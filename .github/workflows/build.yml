@@ -2,7 +2,11 @@ name: Compilar JAR
 
 on:
   push:
+    branches: [main]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -17,8 +21,27 @@ jobs:
       - name: Compilar
         run: |
           chmod +x gradlew
-          ./gradlew build --no-daemon --stacktrace
+          set -o pipefail
+          ./gradlew build --no-daemon --stacktrace 2>&1 | tee build.log
+      - name: Guardar registro de errores
+        if: failure()
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          cp build.log /tmp/build.log
+          git checkout --orphan ci-log
+          git rm -rfq .
+          cp /tmp/build.log build.log
+          git add build.log
+          git commit -qm "Registro de compilación ${GITHUB_SHA::7}"
+          git push -f origin ci-log
       - uses: actions/upload-artifact@v4
         with:
           name: miscelanea-jar
           path: build/libs/*.jar
+      - name: Publicar JAR en una release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Miscelánea build ${{ github.run_number }}
+          files: build/libs/*.jar
