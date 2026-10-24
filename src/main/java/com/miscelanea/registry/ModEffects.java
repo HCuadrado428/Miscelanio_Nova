@@ -15,8 +15,5 @@ public final class ModEffects {
     public static final RegistryObject<MobEffect> CUPIDO = EFFECTS.register("cupido", CupidoEffect::new);
     public static final RegistryObject<MobEffect> ENEMIGO = EFFECTS.register("enemigo", EnemigoEffect::new);
 
-    public static final RegistryObject<MobEffect> PSICOSIS = EFFECTS.register("psicosis", com.miscelanea.carcel.PsicosisEffect::new);
-    public static final RegistryObject<MobEffect> INMUNIDAD_GAS = EFFECTS.register("inmunidad_gas", com.miscelanea.carcel.InmunidadEffect::new);
-
     private ModEffects() {}
 }

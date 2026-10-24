@@ -25,8 +25,6 @@ public class Miscelanea {
         ModEffects.EFFECTS.register(modBus);
         ModPotions.POTIONS.register(modBus);
         ModItems.ITEMS.register(modBus);
-        com.miscelanea.registry.ModBlocks.BLOCKS.register(modBus);
-        com.miscelanea.registry.ModBlocks.BLOCK_ENTITIES.register(modBus);
         ModEntities.ENTITIES.register(modBus);
         ModSounds.SOUNDS.register(modBus);
         ModEnchantments.ENCHANTMENTS.register(modBus);
@@ -51,22 +49,6 @@ public class Miscelanea {
         }
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(ModItems.PORRA);
-            event.accept(ModItems.BOTELLA);
-        }
-        if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
-            com.miscelanea.registry.ModBlocks.ITEMS_BLOQUE.forEach(event::accept);
-            event.accept(ModItems.CARRO_CHIVATO);
-            for (int i = 0; i < com.miscelanea.carcel.Simbolo.TOTAL; i++) {
-                event.accept(com.miscelanea.carcel.LlaveItem.con(ModItems.LLAVE.get(), i));
-            }
-        }
-        if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
-            event.accept(ModItems.GAFAS);
-            event.accept(ModItems.PILA);
-        }
-        if (event.getTabKey() == CreativeModeTabs.FOOD_AND_DRINKS) {
-            event.accept(ModItems.ANTIDOTO);
-            event.accept(ModItems.MEDICINA);
         }
     }
 }
