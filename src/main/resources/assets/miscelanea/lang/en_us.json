@@ -24,7 +24,7 @@
   "enchantment.miscelanea.desatascador.desc": "Shift + right click: shoot a plunger. Then suck to pull, throw or slam.",
   "enchantment.miscelanea.soplido.desc": "Shift + right click: blow to push and reflect projectiles. Quick tap: fire a capture.",
   "enchantment.miscelanea.turbo.desc": "Shift + right click: boost opposite to where the nozzle points.",
-  "enchantment.miscelanea.alquimista.desc": "Shift + right click: suck potion clouds and other entities' effects. Quick tap: spray them.",
+  "enchantment.miscelanea.alquimista.desc": "Right click: suck and absorb potion clouds, thrown potions and others' effects. Shift + right click: spray the tank's negative effects in a stream, like a flamethrower.",
   "key.categories.miscelanea": "Miscelanea",
   "key.miscelanea.soltar_captura": "Release Ghostsucker capture",
   "subtitles.miscelanea.aspirar": "Vacuum whirring",
@@ -52,7 +52,7 @@
   "tooltip.miscelanea.shift.desatascador": "Shift + click: Plunger",
   "tooltip.miscelanea.shift.soplido": "Shift + click: Blower (tap: cannon)",
   "tooltip.miscelanea.shift.turbo": "Shift + click: Turbo",
-  "tooltip.miscelanea.shift.alquimista": "Shift + click: Alchemist (tap: spray)",
+  "tooltip.miscelanea.shift.alquimista": "Shift + click: spray the tank like a flamethrower",
   "tooltip.miscelanea.calor": "Heat: %s%%",
   "tooltip.miscelanea.deposito": "Captures: %s/%s",
   "tooltip.miscelanea.tanque": "Tank to expel: %s%%",
@@ -86,5 +86,6 @@
   "gui.miscelanea.usar": "Take it all now",
   "gui.miscelanea.tirar": "Throw this effect away",
   "gui.miscelanea.reserva_vacia": "Reserve empty: suck positive potions with the Alchemist",
-  "key.miscelanea.mochila": "Open the Ghostsucker backpack"
+  "key.miscelanea.mochila": "Open the Ghostsucker backpack",
+  "tooltip.miscelanea.clic_alquimista": "Right click: suck and absorb potions and effects"
 }

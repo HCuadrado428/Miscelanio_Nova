@@ -22,5 +22,15 @@ public final class ModParticles {
     public static final RegistryObject<SimpleParticleType> SOPLIDO =
             PARTICLES.register("soplido", () -> new SimpleParticleType(false));
 
+    /** Chorro de poción del lanzallamas (Alquimista), con el color del tanque. */
+    public static final RegistryObject<ParticleType<com.miscelanea.aspira.RocioOptions>> ROCIO =
+            PARTICLES.register("rocio", () -> new ParticleType<com.miscelanea.aspira.RocioOptions>(false,
+                    com.miscelanea.aspira.RocioOptions.DESERIALIZER) {
+                @Override
+                public com.mojang.serialization.Codec<com.miscelanea.aspira.RocioOptions> codec() {
+                    return com.miscelanea.aspira.RocioOptions.CODEC;
+                }
+            });
+
     private ModParticles() {}
 }

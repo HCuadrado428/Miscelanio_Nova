@@ -311,6 +311,88 @@ public final class Modos {
         Deposito.vaciarTanque(mochila);
         return true;
     }
+    /**
+     * Shift + clic derecho con Alquimista: suelta el tanque en un chorro continuo, como un lanzallamas.
+     * Lo que toca el chorro recibe los efectos del tanque y en el suelo quedan charquitos de nube.
+     * Devuelve false cuando el tanque se queda vacío.
+     */
+    public static boolean lanzallamas(Player player, int usado) {
+        if (!(player.level() instanceof ServerLevel level)) return true;
+        ItemStack mochila = Deposito.mochila(player);
+        ItemStack tanque = Deposito.tanque(mochila);
+        float carga = Deposito.carga(mochila);
+        if (tanque.isEmpty() || carga <= 0.0F) {
+            Deposito.vaciarTanque(mochila);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BOTTLE_EMPTY, SoundSource.PLAYERS, 1.0F, 0.8F);
+            return false;
+        }
+        List<MobEffectInstance> efectos = PotionUtils.getMobEffects(tanque);
+        int color = tanque.hasTag() && tanque.getTag().contains("CustomPotionColor")
+                ? tanque.getTag().getInt("CustomPotionColor") : PotionUtils.getColor(tanque);
+        Vec3 boca = AspiraUtil.boca(player);
+        Vec3 look = player.getViewVector(1.0F);
+        final double alcance = 7.0;
+
+        // Chorro: gotas con el color del tanque que salen rápido y caen un poco
+        RocioOptions gota = new RocioOptions(color);
+        for (int i = 0; i < 4; i++) {
+            Vec3 dir = look.add((level.random.nextDouble() - 0.5) * 0.16, (level.random.nextDouble() - 0.5) * 0.16,
+                    (level.random.nextDouble() - 0.5) * 0.16).normalize().scale(0.55 + level.random.nextDouble() * 0.25);
+            level.sendParticles(gota, boca.x, boca.y, boca.z, 0, dir.x, dir.y, dir.z, 1.0);
+        }
+        if (usado == 0) {
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.SPLASH_POTION_THROW, SoundSource.PLAYERS, 1.0F, 0.6F);
+        }
+        if (usado % 5 == 0) {
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS,
+                    0.35F, 1.5F + level.random.nextFloat() * 0.3F);
+        }
+
+        // Lo que pilla el chorro
+        if (usado % 5 == 0) {
+            for (LivingEntity e : AspiraUtil.enCono(player, LivingEntity.class, alcance, 0.86)) {
+                for (MobEffectInstance ef : efectos) {
+                    if (ef.getEffect().isInstantenous()) {
+                        if (usado % 10 == 0) ef.getEffect().applyInstantenousEffect(player, player, e, ef.getAmplifier(), 0.5);
+                    } else {
+                        MobEffectInstance actual = e.getEffect(ef.getEffect());
+                        int dur = Math.max(60, ef.getDuration() / 6);
+                        if (actual == null || actual.getDuration() < dur) {
+                            e.addEffect(new MobEffectInstance(ef.getEffect(), dur, ef.getAmplifier()), player);
+                        }
+                    }
+                }
+            }
+        }
+        // Charquito de nube donde cae el chorro
+        if (usado % 12 == 6) {
+            HitResult hit = player.pick(alcance, 1.0F, false);
+            if (hit.getType() == HitResult.Type.BLOCK) {
+                Vec3 p = hit.getLocation();
+                AreaEffectCloud nube = new AreaEffectCloud(level, p.x, p.y, p.z);
+                nube.setOwner(player);
+                for (MobEffectInstance ef : efectos) {
+                    nube.addEffect(new MobEffectInstance(ef.getEffect(), Math.max(40, ef.getDuration() / 8), ef.getAmplifier()));
+                }
+                nube.setFixedColor(color);
+                nube.setRadius(1.1F);
+                nube.setRadiusOnUse(-0.2F);
+                nube.setWaitTime(0);
+                nube.setDuration(60);
+                nube.setRadiusPerTick(-1.1F / 60);
+                level.addFreshEntity(nube);
+            }
+        }
+
+        Deposito.setCarga(mochila, carga - 0.9F);
+        if (carga - 0.9F <= 0.0F) {
+            Deposito.vaciarTanque(mochila);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BOTTLE_EMPTY, SoundSource.PLAYERS, 1.0F, 0.8F);
+            return false;
+        }
+        return true;
+    }
+
     /** Positivos → Reserva; negativos y neutros → tanque para expulsar. */
     private static void guardarEfecto(ItemStack mochila, MobEffectInstance ef, int usado, float carga) {
         if (ef.getEffect().isBeneficial()) {

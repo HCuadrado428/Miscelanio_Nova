@@ -24,7 +24,7 @@
   "enchantment.miscelanea.desatascador.desc": "Shift + clic derecho: dispara una ventosa. Luego aspira para atraer y lanzar o estampar.",
   "enchantment.miscelanea.soplido.desc": "Shift + clic derecho: sopla para empujar y devolver proyectiles. Toque rápido: dispara una captura.",
   "enchantment.miscelanea.turbo.desc": "Shift + clic derecho: impulso en dirección contraria a la boquilla.",
-  "enchantment.miscelanea.alquimista.desc": "Shift + clic derecho: aspira nubes de pociones y efectos ajenos. Toque rápido: rocíalos.",
+  "enchantment.miscelanea.alquimista.desc": "Clic derecho: aspira y absorbe nubes de pociones, pociones lanzadas y efectos ajenos. Shift + clic derecho: suelta los efectos negativos del tanque en un chorro, como un lanzallamas.",
   "key.categories.miscelanea": "Miscelánea",
   "key.miscelanea.soltar_captura": "Soltar captura del Aspirafantasmas",
   "subtitles.miscelanea.aspirar": "Aspiradora zumbando",
@@ -52,7 +52,7 @@
   "tooltip.miscelanea.shift.desatascador": "Shift + clic: Desatascador",
   "tooltip.miscelanea.shift.soplido": "Shift + clic: Soplido (toque: cañón)",
   "tooltip.miscelanea.shift.turbo": "Shift + clic: Turbo",
-  "tooltip.miscelanea.shift.alquimista": "Shift + clic: Alquimista (toque: rociar)",
+  "tooltip.miscelanea.shift.alquimista": "Shift + clic: lanzar el tanque como un lanzallamas",
   "tooltip.miscelanea.calor": "Calor: %s%%",
   "tooltip.miscelanea.deposito": "Depósito: %s/%s",
   "tooltip.miscelanea.tanque": "Tanque para expulsar: %s%%",
@@ -86,5 +86,6 @@
   "gui.miscelanea.usar": "Tomarlo todo ahora",
   "gui.miscelanea.tirar": "Tirar este efecto",
   "gui.miscelanea.reserva_vacia": "Reserva vacía: aspira pociones positivas con el Alquimista",
-  "key.miscelanea.mochila": "Abrir la mochila del Aspirafantasmas"
+  "key.miscelanea.mochila": "Abrir la mochila del Aspirafantasmas",
+  "tooltip.miscelanea.clic_alquimista": "Clic derecho: aspirar y absorber pociones y efectos"
 }

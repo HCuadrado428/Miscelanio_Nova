@@ -74,10 +74,17 @@ public class AspirafantasmasItem extends Item implements GeoItem {
         }
 
         Modo modo = Modo.ASPIRAR;
+        Modo especial = Modo.especial(stack);
         if (player.isShiftKeyDown()) {
-            Modo especial = Modo.especial(stack);
-            // Sin encantamiento: expulsa aire (soplido básico)
-            modo = especial != null ? especial : Modo.SOPLAR;
+            // Sin encantamiento: expulsa aire (soplido básico). Alquimista: lanzallamas con el tanque
+            modo = especial == null ? Modo.SOPLAR : especial == Modo.ALQUIMISTA ? Modo.LANZALLAMAS : especial;
+        } else if (especial == Modo.ALQUIMISTA) {
+            modo = Modo.ALQUIMISTA; // clic derecho: aspira y absorbe pociones y efectos
+        }
+        if (modo == Modo.LANZALLAMAS && Deposito.tanque(Deposito.mochila(player)).isEmpty()) {
+            level.playSound(player, player.getX(), player.getY(), player.getZ(),
+                    net.minecraft.sounds.SoundEvents.DISPENSER_FAIL, net.minecraft.sounds.SoundSource.PLAYERS, 0.5F, 1.6F);
+            return InteractionResultHolder.fail(stack);
         }
 
         if (!modo.mantener()) {
@@ -134,11 +141,12 @@ public class AspirafantasmasItem extends Item implements GeoItem {
 
         float coste = switch (modo) {
             case SOPLIDO -> 1.5F;
+            case LANZALLAMAS -> 0.8F;
             case DESTELLO -> 0.5F;
             default -> 1.0F;
         };
         // Sujetar a alguien con el desatascador calienta poco: se puede aguantar un buen rato (~25 s)
-        if (modo == Modo.ASPIRAR) {
+        if (modo == Modo.ASPIRAR || modo == Modo.ALQUIMISTA) {
             DesatascadorEntity des = Succion.desatascador(player);
             if (des != null && des.agarrado()) coste = 0.4F;
         }
@@ -155,7 +163,13 @@ public class AspirafantasmasItem extends Item implements GeoItem {
             case DESTELLO -> Modos.destelloCargando(player, usado);
             case SOPLIDO -> Modos.soplido(player, usado, true);
             case SOPLAR -> Modos.soplido(player, usado, false);
-            case ALQUIMISTA -> Modos.alquimista(player, usado);
+            case ALQUIMISTA -> {
+                Succion.tick(player, usado);
+                Modos.alquimista(player, usado);
+            }
+            case LANZALLAMAS -> {
+                if (!Modos.lanzallamas(player, usado)) player.stopUsingItem();
+            }
             default -> {}
         }
     }
@@ -180,9 +194,7 @@ public class AspirafantasmasItem extends Item implements GeoItem {
                     if (Modos.canon(player)) calentar(player, stack, 15.0F);
                 }
             }
-            case ALQUIMISTA -> {
-                if (usado < TOQUE && Modos.rociar(player)) calentar(player, stack, 15.0F);
-            }
+            case ALQUIMISTA -> Succion.soltar(player);
             default -> {}
         }
     }
@@ -267,8 +279,8 @@ public class AspirafantasmasItem extends Item implements GeoItem {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         String p = "tooltip." + Miscelanea.MOD_ID + ".";
         tooltip.add(Component.translatable(p + "requiere_mochila").withStyle(ChatFormatting.DARK_GRAY));
-        tooltip.add(Component.translatable(p + "clic").withStyle(ChatFormatting.GRAY));
         Modo modo = Modo.especial(stack);
+        tooltip.add(Component.translatable(p + (modo == Modo.ALQUIMISTA ? "clic_alquimista" : "clic")).withStyle(ChatFormatting.GRAY));
         if (modo != null) {
             tooltip.add(Component.translatable(p + "shift." + modo.id()).withStyle(ChatFormatting.AQUA));
         } else {

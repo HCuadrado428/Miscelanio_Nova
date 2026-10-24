@@ -12,8 +12,9 @@ public enum Modo {
     DESATASCADOR("desatascador", false), // disparo instantáneo
     SOPLIDO("soplido", true),         // mantener para soplar; toque rápido = cañón de capturas
     TURBO("turbo", false),            // impulso instantáneo
-    ALQUIMISTA("alquimista", true),   // mantener para aspirar pociones; toque rápido = rociar
-    SOPLAR("soplar", true);           // Shift sin encantamiento: soplido básico
+    ALQUIMISTA("alquimista", true),   // clic derecho con Alquimista: aspira mobs y absorbe pociones y efectos
+    SOPLAR("soplar", true),           // Shift sin encantamiento: soplido básico
+    LANZALLAMAS("lanzallamas", true); // Shift con Alquimista: suelta el tanque como un lanzallamas
 
     private final String id;
     private final boolean mantener;

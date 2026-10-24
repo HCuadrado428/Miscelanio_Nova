@@ -77,6 +77,7 @@ public final class ClientEvents {
         public static void registerParticles(RegisterParticleProvidersEvent event) {
             event.registerSpriteSet(ModParticles.ASPIRACION.get(), AireParticle.Aspiracion::new);
             event.registerSpriteSet(ModParticles.SOPLIDO.get(), AireParticle.Soplido::new);
+            event.registerSpriteSet(ModParticles.ROCIO.get(), RocioParticle.Provider::new);
         }
 
         @SubscribeEvent
