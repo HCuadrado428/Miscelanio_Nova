@@ -35,6 +35,7 @@ public class EnemigoEffect extends MobEffect {
 
         LivingEntity enemy = EffectUtil.nearestWithEffect(entity, this, RADIUS);
         if (enemy == null) return;
+        EffectUtil.avisarLazo(entity, enemy, 1);
 
         // Chispas de odio mientras están cerca
         if (entity.tickCount % 5 == 0) {

@@ -38,6 +38,7 @@ public class CupidoEffect extends MobEffect {
         LivingEntity partner = EffectUtil.nearestWithEffect(entity, this, RADIUS);
         if (partner == null) return;
 
+        EffectUtil.avisarLazo(entity, partner, 0);
         Vec3 diff = partner.position().subtract(entity.position());
         double distance = diff.length();
 

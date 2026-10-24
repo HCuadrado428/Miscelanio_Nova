@@ -198,6 +198,7 @@ public final class Agarres {
         level.sendParticles(ParticleTypes.ELECTRIC_SPARK, c.x, c.y, c.z, 35, 0.35, 0.5, 0.35, 0.25);
         level.playSound(null, c.x, c.y, c.z, ModSounds.DESCARGA.get(), SoundSource.PLAYERS, 1.0F, 0.9F + level.random.nextFloat() * 0.2F);
         enviar(a, AgarrePacket.Tipo.DESCARGA, a.resistencia);
+        arco(a.agresor, v);
     }
 
     private static void iniciarEjecucion(Agarre a) {
@@ -379,7 +380,15 @@ public final class Agarres {
             Vec3 c = herido.position().add(0, herido.getBbHeight() * 0.6, 0);
             level.sendParticles(ParticleTypes.ELECTRIC_SPARK, c.x, c.y, c.z, 15, 0.25, 0.35, 0.25, 0.2);
             level.playSound(null, c.x, c.y, c.z, ModSounds.CHISPAZO.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+            arco(p, herido);
         }
+    }
+
+    /** Arco eléctrico visible de la punta de la porra a la víctima (unos pocos ticks). */
+    private static void arco(LivingEntity agresor, LivingEntity victima) {
+        com.miscelanea.network.ModNetwork.CHANNEL.send(
+                net.minecraftforge.network.PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> agresor),
+                new com.miscelanea.network.LazoPacket(agresor.getId(), victima.getId(), 2));
     }
 
     @SubscribeEvent

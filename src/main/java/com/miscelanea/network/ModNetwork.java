@@ -52,5 +52,10 @@ public final class ModNetwork {
                 .decoder(CapturaPacket::new)
                 .consumerMainThread(CapturaPacket::handle)
                 .add();
+        CHANNEL.messageBuilder(LazoPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(LazoPacket::encode)
+                .decoder(LazoPacket::new)
+                .consumerMainThread(LazoPacket::handle)
+                .add();
     }
 }

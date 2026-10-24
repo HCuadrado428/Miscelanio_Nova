@@ -30,4 +30,12 @@ final class EffectUtil {
                 .min(Comparator.comparingDouble(other -> other.distanceToSqr(self)))
                 .orElse(null);
     }
+
+    /** Avisa a los clientes cercanos de que estas dos entidades están unidas (para dibujar el lazo). */
+    public static void avisarLazo(net.minecraft.world.entity.LivingEntity a, net.minecraft.world.entity.LivingEntity b, int tipo) {
+        if (a.getId() > b.getId() || a.tickCount % 10 != 0) return; // solo uno de los dos, cada medio segundo
+        com.miscelanea.network.ModNetwork.CHANNEL.send(
+                net.minecraftforge.network.PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> a),
+                new com.miscelanea.network.LazoPacket(a.getId(), b.getId(), tipo));
+    }
 }

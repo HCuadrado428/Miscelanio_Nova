@@ -41,7 +41,7 @@ import java.util.Map;
 public final class MedigunCliente {
     private static final ResourceLocation TEX_RAYO = new ResourceLocation(Miscelanea.MOD_ID, "textures/entity/rayo_medico.png");
 
-    private record Rayo(int paciente, long uberHasta, int color) {}
+    private record Rayo(int paciente, long uberHasta, int color, long desde) {}
 
     private static final Map<Integer, Rayo> RAYOS = new HashMap<>();
     private static final Map<Integer, RayoSonido> SONIDOS = new HashMap<>();
@@ -56,7 +56,9 @@ public final class MedigunCliente {
         if (paciente < 0 && uber <= 0) {
             RAYOS.remove(medico);
         } else {
-            RAYOS.put(medico, new Rayo(paciente, level.getGameTime() + uber, color));
+            Rayo antes = RAYOS.get(medico);
+            long desde = antes != null && antes.paciente() == paciente ? antes.desde() : level.getGameTime();
+            RAYOS.put(medico, new Rayo(paciente, level.getGameTime() + uber, color, desde));
         }
         RayoSonido s = SONIDOS.get(medico);
         if (paciente >= 0 && (s == null || s.isStopped())) {
@@ -136,8 +138,10 @@ public final class MedigunCliente {
             Vec3 mira = pm.getViewVector(pt);
             pose.pushPose();
             pose.translate(-camPos.x, -camPos.y, -camPos.z);
+            // al conectar, el rayo sale disparado hasta el paciente en 4 ticks
+            float alcance = Mth.clamp((tiempo - r.desde()) / 4.0F, 0.05F, 1.0F);
             dibujarRayo(pose, buffers.getBuffer(tipo), ini, fin, mira, camPos, r.color(), tiempo,
-                    tiempo < r.uberHasta());
+                    tiempo < r.uberHasta(), alcance);
             pose.popPose();
             dibujado = true;
         }
@@ -164,8 +168,8 @@ public final class MedigunCliente {
     }
 
     private static void dibujarRayo(PoseStack pose, VertexConsumer vc, Vec3 ini, Vec3 fin, Vec3 mira, Vec3 cam,
-                                    int color, float t, boolean uber) {
-        double dist = ini.distanceTo(fin);
+                                    int color, float t, boolean uber, float alcance) {
+        double dist = ini.distanceTo(fin) * alcance;
         if (dist < 0.05) return;
         // Curva: sale recto hacia donde miras y se dobla hasta el paciente
         Vec3 ctrl = ini.add(mira.scale(dist * 0.5));
@@ -176,7 +180,7 @@ public final class MedigunCliente {
         int n = Mth.clamp((int) (dist * 6), 12, 64);
         Vec3[] base = new Vec3[n + 1];
         for (int i = 0; i <= n; i++) {
-            double s = i / (double) n, u = 1 - s;
+            double s = alcance * i / (double) n, u = 1 - s;
             base[i] = ini.scale(u * u).add(ctrl.scale(2 * u * s)).add(fin.scale(s * s));
         }
         float r = ((color >> 16) & 255) / 255.0F, g = ((color >> 8) & 255) / 255.0F, b = (color & 255) / 255.0F;
@@ -216,7 +220,7 @@ public final class MedigunCliente {
     }
 
     /** Tira de quads siempre de cara a la cámara, con la textura corriendo a lo largo. */
-    private static void cinta(PoseStack pose, VertexConsumer vc, Vec3[] p, Vec3 cam, float ancho,
+    public static void cinta(PoseStack pose, VertexConsumer vc, Vec3[] p, Vec3 cam, float ancho,
                               float r, float g, float b, float alpha, float vOff, double largo) {
         Matrix4f m = pose.last().pose();
         int n = p.length - 1;

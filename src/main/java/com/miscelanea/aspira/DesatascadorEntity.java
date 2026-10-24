@@ -43,7 +43,7 @@ public class DesatascadorEntity extends ThrowableItemProjectile implements GeoEn
     private static final EntityDataAccessor<Boolean> AGARRADO =
             SynchedEntityData.defineId(DesatascadorEntity.class, EntityDataSerializers.BOOLEAN);
 
-    private static final RawAnimation BOING = RawAnimation.begin().thenLoop("animation.desatascador.boing");
+    private static final RawAnimation BOING = RawAnimation.begin().thenPlay("animation.desatascador.pegar").thenLoop("animation.desatascador.pegado");
     private static final RawAnimation VUELO = RawAnimation.begin().thenLoop("animation.desatascador.vuelo");
 
     public static final double LONGITUD_CUERDA = 24.0;

@@ -16,6 +16,8 @@ Un mod de cosas que no tienen nada que ver entre sí, pero que molan.
 - Ignora armadura, funciona con el PvP desactivado y los mobs afectados se pelean entre ellos.
 - Mensaje de muerte propio: "X fue consumido por su odio hacia Y".
 
+Entre dos afectados se ve un **lazo**: una cinta rosa que cuelga y late (Cupido) o un rayo rojo en zigzag que chisporrotea más cuanto más cerca están (Enemigo).
+
 ### Pociones y recetas de alquimia
 | Poción | Receta | Duración |
 |---|---|---|
@@ -56,6 +58,8 @@ Necesitas **la mochila puesta** (hueco del pecho) y **la boquilla en la mano**. 
 
 **Ventana de la mochila (tecla B, con la mochila puesta):** tres tarros con los bichos capturados flotando dentro (botón para soltar cada uno), el tubo del tanque con su color y sus efectos (rociar o tirar), y la **Reserva** con una barra de tiempo por efecto y botones para **pausar** su uso automático, **tomarlo todo ya** o **tirarlo**. Sin texto: al pasar el ratón por encima sale la descripción.
 
+**Sensaciones:** zumbido continuo que sube de tono con el calor (más agudo al soplar, más grave con el lanzallamas), la vista tiembla y se mete hacia dentro al aspirar o se abre al soplar, y la boca de la boquilla se pone **al rojo** a partir del 30 % de calor. Boquilla y mochila tienen animaciones distintas para aspirar, soplar, lanzallamas y cargar el destello. Al capturar, el tira y afloja se ve con una **barra y una flecha** (sin texto) y el bicho te arrastra la cámara hacia su lado.
+
 **Sobrecalentamiento:** la barra de la boquilla pasa de verde a rojo. Al llenarse se bloquea echando humo hasta enfriarse del todo (unos 6 s).
 
 **Recetas**
@@ -79,6 +83,7 @@ Inspirado en el carcelero de The Outlast Trials, con diseño propio. El **genera
 - **Ejecución:** si la víctima tiene ≤30 % de vida, el clic derecho la ejecuta. Levantas la porra en alto, se carga de chispas y la hundes.
 - **Animaciones** en primera y tercera persona, calculadas para que la mano llegue al cuello y la porra apunte a la víctima. Entran y salen suavemente. La víctima ve sus propias manos forcejeando.
 - **Ataque normal:** estocada con zancada (brazo atrás, torso girado, y pincha recto hacia donde miras).
+- **Arco eléctrico:** cada golpe con carga y cada descarga del agarre lanzan un arco visible de la punta de la porra a la víctima.
 - **Generador:** cada descarga gasta carga (barra en el ítem). Se recarga sola tras 3 s sin usarla y muy rápido bajo una tormenta.
 
 **Recetas**
