@@ -1,0 +1,11 @@
+{
+ "variants": {
+  "axis=x": {
+   "model": "miscelanea:block/fluorescente"
+  },
+  "axis=z": {
+   "model": "miscelanea:block/fluorescente",
+   "y": 90
+  }
+ }
+}

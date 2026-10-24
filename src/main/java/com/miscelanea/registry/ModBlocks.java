@@ -59,6 +59,23 @@ public final class ModBlocks {
     public static final RegistryObject<Block> REJILLA_GAS = registrar("rejilla_gas",
             () -> new GasBlock(metal().noOcclusion()));
 
+    // ---- decoración del mapa (como en la comisaría de Kill the Snitch)
+    private static BlockBehaviour.Properties piedra() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(1.5F, 6.0F).requiresCorrectToolForDrops();
+    }
+
+    public static final RegistryObject<Block> AZULEJO_BLANCO = registrar("azulejo_blanco", () -> new Block(piedra()));
+    public static final RegistryObject<Block> AZULEJO_VERDE = registrar("azulejo_verde", () -> new Block(piedra()));
+    public static final RegistryObject<Block> AZULEJO_SANGRE = registrar("azulejo_blanco_sangre", () -> new Block(piedra()));
+    public static final RegistryObject<Block> PARED_VERDE = registrar("pared_verde", () -> new Block(piedra()));
+    public static final RegistryObject<Block> SUELO_BALDOSAS = registrar("suelo_baldosas", () -> new Block(piedra()));
+    public static final RegistryObject<Block> SUELO_SANGRE = registrar("suelo_baldosas_sangre", () -> new Block(piedra()));
+    public static final RegistryObject<Block> PERSIANA = registrar("persiana", () -> new Block(metal().strength(3.0F)));
+    public static final RegistryObject<Block> PERSIANA_SANGRE = registrar("persiana_sangre", () -> new Block(metal().strength(3.0F)));
+    public static final RegistryObject<Block> FLUORESCENTE = registrar("fluorescente",
+            () -> new FluorescenteBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(0.5F)
+                    .sound(SoundType.GLASS).noOcclusion().lightLevel(s -> 15)));
+
     /** Bloque "sin textura" que deja el aliento del núcleo; se deshace solo (sin ítem). */
     public static final RegistryObject<Block> BLOQUE_CORRUPTO = BLOCKS.register("bloque_corrupto",
             () -> new com.miscelanea.nucleo.BloqueCorrupto(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).strength(0.3F)

@@ -1,44 +1,32 @@
 {
  "parent": "item/generated",
  "textures": {
-  "layer0": "miscelanea:item/llave_circulo"
+  "layer0": "miscelanea:item/llave_corazon"
  },
  "overrides": [
   {
    "predicate": {
     "miscelanea:simbolo": 0.0
    },
-   "model": "miscelanea:item/llave_circulo"
+   "model": "miscelanea:item/llave_corazon"
   },
   {
    "predicate": {
     "miscelanea:simbolo": 0.1
    },
-   "model": "miscelanea:item/llave_triangulo"
+   "model": "miscelanea:item/llave_diamante"
   },
   {
    "predicate": {
     "miscelanea:simbolo": 0.2
    },
-   "model": "miscelanea:item/llave_cruz"
+   "model": "miscelanea:item/llave_conejo"
   },
   {
    "predicate": {
     "miscelanea:simbolo": 0.3
    },
-   "model": "miscelanea:item/llave_rayo"
-  },
-  {
-   "predicate": {
-    "miscelanea:simbolo": 0.4
-   },
-   "model": "miscelanea:item/llave_ojo"
-  },
-  {
-   "predicate": {
-    "miscelanea:simbolo": 0.5
-   },
-   "model": "miscelanea:item/llave_calavera"
+   "model": "miscelanea:item/llave_corona"
   }
  ]
 }

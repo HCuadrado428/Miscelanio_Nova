@@ -7,6 +7,14 @@
     "miscelanea:palanca_descarga",
     "miscelanea:taquilla",
     "miscelanea:rejilla_electrica",
-    "miscelanea:rejilla_gas"
+    "miscelanea:rejilla_gas",
+    "miscelanea:azulejo_blanco",
+    "miscelanea:azulejo_verde",
+    "miscelanea:azulejo_blanco_sangre",
+    "miscelanea:pared_verde",
+    "miscelanea:suelo_baldosas",
+    "miscelanea:suelo_baldosas_sangre",
+    "miscelanea:persiana",
+    "miscelanea:persiana_sangre"
   ]
 }

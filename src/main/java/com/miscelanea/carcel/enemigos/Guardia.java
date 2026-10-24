@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level;
 import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
 
-/** Guardia: patrulla, va a los ruidos y te persigue golpeando con una tubería. */
+/** Guardia: patrulla, va a los ruidos y te persigue a machetazos (los Grunts de The Outlast Trials). */
 public class Guardia extends EnemigoCarcel {
     public Guardia(EntityType<? extends Monster> type, Level level) {
         super(type, level, "guardia");

@@ -19,11 +19,11 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
- * Monitor de tubo que muestra el símbolo de la llave que necesita una reja. La pantalla da luz.
+ * Tele de tubo colgada del techo que muestra el símbolo de la llave que necesita una reja. La pantalla da luz.
  * Creativo: clic derecho con la mano vacía cambia el símbolo.
  */
 public class MonitorBlock extends HorizontalDirectionalBlock {
-    private static final VoxelShape FORMA = Block.box(2, 0, 2, 14, 12, 14);
+    private static final VoxelShape FORMA = Block.box(2, 1, 2, 14, 16, 14);
 
     public MonitorBlock(Properties properties) {
         super(properties);

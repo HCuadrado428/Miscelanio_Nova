@@ -1,7 +1,7 @@
 {
  "variants": {
   "facing=north,open=false,simbolo=0": {
-   "model": "miscelanea:block/reja_cerrada_circulo",
+   "model": "miscelanea:block/reja_cerrada_corazon",
    "y": 0
   },
   "facing=north,open=true,simbolo=0": {
@@ -9,7 +9,7 @@
    "y": 0
   },
   "facing=north,open=false,simbolo=1": {
-   "model": "miscelanea:block/reja_cerrada_triangulo",
+   "model": "miscelanea:block/reja_cerrada_diamante",
    "y": 0
   },
   "facing=north,open=true,simbolo=1": {
@@ -17,7 +17,7 @@
    "y": 0
   },
   "facing=north,open=false,simbolo=2": {
-   "model": "miscelanea:block/reja_cerrada_cruz",
+   "model": "miscelanea:block/reja_cerrada_conejo",
    "y": 0
   },
   "facing=north,open=true,simbolo=2": {
@@ -25,31 +25,15 @@
    "y": 0
   },
   "facing=north,open=false,simbolo=3": {
-   "model": "miscelanea:block/reja_cerrada_rayo",
+   "model": "miscelanea:block/reja_cerrada_corona",
    "y": 0
   },
   "facing=north,open=true,simbolo=3": {
    "model": "miscelanea:block/reja_abierta",
    "y": 0
   },
-  "facing=north,open=false,simbolo=4": {
-   "model": "miscelanea:block/reja_cerrada_ojo",
-   "y": 0
-  },
-  "facing=north,open=true,simbolo=4": {
-   "model": "miscelanea:block/reja_abierta",
-   "y": 0
-  },
-  "facing=north,open=false,simbolo=5": {
-   "model": "miscelanea:block/reja_cerrada_calavera",
-   "y": 0
-  },
-  "facing=north,open=true,simbolo=5": {
-   "model": "miscelanea:block/reja_abierta",
-   "y": 0
-  },
   "facing=east,open=false,simbolo=0": {
-   "model": "miscelanea:block/reja_cerrada_circulo",
+   "model": "miscelanea:block/reja_cerrada_corazon",
    "y": 90
   },
   "facing=east,open=true,simbolo=0": {
@@ -57,7 +41,7 @@
    "y": 90
   },
   "facing=east,open=false,simbolo=1": {
-   "model": "miscelanea:block/reja_cerrada_triangulo",
+   "model": "miscelanea:block/reja_cerrada_diamante",
    "y": 90
   },
   "facing=east,open=true,simbolo=1": {
@@ -65,7 +49,7 @@
    "y": 90
   },
   "facing=east,open=false,simbolo=2": {
-   "model": "miscelanea:block/reja_cerrada_cruz",
+   "model": "miscelanea:block/reja_cerrada_conejo",
    "y": 90
   },
   "facing=east,open=true,simbolo=2": {
@@ -73,31 +57,15 @@
    "y": 90
   },
   "facing=east,open=false,simbolo=3": {
-   "model": "miscelanea:block/reja_cerrada_rayo",
+   "model": "miscelanea:block/reja_cerrada_corona",
    "y": 90
   },
   "facing=east,open=true,simbolo=3": {
    "model": "miscelanea:block/reja_abierta",
    "y": 90
   },
-  "facing=east,open=false,simbolo=4": {
-   "model": "miscelanea:block/reja_cerrada_ojo",
-   "y": 90
-  },
-  "facing=east,open=true,simbolo=4": {
-   "model": "miscelanea:block/reja_abierta",
-   "y": 90
-  },
-  "facing=east,open=false,simbolo=5": {
-   "model": "miscelanea:block/reja_cerrada_calavera",
-   "y": 90
-  },
-  "facing=east,open=true,simbolo=5": {
-   "model": "miscelanea:block/reja_abierta",
-   "y": 90
-  },
   "facing=south,open=false,simbolo=0": {
-   "model": "miscelanea:block/reja_cerrada_circulo",
+   "model": "miscelanea:block/reja_cerrada_corazon",
    "y": 180
   },
   "facing=south,open=true,simbolo=0": {
@@ -105,7 +73,7 @@
    "y": 180
   },
   "facing=south,open=false,simbolo=1": {
-   "model": "miscelanea:block/reja_cerrada_triangulo",
+   "model": "miscelanea:block/reja_cerrada_diamante",
    "y": 180
   },
   "facing=south,open=true,simbolo=1": {
@@ -113,7 +81,7 @@
    "y": 180
   },
   "facing=south,open=false,simbolo=2": {
-   "model": "miscelanea:block/reja_cerrada_cruz",
+   "model": "miscelanea:block/reja_cerrada_conejo",
    "y": 180
   },
   "facing=south,open=true,simbolo=2": {
@@ -121,31 +89,15 @@
    "y": 180
   },
   "facing=south,open=false,simbolo=3": {
-   "model": "miscelanea:block/reja_cerrada_rayo",
+   "model": "miscelanea:block/reja_cerrada_corona",
    "y": 180
   },
   "facing=south,open=true,simbolo=3": {
    "model": "miscelanea:block/reja_abierta",
    "y": 180
   },
-  "facing=south,open=false,simbolo=4": {
-   "model": "miscelanea:block/reja_cerrada_ojo",
-   "y": 180
-  },
-  "facing=south,open=true,simbolo=4": {
-   "model": "miscelanea:block/reja_abierta",
-   "y": 180
-  },
-  "facing=south,open=false,simbolo=5": {
-   "model": "miscelanea:block/reja_cerrada_calavera",
-   "y": 180
-  },
-  "facing=south,open=true,simbolo=5": {
-   "model": "miscelanea:block/reja_abierta",
-   "y": 180
-  },
   "facing=west,open=false,simbolo=0": {
-   "model": "miscelanea:block/reja_cerrada_circulo",
+   "model": "miscelanea:block/reja_cerrada_corazon",
    "y": 270
   },
   "facing=west,open=true,simbolo=0": {
@@ -153,7 +105,7 @@
    "y": 270
   },
   "facing=west,open=false,simbolo=1": {
-   "model": "miscelanea:block/reja_cerrada_triangulo",
+   "model": "miscelanea:block/reja_cerrada_diamante",
    "y": 270
   },
   "facing=west,open=true,simbolo=1": {
@@ -161,7 +113,7 @@
    "y": 270
   },
   "facing=west,open=false,simbolo=2": {
-   "model": "miscelanea:block/reja_cerrada_cruz",
+   "model": "miscelanea:block/reja_cerrada_conejo",
    "y": 270
   },
   "facing=west,open=true,simbolo=2": {
@@ -169,26 +121,10 @@
    "y": 270
   },
   "facing=west,open=false,simbolo=3": {
-   "model": "miscelanea:block/reja_cerrada_rayo",
+   "model": "miscelanea:block/reja_cerrada_corona",
    "y": 270
   },
   "facing=west,open=true,simbolo=3": {
-   "model": "miscelanea:block/reja_abierta",
-   "y": 270
-  },
-  "facing=west,open=false,simbolo=4": {
-   "model": "miscelanea:block/reja_cerrada_ojo",
-   "y": 270
-  },
-  "facing=west,open=true,simbolo=4": {
-   "model": "miscelanea:block/reja_abierta",
-   "y": 270
-  },
-  "facing=west,open=false,simbolo=5": {
-   "model": "miscelanea:block/reja_cerrada_calavera",
-   "y": 270
-  },
-  "facing=west,open=true,simbolo=5": {
    "model": "miscelanea:block/reja_abierta",
    "y": 270
   }

@@ -1,99 +1,67 @@
 {
  "variants": {
   "facing=north,simbolo=0": {
-   "model": "miscelanea:block/monitor_circulo",
+   "model": "miscelanea:block/monitor_corazon",
    "y": 0
   },
   "facing=north,simbolo=1": {
-   "model": "miscelanea:block/monitor_triangulo",
+   "model": "miscelanea:block/monitor_diamante",
    "y": 0
   },
   "facing=north,simbolo=2": {
-   "model": "miscelanea:block/monitor_cruz",
+   "model": "miscelanea:block/monitor_conejo",
    "y": 0
   },
   "facing=north,simbolo=3": {
-   "model": "miscelanea:block/monitor_rayo",
-   "y": 0
-  },
-  "facing=north,simbolo=4": {
-   "model": "miscelanea:block/monitor_ojo",
-   "y": 0
-  },
-  "facing=north,simbolo=5": {
-   "model": "miscelanea:block/monitor_calavera",
+   "model": "miscelanea:block/monitor_corona",
    "y": 0
   },
   "facing=east,simbolo=0": {
-   "model": "miscelanea:block/monitor_circulo",
+   "model": "miscelanea:block/monitor_corazon",
    "y": 90
   },
   "facing=east,simbolo=1": {
-   "model": "miscelanea:block/monitor_triangulo",
+   "model": "miscelanea:block/monitor_diamante",
    "y": 90
   },
   "facing=east,simbolo=2": {
-   "model": "miscelanea:block/monitor_cruz",
+   "model": "miscelanea:block/monitor_conejo",
    "y": 90
   },
   "facing=east,simbolo=3": {
-   "model": "miscelanea:block/monitor_rayo",
-   "y": 90
-  },
-  "facing=east,simbolo=4": {
-   "model": "miscelanea:block/monitor_ojo",
-   "y": 90
-  },
-  "facing=east,simbolo=5": {
-   "model": "miscelanea:block/monitor_calavera",
+   "model": "miscelanea:block/monitor_corona",
    "y": 90
   },
   "facing=south,simbolo=0": {
-   "model": "miscelanea:block/monitor_circulo",
+   "model": "miscelanea:block/monitor_corazon",
    "y": 180
   },
   "facing=south,simbolo=1": {
-   "model": "miscelanea:block/monitor_triangulo",
+   "model": "miscelanea:block/monitor_diamante",
    "y": 180
   },
   "facing=south,simbolo=2": {
-   "model": "miscelanea:block/monitor_cruz",
+   "model": "miscelanea:block/monitor_conejo",
    "y": 180
   },
   "facing=south,simbolo=3": {
-   "model": "miscelanea:block/monitor_rayo",
-   "y": 180
-  },
-  "facing=south,simbolo=4": {
-   "model": "miscelanea:block/monitor_ojo",
-   "y": 180
-  },
-  "facing=south,simbolo=5": {
-   "model": "miscelanea:block/monitor_calavera",
+   "model": "miscelanea:block/monitor_corona",
    "y": 180
   },
   "facing=west,simbolo=0": {
-   "model": "miscelanea:block/monitor_circulo",
+   "model": "miscelanea:block/monitor_corazon",
    "y": 270
   },
   "facing=west,simbolo=1": {
-   "model": "miscelanea:block/monitor_triangulo",
+   "model": "miscelanea:block/monitor_diamante",
    "y": 270
   },
   "facing=west,simbolo=2": {
-   "model": "miscelanea:block/monitor_cruz",
+   "model": "miscelanea:block/monitor_conejo",
    "y": 270
   },
   "facing=west,simbolo=3": {
-   "model": "miscelanea:block/monitor_rayo",
-   "y": 270
-  },
-  "facing=west,simbolo=4": {
-   "model": "miscelanea:block/monitor_ojo",
-   "y": 270
-  },
-  "facing=west,simbolo=5": {
-   "model": "miscelanea:block/monitor_calavera",
+   "model": "miscelanea:block/monitor_corona",
    "y": 270
   }
  }

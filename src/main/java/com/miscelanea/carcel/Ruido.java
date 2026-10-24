@@ -16,6 +16,7 @@ public final class Ruido {
     public static void alertar(ServerLevel level, Vec3 donde, double radio, @Nullable Entity causante) {
         AABB caja = new AABB(donde, donde).inflate(radio);
         for (Monster m : level.getEntitiesOfClass(Monster.class, caja, Monster::isAlive)) {
+            if (m instanceof com.miscelanea.carcel.enemigos.Griton g) { g.despertar(causante); continue; }
             if (m.getTarget() != null) continue; // ya está persiguiendo a alguien
             m.getNavigation().moveTo(donde.x, donde.y, donde.z, 1.15);
             m.getLookControl().setLookAt(donde);
