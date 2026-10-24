@@ -51,7 +51,7 @@ public class AspirafantasmasItem extends Item implements GeoItem {
         super(properties);
     }
 
-    private static Component msg(String key, Object... args) {
+    private static net.minecraft.network.chat.MutableComponent msg(String key, Object... args) {
         return Component.translatable("msg." + Miscelanea.MOD_ID + "." + key, args);
     }
 
