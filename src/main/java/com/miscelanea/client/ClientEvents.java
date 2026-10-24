@@ -46,6 +46,11 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void clientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(PoseAspiradora::init); // crea el ArmPose a dos manos
+            // La llave cambia de modelo según su símbolo
+            event.enqueueWork(() -> net.minecraft.client.renderer.item.ItemProperties.register(
+                    com.miscelanea.registry.ModItems.LLAVE.get(),
+                    new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "simbolo"),
+                    (stack, level, entity, seed) -> com.miscelanea.carcel.LlaveItem.simbolo(stack) / 10.0F));
             // Animaciones del agarre de la porra (playerAnimator)
             dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "agarre"), 1000,
@@ -61,6 +66,8 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerEntityRenderer(ModEntities.DESATASCADOR.get(), DesatascadorRenderer::new);
+            event.registerEntityRenderer(ModEntities.CARRO_CHIVATO.get(), com.miscelanea.client.carcel.CarroChivatoRenderer::new);
+            event.registerEntityRenderer(ModEntities.ARROJABLE.get(), net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
         }
 
         @SubscribeEvent
@@ -88,6 +95,7 @@ public final class ClientEvents {
         public static void registerKeys(RegisterKeyMappingsEvent event) {
             event.register(SOLTAR_CAPTURA);
             event.register(MOCHILA);
+            event.register(com.miscelanea.client.carcel.GafasCliente.TECLA);
         }
 
         @SubscribeEvent
@@ -95,6 +103,9 @@ public final class ClientEvents {
             event.registerAboveAll("forcejeo", com.miscelanea.client.porra.AgarreEventos::renderForcejeo);
             event.registerAboveAll("flashbang", FlashOverlay::render);
             event.registerAboveAll("captura", CapturaHud::render);
+            event.registerBelowAll("psicosis", com.miscelanea.client.carcel.PsicosisCliente::render);
+            event.registerBelowAll("gafas", com.miscelanea.client.carcel.GafasCliente::render);
+            event.registerBelowAll("taquilla", com.miscelanea.client.carcel.TaquillaCliente::render);
             event.registerBelowAll("nucleo", com.miscelanea.client.nucleo.NucleoCliente::render);
             event.registerBelowAll("medigun", com.miscelanea.client.medigun.MedigunCliente::render);
         }
