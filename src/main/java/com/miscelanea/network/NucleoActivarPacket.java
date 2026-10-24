@@ -7,16 +7,29 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-/** Cliente → servidor: Shift + clic derecho con la mano vacía llevando el núcleo. */
+/** Cliente → servidor: empieza a cargar (true) o suelta (false) el aliento del núcleo. */
 public class NucleoActivarPacket {
-    public NucleoActivarPacket() {}
+    private final boolean pulsado;
 
-    public NucleoActivarPacket(FriendlyByteBuf buf) {}
+    public NucleoActivarPacket(boolean pulsado) {
+        this.pulsado = pulsado;
+    }
 
-    public void encode(FriendlyByteBuf buf) {}
+    public NucleoActivarPacket(FriendlyByteBuf buf) {
+        this(buf.readBoolean());
+    }
+
+    public void encode(FriendlyByteBuf buf) {
+        buf.writeBoolean(pulsado);
+    }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ServerPlayer p = ctx.get().getSender();
-        if (p != null && p.getMainHandItem().isEmpty()) Aliento.activar(p);
+        if (p == null) return;
+        if (pulsado) {
+            if (p.getMainHandItem().isEmpty()) Aliento.pulsar(p);
+        } else {
+            Aliento.soltar(p);
+        }
     }
 }

@@ -7,27 +7,35 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-/** Servidor → cliente: un jugador empieza el aliento del núcleo (tick de inicio) o lo corta (−1). */
+/**
+ * Servidor → cliente: estado del aliento de un jugador.
+ * carga = tick en que empezó a cargar (−1 = nada), disparo = tick en que soltó (−1 = aún cargando), potencia 0–1.
+ */
 public class NucleoEstadoPacket {
     private final int jugador;
-    private final long inicio;
+    private final long carga, disparo;
+    private final float potencia;
 
-    public NucleoEstadoPacket(int jugador, long inicio) {
+    public NucleoEstadoPacket(int jugador, long carga, long disparo, float potencia) {
         this.jugador = jugador;
-        this.inicio = inicio;
+        this.carga = carga;
+        this.disparo = disparo;
+        this.potencia = potencia;
     }
 
     public NucleoEstadoPacket(FriendlyByteBuf buf) {
-        this(buf.readVarInt(), buf.readLong());
+        this(buf.readVarInt(), buf.readLong(), buf.readLong(), buf.readFloat());
     }
 
     public void encode(FriendlyByteBuf buf) {
         buf.writeVarInt(jugador);
-        buf.writeLong(inicio);
+        buf.writeLong(carga);
+        buf.writeLong(disparo);
+        buf.writeFloat(potencia);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT,
-                () -> () -> com.miscelanea.client.nucleo.NucleoCliente.recibir(jugador, inicio));
+                () -> () -> com.miscelanea.client.nucleo.NucleoCliente.recibir(jugador, carga, disparo, potencia));
     }
 }

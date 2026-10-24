@@ -52,7 +52,7 @@ public class AlientoAnimacion implements IAnimation {
             disparo = 0;
             peso = suave(f / 0.2F);
         } else if (f >= 1) {
-            float u = (f - 1.0F) * 60.0F; // ticks de disparo
+            float u = Math.max(0, NucleoCliente.ticksDisparo(player.getId(), 0)); // ticks de disparo
             disparo = suave(u / 3.0F);    // latigazo rápido
             carga = 1.0F - disparo;
             peso = 1;
@@ -69,7 +69,8 @@ public class AlientoAnimacion implements IAnimation {
         float[] m = mezcla();
         float c = m[0], d = m[1], w = m[2];
         if (w <= 0.001F) return v;
-        float temblor = (f >= 0 && f < 1 ? f * f * 0.05F : 0) + (f >= 1 ? 0.035F : 0);
+        float pot = NucleoCliente.potencia(player.getId(), 0);
+        float temblor = (f >= 0 && f < 1 ? f * f * 0.05F : 0) + (f >= 1 ? 0.02F + 0.04F * pot : 0);
         float n1 = Mth.sin(t * 2.9F) * temblor, n2 = Mth.sin(t * 3.7F + 1.3F) * temblor;
 
         if (type == TransformType.POSITION) {

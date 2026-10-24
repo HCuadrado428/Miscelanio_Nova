@@ -107,13 +107,12 @@ Pistola blanca con emisor de tres púas y medidor de carga, y **mochila médica*
 ### Núcleo de error 🟪⬛ (solo creativo)
 Un núcleo de "textura que falta" incrustado en el pecho: cubo de damero magenta y negro que late y se desgarra, con grietas violetas y fragmentos que orbitan a saltos. Todas sus texturas están animadas.
 
-- **Shift + clic derecho con la mano vacía:** aliento del núcleo, a lo aliento atómico.
-  - **Carga (1,5 s):** te arqueas, echas la cabeza atrás y el error te sube por el cuerpo de los pies a la cabeza. La pantalla se llena de cuadros de error por los bordes.
-  - **Rayo (3 s):** latigazo de cabeza y sale por la boca un rayo negro y morado con núcleo magenta, espirales negras y cuadritos de error. Sigue a donde miras (40 bloques).
-  - Hace 3,5 corazones cada 0,2 s y marchita. Rompe los bloques blandos (hasta dureza 3: tierra, piedra, madera, cristal…), pero no la obsidiana, la bedrock ni nada con inventario. Respeta las zonas protegidas.
-  - Algunos bloques rotos se quedan como **bloque corrupto** (sin textura y brillante), que se deshace solo al rato.
-  - Retroceso, temblor de cámara (también para los que están cerca) y rugido que se corta justo al acabar.
-- **Recarga:** 20 s. Abajo a la izquierda, un cuadrito de damero se va llenando.
+- **Mantén Shift + clic derecho con la mano vacía** para cargar el aliento del núcleo, a lo aliento atómico, y **suelta** para disparar. **Cuanto más cargas, más grande es el rayo.**
+  - **Carga (hasta 5 s):** te arqueas, echas la cabeza atrás, el error te sube por el cuerpo y las tres espinas de la espalda se encienden una tras otra. Delante de la boca crece una bola de cuadros de error. Bajo la mira aparece una barra de damero que se llena y parpadea al máximo. Con menos de 0,6 s no dispara. A los 8 s se dispara solo.
+  - **Rayo:** de 1,5 a 4,5 s según la carga. Pasa de 24 a 56 bloques de alcance y de fino a enorme. Hace de 2 a 6 corazones cada 0,2 s y marchita. Abre un túnel de 1 bloque con poca carga y de hasta 5 de ancho con la carga máxima.
+  - Rompe solo bloques blandos (hasta dureza 3), nunca obsidiana, bedrock ni nada con inventario, y respeta las zonas protegidas. Algunos bloques rotos se quedan como **bloque corrupto** un rato.
+  - Retroceso y temblor de cámara según el tamaño, también para los que están cerca. El rugido se corta justo al acabar.
+- **Recarga:** de 6 a 25 s según la potencia del último rayo. Abajo a la izquierda, un cuadrito de damero se va llenando.
 
 ## Compilar
 Cada vez que se sube algo a GitHub, **GitHub Actions** compila el mod y publica el `.jar` en **Releases**.

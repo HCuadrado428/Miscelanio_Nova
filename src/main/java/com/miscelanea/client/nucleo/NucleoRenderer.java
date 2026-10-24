@@ -28,7 +28,7 @@ public class NucleoRenderer extends GeoArmorRenderer<NucleoItem> {
                                MultiBufferSource buffers, VertexConsumer buffer, float partialTick, int light, int overlay) {
                 AnimatableTexture.setAndUpdate(BRILLO);
                 float f = getCurrentEntity() == null ? -1 : NucleoCliente.fase(getCurrentEntity().getId(), partialTick);
-                float k = f < 0 ? 0.6F : f < 1 ? 0.6F + 0.4F * f : 1.0F;
+                float k = f < 0 ? 0.85F : f < 1 ? 0.85F + 0.15F * f : 1.0F;
                 RenderType rt = RenderType.eyes(BRILLO);
                 getRenderer().reRender(model, pose, buffers, animatable, rt, buffers.getBuffer(rt), partialTick,
                         LightTexture.FULL_SKY, OverlayTexture.NO_OVERLAY, k, k, k, 1.0F);
