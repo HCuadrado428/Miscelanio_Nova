@@ -15,6 +15,31 @@ import software.bernie.geckolib.renderer.GeoItemRenderer;
 public class BoquillaRenderer extends GeoItemRenderer<AspirafantasmasItem> {
     public BoquillaRenderer() {
         super(new DefaultedItemGeoModel<>(new ResourceLocation(Miscelanea.MOD_ID, "aspirafantasmas")));
+        // La boca se pone al rojo con el calor
+        addRenderLayer(new software.bernie.geckolib.renderer.layer.GeoRenderLayer<>(this) {
+            private final ResourceLocation tex = new ResourceLocation(Miscelanea.MOD_ID, "textures/item/aspirafantasmas_calor.png");
+
+            @Override
+            public void render(PoseStack pose, AspirafantasmasItem animatable, BakedGeoModel model,
+                               net.minecraft.client.renderer.RenderType renderType, MultiBufferSource buffers,
+                               VertexConsumer buffer, float partialTick, int light, int overlay) {
+                net.minecraft.world.item.ItemStack s = getCurrentItemStack();
+                if (s == null) return;
+                float f = com.miscelanea.aspira.Calor.fraccion(s);
+                float k;
+                if (com.miscelanea.aspira.Calor.sobrecalentada(s)) {
+                    k = 0.65F + 0.35F * net.minecraft.util.Mth.sin(System.currentTimeMillis() / 90.0F);
+                } else {
+                    if (f < 0.3F) return;
+                    k = (f - 0.3F) / 0.7F;
+                }
+                float r = 1.0F, g = 0.18F + 0.4F * k, b = 0.06F + 0.14F * k * k;
+                net.minecraft.client.renderer.RenderType rt = net.minecraft.client.renderer.RenderType.eyes(tex);
+                getRenderer().reRender(model, pose, buffers, animatable, rt, buffers.getBuffer(rt), partialTick,
+                        net.minecraft.client.renderer.LightTexture.FULL_SKY,
+                        net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY, r * k, g * k, b * k, 1.0F);
+            }
+        });
     }
 
     @Override

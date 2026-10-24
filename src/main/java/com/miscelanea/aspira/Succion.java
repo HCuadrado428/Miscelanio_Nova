@@ -101,10 +101,7 @@ public final class Succion {
 
         Vec3 boca = AspiraUtil.boca(player);
 
-        if (usado % 20 == 0) {
-            level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                    ModSounds.ASPIRAR.get(), SoundSource.PLAYERS, 0.6F, 1.0F);
-        }
+        // (el zumbido en bucle lo pone el cliente: client/AspiraCliente)
         particulas(level, player, boca);
 
         // 1) Desatascador: tiene prioridad sobre todo lo demás
@@ -218,6 +215,7 @@ public final class Succion {
         LivingEntity mob = cap.mob;
         if (!mob.isAlive() || mob.distanceTo(player) > 6.0) {
             CAPTURAS.remove(player.getUUID());
+            enviarHud(player, mob.getId(), -1.0F, 0, false);
             return;
         }
 
@@ -257,21 +255,13 @@ public final class Succion {
             level.sendParticles(tirando ? ParticleTypes.ENCHANTED_HIT : ParticleTypes.SMOKE, c.x, c.y, c.z, 3, 0.2, 0.2, 0.2, 0.05);
         }
 
-        // Barra en la action bar
-        int lleno = Math.round(10.0F * Mth.clamp(cap.resistencia / cap.max, 0.0F, 1.0F));
-        MutableComponent barra = Component.literal("█".repeat(lleno)).withStyle(ChatFormatting.LIGHT_PURPLE)
-                .append(Component.literal("█".repeat(10 - lleno)).withStyle(ChatFormatting.DARK_GRAY));
-        Component flecha = Component.translatable(cap.dir > 0
-                ? "msg." + Miscelanea.MOD_ID + ".gira_izquierda"
-                : "msg." + Miscelanea.MOD_ID + ".gira_derecha")
-                .withStyle(tirando ? ChatFormatting.GREEN : ChatFormatting.YELLOW, ChatFormatting.BOLD);
-        player.displayClientMessage(cap.dir > 0
-                ? Component.empty().append(flecha).append("  ").append(barra)
-                : Component.empty().append(barra).append("  ").append(flecha), true);
+        // HUD gráfico (sin texto) en el cliente
+        enviarHud(player, mob.getId(), Mth.clamp(cap.resistencia / cap.max, 0.0F, 1.0F), cap.dir, tirando);
 
         if (cap.resistencia <= 0.0F) {
             CAPTURAS.remove(player.getUUID());
             Deposito.capturar(player, mob);
+            enviarHud(player, mob.getId(), -1.0F, 1, true);
         }
     }
 
@@ -372,7 +362,14 @@ public final class Succion {
     /** Cuando se deja de aspirar por lo que sea: se acaba el tira y afloja. */
     public static void parar(Player player) {
         CAMARA.remove(player.getUUID());
-        if (CAPTURAS.remove(player.getUUID()) != null) {
+        Captura c = CAPTURAS.remove(player.getUUID());
+        if (c != null) enviarHud(player, c.mob.getId(), -1.0F, 0, false);
+    }
+
+    private static void enviarHud(Player player, int mob, float resistencia, int dir, boolean tirando) {
+        if (player instanceof net.minecraft.server.level.ServerPlayer sp) {
+            com.miscelanea.network.ModNetwork.CHANNEL.send(net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> sp),
+                    new com.miscelanea.network.CapturaPacket(mob, resistencia, dir, tirando));
         }
     }
 

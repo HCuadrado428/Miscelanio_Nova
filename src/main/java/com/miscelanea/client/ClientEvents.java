@@ -90,6 +90,7 @@ public final class ClientEvents {
         public static void registerOverlays(RegisterGuiOverlaysEvent event) {
             event.registerAboveAll("forcejeo", com.miscelanea.client.porra.AgarreEventos::renderForcejeo);
             event.registerAboveAll("flashbang", FlashOverlay::render);
+            event.registerAboveAll("captura", CapturaHud::render);
             event.registerBelowAll("medigun", com.miscelanea.client.medigun.MedigunCliente::render);
         }
     }

@@ -40,6 +40,9 @@ public class AspirafantasmasItem extends Item implements GeoItem {
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.aspirafantasmas.idle");
     private static final RawAnimation ASPIRAR = RawAnimation.begin().thenLoop("animation.aspirafantasmas.aspirar");
     private static final RawAnimation SOBRECALENTADA = RawAnimation.begin().thenLoop("animation.aspirafantasmas.sobrecalentada");
+    private static final RawAnimation SOPLAR_ANIM = RawAnimation.begin().thenLoop("animation.aspirafantasmas.soplar");
+    private static final RawAnimation LANZALLAMAS_ANIM = RawAnimation.begin().thenLoop("animation.aspirafantasmas.lanzallamas");
+    private static final RawAnimation DESTELLO_ANIM = RawAnimation.begin().thenPlayAndHold("animation.aspirafantasmas.destello");
 
     private static final String MODO = "Modo";
     public static final String ACTIVA = "Activa";
@@ -55,6 +58,11 @@ public class AspirafantasmasItem extends Item implements GeoItem {
         return Component.translatable("msg." + Miscelanea.MOD_ID + "." + key, args);
     }
 
+    /** Modo con el que se está usando ahora (vale en el cliente: va en el NBT). */
+    public static Modo modoActivo(ItemStack stack) {
+        return Modo.byOrdinal(stack.hasTag() ? stack.getTag().getInt(MODO) : 0);
+    }
+
     public static boolean activa(ItemStack stack) {
         return stack.hasTag() && stack.getTag().getBoolean(ACTIVA);
     }
@@ -66,7 +74,8 @@ public class AspirafantasmasItem extends Item implements GeoItem {
         ItemStack stack = player.getItemInHand(hand);
 
         if (!Deposito.llevaMochila(player)) {
-            if (!level.isClientSide) player.displayClientMessage(msg("sin_mochila").withStyle(ChatFormatting.RED), true);
+            level.playSound(player, player.getX(), player.getY(), player.getZ(),
+                    net.minecraft.sounds.SoundEvents.DISPENSER_FAIL, net.minecraft.sounds.SoundSource.PLAYERS, 0.5F, 1.4F);
             return InteractionResultHolder.fail(stack);
         }
         if (Calor.sobrecalentada(stack)) {
@@ -319,7 +328,14 @@ public class AspirafantasmasItem extends Item implements GeoItem {
         controllers.add(new AnimationController<>(this, "principal", 4, state -> {
             ItemStack s = state.getData(DataTickets.ITEMSTACK);
             if (s != null && Calor.sobrecalentada(s)) return state.setAndContinue(SOBRECALENTADA);
-            if (s != null && activa(s)) return state.setAndContinue(ASPIRAR);
+            if (s != null && activa(s)) {
+                return state.setAndContinue(switch (modoActivo(s)) {
+                    case SOPLAR, SOPLIDO -> SOPLAR_ANIM;
+                    case LANZALLAMAS -> LANZALLAMAS_ANIM;
+                    case DESTELLO -> DESTELLO_ANIM;
+                    default -> ASPIRAR;
+                });
+            }
             return state.setAndContinue(IDLE);
         }));
     }

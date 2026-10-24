@@ -34,6 +34,8 @@ import java.util.function.Consumer;
 public class MochilaItem extends ArmorItem implements GeoItem {
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.mochila.idle");
     private static final RawAnimation ASPIRAR = RawAnimation.begin().thenLoop("animation.mochila.aspirar");
+    private static final RawAnimation SOPLAR_ANIM = RawAnimation.begin().thenLoop("animation.mochila.soplar");
+    private static final RawAnimation LANZALLAMAS_ANIM = RawAnimation.begin().thenLoop("animation.mochila.lanzallamas");
     private static final RawAnimation SOBRECALENTADA = RawAnimation.begin().thenLoop("animation.mochila.sobrecalentada");
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -102,7 +104,13 @@ public class MochilaItem extends ArmorItem implements GeoItem {
                 ItemStack boquilla = boquillaEnMano(le);
                 if (!boquilla.isEmpty()) {
                     if (Calor.sobrecalentada(boquilla)) return state.setAndContinue(SOBRECALENTADA);
-                    if (AspirafantasmasItem.activa(boquilla)) return state.setAndContinue(ASPIRAR);
+                    if (AspirafantasmasItem.activa(boquilla)) {
+                        return state.setAndContinue(switch (AspirafantasmasItem.modoActivo(boquilla)) {
+                            case SOPLAR, SOPLIDO -> SOPLAR_ANIM;
+                            case LANZALLAMAS -> LANZALLAMAS_ANIM;
+                            default -> ASPIRAR;
+                        });
+                    }
                 }
             }
             return state.setAndContinue(IDLE);
