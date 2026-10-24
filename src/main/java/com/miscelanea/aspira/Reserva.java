@@ -36,7 +36,7 @@ public final class Reserva {
     private static final int INTERVALO = 5;
     private static final String CD_INSTANT = Miscelanea.MOD_ID + ":reserva_instant";
 
-    public record Entrada(MobEffect efecto, int amplificador, int ticks) {}
+    public record Entrada(MobEffect efecto, int amplificador, int ticks, boolean pausado) {}
 
     private Reserva() {}
 
@@ -77,9 +77,52 @@ public final class Reserva {
         for (int i = 0; i < list.size(); i++) {
             CompoundTag t = list.getCompound(i);
             MobEffect ef = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(t.getString("Id")));
-            if (ef != null) out.add(new Entrada(ef, t.getInt("Amp"), t.getInt("T")));
+            if (ef != null) out.add(new Entrada(ef, t.getInt("Amp"), t.getInt("T"), t.getBoolean("P")));
         }
         return out;
+    }
+
+    public static int maxTicks(MobEffect ef) {
+        return ef.isInstantenous() ? 10 : MAX_TICKS;
+    }
+
+    /** Ventana de la mochila: pausar/reanudar el uso automático de un efecto. */
+    public static void alternarPausa(ItemStack mochila, int i) {
+        ListTag list = lista(mochila);
+        if (i < 0 || i >= list.size()) return;
+        CompoundTag t = list.getCompound(i);
+        t.putBoolean("P", !t.getBoolean("P"));
+        mochila.getTag().put(RESERVA, list);
+    }
+
+    /** Ventana de la mochila: tirar un efecto de la reserva. */
+    public static void quitar(ItemStack mochila, int i) {
+        ListTag list = lista(mochila);
+        if (i < 0 || i >= list.size()) return;
+        list.remove(i);
+        mochila.getTag().put(RESERVA, list);
+    }
+
+    /** Ventana de la mochila: beberse ahora toda la reserva de un efecto. */
+    public static void usarAhora(Player p, ItemStack mochila, int i) {
+        ListTag list = lista(mochila);
+        if (i < 0 || i >= list.size()) return;
+        CompoundTag t = list.getCompound(i);
+        MobEffect ef = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(t.getString("Id")));
+        list.remove(i);
+        mochila.getTag().put(RESERVA, list);
+        if (ef == null) return;
+        int amp = t.getInt("Amp");
+        if (ef.isInstantenous()) {
+            for (int k = 0; k < Math.min(3, t.getInt("T")); k++) ef.applyInstantenousEffect(null, null, p, amp, 1.0);
+        } else {
+            p.addEffect(new MobEffectInstance(ef, t.getInt("T"), amp));
+        }
+        p.level().playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.GENERIC_DRINK, SoundSource.PLAYERS, 0.8F, 1.0F);
+    }
+
+    private static ListTag lista(ItemStack mochila) {
+        return mochila.getOrCreateTag().getList(RESERVA, Tag.TAG_COMPOUND);
     }
 
     // ------------------------------------------------------------------ uso automático
@@ -130,7 +173,7 @@ public final class Reserva {
                 cambiado = true;
                 continue;
             }
-            if (!necesita(p, ef)) continue;
+            if (t.getBoolean("P") || !necesita(p, ef)) continue;
             int amp = t.getInt("Amp");
             int ticks = t.getInt("T");
 

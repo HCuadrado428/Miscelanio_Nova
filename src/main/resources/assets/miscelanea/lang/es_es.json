@@ -75,5 +75,16 @@
   "subtitles.miscelanea.medigun_conectar": "Medigun conectada",
   "subtitles.miscelanea.uber_activar": "¡ÜberCarga activada!",
   "subtitles.miscelanea.uber_lista": "ÜberCarga lista",
-  "subtitles.miscelanea.uber_rebote": "El golpe rebota"
+  "subtitles.miscelanea.uber_rebote": "El golpe rebota",
+  "gui.miscelanea.mochila": "Mochila del Aspirafantasmas",
+  "gui.miscelanea.soltar": "Soltar esta captura",
+  "gui.miscelanea.tanque": "Tanque para expulsar: %s%%",
+  "gui.miscelanea.rociar": "Rociar el tanque donde miras",
+  "gui.miscelanea.vaciar": "Tirar el contenido del tanque",
+  "gui.miscelanea.pausar": "No usar este efecto solo",
+  "gui.miscelanea.reanudar": "Volver a usarlo cuando haga falta",
+  "gui.miscelanea.usar": "Tomarlo todo ahora",
+  "gui.miscelanea.tirar": "Tirar este efecto",
+  "gui.miscelanea.reserva_vacia": "Reserva vacía: aspira pociones positivas con el Alquimista",
+  "key.miscelanea.mochila": "Abrir la mochila del Aspirafantasmas"
 }

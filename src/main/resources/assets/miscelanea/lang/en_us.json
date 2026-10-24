@@ -75,5 +75,16 @@
   "subtitles.miscelanea.medigun_conectar": "Medigun connects",
   "subtitles.miscelanea.uber_activar": "ÜberCharge activated!",
   "subtitles.miscelanea.uber_lista": "ÜberCharge ready",
-  "subtitles.miscelanea.uber_rebote": "Hit deflected"
+  "subtitles.miscelanea.uber_rebote": "Hit deflected",
+  "gui.miscelanea.mochila": "Ghostsucker Backpack",
+  "gui.miscelanea.soltar": "Release this capture",
+  "gui.miscelanea.tanque": "Tank to expel: %s%%",
+  "gui.miscelanea.rociar": "Spray the tank where you look",
+  "gui.miscelanea.vaciar": "Dump the tank",
+  "gui.miscelanea.pausar": "Don't use this effect automatically",
+  "gui.miscelanea.reanudar": "Use it again when needed",
+  "gui.miscelanea.usar": "Take it all now",
+  "gui.miscelanea.tirar": "Throw this effect away",
+  "gui.miscelanea.reserva_vacia": "Reserve empty: suck positive potions with the Alchemist",
+  "key.miscelanea.mochila": "Open the Ghostsucker backpack"
 }

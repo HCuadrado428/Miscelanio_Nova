@@ -31,6 +31,14 @@ public final class ClientEvents {
             GLFW.GLFW_KEY_R,
             "key.categories." + Miscelanea.MOD_ID);
 
+    /** Abre la ventana de la mochila del Aspirafantasmas. */
+    public static final KeyMapping MOCHILA = new KeyMapping(
+            "key." + Miscelanea.MOD_ID + ".mochila",
+            KeyConflictContext.IN_GAME,
+            InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_B,
+            "key.categories." + Miscelanea.MOD_ID);
+
     private ClientEvents() {}
 
     @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -74,6 +82,7 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void registerKeys(RegisterKeyMappingsEvent event) {
             event.register(SOLTAR_CAPTURA);
+            event.register(MOCHILA);
         }
 
         @SubscribeEvent
@@ -91,6 +100,12 @@ public final class ClientEvents {
             if (event.phase != TickEvent.Phase.END || Minecraft.getInstance().player == null) return;
             while (SOLTAR_CAPTURA.consumeClick()) {
                 ModNetwork.CHANNEL.sendToServer(new SoltarCapturaPacket());
+            }
+            while (MOCHILA.consumeClick()) {
+                Minecraft mc = Minecraft.getInstance();
+                if (mc.screen == null && com.miscelanea.aspira.Deposito.llevaMochila(mc.player)) {
+                    mc.setScreen(new MochilaScreen());
+                }
             }
         }
     }

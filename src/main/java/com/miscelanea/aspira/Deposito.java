@@ -101,13 +101,25 @@ public final class Deposito {
     /** Saca el último mob capturado en la posición y con la velocidad dadas. Devuelve el mob o null. */
     @Nullable
     public static Entity soltar(Player player, Vec3 pos, Vec3 velocidad) {
+        return soltar(player, numCapturados(mochila(player)) - 1, pos, velocidad);
+    }
+
+    /** Captura i-ésima (la ventana de la mochila deja elegir cuál soltar). */
+    public static CompoundTag captura(ItemStack mochila, int i) {
+        if (!mochila.hasTag()) return null;
+        ListTag list = mochila.getTag().getList(CAPTURADOS, Tag.TAG_COMPOUND);
+        return i >= 0 && i < list.size() ? list.getCompound(i) : null;
+    }
+
+    @Nullable
+    public static Entity soltar(Player player, int indice, Vec3 pos, Vec3 velocidad) {
         if (!(player.level() instanceof ServerLevel level)) return null;
         ItemStack mochila = mochila(player);
-        if (mochila.isEmpty() || numCapturados(mochila) == 0) return null;
+        if (mochila.isEmpty() || indice < 0 || indice >= numCapturados(mochila)) return null;
 
         ListTag list = mochila.getTag().getList(CAPTURADOS, Tag.TAG_COMPOUND);
-        CompoundTag entry = list.getCompound(list.size() - 1);
-        list.remove(list.size() - 1);
+        CompoundTag entry = list.getCompound(indice);
+        list.remove(indice);
         mochila.getTag().put(CAPTURADOS, list);
 
         CompoundTag tag = entry.getCompound("data").copy();

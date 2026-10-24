@@ -42,5 +42,10 @@ public final class ModNetwork {
                 .decoder(MedigunPacket::new)
                 .consumerMainThread(MedigunPacket::handle)
                 .add();
+        CHANNEL.messageBuilder(MochilaAccionPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(MochilaAccionPacket::encode)
+                .decoder(MochilaAccionPacket::new)
+                .consumerMainThread(MochilaAccionPacket::handle)
+                .add();
     }
 }
