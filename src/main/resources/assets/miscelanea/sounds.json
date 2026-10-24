@@ -97,5 +97,23 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.nucleo_fin"
+  },
+  "grito": {
+    "sounds": [
+      {
+        "name": "miscelanea:grito",
+        "attenuation_distance": 48
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.grito"
+  },
+  "jefe_respira": {
+    "sounds": [
+      {
+        "name": "miscelanea:jefe_respira",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.jefe_respira"
   }
 }

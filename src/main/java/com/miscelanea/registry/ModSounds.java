@@ -32,6 +32,11 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> NUCLEO_RAYO = register("nucleo_rayo");
     public static final RegistryObject<SoundEvent> NUCLEO_FIN = register("nucleo_fin");
 
+    /** Grito del gritón (alerta a todos los enemigos). */
+    public static final RegistryObject<SoundEvent> GRITO = register("grito");
+    /** Respiración pesada del carcelero. */
+    public static final RegistryObject<SoundEvent> JEFE_RESPIRA = register("jefe_respira");
+
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name,
                 () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Miscelanea.MOD_ID, name)));

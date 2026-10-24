@@ -58,6 +58,13 @@ public final class ModItems {
     public static final RegistryObject<Item> MEDICINA = ITEMS.register("medicina",
             () -> new com.miscelanea.carcel.JeringuillaItem(new Item.Properties().stacksTo(8), false));
 
+    public static final RegistryObject<Item> HUEVO_GUARDIA = ITEMS.register("guardia_spawn_egg",
+            () -> new net.minecraftforge.common.ForgeSpawnEggItem(ModEntities.GUARDIA, 0x262E46, 0x8A1010, new Item.Properties()));
+    public static final RegistryObject<Item> HUEVO_GRITON = ITEMS.register("griton_spawn_egg",
+            () -> new net.minecraftforge.common.ForgeSpawnEggItem(ModEntities.GRITON, 0xBEB4A8, 0x6A0A0A, new Item.Properties()));
+    public static final RegistryObject<Item> HUEVO_JEFE = ITEMS.register("jefe_spawn_egg",
+            () -> new net.minecraftforge.common.ForgeSpawnEggItem(ModEntities.JEFE, 0x96784F, 0x46341F, new Item.Properties()));
+
     /** Medigun: rayo que cura y ÜberCarga. Necesita la mochila médica. */
     public static final RegistryObject<Item> MEDIGUN = ITEMS.register("medigun",
             () -> new com.miscelanea.medigun.MedigunItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));

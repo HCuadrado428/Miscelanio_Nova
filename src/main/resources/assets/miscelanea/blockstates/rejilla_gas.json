@@ -1,0 +1,10 @@
+{
+ "variants": {
+  "powered=false": {
+   "model": "miscelanea:block/rejilla_gas"
+  },
+  "powered=true": {
+   "model": "miscelanea:block/rejilla_gas_off"
+  }
+ }
+}

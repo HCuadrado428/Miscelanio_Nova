@@ -1,0 +1,36 @@
+{
+ "variants": {
+  "facing=north,triggered=false": {
+   "model": "miscelanea:block/alarma_latas",
+   "y": 0
+  },
+  "facing=north,triggered=true": {
+   "model": "miscelanea:block/alarma_latas_sonando",
+   "y": 0
+  },
+  "facing=east,triggered=false": {
+   "model": "miscelanea:block/alarma_latas",
+   "y": 90
+  },
+  "facing=east,triggered=true": {
+   "model": "miscelanea:block/alarma_latas_sonando",
+   "y": 90
+  },
+  "facing=south,triggered=false": {
+   "model": "miscelanea:block/alarma_latas",
+   "y": 180
+  },
+  "facing=south,triggered=true": {
+   "model": "miscelanea:block/alarma_latas_sonando",
+   "y": 180
+  },
+  "facing=west,triggered=false": {
+   "model": "miscelanea:block/alarma_latas",
+   "y": 270
+  },
+  "facing=west,triggered=true": {
+   "model": "miscelanea:block/alarma_latas_sonando",
+   "y": 270
+  }
+ }
+}

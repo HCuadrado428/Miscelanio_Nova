@@ -1,0 +1,30 @@
+{
+ "parent": "block/block",
+ "textures": {
+  "c": "miscelanea:block/cristales_rotos",
+  "particle": "miscelanea:block/cristales_rotos"
+ },
+ "elements": [
+  {
+   "from": [
+    0,
+    0.05,
+    0
+   ],
+   "to": [
+    16,
+    0.25,
+    16
+   ],
+   "faces": {
+    "up": {
+     "texture": "#c"
+    },
+    "down": {
+     "texture": "#c"
+    }
+   }
+  }
+ ],
+ "render_type": "minecraft:cutout"
+}

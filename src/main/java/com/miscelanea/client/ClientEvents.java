@@ -68,6 +68,9 @@ public final class ClientEvents {
             event.registerEntityRenderer(ModEntities.DESATASCADOR.get(), DesatascadorRenderer::new);
             event.registerEntityRenderer(ModEntities.CARRO_CHIVATO.get(), com.miscelanea.client.carcel.CarroChivatoRenderer::new);
             event.registerEntityRenderer(ModEntities.ARROJABLE.get(), net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
+            event.registerEntityRenderer(ModEntities.GUARDIA.get(), c -> new com.miscelanea.client.carcel.EnemigoRenderer<>(c, "guardia", 0.5F));
+            event.registerEntityRenderer(ModEntities.GRITON.get(), c -> new com.miscelanea.client.carcel.EnemigoRenderer<>(c, "griton", 0.45F));
+            event.registerEntityRenderer(ModEntities.JEFE.get(), c -> new com.miscelanea.client.carcel.EnemigoRenderer<>(c, "jefe", 0.8F));
         }
 
         @SubscribeEvent

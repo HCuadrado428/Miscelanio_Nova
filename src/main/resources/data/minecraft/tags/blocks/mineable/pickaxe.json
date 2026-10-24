@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "miscelanea:reja_simbolo",
+    "miscelanea:monitor_simbolo",
+    "miscelanea:terminal_ejecucion",
+    "miscelanea:palanca_descarga",
+    "miscelanea:taquilla",
+    "miscelanea:rejilla_electrica",
+    "miscelanea:rejilla_gas"
+  ]
+}

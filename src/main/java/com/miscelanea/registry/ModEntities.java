@@ -32,5 +32,26 @@ public final class ModEntities {
                     .updateInterval(10)
                     .build("arrojable"));
 
+    public static final RegistryObject<EntityType<com.miscelanea.carcel.enemigos.Guardia>> GUARDIA = ENTITIES.register("guardia",
+            () -> EntityType.Builder.<com.miscelanea.carcel.enemigos.Guardia>of(com.miscelanea.carcel.enemigos.Guardia::new, MobCategory.MONSTER)
+                    .sized(0.6F, 1.95F).clientTrackingRange(10).build("guardia"));
+    public static final RegistryObject<EntityType<com.miscelanea.carcel.enemigos.Griton>> GRITON = ENTITIES.register("griton",
+            () -> EntityType.Builder.<com.miscelanea.carcel.enemigos.Griton>of(com.miscelanea.carcel.enemigos.Griton::new, MobCategory.MONSTER)
+                    .sized(0.6F, 2.2F).clientTrackingRange(10).build("griton"));
+    public static final RegistryObject<EntityType<com.miscelanea.carcel.enemigos.Jefe>> JEFE = ENTITIES.register("jefe",
+            () -> EntityType.Builder.<com.miscelanea.carcel.enemigos.Jefe>of(com.miscelanea.carcel.enemigos.Jefe::new, MobCategory.MONSTER)
+                    .sized(0.9F, 2.4F).clientTrackingRange(12).build("jefe"));
+
+    /** Atributos de los enemigos (bus del mod). */
+    @net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, bus = net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.MOD)
+    public static final class Atributos {
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public static void registrar(net.minecraftforge.event.entity.EntityAttributeCreationEvent e) {
+            e.put(GUARDIA.get(), com.miscelanea.carcel.enemigos.Guardia.atributos().build());
+            e.put(GRITON.get(), com.miscelanea.carcel.enemigos.Griton.atributos().build());
+            e.put(JEFE.get(), com.miscelanea.carcel.enemigos.Jefe.atributos().build());
+        }
+    }
+
     private ModEntities() {}
 }

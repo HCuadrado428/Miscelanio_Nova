@@ -1,0 +1,100 @@
+{
+ "variants": {
+  "facing=north,simbolo=0": {
+   "model": "miscelanea:block/monitor_circulo",
+   "y": 0
+  },
+  "facing=north,simbolo=1": {
+   "model": "miscelanea:block/monitor_triangulo",
+   "y": 0
+  },
+  "facing=north,simbolo=2": {
+   "model": "miscelanea:block/monitor_cruz",
+   "y": 0
+  },
+  "facing=north,simbolo=3": {
+   "model": "miscelanea:block/monitor_rayo",
+   "y": 0
+  },
+  "facing=north,simbolo=4": {
+   "model": "miscelanea:block/monitor_ojo",
+   "y": 0
+  },
+  "facing=north,simbolo=5": {
+   "model": "miscelanea:block/monitor_calavera",
+   "y": 0
+  },
+  "facing=east,simbolo=0": {
+   "model": "miscelanea:block/monitor_circulo",
+   "y": 90
+  },
+  "facing=east,simbolo=1": {
+   "model": "miscelanea:block/monitor_triangulo",
+   "y": 90
+  },
+  "facing=east,simbolo=2": {
+   "model": "miscelanea:block/monitor_cruz",
+   "y": 90
+  },
+  "facing=east,simbolo=3": {
+   "model": "miscelanea:block/monitor_rayo",
+   "y": 90
+  },
+  "facing=east,simbolo=4": {
+   "model": "miscelanea:block/monitor_ojo",
+   "y": 90
+  },
+  "facing=east,simbolo=5": {
+   "model": "miscelanea:block/monitor_calavera",
+   "y": 90
+  },
+  "facing=south,simbolo=0": {
+   "model": "miscelanea:block/monitor_circulo",
+   "y": 180
+  },
+  "facing=south,simbolo=1": {
+   "model": "miscelanea:block/monitor_triangulo",
+   "y": 180
+  },
+  "facing=south,simbolo=2": {
+   "model": "miscelanea:block/monitor_cruz",
+   "y": 180
+  },
+  "facing=south,simbolo=3": {
+   "model": "miscelanea:block/monitor_rayo",
+   "y": 180
+  },
+  "facing=south,simbolo=4": {
+   "model": "miscelanea:block/monitor_ojo",
+   "y": 180
+  },
+  "facing=south,simbolo=5": {
+   "model": "miscelanea:block/monitor_calavera",
+   "y": 180
+  },
+  "facing=west,simbolo=0": {
+   "model": "miscelanea:block/monitor_circulo",
+   "y": 270
+  },
+  "facing=west,simbolo=1": {
+   "model": "miscelanea:block/monitor_triangulo",
+   "y": 270
+  },
+  "facing=west,simbolo=2": {
+   "model": "miscelanea:block/monitor_cruz",
+   "y": 270
+  },
+  "facing=west,simbolo=3": {
+   "model": "miscelanea:block/monitor_rayo",
+   "y": 270
+  },
+  "facing=west,simbolo=4": {
+   "model": "miscelanea:block/monitor_ojo",
+   "y": 270
+  },
+  "facing=west,simbolo=5": {
+   "model": "miscelanea:block/monitor_calavera",
+   "y": 270
+  }
+ }
+}

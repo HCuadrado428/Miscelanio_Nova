@@ -1,0 +1,16 @@
+{
+ "variants": {
+  "activa=false,averiada=false": {
+   "model": "miscelanea:block/rejilla_electrica"
+  },
+  "activa=true,averiada=false": {
+   "model": "miscelanea:block/rejilla_electrica_on"
+  },
+  "activa=false,averiada=true": {
+   "model": "miscelanea:block/rejilla_electrica_rota"
+  },
+  "activa=true,averiada=true": {
+   "model": "miscelanea:block/rejilla_electrica_rota"
+  }
+ }
+}

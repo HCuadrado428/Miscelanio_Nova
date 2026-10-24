@@ -1,0 +1,162 @@
+{
+ "parent": "block/block",
+ "textures": {
+  "caja": "miscelanea:block/palanca_caja",
+  "mango": "miscelanea:block/palanca_mango",
+  "particle": "miscelanea:block/palanca_caja"
+ },
+ "elements": [
+  {
+   "from": [
+    3,
+    2,
+    12
+   ],
+   "to": [
+    13,
+    14,
+    16
+   ],
+   "faces": {
+    "north": {
+     "texture": "#caja",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ]
+    },
+    "south": {
+     "texture": "#caja"
+    },
+    "east": {
+     "texture": "#caja"
+    },
+    "west": {
+     "texture": "#caja"
+    },
+    "up": {
+     "texture": "#caja"
+    },
+    "down": {
+     "texture": "#caja"
+    }
+   }
+  },
+  {
+   "from": [
+    7,
+    7,
+    9
+   ],
+   "to": [
+    9,
+    8,
+    12
+   ],
+   "faces": {
+    "north": {
+     "texture": "#caja"
+    },
+    "south": {
+     "texture": "#caja"
+    },
+    "east": {
+     "texture": "#caja"
+    },
+    "west": {
+     "texture": "#caja"
+    },
+    "up": {
+     "texture": "#caja"
+    },
+    "down": {
+     "texture": "#caja"
+    }
+   }
+  },
+  {
+   "from": [
+    7.25,
+    8,
+    10.25
+   ],
+   "to": [
+    8.75,
+    15,
+    11.75
+   ],
+   "faces": {
+    "north": {
+     "texture": "#mango"
+    },
+    "south": {
+     "texture": "#mango"
+    },
+    "east": {
+     "texture": "#mango"
+    },
+    "west": {
+     "texture": "#mango"
+    },
+    "up": {
+     "texture": "#mango"
+    },
+    "down": {
+     "texture": "#mango"
+    }
+   },
+   "rotation": {
+    "origin": [
+     8,
+     8,
+     11
+    ],
+    "axis": "x",
+    "angle": 45
+   }
+  },
+  {
+   "from": [
+    6,
+    14,
+    9.75
+   ],
+   "to": [
+    10,
+    16,
+    12.25
+   ],
+   "faces": {
+    "north": {
+     "texture": "#mango"
+    },
+    "south": {
+     "texture": "#mango"
+    },
+    "east": {
+     "texture": "#mango"
+    },
+    "west": {
+     "texture": "#mango"
+    },
+    "up": {
+     "texture": "#mango"
+    },
+    "down": {
+     "texture": "#mango"
+    }
+   },
+   "rotation": {
+    "origin": [
+     8,
+     8,
+     11
+    ],
+    "axis": "x",
+    "angle": 45
+   }
+  }
+ ]
+}

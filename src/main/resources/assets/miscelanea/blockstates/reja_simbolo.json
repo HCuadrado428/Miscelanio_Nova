@@ -1,0 +1,196 @@
+{
+ "variants": {
+  "facing=north,open=false,simbolo=0": {
+   "model": "miscelanea:block/reja_cerrada_circulo",
+   "y": 0
+  },
+  "facing=north,open=true,simbolo=0": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 0
+  },
+  "facing=north,open=false,simbolo=1": {
+   "model": "miscelanea:block/reja_cerrada_triangulo",
+   "y": 0
+  },
+  "facing=north,open=true,simbolo=1": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 0
+  },
+  "facing=north,open=false,simbolo=2": {
+   "model": "miscelanea:block/reja_cerrada_cruz",
+   "y": 0
+  },
+  "facing=north,open=true,simbolo=2": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 0
+  },
+  "facing=north,open=false,simbolo=3": {
+   "model": "miscelanea:block/reja_cerrada_rayo",
+   "y": 0
+  },
+  "facing=north,open=true,simbolo=3": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 0
+  },
+  "facing=north,open=false,simbolo=4": {
+   "model": "miscelanea:block/reja_cerrada_ojo",
+   "y": 0
+  },
+  "facing=north,open=true,simbolo=4": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 0
+  },
+  "facing=north,open=false,simbolo=5": {
+   "model": "miscelanea:block/reja_cerrada_calavera",
+   "y": 0
+  },
+  "facing=north,open=true,simbolo=5": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 0
+  },
+  "facing=east,open=false,simbolo=0": {
+   "model": "miscelanea:block/reja_cerrada_circulo",
+   "y": 90
+  },
+  "facing=east,open=true,simbolo=0": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 90
+  },
+  "facing=east,open=false,simbolo=1": {
+   "model": "miscelanea:block/reja_cerrada_triangulo",
+   "y": 90
+  },
+  "facing=east,open=true,simbolo=1": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 90
+  },
+  "facing=east,open=false,simbolo=2": {
+   "model": "miscelanea:block/reja_cerrada_cruz",
+   "y": 90
+  },
+  "facing=east,open=true,simbolo=2": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 90
+  },
+  "facing=east,open=false,simbolo=3": {
+   "model": "miscelanea:block/reja_cerrada_rayo",
+   "y": 90
+  },
+  "facing=east,open=true,simbolo=3": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 90
+  },
+  "facing=east,open=false,simbolo=4": {
+   "model": "miscelanea:block/reja_cerrada_ojo",
+   "y": 90
+  },
+  "facing=east,open=true,simbolo=4": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 90
+  },
+  "facing=east,open=false,simbolo=5": {
+   "model": "miscelanea:block/reja_cerrada_calavera",
+   "y": 90
+  },
+  "facing=east,open=true,simbolo=5": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 90
+  },
+  "facing=south,open=false,simbolo=0": {
+   "model": "miscelanea:block/reja_cerrada_circulo",
+   "y": 180
+  },
+  "facing=south,open=true,simbolo=0": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 180
+  },
+  "facing=south,open=false,simbolo=1": {
+   "model": "miscelanea:block/reja_cerrada_triangulo",
+   "y": 180
+  },
+  "facing=south,open=true,simbolo=1": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 180
+  },
+  "facing=south,open=false,simbolo=2": {
+   "model": "miscelanea:block/reja_cerrada_cruz",
+   "y": 180
+  },
+  "facing=south,open=true,simbolo=2": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 180
+  },
+  "facing=south,open=false,simbolo=3": {
+   "model": "miscelanea:block/reja_cerrada_rayo",
+   "y": 180
+  },
+  "facing=south,open=true,simbolo=3": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 180
+  },
+  "facing=south,open=false,simbolo=4": {
+   "model": "miscelanea:block/reja_cerrada_ojo",
+   "y": 180
+  },
+  "facing=south,open=true,simbolo=4": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 180
+  },
+  "facing=south,open=false,simbolo=5": {
+   "model": "miscelanea:block/reja_cerrada_calavera",
+   "y": 180
+  },
+  "facing=south,open=true,simbolo=5": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 180
+  },
+  "facing=west,open=false,simbolo=0": {
+   "model": "miscelanea:block/reja_cerrada_circulo",
+   "y": 270
+  },
+  "facing=west,open=true,simbolo=0": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 270
+  },
+  "facing=west,open=false,simbolo=1": {
+   "model": "miscelanea:block/reja_cerrada_triangulo",
+   "y": 270
+  },
+  "facing=west,open=true,simbolo=1": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 270
+  },
+  "facing=west,open=false,simbolo=2": {
+   "model": "miscelanea:block/reja_cerrada_cruz",
+   "y": 270
+  },
+  "facing=west,open=true,simbolo=2": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 270
+  },
+  "facing=west,open=false,simbolo=3": {
+   "model": "miscelanea:block/reja_cerrada_rayo",
+   "y": 270
+  },
+  "facing=west,open=true,simbolo=3": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 270
+  },
+  "facing=west,open=false,simbolo=4": {
+   "model": "miscelanea:block/reja_cerrada_ojo",
+   "y": 270
+  },
+  "facing=west,open=true,simbolo=4": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 270
+  },
+  "facing=west,open=false,simbolo=5": {
+   "model": "miscelanea:block/reja_cerrada_calavera",
+   "y": 270
+  },
+  "facing=west,open=true,simbolo=5": {
+   "model": "miscelanea:block/reja_abierta",
+   "y": 270
+  }
+ }
+}

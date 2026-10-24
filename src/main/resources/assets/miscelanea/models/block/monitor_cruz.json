@@ -1,0 +1,180 @@
+{
+ "parent": "block/block",
+ "textures": {
+  "caja": "miscelanea:block/monitor_caja",
+  "pantalla": "miscelanea:block/monitor_pantalla_cruz",
+  "particle": "miscelanea:block/monitor_caja"
+ },
+ "elements": [
+  {
+   "from": [
+    4,
+    0,
+    5
+   ],
+   "to": [
+    12,
+    1,
+    11
+   ],
+   "faces": {
+    "north": {
+     "texture": "#caja"
+    },
+    "south": {
+     "texture": "#caja"
+    },
+    "east": {
+     "texture": "#caja"
+    },
+    "west": {
+     "texture": "#caja"
+    },
+    "up": {
+     "texture": "#caja"
+    },
+    "down": {
+     "texture": "#caja"
+    }
+   }
+  },
+  {
+   "from": [
+    7,
+    1,
+    7
+   ],
+   "to": [
+    9,
+    3,
+    9
+   ],
+   "faces": {
+    "north": {
+     "texture": "#caja"
+    },
+    "south": {
+     "texture": "#caja"
+    },
+    "east": {
+     "texture": "#caja"
+    },
+    "west": {
+     "texture": "#caja"
+    },
+    "up": {
+     "texture": "#caja"
+    },
+    "down": {
+     "texture": "#caja"
+    }
+   }
+  },
+  {
+   "from": [
+    2,
+    3,
+    3
+   ],
+   "to": [
+    14,
+    13,
+    13
+   ],
+   "faces": {
+    "north": {
+     "texture": "#caja"
+    },
+    "south": {
+     "texture": "#caja"
+    },
+    "east": {
+     "texture": "#caja"
+    },
+    "west": {
+     "texture": "#caja"
+    },
+    "up": {
+     "texture": "#caja"
+    },
+    "down": {
+     "texture": "#caja"
+    }
+   }
+  },
+  {
+   "from": [
+    4,
+    4.5,
+    13
+   ],
+   "to": [
+    12,
+    11.5,
+    15
+   ],
+   "faces": {
+    "north": {
+     "texture": "#caja"
+    },
+    "south": {
+     "texture": "#caja"
+    },
+    "east": {
+     "texture": "#caja"
+    },
+    "west": {
+     "texture": "#caja"
+    },
+    "up": {
+     "texture": "#caja"
+    },
+    "down": {
+     "texture": "#caja"
+    }
+   }
+  },
+  {
+   "from": [
+    3,
+    4,
+    2.6
+   ],
+   "to": [
+    13,
+    12,
+    3
+   ],
+   "faces": {
+    "north": {
+     "texture": "#pantalla",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "south": {
+     "texture": "#caja"
+    },
+    "east": {
+     "texture": "#caja"
+    },
+    "west": {
+     "texture": "#caja"
+    },
+    "up": {
+     "texture": "#caja"
+    },
+    "down": {
+     "texture": "#caja"
+    }
+   }
+  }
+ ]
+}

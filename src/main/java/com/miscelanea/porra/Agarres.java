@@ -63,7 +63,7 @@ public final class Agarres {
     private static final String CD_CHOQUE = Miscelanea.MOD_ID + ":cd_choque";
 
     private static final class Agarre {
-        final Player agresor;
+        final LivingEntity agresor;
         final LivingEntity victima;
         int ticks;
         int proxDescarga = 15;
@@ -71,7 +71,7 @@ public final class Agarres {
         float resistencia = RESISTENCIA_MAX;
         int ultimoForcejeo = -100;
 
-        Agarre(Player agresor, LivingEntity victima) {
+        Agarre(LivingEntity agresor, LivingEntity victima) {
             this.agresor = agresor;
             this.victima = victima;
         }
@@ -90,7 +90,19 @@ public final class Agarres {
         return POR_AGRESOR.containsKey(e.getUUID());
     }
 
-    private static boolean llevaPorra(Player p) {
+    /** Para la IA del jefe: si puede, ejecuta a su víctima (poca vida); si no, la suelta de un empujón. */
+    public static void accionMob(LivingEntity jefe) {
+        Agarre a = POR_AGRESOR.get(jefe.getUUID());
+        if (a == null || a.ejecucion >= 0) return;
+        if (a.victima.getHealth() <= a.victima.getMaxHealth() * UMBRAL_EJECUCION) iniciarEjecucion(a);
+    }
+
+    /** ¿Se le puede agarrar ahora? (para la IA del jefe) */
+    public static boolean agarrable(LivingEntity e) {
+        return puedeSerAgarrado(e);
+    }
+
+    private static boolean llevaPorra(LivingEntity p) {
         return p.getMainHandItem().is(ModItems.PORRA.get());
     }
 
@@ -130,7 +142,7 @@ public final class Agarres {
         return e.getBbHeight() <= 2.6F && e.getBbWidth() <= 1.4F && e.getMaxHealth() < 100.0F;
     }
 
-    public static void agarrar(Player p, LivingEntity v) {
+    public static void agarrar(LivingEntity p, LivingEntity v) {
         if (!(p.level() instanceof ServerLevel level) || !puedeSerAgarrado(v) || agarrando(p) || esVictima(p)) return;
         Agarre a = new Agarre(p, v);
         POR_AGRESOR.put(p.getUUID(), a);
@@ -183,7 +195,8 @@ public final class Agarres {
     // ------------------------------------------------------------------ descargas y ejecución
 
     private static void descargar(ServerLevel level, Agarre a) {
-        if (!BateriaItem.gastar(a.agresor, COSTE_DESCARGA)) {
+        // los mobs (el jefe) no necesitan batería
+        if (a.agresor instanceof Player && !BateriaItem.gastar(a.agresor, COSTE_DESCARGA)) {
             soltar(a, true);
             return;
         }
@@ -279,10 +292,10 @@ public final class Agarres {
         if (event.phase != TickEvent.Phase.END) return;
 
         for (Agarre a : new ArrayList<>(POR_AGRESOR.values())) {
-            Player p = a.agresor;
+            LivingEntity p = a.agresor;
             LivingEntity v = a.victima;
             if (!p.isAlive() || !v.isAlive() || p.level() != v.level() || p.distanceTo(v) > 4.0
-                    || !llevaPorra(p) || BateriaItem.de(p).isEmpty()) {
+                    || !llevaPorra(p) || (p instanceof Player && BateriaItem.de(p).isEmpty())) {
                 soltar(a, false);
                 continue;
             }
@@ -330,14 +343,14 @@ public final class Agarres {
 
     /** Mantiene a la víctima delante del agresor, un poco levantada, mirándole. */
     private static void sujetar(Agarre a) {
-        Player p = a.agresor;
+        LivingEntity p = a.agresor;
         LivingEntity v = a.victima;
-        Vec3 frente = Vec3.directionFromRotation(0, p.getYRot());
+        Vec3 frente = Vec3.directionFromRotation(0, p instanceof Player ? p.getYRot() : p.yBodyRot);
         // Entrada progresiva: la acerca de 1,1 a 0,7 bloques y la levanta 0,2 en 5 ticks (igual en el cliente)
         float k = Math.min(1.0F, a.ticks / 5.0F);
         k = k * k * (3.0F - 2.0F * k);
         Vec3 punto = p.position().add(frente.scale(1.1 + (0.7 - 1.1) * k)).add(0, 0.2 * k, 0);
-        float yaw = p.getYRot() + 180.0F;
+        float yaw = (p instanceof Player ? p.getYRot() : p.yBodyRot) + 180.0F;
         float pitch = -15.0F;
 
         v.fallDistance = 0.0F;
@@ -446,7 +459,7 @@ public final class Agarres {
 
     /** Agresor de una víctima (para el cliente no hace falta; se usa en eventos del servidor). */
     @Nullable
-    public static Player agresorDe(Entity victima) {
+    public static LivingEntity agresorDe(Entity victima) {
         Agarre a = POR_VICTIMA.get(victima.getUUID());
         return a != null ? a.agresor : null;
     }

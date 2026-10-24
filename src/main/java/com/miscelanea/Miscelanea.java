@@ -60,6 +60,9 @@ public class Miscelanea {
         if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
             com.miscelanea.registry.ModBlocks.ITEMS_BLOQUE.forEach(event::accept);
             event.accept(ModItems.CARRO_CHIVATO);
+            event.accept(ModItems.HUEVO_GUARDIA);
+            event.accept(ModItems.HUEVO_GRITON);
+            event.accept(ModItems.HUEVO_JEFE);
             for (int i = 0; i < com.miscelanea.carcel.Simbolo.TOTAL; i++) {
                 event.accept(com.miscelanea.carcel.LlaveItem.con(ModItems.LLAVE.get(), i));
             }
