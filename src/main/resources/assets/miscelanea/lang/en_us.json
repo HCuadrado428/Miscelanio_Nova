@@ -67,5 +67,13 @@
   "death.attack.miscelanea.descarga": "%1$s was electrocuted by %2$s",
   "death.attack.miscelanea.descarga.player": "%1$s was electrocuted by %2$s",
   "death.attack.miscelanea.descarga.item": "%1$s was electrocuted by %2$s using %3$s",
-  "hud.miscelanea.sueltate": "BREAK FREE!"
+  "hud.miscelanea.sueltate": "BREAK FREE!",
+  "item.miscelanea.medigun": "Medigun",
+  "item.miscelanea.mochila_medica": "Medic Backpack",
+  "effect.miscelanea.ubercarga": "ÜberCharge",
+  "subtitles.miscelanea.medigun_rayo": "Medigun beam",
+  "subtitles.miscelanea.medigun_conectar": "Medigun connects",
+  "subtitles.miscelanea.uber_activar": "ÜberCharge activated!",
+  "subtitles.miscelanea.uber_lista": "ÜberCharge ready",
+  "subtitles.miscelanea.uber_rebote": "Hit deflected"
 }

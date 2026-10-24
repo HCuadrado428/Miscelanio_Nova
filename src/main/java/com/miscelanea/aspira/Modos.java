@@ -203,32 +203,46 @@ public final class Modos {
         if (mochila.isEmpty()) return;
         Vec3 boca = AspiraUtil.boca(player);
 
-        // Nubes de pociones persistentes
-        for (AreaEffectCloud nube : AspiraUtil.enCono(player, AreaEffectCloud.class, 10.0, 0.7)) {
-            Potion pocion = nube.getPotion();
-            if (pocion == Potions.EMPTY || pocion.getEffects().isEmpty()) continue;
+        // Nubes de pociones persistentes: basta con apuntar a cualquier parte de la nube
+        boolean absorbiendo = false;
+        for (AreaEffectCloud nube : nubesApuntadas(player, 10.0)) {
+            List<MobEffectInstance> efectos = efectosDeNube(nube);
+            if (efectos.isEmpty()) continue;
+            absorbiendo = true;
+            for (MobEffectInstance ef : efectos) guardarEfecto(mochila, ef, usado, 0.6F);
 
-            for (MobEffectInstance ef : pocion.getEffects()) {
-                if (ef.getEffect().isBeneficial()) {
-                    if (ef.getEffect().isInstantenous()) {
-                        if (usado % 8 == 0) Reserva.anadir(mochila, ef.getEffect(), ef.getAmplifier(), 1);
-                    } else {
-                        Reserva.anadir(mochila, ef.getEffect(), ef.getAmplifier(), Math.max(ef.getDuration() / 40, 10));
-                    }
-                } else {
-                    Deposito.anadirAlTanque(mochila, ef, 0.6F);
-                }
-            }
-
-            float r = nube.getRadius() - 0.12F;
-            if (r < 0.5F) nube.discard();
-            else nube.setRadius(r);
-
+            // la nube encoge hasta desaparecer (~3 s una nube normal de 3 bloques)
+            float r = nube.getRadius() - 0.05F - nube.getRadius() * 0.02F;
             Vec3 p = nube.position().add(0, 0.3, 0);
+            if (r < 0.5F) {
+                nube.discard();
+                level.playSound(null, p.x, p.y, p.z, SoundEvents.BOTTLE_FILL_DRAGONBREATH, SoundSource.PLAYERS, 1.0F, 1.1F);
+            } else {
+                nube.setRadius(r);
+            }
             int color = nube.getColor();
             double cr = (color >> 16 & 255) / 255.0, cg = (color >> 8 & 255) / 255.0, cb = (color & 255) / 255.0;
-            level.sendParticles(ParticleTypes.ENTITY_EFFECT, p.x, p.y, p.z, 0, cr, cg, cb, 1.0);
-            AspiraUtil.chorro(level, ParticleTypes.WITCH, p, boca, 0.4);
+            for (int k = 0; k < 3; k++) {
+                double a = level.random.nextDouble() * Math.PI * 2, d = level.random.nextDouble() * r;
+                Vec3 q = p.add(Math.cos(a) * d, 0, Math.sin(a) * d);
+                level.sendParticles(ParticleTypes.ENTITY_EFFECT, q.x, q.y, q.z, 0, cr, cg, cb, 1.0);
+                if (k == 0) AspiraUtil.chorro(level, ParticleTypes.WITCH, q, boca, 0.45);
+            }
+        }
+        if (absorbiendo && usado % 10 == 0) {
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BOTTLE_FILL,
+                    SoundSource.PLAYERS, 0.6F, 0.8F + level.random.nextFloat() * 0.2F);
+        }
+
+        // Pociones lanzadas en pleno vuelo (arrojadizas y persistentes): se tragan enteras
+        for (net.minecraft.world.entity.projectile.ThrownPotion pocion
+                : AspiraUtil.enCono(player, net.minecraft.world.entity.projectile.ThrownPotion.class, 8.0, 0.75)) {
+            ItemStack item = pocion.getItem();
+            for (MobEffectInstance ef : PotionUtils.getMobEffects(item)) guardarEfecto(mochila, ef, 0, 20.0F);
+            Vec3 c = AspiraUtil.centro(pocion);
+            AspiraUtil.chorro(level, ParticleTypes.WITCH, c, boca, 0.6);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 1.0F, 1.4F);
+            pocion.discard();
         }
 
         // Robar un efecto por segundo a quien esté delante
@@ -296,5 +310,50 @@ public final class Modos {
 
         Deposito.vaciarTanque(mochila);
         return true;
+    }
+    /** Positivos → Reserva; negativos y neutros → tanque para expulsar. */
+    private static void guardarEfecto(ItemStack mochila, MobEffectInstance ef, int usado, float carga) {
+        if (ef.getEffect().isBeneficial()) {
+            if (ef.getEffect().isInstantenous()) {
+                if (usado % 8 == 0) Reserva.anadir(mochila, ef.getEffect(), ef.getAmplifier(), 1);
+            } else {
+                Reserva.anadir(mochila, ef.getEffect(), ef.getAmplifier(), Math.max(ef.getDuration() / 40, 10));
+            }
+        } else {
+            Deposito.anadirAlTanque(mochila, ef, carga);
+        }
+    }
+
+    /** Todos los efectos de una nube: los de su poción y los añadidos a mano (aliento de dragón, rociados, de otros mods). */
+    public static List<MobEffectInstance> efectosDeNube(AreaEffectCloud nube) {
+        List<MobEffectInstance> out = new ArrayList<>();
+        Potion pocion = nube.getPotion();
+        if (pocion != Potions.EMPTY) out.addAll(pocion.getEffects());
+        net.minecraft.nbt.CompoundTag tag = new net.minecraft.nbt.CompoundTag();
+        nube.saveWithoutId(tag);
+        net.minecraft.nbt.ListTag lista = tag.getList("Effects", net.minecraft.nbt.Tag.TAG_COMPOUND);
+        for (int i = 0; i < lista.size(); i++) {
+            MobEffectInstance e = MobEffectInstance.load(lista.getCompound(i));
+            if (e != null) out.add(e);
+        }
+        return out;
+    }
+
+    /** Nubes a las que apunta la boquilla (vale cualquier parte de la nube, no solo el centro). */
+    private static List<AreaEffectCloud> nubesApuntadas(Player player, double alcance) {
+        Vec3 ojo = player.getEyePosition();
+        Vec3 mira = player.getViewVector(1.0F);
+        return player.level().getEntitiesOfClass(AreaEffectCloud.class, player.getBoundingBox().inflate(alcance + 4), n -> {
+            if (!n.isAlive()) return false;
+            Vec3 c = n.position();
+            double t = Mth.clamp(c.subtract(ojo).dot(mira), 0.0, alcance);
+            Vec3 cerca = ojo.add(mira.scale(t));
+            double dx = cerca.x - c.x, dz = cerca.z - c.z;
+            if (Math.sqrt(dx * dx + dz * dz) > n.getRadius() + 0.75) return false;
+            if (cerca.y < c.y - 1.0 || cerca.y > c.y + 3.0) return false;
+            Vec3 objetivo = new Vec3(Mth.clamp(cerca.x, c.x - n.getRadius(), c.x + n.getRadius()), c.y + 0.4,
+                    Mth.clamp(cerca.z, c.z - n.getRadius(), c.z + n.getRadius()));
+            return AspiraUtil.lineaDeVision(player, objetivo) || AspiraUtil.lineaDeVision(player, c.add(0, 0.4, 0));
+        });
     }
 }

@@ -20,6 +20,13 @@ public final class ModSounds {
     /** Descarga larga del agarre. */
     public static final RegistryObject<SoundEvent> DESCARGA = register("descarga");
 
+    /** Zumbido del rayo de la medigun (en bucle). */
+    public static final RegistryObject<SoundEvent> MEDIGUN_RAYO = register("medigun_rayo");
+    public static final RegistryObject<SoundEvent> MEDIGUN_CONECTAR = register("medigun_conectar");
+    public static final RegistryObject<SoundEvent> UBER_ACTIVAR = register("uber_activar");
+    public static final RegistryObject<SoundEvent> UBER_LISTA = register("uber_lista");
+    public static final RegistryObject<SoundEvent> UBER_REBOTE = register("uber_rebote");
+
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name,
                 () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Miscelanea.MOD_ID, name)));

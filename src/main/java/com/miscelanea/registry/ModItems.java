@@ -39,5 +39,14 @@ public final class ModItems {
             () -> new BateriaItem(MochilaArmorMaterial.INSTANCE, ArmorItem.Type.CHESTPLATE,
                     new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
 
+    /** Medigun: rayo que cura y ÜberCarga. Necesita la mochila médica. */
+    public static final RegistryObject<Item> MEDIGUN = ITEMS.register("medigun",
+            () -> new com.miscelanea.medigun.MedigunItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+
+    /** Mochila médica (hueco del pecho). */
+    public static final RegistryObject<Item> MOCHILA_MEDICA = ITEMS.register("mochila_medica",
+            () -> new com.miscelanea.medigun.MochilaMedicaItem(MochilaArmorMaterial.INSTANCE, ArmorItem.Type.CHESTPLATE,
+                    new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+
     private ModItems() {}
 }

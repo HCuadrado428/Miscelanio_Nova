@@ -59,6 +59,8 @@ public final class ClientEvents {
                 if (renderer != null) {
                     renderer.addLayer(new MangueraLayer(renderer));
                     renderer.addLayer(new com.miscelanea.client.porra.CableLayer(renderer));
+                    renderer.addLayer(new com.miscelanea.client.medigun.MedigunLayer(renderer));
+                    renderer.addLayer(new com.miscelanea.client.medigun.UberLayer(renderer, "slim".equals(skin)));
                 }
             }
         }
@@ -78,6 +80,7 @@ public final class ClientEvents {
         public static void registerOverlays(RegisterGuiOverlaysEvent event) {
             event.registerAboveAll("forcejeo", com.miscelanea.client.porra.AgarreEventos::renderForcejeo);
             event.registerAboveAll("flashbang", FlashOverlay::render);
+            event.registerBelowAll("medigun", com.miscelanea.client.medigun.MedigunCliente::render);
         }
     }
 

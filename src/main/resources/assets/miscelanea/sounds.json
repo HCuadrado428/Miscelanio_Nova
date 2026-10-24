@@ -25,5 +25,50 @@
       "miscelanea:descarga"
     ],
     "subtitle": "subtitles.miscelanea.descarga"
+  },
+  "medigun_rayo": {
+    "sounds": [
+      {
+        "name": "miscelanea:medigun_rayo",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.medigun_rayo"
+  },
+  "medigun_conectar": {
+    "sounds": [
+      {
+        "name": "miscelanea:medigun_conectar",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.medigun_conectar"
+  },
+  "uber_activar": {
+    "sounds": [
+      {
+        "name": "miscelanea:uber_activar",
+        "attenuation_distance": 32
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.uber_activar"
+  },
+  "uber_lista": {
+    "sounds": [
+      {
+        "name": "miscelanea:uber_lista",
+        "attenuation_distance": 8
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.uber_lista"
+  },
+  "uber_rebote": {
+    "sounds": [
+      {
+        "name": "miscelanea:uber_rebote",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.uber_rebote"
   }
 }

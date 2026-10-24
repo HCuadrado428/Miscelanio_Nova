@@ -29,6 +29,7 @@ public class Miscelanea {
         ModSounds.SOUNDS.register(modBus);
         ModEnchantments.ENCHANTMENTS.register(modBus);
         ModParticles.PARTICLES.register(modBus);
+        com.miscelanea.registry.ModRecipes.SERIALIZERS.register(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::creativeTabs);
@@ -46,6 +47,8 @@ public class Miscelanea {
             event.accept(ModItems.ASPIRAFANTASMAS);
             event.accept(ModItems.MOCHILA);
             event.accept(ModItems.BATERIA);
+            event.accept(ModItems.MEDIGUN);
+            event.accept(ModItems.MOCHILA_MEDICA);
         }
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(ModItems.PORRA);

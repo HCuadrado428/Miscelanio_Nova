@@ -67,5 +67,13 @@
   "death.attack.miscelanea.descarga": "%1$s fue electrocutado por %2$s",
   "death.attack.miscelanea.descarga.player": "%1$s fue electrocutado por %2$s",
   "death.attack.miscelanea.descarga.item": "%1$s fue electrocutado por %2$s con %3$s",
-  "hud.miscelanea.sueltate": "¡SUÉLTATE!"
+  "hud.miscelanea.sueltate": "¡SUÉLTATE!",
+  "item.miscelanea.medigun": "Medigun",
+  "item.miscelanea.mochila_medica": "Mochila médica",
+  "effect.miscelanea.ubercarga": "ÜberCarga",
+  "subtitles.miscelanea.medigun_rayo": "Rayo de la medigun",
+  "subtitles.miscelanea.medigun_conectar": "Medigun conectada",
+  "subtitles.miscelanea.uber_activar": "¡ÜberCarga activada!",
+  "subtitles.miscelanea.uber_lista": "ÜberCarga lista",
+  "subtitles.miscelanea.uber_rebote": "El golpe rebota"
 }
