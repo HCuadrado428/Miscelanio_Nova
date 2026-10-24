@@ -85,7 +85,7 @@ public class AlientoAnimacion implements IAnimation {
         switch (part) {
             case "body": {
                 // playerAnimator: x>0 arquea hacia atrás, x<0 se inclina hacia delante
-                float x = 0.32F * c - 0.18F * d + n1;
+                float x = 0.14F * c - 0.12F * d + n1;
                 return new Vec3f(Mth.lerp(w, v.getX(), x), Mth.lerp(w, v.getY(), n2 * 0.5F), Mth.lerp(w, v.getZ(), n2 * 0.4F));
             }
             case "head": {

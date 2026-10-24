@@ -29,7 +29,7 @@ import java.util.function.Consumer;
  */
 public class NucleoItem extends ArmorItem implements GeoItem {
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.nucleo.idle");
-    private static final RawAnimation CARGA = RawAnimation.begin().thenLoop("animation.nucleo.carga");
+    private static final RawAnimation CARGA = RawAnimation.begin().thenPlayAndHold("animation.nucleo.carga");
     private static final RawAnimation DISPARO = RawAnimation.begin().thenLoop("animation.nucleo.disparo");
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
