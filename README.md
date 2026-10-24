@@ -104,6 +104,17 @@ Pistola blanca con emisor de tres púas y medidor de carga, y **mochila médica*
 - Medigun: `_, oro, lágrima de ghast / hierro, diamante, oro / hierro, _, _`
 - Mochila médica: `cuero, _, cuero / cristal, manzana dorada, cristal / hierro, soporte para pociones, hierro`
 
+### Núcleo de error 🟪⬛ (solo creativo)
+Un núcleo de "textura que falta" incrustado en el pecho: cubo de damero magenta y negro que late y se desgarra, con grietas violetas y fragmentos que orbitan a saltos. Todas sus texturas están animadas.
+
+- **Shift + clic derecho con la mano vacía:** aliento del núcleo, a lo aliento atómico.
+  - **Carga (1,5 s):** te arqueas, echas la cabeza atrás y el error te sube por el cuerpo de los pies a la cabeza. La pantalla se llena de cuadros de error por los bordes.
+  - **Rayo (3 s):** latigazo de cabeza y sale por la boca un rayo negro y morado con núcleo magenta, espirales negras y cuadritos de error. Sigue a donde miras (40 bloques).
+  - Hace 3,5 corazones cada 0,2 s y marchita. Rompe los bloques blandos (hasta dureza 3: tierra, piedra, madera, cristal…), pero no la obsidiana, la bedrock ni nada con inventario. Respeta las zonas protegidas.
+  - Algunos bloques rotos se quedan como **bloque corrupto** (sin textura y brillante), que se deshace solo al rato.
+  - Retroceso, temblor de cámara (también para los que están cerca) y rugido que se corta justo al acabar.
+- **Recarga:** 20 s. Abajo a la izquierda, un cuadrito de damero se va llenando.
+
 ## Compilar
 Cada vez que se sube algo a GitHub, **GitHub Actions** compila el mod y publica el `.jar` en **Releases**.
 

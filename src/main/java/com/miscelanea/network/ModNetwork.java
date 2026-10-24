@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String PROTOCOLO = "4";
+    private static final String PROTOCOLO = "5";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "main"),
@@ -56,6 +56,16 @@ public final class ModNetwork {
                 .encoder(LazoPacket::encode)
                 .decoder(LazoPacket::new)
                 .consumerMainThread(LazoPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(NucleoActivarPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(NucleoActivarPacket::encode)
+                .decoder(NucleoActivarPacket::new)
+                .consumerMainThread(NucleoActivarPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(NucleoEstadoPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(NucleoEstadoPacket::encode)
+                .decoder(NucleoEstadoPacket::new)
+                .consumerMainThread(NucleoEstadoPacket::handle)
                 .add();
     }
 }

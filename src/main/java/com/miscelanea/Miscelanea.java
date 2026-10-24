@@ -30,6 +30,7 @@ public class Miscelanea {
         ModEnchantments.ENCHANTMENTS.register(modBus);
         ModParticles.PARTICLES.register(modBus);
         com.miscelanea.registry.ModRecipes.SERIALIZERS.register(modBus);
+        com.miscelanea.registry.ModBlocks.BLOCKS.register(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::creativeTabs);
@@ -52,6 +53,7 @@ public class Miscelanea {
         }
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(ModItems.PORRA);
+            event.accept(ModItems.NUCLEO);
         }
     }
 }

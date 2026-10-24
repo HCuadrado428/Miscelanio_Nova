@@ -48,5 +48,10 @@ public final class ModItems {
             () -> new com.miscelanea.medigun.MochilaMedicaItem(MochilaArmorMaterial.INSTANCE, ArmorItem.Type.CHESTPLATE,
                     new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
 
+    /** Núcleo de error en el pecho (solo creativo): Shift + clic derecho con la mano vacía = aliento. */
+    public static final RegistryObject<Item> NUCLEO = ITEMS.register("nucleo",
+            () -> new com.miscelanea.nucleo.NucleoItem(MochilaArmorMaterial.INSTANCE,
+                    new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
+
     private ModItems() {}
 }

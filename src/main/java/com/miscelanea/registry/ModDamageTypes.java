@@ -21,6 +21,13 @@ public final class ModDamageTypes {
         return new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DESCARGA), atacante);
     }
 
+    public static final ResourceKey<DamageType> NUCLEO =
+            ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Miscelanea.MOD_ID, "nucleo"));
+
+    public static DamageSource nucleo(Level level, net.minecraft.world.entity.Entity atacante) {
+        return new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(NUCLEO), atacante);
+    }
+
     public static DamageSource enemigo(Level level) {
         return new DamageSource(level.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(ENEMIGO));
     }

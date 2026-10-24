@@ -70,5 +70,32 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.uber_rebote"
+  },
+  "nucleo_carga": {
+    "sounds": [
+      {
+        "name": "miscelanea:nucleo_carga",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.nucleo_carga"
+  },
+  "nucleo_rayo": {
+    "sounds": [
+      {
+        "name": "miscelanea:nucleo_rayo",
+        "attenuation_distance": 48
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.nucleo_rayo"
+  },
+  "nucleo_fin": {
+    "sounds": [
+      {
+        "name": "miscelanea:nucleo_fin",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.nucleo_fin"
   }
 }

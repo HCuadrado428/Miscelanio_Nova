@@ -108,7 +108,7 @@ public final class AspiraCliente {
             Modo m = p.isRemoved() ? null : modoEnUso(p);
             if (m == null) {
                 // se apaga en unos ticks en vez de cortarse en seco
-                volume -= 0.12F;
+                volume -= 0.22F;
                 if (volume <= 0.0F) stop();
                 return;
             }

@@ -129,10 +129,7 @@ public final class Modos {
                 AspiraUtil.aire(level, boca, boca.add(dir.normalize().scale(6.0)), false);
             }
         }
-        if (usado % 20 == 0) {
-            level.playSound(null, player.getX(), player.getY(), player.getZ(),
-                    SoundEvents.ELYTRA_FLYING, SoundSource.PLAYERS, 0.4F, 1.6F);
-        }
+        // (el sonido del soplido es el bucle del cliente: client/AspiraCliente, se corta al soltar)
 
         for (Entity e : AspiraUtil.enCono(player, Entity.class, Succion.ALCANCE, 0.75)) {
             double dist = AspiraUtil.centro(e).distanceTo(boca);
@@ -342,10 +339,6 @@ public final class Modos {
         }
         if (usado == 0) {
             level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.SPLASH_POTION_THROW, SoundSource.PLAYERS, 1.0F, 0.6F);
-        }
-        if (usado % 5 == 0) {
-            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS,
-                    0.35F, 1.5F + level.random.nextFloat() * 0.3F);
         }
 
         // Lo que pilla el chorro

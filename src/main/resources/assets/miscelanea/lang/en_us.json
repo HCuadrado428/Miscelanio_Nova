@@ -87,5 +87,13 @@
   "gui.miscelanea.tirar": "Throw this effect away",
   "gui.miscelanea.reserva_vacia": "Reserve empty: suck positive potions with the Alchemist",
   "key.miscelanea.mochila": "Open the Ghostsucker backpack",
-  "tooltip.miscelanea.clic_alquimista": "Right click: suck and absorb potions and effects"
+  "tooltip.miscelanea.clic_alquimista": "Right click: suck and absorb potions and effects",
+  "item.miscelanea.nucleo": "Error Core",
+  "block.miscelanea.bloque_corrupto": "Corrupted Block",
+  "death.attack.miscelanea.nucleo": "%1$s was deleted by an error",
+  "death.attack.miscelanea.nucleo.player": "%1$s was deleted by %2$s's breath",
+  "death.attack.miscelanea.nucleo.item": "%1$s was deleted by %2$s's breath",
+  "subtitles.miscelanea.nucleo_carga": "Core charging",
+  "subtitles.miscelanea.nucleo_rayo": "Core breath",
+  "subtitles.miscelanea.nucleo_fin": "Core powering down"
 }

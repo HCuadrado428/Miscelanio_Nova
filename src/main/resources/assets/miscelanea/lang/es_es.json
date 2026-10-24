@@ -87,5 +87,13 @@
   "gui.miscelanea.tirar": "Tirar este efecto",
   "gui.miscelanea.reserva_vacia": "Reserva vacía: aspira pociones positivas con el Alquimista",
   "key.miscelanea.mochila": "Abrir la mochila del Aspirafantasmas",
-  "tooltip.miscelanea.clic_alquimista": "Clic derecho: aspirar y absorber pociones y efectos"
+  "tooltip.miscelanea.clic_alquimista": "Clic derecho: aspirar y absorber pociones y efectos",
+  "item.miscelanea.nucleo": "Núcleo de error",
+  "block.miscelanea.bloque_corrupto": "Bloque corrupto",
+  "death.attack.miscelanea.nucleo": "%1$s fue borrado por un error",
+  "death.attack.miscelanea.nucleo.player": "%1$s fue borrado por el aliento de %2$s",
+  "death.attack.miscelanea.nucleo.item": "%1$s fue borrado por el aliento de %2$s",
+  "subtitles.miscelanea.nucleo_carga": "Núcleo cargando",
+  "subtitles.miscelanea.nucleo_rayo": "Aliento del núcleo",
+  "subtitles.miscelanea.nucleo_fin": "Núcleo apagándose"
 }

@@ -23,10 +23,15 @@ public class RayoSonido extends AbstractTickableSoundInstance {
 
     @Override
     public void tick() {
-        if (medico.isRemoved() || !MedigunCliente.curando(medico.getId())) {
-            stop();
+        // Se corta en cuanto el médico suelta el clic (sin esperar al servidor)
+        boolean usando = medico instanceof net.minecraft.world.entity.player.Player p && p.isUsingItem()
+                && p.getUseItem().getItem() instanceof com.miscelanea.medigun.MedigunItem;
+        if (medico.isRemoved() || !usando || !MedigunCliente.curando(medico.getId())) {
+            volume -= 0.25F;
+            if (volume <= 0.0F) stop();
             return;
         }
+        volume = Math.min(0.55F, volume + 0.15F);
         this.x = medico.getX();
         this.y = medico.getY() + 1.2;
         this.z = medico.getZ();

@@ -53,6 +53,9 @@ public final class ClientEvents {
             dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "estocada"), 900,
                     com.miscelanea.client.porra.EstocadaAnimacion::new);
+            dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
+                    new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "aliento"), 1100,
+                    com.miscelanea.client.nucleo.AlientoAnimacion::new);
         }
 
         @SubscribeEvent
@@ -69,6 +72,7 @@ public final class ClientEvents {
                     renderer.addLayer(new com.miscelanea.client.porra.CableLayer(renderer));
                     renderer.addLayer(new com.miscelanea.client.medigun.MedigunLayer(renderer));
                     renderer.addLayer(new com.miscelanea.client.medigun.UberLayer(renderer, "slim".equals(skin)));
+                    renderer.addLayer(new com.miscelanea.client.nucleo.GlitchCapaLayer(renderer, "slim".equals(skin)));
                 }
             }
         }
@@ -91,6 +95,7 @@ public final class ClientEvents {
             event.registerAboveAll("forcejeo", com.miscelanea.client.porra.AgarreEventos::renderForcejeo);
             event.registerAboveAll("flashbang", FlashOverlay::render);
             event.registerAboveAll("captura", CapturaHud::render);
+            event.registerBelowAll("nucleo", com.miscelanea.client.nucleo.NucleoCliente::render);
             event.registerBelowAll("medigun", com.miscelanea.client.medigun.MedigunCliente::render);
         }
     }

@@ -27,6 +27,11 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> UBER_LISTA = register("uber_lista");
     public static final RegistryObject<SoundEvent> UBER_REBOTE = register("uber_rebote");
 
+    public static final RegistryObject<SoundEvent> NUCLEO_CARGA = register("nucleo_carga");
+    /** Rugido del rayo del núcleo (en bucle; lo para el cliente al acabar). */
+    public static final RegistryObject<SoundEvent> NUCLEO_RAYO = register("nucleo_rayo");
+    public static final RegistryObject<SoundEvent> NUCLEO_FIN = register("nucleo_fin");
+
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name,
                 () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Miscelanea.MOD_ID, name)));
