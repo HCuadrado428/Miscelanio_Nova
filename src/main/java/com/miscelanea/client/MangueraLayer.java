@@ -72,7 +72,7 @@ public class MangueraLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         Vector3f c2 = new Vector3f(fin).add(0.0F, 6.0F / 16.0F, 2.5F / 16.0F);
 
         Tubo.dibujar(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURA)), light,
-                ini, c1, c2, fin, 1.0F / 16.0F, 20, 4.0F / 16.0F);
+                ini, c1, c2, fin, 1.0F / 16.0F, 20, 16.0F / 16.0F);
 
         // Guardar la boca en coordenadas del mundo
         Vector3f boca = PoseAspiradora.punto(geo, PoseAspiradora.BOCA);

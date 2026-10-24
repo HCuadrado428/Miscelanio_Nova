@@ -85,7 +85,7 @@ public class DesatascadorRenderer extends GeoEntityRenderer<DesatascadorEntity> 
 
         int segmentos = Mth.clamp((int) (largo * 3.0F), 8, 40);
         Tubo.dibujar(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(CUERDA)), light,
-                a, p1, p2, b, 0.35F / 16.0F, segmentos, 0.5F);
+                a, p1, p2, b, 0.35F / 16.0F, segmentos, 5.6F / 16.0F);
     }
 
     /** Boca de la boquilla: la que calcula MangueraLayer en tercera persona, o una aproximación en primera. */

@@ -53,6 +53,6 @@ public class CableLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<Ab
         Vector3f c1 = new Vector3f(borne).add(lado * 1.5F / 16.0F, -3.0F / 16.0F, 2.0F / 16.0F);
         Vector3f c2 = new Vector3f(mano).add(0.0F, 5.0F / 16.0F, 2.0F / 16.0F);
         Tubo.dibujar(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURA)), light,
-                borne, c1, c2, mano, 0.45F / 16.0F, 18, 3.0F / 16.0F);
+                borne, c1, c2, mano, 0.45F / 16.0F, 18, 7.2F / 16.0F);
     }
 }

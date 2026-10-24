@@ -52,7 +52,9 @@ Necesitas **la mochila puesta** (hueco del pecho) y **la boquilla en la mano**. 
 | Desatascador | Dispara una ventosa atada con una cuerda floja. Si da a alguien, **aspira (clic normal)**: la cuerda se va tensando cuanto más se acerca hasta que queda **agarrado** delante de la boquilla. Mientras mantengas el clic sigue agarrado (calienta poco, aguanta ~25 s) y la barra de **fuerza** se carga (hasta x1,8 en 3 s). Al soltar: mirando abajo lo **estampas**, mirando arriba lo mandas **a las nubes** y al frente lo **lanzas**. Si al soltar das un **latigazo de cámara** (giras el ratón rápido), sale disparado hasta x7 más fuerte, y con carga completa y latigazo máximo puede volar más de 100 bloques. El daño del impacto también sube. Si da en un bloque, aspirar te lleva hasta él como un gancho. |
 | Soplido | Versión mejorada del soplido: más fuerza. Mantén para empujar a todo, apagar fuego y **devolver proyectiles**. Con un toque rápido dispara un mob capturado como **bala de cañón**. |
 | Turbo | Impulso hacia el lado contrario de donde apunta la boquilla: si apuntas al suelo, sales volando. |
-| Alquimista | Mantén para aspirar nubes de pociones persistentes y **robar efectos** a quien tengas delante. Los efectos **negativos** van al tanque y solo sirven para expulsarlos: con un toque rápido **rocías** el tanque donde mires. Los **positivos** se guardan en la **reserva** de la mochila y se activan solos, como un faro, solo mientras hacen falta. Velocidad y salto mientras corres, regeneración si te falta vida, curación instantánea por debajo del 40 %, resistencia al fuego si te quemas, respiración acuática si te ahogas, visión nocturna a oscuras, caída lenta al caer, fuerza al pelear, prisa al picar, invisibilidad agachado, resistencia y absorción al recibir daño, saturación con hambre. La reserva solo se gasta mientras está activa. |
+| Alquimista | Mantén para aspirar nubes de pociones persistentes y **robar efectos** a quien tengas delante. Los efectos **negativos** van al tanque y solo sirven para expulsarlos: con un toque rápido **rocías** el tanque donde mires. Se aspira apuntando a **cualquier parte** de la nube (también el aliento de dragón, las nubes rociadas y las de otros mods), y las **pociones lanzadas** se pueden tragar en pleno vuelo. Los **positivos** se guardan en la **reserva** de la mochila y se activan solos, como un faro, solo mientras hacen falta. Velocidad y salto mientras corres, regeneración si te falta vida, curación instantánea por debajo del 40 %, resistencia al fuego si te quemas, respiración acuática si te ahogas, visión nocturna a oscuras, caída lenta al caer, fuerza al pelear, prisa al picar, invisibilidad agachado, resistencia y absorción al recibir daño, saturación con hambre. La reserva solo se gasta mientras está activa. |
+
+**Ventana de la mochila (tecla B, con la mochila puesta):** tres tarros con los bichos capturados flotando dentro (botón para soltar cada uno), el tubo del tanque con su color y sus efectos (rociar o tirar), y la **Reserva** con una barra de tiempo por efecto y botones para **pausar** su uso automático, **tomarlo todo ya** o **tirarlo**. Sin texto: al pasar el ratón por encima sale la descripción.
 
 **Sobrecalentamiento:** la barra de la boquilla pasa de verde a rojo. Al llenarse se bloquea echando humo hasta enfriarse del todo (unos 6 s).
 
@@ -83,8 +85,24 @@ Inspirado en el carcelero de The Outlast Trials, con diseño propio. El **genera
 - Porra (en diagonal): lingote de cobre arriba a la derecha, pararrayos en el centro y lingote de hierro abajo a la izquierda.
 - Generador: `cobre, cuero, cobre / hierro, bloque de redstone, hierro / hierro, hierro, hierro`
 
+### Medigun 💉 (GeckoLib, inspirada en TF2)
+Pistola blanca con emisor de tres púas y medidor de carga, y **mochila médica** con dos depósitos y un vial que se llena con la ÜberCarga. Las une una manguera 3D. Se lleva a dos manos.
+
+- **Curar:** mantén clic derecho apuntando a un jugador (hasta 10 bloques). El rayo se queda enganchado aunque dejes de apuntarle, mientras esté a menos de 14 bloques y a la vista (aguanta 1 s detrás de una esquina).
+- **Curación:** 1 corazón/s, que sube hasta 3 corazones/s si el paciente lleva 3 s sin recibir daño. Con la vida llena le **sobrecura** hasta 4 corazones dorados extra, que se pierden poco a poco.
+- **ÜberCarga:** se llena curando (40 s con heridos, el doble si están sanos). Con la barra llena, **Shift + clic derecho**: tú y tu paciente sois **invulnerables 8 s** (salvo el vacío y /kill), con una capa brillante del color del rayo y los golpes rebotan.
+- **El rayo** es una cinta ondulante con dos hilos en espiral que sale de la boca de la pistola y se dobla hacia donde miras. Zumba mientras cura.
+- **Color:** medigun + cualquier tinte en la mesa de crafteo. Cambia el rayo, la capa de ÜberCarga y las luces de la pistola y la mochila.
+- **HUD sin texto:** barra de ÜberCarga abajo a la derecha (parpadea cuando está lista) y la vida del paciente bajo la mira.
+
+**Recetas**
+- Medigun: `_, oro, lágrima de ghast / hierro, diamante, oro / hierro, _, _`
+- Mochila médica: `cuero, _, cuero / cristal, manzana dorada, cristal / hierro, soporte para pociones, hierro`
+
 ## Compilar
-Requiere JDK 17 e internet (descarga Forge y GeckoLib 4.8.4 la primera vez). Para jugar, **GeckoLib** y **playerAnimator** (1.0.2-rc1+1.20) tienen que estar también en la carpeta `mods`:
+Cada vez que se sube algo a GitHub, **GitHub Actions** compila el mod y publica el `.jar` en **Releases**.
+
+En local requiere JDK 17 e internet (descarga Forge y GeckoLib 4.8.4 la primera vez). Para jugar, **GeckoLib** y **playerAnimator** (1.0.2-rc1+1.20) tienen que estar también en la carpeta `mods`:
 ```
 ./gradlew build        (Windows: gradlew.bat build)
 ```

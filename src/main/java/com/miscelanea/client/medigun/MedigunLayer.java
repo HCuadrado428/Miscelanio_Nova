@@ -68,7 +68,7 @@ public class MedigunLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<
             Vector3f c1 = new Vector3f(ini).add(lado * 2.5F / 16.0F, 5.0F / 16.0F, 2.5F / 16.0F);
             Vector3f c2 = new Vector3f(fin).add(0.0F, 6.0F / 16.0F, 2.5F / 16.0F);
             Tubo.dibujar(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURA)), light,
-                    ini, c1, c2, fin, 0.8F / 16.0F, 20, 3.0F / 16.0F);
+                    ini, c1, c2, fin, 0.8F / 16.0F, 20, 12.8F / 16.0F);
         }
 
         // Boca en coordenadas del mundo (igual que la manguera de la aspiradora)
