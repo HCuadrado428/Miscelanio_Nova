@@ -1,0 +1,29 @@
+{
+  "aspirar": {
+    "sounds": [
+      {
+        "name": "miscelanea:aspirar",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.aspirar"
+  },
+  "pitido": {
+    "sounds": [
+      "miscelanea:pitido"
+    ],
+    "subtitle": "subtitles.miscelanea.pitido"
+  },
+  "chispazo": {
+    "sounds": [
+      "miscelanea:chispazo"
+    ],
+    "subtitle": "subtitles.miscelanea.chispazo"
+  },
+  "descarga": {
+    "sounds": [
+      "miscelanea:descarga"
+    ],
+    "subtitle": "subtitles.miscelanea.descarga"
+  }
+}
