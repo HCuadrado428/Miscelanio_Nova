@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "ISI",
+    "GBI",
+    " I "
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "S": {
+      "item": "minecraft:ink_sac"
+    },
+    "G": {
+      "item": "minecraft:glass_bottle"
+    },
+    "B": {
+      "item": "minecraft:orange_dye"
+    }
+  },
+  "result": {
+    "item": "miscelanea:lanzatintas"
+  }
+}

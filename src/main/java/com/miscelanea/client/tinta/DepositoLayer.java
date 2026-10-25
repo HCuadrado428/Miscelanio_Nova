@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
@@ -37,19 +38,23 @@ public class DepositoLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         Matrix4f m = ps.last().pose();
         Matrix3f n = ps.last().normal();
         VertexConsumer vc = buf.getBuffer(RenderType.entityCutoutNoCull(TEX));
-        // tinta dentro (sube y baja con el nivel)
-        float fondo = 10.5F, techo = 2.5F;
+        // Bidón tipo botella deportiva gigante (Splatoon 2): cuerpo de plástico transparente, tapones arriba y abajo,
+        // pestillo de botella deportiva, LED rojo arriba y dos correas cortas a los hombros.
+        float fondo = 12.6F, techo = 2.0F;
         float top = fondo - (fondo - techo) * fill;
-        if (fill > 0.01F) caja(vc, m, n, -2.6F, top, 2.6F, 2.6F, fondo, 5.4F, 0.5F, 0, 1, 0.5F, r, g, b, luz);
-        // tapa, base, correas y marco metálico
-        caja(vc, m, n, -3.2F, 1.4F, 2.1F, 3.2F, 2.6F, 5.9F, 0, 0, 0.5F, 0.5F, 1, 1, 1, luz);
-        caja(vc, m, n, -3.2F, 10.4F, 2.1F, 3.2F, 11.6F, 5.9F, 0, 0, 0.5F, 0.5F, 1, 1, 1, luz);
-        caja(vc, m, n, -1.0F, 0.6F, 3.2F, 1.0F, 1.4F, 4.8F, 0, 0, 0.5F, 0.5F, 1, 1, 1, luz);   // boquilla
-        for (float x : new float[]{-3.2F, 2.6F}) caja(vc, m, n, x, 2.6F, 5.3F, x + 0.6F, 10.4F, 5.9F, 0, 0, 0.5F, 0.5F, 1, 1, 1, luz);
-        for (float x : new float[]{-2.6F, 1.8F}) caja(vc, m, n, x, 0.0F, -2.1F, x + 0.8F, 6.0F, 2.1F, 0, 0.5F, 0.5F, 1, 1, 1, 1, luz);   // correas
-        // cristal (sobre la tinta)
+        boolean vacio = fill < 0.02F && (p.tickCount / 5) % 2 == 0;     // parpadea en rojo cuando se vacía
+        if (fill > 0.01F) caja(vc, m, n, -3.0F, top, 2.6F, 3.0F, fondo, 6.8F, 0, 0.25F, 0.25F, 0.5F, r, g, b, luz);
+        caja(vc, m, n, -3.5F, 12.6F, 2.2F, 3.5F, 13.8F, 7.2F, 0, 0, 0.25F, 0.25F, 1, 1, 1, luz);          // tapón de abajo
+        caja(vc, m, n, -3.5F, 0.8F, 2.2F, 3.5F, 2.0F, 7.2F, 0, 0, 0.25F, 0.25F, 1, 1, 1, luz);            // tapón de arriba
+        caja(vc, m, n, -1.6F, -0.4F, 3.4F, 1.6F, 0.8F, 6.0F, 0.25F, 0, 0.5F, 0.25F, 1, 1, 1, luz);        // pestillo
+        caja(vc, m, n, -0.5F, -0.9F, 5.4F, 0.5F, -0.4F, 6.2F, 0.75F, 0, 1, 0.25F, 1, 1, 1, LightTexture.FULL_BRIGHT);   // LED
+        for (float x : new float[]{-3.0F, 1.8F}) {
+            caja(vc, m, n, x, 0.0F, -2.15F, x + 1.2F, 4.5F, -1.9F, 0.5F, 0, 0.75F, 0.25F, 1, 1, 1, luz);   // correas por delante
+            caja(vc, m, n, x, -0.3F, -2.15F, x + 1.2F, 0.0F, 2.2F, 0.5F, 0, 0.75F, 0.25F, 1, 1, 1, luz);   // por encima del hombro
+        }
         RenderType cristal = RenderType.entityTranslucent(TEX);
-        caja(buf.getBuffer(cristal), m, n, -2.9F, 2.6F, 2.3F, 2.9F, 10.4F, 5.7F, 0.5F, 0.5F, 1, 1, 1, 1, 1, luz);
+        float cr = vacio ? 1.0F : 1, cg = vacio ? 0.3F : 1, cb = vacio ? 0.3F : 1;
+        caja(buf.getBuffer(cristal), m, n, -3.3F, 2.0F, 2.4F, 3.3F, 12.6F, 7.0F, 0.25F, 0.25F, 0.5F, 0.5F, cr, cg, cb, luz);
         ps.popPose();
     }
 

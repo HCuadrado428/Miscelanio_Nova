@@ -95,5 +95,8 @@
   "death.attack.miscelanea.nucleo.item": "%1$s fue borrado por el aliento de %2$s",
   "subtitles.miscelanea.nucleo_carga": "Núcleo cargando",
   "subtitles.miscelanea.nucleo_rayo": "Aliento del núcleo",
-  "subtitles.miscelanea.nucleo_fin": "Núcleo apagándose"
+  "subtitles.miscelanea.nucleo_fin": "Núcleo apagándose",
+  "item.miscelanea.lanzatintas": "Lanzatintas",
+  "item.miscelanea.rodillo": "Rodillo",
+  "entity.miscelanea.tinta": "Tinta"
 }

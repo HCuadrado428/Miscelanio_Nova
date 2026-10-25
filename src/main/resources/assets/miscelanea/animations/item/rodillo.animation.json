@@ -1,0 +1,98 @@
+{
+ "format_version": "1.8.0",
+ "animations": {
+  "animation.rodillo.idle": {
+   "loop": true,
+   "animation_length": 2.0,
+   "bones": {}
+  },
+  "animation.rodillo.rodar": {
+   "loop": true,
+   "animation_length": 0.5,
+   "bones": {
+    "rulo": {
+     "rotation": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.5": [
+       -360,
+       0,
+       0
+      ]
+     }
+    },
+    "palo": {
+     "position": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.25": [
+       0,
+       0.15,
+       0
+      ],
+      "0.5": [
+       0,
+       0,
+       0
+      ]
+     }
+    }
+   }
+  },
+  "animation.rodillo.flick": {
+   "loop": false,
+   "animation_length": 0.5,
+   "bones": {
+    "palo": {
+     "rotation": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.12": [
+       -55,
+       0,
+       0
+      ],
+      "0.3": [
+       -70,
+       0,
+       0
+      ],
+      "0.5": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    "rulo": {
+     "rotation": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.3": [
+       180,
+       0,
+       0
+      ],
+      "0.5": [
+       180,
+       0,
+       0
+      ]
+     }
+    }
+   }
+  }
+ }
+}
