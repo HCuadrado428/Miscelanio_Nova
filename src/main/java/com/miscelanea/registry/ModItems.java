@@ -59,5 +59,9 @@ public final class ModItems {
     public static final RegistryObject<Item> RODILLO = ITEMS.register("rodillo",
             () -> new com.miscelanea.tinta.RodilloItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON)));
 
+    // ---- Half-Life 2
+    public static final RegistryObject<Item> PISTOLA_GRAVEDAD = ITEMS.register("pistola_gravedad",
+            () -> new com.miscelanea.gravedad.GravedadItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.EPIC)));
+
     private ModItems() {}
 }

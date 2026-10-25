@@ -98,5 +98,6 @@
   "subtitles.miscelanea.nucleo_fin": "Core powering down",
   "item.miscelanea.lanzatintas": "Splattershot",
   "item.miscelanea.rodillo": "Splat Roller",
-  "entity.miscelanea.tinta": "Ink"
+  "entity.miscelanea.tinta": "Ink",
+  "item.miscelanea.pistola_gravedad": "Gravity Gun"
 }

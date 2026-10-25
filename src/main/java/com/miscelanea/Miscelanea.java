@@ -58,6 +58,7 @@ public class Miscelanea {
             event.accept(ModItems.NUCLEO);
             event.accept(ModItems.LANZATINTAS);
             event.accept(ModItems.RODILLO);
+            event.accept(ModItems.PISTOLA_GRAVEDAD);
         }
     }
 }
