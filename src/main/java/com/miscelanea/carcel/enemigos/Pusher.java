@@ -20,7 +20,7 @@ import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.object.PlayState;
 
-/** Pusher: máscara de gas y tanque a la espalda. Cuando te alcanza te inyecta gas: te baja mucho la cordura. */
+/** Pusher: máscara de gas y tanque a la espalda. Cuando se acerca te rocía gas verde con el pulverizador: te baja mucho la cordura. */
 public class Pusher extends EnemigoCarcel {
     private int enfriar;
 
@@ -44,16 +44,27 @@ public class Pusher extends EnemigoCarcel {
             enfriar--;
             return;
         }
+        // Remata al caído rociándole gas en la cara
+        if (rematarCaido(12)) return;
         LivingEntity t = getTarget();
-        if (t instanceof ServerPlayer p && distanceTo(p) < 1.8 && hasLineOfSight(p)) {
-            enfriar = 200;
+        if (t instanceof ServerPlayer p && distanceTo(p) < 3.5 && hasLineOfSight(p)) {
+            enfriar = 120;
             swing(net.minecraft.world.InteractionHand.MAIN_HAND);
-            p.hurt(damageSources().mobAttack(this), 2.0F);
-            Jugadores.drenar(p, 120);
-            p.addEffect(new MobEffectInstance(ModEffects.PSICOSIS.get(), 100, 0, false, false, true));
             ServerLevel sl = (ServerLevel) level();
-            sl.playSound(null, getX(), getY(), getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.HOSTILE, 1.2F, 0.6F);
-            sl.sendParticles(ParticleTypes.SPORE_BLOSSOM_AIR, p.getX(), p.getY() + 1.4, p.getZ(), 40, 0.4, 0.4, 0.4, 0.01);
+            sl.playSound(null, getX(), getY(), getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.HOSTILE, 1.4F, 0.5F);
+            // nube verde de gas del pulverizador (en cono hacia delante)
+            net.minecraft.world.phys.Vec3 dir = getLookAngle();
+            for (int i = 1; i <= 6; i++) {
+                net.minecraft.world.phys.Vec3 c = position().add(0, 1.4, 0).add(dir.scale(i * 0.6));
+                sl.sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.45F, 0.95F, 0.3F), 2.5F),
+                        c.x, c.y, c.z, 6 + i * 2, 0.15 * i, 0.15 * i, 0.15 * i, 0.01);
+            }
+            for (ServerPlayer o : sl.getEntitiesOfClass(ServerPlayer.class, getBoundingBox().inflate(3.5))) {
+                if (!hasLineOfSight(o)) continue;
+                Jugadores.drenar(o, 90);
+                o.addEffect(new MobEffectInstance(ModEffects.PSICOSIS.get(), 80, 0, false, false, true));
+                o.addEffect(new MobEffectInstance(net.minecraft.world.effect.MobEffects.CONFUSION, 100, 0, false, false));
+            }
         }
     }
 
