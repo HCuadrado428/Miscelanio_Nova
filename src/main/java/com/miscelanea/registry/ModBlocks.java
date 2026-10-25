@@ -1,24 +1,20 @@
 package com.miscelanea.registry;
 
 import com.miscelanea.Miscelanea;
-import com.miscelanea.carcel.*;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.level.material.PushReaction;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
-/** Bloques de la cárcel. */
+/** Bloques del mod. */
 public final class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Miscelanea.MOD_ID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
@@ -27,105 +23,10 @@ public final class ModBlocks {
     /** Para la pestaña de creativo, en el orden de registro. */
     public static final List<RegistryObject<Item>> ITEMS_BLOQUE = new ArrayList<>();
 
-    private static BlockBehaviour.Properties metal() {
-        return BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(5.0F, 1200.0F)
-                .sound(SoundType.METAL).requiresCorrectToolForDrops();
-    }
-
-    public static final RegistryObject<Block> REJA = registrar("reja_simbolo",
-            () -> new RejaBlock(metal().noOcclusion().pushReaction(PushReaction.BLOCK)));
-    public static final RegistryObject<Block> MONITOR = registrar("monitor_simbolo",
-            () -> new MonitorBlock(metal().strength(2.0F).noOcclusion().lightLevel(s -> 7)));
-    public static final RegistryObject<Block> CADAVER = registrar("cadaver",
-            () -> new CadaverBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE)
-                    .strength(1.0F).sound(SoundType.WOOL).noOcclusion()));
-    public static final RegistryObject<Block> TERMINAL = registrar("terminal_ejecucion",
-            () -> new TerminalBlock(metal().noOcclusion().lightLevel(s -> 4)));
-    public static final RegistryObject<Block> PALANCA = registrar("palanca_descarga",
-            () -> new PalancaBlock(metal().strength(2.0F).noOcclusion().noCollission()));
-    public static final RegistryObject<Block> TAQUILLA = registrar("taquilla",
-            () -> new TaquillaBlock(metal().strength(3.0F).noOcclusion()
-                    .isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p) -> false)
-                    .pushReaction(PushReaction.BLOCK)));
-    public static final RegistryObject<Block> CRISTALES = registrar("cristales_rotos",
-            () -> new CristalesBlock(BlockBehaviour.Properties.of().mapColor(MapColor.NONE).strength(0.3F)
-                    .sound(SoundType.GLASS).noOcclusion().noCollission()));
-    public static final RegistryObject<Block> LATAS = registrar("alarma_latas",
-            () -> new LatasBlock(BlockBehaviour.Properties.of().mapColor(MapColor.NONE).strength(0.2F)
-                    .sound(SoundType.CHAIN).noOcclusion().noCollission()));
-    public static final RegistryObject<Block> REJILLA_ELECTRICA = registrar("rejilla_electrica",
-            () -> new RejillaElectricaBlock(metal().noOcclusion()
-                    .lightLevel(s -> s.getValue(RejillaElectricaBlock.ACTIVA) ? 6 : 0)));
-    public static final RegistryObject<Block> REJILLA_GAS = registrar("rejilla_gas",
-            () -> new GasBlock(metal().noOcclusion()));
-
-    // ---- decoración del mapa (como en la comisaría de Kill the Snitch)
-    private static BlockBehaviour.Properties piedra() {
-        return BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(1.5F, 6.0F).requiresCorrectToolForDrops();
-    }
-
-    public static final RegistryObject<Block> AZULEJO_BLANCO = registrar("azulejo_blanco", () -> new Block(piedra()));
-    public static final RegistryObject<Block> AZULEJO_VERDE = registrar("azulejo_verde", () -> new Block(piedra()));
-    public static final RegistryObject<Block> AZULEJO_SANGRE = registrar("azulejo_blanco_sangre", () -> new Block(piedra()));
-    public static final RegistryObject<Block> PARED_VERDE = registrar("pared_verde", () -> new Block(piedra()));
-    public static final RegistryObject<Block> SUELO_BALDOSAS = registrar("suelo_baldosas", () -> new Block(piedra()));
-    public static final RegistryObject<Block> SUELO_SANGRE = registrar("suelo_baldosas_sangre", () -> new Block(piedra()));
-    public static final RegistryObject<Block> PERSIANA = registrar("persiana", () -> new Block(metal().strength(3.0F)));
-    public static final RegistryObject<Block> PERSIANA_SANGRE = registrar("persiana_sangre", () -> new Block(metal().strength(3.0F)));
-    public static final RegistryObject<Block> FLUORESCENTE = registrar("fluorescente",
-            () -> new FluorescenteBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(0.5F)
-                    .sound(SoundType.GLASS).noOcclusion().lightLevel(s -> s.getValue(FluorescenteBlock.LIT) ? 15 : 0)));
-
-    // ---- Programa (la prueba "Matar al chivato")
-    public static final RegistryObject<Block> BOTON_ROJO = registrar("boton_rojo",
-            () -> new com.miscelanea.programa.BotonRojoBlock(metal().strength(2.0F).noOcclusion().lightLevel(s -> 4)));
-    public static final RegistryObject<Block> GENERADOR = registrar("generador",
-            () -> new com.miscelanea.programa.GeneradorBlock(metal().noOcclusion()
-                    .lightLevel(s -> s.getValue(com.miscelanea.programa.GeneradorBlock.ENCENDIDO) ? 7 : 0)));
-    public static final RegistryObject<Block> INTERRUPTOR = registrar("interruptor",
-            () -> new com.miscelanea.programa.InterruptorBlock(metal().strength(2.0F).noOcclusion().noCollission().lightLevel(s -> 5)));
-    public static final RegistryObject<Block> BIDON = registrar("bidon",
-            () -> new com.miscelanea.programa.BidonBlock(metal().strength(1.0F).noOcclusion()));
-    public static final RegistryObject<Block> TERMINAL_PROGRAMA = registrar("terminal_programa",
-            () -> new com.miscelanea.programa.TerminalProgramaBlock(metal().noOcclusion().lightLevel(s -> 6)));
-    public static final RegistryObject<Block> CAJA_HERRAMIENTAS = registrar("caja_herramientas",
-            () -> new com.miscelanea.programa.CajaCerradaBlock(metal().strength(2.0F).noOcclusion(), false));
-    public static final RegistryObject<Block> BOTIQUIN = registrar("botiquin",
-            () -> new com.miscelanea.programa.CajaCerradaBlock(metal().strength(2.0F).noOcclusion(), true));
-    public static final RegistryObject<Block> ARCHIVADOR = registrar("archivador",
-            () -> new com.miscelanea.programa.ArchivadorBlock(metal().strength(3.0F)));
-    public static final RegistryObject<Block> VITRINA = registrar("vitrina",
-            () -> new com.miscelanea.programa.VitrinaBlock(metal().strength(1.0F).noOcclusion().lightLevel(s -> 3)));
-    public static final RegistryObject<Block> BARRICADA = registrar("barricada",
-            () -> new com.miscelanea.programa.BarricadaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(4.0F)
-                    .sound(SoundType.WOOD).noOcclusion()));
-    public static final RegistryObject<Block> PERSIANA_PUERTA = registrar("persiana_puerta",
-            () -> new com.miscelanea.programa.PersianaPuertaBlock(metal().strength(4.0F).noOcclusion()));
-    public static final RegistryObject<Block> LUZ_TRAMPA = registrar("luz_trampa",
-            () -> new com.miscelanea.programa.LuzBlock(metal().strength(0.5F).noOcclusion().noCollission().lightLevel(s -> 6)));
-    public static final RegistryObject<Block> ALARMA = registrar("alarma_ruido",
-            () -> new com.miscelanea.programa.LuzBlock(metal().strength(0.5F).noOcclusion().noCollission().lightLevel(s -> 4)));
-    public static final RegistryObject<Block> PUERTA_KEY = BLOCKS.register("puerta_key",
-            () -> new net.minecraft.world.level.block.DoorBlock(metal().strength(3.0F).noOcclusion(),
-                    net.minecraft.world.level.block.state.properties.BlockSetType.OAK));
-    static {
-        ITEMS_BLOQUE.add(ModItems.ITEMS.register("puerta_key",
-                () -> new net.minecraft.world.item.DoubleHighBlockItem(PUERTA_KEY.get(), new Item.Properties())));
-    }
-
     /** Bloque "sin textura" que deja el aliento del núcleo; se deshace solo (sin ítem). */
     public static final RegistryObject<Block> BLOQUE_CORRUPTO = BLOCKS.register("bloque_corrupto",
             () -> new com.miscelanea.nucleo.BloqueCorrupto(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).strength(0.3F)
                     .sound(SoundType.AMETHYST).lightLevel(s -> 6).noLootTable()));
-
-    public static final RegistryObject<BlockEntityType<CadaverBlockEntity>> CADAVER_BE = BLOCK_ENTITIES.register("cadaver",
-            () -> BlockEntityType.Builder.of(CadaverBlockEntity::new, CADAVER.get()).build(null));
-
-    private static RegistryObject<Block> registrar(String nombre, Supplier<Block> bloque) {
-        RegistryObject<Block> b = BLOCKS.register(nombre, bloque);
-        ITEMS_BLOQUE.add(ModItems.ITEMS.register(nombre, () -> new BlockItem(b.get(), new Item.Properties())));
-        return b;
-    }
 
     private ModBlocks() {}
 }

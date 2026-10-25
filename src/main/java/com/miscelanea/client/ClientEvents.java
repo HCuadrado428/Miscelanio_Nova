@@ -46,11 +46,6 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void clientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(PoseAspiradora::init); // crea el ArmPose a dos manos
-            // La llave cambia de modelo según su símbolo
-            event.enqueueWork(() -> net.minecraft.client.renderer.item.ItemProperties.register(
-                    com.miscelanea.registry.ModItems.LLAVE.get(),
-                    new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "simbolo"),
-                    (stack, level, entity, seed) -> com.miscelanea.carcel.LlaveItem.simbolo(stack) / 10.0F));
             // Animaciones del agarre de la porra (playerAnimator)
             dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "agarre"), 1000,
@@ -61,22 +56,11 @@ public final class ClientEvents {
             dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "aliento"), 1100,
                     com.miscelanea.client.nucleo.AlientoAnimacion::new);
-            dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
-                    new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "accion"), 950,
-                    com.miscelanea.client.programa.AccionAnimacion::new);
         }
 
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerEntityRenderer(ModEntities.DESATASCADOR.get(), DesatascadorRenderer::new);
-            event.registerEntityRenderer(ModEntities.CARRO_CHIVATO.get(), com.miscelanea.client.carcel.CarroChivatoRenderer::new);
-            event.registerEntityRenderer(ModEntities.ARROJABLE.get(), net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
-            event.registerEntityRenderer(ModEntities.GUARDIA.get(), c -> new com.miscelanea.client.carcel.EnemigoRenderer<>(c, "guardia", 0.5F));
-            event.registerEntityRenderer(ModEntities.GRITON.get(), c -> new com.miscelanea.client.carcel.EnemigoRenderer<>(c, "griton", 0.45F));
-            event.registerEntityRenderer(ModEntities.JEFE.get(), c -> new com.miscelanea.client.carcel.EnemigoRenderer<>(c, "jefe", 0.8F));
-            event.registerEntityRenderer(ModEntities.PUSHER.get(), c -> new com.miscelanea.client.carcel.EnemigoRenderer<>(c, "pusher", 0.5F));
-            event.registerEntityRenderer(ModEntities.SKINNER.get(), com.miscelanea.client.programa.SkinnerRenderer::new);
-            event.registerEntityRenderer(ModEntities.RIG_PROYECTIL.get(), net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
         }
 
         @SubscribeEvent
@@ -104,8 +88,6 @@ public final class ClientEvents {
         public static void registerKeys(RegisterKeyMappingsEvent event) {
             event.register(SOLTAR_CAPTURA);
             event.register(MOCHILA);
-            event.register(com.miscelanea.client.carcel.GafasCliente.TECLA);
-            event.register(com.miscelanea.client.programa.ProgramaHud.TECLA_RIG);
         }
 
         @SubscribeEvent
@@ -113,12 +95,8 @@ public final class ClientEvents {
             event.registerAboveAll("forcejeo", com.miscelanea.client.porra.AgarreEventos::renderForcejeo);
             event.registerAboveAll("flashbang", FlashOverlay::render);
             event.registerAboveAll("captura", CapturaHud::render);
-            event.registerBelowAll("psicosis", com.miscelanea.client.carcel.PsicosisCliente::render);
-            event.registerBelowAll("gafas", com.miscelanea.client.carcel.GafasCliente::render);
-            event.registerBelowAll("taquilla", com.miscelanea.client.carcel.TaquillaCliente::render);
             event.registerBelowAll("nucleo", com.miscelanea.client.nucleo.NucleoCliente::render);
             event.registerBelowAll("medigun", com.miscelanea.client.medigun.MedigunCliente::render);
-            event.registerAboveAll("programa", com.miscelanea.client.programa.ProgramaHud::render);
         }
     }
 

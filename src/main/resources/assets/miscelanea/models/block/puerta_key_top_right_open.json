@@ -1,8 +1,0 @@
-{
- "parent": "minecraft:block/door_top_right_open",
- "render_type": "minecraft:cutout",
- "textures": {
-  "bottom": "miscelanea:block/puerta_key_bottom",
-  "top": "miscelanea:block/puerta_key_top"
- }
-}
