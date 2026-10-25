@@ -19,5 +19,9 @@ public final class ModEntities {
                     .updateInterval(1)
                     .build("desatascador"));
 
+    public static final RegistryObject<EntityType<com.miscelanea.tinta.TintaProyectil>> TINTA = ENTITIES.register("tinta",
+            () -> EntityType.Builder.<com.miscelanea.tinta.TintaProyectil>of(com.miscelanea.tinta.TintaProyectil::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F).clientTrackingRange(6).updateInterval(1).build("tinta"));
+
     private ModEntities() {}
 }

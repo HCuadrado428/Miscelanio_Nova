@@ -56,6 +56,8 @@ public class Miscelanea {
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(ModItems.PORRA);
             event.accept(ModItems.NUCLEO);
+            event.accept(ModItems.LANZATINTAS);
+            event.accept(ModItems.RODILLO);
         }
     }
 }

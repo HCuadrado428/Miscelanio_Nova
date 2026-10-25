@@ -61,6 +61,12 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerEntityRenderer(ModEntities.DESATASCADOR.get(), DesatascadorRenderer::new);
+            event.registerEntityRenderer(ModEntities.TINTA.get(), com.miscelanea.client.tinta.TintaProyectilRenderer::new);
+        }
+
+        @SubscribeEvent
+        public static void capas(EntityRenderersEvent.RegisterLayerDefinitions event) {
+            event.registerLayerDefinition(com.miscelanea.client.tinta.CalamarRender.CAPA, com.miscelanea.client.tinta.CalamarRender::crear);
         }
 
         @SubscribeEvent
@@ -73,6 +79,7 @@ public final class ClientEvents {
                     renderer.addLayer(new com.miscelanea.client.medigun.MedigunLayer(renderer));
                     renderer.addLayer(new com.miscelanea.client.medigun.UberLayer(renderer, "slim".equals(skin)));
                     renderer.addLayer(new com.miscelanea.client.nucleo.GlitchCapaLayer(renderer, "slim".equals(skin)));
+                    renderer.addLayer(new com.miscelanea.client.tinta.DepositoLayer(renderer));
                 }
             }
         }
@@ -97,6 +104,7 @@ public final class ClientEvents {
             event.registerAboveAll("captura", CapturaHud::render);
             event.registerBelowAll("nucleo", com.miscelanea.client.nucleo.NucleoCliente::render);
             event.registerBelowAll("medigun", com.miscelanea.client.medigun.MedigunCliente::render);
+            event.registerAboveAll("tinta", com.miscelanea.client.tinta.CalamarRender::hud);
         }
     }
 

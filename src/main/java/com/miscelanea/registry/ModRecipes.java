@@ -15,5 +15,8 @@ public final class ModRecipes {
     public static final RegistryObject<RecipeSerializer<MedigunTinteRecipe>> MEDIGUN_TINTE =
             SERIALIZERS.register("medigun_tinte", () -> new SimpleCraftingRecipeSerializer<>(MedigunTinteRecipe::new));
 
+    public static final RegistryObject<RecipeSerializer<com.miscelanea.tinta.TintaTinteRecipe>> TINTA_TINTE =
+            SERIALIZERS.register("tinta_tinte", () -> new SimpleCraftingRecipeSerializer<>(com.miscelanea.tinta.TintaTinteRecipe::new));
+
     private ModRecipes() {}
 }

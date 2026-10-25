@@ -53,5 +53,11 @@ public final class ModItems {
             () -> new com.miscelanea.nucleo.NucleoItem(MochilaArmorMaterial.INSTANCE,
                     new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
 
+    // ---- Splatoon
+    public static final RegistryObject<Item> LANZATINTAS = ITEMS.register("lanzatintas",
+            () -> new com.miscelanea.tinta.LanzatintasItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> RODILLO = ITEMS.register("rodillo",
+            () -> new com.miscelanea.tinta.RodilloItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.UNCOMMON)));
+
     private ModItems() {}
 }
