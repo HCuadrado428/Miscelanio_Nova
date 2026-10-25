@@ -25,7 +25,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
- * Reja con cerradura de símbolo. Se abre con la llave del mismo símbolo (se gasta) y abre toda la columna.
+ * Reja con cerradura de símbolo. Se abre con la llave del mismo símbolo (se gasta) y abre toda la reja (todas las conectadas).
  * Cerrada bloquea también el carro del chivato. Abierta emite señal de redstone.
  * Creativo: Shift + clic derecho con la mano vacía cambia el símbolo; clic derecho con la mano vacía la cierra.
  */
@@ -103,13 +103,22 @@ public class RejaBlock extends HorizontalDirectionalBlock {
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
-    /** Aplica un cambio a toda la columna vertical de rejas iguales. */
+    /** Aplica un cambio a todas las rejas conectadas (la puerta entera, columnas y filas). */
     private void columna(Level level, BlockPos pos, java.util.function.UnaryOperator<BlockState> cambio) {
-        BlockPos p = pos;
-        while (level.getBlockState(p.below()).is(this)) p = p.below();
-        while (level.getBlockState(p).is(this)) {
+        java.util.ArrayDeque<BlockPos> cola = new java.util.ArrayDeque<>();
+        java.util.Set<BlockPos> vistos = new java.util.HashSet<>();
+        cola.add(pos.immutable());
+        vistos.add(pos.immutable());
+        while (!cola.isEmpty() && vistos.size() < 96) {
+            BlockPos p = cola.poll();
             level.setBlock(p, cambio.apply(level.getBlockState(p)), Block.UPDATE_ALL);
-            p = p.above();
+            for (net.minecraft.core.Direction d : net.minecraft.core.Direction.values()) {
+                BlockPos q = p.relative(d);
+                if (!vistos.contains(q) && level.getBlockState(q).is(this)) {
+                    vistos.add(q.immutable());
+                    cola.add(q.immutable());
+                }
+            }
         }
     }
 

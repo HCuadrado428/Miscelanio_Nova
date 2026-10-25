@@ -74,7 +74,27 @@ public final class ModBlocks {
     public static final RegistryObject<Block> PERSIANA_SANGRE = registrar("persiana_sangre", () -> new Block(metal().strength(3.0F)));
     public static final RegistryObject<Block> FLUORESCENTE = registrar("fluorescente",
             () -> new FluorescenteBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(0.5F)
-                    .sound(SoundType.GLASS).noOcclusion().lightLevel(s -> 15)));
+                    .sound(SoundType.GLASS).noOcclusion().lightLevel(s -> s.getValue(FluorescenteBlock.LIT) ? 15 : 0)));
+
+    // ---- Programa (la prueba "Matar al chivato")
+    public static final RegistryObject<Block> BOTON_ROJO = registrar("boton_rojo",
+            () -> new com.miscelanea.programa.BotonRojoBlock(metal().strength(2.0F).noOcclusion().lightLevel(s -> 4)));
+    public static final RegistryObject<Block> GENERADOR = registrar("generador",
+            () -> new com.miscelanea.programa.GeneradorBlock(metal().noOcclusion()
+                    .lightLevel(s -> s.getValue(com.miscelanea.programa.GeneradorBlock.ENCENDIDO) ? 7 : 0)));
+    public static final RegistryObject<Block> INTERRUPTOR = registrar("interruptor",
+            () -> new com.miscelanea.programa.InterruptorBlock(metal().strength(2.0F).noOcclusion().noCollission().lightLevel(s -> 5)));
+    public static final RegistryObject<Block> BIDON = registrar("bidon",
+            () -> new com.miscelanea.programa.BidonBlock(metal().strength(1.0F).noOcclusion()));
+    public static final RegistryObject<Block> TERMINAL_PROGRAMA = registrar("terminal_programa",
+            () -> new com.miscelanea.programa.TerminalProgramaBlock(metal().noOcclusion().lightLevel(s -> 6)));
+    public static final RegistryObject<Block> PUERTA_KEY = BLOCKS.register("puerta_key",
+            () -> new net.minecraft.world.level.block.DoorBlock(metal().strength(3.0F).noOcclusion(),
+                    net.minecraft.world.level.block.state.properties.BlockSetType.OAK));
+    static {
+        ITEMS_BLOQUE.add(ModItems.ITEMS.register("puerta_key",
+                () -> new net.minecraft.world.item.DoubleHighBlockItem(PUERTA_KEY.get(), new Item.Properties())));
+    }
 
     /** Bloque "sin textura" que deja el aliento del núcleo; se deshace solo (sin ítem). */
     public static final RegistryObject<Block> BLOQUE_CORRUPTO = BLOCKS.register("bloque_corrupto",

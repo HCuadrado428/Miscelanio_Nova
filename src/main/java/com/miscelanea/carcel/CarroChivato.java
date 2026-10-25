@@ -117,6 +117,10 @@ public class CarroChivato extends AbstractMinecart implements GeoEntity {
             return InteractionResult.sidedSuccess(level().isClientSide);
         }
         if (estado() != VIVO) return InteractionResult.PASS;
+        if (!level().isClientSide && !com.miscelanea.programa.Prueba.puedeEmpujar(this)) {
+            if (tickCount % 10 == 0) level().playSound(null, getX(), getY(), getZ(), SoundEvents.CHAIN_HIT, SoundSource.NEUTRAL, 0.6F, 0.6F);
+            return InteractionResult.CONSUME;
+        }
         if (!level().isClientSide) {
             Vec3 dir = position().subtract(player.position()).multiply(1, 0, 1);
             if (dir.lengthSqr() > 1.0E-4) empuje = dir.normalize();
@@ -178,6 +182,12 @@ public class CarroChivato extends AbstractMinecart implements GeoEntity {
         if (estado == VIVO) {
             boolean empujado = tickCount < empujadoHasta;
             entityData.set(EMPUJADO, empujado);
+            if (empujado && rejaDelante(level, empuje)) {
+                empujado = false;
+                empujadoHasta = 0;
+                entityData.set(EMPUJADO, false);
+                setDeltaMovement(Vec3.ZERO);
+            }
             if (empujado) {
                 setDeltaMovement(empuje.scale(VEL_EMPUJE));
                 if (tickCount % 10 == 0) {
@@ -243,6 +253,18 @@ public class CarroChivato extends AbstractMinecart implements GeoEntity {
                 barra.removeAllPlayers();
             }
         }
+    }
+
+    /** ¿Hay una reja cerrada justo delante en la dirección de empuje? */
+    private boolean rejaDelante(ServerLevel level, Vec3 dir) {
+        for (double d = 0.6; d <= 1.2; d += 0.3) {
+            BlockPos p = BlockPos.containing(position().add(dir.scale(d)));
+            for (int dy = 0; dy <= 1; dy++) {
+                BlockState st = level.getBlockState(p.above(dy));
+                if (st.getBlock() instanceof RejaBlock && !st.getValue(RejaBlock.ABIERTA)) return true;
+            }
+        }
+        return false;
     }
 
     private void actualizarBarra(ServerLevel level) {

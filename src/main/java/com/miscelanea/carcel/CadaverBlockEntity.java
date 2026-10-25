@@ -17,6 +17,8 @@ public class CadaverBlockEntity extends BlockEntity {
     private UUID registrando;
     private long ultimoPaso;
     private int pasos;
+    /** Símbolo marcado en el cuerpo (-1 = ninguno). Se ve en el cliente al mirarlo fijamente. */
+    private int simbolo = -1;
 
     public CadaverBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.CADAVER_BE.get(), pos, state);
@@ -33,6 +35,28 @@ public class CadaverBlockEntity extends BlockEntity {
         pasos = 0;
         setChanged();
         return c;
+    }
+
+    public int simbolo() {
+        return simbolo;
+    }
+
+    public void setSimbolo(int s) {
+        simbolo = s;
+        setChanged();
+        if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        CompoundTag t = super.getUpdateTag();
+        t.putInt("Simbolo", simbolo);
+        return t;
+    }
+
+    @Override
+    public net.minecraft.network.protocol.Packet<net.minecraft.network.protocol.game.ClientGamePacketListener> getUpdatePacket() {
+        return net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(this);
     }
 
     public boolean esTrampa() {
@@ -57,6 +81,7 @@ public class CadaverBlockEntity extends BlockEntity {
         super.saveAdditional(tag);
         if (!contenido.isEmpty()) tag.put("Contenido", contenido.save(new CompoundTag()));
         tag.putBoolean("Trampa", trampa);
+        tag.putInt("Simbolo", simbolo);
     }
 
     @Override
@@ -64,5 +89,6 @@ public class CadaverBlockEntity extends BlockEntity {
         super.load(tag);
         contenido = tag.contains("Contenido") ? ItemStack.of(tag.getCompound("Contenido")) : ItemStack.EMPTY;
         trampa = tag.getBoolean("Trampa");
+        simbolo = tag.contains("Simbolo") ? tag.getInt("Simbolo") : -1;
     }
 }

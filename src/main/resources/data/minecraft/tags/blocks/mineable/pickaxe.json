@@ -15,6 +15,12 @@
     "miscelanea:suelo_baldosas",
     "miscelanea:suelo_baldosas_sangre",
     "miscelanea:persiana",
-    "miscelanea:persiana_sangre"
+    "miscelanea:persiana_sangre",
+    "miscelanea:boton_rojo",
+    "miscelanea:generador",
+    "miscelanea:interruptor",
+    "miscelanea:bidon",
+    "miscelanea:terminal_programa",
+    "miscelanea:puerta_key"
   ]
 }

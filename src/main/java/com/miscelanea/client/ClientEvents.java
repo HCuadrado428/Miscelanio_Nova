@@ -111,6 +111,7 @@ public final class ClientEvents {
             event.registerBelowAll("taquilla", com.miscelanea.client.carcel.TaquillaCliente::render);
             event.registerBelowAll("nucleo", com.miscelanea.client.nucleo.NucleoCliente::render);
             event.registerBelowAll("medigun", com.miscelanea.client.medigun.MedigunCliente::render);
+            event.registerAboveAll("programa", com.miscelanea.client.programa.ProgramaHud::render);
         }
     }
 

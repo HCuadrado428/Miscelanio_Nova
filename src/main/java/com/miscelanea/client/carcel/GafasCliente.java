@@ -63,7 +63,11 @@ public final class GafasCliente {
             g.fill(0, 0, m * 2, h, col);
             g.fill(w - m * 2, 0, w, h, col);
         }
-        // Batería: barrita en la esquina, sin texto
+        // Batería: barrita en la esquina, sin texto (en el Programa la pinta su propia interfaz)
+        if (com.miscelanea.client.programa.ProgramaHud.enPrograma()) {
+            RenderSystem.disableBlend();
+            return;
+        }
         int b = GafasItem.bateria(casco);
         int largo = 40, x0 = w - largo - 10, y0 = h - 14;
         g.fill(x0 - 1, y0 - 1, x0 + largo + 1, y0 + 4, 0x80000000);

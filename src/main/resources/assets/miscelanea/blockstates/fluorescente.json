@@ -1,9 +1,16 @@
 {
  "variants": {
-  "axis=x": {
+  "axis=x,lit=false": {
+   "model": "miscelanea:block/fluorescente_off"
+  },
+  "axis=x,lit=true": {
    "model": "miscelanea:block/fluorescente"
   },
-  "axis=z": {
+  "axis=z,lit=false": {
+   "model": "miscelanea:block/fluorescente_off",
+   "y": 90
+  },
+  "axis=z,lit=true": {
    "model": "miscelanea:block/fluorescente",
    "y": 90
   }

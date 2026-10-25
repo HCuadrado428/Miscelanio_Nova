@@ -18,6 +18,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 @Mod(Miscelanea.MOD_ID)
 public class Miscelanea {
     public static final String MOD_ID = "miscelanea";
+    public static final org.slf4j.Logger LOGGER = com.mojang.logging.LogUtils.getLogger();
 
     public Miscelanea() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
