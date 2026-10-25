@@ -74,6 +74,12 @@ public class Jefe extends EnemigoCarcel {
         super.aiStep();
         if (level().isClientSide) return;
         if (getMainHandItem().isEmpty()) setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(ModItems.PORRA.get()));
+        if (estadoEspecial() != 0) return;
+        if (!Agarres.agarrando(this) && rematarCaido(16)) {
+            if (tickCount % 6 == 0 && level() instanceof net.minecraft.server.level.ServerLevel sl)
+                sl.sendParticles(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK, getX(), getY() + 1.2, getZ(), 6, 0.3, 0.3, 0.3, 0.2);
+            return;
+        }
         if (Agarres.agarrando(this)) {
             getNavigation().stop();
             Agarres.accionMob(this);
@@ -89,6 +95,17 @@ public class Jefe extends EnemigoCarcel {
             Agarres.agarrar(this, t);
             level().playSound(null, getX(), getY(), getZ(), SoundEvents.RAVAGER_ROAR, SoundSource.HOSTILE, 1.0F, 1.3F);
         }
+    }
+
+    /** La porra eléctrica desactiva el rig 30 s. */
+    @Override
+    public boolean doHurtTarget(net.minecraft.world.entity.Entity t) {
+        boolean r = super.doHurtTarget(t);
+        if (r && t instanceof net.minecraft.server.level.ServerPlayer sp) {
+            com.miscelanea.programa.Rigs.desactivar(sp, 600);
+            level().playSound(null, getX(), getY(), getZ(), ModSounds.DESCARGA.get(), SoundSource.HOSTILE, 1.0F, 1.0F);
+        }
+        return r;
     }
 
     @Override

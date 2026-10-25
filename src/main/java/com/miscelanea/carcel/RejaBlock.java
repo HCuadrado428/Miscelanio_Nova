@@ -83,6 +83,15 @@ public class RejaBlock extends HorizontalDirectionalBlock {
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
         if (s.getValue(ABIERTA)) return InteractionResult.PASS;
+        if (!mano.is(ModItems.LLAVE.get())) {
+            // Las llaves no ocupan hueco: se usa la que lleves que coincida con el símbolo
+            for (ItemStack it : player.getInventory().items) {
+                if (it.is(ModItems.LLAVE.get()) && LlaveItem.simbolo(it) == s.getValue(Simbolo.PROPIEDAD)) {
+                    mano = it;
+                    break;
+                }
+            }
+        }
         if (mano.is(ModItems.LLAVE.get())) {
             if (!level.isClientSide) {
                 if (LlaveItem.simbolo(mano) == s.getValue(Simbolo.PROPIEDAD)) {

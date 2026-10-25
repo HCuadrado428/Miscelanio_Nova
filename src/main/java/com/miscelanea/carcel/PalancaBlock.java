@@ -66,6 +66,8 @@ public class PalancaBlock extends HorizontalDirectionalBlock {
     public InteractionResult use(BlockState s, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide) return InteractionResult.SUCCESS;
         ServerLevel sl = (ServerLevel) level;
+        if (player instanceof net.minecraft.server.level.ServerPlayer sp)
+            com.miscelanea.programa.Acciones.poner(sp, com.miscelanea.programa.Acciones.Accion.PALANCA, 8);
         boolean alguno = false;
         for (CarroChivato c : level.getEntitiesOfClass(CarroChivato.class, new AABB(pos).inflate(24),
                 c -> c.estado() == CarroChivato.ENGANCHADO)) {

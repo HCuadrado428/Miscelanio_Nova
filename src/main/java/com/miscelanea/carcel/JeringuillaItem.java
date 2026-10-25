@@ -39,6 +39,8 @@ public class JeringuillaItem extends Item {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        if (player instanceof net.minecraft.server.level.ServerPlayer sp)
+            com.miscelanea.programa.Acciones.poner(sp, com.miscelanea.programa.Acciones.Accion.INYECTAR, 30);
         player.startUsingItem(hand);
         return InteractionResultHolder.consume(player.getItemInHand(hand));
     }
@@ -47,6 +49,8 @@ public class JeringuillaItem extends Item {
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity e) {
         if (!level.isClientSide) {
             if (antidoto) {
+                if (e instanceof net.minecraft.server.level.ServerPlayer sp && com.miscelanea.programa.Prueba.dentro(sp))
+                    com.miscelanea.programa.Jugadores.restaurarCordura(sp);
                 e.removeEffect(ModEffects.PSICOSIS.get());
                 e.removeEffect(MobEffects.CONFUSION);
                 e.addEffect(new MobEffectInstance(ModEffects.INMUNIDAD_GAS.get(), 1200, 0));

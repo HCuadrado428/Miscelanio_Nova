@@ -122,6 +122,8 @@ public class CarroChivato extends AbstractMinecart implements GeoEntity {
             return InteractionResult.CONSUME;
         }
         if (!level().isClientSide) {
+            if (player instanceof net.minecraft.server.level.ServerPlayer sp)
+                com.miscelanea.programa.Acciones.poner(sp, com.miscelanea.programa.Acciones.Accion.EMPUJAR, 8);
             Vec3 dir = position().subtract(player.position()).multiply(1, 0, 1);
             if (dir.lengthSqr() > 1.0E-4) empuje = dir.normalize();
             empujadoHasta = tickCount + 6;

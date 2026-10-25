@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String PROTOCOLO = "7";
+    private static final String PROTOCOLO = "8";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "main"),
@@ -91,6 +91,26 @@ public final class ModNetwork {
                 .encoder(com.miscelanea.programa.PruebaFinPacket::encode)
                 .decoder(com.miscelanea.programa.PruebaFinPacket::new)
                 .consumerMainThread(com.miscelanea.programa.PruebaFinPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.programa.AccionPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.miscelanea.programa.AccionPacket::encode)
+                .decoder(com.miscelanea.programa.AccionPacket::new)
+                .consumerMainThread(com.miscelanea.programa.AccionPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.programa.UsarRigPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.programa.UsarRigPacket::encode)
+                .decoder(com.miscelanea.programa.UsarRigPacket::new)
+                .consumerMainThread(com.miscelanea.programa.UsarRigPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.programa.EntrarPruebaPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.programa.EntrarPruebaPacket::encode)
+                .decoder(com.miscelanea.programa.EntrarPruebaPacket::new)
+                .consumerMainThread(com.miscelanea.programa.EntrarPruebaPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.programa.GanzuaPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.programa.GanzuaPacket::encode)
+                .decoder(com.miscelanea.programa.GanzuaPacket::new)
+                .consumerMainThread(com.miscelanea.programa.GanzuaPacket::handle)
                 .add();
     }
 }

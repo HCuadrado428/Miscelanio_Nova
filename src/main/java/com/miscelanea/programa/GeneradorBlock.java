@@ -85,6 +85,7 @@ public class GeneradorBlock extends HorizontalDirectionalBlock {
         ItemStack mano = player.getItemInHand(hand);
         if (s.getValue(ENCENDIDO)) return InteractionResult.CONSUME;
         if (!s.getValue(LLENO)) {
+            if (!mano.is(ModBlocks.BIDON.get().asItem())) mano = player.getOffhandItem();
             if (mano.is(ModBlocks.BIDON.get().asItem())) {
                 if (!player.isCreative()) mano.shrink(1);
                 level.setBlock(pos, s.setValue(LLENO, true), Block.UPDATE_ALL);
@@ -100,6 +101,7 @@ public class GeneradorBlock extends HorizontalDirectionalBlock {
             return InteractionResult.CONSUME;
         }
         // Manivela
+        if (player instanceof ServerPlayer sp0) Acciones.poner(sp0, Acciones.Accion.MANIVELA, 14);
         int n = Prueba.manivela();
         float a = aguja(level.getGameTime());
         float[] z = zona(n);
@@ -109,7 +111,6 @@ public class GeneradorBlock extends HorizontalDirectionalBlock {
             if (n >= ACIERTOS) {
                 level.setBlock(pos, s.setValue(ENCENDIDO, true), Block.UPDATE_ALL);
                 level.playSound(null, pos, SoundEvents.BEACON_POWER_SELECT, SoundSource.BLOCKS, 1.5F, 0.6F);
-                n = 0;
                 Prueba.setManivela(0);
                 if (player instanceof ServerPlayer sp) Prueba.generadorArrancado((ServerLevel) level, sp);
                 return InteractionResult.CONSUME;

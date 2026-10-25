@@ -14,7 +14,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.phys.BlockHitResult;
 
-/** Terminal del Programa: clic derecho para entrar en la prueba "Matar al chivato". */
+/** Terminal del Programa: clic derecho para elegir rig y entrar en la prueba "Matar al chivato". */
 public class TerminalProgramaBlock extends HorizontalDirectionalBlock {
     public TerminalProgramaBlock(Properties p) {
         super(p);
@@ -33,8 +33,10 @@ public class TerminalProgramaBlock extends HorizontalDirectionalBlock {
 
     @Override
     public InteractionResult use(BlockState s, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide) return InteractionResult.SUCCESS;
-        if (player instanceof ServerPlayer sp) Prueba.entrar(sp);
-        return InteractionResult.CONSUME;
+        if (level.isClientSide) {
+            net.minecraftforge.fml.DistExecutor.unsafeRunWhenOn(net.minecraftforge.api.distmarker.Dist.CLIENT,
+                    () -> () -> net.minecraft.client.Minecraft.getInstance().setScreen(new com.miscelanea.client.programa.RigScreen()));
+        }
+        return InteractionResult.sidedSuccess(level.isClientSide);
     }
 }

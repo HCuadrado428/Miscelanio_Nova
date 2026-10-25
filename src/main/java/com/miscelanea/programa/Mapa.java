@@ -99,7 +99,10 @@ public final class Mapa {
     /** Resultado de colocar el mapa: posiciones especiales encontradas en los bloques. */
     public static final class Colocado {
         public final List<BlockPos> luces = new ArrayList<>();
-        public BlockPos generador;
+        public final List<BlockPos> generadores = new ArrayList<>();
+        public final List<BlockPos> cajas = new ArrayList<>();
+        public final List<BlockPos> puertas = new ArrayList<>();
+        public final List<BlockPos> alarmas = new ArrayList<>();
     }
 
     /** Coloca todo el mapa (incluido el aire, para borrar la partida anterior). */
@@ -115,7 +118,11 @@ public final class Mapa {
                 p.set(origen.getX() + x, origen.getY() + y, origen.getZ() + z);
                 if (level.getBlockState(p) != st) level.setBlock(p, st, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
                 if (st.getBlock() instanceof com.miscelanea.carcel.FluorescenteBlock) c.luces.add(p.immutable());
-                if (st.getBlock() instanceof GeneradorBlock) c.generador = p.immutable();
+                if (st.getBlock() instanceof GeneradorBlock) c.generadores.add(p.immutable());
+                if (st.getBlock() instanceof CajaCerradaBlock caja && !caja.esBotiquin()) c.cajas.add(p.immutable());
+                if (st.is(Blocks.SPRUCE_DOOR) && st.getValue(net.minecraft.world.level.block.DoorBlock.HALF)
+                        == net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER) c.puertas.add(p.immutable());
+                if (st.is(com.miscelanea.registry.ModBlocks.ALARMA.get())) c.alarmas.add(p.immutable());
             }
         }
         return c;

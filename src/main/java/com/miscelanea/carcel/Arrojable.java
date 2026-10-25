@@ -41,7 +41,7 @@ public class Arrojable extends ThrowableItemProjectile {
     }
 
     private boolean esBotella() {
-        return !getItem().is(Items.BRICK) && !getItem().is(Items.NETHER_BRICK);
+        return !getItem().is(Items.BRICK) && !getItem().is(Items.NETHER_BRICK) && !getItem().is(ModItems.LADRILLO.get());
     }
 
     @Override
@@ -49,7 +49,7 @@ public class Arrojable extends ThrowableItemProjectile {
         super.onHitEntity(hit);
         if (hit.getEntity() instanceof LivingEntity le && le != getOwner()) {
             le.hurt(damageSources().thrown(this, getOwner()), esBotella() ? 1.0F : 2.0F);
-            le.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 5, false, false));
+            le.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 6, false, false));
             le.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 2, false, false));
             if (le instanceof Mob m) {
                 m.getNavigation().stop();

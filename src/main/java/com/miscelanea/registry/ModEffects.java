@@ -20,5 +20,11 @@ public final class ModEffects {
     public static final RegistryObject<MobEffect> PSICOSIS = EFFECTS.register("psicosis", com.miscelanea.carcel.PsicosisEffect::new);
     public static final RegistryObject<MobEffect> INMUNIDAD_GAS = EFFECTS.register("inmunidad_gas", com.miscelanea.carcel.InmunidadEffect::new);
 
+    /** Adrenalina: corres más y no gastas aguante. */
+    public static final RegistryObject<MobEffect> ADRENALINA = EFFECTS.register("adrenalina",
+            () -> new MobEffect(net.minecraft.world.effect.MobEffectCategory.BENEFICIAL, 0xE8D040) {}
+                    .addAttributeModifier(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED,
+                            "6b1e0c7a-3a51-4d0e-9f22-2c4a5e9b1a01", 0.3, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.MULTIPLY_TOTAL));
+
     private ModEffects() {}
 }

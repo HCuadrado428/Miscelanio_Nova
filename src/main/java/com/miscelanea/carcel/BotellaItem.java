@@ -30,6 +30,8 @@ public class BotellaItem extends Item {
     static void lanzar(Level level, Player player, ItemStack stack) {
         level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.SNOWBALL_THROW,
                 SoundSource.PLAYERS, 0.5F, 0.4F / (level.getRandom().nextFloat() * 0.4F + 0.8F));
+        if (player instanceof net.minecraft.server.level.ServerPlayer sp)
+            com.miscelanea.programa.Acciones.poner(sp, com.miscelanea.programa.Acciones.Accion.LANZAR, 10);
         if (!level.isClientSide) {
             Arrojable a = new Arrojable(level, player, stack);
             a.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.3F, 1.0F);

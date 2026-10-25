@@ -61,6 +61,9 @@ public final class ClientEvents {
             dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "aliento"), 1100,
                     com.miscelanea.client.nucleo.AlientoAnimacion::new);
+            dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
+                    new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "accion"), 950,
+                    com.miscelanea.client.programa.AccionAnimacion::new);
         }
 
         @SubscribeEvent
@@ -71,6 +74,9 @@ public final class ClientEvents {
             event.registerEntityRenderer(ModEntities.GUARDIA.get(), c -> new com.miscelanea.client.carcel.EnemigoRenderer<>(c, "guardia", 0.5F));
             event.registerEntityRenderer(ModEntities.GRITON.get(), c -> new com.miscelanea.client.carcel.EnemigoRenderer<>(c, "griton", 0.45F));
             event.registerEntityRenderer(ModEntities.JEFE.get(), c -> new com.miscelanea.client.carcel.EnemigoRenderer<>(c, "jefe", 0.8F));
+            event.registerEntityRenderer(ModEntities.PUSHER.get(), c -> new com.miscelanea.client.carcel.EnemigoRenderer<>(c, "pusher", 0.5F));
+            event.registerEntityRenderer(ModEntities.SKINNER.get(), com.miscelanea.client.programa.SkinnerRenderer::new);
+            event.registerEntityRenderer(ModEntities.RIG_PROYECTIL.get(), net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
         }
 
         @SubscribeEvent
@@ -99,6 +105,7 @@ public final class ClientEvents {
             event.register(SOLTAR_CAPTURA);
             event.register(MOCHILA);
             event.register(com.miscelanea.client.carcel.GafasCliente.TECLA);
+            event.register(com.miscelanea.client.programa.ProgramaHud.TECLA_RIG);
         }
 
         @SubscribeEvent

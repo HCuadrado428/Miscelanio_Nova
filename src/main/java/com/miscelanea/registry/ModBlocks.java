@@ -88,6 +88,23 @@ public final class ModBlocks {
             () -> new com.miscelanea.programa.BidonBlock(metal().strength(1.0F).noOcclusion()));
     public static final RegistryObject<Block> TERMINAL_PROGRAMA = registrar("terminal_programa",
             () -> new com.miscelanea.programa.TerminalProgramaBlock(metal().noOcclusion().lightLevel(s -> 6)));
+    public static final RegistryObject<Block> CAJA_HERRAMIENTAS = registrar("caja_herramientas",
+            () -> new com.miscelanea.programa.CajaCerradaBlock(metal().strength(2.0F).noOcclusion(), false));
+    public static final RegistryObject<Block> BOTIQUIN = registrar("botiquin",
+            () -> new com.miscelanea.programa.CajaCerradaBlock(metal().strength(2.0F).noOcclusion(), true));
+    public static final RegistryObject<Block> ARCHIVADOR = registrar("archivador",
+            () -> new com.miscelanea.programa.ArchivadorBlock(metal().strength(3.0F)));
+    public static final RegistryObject<Block> VITRINA = registrar("vitrina",
+            () -> new com.miscelanea.programa.VitrinaBlock(metal().strength(1.0F).noOcclusion().lightLevel(s -> 3)));
+    public static final RegistryObject<Block> BARRICADA = registrar("barricada",
+            () -> new com.miscelanea.programa.BarricadaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(4.0F)
+                    .sound(SoundType.WOOD).noOcclusion()));
+    public static final RegistryObject<Block> PERSIANA_PUERTA = registrar("persiana_puerta",
+            () -> new com.miscelanea.programa.PersianaPuertaBlock(metal().strength(4.0F).noOcclusion()));
+    public static final RegistryObject<Block> LUZ_TRAMPA = registrar("luz_trampa",
+            () -> new com.miscelanea.programa.LuzBlock(metal().strength(0.5F).noOcclusion().noCollission().lightLevel(s -> 6)));
+    public static final RegistryObject<Block> ALARMA = registrar("alarma_ruido",
+            () -> new com.miscelanea.programa.LuzBlock(metal().strength(0.5F).noOcclusion().noCollission().lightLevel(s -> 4)));
     public static final RegistryObject<Block> PUERTA_KEY = BLOCKS.register("puerta_key",
             () -> new net.minecraft.world.level.block.DoorBlock(metal().strength(3.0F).noOcclusion(),
                     net.minecraft.world.level.block.state.properties.BlockSetType.OAK));

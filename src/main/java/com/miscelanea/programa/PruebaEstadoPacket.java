@@ -7,13 +7,14 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-/** Servidor → cliente: estado de la prueba para la interfaz (etapa, subpasos, inicio...). */
+/** Servidor → cliente: estado de la prueba y del jugador para la interfaz. */
 public class PruebaEstadoPacket {
-    public final boolean activo, intro;
-    public final int etapa, a, b, manivela, muertes;
+    public final boolean activo, intro, perseguido;
+    public final int etapa, a, b, manivela, muertes, vidas, cordura, psicosis, caido, rig, rigCd, rigMax, rigOff;
     public final long inicio;
 
-    public PruebaEstadoPacket(boolean activo, boolean intro, int etapa, int a, int b, int manivela, long inicio, int muertes) {
+    public PruebaEstadoPacket(boolean activo, boolean intro, int etapa, int a, int b, int manivela, long inicio, int muertes,
+                              int vidas, int cordura, int psicosis, int caido, int rig, int rigCd, int rigMax, int rigOff, boolean perseguido) {
         this.activo = activo;
         this.intro = intro;
         this.etapa = etapa;
@@ -22,21 +23,44 @@ public class PruebaEstadoPacket {
         this.manivela = manivela;
         this.inicio = inicio;
         this.muertes = muertes;
+        this.vidas = vidas;
+        this.cordura = cordura;
+        this.psicosis = psicosis;
+        this.caido = caido;
+        this.rig = rig;
+        this.rigCd = rigCd;
+        this.rigMax = rigMax;
+        this.rigOff = rigOff;
+        this.perseguido = perseguido;
     }
 
-    public PruebaEstadoPacket(FriendlyByteBuf buf) {
-        this(buf.readBoolean(), buf.readBoolean(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), buf.readLong(), buf.readVarInt());
+    public static PruebaEstadoPacket inactivo() {
+        return new PruebaEstadoPacket(false, false, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, false);
     }
 
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeBoolean(activo);
-        buf.writeBoolean(intro);
-        buf.writeVarInt(etapa);
-        buf.writeVarInt(a);
-        buf.writeVarInt(b);
-        buf.writeVarInt(manivela);
-        buf.writeLong(inicio);
-        buf.writeVarInt(muertes);
+    public PruebaEstadoPacket(FriendlyByteBuf f) {
+        this(f.readBoolean(), f.readBoolean(), f.readVarInt(), f.readVarInt(), f.readVarInt(), f.readVarInt(), f.readLong(), f.readVarInt(),
+                f.readVarInt(), f.readVarInt(), f.readVarInt(), f.readVarInt(), f.readVarInt(), f.readVarInt(), f.readVarInt(), f.readVarInt(), f.readBoolean());
+    }
+
+    public void encode(FriendlyByteBuf f) {
+        f.writeBoolean(activo);
+        f.writeBoolean(intro);
+        f.writeVarInt(etapa);
+        f.writeVarInt(a);
+        f.writeVarInt(b);
+        f.writeVarInt(manivela);
+        f.writeLong(inicio);
+        f.writeVarInt(muertes);
+        f.writeVarInt(vidas);
+        f.writeVarInt(cordura);
+        f.writeVarInt(psicosis);
+        f.writeVarInt(caido);
+        f.writeVarInt(rig);
+        f.writeVarInt(rigCd);
+        f.writeVarInt(rigMax);
+        f.writeVarInt(rigOff);
+        f.writeBoolean(perseguido);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

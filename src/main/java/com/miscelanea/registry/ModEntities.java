@@ -42,6 +42,16 @@ public final class ModEntities {
             () -> EntityType.Builder.<com.miscelanea.carcel.enemigos.Jefe>of(com.miscelanea.carcel.enemigos.Jefe::new, MobCategory.MONSTER)
                     .sized(0.9F, 2.4F).clientTrackingRange(12).build("jefe"));
 
+    public static final RegistryObject<EntityType<com.miscelanea.carcel.enemigos.Pusher>> PUSHER = ENTITIES.register("pusher",
+            () -> EntityType.Builder.<com.miscelanea.carcel.enemigos.Pusher>of(com.miscelanea.carcel.enemigos.Pusher::new, MobCategory.MONSTER)
+                    .sized(0.6F, 1.95F).clientTrackingRange(10).build("pusher"));
+    public static final RegistryObject<EntityType<com.miscelanea.carcel.enemigos.Skinner>> SKINNER = ENTITIES.register("skinner",
+            () -> EntityType.Builder.<com.miscelanea.carcel.enemigos.Skinner>of(com.miscelanea.carcel.enemigos.Skinner::new, MobCategory.MONSTER)
+                    .sized(0.7F, 2.3F).clientTrackingRange(12).build("skinner"));
+    public static final RegistryObject<EntityType<com.miscelanea.programa.RigProyectil>> RIG_PROYECTIL = ENTITIES.register("rig_proyectil",
+            () -> EntityType.Builder.<com.miscelanea.programa.RigProyectil>of(com.miscelanea.programa.RigProyectil::new, MobCategory.MISC)
+                    .sized(0.3F, 0.3F).clientTrackingRange(6).updateInterval(5).build("rig_proyectil"));
+
     /** Atributos de los enemigos (bus del mod). */
     @net.minecraftforge.fml.common.Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, bus = net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus.MOD)
     public static final class Atributos {
@@ -50,6 +60,8 @@ public final class ModEntities {
             e.put(GUARDIA.get(), com.miscelanea.carcel.enemigos.Guardia.atributos().build());
             e.put(GRITON.get(), com.miscelanea.carcel.enemigos.Griton.atributos().build());
             e.put(JEFE.get(), com.miscelanea.carcel.enemigos.Jefe.atributos().build());
+            e.put(PUSHER.get(), com.miscelanea.carcel.enemigos.Pusher.atributos().build());
+            e.put(SKINNER.get(), com.miscelanea.carcel.enemigos.Skinner.atributos().build());
         }
     }
 

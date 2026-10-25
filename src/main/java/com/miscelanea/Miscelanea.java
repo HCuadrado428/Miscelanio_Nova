@@ -64,6 +64,9 @@ public class Miscelanea {
             event.accept(ModItems.HUEVO_GUARDIA);
             event.accept(ModItems.HUEVO_GRITON);
             event.accept(ModItems.HUEVO_JEFE);
+            event.accept(ModItems.HUEVO_PUSHER);
+            for (var it : java.util.List.of(ModItems.GANZUA, ModItems.MEDICINA_GRANDE, ModItems.ADRENALINA, ModItems.RECARGADOR,
+                    ModItems.PASTILLA, ModItems.JERINGA_REANIMAR, ModItems.PILA_GRANDE, ModItems.LADRILLO)) event.accept(it);
             for (int i = 0; i < com.miscelanea.carcel.Simbolo.TOTAL; i++) {
                 event.accept(com.miscelanea.carcel.LlaveItem.con(ModItems.LLAVE.get(), i));
             }

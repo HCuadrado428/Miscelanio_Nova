@@ -46,7 +46,11 @@ public class GafasItem extends ArmorItem {
     }
 
     public static void recargar(Player p, ItemStack gafas, ItemStack pila) {
-        gafas.getOrCreateTag().putInt("Bateria", BATERIA_MAX);
+        recargar(p, gafas, pila, BATERIA_MAX);
+    }
+
+    public static void recargar(Player p, ItemStack gafas, ItemStack pila, int carga) {
+        gafas.getOrCreateTag().putInt("Bateria", Math.min(BATERIA_MAX, bateria(gafas) + carga));
         p.level().playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.ARMOR_EQUIP_IRON, SoundSource.PLAYERS, 0.7F, 1.6F);
         if (!p.getAbilities().instabuild) pila.shrink(1);
     }

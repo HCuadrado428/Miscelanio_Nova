@@ -33,6 +33,9 @@ public class PsicosisEffect extends MobEffect {
     public void applyEffectTick(LivingEntity e, int nivel) {
         if (e.level().isClientSide || !(e instanceof Player p)) return;
         var r = p.getRandom();
+        // En la prueba el gas no quita vida: te baja la cordura (hasta la psicosis)
+        boolean enPrueba = p instanceof net.minecraft.server.level.ServerPlayer sp0 && com.miscelanea.programa.Prueba.dentro(sp0);
+        if (enPrueba) com.miscelanea.programa.Jugadores.drenar((net.minecraft.server.level.ServerPlayer) p, 1 + nivel);
         // Sonidos falsos solo para él (playNotifySound los oye nada más el jugador)
         if (r.nextInt(Math.max(20, 120 - nivel * 40)) == 0 && p instanceof net.minecraft.server.level.ServerPlayer sp) {
             SoundEvent s = FALSOS[r.nextInt(FALSOS.length)];
@@ -44,7 +47,7 @@ public class PsicosisEffect extends MobEffect {
         if (nivel >= 1 && p.tickCount % 40 == 0) {
             p.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 120, 0, false, false));
         }
-        if (nivel >= 2 && p.tickCount % 60 == 0) {
+        if (!enPrueba && nivel >= 2 && p.tickCount % 60 == 0) {
             p.hurt(p.damageSources().magic(), 1.0F);
         }
     }

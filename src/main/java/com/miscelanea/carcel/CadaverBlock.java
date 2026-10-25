@@ -107,6 +107,8 @@ public class CadaverBlock extends BaseEntityBlock {
 
         // ---- Registrar (al mantener el clic, se llama varias veces)
         int paso = be.avanzar(player, level.getGameTime());
+        if (player instanceof net.minecraft.server.level.ServerPlayer sp)
+            com.miscelanea.programa.Acciones.poner(sp, com.miscelanea.programa.Acciones.Accion.REGISTRAR, 8);
         ServerLevel sl = (ServerLevel) level;
         if (paso % 3 == 1) {
             level.playSound(null, pos, SoundEvents.ARMOR_EQUIP_LEATHER, SoundSource.BLOCKS, 0.6F, 0.7F + level.random.nextFloat() * 0.2F);

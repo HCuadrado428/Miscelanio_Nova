@@ -121,6 +121,11 @@ public class Griton extends EnemigoCarcel {
             if (p != null && !p.isCrouching() && !p.isCreative() && !p.isSpectator() && puedeVer(p)) despertar(p);
             return;
         }
+        // Despierto: si hay alguien en el suelo cerca, le grita en la cara hasta matarlo
+        if (estadoEspecial() == 0 && rematarCaido(10)) {
+            if (tickCount % 10 == 0) playSound(ModSounds.GRITO.get(), 1.5F, 1.2F);
+            return;
+        }
         // huyendo: cuando llega (o se cansa) se vuelve a dormir donde esté
         if (huyendo > 0) huyendo--;
         if (huyendo == 0 || getNavigation().isDone()) {

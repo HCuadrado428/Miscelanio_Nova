@@ -34,6 +34,7 @@ public class InterruptorBlock extends ParedBlock {
     public InteractionResult use(BlockState s, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide) return InteractionResult.SUCCESS;
         if (s.getValue(ON)) return InteractionResult.CONSUME;
+        if (!Prueba.interruptor((ServerLevel) level, pos, player)) return InteractionResult.CONSUME;
         level.setBlock(pos, s.setValue(ON, true), Block.UPDATE_ALL);
         level.playSound(null, pos, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 1.0F, 0.5F);
         level.playSound(null, pos, ModSounds.CHISPAZO.get(), SoundSource.BLOCKS, 0.4F, 1.2F);
