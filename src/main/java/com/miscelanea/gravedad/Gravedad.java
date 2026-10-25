@@ -201,8 +201,9 @@ public final class Gravedad {
             double vel = e.getDeltaMovement().length();
             if (vel < 0.35) continue;
             AABB caja = e.getBoundingBox().inflate(0.3);
+            final Entity lanzado = e;
             Entity quien = ((ServerLevel) e.level()).getEntity(la.quien);
-            for (LivingEntity v : e.level().getEntitiesOfClass(LivingEntity.class, caja, v -> v != e && v != quien && v.isAlive())) {
+            for (LivingEntity v : e.level().getEntitiesOfClass(LivingEntity.class, caja, v -> v != lanzado && v != quien && v.isAlive())) {
                 float dano = (float) Math.min(16.0, vel * (e instanceof FallingBlockEntity ? 9.0 : 6.0));
                 v.hurt(quien instanceof Player pq ? v.damageSources().playerAttack(pq) : v.damageSources().flyIntoWall(), dano);
                 v.knockback(0.8, -e.getDeltaMovement().x, -e.getDeltaMovement().z);
