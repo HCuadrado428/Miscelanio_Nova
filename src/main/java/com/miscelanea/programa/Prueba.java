@@ -500,7 +500,7 @@ public final class Prueba {
             }
             for (ServerPlayer j : js) {
                 if (j.isCrouching() || j.distanceToSqr(Vec3.atCenterOf(p)) > 12.25) continue;
-                if (j.getDeltaMovement().horizontalDistanceSqr() < 0.0004 && !j.isSprinting()) continue;
+                if (j.position().distanceToSqr(j.xo, j.yo, j.zo) < 0.0004 && !j.isSprinting()) continue;
                 lvl.setBlock(p, s.setValue(LuzBlock.DISPARADA, true), Block.UPDATE_ALL);
                 a.setValue(t);
                 lvl.playSound(null, p, SoundEvents.BELL_BLOCK, SoundSource.BLOCKS, 2.5F, 1.4F);
