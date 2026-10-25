@@ -21,6 +21,13 @@
     "miscelanea:interruptor",
     "miscelanea:bidon",
     "miscelanea:terminal_programa",
-    "miscelanea:puerta_key"
+    "miscelanea:puerta_key",
+    "miscelanea:caja_herramientas",
+    "miscelanea:botiquin",
+    "miscelanea:archivador",
+    "miscelanea:vitrina",
+    "miscelanea:persiana_puerta",
+    "miscelanea:luz_trampa",
+    "miscelanea:alarma_ruido"
   ]
 }

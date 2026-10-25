@@ -1,0 +1,10 @@
+{
+ "variants": {
+  "open=false": {
+   "model": "miscelanea:block/persiana_puerta"
+  },
+  "open=true": {
+   "model": "miscelanea:block/persiana_puerta_abierta"
+  }
+ }
+}

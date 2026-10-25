@@ -1,0 +1,36 @@
+{
+ "variants": {
+  "facing=north,rota=false": {
+   "model": "miscelanea:block/vitrina",
+   "y": 0
+  },
+  "facing=north,rota=true": {
+   "model": "miscelanea:block/vitrina_rota",
+   "y": 0
+  },
+  "facing=east,rota=false": {
+   "model": "miscelanea:block/vitrina",
+   "y": 90
+  },
+  "facing=east,rota=true": {
+   "model": "miscelanea:block/vitrina_rota",
+   "y": 90
+  },
+  "facing=south,rota=false": {
+   "model": "miscelanea:block/vitrina",
+   "y": 180
+  },
+  "facing=south,rota=true": {
+   "model": "miscelanea:block/vitrina_rota",
+   "y": 180
+  },
+  "facing=west,rota=false": {
+   "model": "miscelanea:block/vitrina",
+   "y": 270
+  },
+  "facing=west,rota=true": {
+   "model": "miscelanea:block/vitrina_rota",
+   "y": 270
+  }
+ }
+}

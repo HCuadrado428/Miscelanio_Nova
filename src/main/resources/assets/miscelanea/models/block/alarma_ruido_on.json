@@ -1,0 +1,51 @@
+{
+ "parent": "block/block",
+ "textures": {
+  "a": "miscelanea:block/alarma_on",
+  "particle": "miscelanea:block/alarma_on"
+ },
+ "elements": [
+  {
+   "from": [
+    4,
+    3,
+    13
+   ],
+   "to": [
+    12,
+    13,
+    16
+   ],
+   "faces": {
+    "north": {
+     "texture": "#a",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "south": {
+     "texture": "#a"
+    },
+    "east": {
+     "texture": "#a"
+    },
+    "west": {
+     "texture": "#a"
+    },
+    "up": {
+     "texture": "#a"
+    },
+    "down": {
+     "texture": "#a"
+    }
+   }
+  }
+ ]
+}

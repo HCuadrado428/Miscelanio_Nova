@@ -1,0 +1,51 @@
+{
+ "parent": "block/block",
+ "textures": {
+  "l": "miscelanea:block/luz_trampa",
+  "particle": "miscelanea:block/luz_trampa"
+ },
+ "elements": [
+  {
+   "from": [
+    5,
+    5,
+    14
+   ],
+   "to": [
+    11,
+    11,
+    16
+   ],
+   "faces": {
+    "north": {
+     "texture": "#l",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "south": {
+     "texture": "#l"
+    },
+    "east": {
+     "texture": "#l"
+    },
+    "west": {
+     "texture": "#l"
+    },
+    "up": {
+     "texture": "#l"
+    },
+    "down": {
+     "texture": "#l"
+    }
+   }
+  }
+ ]
+}

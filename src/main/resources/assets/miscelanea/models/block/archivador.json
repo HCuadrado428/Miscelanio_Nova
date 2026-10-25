@@ -1,0 +1,49 @@
+{
+ "parent": "block/block",
+ "textures": {
+  "l": "miscelanea:block/archivador_lado",
+  "f": "miscelanea:block/archivador",
+  "a": "miscelanea:block/archivador_abierto",
+  "particle": "miscelanea:block/archivador_lado"
+ },
+ "elements": [
+  {
+   "from": [
+    1,
+    0,
+    1
+   ],
+   "to": [
+    15,
+    16,
+    15
+   ],
+   "faces": {
+    "north": {
+     "texture": "#f",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ]
+    },
+    "south": {
+     "texture": "#l"
+    },
+    "east": {
+     "texture": "#l"
+    },
+    "west": {
+     "texture": "#l"
+    },
+    "up": {
+     "texture": "#l"
+    },
+    "down": {
+     "texture": "#l"
+    }
+   }
+  }
+ ]
+}
