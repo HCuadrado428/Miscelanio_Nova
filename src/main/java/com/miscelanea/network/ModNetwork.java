@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String PROTOCOLO = "11";
+    private static final String PROTOCOLO = "12";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "main"),
@@ -81,6 +81,11 @@ public final class ModNetwork {
                 .encoder(com.miscelanea.gravedad.GravedadPacket::encode)
                 .decoder(com.miscelanea.gravedad.GravedadPacket::new)
                 .consumerMainThread(com.miscelanea.gravedad.GravedadPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.armas.GanchoPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.armas.GanchoPacket::encode)
+                .decoder(com.miscelanea.armas.GanchoPacket::new)
+                .consumerMainThread(com.miscelanea.armas.GanchoPacket::handle)
                 .add();
     }
 }

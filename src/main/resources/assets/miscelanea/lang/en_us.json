@@ -99,5 +99,20 @@
   "item.miscelanea.lanzatintas": "Splattershot",
   "item.miscelanea.rodillo": "Splat Roller",
   "entity.miscelanea.tinta": "Ink",
-  "item.miscelanea.pistola_gravedad": "Gravity Gun"
+  "item.miscelanea.pistola_gravedad": "Gravity Gun",
+  "item.miscelanea.superescopeta": "Super Shotgun",
+  "item.miscelanea.lanzacohetes": "Rocket Launcher",
+  "item.miscelanea.cartuchos": "Shotgun Shells",
+  "item.miscelanea.cohete": "Rocket",
+  "entity.miscelanea.gancho": "Grappling Hook",
+  "entity.miscelanea.cohete": "Rocket",
+  "subtitles.miscelanea.escopeta_disparo": "Shotgun fires",
+  "subtitles.miscelanea.escopeta_recarga": "Shotgun reloads",
+  "subtitles.miscelanea.gancho_lanzar": "Hook launched",
+  "subtitles.miscelanea.gancho_enganchar": "Hook latches",
+  "subtitles.miscelanea.lanzacohetes_disparo": "Rocket fired",
+  "subtitles.miscelanea.lanzacohetes_recarga": "Rocket launcher reloads",
+  "subtitles.miscelanea.cohete_explosion": "Rocket explodes",
+  "item.miscelanea.superescopeta.ayuda": "Right click: fire · Left click (hold): hook",
+  "item.miscelanea.lanzacohetes.ayuda": "Right click: fire · Reloads one at a time"
 }

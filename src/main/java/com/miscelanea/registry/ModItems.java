@@ -63,5 +63,13 @@ public final class ModItems {
     public static final RegistryObject<Item> PISTOLA_GRAVEDAD = ITEMS.register("pistola_gravedad",
             () -> new com.miscelanea.gravedad.GravedadItem(new Item.Properties().stacksTo(1).rarity(net.minecraft.world.item.Rarity.EPIC)));
 
+    // ---- Doom / TF2
+    public static final RegistryObject<Item> SUPERESCOPETA = ITEMS.register("superescopeta",
+            () -> new com.miscelanea.armas.EscopetaItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+    public static final RegistryObject<Item> LANZACOHETES = ITEMS.register("lanzacohetes",
+            () -> new com.miscelanea.armas.LanzacohetesItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+    public static final RegistryObject<Item> CARTUCHOS = ITEMS.register("cartuchos", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> COHETE = ITEMS.register("cohete", () -> new Item(new Item.Properties().stacksTo(16)));
+
     private ModItems() {}
 }

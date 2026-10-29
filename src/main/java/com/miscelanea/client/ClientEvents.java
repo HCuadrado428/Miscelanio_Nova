@@ -62,6 +62,8 @@ public final class ClientEvents {
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerEntityRenderer(ModEntities.DESATASCADOR.get(), DesatascadorRenderer::new);
             event.registerEntityRenderer(ModEntities.TINTA.get(), com.miscelanea.client.tinta.TintaProyectilRenderer::new);
+            event.registerEntityRenderer(ModEntities.GANCHO.get(), com.miscelanea.client.armas.GanchoRenderer::new);
+            event.registerEntityRenderer(ModEntities.COHETE.get(), com.miscelanea.client.armas.CoheteRenderer::new);
         }
 
         @SubscribeEvent
@@ -105,6 +107,7 @@ public final class ClientEvents {
             event.registerBelowAll("nucleo", com.miscelanea.client.nucleo.NucleoCliente::render);
             event.registerBelowAll("medigun", com.miscelanea.client.medigun.MedigunCliente::render);
             event.registerAboveAll("tinta", com.miscelanea.client.tinta.CalamarRender::hud);
+            event.registerAboveAll("armas", com.miscelanea.client.armas.ArmasCliente::hud);
         }
     }
 

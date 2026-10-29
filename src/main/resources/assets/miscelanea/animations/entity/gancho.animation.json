@@ -1,0 +1,30 @@
+{
+ "format_version": "1.8.0",
+ "animations": {
+  "animation.gancho.vuelo": {
+   "loop": true,
+   "animation_length": 0.3,
+   "bones": {
+    "garfio": {
+     "rotation": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.3": [
+       0,
+       0,
+       360
+      ]
+     }
+    }
+   }
+  },
+  "animation.gancho.enganchado": {
+   "loop": true,
+   "animation_length": 1.0,
+   "bones": {}
+  }
+ }
+}

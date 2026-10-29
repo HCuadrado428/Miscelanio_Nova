@@ -97,5 +97,68 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.nucleo_fin"
+  },
+  "escopeta_disparo": {
+    "sounds": [
+      {
+        "name": "miscelanea:escopeta_disparo",
+        "attenuation_distance": 48
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.escopeta_disparo"
+  },
+  "escopeta_recarga": {
+    "sounds": [
+      {
+        "name": "miscelanea:escopeta_recarga",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.escopeta_recarga"
+  },
+  "gancho_lanzar": {
+    "sounds": [
+      {
+        "name": "miscelanea:gancho_lanzar",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.gancho_lanzar"
+  },
+  "gancho_enganchar": {
+    "sounds": [
+      {
+        "name": "miscelanea:gancho_enganchar",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.gancho_enganchar"
+  },
+  "lanzacohetes_disparo": {
+    "sounds": [
+      {
+        "name": "miscelanea:lanzacohetes_disparo",
+        "attenuation_distance": 48
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.lanzacohetes_disparo"
+  },
+  "lanzacohetes_recarga": {
+    "sounds": [
+      {
+        "name": "miscelanea:lanzacohetes_recarga",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.lanzacohetes_recarga"
+  },
+  "cohete_explosion": {
+    "sounds": [
+      {
+        "name": "miscelanea:cohete_explosion",
+        "attenuation_distance": 64
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.cohete_explosion"
   }
 }

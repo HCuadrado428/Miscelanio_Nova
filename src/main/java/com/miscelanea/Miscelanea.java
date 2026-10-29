@@ -59,6 +59,10 @@ public class Miscelanea {
             event.accept(ModItems.LANZATINTAS);
             event.accept(ModItems.RODILLO);
             event.accept(ModItems.PISTOLA_GRAVEDAD);
+            event.accept(ModItems.SUPERESCOPETA);
+            event.accept(ModItems.CARTUCHOS);
+            event.accept(ModItems.LANZACOHETES);
+            event.accept(ModItems.COHETE);
         }
     }
 }

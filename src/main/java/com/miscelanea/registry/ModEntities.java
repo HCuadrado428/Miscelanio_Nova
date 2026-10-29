@@ -23,5 +23,13 @@ public final class ModEntities {
             () -> EntityType.Builder.<com.miscelanea.tinta.TintaProyectil>of(com.miscelanea.tinta.TintaProyectil::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F).clientTrackingRange(6).updateInterval(1).build("tinta"));
 
+    public static final RegistryObject<EntityType<com.miscelanea.armas.GanchoEntity>> GANCHO = ENTITIES.register("gancho",
+            () -> EntityType.Builder.<com.miscelanea.armas.GanchoEntity>of(com.miscelanea.armas.GanchoEntity::new, MobCategory.MISC)
+                    .sized(0.3F, 0.3F).clientTrackingRange(8).updateInterval(1).build("gancho"));
+
+    public static final RegistryObject<EntityType<com.miscelanea.armas.CoheteEntity>> COHETE = ENTITIES.register("cohete",
+            () -> EntityType.Builder.<com.miscelanea.armas.CoheteEntity>of(com.miscelanea.armas.CoheteEntity::new, MobCategory.MISC)
+                    .sized(0.3F, 0.3F).clientTrackingRange(8).updateInterval(1).build("cohete"));
+
     private ModEntities() {}
 }

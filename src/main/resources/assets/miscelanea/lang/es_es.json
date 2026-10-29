@@ -99,5 +99,20 @@
   "item.miscelanea.lanzatintas": "Lanzatintas",
   "item.miscelanea.rodillo": "Rodillo",
   "entity.miscelanea.tinta": "Tinta",
-  "item.miscelanea.pistola_gravedad": "Pistola de gravedad"
+  "item.miscelanea.pistola_gravedad": "Pistola de gravedad",
+  "item.miscelanea.superescopeta": "Superescopeta",
+  "item.miscelanea.lanzacohetes": "Lanzacohetes",
+  "item.miscelanea.cartuchos": "Cartuchos",
+  "item.miscelanea.cohete": "Cohete",
+  "entity.miscelanea.gancho": "Gancho",
+  "entity.miscelanea.cohete": "Cohete",
+  "subtitles.miscelanea.escopeta_disparo": "Disparo de escopeta",
+  "subtitles.miscelanea.escopeta_recarga": "Escopeta recargando",
+  "subtitles.miscelanea.gancho_lanzar": "Gancho lanzado",
+  "subtitles.miscelanea.gancho_enganchar": "Gancho enganchado",
+  "subtitles.miscelanea.lanzacohetes_disparo": "Cohete disparado",
+  "subtitles.miscelanea.lanzacohetes_recarga": "Lanzacohetes recargando",
+  "subtitles.miscelanea.cohete_explosion": "Explosión de cohete",
+  "item.miscelanea.superescopeta.ayuda": "Clic derecho: disparar · Clic izquierdo (mantener): gancho",
+  "item.miscelanea.lanzacohetes.ayuda": "Clic derecho: disparar · Recarga sola de uno en uno"
 }
