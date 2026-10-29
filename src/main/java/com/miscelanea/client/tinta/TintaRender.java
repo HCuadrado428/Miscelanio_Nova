@@ -24,10 +24,11 @@ import org.joml.Matrix4f;
 
 import java.util.Map;
 
-/** Dibuja la tinta: una mancha de forma irregular (4 variantes, giradas al azar) pegada a cada cara pintada. */
+/** Dibuja la tinta: cada cara pintada se une con sus vecinas del mismo color (charco continuo) y lleva una capa de reflejos. */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
 public final class TintaRender {
     private static final ResourceLocation MANCHAS = new ResourceLocation(Miscelanea.MOD_ID, "textures/entity/tinta.png");
+    private static final ResourceLocation BRILLOS = new ResourceLocation(Miscelanea.MOD_ID, "textures/entity/tinta_brillo.png");
     private static final float SEP = 0.004F;
 
     private TintaRender() {}
@@ -51,7 +52,9 @@ public final class TintaRender {
         Matrix4f m = ps.last().pose();
         Matrix3f n = ps.last().normal();
         MultiBufferSource.BufferSource buf = mc.renderBuffers().bufferSource();
-        VertexConsumer vc = buf.getBuffer(RenderType.entityTranslucent(MANCHAS));
+        for (int pasada = 0; pasada < 2; pasada++) {
+        RenderType tipo = RenderType.entityTranslucent(pasada == 0 ? MANCHAS : BRILLOS);
+        VertexConsumer vc = buf.getBuffer(tipo);
         BlockPos.MutableBlockPos fuera = new BlockPos.MutableBlockPos();
         for (Map.Entry<Long, Map<Long, Tinta.Mancha>> ech : Tinta.CLIENTE.entrySet()) {
             ChunkPos cp = new ChunkPos(ech.getKey());
@@ -65,23 +68,26 @@ public final class TintaRender {
                     Direction d = Direction.from3DDataValue(i);
                     fuera.setWithOffset(p, d);
                     int luz = LevelRenderer.getLightColor(mc.level, fuera);
-                    cara(vc, m, n, p, d, col, luz, (int) (eb.getKey() * 31 + i * 7));
+                    cara(vc, m, n, mc, p, d, col, luz, (int) (eb.getKey() * 31 + i * 7), pasada == 1);
                 }
             }
         }
-        buf.endBatch(RenderType.entityTranslucent(MANCHAS));
+        buf.endBatch(tipo);
+        }
         ps.popPose();
     }
 
-    /** Un quad pegado a la cara 'd' del bloque 'p'. */
-    private static void cara(VertexConsumer vc, Matrix4f m, Matrix3f n, BlockPos p, Direction d, int col, int luz, int hash) {
+    /**
+     * Un quad pegado a la cara 'd' del bloque 'p'. La forma se elige según qué caras vecinas (en el mismo plano)
+     * tienen tinta del mismo color, para que la tinta forme un charco continuo con borde ondulado solo por fuera.
+     */
+    private static void cara(VertexConsumer vc, Matrix4f m, Matrix3f n, Minecraft mc, BlockPos p, Direction d, int col, int luz,
+                             int hash, boolean brillo) {
         float r = ((col >> 16) & 255) / 255F, g = ((col >> 8) & 255) / 255F, b = (col & 255) / 255F;
-        int variante = Math.floorMod(hash, 4);
-        int giro = Math.floorMod(hash >> 3, 4);
-        float u0 = variante / 4F, u1 = (variante + 1) / 4F;
+        if (brillo) r = g = b = 1.0F;
         float x = p.getX(), y = p.getY(), z = p.getZ();
-        float[][] q;   // 4 esquinas en sentido antihorario visto desde fuera
-        float s = SEP;
+        float[][] q;   // 4 esquinas en sentido antihorario visto desde fuera; uv: (0,0) (0,1) (1,1) (1,0)
+        float s = brillo ? SEP + 0.001F : SEP;
         switch (d) {
             case UP -> q = new float[][]{{x, y + 1 + s, z}, {x, y + 1 + s, z + 1}, {x + 1, y + 1 + s, z + 1}, {x + 1, y + 1 + s, z}};
             case DOWN -> q = new float[][]{{x, y - s, z + 1}, {x, y - s, z}, {x + 1, y - s, z}, {x + 1, y - s, z + 1}};
@@ -90,11 +96,23 @@ public final class TintaRender {
             case WEST -> q = new float[][]{{x - s, y + 1, z}, {x - s, y, z}, {x - s, y, z + 1}, {x - s, y + 1, z + 1}};
             default -> q = new float[][]{{x + 1 + s, y + 1, z + 1}, {x + 1 + s, y, z + 1}, {x + 1 + s, y, z}, {x + 1 + s, y + 1, z}};
         }
-        float[][] uv = {{u0, 0}, {u0, 1}, {u1, 1}, {u1, 0}};
+        // bits: 1 = borde v=0 (esquinas 0-3), 2 = borde u=1 (2-3), 4 = borde v=1 (1-2), 8 = borde u=0 (0-1)
+        int[][] bordes = {{0, 3}, {2, 3}, {1, 2}, {0, 1}};
+        float cx = (q[0][0] + q[2][0]) / 2, cy = (q[0][1] + q[2][1]) / 2, cz = (q[0][2] + q[2][2]) / 2;
+        int mascara = 0;
+        for (int k = 0; k < 4; k++) {
+            float[] a = q[bordes[k][0]], c = q[bordes[k][1]];
+            int dx = Math.round(((a[0] + c[0]) / 2 - cx) * 2), dy = Math.round(((a[1] + c[1]) / 2 - cy) * 2), dz = Math.round(((a[2] + c[2]) / 2 - cz) * 2);
+            if (Tinta.color(mc.level, p.offset(dx, dy, dz), d) == col) mascara |= 1 << k;
+        }
+        int idx = mascara + 16 * Math.floorMod(hash >> 2, 2);
+        float eu = 0.5F / 512F, ev = 0.5F / 256F;   // medio texel hacia dentro para no sangrar con la loseta vecina
+        float u0 = (idx % 8) / 8F + eu, u1 = (idx % 8 + 1) / 8F - eu;
+        float v0 = (idx / 8) / 4F + ev, v1 = (idx / 8 + 1) / 4F - ev;
+        float[][] uv = {{u0, v0}, {u0, v1}, {u1, v1}, {u1, v0}};
         for (int k = 0; k < 4; k++) {
             float[] c = q[k];
-            float[] t = uv[(k + giro) % 4];
-            vc.vertex(m, c[0], c[1], c[2]).color(r, g, b, 1.0F).uv(t[0], t[1]).overlayCoords(OverlayTexture.NO_OVERLAY)
+            vc.vertex(m, c[0], c[1], c[2]).color(r, g, b, 1.0F).uv(uv[k][0], uv[k][1]).overlayCoords(OverlayTexture.NO_OVERLAY)
                     .uv2(luz).normal(n, d.getStepX(), d.getStepY(), d.getStepZ()).endVertex();
         }
     }

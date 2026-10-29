@@ -34,12 +34,14 @@ import java.util.function.Consumer;
  * Rodillo (Splat Roller de Splatoon):
  * - Mantén clic derecho y anda: pinta una franja ancha del suelo y atropella a los mobs que pilla.
  * - Un toque corto de clic derecho: lanza una ola de tinta en abanico (el "flick").
+ * - Si el toque es en el aire, el golpe es vertical: franja estrecha que llega más lejos.
  */
 public class RodilloItem extends Item implements GeoItem {
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.rodillo.idle");
     private static final RawAnimation RODAR = RawAnimation.begin().thenLoop("animation.rodillo.rodar");
     private static final RawAnimation FLICK = RawAnimation.begin().thenPlay("animation.rodillo.flick");
-    public static final String RODANDO = "Rodando", FLICK_T = "Flick";
+    private static final RawAnimation VERTICAL = RawAnimation.begin().thenPlay("animation.rodillo.vertical");
+    public static final String RODANDO = "Rodando", FLICK_T = "Flick", FLICK_V = "FlickVertical";
     private static final Map<UUID, Vec3> ULTIMA = new HashMap<>();
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
@@ -110,13 +112,31 @@ public class RodilloItem extends Item implements GeoItem {
             level.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.DISPENSER_FAIL, SoundSource.PLAYERS, 0.5F, 1.8F);
             return;
         }
-        s.getOrCreateTag().putInt(FLICK_T, 10);
         int color = ArmaTinta.color(s);
-        for (int i = -3; i <= 3; i++) {
-            TintaProyectil tp = new TintaProyectil(level, p, color, 6.0F, 1.4F, 1.6F);
-            tp.setPos(p.getX(), p.getEyeY() - 0.4, p.getZ());
-            tp.shootFromRotation(p, Math.min(p.getXRot(), 10.0F) - 8.0F, p.getYRot() + i * 9.0F, 0.0F, 0.95F, 2.0F);
-            level.addFreshEntity(tp);
+        if (!p.onGround() && !p.isInWater()) {
+            // En el aire: golpe VERTICAL. Una franja estrecha y larga hacia delante que llega más lejos.
+            s.getOrCreateTag().putInt(FLICK_T, 0);
+            s.getOrCreateTag().putInt(FLICK_V, 12);
+            for (int i = 0; i < 7; i++) {
+                TintaProyectil tp = new TintaProyectil(level, p, color, 7.0F, 1.3F, 1.5F);
+                tp.setPos(p.getX(), p.getEyeY() - 0.2, p.getZ());
+                tp.shootFromRotation(p, Math.min(p.getXRot(), 15.0F) - 6.0F, p.getYRot(), 0.0F, 0.75F + i * 0.17F, 0.6F);
+                level.addFreshEntity(tp);
+            }
+            // El rodillo pega en el suelo justo delante
+            Vec3 fwd = Vec3.directionFromRotation(0, p.getYRot());
+            for (double d = 0.8; d <= 2.0; d += 0.6) Tinta.pintarSuelo((ServerLevel) level, p.position().add(fwd.scale(d)), color);
+            level.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.SLIME_BLOCK_FALL, SoundSource.PLAYERS, 1.0F, 0.6F);
+        } else {
+            // En el suelo: ola horizontal en abanico
+            s.getOrCreateTag().putInt(FLICK_V, 0);
+            s.getOrCreateTag().putInt(FLICK_T, 10);
+            for (int i = -3; i <= 3; i++) {
+                TintaProyectil tp = new TintaProyectil(level, p, color, 6.0F, 1.4F, 1.6F);
+                tp.setPos(p.getX(), p.getEyeY() - 0.4, p.getZ());
+                tp.shootFromRotation(p, Math.min(p.getXRot(), 10.0F) - 8.0F, p.getYRot() + i * 9.0F, 0.0F, 0.95F, 2.0F);
+                level.addFreshEntity(tp);
+            }
         }
         level.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.GENERIC_SPLASH, SoundSource.PLAYERS, 0.9F, 1.3F);
         level.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, SoundSource.PLAYERS, 0.8F, 0.8F);
@@ -125,6 +145,7 @@ public class RodilloItem extends Item implements GeoItem {
     @Override
     public void inventoryTick(ItemStack s, Level level, Entity e, int slot, boolean sel) {
         if (!level.isClientSide && s.hasTag() && s.getTag().getInt(FLICK_T) > 0) s.getTag().putInt(FLICK_T, s.getTag().getInt(FLICK_T) - 1);
+        if (!level.isClientSide && s.hasTag() && s.getTag().getInt(FLICK_V) > 0) s.getTag().putInt(FLICK_V, s.getTag().getInt(FLICK_V) - 1);
         if (!level.isClientSide && s.hasTag() && s.getTag().getBoolean(RODANDO)
                 && !(e instanceof LivingEntity le && le.isUsingItem() && le.getUseItem() == s)) {
             s.getTag().putBoolean(RODANDO, false);
@@ -159,6 +180,7 @@ public class RodilloItem extends Item implements GeoItem {
         c.add(new AnimationController<>(this, "rodillo", 2, state -> {
             ItemStack s = state.getData(DataTickets.ITEMSTACK);
             if (s != null && s.hasTag()) {
+                if (s.getTag().getInt(FLICK_V) > 0) return state.setAndContinue(VERTICAL);
                 if (s.getTag().getInt(FLICK_T) > 0) return state.setAndContinue(FLICK);
                 if (s.getTag().getBoolean(RODANDO)) return state.setAndContinue(RODAR);
             }

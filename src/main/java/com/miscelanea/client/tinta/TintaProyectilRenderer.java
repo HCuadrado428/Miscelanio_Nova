@@ -34,13 +34,13 @@ public class TintaProyectilRenderer extends EntityRenderer<TintaProyectil> {
         Matrix4f m = ps.last().pose();
         Matrix3f n = ps.last().normal();
         VertexConsumer vc = buf.getBuffer(RenderType.entityTranslucent(TEX));
-        int v = e.getId() & 3;
-        float u0 = v / 4F, u1 = (v + 1) / 4F;
+        // mancha suelta del atlas de tinta (loseta 0 o 16: sin vecinos)
+        float u0 = 0, u1 = 1 / 8F, v0 = (e.getId() & 1) * 0.5F, v1 = v0 + 0.25F;
         int l = LightTexture.FULL_BRIGHT;
-        vc.vertex(m, -s, -s, 0).color(r, g, b, 1).uv(u0, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(l).normal(n, 0, 1, 0).endVertex();
-        vc.vertex(m, s, -s, 0).color(r, g, b, 1).uv(u1, 1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(l).normal(n, 0, 1, 0).endVertex();
-        vc.vertex(m, s, s, 0).color(r, g, b, 1).uv(u1, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(l).normal(n, 0, 1, 0).endVertex();
-        vc.vertex(m, -s, s, 0).color(r, g, b, 1).uv(u0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(l).normal(n, 0, 1, 0).endVertex();
+        vc.vertex(m, -s, -s, 0).color(r, g, b, 1).uv(u0, v1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(l).normal(n, 0, 1, 0).endVertex();
+        vc.vertex(m, s, -s, 0).color(r, g, b, 1).uv(u1, v1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(l).normal(n, 0, 1, 0).endVertex();
+        vc.vertex(m, s, s, 0).color(r, g, b, 1).uv(u1, v0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(l).normal(n, 0, 1, 0).endVertex();
+        vc.vertex(m, -s, s, 0).color(r, g, b, 1).uv(u0, v0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(l).normal(n, 0, 1, 0).endVertex();
         ps.popPose();
         super.render(e, yaw, partial, ps, buf, luz);
     }

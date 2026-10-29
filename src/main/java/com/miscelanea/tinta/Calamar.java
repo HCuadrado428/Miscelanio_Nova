@@ -7,12 +7,14 @@ import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.joml.Vector3f;
@@ -33,11 +35,15 @@ public final class Calamar {
     private static final UUID FRENO = UUID.fromString("2f7c6a10-5b3e-4c1d-9a8e-7b6c5d4e3f22");
     private static final Set<UUID> INVISIBLES = new HashSet<>();
     private static final Set<Integer> EN_TINTA_CLIENTE = new HashSet<>();
+    private static final Set<Integer> CALAMAR_CLIENTE = new HashSet<>(), CALAMAR_SERVIDOR = new HashSet<>();
+    /** Caja de choque del calamar: 0.6 de ancho y menos de 1 bloque de alto (cabe por huecos de 1). */
+    public static final EntityDimensions TAMANO = EntityDimensions.scalable(0.6F, 0.9F);
 
     private Calamar() {}
 
     public static boolean es(Player p) {
-        return p.isCrouching() && !p.isUsingItem() && !p.isPassenger() && !p.getAbilities().flying && !p.isSpectator()
+        if (p.getInventory() == null) return false;   // aún construyéndose
+        return p.isShiftKeyDown() && !p.isUsingItem() && !p.isInWater() && !p.isPassenger() && !p.getAbilities().flying && !p.isSpectator()
                 && !ArmaTinta.enMano(p).isEmpty();
     }
 
@@ -69,12 +75,31 @@ public final class Calamar {
         else if (!activo && tiene) a.removeModifier(id);
     }
 
+    /** Mientras es calamar, la caja de choque mide 1 bloque en vez de 2. */
+    @SubscribeEvent
+    public static void tamano(EntityEvent.Size e) {
+        if (!(e.getEntity() instanceof Player p)) return;
+        try {
+            if (!es(p)) return;
+        } catch (RuntimeException ex) {
+            return;   // el jugador aún no está listo
+        }
+        e.setNewSize(TAMANO);
+        e.setNewEyeHeight(0.55F);
+    }
+
     @SubscribeEvent
     public static void tick(TickEvent.PlayerTickEvent e) {
         if (e.phase != TickEvent.Phase.END) return;
         Player p = e.player;
         int color = ArmaTinta.colorJugador(p);
         boolean calamar = es(p);
+        Set<Integer> marcados = p.level().isClientSide ? CALAMAR_CLIENTE : CALAMAR_SERVIDOR;
+        if (calamar != marcados.contains(p.getId())) {
+            if (calamar) marcados.add(p.getId());
+            else marcados.remove(p.getId());
+            p.refreshDimensions();
+        }
         boolean enTinta = calamar && enSuTinta(p);
         Direction pared = calamar ? paredPintada(p, color) : null;
         int suelo = Tinta.suelo(p.level(), p.position());
