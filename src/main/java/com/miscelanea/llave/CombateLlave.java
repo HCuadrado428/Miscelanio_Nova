@@ -38,14 +38,29 @@ public final class CombateLlave {
 
     private CombateLlave() {}
 
+    private static final org.slf4j.Logger LOG = com.mojang.logging.LogUtils.getLogger();
+
     public static void accion(ServerPlayer p, AccionLlave a, float yaw, int objetivo) {
         var s = p.getMainHandItem();
-        if (!(s.getItem() instanceof LlaveEspadaItem) || p.isSpectator()) return;
+        LOG.info("[Llave] servidor recibe {} de {}", a, p.getName().getString());
+        if (!(s.getItem() instanceof LlaveEspadaItem) || p.isSpectator()) {
+            LOG.info("[Llave] rechazada: no lleva la llave en la mano principal");
+            return;
+        }
         long ahora = p.level().getGameTime();
-        if (ahora < LIBRE.getOrDefault(p.getUUID(), 0L) - 3) return;
+        if (ahora < LIBRE.getOrDefault(p.getUUID(), 0L) - 3) {
+            LOG.info("[Llave] rechazada: aun ocupado");
+            return;
+        }
         boolean lanzada = LlaveEspadaItem.lanzada(s);
-        if (lanzada && a != AccionLlave.CURA && a != AccionLlave.PIRO && a != AccionLlave.HIELO) return;
-        if (a.coste > 0 && !Magia.gastar(p, a.coste)) return;
+        if (lanzada && a != AccionLlave.CURA && a != AccionLlave.PIRO && a != AccionLlave.HIELO) {
+            LOG.info("[Llave] rechazada: la llave esta lanzada");
+            return;
+        }
+        if (a.coste > 0 && !Magia.gastar(p, a.coste)) {
+            LOG.info("[Llave] rechazada: sin PM");
+            return;
+        }
         LIBRE.put(p.getUUID(), ahora + a.recuperacion);
         ModNetwork.CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> p), new AnimPacket(p.getId(), a.ordinal()));
         Entity obj = objetivo >= 0 ? p.level().getEntity(objetivo) : null;

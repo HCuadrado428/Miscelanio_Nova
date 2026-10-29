@@ -130,6 +130,7 @@ public final class LlaveCliente {
             if (p != null && !CamaraCombate.activa()) while (FIJAR.consumeClick()) {}
             return;
         }
+        revisarTiempos(p);
         while (CAMBIAR.consumeClick()) comando = (comando + 1) % AccionLlave.COMANDOS.length;
         while (FIJAR.consumeClick()) alternarFijado(p);
         while (COMANDO.consumeClick()) {
@@ -150,7 +151,19 @@ public final class LlaveCliente {
         moverDuranteAccion(p);
     }
 
+    private static final org.slf4j.Logger LOG = com.mojang.logging.LogUtils.getLogger();
+
+    /** Si el jugador es nuevo (respawn, otro mundo) su tickCount vuelve a 0: los tiempos guardados ya no valen. */
+    private static void revisarTiempos(LocalPlayer p) {
+        if (libreEn > p.tickCount + 100 || ultimoGolpe > p.tickCount) {
+            libreEn = 0;
+            ultimoGolpe = 0;
+            accion = null;
+        }
+    }
+
     private static void atacar(LocalPlayer p) {
+        revisarTiempos(p);
         if (LlaveEspadaItem.lanzada(p.getMainHandItem())) return;
         if (p.tickCount < libreEn) {
             if (libreEn - p.tickCount <= 5) pendiente = true;   // se guarda el clic para encadenar
@@ -182,6 +195,7 @@ public final class LlaveCliente {
         dirAccion = Vec3.directionFromRotation(0, yaw);
         libreEn = p.tickCount + a.recuperacion;
         ModNetwork.CHANNEL.sendToServer(new AccionPacket(a, yaw, obj != null ? obj.getId() : -1));
+        LOG.info("[Llave] accion {} enviada (capa de animacion encontrada: {})", a, AnimJugador.de(p) != null);
     }
 
     /** Movimiento del propio jugador durante algunas acciones (lo mueve su cliente). */

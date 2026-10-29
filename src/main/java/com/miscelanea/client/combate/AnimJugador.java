@@ -44,6 +44,7 @@ public class AnimJugador implements IAnimation {
     public AnimJugador(AbstractClientPlayer player) {
         this.player = player;
         POR_JUGADOR.put(player, this);
+        com.mojang.logging.LogUtils.getLogger().info("[Llave] capa de animacion creada para {}", player.getClass().getSimpleName());
     }
 
     public static AnimJugador de(AbstractClientPlayer p) {
