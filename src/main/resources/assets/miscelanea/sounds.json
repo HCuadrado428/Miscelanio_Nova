@@ -160,5 +160,77 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.cohete_explosion"
+  },
+  "llave_golpe": {
+    "sounds": [
+      {
+        "name": "miscelanea:llave_golpe",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.llave_golpe"
+  },
+  "llave_impacto": {
+    "sounds": [
+      {
+        "name": "miscelanea:llave_impacto",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.llave_impacto"
+  },
+  "llave_remate": {
+    "sounds": [
+      {
+        "name": "miscelanea:llave_remate",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.llave_remate"
+  },
+  "llave_lanzar": {
+    "sounds": [
+      {
+        "name": "miscelanea:llave_lanzar",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.llave_lanzar"
+  },
+  "hechizo_piro": {
+    "sounds": [
+      {
+        "name": "miscelanea:hechizo_piro",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.hechizo_piro"
+  },
+  "hechizo_hielo": {
+    "sounds": [
+      {
+        "name": "miscelanea:hechizo_hielo",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.hechizo_hielo"
+  },
+  "hechizo_cura": {
+    "sounds": [
+      {
+        "name": "miscelanea:hechizo_cura",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.hechizo_cura"
+  },
+  "cerradura": {
+    "sounds": [
+      {
+        "name": "miscelanea:cerradura",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.cerradura"
   }
 }

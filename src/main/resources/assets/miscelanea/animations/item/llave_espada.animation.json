@@ -1,0 +1,45 @@
+{
+ "format_version": "1.8.0",
+ "animations": {
+  "animation.llave_espada.idle": {
+   "loop": true,
+   "animation_length": 2.0,
+   "bones": {
+    "llavero": {
+     "rotation": {
+      "0.0": [
+       0,
+       0,
+       -8
+      ],
+      "1.0": [
+       0,
+       0,
+       8
+      ],
+      "2.0": [
+       0,
+       0,
+       -8
+      ]
+     }
+    }
+   }
+  },
+  "animation.llave_espada.lanzada": {
+   "loop": true,
+   "animation_length": 1.0,
+   "bones": {
+    "llave": {
+     "scale": {
+      "0.0": [
+       0,
+       0,
+       0
+      ]
+     }
+    }
+   }
+  }
+ }
+}

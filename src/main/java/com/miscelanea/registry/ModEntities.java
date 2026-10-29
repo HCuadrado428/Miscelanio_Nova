@@ -31,5 +31,13 @@ public final class ModEntities {
             () -> EntityType.Builder.<com.miscelanea.armas.CoheteEntity>of(com.miscelanea.armas.CoheteEntity::new, MobCategory.MISC)
                     .sized(0.3F, 0.3F).clientTrackingRange(8).updateInterval(1).build("cohete"));
 
+    public static final RegistryObject<EntityType<com.miscelanea.llave.LlaveLanzada>> LLAVE_LANZADA = ENTITIES.register("llave_lanzada",
+            () -> EntityType.Builder.<com.miscelanea.llave.LlaveLanzada>of(com.miscelanea.llave.LlaveLanzada::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F).clientTrackingRange(8).updateInterval(1).build("llave_lanzada"));
+
+    public static final RegistryObject<EntityType<com.miscelanea.llave.HechizoEntity>> HECHIZO = ENTITIES.register("hechizo",
+            () -> EntityType.Builder.<com.miscelanea.llave.HechizoEntity>of(com.miscelanea.llave.HechizoEntity::new, MobCategory.MISC)
+                    .sized(0.3F, 0.3F).clientTrackingRange(8).updateInterval(1).build("hechizo"));
+
     private ModEntities() {}
 }

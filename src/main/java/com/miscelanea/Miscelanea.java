@@ -63,6 +63,7 @@ public class Miscelanea {
             event.accept(ModItems.CARTUCHOS);
             event.accept(ModItems.LANZACOHETES);
             event.accept(ModItems.COHETE);
+            event.accept(ModItems.LLAVE_ESPADA);
         }
     }
 }

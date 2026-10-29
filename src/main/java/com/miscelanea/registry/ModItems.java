@@ -71,5 +71,9 @@ public final class ModItems {
     public static final RegistryObject<Item> CARTUCHOS = ITEMS.register("cartuchos", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> COHETE = ITEMS.register("cohete", () -> new Item(new Item.Properties().stacksTo(16)));
 
+    // ---- Kingdom Hearts
+    public static final RegistryObject<Item> LLAVE_ESPADA = ITEMS.register("llave_espada",
+            () -> new com.miscelanea.llave.LlaveEspadaItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
+
     private ModItems() {}
 }

@@ -46,6 +46,11 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void clientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(PoseAspiradora::init); // crea el ArmPose a dos manos
+            com.miscelanea.client.combate.LlaveCliente.init();
+            // Animaciones de combate con armas con estilo (Llave Espada...): por encima de todo
+            dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
+                    new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "combate"), 1200,
+                    com.miscelanea.client.combate.AnimJugador::new);
             // Animaciones del agarre de la porra (playerAnimator)
             dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "agarre"), 1000,
@@ -64,6 +69,8 @@ public final class ClientEvents {
             event.registerEntityRenderer(ModEntities.TINTA.get(), com.miscelanea.client.tinta.TintaProyectilRenderer::new);
             event.registerEntityRenderer(ModEntities.GANCHO.get(), com.miscelanea.client.armas.GanchoRenderer::new);
             event.registerEntityRenderer(ModEntities.COHETE.get(), com.miscelanea.client.armas.CoheteRenderer::new);
+            event.registerEntityRenderer(ModEntities.LLAVE_LANZADA.get(), com.miscelanea.client.combate.LlaveLanzadaRenderer::new);
+            event.registerEntityRenderer(ModEntities.HECHIZO.get(), com.miscelanea.client.combate.HechizoRenderer::new);
         }
 
         @SubscribeEvent
@@ -97,6 +104,9 @@ public final class ClientEvents {
         public static void registerKeys(RegisterKeyMappingsEvent event) {
             event.register(SOLTAR_CAPTURA);
             event.register(MOCHILA);
+            event.register(com.miscelanea.client.combate.LlaveCliente.COMANDO);
+            event.register(com.miscelanea.client.combate.LlaveCliente.CAMBIAR);
+            event.register(com.miscelanea.client.combate.LlaveCliente.FIJAR);
         }
 
         @SubscribeEvent
@@ -108,6 +118,7 @@ public final class ClientEvents {
             event.registerBelowAll("medigun", com.miscelanea.client.medigun.MedigunCliente::render);
             event.registerAboveAll("tinta", com.miscelanea.client.tinta.CalamarRender::hud);
             event.registerAboveAll("armas", com.miscelanea.client.armas.ArmasCliente::hud);
+            event.registerAboveAll("llave", com.miscelanea.client.combate.LlaveCliente::hud);
         }
     }
 

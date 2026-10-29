@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.miscelanea.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "miscelanea.refmap.json",
+  "mixins": [],
+  "client": ["CameraMixin", "MouseHandlerMixin"],
+  "injectors": {"defaultRequire": 1}
+}

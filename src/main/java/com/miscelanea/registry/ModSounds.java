@@ -40,6 +40,15 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> LANZACOHETES_RECARGA = register("lanzacohetes_recarga");
     public static final RegistryObject<SoundEvent> COHETE_EXPLOSION = register("cohete_explosion");
 
+    public static final RegistryObject<SoundEvent> LLAVE_GOLPE = register("llave_golpe");
+    public static final RegistryObject<SoundEvent> LLAVE_IMPACTO = register("llave_impacto");
+    public static final RegistryObject<SoundEvent> LLAVE_REMATE = register("llave_remate");
+    public static final RegistryObject<SoundEvent> LLAVE_LANZAR = register("llave_lanzar");
+    public static final RegistryObject<SoundEvent> HECHIZO_PIRO = register("hechizo_piro");
+    public static final RegistryObject<SoundEvent> HECHIZO_HIELO = register("hechizo_hielo");
+    public static final RegistryObject<SoundEvent> HECHIZO_CURA = register("hechizo_cura");
+    public static final RegistryObject<SoundEvent> CERRADURA = register("cerradura");
+
 
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name,

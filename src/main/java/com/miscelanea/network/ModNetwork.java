@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String PROTOCOLO = "12";
+    private static final String PROTOCOLO = "13";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "main"),
@@ -86,6 +86,21 @@ public final class ModNetwork {
                 .encoder(com.miscelanea.armas.GanchoPacket::encode)
                 .decoder(com.miscelanea.armas.GanchoPacket::new)
                 .consumerMainThread(com.miscelanea.armas.GanchoPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.llave.AccionPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.llave.AccionPacket::encode)
+                .decoder(com.miscelanea.llave.AccionPacket::new)
+                .consumerMainThread(com.miscelanea.llave.AccionPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.llave.AnimPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.miscelanea.llave.AnimPacket::encode)
+                .decoder(com.miscelanea.llave.AnimPacket::new)
+                .consumerMainThread(com.miscelanea.llave.AnimPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.llave.PmPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.miscelanea.llave.PmPacket::encode)
+                .decoder(com.miscelanea.llave.PmPacket::new)
+                .consumerMainThread(com.miscelanea.llave.PmPacket::handle)
                 .add();
     }
 }
