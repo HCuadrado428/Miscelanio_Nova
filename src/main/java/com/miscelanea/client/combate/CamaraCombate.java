@@ -30,9 +30,9 @@ public final class CamaraCombate {
     /** Colocación de la cámara de cada juego. */
     public record Estilo(double distancia, double altura, double lateral, float giroMax, float pitchMin, float pitchMax) {}
 
-    public static final Estilo KINGDOM_HEARTS = new Estilo(5.2, 1.55, 0.0, 30F, -40F, 70F);
-    public static final Estilo GOD_OF_WAR = new Estilo(2.5, 1.62, 0.72, 25F, -50F, 60F);
-    public static final Estilo GOD_OF_WAR_APUNTAR = new Estilo(1.45, 1.66, 0.82, 25F, -60F, 70F);
+    public static final Estilo KINGDOM_HEARTS = new Estilo(5.2, 1.55, 0.0, 40F, -40F, 70F);
+    public static final Estilo GOD_OF_WAR = new Estilo(3.0, 1.78, 0.78, 45F, -50F, 60F);
+    public static final Estilo GOD_OF_WAR_APUNTAR = new Estilo(1.6, 1.72, 0.85, 45F, -60F, 70F);
 
     /** Si es true, el jugador mira siempre hacia la cámara (apuntando, con el escudo...) y se mueve de lado. */
     public static boolean encarar;
@@ -94,7 +94,7 @@ public final class CamaraCombate {
             alt = nuevo.altura();
             lat = nuevo.lateral();
             yaw = p.getYRot();
-            pitch = 15F;
+            pitch = 10F;
             antes = mc.options.getCameraType();
         } else if (nuevo == null && estilo != null) {
             if (p != null) {

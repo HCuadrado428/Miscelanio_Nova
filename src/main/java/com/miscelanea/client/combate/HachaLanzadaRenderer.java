@@ -31,14 +31,14 @@ public class HachaLanzadaRenderer extends GeoEntityRenderer<HachaLanzada> {
         if (e.estado() == HachaLanzada.CLAVADA) {
             // la cabeza clavada delante; el mango sale hacia atrás y arriba
             ps.mulPose(Axis.XP.rotationDegrees(-55));
-            ps.translate(0, -0.85, 0);
+            ps.translate(0, -0.62, 0);
         } else if (e.pesado() && e.estado() == HachaLanzada.VOLANDO) {
             ps.mulPose(Axis.XP.rotationDegrees(giro));          // gira en vertical
-            ps.translate(0, -0.42, 0);
+            ps.translate(0, -0.34, 0);
         } else {
             ps.mulPose(Axis.XP.rotationDegrees(90));            // tumbada
             ps.mulPose(Axis.ZP.rotationDegrees(giro));          // gira en horizontal
-            ps.translate(0, -0.42, 0);
+            ps.translate(0, -0.34, 0);
         }
         ps.mulPose(Axis.YP.rotationDegrees(-90));               // filo hacia delante (antes del giro de GeckoLib)
         ps.scale(0.85F, 0.85F, 0.85F);
