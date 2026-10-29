@@ -49,6 +49,18 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> HECHIZO_CURA = register("hechizo_cura");
     public static final RegistryObject<SoundEvent> CERRADURA = register("cerradura");
 
+    public static final RegistryObject<SoundEvent> HACHA_GOLPE = register("hacha_golpe");
+    public static final RegistryObject<SoundEvent> HACHA_IMPACTO = register("hacha_impacto");
+    public static final RegistryObject<SoundEvent> HACHA_LANZAR = register("hacha_lanzar");
+    public static final RegistryObject<SoundEvent> HACHA_VOLVER = register("hacha_volver");
+    public static final RegistryObject<SoundEvent> HACHA_ATRAPAR = register("hacha_atrapar");
+    public static final RegistryObject<SoundEvent> ESCUDO_BLOQUEO = register("escudo_bloqueo");
+    public static final RegistryObject<SoundEvent> ESCUDO_PARRY = register("escudo_parry");
+    public static final RegistryObject<SoundEvent> ESCUDO_ABRIR = register("escudo_abrir");
+    public static final RegistryObject<SoundEvent> RUNICO = register("runico");
+    public static final RegistryObject<SoundEvent> ESCARCHA = register("escarcha");
+    public static final RegistryObject<SoundEvent> PUNETAZO = register("punetazo");
+
 
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name,

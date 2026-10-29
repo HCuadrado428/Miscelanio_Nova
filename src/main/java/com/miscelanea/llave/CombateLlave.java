@@ -74,7 +74,7 @@ public final class CombateLlave {
         }
     }
 
-    private static void programar(ServerPlayer p, int ticks, Runnable r) {
+    public static void programar(ServerPlayer p, int ticks, Runnable r) {
         TAREAS.add(new Tarea(p, p.level().getGameTime() + ticks, r));
     }
 

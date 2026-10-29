@@ -27,6 +27,11 @@ public class AnimJugador implements IAnimation {
         AnimClip reposo();
         AnimClip correr();
         AnimClip aire();
+
+        /** Postura que manda sobre las demás mientras no hay un ataque (apuntar, escudo, cargar...), o null. */
+        default AnimClip especial(AbstractClientPlayer p) {
+            return null;
+        }
     }
 
     /** Devuelve el estilo del arma que lleva el jugador en la mano (o null). Lo rellena el cliente de cada arma. */
@@ -114,7 +119,8 @@ public class AnimJugador implements IAnimation {
             clip.muestra(ahora - inicioClip, tmp);
         } else {
             double vel = Math.hypot(player.getX() - player.xo, player.getZ() - player.zo);
-            AnimClip nueva = aireCombate && !player.onGround() ? estilo.aire() : vel > 0.09 ? estilo.correr() : estilo.reposo();
+            AnimClip esp = estilo.especial(player);
+            AnimClip nueva = esp != null ? esp : aireCombate && !player.onGround() ? estilo.aire() : vel > 0.09 ? estilo.correr() : estilo.reposo();
             if (nueva != postura) {
                 if (postura != null) empezarMezcla(4.0F);
                 postura = nueva;

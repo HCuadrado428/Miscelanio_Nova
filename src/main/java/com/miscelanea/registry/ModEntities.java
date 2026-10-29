@@ -39,5 +39,9 @@ public final class ModEntities {
             () -> EntityType.Builder.<com.miscelanea.llave.HechizoEntity>of(com.miscelanea.llave.HechizoEntity::new, MobCategory.MISC)
                     .sized(0.3F, 0.3F).clientTrackingRange(8).updateInterval(1).build("hechizo"));
 
+    public static final RegistryObject<EntityType<com.miscelanea.hacha.HachaLanzada>> HACHA_LANZADA = ENTITIES.register("hacha_lanzada",
+            () -> EntityType.Builder.<com.miscelanea.hacha.HachaLanzada>of(com.miscelanea.hacha.HachaLanzada::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F).clientTrackingRange(10).updateInterval(1).build("hacha_lanzada"));
+
     private ModEntities() {}
 }

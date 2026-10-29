@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String PROTOCOLO = "13";
+    private static final String PROTOCOLO = "14";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "main"),
@@ -101,6 +101,21 @@ public final class ModNetwork {
                 .encoder(com.miscelanea.llave.PmPacket::encode)
                 .decoder(com.miscelanea.llave.PmPacket::new)
                 .consumerMainThread(com.miscelanea.llave.PmPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.hacha.HachaPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.hacha.HachaPacket::encode)
+                .decoder(com.miscelanea.hacha.HachaPacket::new)
+                .consumerMainThread(com.miscelanea.hacha.HachaPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.hacha.PosturaPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.hacha.PosturaPacket::encode)
+                .decoder(com.miscelanea.hacha.PosturaPacket::new)
+                .consumerMainThread(com.miscelanea.hacha.PosturaPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.hacha.PosturaOtroPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.miscelanea.hacha.PosturaOtroPacket::encode)
+                .decoder(com.miscelanea.hacha.PosturaOtroPacket::new)
+                .consumerMainThread(com.miscelanea.hacha.PosturaOtroPacket::handle)
                 .add();
     }
 }

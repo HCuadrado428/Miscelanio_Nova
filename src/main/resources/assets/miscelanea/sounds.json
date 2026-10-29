@@ -232,5 +232,104 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.cerradura"
+  },
+  "hacha_golpe": {
+    "sounds": [
+      {
+        "name": "miscelanea:hacha_golpe",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.hacha_golpe"
+  },
+  "hacha_impacto": {
+    "sounds": [
+      {
+        "name": "miscelanea:hacha_impacto",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.hacha_impacto"
+  },
+  "hacha_lanzar": {
+    "sounds": [
+      {
+        "name": "miscelanea:hacha_lanzar",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.hacha_lanzar"
+  },
+  "hacha_volver": {
+    "sounds": [
+      {
+        "name": "miscelanea:hacha_volver",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.hacha_volver"
+  },
+  "hacha_atrapar": {
+    "sounds": [
+      {
+        "name": "miscelanea:hacha_atrapar",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.hacha_atrapar"
+  },
+  "escudo_bloqueo": {
+    "sounds": [
+      {
+        "name": "miscelanea:escudo_bloqueo",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.escudo_bloqueo"
+  },
+  "escudo_parry": {
+    "sounds": [
+      {
+        "name": "miscelanea:escudo_parry",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.escudo_parry"
+  },
+  "escudo_abrir": {
+    "sounds": [
+      {
+        "name": "miscelanea:escudo_abrir",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.escudo_abrir"
+  },
+  "runico": {
+    "sounds": [
+      {
+        "name": "miscelanea:runico",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.runico"
+  },
+  "escarcha": {
+    "sounds": [
+      {
+        "name": "miscelanea:escarcha",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.escarcha"
+  },
+  "punetazo": {
+    "sounds": [
+      {
+        "name": "miscelanea:punetazo",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.punetazo"
   }
 }

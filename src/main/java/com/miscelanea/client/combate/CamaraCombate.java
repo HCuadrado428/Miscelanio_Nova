@@ -31,7 +31,12 @@ public final class CamaraCombate {
     public record Estilo(double distancia, double altura, double lateral, float giroMax, float pitchMin, float pitchMax) {}
 
     public static final Estilo KINGDOM_HEARTS = new Estilo(5.2, 1.55, 0.0, 30F, -40F, 70F);
-    public static final Estilo GOD_OF_WAR = new Estilo(2.4, 1.62, 0.7, 25F, -50F, 60F);
+    public static final Estilo GOD_OF_WAR = new Estilo(2.5, 1.62, 0.72, 25F, -50F, 60F);
+    public static final Estilo GOD_OF_WAR_APUNTAR = new Estilo(1.45, 1.66, 0.82, 25F, -60F, 70F);
+
+    /** Si es true, el jugador mira siempre hacia la cámara (apuntando, con el escudo...) y se mueve de lado. */
+    public static boolean encarar;
+    private static double dist = 4, alt = 1.6, lat = 0;
 
     /** Qué estilo de cámara toca con lo que lleva el jugador (lo rellenan las armas). */
     public static Function<LocalPlayer, Estilo> ESTILO = p -> null;
@@ -83,7 +88,11 @@ public final class CamaraCombate {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer p = mc.player;
         Estilo nuevo = p == null || p.isSpectator() ? null : ESTILO.apply(p);
+        if (nuevo == null) encarar = false;
         if (nuevo != null && estilo == null) {
+            dist = nuevo.distancia();
+            alt = nuevo.altura();
+            lat = nuevo.lateral();
             yaw = p.getYRot();
             pitch = 15F;
             antes = mc.options.getCameraType();
@@ -112,6 +121,11 @@ public final class CamaraCombate {
         if (bloqueoMovimiento > 0) {
             in.forwardImpulse = 0;
             in.leftImpulse = 0;
+            return;
+        }
+        if (encarar) {
+            p.setYRot(yaw);
+            p.setXRot(Mth.clamp(pitch, -60, 60));
             return;
         }
         float f = in.forwardImpulse, l = in.leftImpulse;
@@ -144,7 +158,12 @@ public final class CamaraCombate {
         long ahora = System.nanoTime();
         float dt = ultimoFrame == 0 ? 0.016F : Math.min(0.1F, (ahora - ultimoFrame) / 1e9F);
         ultimoFrame = ahora;
-        Vec3 pivote = new Vec3(Mth.lerp(partial, ent.xo, ent.getX()), Mth.lerp(partial, ent.yo, ent.getY()) + estilo.altura(),
+        // transición suave entre colocaciones (p. ej. al apuntar la cámara se pega al hombro)
+        float ks = Math.min(1, dt * 9F);
+        dist += (estilo.distancia() - dist) * ks;
+        alt += (estilo.altura() - alt) * ks;
+        lat += (estilo.lateral() - lat) * ks;
+        Vec3 pivote = new Vec3(Mth.lerp(partial, ent.xo, ent.getX()), Mth.lerp(partial, ent.yo, ent.getY()) + alt,
                 Mth.lerp(partial, ent.zo, ent.getZ()));
         if (fijado != null) {
             Vec3 obj = fijado.getPosition(partial).add(0, fijado.getBbHeight() * 0.5, 0);
@@ -158,9 +177,9 @@ public final class CamaraCombate {
         Vec3 delante = Vec3.directionFromRotation(pitch, yaw);
         float r = yaw * Mth.DEG_TO_RAD;
         Vec3 derecha = new Vec3(-Mth.cos(r), 0, -Mth.sin(r));
-        Vec3 lado = pivote.add(derecha.scale(estilo.lateral()));
+        Vec3 lado = pivote.add(derecha.scale(lat));
         lado = choque(level, ent, pivote, lado);
-        Vec3 pos = choque(level, ent, lado, lado.subtract(delante.scale(estilo.distancia())));
+        Vec3 pos = choque(level, ent, lado, lado.subtract(delante.scale(dist)));
         return new double[]{pos.x, pos.y, pos.z, yaw, pitch};
     }
 

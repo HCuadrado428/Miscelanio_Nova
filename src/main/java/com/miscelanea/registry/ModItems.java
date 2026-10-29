@@ -75,5 +75,12 @@ public final class ModItems {
     public static final RegistryObject<Item> LLAVE_ESPADA = ITEMS.register("llave_espada",
             () -> new com.miscelanea.llave.LlaveEspadaItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
 
+    // ---- God of War
+    public static final RegistryObject<Item> HACHA_LEVIATAN = ITEMS.register("hacha_leviatan",
+            () -> new com.miscelanea.hacha.HachaItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
+    /** Solo para dibujar el escudo plegable de Kratos en el brazo. */
+    public static final RegistryObject<Item> ESCUDO_GUARDIAN = ITEMS.register("escudo_guardian",
+            () -> new com.miscelanea.hacha.EscudoItem(new Item.Properties().stacksTo(1)));
+
     private ModItems() {}
 }

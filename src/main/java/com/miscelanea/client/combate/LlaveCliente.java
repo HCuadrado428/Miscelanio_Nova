@@ -125,9 +125,12 @@ public final class LlaveCliente {
         if (sonicOtros != null && !AnimJugador.ocupado(sonicOtros)) sonicOtros = null;
         if (!lleva(p)) {
             accion = null;
-            while (COMANDO.consumeClick()) {}
-            while (CAMBIAR.consumeClick()) {}
-            if (p != null && !CamaraCombate.activa()) while (FIJAR.consumeClick()) {}
+            // las mismas teclas las usa el Hacha Leviatán: solo se vacían si no llevas ninguna de las dos
+            if (p != null && !(p.getMainHandItem().getItem() instanceof com.miscelanea.hacha.HachaItem)) {
+                while (COMANDO.consumeClick()) {}
+                while (CAMBIAR.consumeClick()) {}
+                while (FIJAR.consumeClick()) {}
+            }
             return;
         }
         revisarTiempos(p);

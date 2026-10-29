@@ -1,0 +1,60 @@
+{
+ "format_version": "1.8.0",
+ "animations": {
+  "animation.hacha_leviatan.idle": {
+   "loop": true,
+   "animation_length": 1.0,
+   "bones": {
+    "escarcha": {
+     "scale": {
+      "0.0": [
+       0,
+       0,
+       0
+      ]
+     }
+    }
+   }
+  },
+  "animation.hacha_leviatan.escarcha": {
+   "loop": true,
+   "animation_length": 1.0,
+   "bones": {
+    "escarcha": {
+     "scale": {
+      "0.0": [
+       1,
+       1,
+       1
+      ],
+      "0.5": [
+       1.04,
+       1.02,
+       1.1
+      ],
+      "1.0": [
+       1,
+       1,
+       1
+      ]
+     }
+    }
+   }
+  },
+  "animation.hacha_leviatan.lanzada": {
+   "loop": true,
+   "animation_length": 1.0,
+   "bones": {
+    "hacha": {
+     "scale": {
+      "0.0": [
+       0,
+       0,
+       0
+      ]
+     }
+    }
+   }
+  }
+ }
+}

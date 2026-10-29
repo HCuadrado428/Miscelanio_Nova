@@ -47,6 +47,7 @@ public final class ClientEvents {
         public static void clientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(PoseAspiradora::init); // crea el ArmPose a dos manos
             com.miscelanea.client.combate.LlaveCliente.init();
+            com.miscelanea.client.combate.HachaCliente.init();
             // Animaciones de combate con armas con estilo (Llave Espada...): por encima de todo
             dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "combate"), 1200,
@@ -71,6 +72,7 @@ public final class ClientEvents {
             event.registerEntityRenderer(ModEntities.COHETE.get(), com.miscelanea.client.armas.CoheteRenderer::new);
             event.registerEntityRenderer(ModEntities.LLAVE_LANZADA.get(), com.miscelanea.client.combate.LlaveLanzadaRenderer::new);
             event.registerEntityRenderer(ModEntities.HECHIZO.get(), com.miscelanea.client.combate.HechizoRenderer::new);
+            event.registerEntityRenderer(ModEntities.HACHA_LANZADA.get(), com.miscelanea.client.combate.HachaLanzadaRenderer::new);
         }
 
         @SubscribeEvent
@@ -89,6 +91,7 @@ public final class ClientEvents {
                     renderer.addLayer(new com.miscelanea.client.medigun.UberLayer(renderer, "slim".equals(skin)));
                     renderer.addLayer(new com.miscelanea.client.nucleo.GlitchCapaLayer(renderer, "slim".equals(skin)));
                     renderer.addLayer(new com.miscelanea.client.tinta.DepositoLayer(renderer));
+                    renderer.addLayer(new com.miscelanea.client.combate.EscudoLayer(renderer, "slim".equals(skin)));
                 }
             }
         }
@@ -107,6 +110,8 @@ public final class ClientEvents {
             event.register(com.miscelanea.client.combate.LlaveCliente.COMANDO);
             event.register(com.miscelanea.client.combate.LlaveCliente.CAMBIAR);
             event.register(com.miscelanea.client.combate.LlaveCliente.FIJAR);
+            event.register(com.miscelanea.client.combate.HachaCliente.APUNTAR);
+            event.register(com.miscelanea.client.combate.HachaCliente.ESCUDO);
         }
 
         @SubscribeEvent
@@ -119,6 +124,7 @@ public final class ClientEvents {
             event.registerAboveAll("tinta", com.miscelanea.client.tinta.CalamarRender::hud);
             event.registerAboveAll("armas", com.miscelanea.client.armas.ArmasCliente::hud);
             event.registerAboveAll("llave", com.miscelanea.client.combate.LlaveCliente::hud);
+            event.registerAboveAll("hacha", com.miscelanea.client.combate.HachaCliente::hud);
         }
     }
 
