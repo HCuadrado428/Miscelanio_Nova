@@ -9,7 +9,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
+import java.util.WeakHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -19,7 +19,8 @@ import java.util.function.Function;
  * Mezcla suave entre clips y entre posturas.
  */
 public class AnimJugador implements IAnimation {
-    private static final Map<Integer, AnimJugador> POR_JUGADOR = new HashMap<>();
+    // Por objeto jugador (no por id: al crearse el jugador su id aún no es el definitivo, se cambia después con setId)
+    private static final Map<AbstractClientPlayer, AnimJugador> POR_JUGADOR = new WeakHashMap<>();
 
     /** Lo que define cada arma: qué clips usar como postura. */
     public interface Estilo {
@@ -42,11 +43,11 @@ public class AnimJugador implements IAnimation {
 
     public AnimJugador(AbstractClientPlayer player) {
         this.player = player;
-        POR_JUGADOR.put(player.getId(), this);
+        POR_JUGADOR.put(player, this);
     }
 
     public static AnimJugador de(AbstractClientPlayer p) {
-        return POR_JUGADOR.get(p.getId());
+        return POR_JUGADOR.get(p);
     }
 
     /** Reproduce un clip de ataque/acción. */
