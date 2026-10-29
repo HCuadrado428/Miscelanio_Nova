@@ -51,19 +51,21 @@ public class AnimJugador implements IAnimation {
         return POR_JUGADOR.get(p);
     }
 
+    /** Petición de clip pendiente: la recoge la capa del jugador en su siguiente fotograma (por UUID, que no cambia). */
+    private record Pedido(AnimClip clip, float inicio, boolean aereo) {}
+
+    private static final Map<java.util.UUID, Pedido> PEDIDOS = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final Map<java.util.UUID, Boolean> OCUPADOS = new java.util.concurrent.ConcurrentHashMap<>();
+
     /** Reproduce un clip de ataque/acción. */
     public static void reproducir(AbstractClientPlayer p, AnimClip c, boolean aereo) {
-        AnimJugador a = de(p);
-        if (a == null || c == null) return;
-        a.empezarMezcla(2.0F);
-        a.clip = c;
-        a.inicioClip = p.tickCount + mc().getFrameTime();
-        if (aereo) a.aireCombate = true;
+        if (c == null) return;
+        PEDIDOS.put(p.getUUID(), new Pedido(c, p.tickCount + mc().getFrameTime(), aereo));
+        OCUPADOS.put(p.getUUID(), true);
     }
 
     public static boolean ocupado(AbstractClientPlayer p) {
-        AnimJugador a = de(p);
-        return a != null && a.clip != null;
+        return OCUPADOS.getOrDefault(p.getUUID(), false);
     }
 
     private static net.minecraft.client.Minecraft mc() {
@@ -91,8 +93,17 @@ public class AnimJugador implements IAnimation {
 
     @Override
     public void setupAnim(float tickDelta) {
+        if (estilo == null) estilo = ESTILO.apply(player);
         if (estilo == null) return;
         float ahora = player.tickCount + tickDelta;
+        Pedido pe = PEDIDOS.remove(player.getUUID());
+        if (pe != null) {
+            empezarMezcla(2.0F);
+            clip = pe.clip();
+            inicioClip = Math.min(pe.inicio(), ahora);
+            if (pe.aereo()) aireCombate = true;
+        }
+        OCUPADOS.put(player.getUUID(), clip != null);
         zurdo = player.getMainArm() == HumanoidArm.LEFT;
         if (player.onGround() || player.isInWater()) aireCombate = false;
         if (clip != null && ahora - inicioClip >= clip.dur) {
