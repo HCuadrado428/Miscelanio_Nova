@@ -530,9 +530,9 @@ public final class Juegos {
             }
         }
 
-        void mover(float f) {
-            bxp += vx * f;
-            byp += vy * f;
+        void mover(float dt) {
+            bxp += vx * dt;
+            byp += vy * dt;
             if (bxp < X0) {
                 bxp = X0;
                 vx = Math.abs(vx);
