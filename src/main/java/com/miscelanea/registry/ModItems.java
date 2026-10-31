@@ -86,5 +86,28 @@ public final class ModItems {
     public static final RegistryObject<Item> PIPBOY = ITEMS.register("pipboy",
             () -> new com.miscelanea.pipboy.PipBoyItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
 
+    // ---- Animal Crossing / Stardew: bichos, peces y museo
+    public static final RegistryObject<Item> RED = ITEMS.register("red",
+            () -> new com.miscelanea.bichos.RedItem(new Item.Properties().durability(240)));
+    public static final RegistryObject<Item> CANA = ITEMS.register("cana",
+            () -> new com.miscelanea.bichos.CanaItem(new Item.Properties().durability(128)));
+    public static final RegistryObject<Item> BICHOPEDIA = ITEMS.register("bichopedia",
+            () -> new com.miscelanea.bichos.BichopediaItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> VITRINA = ITEMS.register("vitrina",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.VITRINA.get(), new Item.Properties()));
+    private static final java.util.Map<com.miscelanea.bichos.Especie, RegistryObject<Item>> BICHOS = new java.util.EnumMap<>(com.miscelanea.bichos.Especie.class);
+    static {
+        for (com.miscelanea.bichos.Especie e : com.miscelanea.bichos.Especie.values())
+            BICHOS.put(e, ITEMS.register(e.item(), () -> new com.miscelanea.bichos.BichoItem(e, new Item.Properties().stacksTo(e.esPez() ? 16 : 64))));
+    }
+
+    public static Item bicho(com.miscelanea.bichos.Especie e) {
+        return BICHOS.get(e).get();
+    }
+
+    public static java.util.Collection<RegistryObject<Item>> bichos() {
+        return BICHOS.values();
+    }
+
     private ModItems() {}
 }

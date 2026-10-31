@@ -28,5 +28,13 @@ public final class ModBlocks {
             () -> new com.miscelanea.nucleo.BloqueCorrupto(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).strength(0.3F)
                     .sound(SoundType.AMETHYST).lightLevel(s -> 6).noLootTable()));
 
+    /** Vitrina del museo de bichos y peces. */
+    public static final RegistryObject<Block> VITRINA = BLOCKS.register("vitrina",
+            () -> new com.miscelanea.bichos.VitrinaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.5F)
+                    .sound(SoundType.GLASS).noOcclusion()));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.bichos.VitrinaBlockEntity>> VITRINA_BE = BLOCK_ENTITIES.register("vitrina",
+            () -> BlockEntityType.Builder.of(com.miscelanea.bichos.VitrinaBlockEntity::new, VITRINA.get()).build(null));
+
     private ModBlocks() {}
 }

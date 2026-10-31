@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "miscelanea:block/vitrina"
+    },
+    "facing=east": {
+      "model": "miscelanea:block/vitrina",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "miscelanea:block/vitrina",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "miscelanea:block/vitrina",
+      "y": 270
+    }
+  }
+}

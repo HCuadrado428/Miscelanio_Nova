@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String PROTOCOLO = "15";
+    private static final String PROTOCOLO = "16";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "main"),
@@ -131,6 +131,21 @@ public final class ModNetwork {
                 .encoder(com.miscelanea.pipboy.PipBoyAccionPacket::encode)
                 .decoder(com.miscelanea.pipboy.PipBoyAccionPacket::new)
                 .consumerMainThread(com.miscelanea.pipboy.PipBoyAccionPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.bichos.ColeccionPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.miscelanea.bichos.ColeccionPacket::encode)
+                .decoder(com.miscelanea.bichos.ColeccionPacket::new)
+                .consumerMainThread(com.miscelanea.bichos.ColeccionPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.bichos.PescaPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.miscelanea.bichos.PescaPacket::encode)
+                .decoder(com.miscelanea.bichos.PescaPacket::new)
+                .consumerMainThread(com.miscelanea.bichos.PescaPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.bichos.PescaResultadoPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.bichos.PescaResultadoPacket::encode)
+                .decoder(com.miscelanea.bichos.PescaResultadoPacket::new)
+                .consumerMainThread(com.miscelanea.bichos.PescaResultadoPacket::handle)
                 .add();
     }
 }

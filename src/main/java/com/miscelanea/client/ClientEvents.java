@@ -48,6 +48,13 @@ public final class ClientEvents {
             event.enqueueWork(PoseAspiradora::init); // crea el ArmPose a dos manos
             com.miscelanea.client.combate.LlaveCliente.init();
             com.miscelanea.client.combate.HachaCliente.init();
+            event.enqueueWork(() -> net.minecraft.client.renderer.item.ItemProperties.register(com.miscelanea.registry.ModItems.CANA.get(),
+                    new net.minecraft.resources.ResourceLocation("cast"), (stack, level, ent, seed) -> {
+                        if (!(ent instanceof net.minecraft.world.entity.player.Player pl)) return 0F;
+                        boolean principal = pl.getMainHandItem() == stack, otra = pl.getOffhandItem() == stack;
+                        if (pl.getMainHandItem().getItem() instanceof net.minecraft.world.item.FishingRodItem) otra = false;
+                        return (principal || otra) && pl.fishing != null ? 1F : 0F;
+                    }));
             // Animaciones de combate con armas con estilo (Llave Espada...): por encima de todo
             dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "combate"), 1200,
@@ -76,6 +83,8 @@ public final class ClientEvents {
             event.registerEntityRenderer(ModEntities.LLAVE_LANZADA.get(), com.miscelanea.client.combate.LlaveLanzadaRenderer::new);
             event.registerEntityRenderer(ModEntities.HECHIZO.get(), com.miscelanea.client.combate.HechizoRenderer::new);
             event.registerEntityRenderer(ModEntities.HACHA_LANZADA.get(), com.miscelanea.client.combate.HachaLanzadaRenderer::new);
+            event.registerEntityRenderer(ModEntities.BICHO.get(), com.miscelanea.client.bichos.BichoRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.VITRINA_BE.get(), com.miscelanea.client.bichos.VitrinaRenderer::new);
         }
 
         @SubscribeEvent

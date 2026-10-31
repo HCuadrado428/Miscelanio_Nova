@@ -53,6 +53,11 @@ public class Miscelanea {
             event.accept(ModItems.MEDIGUN);
             event.accept(ModItems.MOCHILA_MEDICA);
             event.accept(ModItems.PIPBOY);
+            event.accept(ModItems.RED);
+            event.accept(ModItems.CANA);
+            event.accept(ModItems.BICHOPEDIA);
+            event.accept(ModItems.VITRINA);
+            for (var b : ModItems.bichos()) event.accept(b);
         }
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(ModItems.PORRA);
