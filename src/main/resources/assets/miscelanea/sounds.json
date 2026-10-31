@@ -388,5 +388,80 @@
       "miscelanea:pipboy_poner"
     ],
     "subtitle": "subtitles.miscelanea.pipboy_poner"
+  },
+  "gb_mover": {
+    "sounds": [
+      "miscelanea:gb_mover"
+    ],
+    "subtitle": "subtitles.miscelanea.gb_mover"
+  },
+  "gb_girar": {
+    "sounds": [
+      "miscelanea:gb_girar"
+    ],
+    "subtitle": "subtitles.miscelanea.gb_girar"
+  },
+  "gb_linea": {
+    "sounds": [
+      "miscelanea:gb_linea"
+    ],
+    "subtitle": "subtitles.miscelanea.gb_linea"
+  },
+  "gb_comer": {
+    "sounds": [
+      "miscelanea:gb_comer"
+    ],
+    "subtitle": "subtitles.miscelanea.gb_comer"
+  },
+  "gb_punto": {
+    "sounds": [
+      "miscelanea:gb_punto"
+    ],
+    "subtitle": "subtitles.miscelanea.gb_punto"
+  },
+  "gb_rebote": {
+    "sounds": [
+      "miscelanea:gb_rebote"
+    ],
+    "subtitle": "subtitles.miscelanea.gb_rebote"
+  },
+  "gb_disparo": {
+    "sounds": [
+      "miscelanea:gb_disparo"
+    ],
+    "subtitle": "subtitles.miscelanea.gb_disparo"
+  },
+  "gb_explosion": {
+    "sounds": [
+      "miscelanea:gb_explosion"
+    ],
+    "subtitle": "subtitles.miscelanea.gb_explosion"
+  },
+  "gb_aleteo": {
+    "sounds": [
+      "miscelanea:gb_aleteo"
+    ],
+    "subtitle": "subtitles.miscelanea.gb_aleteo"
+  },
+  "gb_fin": {
+    "sounds": [
+      "miscelanea:gb_fin"
+    ],
+    "subtitle": "subtitles.miscelanea.gb_fin"
+  },
+  "gb_inicio": {
+    "sounds": [
+      "miscelanea:gb_inicio"
+    ],
+    "subtitle": "subtitles.miscelanea.gb_inicio"
+  },
+  "gb_musica": {
+    "sounds": [
+      {
+        "name": "miscelanea:gb_musica",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.gb_musica"
   }
 }

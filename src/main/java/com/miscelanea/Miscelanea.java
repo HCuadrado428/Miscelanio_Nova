@@ -58,6 +58,8 @@ public class Miscelanea {
             event.accept(ModItems.BICHOPEDIA);
             event.accept(ModItems.VITRINA);
             for (var b : ModItems.bichos()) event.accept(b);
+            event.accept(ModItems.CONSOLA);
+            for (var c : ModItems.cartuchosJuego()) event.accept(c);
         }
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(ModItems.PORRA);

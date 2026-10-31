@@ -70,6 +70,20 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> PIPBOY_PONER = register("pipboy_poner");
 
 
+    // ---- Consola de bolsillo
+    public static final RegistryObject<SoundEvent> GB_MOVER = register("gb_mover");
+    public static final RegistryObject<SoundEvent> GB_GIRAR = register("gb_girar");
+    public static final RegistryObject<SoundEvent> GB_LINEA = register("gb_linea");
+    public static final RegistryObject<SoundEvent> GB_COMER = register("gb_comer");
+    public static final RegistryObject<SoundEvent> GB_PUNTO = register("gb_punto");
+    public static final RegistryObject<SoundEvent> GB_REBOTE = register("gb_rebote");
+    public static final RegistryObject<SoundEvent> GB_DISPARO = register("gb_disparo");
+    public static final RegistryObject<SoundEvent> GB_EXPLOSION = register("gb_explosion");
+    public static final RegistryObject<SoundEvent> GB_ALETEO = register("gb_aleteo");
+    public static final RegistryObject<SoundEvent> GB_FIN = register("gb_fin");
+    public static final RegistryObject<SoundEvent> GB_INICIO = register("gb_inicio");
+    public static final RegistryObject<SoundEvent> GB_MUSICA = register("gb_musica");
+
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name,
                 () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Miscelanea.MOD_ID, name)));

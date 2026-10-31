@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String PROTOCOLO = "16";
+    private static final String PROTOCOLO = "17";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "main"),
@@ -146,6 +146,16 @@ public final class ModNetwork {
                 .encoder(com.miscelanea.bichos.PescaResultadoPacket::encode)
                 .decoder(com.miscelanea.bichos.PescaResultadoPacket::new)
                 .consumerMainThread(com.miscelanea.bichos.PescaResultadoPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.consola.RecordsPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.miscelanea.consola.RecordsPacket::encode)
+                .decoder(com.miscelanea.consola.RecordsPacket::new)
+                .consumerMainThread(com.miscelanea.consola.RecordsPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.consola.RecordPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.consola.RecordPacket::encode)
+                .decoder(com.miscelanea.consola.RecordPacket::new)
+                .consumerMainThread(com.miscelanea.consola.RecordPacket::handle)
                 .add();
     }
 }

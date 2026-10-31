@@ -101,6 +101,23 @@ public final class ModItems {
             BICHOS.put(e, ITEMS.register(e.item(), () -> new com.miscelanea.bichos.BichoItem(e, new Item.Properties().stacksTo(e.esPez() ? 16 : 64))));
     }
 
+    // ---- Consola de bolsillo
+    public static final RegistryObject<Item> CONSOLA = ITEMS.register("consola",
+            () -> new com.miscelanea.consola.ConsolaItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
+    private static final java.util.Map<com.miscelanea.consola.Juego, RegistryObject<Item>> CARTUCHOS_JUEGO = new java.util.EnumMap<>(com.miscelanea.consola.Juego.class);
+    static {
+        for (com.miscelanea.consola.Juego j : com.miscelanea.consola.Juego.values())
+            CARTUCHOS_JUEGO.put(j, ITEMS.register(j.item(), () -> new com.miscelanea.consola.CartuchoItem(j, new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON))));
+    }
+
+    public static Item cartucho(com.miscelanea.consola.Juego j) {
+        return CARTUCHOS_JUEGO.get(j).get();
+    }
+
+    public static java.util.Collection<RegistryObject<Item>> cartuchosJuego() {
+        return CARTUCHOS_JUEGO.values();
+    }
+
     public static Item bicho(com.miscelanea.bichos.Especie e) {
         return BICHOS.get(e).get();
     }
