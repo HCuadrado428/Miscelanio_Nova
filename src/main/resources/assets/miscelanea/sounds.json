@@ -331,5 +331,62 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.punetazo"
+  },
+  "radio_0": {
+    "sounds": [
+      {
+        "name": "miscelanea:radio_0",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.radio"
+  },
+  "radio_1": {
+    "sounds": [
+      {
+        "name": "miscelanea:radio_1",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.radio"
+  },
+  "radio_2": {
+    "sounds": [
+      {
+        "name": "miscelanea:radio_2",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.radio"
+  },
+  "radio_estatica": {
+    "sounds": [
+      "miscelanea:radio_estatica"
+    ],
+    "subtitle": "subtitles.miscelanea.radio_estatica"
+  },
+  "pipboy_abrir": {
+    "sounds": [
+      "miscelanea:pipboy_abrir"
+    ],
+    "subtitle": "subtitles.miscelanea.pipboy_abrir"
+  },
+  "pipboy_clic": {
+    "sounds": [
+      "miscelanea:pipboy_clic"
+    ],
+    "subtitle": "subtitles.miscelanea.pipboy_clic"
+  },
+  "pipboy_encender": {
+    "sounds": [
+      "miscelanea:pipboy_encender"
+    ],
+    "subtitle": "subtitles.miscelanea.pipboy_encender"
+  },
+  "pipboy_poner": {
+    "sounds": [
+      "miscelanea:pipboy_poner"
+    ],
+    "subtitle": "subtitles.miscelanea.pipboy_poner"
   }
 }

@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String PROTOCOLO = "14";
+    private static final String PROTOCOLO = "15";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "main"),
@@ -116,6 +116,21 @@ public final class ModNetwork {
                 .encoder(com.miscelanea.hacha.PosturaOtroPacket::encode)
                 .decoder(com.miscelanea.hacha.PosturaOtroPacket::new)
                 .consumerMainThread(com.miscelanea.hacha.PosturaOtroPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.pipboy.PipBoyEstadoPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.miscelanea.pipboy.PipBoyEstadoPacket::encode)
+                .decoder(com.miscelanea.pipboy.PipBoyEstadoPacket::new)
+                .consumerMainThread(com.miscelanea.pipboy.PipBoyEstadoPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.pipboy.PipBoyDatosPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.miscelanea.pipboy.PipBoyDatosPacket::encode)
+                .decoder(com.miscelanea.pipboy.PipBoyDatosPacket::new)
+                .consumerMainThread(com.miscelanea.pipboy.PipBoyDatosPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.pipboy.PipBoyAccionPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.pipboy.PipBoyAccionPacket::encode)
+                .decoder(com.miscelanea.pipboy.PipBoyAccionPacket::new)
+                .consumerMainThread(com.miscelanea.pipboy.PipBoyAccionPacket::handle)
                 .add();
     }
 }

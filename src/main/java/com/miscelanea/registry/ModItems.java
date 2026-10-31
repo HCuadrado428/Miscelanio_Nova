@@ -82,5 +82,9 @@ public final class ModItems {
     public static final RegistryObject<Item> ESCUDO_GUARDIAN = ITEMS.register("escudo_guardian",
             () -> new com.miscelanea.hacha.EscudoItem(new Item.Properties().stacksTo(1)));
 
+    // ---- Fallout
+    public static final RegistryObject<Item> PIPBOY = ITEMS.register("pipboy",
+            () -> new com.miscelanea.pipboy.PipBoyItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+
     private ModItems() {}
 }

@@ -52,6 +52,7 @@ public class Miscelanea {
             event.accept(ModItems.BATERIA);
             event.accept(ModItems.MEDIGUN);
             event.accept(ModItems.MOCHILA_MEDICA);
+            event.accept(ModItems.PIPBOY);
         }
         if (event.getTabKey() == CreativeModeTabs.COMBAT) {
             event.accept(ModItems.PORRA);

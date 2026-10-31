@@ -61,6 +61,14 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> ESCARCHA = register("escarcha");
     public static final RegistryObject<SoundEvent> PUNETAZO = register("punetazo");
 
+    @SuppressWarnings("unchecked")
+    public static final RegistryObject<SoundEvent>[] RADIO = new RegistryObject[]{register("radio_0"), register("radio_1"), register("radio_2")};
+    public static final RegistryObject<SoundEvent> RADIO_ESTATICA = register("radio_estatica");
+    public static final RegistryObject<SoundEvent> PIPBOY_ABRIR = register("pipboy_abrir");
+    public static final RegistryObject<SoundEvent> PIPBOY_CLIC = register("pipboy_clic");
+    public static final RegistryObject<SoundEvent> PIPBOY_ENCENDER = register("pipboy_encender");
+    public static final RegistryObject<SoundEvent> PIPBOY_PONER = register("pipboy_poner");
+
 
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name,

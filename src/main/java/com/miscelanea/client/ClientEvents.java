@@ -52,6 +52,9 @@ public final class ClientEvents {
             dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "combate"), 1200,
                     com.miscelanea.client.combate.AnimJugador::new);
+            dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
+                    new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "pipboy"), 1300,
+                    com.miscelanea.client.pipboy.AnimPipBoy::new);
             // Animaciones del agarre de la porra (playerAnimator)
             dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "agarre"), 1000,
@@ -92,6 +95,7 @@ public final class ClientEvents {
                     renderer.addLayer(new com.miscelanea.client.nucleo.GlitchCapaLayer(renderer, "slim".equals(skin)));
                     renderer.addLayer(new com.miscelanea.client.tinta.DepositoLayer(renderer));
                     renderer.addLayer(new com.miscelanea.client.combate.EscudoLayer(renderer, "slim".equals(skin)));
+                    renderer.addLayer(new com.miscelanea.client.pipboy.PipBoyLayer(renderer, "slim".equals(skin)));
                 }
             }
         }
@@ -112,6 +116,7 @@ public final class ClientEvents {
             event.register(com.miscelanea.client.combate.LlaveCliente.FIJAR);
             event.register(com.miscelanea.client.combate.HachaCliente.APUNTAR);
             event.register(com.miscelanea.client.combate.HachaCliente.ESCUDO);
+            event.register(com.miscelanea.client.pipboy.PipBoyCliente.ABRIR);
         }
 
         @SubscribeEvent
