@@ -27,6 +27,9 @@ public class AnimPipBoy implements IAnimation {
         return peso > 0 || pesoO > 0 || PipBoyCliente.mirando(p);
     }
 
+    @Override
+    public void setupAnim(float tickDelta) {}
+
     private float k(float td) {
         float x = Mth.lerp(td, pesoO, peso);
         return x * x * (3 - 2 * x);
