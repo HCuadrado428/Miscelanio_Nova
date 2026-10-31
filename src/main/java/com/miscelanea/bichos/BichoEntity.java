@@ -91,7 +91,7 @@ public class BichoEntity extends Mob {
     }
 
     @Override
-    protected void serverAiStep() {
+    protected void customServerAiStep() {
         Especie e = especie();
         vida++;
         if (casa == null) casa = position();
