@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "miscelanea:vitrina"
+    "miscelanea:vitrina",
+    "miscelanea:silla",
+    "miscelanea:sofa",
+    "miscelanea:mesa"
   ]
 }

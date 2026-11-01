@@ -1,0 +1,28 @@
+{
+ "type": "minecraft:block",
+ "pools": [
+  {
+   "rolls": 1,
+   "entries": [
+    {
+     "type": "minecraft:item",
+     "name": "miscelanea:lampara",
+     "functions": [
+      {
+       "function": "minecraft:copy_state",
+       "block": "miscelanea:lampara",
+       "properties": [
+        "color"
+       ]
+      }
+     ]
+    }
+   ],
+   "conditions": [
+    {
+     "condition": "minecraft:survives_explosion"
+    }
+   ]
+  }
+ ]
+}

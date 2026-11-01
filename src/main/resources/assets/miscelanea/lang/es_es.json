@@ -372,5 +372,10 @@
   "hud.miscelanea.ocarina": "Toca con 1 2 3 4 5",
   "subtitles.miscelanea.ocarina": "Suena una ocarina",
   "subtitles.miscelanea.cancion": "Melodía de ocarina",
-  "subtitles.miscelanea.ocarina_exito": "Destello mágico"
+  "subtitles.miscelanea.ocarina_exito": "Destello mágico",
+  "block.miscelanea.silla": "Silla",
+  "block.miscelanea.sofa": "Sofá",
+  "block.miscelanea.mesa": "Mesa",
+  "block.miscelanea.lampara": "Lámpara de pie",
+  "entity.miscelanea.asiento": "Asiento"
 }

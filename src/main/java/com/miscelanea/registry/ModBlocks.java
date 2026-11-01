@@ -36,5 +36,16 @@ public final class ModBlocks {
     public static final RegistryObject<BlockEntityType<com.miscelanea.bichos.VitrinaBlockEntity>> VITRINA_BE = BLOCK_ENTITIES.register("vitrina",
             () -> BlockEntityType.Builder.of(com.miscelanea.bichos.VitrinaBlockEntity::new, VITRINA.get()).build(null));
 
+    // ---- Muebles
+    public static final RegistryObject<Block> SILLA = BLOCKS.register("silla",
+            () -> new com.miscelanea.muebles.SillaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.2F).sound(SoundType.WOOD).noOcclusion()));
+    public static final RegistryObject<Block> SOFA = BLOCKS.register("sofa",
+            () -> new com.miscelanea.muebles.SofaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOL).strength(1.0F).sound(SoundType.WOOL).noOcclusion()));
+    public static final RegistryObject<Block> MESA = BLOCKS.register("mesa",
+            () -> new com.miscelanea.muebles.MesaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.5F).sound(SoundType.WOOD).noOcclusion()));
+    public static final RegistryObject<Block> LAMPARA = BLOCKS.register("lampara",
+            () -> new com.miscelanea.muebles.LamparaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(0.8F).sound(SoundType.LANTERN)
+                    .noOcclusion().lightLevel(st -> st.getValue(com.miscelanea.muebles.LamparaBlock.LIT) ? 15 : 0)));
+
     private ModBlocks() {}
 }

@@ -12,6 +12,9 @@ public final class ModEntities {
     public static final DeferredRegister<EntityType<?>> ENTITIES =
             DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Miscelanea.MOD_ID);
 
+    public static final RegistryObject<EntityType<com.miscelanea.muebles.Asiento>> ASIENTO = ENTITIES.register("asiento",
+            () -> EntityType.Builder.<com.miscelanea.muebles.Asiento>of(com.miscelanea.muebles.Asiento::new, MobCategory.MISC)
+                    .sized(0.01F, 0.01F).clientTrackingRange(10).noSummon().build("asiento"));
     public static final RegistryObject<EntityType<DesatascadorEntity>> DESATASCADOR = ENTITIES.register("desatascador",
             () -> EntityType.Builder.<DesatascadorEntity>of(DesatascadorEntity::new, MobCategory.MISC)
                     .sized(0.4F, 0.4F)

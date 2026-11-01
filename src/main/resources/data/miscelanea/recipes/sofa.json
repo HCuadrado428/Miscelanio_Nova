@@ -1,0 +1,21 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "building",
+ "pattern": [
+  "L  ",
+  "LLL",
+  "P P"
+ ],
+ "key": {
+  "P": {
+   "tag": "minecraft:planks"
+  },
+  "L": {
+   "tag": "minecraft:wool"
+  }
+ },
+ "result": {
+  "item": "miscelanea:sofa",
+  "count": 2
+ }
+}

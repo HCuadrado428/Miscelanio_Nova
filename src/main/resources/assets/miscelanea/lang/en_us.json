@@ -372,5 +372,10 @@
   "hud.miscelanea.ocarina": "Play with 1 2 3 4 5",
   "subtitles.miscelanea.ocarina": "Ocarina plays",
   "subtitles.miscelanea.cancion": "Ocarina melody",
-  "subtitles.miscelanea.ocarina_exito": "Magic sparkle"
+  "subtitles.miscelanea.ocarina_exito": "Magic sparkle",
+  "block.miscelanea.silla": "Chair",
+  "block.miscelanea.sofa": "Sofa",
+  "block.miscelanea.mesa": "Table",
+  "block.miscelanea.lampara": "Floor Lamp",
+  "entity.miscelanea.asiento": "Seat"
 }

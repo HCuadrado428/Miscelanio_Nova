@@ -1,0 +1,10 @@
+{
+ "variants": {
+  "lit=false": {
+   "model": "miscelanea:block/lampara"
+  },
+  "lit=true": {
+   "model": "miscelanea:block/lampara_on"
+  }
+ }
+}

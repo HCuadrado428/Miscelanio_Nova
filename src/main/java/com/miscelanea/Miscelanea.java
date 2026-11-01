@@ -46,6 +46,14 @@ public class Miscelanea {
     }
 
     private void creativeTabs(final BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
+            event.accept(ModItems.MESA);
+            for (net.minecraft.world.item.DyeColor c : net.minecraft.world.item.DyeColor.values()) {
+                event.accept(ModItems.mueble(ModItems.SILLA.get(), c));
+                event.accept(ModItems.mueble(ModItems.SOFA.get(), c));
+                event.accept(ModItems.mueble(ModItems.LAMPARA.get(), c));
+            }
+        }
         if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(ModItems.ASPIRAFANTASMAS);
             event.accept(ModItems.MOCHILA);

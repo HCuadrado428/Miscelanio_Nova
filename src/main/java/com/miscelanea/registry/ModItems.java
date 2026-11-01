@@ -101,6 +101,21 @@ public final class ModItems {
             BICHOS.put(e, ITEMS.register(e.item(), () -> new com.miscelanea.bichos.BichoItem(e, new Item.Properties().stacksTo(e.esPez() ? 16 : 64))));
     }
 
+    // ---- Muebles
+    public static final RegistryObject<Item> SILLA = ITEMS.register("silla", () -> new net.minecraft.world.item.BlockItem(ModBlocks.SILLA.get(), new Item.Properties()));
+    public static final RegistryObject<Item> SOFA = ITEMS.register("sofa", () -> new net.minecraft.world.item.BlockItem(ModBlocks.SOFA.get(), new Item.Properties()));
+    public static final RegistryObject<Item> MESA = ITEMS.register("mesa", () -> new net.minecraft.world.item.BlockItem(ModBlocks.MESA.get(), new Item.Properties()));
+    public static final RegistryObject<Item> LAMPARA = ITEMS.register("lampara", () -> new net.minecraft.world.item.BlockItem(ModBlocks.LAMPARA.get(), new Item.Properties()));
+
+    /** Un mueble de un color concreto (el color va en BlockStateTag y se conserva al colocarlo y al romperlo). */
+    public static net.minecraft.world.item.ItemStack mueble(Item it, net.minecraft.world.item.DyeColor c) {
+        net.minecraft.world.item.ItemStack s = new net.minecraft.world.item.ItemStack(it);
+        net.minecraft.nbt.CompoundTag t = new net.minecraft.nbt.CompoundTag();
+        t.putString("color", c.getName());
+        s.getOrCreateTag().put("BlockStateTag", t);
+        return s;
+    }
+
     // ---- Ocarina
     public static final RegistryObject<Item> OCARINA = ITEMS.register("ocarina",
             () -> new com.miscelanea.ocarina.OcarinaItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));

@@ -1,0 +1,26 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "building",
+ "pattern": [
+  "LGL",
+  " S ",
+  " I "
+ ],
+ "key": {
+  "L": {
+   "tag": "minecraft:wool"
+  },
+  "G": {
+   "item": "minecraft:glowstone_dust"
+  },
+  "S": {
+   "item": "minecraft:stick"
+  },
+  "I": {
+   "item": "minecraft:iron_ingot"
+  }
+ },
+ "result": {
+  "item": "miscelanea:lampara"
+ }
+}

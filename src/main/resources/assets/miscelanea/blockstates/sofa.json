@@ -1,0 +1,68 @@
+{
+ "variants": {
+  "facing=north,forma=solo": {
+   "model": "miscelanea:block/sofa_solo",
+   "y": 0
+  },
+  "facing=north,forma=izq": {
+   "model": "miscelanea:block/sofa_izq",
+   "y": 0
+  },
+  "facing=north,forma=der": {
+   "model": "miscelanea:block/sofa_der",
+   "y": 0
+  },
+  "facing=north,forma=medio": {
+   "model": "miscelanea:block/sofa_medio",
+   "y": 0
+  },
+  "facing=east,forma=solo": {
+   "model": "miscelanea:block/sofa_solo",
+   "y": 90
+  },
+  "facing=east,forma=izq": {
+   "model": "miscelanea:block/sofa_izq",
+   "y": 90
+  },
+  "facing=east,forma=der": {
+   "model": "miscelanea:block/sofa_der",
+   "y": 90
+  },
+  "facing=east,forma=medio": {
+   "model": "miscelanea:block/sofa_medio",
+   "y": 90
+  },
+  "facing=south,forma=solo": {
+   "model": "miscelanea:block/sofa_solo",
+   "y": 180
+  },
+  "facing=south,forma=izq": {
+   "model": "miscelanea:block/sofa_izq",
+   "y": 180
+  },
+  "facing=south,forma=der": {
+   "model": "miscelanea:block/sofa_der",
+   "y": 180
+  },
+  "facing=south,forma=medio": {
+   "model": "miscelanea:block/sofa_medio",
+   "y": 180
+  },
+  "facing=west,forma=solo": {
+   "model": "miscelanea:block/sofa_solo",
+   "y": 270
+  },
+  "facing=west,forma=izq": {
+   "model": "miscelanea:block/sofa_izq",
+   "y": 270
+  },
+  "facing=west,forma=der": {
+   "model": "miscelanea:block/sofa_der",
+   "y": 270
+  },
+  "facing=west,forma=medio": {
+   "model": "miscelanea:block/sofa_medio",
+   "y": 270
+  }
+ }
+}

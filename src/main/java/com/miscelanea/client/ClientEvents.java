@@ -78,7 +78,27 @@ public final class ClientEvents {
         }
 
         @SubscribeEvent
+        public static void coloresBloque(net.minecraftforge.client.event.RegisterColorHandlersEvent.Block event) {
+            event.register((st, l, p, tinte) -> tinte == 0 && st.hasProperty(com.miscelanea.muebles.Muebles.COLOR)
+                            ? com.miscelanea.muebles.Muebles.rgb(st.getValue(com.miscelanea.muebles.Muebles.COLOR)) : -1,
+                    com.miscelanea.registry.ModBlocks.SILLA.get(), com.miscelanea.registry.ModBlocks.SOFA.get(), com.miscelanea.registry.ModBlocks.LAMPARA.get());
+        }
+
+        @SubscribeEvent
+        public static void coloresItem(net.minecraftforge.client.event.RegisterColorHandlersEvent.Item event) {
+            event.register((st, tinte) -> {
+                if (tinte != 0) return -1;
+                net.minecraft.world.item.DyeColor def = st.is(com.miscelanea.registry.ModItems.LAMPARA.get()) ? net.minecraft.world.item.DyeColor.WHITE : net.minecraft.world.item.DyeColor.RED;
+                var t = st.getTag();
+                if (t != null && t.getCompound("BlockStateTag").contains("color"))
+                    def = net.minecraft.world.item.DyeColor.byName(t.getCompound("BlockStateTag").getString("color"), def);
+                return com.miscelanea.muebles.Muebles.rgb(def);
+            }, com.miscelanea.registry.ModItems.SILLA.get(), com.miscelanea.registry.ModItems.SOFA.get(), com.miscelanea.registry.ModItems.LAMPARA.get());
+        }
+
+        @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerEntityRenderer(com.miscelanea.registry.ModEntities.ASIENTO.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
             event.registerEntityRenderer(ModEntities.DESATASCADOR.get(), DesatascadorRenderer::new);
             event.registerEntityRenderer(ModEntities.TINTA.get(), com.miscelanea.client.tinta.TintaProyectilRenderer::new);
             event.registerEntityRenderer(ModEntities.GANCHO.get(), com.miscelanea.client.armas.GanchoRenderer::new);
