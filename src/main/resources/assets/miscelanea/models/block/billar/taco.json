@@ -1,0 +1,351 @@
+{
+ "parent": "block/block",
+ "textures": {
+  "taco": "miscelanea:block/mesas/billar_taco",
+  "tiza": "miscelanea:block/mesas/billar_tiza",
+  "negro": "miscelanea:block/mesas/billar_negro",
+  "particle": "miscelanea:block/mesas/billar_taco"
+ },
+ "elements": [
+  {
+   "from": [
+    9,
+    7.75,
+    7.75
+   ],
+   "to": [
+    9.5,
+    8.25,
+    8.25
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      6.5,
+      7.75,
+      7,
+      8.25
+     ],
+     "texture": "#tiza"
+    },
+    "south": {
+     "uv": [
+      9,
+      7.75,
+      9.5,
+      8.25
+     ],
+     "texture": "#tiza"
+    },
+    "east": {
+     "uv": [
+      7.75,
+      7.75,
+      8.25,
+      8.25
+     ],
+     "texture": "#tiza"
+    },
+    "west": {
+     "uv": [
+      7.75,
+      7.75,
+      8.25,
+      8.25
+     ],
+     "texture": "#tiza"
+    },
+    "up": {
+     "uv": [
+      9,
+      7.75,
+      9.5,
+      8.25
+     ],
+     "texture": "#tiza"
+    },
+    "down": {
+     "uv": [
+      9,
+      7.75,
+      9.5,
+      8.25
+     ],
+     "texture": "#tiza"
+    }
+   }
+  },
+  {
+   "from": [
+    9.5,
+    7.72,
+    7.72
+   ],
+   "to": [
+    10.2,
+    8.28,
+    8.28
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      5.8,
+      7.72,
+      6.5,
+      8.28
+     ],
+     "texture": "#negro"
+    },
+    "south": {
+     "uv": [
+      9.5,
+      7.72,
+      10.2,
+      8.28
+     ],
+     "texture": "#negro"
+    },
+    "east": {
+     "uv": [
+      7.72,
+      7.72,
+      8.28,
+      8.28
+     ],
+     "texture": "#negro"
+    },
+    "west": {
+     "uv": [
+      7.72,
+      7.72,
+      8.28,
+      8.28
+     ],
+     "texture": "#negro"
+    },
+    "up": {
+     "uv": [
+      9.5,
+      7.72,
+      10.2,
+      8.28
+     ],
+     "texture": "#negro"
+    },
+    "down": {
+     "uv": [
+      9.5,
+      7.72,
+      10.2,
+      8.28
+     ],
+     "texture": "#negro"
+    }
+   }
+  },
+  {
+   "from": [
+    10.2,
+    7.7,
+    7.7
+   ],
+   "to": [
+    25.012,
+    8.3,
+    8.3
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      7,
+      7.7,
+      16,
+      8.3
+     ],
+     "texture": "#taco"
+    },
+    "south": {
+     "uv": [
+      10.2,
+      7.7,
+      16,
+      8.3
+     ],
+     "texture": "#taco"
+    },
+    "east": {
+     "uv": [
+      7.7,
+      7.7,
+      8.3,
+      8.3
+     ],
+     "texture": "#taco"
+    },
+    "west": {
+     "uv": [
+      7.7,
+      7.7,
+      8.3,
+      8.3
+     ],
+     "texture": "#taco"
+    },
+    "up": {
+     "uv": [
+      10.2,
+      7.7,
+      16,
+      8.3
+     ],
+     "texture": "#taco"
+    },
+    "down": {
+     "uv": [
+      10.2,
+      7.7,
+      16,
+      8.3
+     ],
+     "texture": "#taco"
+    }
+   }
+  },
+  {
+   "from": [
+    25,
+    7.6,
+    7.6
+   ],
+   "to": [
+    31.8,
+    8.4,
+    8.4
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      0.2,
+      7.6,
+      7,
+      8.4
+     ],
+     "texture": "#negro"
+    },
+    "south": {
+     "uv": [
+      9,
+      7.6,
+      15.8,
+      8.4
+     ],
+     "texture": "#negro"
+    },
+    "east": {
+     "uv": [
+      7.6,
+      7.6,
+      8.4,
+      8.4
+     ],
+     "texture": "#negro"
+    },
+    "west": {
+     "uv": [
+      7.6,
+      7.6,
+      8.4,
+      8.4
+     ],
+     "texture": "#negro"
+    },
+    "up": {
+     "uv": [
+      9,
+      7.6,
+      15.8,
+      8.4
+     ],
+     "texture": "#negro"
+    },
+    "down": {
+     "uv": [
+      9,
+      7.6,
+      15.8,
+      8.4
+     ],
+     "texture": "#negro"
+    }
+   }
+  },
+  {
+   "from": [
+    24.4,
+    7.62,
+    7.62
+   ],
+   "to": [
+    25,
+    8.38,
+    8.38
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      7,
+      7.62,
+      7.6,
+      8.38
+     ],
+     "texture": "#tiza"
+    },
+    "south": {
+     "uv": [
+      8.4,
+      7.62,
+      9,
+      8.38
+     ],
+     "texture": "#tiza"
+    },
+    "east": {
+     "uv": [
+      7.62,
+      7.62,
+      8.38,
+      8.38
+     ],
+     "texture": "#tiza"
+    },
+    "west": {
+     "uv": [
+      7.62,
+      7.62,
+      8.38,
+      8.38
+     ],
+     "texture": "#tiza"
+    },
+    "up": {
+     "uv": [
+      8.4,
+      7.62,
+      9,
+      8.38
+     ],
+     "texture": "#tiza"
+    },
+    "down": {
+     "uv": [
+      8.4,
+      7.62,
+      9,
+      8.38
+     ],
+     "texture": "#tiza"
+    }
+   }
+  }
+ ]
+}

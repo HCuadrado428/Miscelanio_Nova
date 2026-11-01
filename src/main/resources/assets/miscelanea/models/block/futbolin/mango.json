@@ -1,0 +1,148 @@
+{
+ "parent": "block/block",
+ "textures": {
+  "metal": "miscelanea:block/mesas/futbolin_metal",
+  "negro": "miscelanea:block/mesas/futbolin_negro",
+  "piel": "miscelanea:block/mesas/futbolin_piel",
+  "blanco": "miscelanea:block/mesas/futbolin_blanco",
+  "particle": "miscelanea:block/mesas/futbolin_metal"
+ },
+ "elements": [
+  {
+   "from": [
+    6,
+    7.25,
+    7.25
+   ],
+   "to": [
+    10,
+    8.75,
+    8.75
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      6,
+      7.25,
+      10,
+      8.75
+     ],
+     "texture": "#negro"
+    },
+    "south": {
+     "uv": [
+      6,
+      7.25,
+      10,
+      8.75
+     ],
+     "texture": "#negro"
+    },
+    "east": {
+     "uv": [
+      7.25,
+      7.25,
+      8.75,
+      8.75
+     ],
+     "texture": "#negro"
+    },
+    "west": {
+     "uv": [
+      7.25,
+      7.25,
+      8.75,
+      8.75
+     ],
+     "texture": "#negro"
+    },
+    "up": {
+     "uv": [
+      6,
+      7.25,
+      10,
+      8.75
+     ],
+     "texture": "#negro"
+    },
+    "down": {
+     "uv": [
+      6,
+      7.25,
+      10,
+      8.75
+     ],
+     "texture": "#negro"
+    }
+   }
+  },
+  {
+   "from": [
+    10,
+    7.5,
+    7.5
+   ],
+   "to": [
+    10.4,
+    8.5,
+    8.5
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      5.6,
+      7.5,
+      6,
+      8.5
+     ],
+     "texture": "#metal"
+    },
+    "south": {
+     "uv": [
+      10,
+      7.5,
+      10.4,
+      8.5
+     ],
+     "texture": "#metal"
+    },
+    "east": {
+     "uv": [
+      7.5,
+      7.5,
+      8.5,
+      8.5
+     ],
+     "texture": "#metal"
+    },
+    "west": {
+     "uv": [
+      7.5,
+      7.5,
+      8.5,
+      8.5
+     ],
+     "texture": "#metal"
+    },
+    "up": {
+     "uv": [
+      10,
+      7.5,
+      10.4,
+      8.5
+     ],
+     "texture": "#metal"
+    },
+    "down": {
+     "uv": [
+      10,
+      7.5,
+      10.4,
+      8.5
+     ],
+     "texture": "#metal"
+    }
+   }
+  }
+ ]
+}

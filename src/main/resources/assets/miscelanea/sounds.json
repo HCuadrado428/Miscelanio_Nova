@@ -907,5 +907,47 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "bi_choque": {
+    "sounds": [
+      "miscelanea:bi_choque"
+    ],
+    "subtitle": "subtitles.miscelanea.billar"
+  },
+  "bi_banda": {
+    "sounds": [
+      "miscelanea:bi_banda"
+    ],
+    "subtitle": "subtitles.miscelanea.billar"
+  },
+  "bi_tronera": {
+    "sounds": [
+      "miscelanea:bi_tronera"
+    ],
+    "subtitle": "subtitles.miscelanea.billar"
+  },
+  "bi_taco": {
+    "sounds": [
+      "miscelanea:bi_taco"
+    ],
+    "subtitle": "subtitles.miscelanea.billar"
+  },
+  "fu_golpe": {
+    "sounds": [
+      "miscelanea:fu_golpe"
+    ],
+    "subtitle": "subtitles.miscelanea.futbolin"
+  },
+  "fu_gol": {
+    "sounds": [
+      "miscelanea:fu_gol"
+    ],
+    "subtitle": "subtitles.miscelanea.futbolin"
+  },
+  "fu_silbato": {
+    "sounds": [
+      "miscelanea:fu_silbato"
+    ],
+    "subtitle": "subtitles.miscelanea.futbolin"
   }
 }

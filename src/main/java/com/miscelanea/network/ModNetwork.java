@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String PROTOCOLO = "28";
+    private static final String PROTOCOLO = "29";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "main"),
@@ -216,6 +216,21 @@ public final class ModNetwork {
                 .encoder(com.miscelanea.imperio.ImperioClicPacket::encode)
                 .decoder(com.miscelanea.imperio.ImperioClicPacket::new)
                 .consumerMainThread(com.miscelanea.imperio.ImperioClicPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.mesas.MesaFisicaPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.miscelanea.mesas.MesaFisicaPacket::encode)
+                .decoder(com.miscelanea.mesas.MesaFisicaPacket::new)
+                .consumerMainThread(com.miscelanea.mesas.MesaFisicaPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.mesas.BillarTiroPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.mesas.BillarTiroPacket::encode)
+                .decoder(com.miscelanea.mesas.BillarTiroPacket::new)
+                .consumerMainThread(com.miscelanea.mesas.BillarTiroPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.mesas.FutbolinMandoPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.mesas.FutbolinMandoPacket::encode)
+                .decoder(com.miscelanea.mesas.FutbolinMandoPacket::new)
+                .consumerMainThread(com.miscelanea.mesas.FutbolinMandoPacket::handle)
                 .add();
         CHANNEL.messageBuilder(com.miscelanea.parchis.ParchisClicPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(com.miscelanea.parchis.ParchisClicPacket::encode)

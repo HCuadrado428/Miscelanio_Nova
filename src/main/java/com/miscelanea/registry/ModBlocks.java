@@ -54,6 +54,18 @@ public final class ModBlocks {
     public static final RegistryObject<Block> RECREATIVA_DOBLE = BLOCKS.register("recreativa_doble",
             () -> new com.miscelanea.arcade.RecreativaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(2.0F)
                     .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 7), true));
+    public static final RegistryObject<Block> BILLAR = BLOCKS.register("billar",
+            () -> new com.miscelanea.mesas.BillarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(2.5F)
+                    .sound(SoundType.WOOD).noOcclusion()));
+    public static final RegistryObject<Block> FUTBOLIN = BLOCKS.register("futbolin",
+            () -> new com.miscelanea.mesas.FutbolinBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F)
+                    .sound(SoundType.WOOD).noOcclusion()));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.mesas.BillarBlockEntity>> BILLAR_BE = BLOCK_ENTITIES.register("billar",
+            () -> BlockEntityType.Builder.of(com.miscelanea.mesas.BillarBlockEntity::new, BILLAR.get()).build(null));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.mesas.FutbolinBlockEntity>> FUTBOLIN_BE = BLOCK_ENTITIES.register("futbolin",
+            () -> BlockEntityType.Builder.of(com.miscelanea.mesas.FutbolinBlockEntity::new, FUTBOLIN.get()).build(null));
     public static final RegistryObject<Block> CARTEL_RECORDS = BLOCKS.register("cartel_records",
             () -> new com.miscelanea.arcade.CartelRecordsBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(1.0F)
                     .sound(SoundType.GLASS).noOcclusion().lightLevel(st -> 9)));
