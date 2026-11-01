@@ -184,6 +184,14 @@ public final class ModItems {
             () -> new com.miscelanea.feria.CapsulaGachaItem(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> CHAPA = ITEMS.register("chapa",
             () -> new com.miscelanea.feria.ChapaItem(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> BOLERA = ITEMS.register("bolera",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.BOLERA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> BOLA_BOLOS = ITEMS.register("bola_bolos",
+            () -> new com.miscelanea.bolos.BolaBolosItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> DIANA_DARDOS = ITEMS.register("diana_dardos",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.DIANA_DARDOS.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> DARDO = ITEMS.register("dardo",
+            () -> new com.miscelanea.dardos.DardoItem(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> PISTA_BAILE = ITEMS.register("pista_baile",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PISTA_BAILE.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> BILLAR = ITEMS.register("billar",

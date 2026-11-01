@@ -154,6 +154,11 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> FE_TIOVIVO = register("fe_tiovivo");
     public static final RegistryObject<SoundEvent> FE_NORIA = register("fe_noria");
     public static final RegistryObject<SoundEvent> FE_CHOQUE = register("fe_choque");
+    public static final RegistryObject<SoundEvent> BO_BOLO = register("bo_bolo");
+    public static final RegistryObject<SoundEvent> BO_RUEDA = register("bo_rueda");
+    public static final RegistryObject<SoundEvent> BO_PLENO = register("bo_pleno");
+    public static final RegistryObject<SoundEvent> DA_CLAVA = register("da_clava");
+    public static final RegistryObject<SoundEvent> DA_LANZA = register("da_lanza");
     public static final RegistryObject<SoundEvent> FE_GANCHO = register("fe_gancho");
     public static final RegistryObject<SoundEvent> FE_GANCHO_MUSICA = register("fe_gancho_musica");
     public static final RegistryObject<SoundEvent> FE_PREMIO = register("fe_premio");

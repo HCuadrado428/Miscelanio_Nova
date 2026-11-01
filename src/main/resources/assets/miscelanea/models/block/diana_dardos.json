@@ -1,0 +1,215 @@
+{
+ "parent": "block/block",
+ "textures": {
+  "d": "miscelanea:block/feria/diana_dardos",
+  "n": "miscelanea:block/feria/negro",
+  "m": "miscelanea:block/feria/metal_blanco",
+  "particle": "miscelanea:block/feria/diana_dardos"
+ },
+ "elements": [
+  {
+   "from": [
+    0.5,
+    0.5,
+    14
+   ],
+   "to": [
+    15.5,
+    15.5,
+    15
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "texture": "#d"
+    },
+    "south": {
+     "uv": [
+      0.5,
+      0.5,
+      15.5,
+      15.5
+     ],
+     "texture": "#n"
+    },
+    "east": {
+     "uv": [
+      1,
+      0.5,
+      2,
+      15.5
+     ],
+     "texture": "#n"
+    },
+    "west": {
+     "uv": [
+      14,
+      0.5,
+      15,
+      15.5
+     ],
+     "texture": "#n"
+    },
+    "up": {
+     "uv": [
+      0.5,
+      14,
+      15.5,
+      15
+     ],
+     "texture": "#n"
+    },
+    "down": {
+     "uv": [
+      0.5,
+      1,
+      15.5,
+      2
+     ],
+     "texture": "#n"
+    }
+   }
+  },
+  {
+   "from": [
+    1,
+    1,
+    15
+   ],
+   "to": [
+    15,
+    15,
+    16
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      1,
+      1,
+      15,
+      15
+     ],
+     "texture": "#n"
+    },
+    "south": {
+     "uv": [
+      1,
+      1,
+      15,
+      15
+     ],
+     "texture": "#n"
+    },
+    "east": {
+     "uv": [
+      0,
+      1,
+      1,
+      15
+     ],
+     "texture": "#n"
+    },
+    "west": {
+     "uv": [
+      15,
+      1,
+      16,
+      15
+     ],
+     "texture": "#n"
+    },
+    "up": {
+     "uv": [
+      1,
+      15,
+      15,
+      16
+     ],
+     "texture": "#n"
+    },
+    "down": {
+     "uv": [
+      1,
+      0,
+      15,
+      1
+     ],
+     "texture": "#n"
+    }
+   }
+  },
+  {
+   "from": [
+    7,
+    15.5,
+    15
+   ],
+   "to": [
+    9,
+    16,
+    16
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      7,
+      0,
+      9,
+      0.5
+     ],
+     "texture": "#m"
+    },
+    "south": {
+     "uv": [
+      7,
+      0,
+      9,
+      0.5
+     ],
+     "texture": "#m"
+    },
+    "east": {
+     "uv": [
+      0,
+      0,
+      1,
+      0.5
+     ],
+     "texture": "#m"
+    },
+    "west": {
+     "uv": [
+      15,
+      0,
+      16,
+      0.5
+     ],
+     "texture": "#m"
+    },
+    "up": {
+     "uv": [
+      7,
+      15,
+      9,
+      16
+     ],
+     "texture": "#m"
+    },
+    "down": {
+     "uv": [
+      7,
+      0,
+      9,
+      1
+     ],
+     "texture": "#m"
+    }
+   }
+  }
+ ]
+}

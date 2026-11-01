@@ -24,6 +24,12 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<com.miscelanea.feria.VagonetaBruja>> VAGONETA_BRUJA = ENTITIES.register("vagoneta_bruja",
             () -> EntityType.Builder.<com.miscelanea.feria.VagonetaBruja>of(com.miscelanea.feria.VagonetaBruja::new, MobCategory.MISC)
                     .sized(0.98F, 0.7F).clientTrackingRange(8).build("vagoneta_bruja"));
+    public static final RegistryObject<EntityType<com.miscelanea.bolos.BolaBolos>> BOLA_BOLOS = ENTITIES.register("bola_bolos",
+            () -> EntityType.Builder.<com.miscelanea.bolos.BolaBolos>of(com.miscelanea.bolos.BolaBolos::new, MobCategory.MISC)
+                    .sized(0.34F, 0.34F).clientTrackingRange(8).updateInterval(1).noSummon().build("bola_bolos"));
+    public static final RegistryObject<EntityType<com.miscelanea.dardos.Dardo>> DARDO = ENTITIES.register("dardo",
+            () -> EntityType.Builder.<com.miscelanea.dardos.Dardo>of(com.miscelanea.dardos.Dardo::new, MobCategory.MISC)
+                    .sized(0.2F, 0.2F).clientTrackingRange(6).updateInterval(1).noSummon().build("dardo"));
     public static final RegistryObject<EntityType<com.miscelanea.muebles.Asiento>> ASIENTO = ENTITIES.register("asiento",
             () -> EntityType.Builder.<com.miscelanea.muebles.Asiento>of(com.miscelanea.muebles.Asiento::new, MobCategory.MISC)
                     .sized(0.01F, 0.01F).clientTrackingRange(10).noSummon().build("asiento"));

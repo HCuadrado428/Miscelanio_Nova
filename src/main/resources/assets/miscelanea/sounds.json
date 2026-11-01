@@ -1240,5 +1240,35 @@
       "miscelanea:fe_capsula_abre"
     ],
     "subtitle": "subtitles.miscelanea.fe_capsula_abre"
+  },
+  "bo_bolo": {
+    "sounds": [
+      "miscelanea:bo_bolo"
+    ],
+    "subtitle": "subtitles.miscelanea.bo_bolo"
+  },
+  "bo_rueda": {
+    "sounds": [
+      "miscelanea:bo_rueda"
+    ],
+    "subtitle": "subtitles.miscelanea.bo_rueda"
+  },
+  "bo_pleno": {
+    "sounds": [
+      "miscelanea:bo_pleno"
+    ],
+    "subtitle": "subtitles.miscelanea.bo_pleno"
+  },
+  "da_clava": {
+    "sounds": [
+      "miscelanea:da_clava"
+    ],
+    "subtitle": "subtitles.miscelanea.da_clava"
+  },
+  "da_lanza": {
+    "sounds": [
+      "miscelanea:da_lanza"
+    ],
+    "subtitle": "subtitles.miscelanea.da_lanza"
   }
 }

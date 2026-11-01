@@ -147,6 +147,10 @@ public final class ClientEvents {
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.SUSTO_BE.get(), com.miscelanea.client.feria.SustoRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.MAQUINA_FERIA_BE.get(), com.miscelanea.client.feria.MaquinaFeriaRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.MAQUINA_ALTA_BE.get(), com.miscelanea.client.feria.MaquinaAltaRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.BOLERA_BE.get(), com.miscelanea.client.bolos.BoleraRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.DIANA_DARDOS_BE.get(), com.miscelanea.client.bolos.DianaDardosRenderer::new);
+            event.registerEntityRenderer(com.miscelanea.registry.ModEntities.BOLA_BOLOS.get(), com.miscelanea.client.bolos.BolaBolosRenderer::new);
+            event.registerEntityRenderer(com.miscelanea.registry.ModEntities.DARDO.get(), com.miscelanea.client.bolos.DardoRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.CASETA_TIRO_BE.get(), com.miscelanea.client.feria.CasetaTiroRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TANQUE_BE.get(), com.miscelanea.client.tanques.TanqueRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TABLERO_BE.get(), com.miscelanea.client.juegos.TableroRenderer::new);
