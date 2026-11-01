@@ -1,0 +1,81 @@
+{
+ "multipart": [
+  {
+   "apply": {
+    "model": "miscelanea:block/acuario_base"
+   }
+  },
+  {
+   "when": {
+    "north": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/acuario_north"
+   }
+  },
+  {
+   "when": {
+    "south": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/acuario_south"
+   }
+  },
+  {
+   "when": {
+    "east": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/acuario_east"
+   }
+  },
+  {
+   "when": {
+    "west": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/acuario_west"
+   }
+  },
+  {
+   "when": {
+    "north": "false",
+    "west": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/acuario_poste",
+    "y": 0
+   }
+  },
+  {
+   "when": {
+    "north": "false",
+    "east": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/acuario_poste",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "south": "false",
+    "east": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/acuario_poste",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "south": "false",
+    "west": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/acuario_poste",
+    "y": 270
+   }
+  }
+ ]
+}

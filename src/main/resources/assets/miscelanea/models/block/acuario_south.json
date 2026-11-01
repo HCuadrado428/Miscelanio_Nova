@@ -1,0 +1,206 @@
+{
+ "parent": "block/block",
+ "render_type": "minecraft:translucent",
+ "textures": {
+  "marco": "miscelanea:block/tanque_marco",
+  "cristal": "miscelanea:block/tanque_cristal",
+  "particle": "miscelanea:block/tanque_cristal",
+  "arena": "miscelanea:block/acuario_arena",
+  "agua": "miscelanea:block/acuario_agua",
+  "alga": "miscelanea:block/acuario_alga",
+  "piedra": "miscelanea:block/acuario_piedra"
+ },
+ "elements": [
+  {
+   "from": [
+    0,
+    1,
+    15.5
+   ],
+   "to": [
+    16,
+    15,
+    16
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      0,
+      1,
+      16,
+      15
+     ],
+     "texture": "#cristal"
+    },
+    "south": {
+     "uv": [
+      0,
+      1,
+      16,
+      15
+     ],
+     "texture": "#cristal"
+    }
+   }
+  },
+  {
+   "from": [
+    0,
+    0,
+    15.5
+   ],
+   "to": [
+    16,
+    1,
+    16
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      0,
+      15,
+      16,
+      16
+     ],
+     "texture": "#marco"
+    },
+    "south": {
+     "uv": [
+      0,
+      15,
+      16,
+      16
+     ],
+     "texture": "#marco"
+    },
+    "east": {
+     "uv": [
+      0,
+      15,
+      0.5,
+      16
+     ],
+     "texture": "#marco"
+    },
+    "west": {
+     "uv": [
+      15.5,
+      15,
+      16,
+      16
+     ],
+     "texture": "#marco"
+    },
+    "up": {
+     "uv": [
+      0,
+      15.5,
+      16,
+      16
+     ],
+     "texture": "#marco"
+    },
+    "down": {
+     "uv": [
+      0,
+      0,
+      16,
+      0.5
+     ],
+     "texture": "#marco"
+    }
+   }
+  },
+  {
+   "from": [
+    0,
+    15,
+    15.5
+   ],
+   "to": [
+    16,
+    16,
+    16
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      0,
+      0,
+      16,
+      1
+     ],
+     "texture": "#marco"
+    },
+    "south": {
+     "uv": [
+      0,
+      0,
+      16,
+      1
+     ],
+     "texture": "#marco"
+    },
+    "east": {
+     "uv": [
+      0,
+      0,
+      0.5,
+      1
+     ],
+     "texture": "#marco"
+    },
+    "west": {
+     "uv": [
+      15.5,
+      0,
+      16,
+      1
+     ],
+     "texture": "#marco"
+    },
+    "up": {
+     "uv": [
+      0,
+      15.5,
+      16,
+      16
+     ],
+     "texture": "#marco"
+    },
+    "down": {
+     "uv": [
+      0,
+      0,
+      16,
+      0.5
+     ],
+     "texture": "#marco"
+    }
+   }
+  },
+  {
+   "from": [
+    0,
+    3,
+    15.39
+   ],
+   "to": [
+    16,
+    13.5,
+    15.4
+   ],
+   "faces": {
+    "south": {
+     "uv": [
+      0,
+      2.5,
+      16,
+      13
+     ],
+     "texture": "#agua"
+    }
+   }
+  }
+ ]
+}

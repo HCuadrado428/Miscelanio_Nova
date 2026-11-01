@@ -55,5 +55,16 @@ public final class ModBlocks {
     public static final RegistryObject<BlockEntityType<com.miscelanea.arcade.RecreativaBlockEntity>> RECREATIVA_BE = BLOCK_ENTITIES.register("recreativa",
             () -> BlockEntityType.Builder.of(com.miscelanea.arcade.RecreativaBlockEntity::new, RECREATIVA.get()).build(null));
 
+    // ---- Acuario y terrario
+    public static final RegistryObject<Block> ACUARIO = BLOCKS.register("acuario",
+            () -> new com.miscelanea.tanques.TanqueBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WATER).strength(0.6F).sound(SoundType.GLASS)
+                    .noOcclusion().lightLevel(s -> 5), true));
+    public static final RegistryObject<Block> TERRARIO = BLOCKS.register("terrario",
+            () -> new com.miscelanea.tanques.TanqueBlock(BlockBehaviour.Properties.of().mapColor(MapColor.GRASS).strength(0.6F).sound(SoundType.GLASS)
+                    .noOcclusion(), false));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.tanques.TanqueBlockEntity>> TANQUE_BE = BLOCK_ENTITIES.register("tanque",
+            () -> BlockEntityType.Builder.of(com.miscelanea.tanques.TanqueBlockEntity::new, ACUARIO.get(), TERRARIO.get()).build(null));
+
     private ModBlocks() {}
 }

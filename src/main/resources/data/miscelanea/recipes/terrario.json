@@ -1,0 +1,26 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "building",
+ "pattern": [
+  "GGG",
+  "GLG",
+  "IDI"
+ ],
+ "key": {
+  "G": {
+   "item": "minecraft:glass"
+  },
+  "L": {
+   "tag": "minecraft:leaves"
+  },
+  "I": {
+   "item": "minecraft:iron_ingot"
+  },
+  "D": {
+   "item": "minecraft:dirt"
+  }
+ },
+ "result": {
+  "item": "miscelanea:terrario"
+ }
+}

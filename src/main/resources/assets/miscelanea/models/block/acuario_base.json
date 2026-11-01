@@ -1,0 +1,397 @@
+{
+ "parent": "block/block",
+ "render_type": "minecraft:translucent",
+ "textures": {
+  "marco": "miscelanea:block/tanque_marco",
+  "cristal": "miscelanea:block/tanque_cristal",
+  "particle": "miscelanea:block/tanque_cristal",
+  "arena": "miscelanea:block/acuario_arena",
+  "agua": "miscelanea:block/acuario_agua",
+  "alga": "miscelanea:block/acuario_alga",
+  "piedra": "miscelanea:block/acuario_piedra"
+ },
+ "elements": [
+  {
+   "from": [
+    0.5,
+    0,
+    0.5
+   ],
+   "to": [
+    15.5,
+    1,
+    15.5
+   ],
+   "faces": {
+    "up": {
+     "uv": [
+      0.5,
+      0.5,
+      15.5,
+      15.5
+     ],
+     "texture": "#marco"
+    },
+    "down": {
+     "uv": [
+      0.5,
+      0.5,
+      15.5,
+      15.5
+     ],
+     "texture": "#marco"
+    }
+   }
+  },
+  {
+   "from": [
+    0.5,
+    1,
+    0.5
+   ],
+   "to": [
+    15.5,
+    3,
+    15.5
+   ],
+   "faces": {
+    "up": {
+     "uv": [
+      0.5,
+      0.5,
+      15.5,
+      15.5
+     ],
+     "texture": "#arena"
+    }
+   }
+  },
+  {
+   "from": [
+    0.5,
+    13.5,
+    0.5
+   ],
+   "to": [
+    15.5,
+    13.5,
+    15.5
+   ],
+   "faces": {
+    "up": {
+     "uv": [
+      0.5,
+      0.5,
+      15.5,
+      15.5
+     ],
+     "texture": "#agua"
+    }
+   }
+  },
+  {
+   "from": [
+    9,
+    3,
+    9
+   ],
+   "to": [
+    13,
+    6,
+    12.5
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      3,
+      10,
+      7,
+      13
+     ],
+     "texture": "#piedra"
+    },
+    "south": {
+     "uv": [
+      9,
+      10,
+      13,
+      13
+     ],
+     "texture": "#piedra"
+    },
+    "east": {
+     "uv": [
+      3.5,
+      10,
+      7,
+      13
+     ],
+     "texture": "#piedra"
+    },
+    "west": {
+     "uv": [
+      9,
+      10,
+      12.5,
+      13
+     ],
+     "texture": "#piedra"
+    },
+    "up": {
+     "uv": [
+      9,
+      9,
+      13,
+      12.5
+     ],
+     "texture": "#piedra"
+    },
+    "down": {
+     "uv": [
+      9,
+      3.5,
+      13,
+      7
+     ],
+     "texture": "#piedra"
+    }
+   }
+  },
+  {
+   "from": [
+    10,
+    6,
+    10
+   ],
+   "to": [
+    12,
+    7.5,
+    11.5
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      4,
+      8.5,
+      6,
+      10
+     ],
+     "texture": "#piedra"
+    },
+    "south": {
+     "uv": [
+      10,
+      8.5,
+      12,
+      10
+     ],
+     "texture": "#piedra"
+    },
+    "east": {
+     "uv": [
+      4.5,
+      8.5,
+      6,
+      10
+     ],
+     "texture": "#piedra"
+    },
+    "west": {
+     "uv": [
+      10,
+      8.5,
+      11.5,
+      10
+     ],
+     "texture": "#piedra"
+    },
+    "up": {
+     "uv": [
+      10,
+      10,
+      12,
+      11.5
+     ],
+     "texture": "#piedra"
+    },
+    "down": {
+     "uv": [
+      10,
+      4.5,
+      12,
+      6
+     ],
+     "texture": "#piedra"
+    }
+   }
+  },
+  {
+   "from": [
+    2,
+    3,
+    12.0
+   ],
+   "to": [
+    8,
+    13,
+    12.0
+   ],
+   "rotation": {
+    "origin": [
+     5.0,
+     3,
+     12.0
+    ],
+    "axis": "y",
+    "angle": 45,
+    "rescale": true
+   },
+   "faces": {
+    "north": {
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "texture": "#alga"
+    },
+    "south": {
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "texture": "#alga"
+    }
+   }
+  },
+  {
+   "from": [
+    2,
+    3,
+    12.0
+   ],
+   "to": [
+    8,
+    13,
+    12.0
+   ],
+   "rotation": {
+    "origin": [
+     5.0,
+     3,
+     12.0
+    ],
+    "axis": "y",
+    "angle": -45,
+    "rescale": true
+   },
+   "faces": {
+    "north": {
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "texture": "#alga"
+    },
+    "south": {
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "texture": "#alga"
+    }
+   }
+  },
+  {
+   "from": [
+    10,
+    3,
+    4.5
+   ],
+   "to": [
+    15,
+    10,
+    4.5
+   ],
+   "rotation": {
+    "origin": [
+     12.5,
+     3,
+     4.5
+    ],
+    "axis": "y",
+    "angle": 45,
+    "rescale": true
+   },
+   "faces": {
+    "north": {
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "texture": "#alga"
+    },
+    "south": {
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "texture": "#alga"
+    }
+   }
+  },
+  {
+   "from": [
+    10,
+    3,
+    4.5
+   ],
+   "to": [
+    15,
+    10,
+    4.5
+   ],
+   "rotation": {
+    "origin": [
+     12.5,
+     3,
+     4.5
+    ],
+    "axis": "y",
+    "angle": -45,
+    "rescale": true
+   },
+   "faces": {
+    "north": {
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "texture": "#alga"
+    },
+    "south": {
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "texture": "#alga"
+    }
+   }
+  }
+ ]
+}

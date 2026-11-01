@@ -72,6 +72,9 @@ public final class ModSounds {
 
     public static final RegistryObject<SoundEvent> ARCADE_FICHA = register("arcade_ficha");
     public static final RegistryObject<SoundEvent> ARCADE_MUSICA = register("arcade_musica");
+    public static final RegistryObject<SoundEvent> DETECTOR_PITIDO = register("detector_pitido");
+    public static final RegistryObject<SoundEvent> TESORO = register("tesoro");
+    public static final RegistryObject<SoundEvent> CAPSULA_ABRIR = register("capsula_abrir");
     // ---- Ocarina
     public static final RegistryObject<SoundEvent>[] OCARINA = new RegistryObject[]{register("ocarina_0"), register("ocarina_1"), register("ocarina_2"), register("ocarina_3"), register("ocarina_4")};
     public static final RegistryObject<SoundEvent>[] CANCION = new RegistryObject[]{register("cancion_sol"), register("cancion_luna"), register("cancion_tormenta"), register("cancion_despejar"), register("cancion_regreso")};

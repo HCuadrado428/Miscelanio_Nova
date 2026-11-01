@@ -86,6 +86,15 @@ public class VitrinaBlock extends BaseEntityBlock {
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
+        if (v.ejemplar().isEmpty() && mano.getItem() instanceof com.miscelanea.tesoros.FosilItem) {
+            if (!level.isClientSide && player instanceof ServerPlayer sp) {
+                v.poner(mano.copyWithCount(1), sp.getGameProfile().getName());
+                if (!sp.getAbilities().instabuild) mano.shrink(1);
+                sp.displayClientMessage(Component.translatable("msg.miscelanea.expuesto", mano.getHoverName()).withStyle(ChatFormatting.GRAY), false);
+                level.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 0.7F, 1.0F);
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
         if (!v.ejemplar().isEmpty() && mano.isEmpty() && player.isShiftKeyDown()) {
             if (!level.isClientSide) {
                 player.setItemInHand(hand, v.quitar());

@@ -67,6 +67,11 @@ public class Miscelanea {
             event.accept(ModItems.VITRINA);
             for (var b : ModItems.bichos()) event.accept(b);
             event.accept(ModItems.OCARINA);
+            event.accept(ModItems.DETECTOR);
+            event.accept(ModItems.CAPSULA_TIEMPO);
+            for (var f : ModItems.FOSILES) event.accept(f);
+            event.accept(ModItems.ACUARIO);
+            event.accept(ModItems.TERRARIO);
             event.accept(ModItems.RECREATIVA);
             event.accept(ModItems.FICHA);
             event.accept(ModItems.CONSOLA);

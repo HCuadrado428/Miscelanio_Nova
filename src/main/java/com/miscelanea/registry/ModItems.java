@@ -116,6 +116,18 @@ public final class ModItems {
         return s;
     }
 
+    // ---- Detector de metales y tesoros
+    public static final RegistryObject<Item> DETECTOR = ITEMS.register("detector",
+            () -> new com.miscelanea.tesoros.DetectorItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> CAPSULA_TIEMPO = ITEMS.register("capsula_tiempo",
+            () -> new com.miscelanea.tesoros.CapsulaItem(new Item.Properties().stacksTo(16).rarity(Rarity.RARE)));
+    public static final java.util.List<RegistryObject<Item>> FOSILES = java.util.stream.Stream.of("amonites", "trilobites", "diente", "craneo", "ambar")
+            .map(n -> ITEMS.register("fosil_" + n, () -> (Item) new com.miscelanea.tesoros.FosilItem(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON))))
+            .toList();
+    // ---- Acuario y terrario
+    public static final RegistryObject<Item> ACUARIO = ITEMS.register("acuario", () -> new net.minecraft.world.item.BlockItem(ModBlocks.ACUARIO.get(), new Item.Properties()));
+    public static final RegistryObject<Item> TERRARIO = ITEMS.register("terrario", () -> new net.minecraft.world.item.BlockItem(ModBlocks.TERRARIO.get(), new Item.Properties()));
+
     // ---- Recreativa
     public static final RegistryObject<Item> RECREATIVA = ITEMS.register("recreativa",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.RECREATIVA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));

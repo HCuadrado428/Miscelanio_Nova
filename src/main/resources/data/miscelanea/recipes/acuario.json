@@ -1,0 +1,26 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "building",
+ "pattern": [
+  "GGG",
+  "GWG",
+  "ISI"
+ ],
+ "key": {
+  "G": {
+   "item": "minecraft:glass"
+  },
+  "W": {
+   "item": "minecraft:water_bucket"
+  },
+  "I": {
+   "item": "minecraft:iron_ingot"
+  },
+  "S": {
+   "tag": "minecraft:sand"
+  }
+ },
+ "result": {
+  "item": "miscelanea:acuario"
+ }
+}

@@ -559,5 +559,23 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.gb_musica"
+  },
+  "detector_pitido": {
+    "sounds": [
+      "miscelanea:detector_pitido"
+    ],
+    "subtitle": "subtitles.miscelanea.detector_pitido"
+  },
+  "tesoro": {
+    "sounds": [
+      "miscelanea:tesoro"
+    ],
+    "subtitle": "subtitles.miscelanea.tesoro"
+  },
+  "capsula_abrir": {
+    "sounds": [
+      "miscelanea:capsula_abrir"
+    ],
+    "subtitle": "subtitles.miscelanea.capsula_abrir"
   }
 }

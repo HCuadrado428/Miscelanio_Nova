@@ -1,0 +1,81 @@
+{
+ "multipart": [
+  {
+   "apply": {
+    "model": "miscelanea:block/terrario_base"
+   }
+  },
+  {
+   "when": {
+    "north": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/terrario_north"
+   }
+  },
+  {
+   "when": {
+    "south": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/terrario_south"
+   }
+  },
+  {
+   "when": {
+    "east": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/terrario_east"
+   }
+  },
+  {
+   "when": {
+    "west": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/terrario_west"
+   }
+  },
+  {
+   "when": {
+    "north": "false",
+    "west": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/terrario_poste",
+    "y": 0
+   }
+  },
+  {
+   "when": {
+    "north": "false",
+    "east": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/terrario_poste",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "south": "false",
+    "east": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/terrario_poste",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "south": "false",
+    "west": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/terrario_poste",
+    "y": 270
+   }
+  }
+ ]
+}

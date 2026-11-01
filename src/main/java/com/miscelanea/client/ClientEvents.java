@@ -100,6 +100,7 @@ public final class ClientEvents {
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.ASIENTO.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.RECREATIVA_BE.get(), com.miscelanea.client.arcade.RecreativaRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TANQUE_BE.get(), com.miscelanea.client.tanques.TanqueRenderer::new);
             event.registerEntityRenderer(ModEntities.DESATASCADOR.get(), DesatascadorRenderer::new);
             event.registerEntityRenderer(ModEntities.TINTA.get(), com.miscelanea.client.tinta.TintaProyectilRenderer::new);
             event.registerEntityRenderer(ModEntities.GANCHO.get(), com.miscelanea.client.armas.GanchoRenderer::new);
@@ -164,6 +165,7 @@ public final class ClientEvents {
             event.registerAboveAll("llave", com.miscelanea.client.combate.LlaveCliente::hud);
             event.registerAboveAll("hacha", com.miscelanea.client.combate.HachaCliente::hud);
             event.registerAboveAll("ocarina", com.miscelanea.client.ocarina.OcarinaCliente::hud);
+            event.registerAboveAll("detector", com.miscelanea.client.tesoros.DetectorCliente::hud);
         }
     }
 
