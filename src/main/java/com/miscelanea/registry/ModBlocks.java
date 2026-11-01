@@ -85,5 +85,11 @@ public final class ModBlocks {
     public static final RegistryObject<BlockEntityType<com.miscelanea.trampolin.TrampolinBlockEntity>> TRAMPOLIN_BE = BLOCK_ENTITIES.register("trampolin",
             () -> BlockEntityType.Builder.of(com.miscelanea.trampolin.TrampolinBlockEntity::new, TRAMPOLIN.get()).build(null));
 
+    public static final RegistryObject<Block> IMPERIO = BLOCKS.register("imperio",
+            () -> new com.miscelanea.imperio.ImperioBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(0.8F).sound(SoundType.WOOD).noOcclusion()));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.imperio.ImperioBlockEntity>> IMPERIO_BE = BLOCK_ENTITIES.register("imperio",
+            () -> BlockEntityType.Builder.of(com.miscelanea.imperio.ImperioBlockEntity::new, IMPERIO.get()).build(null));
+
     private ModBlocks() {}
 }

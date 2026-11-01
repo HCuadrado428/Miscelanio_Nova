@@ -1,0 +1,82 @@
+{
+ "parent": "block/block",
+ "textures": {
+  "d1": "miscelanea:block/dado_1",
+  "d2": "miscelanea:block/dado_2",
+  "d3": "miscelanea:block/dado_3",
+  "d4": "miscelanea:block/dado_4",
+  "d5": "miscelanea:block/dado_5",
+  "d6": "miscelanea:block/dado_6",
+  "particle": "miscelanea:block/dado_1"
+ },
+ "elements": [
+  {
+   "from": [
+    0,
+    0,
+    0
+   ],
+   "to": [
+    16,
+    16,
+    16
+   ],
+   "faces": {
+    "up": {
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "texture": "#d1"
+    },
+    "down": {
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "texture": "#d6"
+    },
+    "north": {
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "texture": "#d2"
+    },
+    "south": {
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "texture": "#d5"
+    },
+    "east": {
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "texture": "#d3"
+    },
+    "west": {
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "texture": "#d4"
+    }
+   }
+  }
+ ]
+}

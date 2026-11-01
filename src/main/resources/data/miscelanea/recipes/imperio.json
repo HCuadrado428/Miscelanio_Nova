@@ -1,0 +1,23 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "PEP",
+  "EBE",
+  "PEP"
+ ],
+ "key": {
+  "P": {
+   "item": "minecraft:paper"
+  },
+  "E": {
+   "item": "minecraft:emerald"
+  },
+  "B": {
+   "item": "miscelanea:tablero"
+  }
+ },
+ "result": {
+  "item": "miscelanea:imperio"
+ }
+}
