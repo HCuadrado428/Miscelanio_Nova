@@ -1,0 +1,26 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "LSL",
+  "RSY",
+  "LSL"
+ ],
+ "key": {
+  "L": {
+   "item": "minecraft:lapis_lazuli"
+  },
+  "S": {
+   "item": "minecraft:stick"
+  },
+  "R": {
+   "item": "minecraft:red_dye"
+  },
+  "Y": {
+   "item": "minecraft:yellow_dye"
+  }
+ },
+ "result": {
+  "item": "miscelanea:cuatro"
+ }
+}

@@ -138,6 +138,8 @@ public final class ModItems {
 
     public static final RegistryObject<Item> IMPERIO = ITEMS.register("imperio", () -> new net.minecraft.world.item.BlockItem(ModBlocks.IMPERIO.get(), new Item.Properties()));
     public static final RegistryObject<Item> PARCHIS = ITEMS.register("parchis", () -> new net.minecraft.world.item.BlockItem(ModBlocks.PARCHIS.get(), new Item.Properties()));
+    public static final RegistryObject<Item> OCA = ITEMS.register("oca", () -> new net.minecraft.world.item.BlockItem(ModBlocks.OCA.get(), new Item.Properties()));
+    public static final RegistryObject<Item> CUATRO = ITEMS.register("cuatro", () -> new net.minecraft.world.item.BlockItem(ModBlocks.CUATRO.get(), new Item.Properties()));
 
     // ---- Recreativa
     public static final RegistryObject<Item> RECREATIVA = ITEMS.register("recreativa",

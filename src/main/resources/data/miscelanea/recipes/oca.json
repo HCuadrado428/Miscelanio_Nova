@@ -1,0 +1,26 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "PFP",
+  "FBF",
+  "PHP"
+ ],
+ "key": {
+  "P": {
+   "item": "minecraft:paper"
+  },
+  "F": {
+   "item": "minecraft:feather"
+  },
+  "B": {
+   "item": "miscelanea:tablero"
+  },
+  "H": {
+   "item": "minecraft:bone"
+  }
+ },
+ "result": {
+  "item": "miscelanea:oca"
+ }
+}

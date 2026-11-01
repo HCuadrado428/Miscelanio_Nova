@@ -97,5 +97,17 @@ public final class ModBlocks {
     public static final RegistryObject<BlockEntityType<com.miscelanea.parchis.ParchisBlockEntity>> PARCHIS_BE = BLOCK_ENTITIES.register("parchis",
             () -> BlockEntityType.Builder.of(com.miscelanea.parchis.ParchisBlockEntity::new, PARCHIS.get()).build(null));
 
+    public static final RegistryObject<Block> OCA = BLOCKS.register("oca",
+            () -> new com.miscelanea.oca.OcaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(0.8F).sound(SoundType.WOOD).noOcclusion()));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.oca.OcaBlockEntity>> OCA_BE = BLOCK_ENTITIES.register("oca",
+            () -> BlockEntityType.Builder.of(com.miscelanea.oca.OcaBlockEntity::new, OCA.get()).build(null));
+
+    public static final RegistryObject<Block> CUATRO = BLOCKS.register("cuatro",
+            () -> new com.miscelanea.cuatro.CuatroBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLUE).strength(0.8F).sound(SoundType.WOOD).noOcclusion()));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.cuatro.CuatroBlockEntity>> CUATRO_BE = BLOCK_ENTITIES.register("cuatro",
+            () -> BlockEntityType.Builder.of(com.miscelanea.cuatro.CuatroBlockEntity::new, CUATRO.get()).build(null));
+
     private ModBlocks() {}
 }
