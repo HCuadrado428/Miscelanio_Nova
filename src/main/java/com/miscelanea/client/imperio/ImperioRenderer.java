@@ -39,8 +39,10 @@ public class ImperioRenderer implements BlockEntityRenderer<ImperioBlockEntity> 
 
     public ImperioRenderer(BlockEntityRendererProvider.Context c) {}
 
+    private static final java.util.Map<String, ResourceLocation> RL = new java.util.HashMap<>();
+
     public static ResourceLocation modelo(String n) {
-        return new ResourceLocation(Miscelanea.MOD_ID, "block/imperio/" + n);
+        return RL.computeIfAbsent(n, k -> new ResourceLocation(Miscelanea.MOD_ID, "block/imperio/" + k));
     }
 
     private Vec3 local(ImperioBlockEntity be, double tx, double ty) {
@@ -95,7 +97,7 @@ public class ImperioRenderer implements BlockEntityRenderer<ImperioBlockEntity> 
             double[] pos;
             double salto = 0;
             if (p.fase == Partida.MOVER && i == p.turno && t >= p.tMover) {
-                float e = (t - p.tMover) / 5F;
+                float e = (t - p.tMover) / p.paso();
                 int paso = Math.min(p.movPasos, (int) e);
                 float fr = Math.min(1F, e - paso);
                 int a = p.movAtras ? Math.floorMod(p.movDesde - paso, 40) : (p.movDesde + paso) % 40;
@@ -119,7 +121,7 @@ public class ImperioRenderer implements BlockEntityRenderer<ImperioBlockEntity> 
 
         // ---------------- dados
         if (p.fase != Partida.LOBBY) {
-            float rodar = (t - p.tDados) / 20F;
+            float rodar = (t - p.tDados) / Math.max(6F, p.dadoTicks());
             for (int k = 0; k < 2; k++) {
                 int v = k == 0 ? p.d1 : p.d2;
                 Vec3 c = local(be, 236 + k * 40, 255);
@@ -181,6 +183,11 @@ public class ImperioRenderer implements BlockEntityRenderer<ImperioBlockEntity> 
         List<Integer> colores = new ArrayList<>();
         lineas.add(estado(p));
         colores.add(0xFFFFE070);
+        Partida.Jugador yo = p.actual();
+        if (yo != null && mc.player.getUUID().equals(yo.uuid) && p.fase >= Partida.TIRAR && p.fase <= Partida.DEUDA && p.fase != Partida.MOVER) {
+            lineas.add(I18n.get("imperio.miscelanea.pista." + p.fase));
+            colores.add(0xFF80E0FF);
+        }
         for (int i = 0; i < p.js.size(); i++) {
             Partida.Jugador j = p.js.get(i);
             String extra = j.fuera ? " ✖" : (j.carcel > 0 ? " ⛓" : "");

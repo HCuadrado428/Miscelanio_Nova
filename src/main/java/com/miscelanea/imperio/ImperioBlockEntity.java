@@ -69,7 +69,16 @@ public class ImperioBlockEntity extends BlockEntity {
         int c = ImperioGeo.casillaEn(tx, ty);
         boolean miTurno = yo >= 0 && yo == p.turno && p.fase != Partida.LOBBY;
         if (b == null) {
-            if (c >= 0 && miTurno && Casillas.comprable(c)) {
+            if (c >= 0 && miTurno && Casillas.comprable(c) && p.fase != Partida.TIRAR) {
+                p.sel = p.sel == c ? -1 : c;
+                sonar(SoundEvents.WOODEN_BUTTON_CLICK_ON, 1.6F);
+                cambiado();
+            } else if (miTurno && p.fase == Partida.TIRAR && (c < 0 || !Casillas.comprable(c) || p.dueno[c] != yo)) {
+                // clic fácil: cualquier sitio del tablero tira los dados
+                p.tirar(rnd, ahora);
+                sonar(SoundEvents.BONE_BLOCK_HIT, 1.4F);
+                cambiado();
+            } else if (c >= 0 && miTurno && Casillas.comprable(c)) {
                 p.sel = p.sel == c ? -1 : c;
                 sonar(SoundEvents.WOODEN_BUTTON_CLICK_ON, 1.6F);
                 cambiado();
@@ -81,6 +90,10 @@ public class ImperioBlockEntity extends BlockEntity {
             case ImperioBotones.UNIRSE -> hecho = p.unir(pl.getUUID(), pl.getGameProfile().getName());
             case ImperioBotones.CPU -> hecho = yo >= 0 && p.anadirCpu();
             case ImperioBotones.RONDAS -> p.cambiarLimite();
+            case ImperioBotones.VELOCIDAD -> {
+                if (yo >= 0 || p.fase == Partida.LOBBY) p.cambiarVelocidad();
+                else hecho = false;
+            }
             case ImperioBotones.EMPEZAR -> hecho = yo >= 0 && p.empezar(rnd);
             case ImperioBotones.NUEVA -> {
                 Partida n = new Partida();
@@ -133,7 +146,7 @@ public class ImperioBlockEntity extends BlockEntity {
         long tCartaAntes = p.tCarta;
         boolean cambio = p.tick(ahora, be.rnd);
         if (p.fase != Partida.MOVER && p.actual() != null && p.actual().cpu() && p.fase != Partida.LOBBY && p.fase != Partida.FIN) {
-            if (++be.esperaCpu >= 16) {
+            if (++be.esperaCpu >= p.esperaCpu()) {
                 be.esperaCpu = 0;
                 cambio |= p.cpu(be.rnd, ahora);
             }

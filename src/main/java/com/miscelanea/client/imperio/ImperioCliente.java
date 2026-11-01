@@ -28,7 +28,14 @@ public final class ImperioCliente {
         apuntado = null;
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer p = mc.player;
-        if (p == null || mc.level == null || mc.screen != null) return;
+        if (p == null || mc.level == null) return;
+        for (ImperioBlockEntity be : ImperioBlockEntity.Visibles.SET) {
+            if (be.isRemoved() || be.getLevel() != mc.level || be.getBlockPos().distToCenterSqr(p.position()) > 400) continue;
+            com.miscelanea.imperio.Partida q = be.p;
+            com.miscelanea.client.juegos.AvisoTurno.revisar(be, q.fase != com.miscelanea.imperio.Partida.LOBBY && q.fase != com.miscelanea.imperio.Partida.FIN
+                    && q.actual() != null && p.getUUID().equals(q.actual().uuid), "block.miscelanea.imperio");
+        }
+        if (mc.screen != null) return;
         Vec3 ojo = p.getEyePosition(), dir = p.getViewVector(1F);
         double mejor = 6.0;
         double tope = mc.hitResult != null && mc.hitResult.getType() != HitResult.Type.MISS ? mc.hitResult.getLocation().distanceTo(ojo) : 99;

@@ -62,6 +62,8 @@ public final class ParchisCliente {
             VISTO.put(be, ahora);
             if (antes >= ahora) continue;
             ParchisPartida p = be.p;
+            com.miscelanea.client.juegos.AvisoTurno.revisar(be, p.fase != ParchisPartida.LOBBY && p.fase != ParchisPartida.FIN && p.actual() != null
+                    && mc.player.getUUID().equals(p.actual().uuid), "block.miscelanea.parchis");
             Vec3 c = Vec3.atCenterOf(be.getBlockPos());
             if (p.movColor >= 0) {
                 int pasos = p.movDesde == ParchisPartida.CASA ? 2 : p.movHasta - p.movDesde;

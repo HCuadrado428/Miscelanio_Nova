@@ -66,12 +66,19 @@ public class ParchisBlockEntity extends BlockEntity {
         boolean miTurno = yo >= 0 && yo == p.turno && p.fase != ParchisPartida.LOBBY && p.fase != ParchisPartida.FIN;
         ParchisBotones.Boton b = ParchisBotones.en(p, tx, ty);
         if (b == null) {
-            if (miTurno && p.fase == ParchisPartida.ELEGIR && ahora - p.tDado >= 12) {
-                int f = ParchisGeo.fichaEn(p, p.colorActual(), tx, ty);
+            if (miTurno && p.fase == ParchisPartida.TIRAR) {
+                // clic fácil: cualquier sitio del tablero tira el dado
+                p.tirar(rnd, ahora);
+                sonar(SoundEvents.BONE_BLOCK_HIT, 0.9F, 1.5F);
+                cambiado();
+            } else if (miTurno && p.fase == ParchisPartida.ELEGIR && ahora - p.tDado >= Math.min(12, p.dadoTicks())) {
+                int c = p.colorActual();
+                int f = ParchisGeo.elegir(p, c, p.opciones(c, p.valor, p.esBono), tx, ty);
                 if (f >= 0 && p.mover(f, ahora)) {
                     sonar(SoundEvents.WOOD_HIT, 0.7F, 1.6F);
                     cambiado();
-                } else if (f >= 0) pl.displayClientMessage(Component.translatable("msg.miscelanea.parchis.no_mueve").withStyle(ChatFormatting.GRAY), true);
+                } else if (ParchisGeo.fichaEn(p, c, tx, ty) >= 0)
+                    pl.displayClientMessage(Component.translatable("msg.miscelanea.parchis.no_mueve").withStyle(ChatFormatting.GRAY), true);
             }
             return;
         }
@@ -80,7 +87,15 @@ public class ParchisBlockEntity extends BlockEntity {
             case ParchisBotones.UNIRSE -> hecho = p.unir(pl.getUUID(), pl.getGameProfile().getName());
             case ParchisBotones.CPU -> hecho = yo >= 0 && p.anadirCpu();
             case ParchisBotones.EMPEZAR -> hecho = yo >= 0 && p.empezar(rnd);
-            case ParchisBotones.NUEVA -> p = new ParchisPartida();
+            case ParchisBotones.NUEVA -> {
+                int v = p.velocidad;
+                p = new ParchisPartida();
+                p.velocidad = v;
+            }
+            case ParchisBotones.VELOCIDAD -> {
+                if (yo >= 0 || p.fase == ParchisPartida.LOBBY) p.cambiarVelocidad();
+                else hecho = false;
+            }
             case ParchisBotones.TERMINAR -> {
                 if (yo >= 0) p.terminar();
                 else hecho = false;
@@ -108,7 +123,7 @@ public class ParchisBlockEntity extends BlockEntity {
         boolean cambio = p.tick(ahora);
         if (p.fase != ParchisPartida.LOBBY && p.fase != ParchisPartida.FIN && p.fase != ParchisPartida.MOVER) {
             if (p.actual().cpu()) {
-                if (++be.esperaCpu >= 16) {
+                if (++be.esperaCpu >= p.esperaCpu()) {
                     be.esperaCpu = 0;
                     int f0 = p.fase;
                     if (p.cpu(be.rnd, ahora)) {

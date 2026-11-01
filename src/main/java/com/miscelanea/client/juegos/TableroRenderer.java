@@ -35,8 +35,10 @@ public class TableroRenderer implements BlockEntityRenderer<TableroBlockEntity> 
 
     public TableroRenderer(BlockEntityRendererProvider.Context c) {}
 
+    private static final java.util.Map<String, ResourceLocation> RL = new java.util.HashMap<>();
+
     public static ResourceLocation modelo(String pieza, boolean blanca) {
-        return new ResourceLocation(Miscelanea.MOD_ID, "block/pieza/" + pieza + (blanca ? "_blanca" : "_negra"));
+        return RL.computeIfAbsent(pieza + (blanca ? "_blanca" : "_negra"), k -> new ResourceLocation(Miscelanea.MOD_ID, "block/pieza/" + k));
     }
 
     @Override
@@ -52,11 +54,11 @@ public class TableroRenderer implements BlockEntityRenderer<TableroBlockEntity> 
         boolean jaque = false;
         int rey = -1;
         if (aj) {
-            Ajedrez a = be.partidaAjedrez();
+            Ajedrez a = be.verAjedrez();
             t = a.t;
             jaque = be.resultado == 0 && a.enJaque(a.blancas);
             if (jaque) rey = a.rey(a.blancas);
-        } else t = be.partidaDamas().t;
+        } else t = be.verDamas().t;
 
         // ---------------- resaltes en el tablero
         VertexConsumer hv = buf.getBuffer(RenderType.entityTranslucent(BLANCO));
@@ -71,9 +73,19 @@ public class TableroRenderer implements BlockEntityRenderer<TableroBlockEntity> 
             List<Integer> ds = be.destinos(be.sel);
             for (int d : ds) casilla(hv, ps, be, d, base, s, t[d] != 0 ? 0xFF6040 : 0x50E070, 0.65F, t[d] != 0 ? 1F : 0.34F, luz);
         }
+        boolean mio = esMiTurno(be);
         if (TableroCliente.apuntado == be && TableroCliente.casilla >= 0) {
             float pul = 0.25F + 0.1F * Mth.sin((ahora + pt) * 0.3F);
             casilla(hv, ps, be, TableroCliente.casilla, base, s, 0xFFFFFF, pul, 1F, luz);
+            if (mio && be.sel < 0 && be.resultado == 0) {
+                int sq = TableroCliente.casilla;
+                List<Integer> ds = be.destinos(sq);
+                if (!ds.isEmpty()) for (int d : ds) casilla(hv, ps, be, d, base, s, t[d] != 0 ? 0xFF6040 : 0x50E070, 0.35F, t[d] != 0 ? 1F : 0.26F, luz);
+                else {
+                    List<Integer> os = be.origenes(sq);
+                    if (os.size() == 1) casilla(hv, ps, be, os.get(0), base, s, 0xFFD040, 0.45F, 1F, luz);
+                }
+            }
         }
 
         // ---------------- piezas
@@ -133,7 +145,18 @@ public class TableroRenderer implements BlockEntityRenderer<TableroBlockEntity> 
         Matrix4f mx = ps.last().pose();
         font.drawInBatch(l1, -font.width(l1) / 2F, 0, 0xFFFFE070, false, mx, buf, Font.DisplayMode.NORMAL, 0x60000000, 0xF000F0);
         font.drawInBatch(l2, -font.width(l2) / 2F, 11, jaque ? 0xFFFF6060 : 0xFFFFFFFF, false, mx, buf, Font.DisplayMode.NORMAL, 0x60000000, 0xF000F0);
+        if (mio) {
+            String l3 = I18n.get("tablero.miscelanea.pista");
+            font.drawInBatch(l3, -font.width(l3) / 2F, 22, 0xFF80E0FF, false, mx, buf, Font.DisplayMode.NORMAL, 0x60000000, 0xF000F0);
+        }
         ps.popPose();
+    }
+
+    static boolean esMiTurno(TableroBlockEntity be) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || be.resultado != 0 || be.blancas == null || be.estado.length == 0) return false;
+        java.util.UUID u = mc.player.getUUID();
+        return be.turnoBlancas() ? u.equals(be.blancas) : (!be.contraCpu() && u.equals(be.negras));
     }
 
     /** Cuadrado de color sobre una casilla (tam &lt; 1 = punto en el centro). */

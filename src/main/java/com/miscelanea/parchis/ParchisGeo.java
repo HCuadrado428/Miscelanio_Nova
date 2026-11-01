@@ -71,6 +71,32 @@ public final class ParchisGeo {
         return casilla(ParchisPartida.casilla(c, q), 0, 1);
     }
 
+    /**
+     * Clic fácil: de las fichas que se pueden mover, la más cercana al punto apuntado contando tanto la ficha como su casilla
+     * de destino (con un imán generoso). -1 si no hay ninguna cerca.
+     */
+    public static int elegir(ParchisPartida p, int c, List<Integer> opciones, double tx, double ty) {
+        int mejor = -1;
+        double md = 46 * 46;
+        for (int f : opciones) {
+            double[] a = ficha(p, c, f);
+            double da = (a[0] - tx) * (a[0] - tx) + (a[1] - ty) * (a[1] - ty);
+            int d = p.destino(c, f, p.valor);
+            double db = Double.MAX_VALUE;
+            if (d >= 0) {
+                double[] b = paso(c, d, f);
+                db = (b[0] - tx) * (b[0] - tx) + (b[1] - ty) * (b[1] - ty);
+            }
+            double dd = Math.min(da, db * 1.15);
+            if (dd < md) {
+                md = dd;
+                mejor = f;
+            }
+        }
+        if (mejor < 0 && opciones.size() == 1) return opciones.get(0);
+        return mejor;
+    }
+
     /** Ficha del color c que hay bajo el punto (tx, ty), o -1. */
     public static int fichaEn(ParchisPartida p, int c, double tx, double ty) {
         int mejor = -1;

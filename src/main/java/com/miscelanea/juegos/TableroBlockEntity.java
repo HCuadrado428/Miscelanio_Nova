@@ -74,15 +74,55 @@ public class TableroBlockEntity extends BlockEntity {
         return d;
     }
 
+    // ---- vista de solo lectura: se reconstruye únicamente cuando cambia el estado (antes se rehacía varias veces por fotograma)
+    private int[] vistaDe;
+    private boolean vistaAjedrez;
+    private Ajedrez vistaA;
+    private Damas vistaD;
+    private List<Integer> vistaLegales;
+
+    private void vista() {
+        if (vistaDe == estado && vistaAjedrez == ajedrez()) return;
+        vistaDe = estado;
+        vistaAjedrez = ajedrez();
+        vistaLegales = null;
+        vistaA = vistaAjedrez ? partidaAjedrez() : null;
+        vistaD = vistaAjedrez ? null : partidaDamas();
+    }
+
+    /** Partida de ajedrez para consultar (no modificar). */
+    public Ajedrez verAjedrez() {
+        vista();
+        return vistaA != null ? vistaA : partidaAjedrez();
+    }
+
+    /** Partida de damas para consultar (no modificar). */
+    public Damas verDamas() {
+        vista();
+        return vistaD != null ? vistaD : partidaDamas();
+    }
+
+    public List<Integer> legales() {
+        vista();
+        if (vistaLegales == null) vistaLegales = vistaAjedrez ? vistaA.legales() : vistaD.legales();
+        return vistaLegales;
+    }
+
     public boolean turnoBlancas() {
-        return ajedrez() ? partidaAjedrez().blancas : partidaDamas().blancas;
+        return ajedrez() ? verAjedrez().blancas : verDamas().blancas;
     }
 
     /** Movimientos legales desde una casilla (lista de casillas destino). */
     public java.util.List<Integer> destinos(int desde) {
         java.util.List<Integer> out = new java.util.ArrayList<>();
-        List<Integer> ms = ajedrez() ? partidaAjedrez().legales() : partidaDamas().legales();
-        for (int m : ms) if ((m & 63) == desde) out.add((m >> 6) & 63);
+        for (int m : legales()) if ((m & 63) == desde) out.add((m >> 6) & 63);
+        return out;
+    }
+
+    /** Casillas de origen de las jugadas que llegan a una casilla. */
+    public java.util.List<Integer> origenes(int hasta) {
+        java.util.List<Integer> out = new java.util.ArrayList<>();
+        for (int m : legales()) if (((m >> 6) & 63) == hasta && !out.contains(m & 63)) out.add(m & 63);
         return out;
     }
 
@@ -136,14 +176,28 @@ public class TableroBlockEntity extends BlockEntity {
             cambiado();
             return;
         }
-        int pieza = ajedrez() ? partidaAjedrez().t[sq] : partidaDamas().t[sq];
+        int pieza = ajedrez() ? verAjedrez().t[sq] : verDamas().t[sq];
         boolean propia = pieza != 0 && (ajedrez() ? !Ajedrez.esNegra(pieza) == tb : Damas.esBlanca(pieza) == tb);
-        if (!ajedrez() && partidaDamas().obligada >= 0) sel = partidaDamas().obligada;
+        if (!ajedrez() && verDamas().obligada >= 0) sel = verDamas().obligada;
         if (sel >= 0 && destinos(sel).contains(sq)) {
             mover(sel, sq);
             return;
         }
-        if (propia && !destinos(sq).isEmpty() && (ajedrez() || partidaDamas().obligada < 0)) {
+        if (!propia) {
+            // clic fácil: tocar directamente el destino si solo una pieza puede ir allí
+            List<Integer> os = origenes(sq);
+            if (os.size() == 1) {
+                mover(os.get(0), sq);
+                return;
+            }
+            if (os.size() > 1) {
+                p.displayClientMessage(Component.translatable("msg.miscelanea.tablero.varias").withStyle(ChatFormatting.GRAY), true);
+                sel = -1;
+                cambiado();
+                return;
+            }
+        }
+        if (propia && !destinos(sq).isEmpty() && (ajedrez() || verDamas().obligada < 0)) {
             sel = sq;
             level.playSound(null, worldPosition, SoundEvents.WOODEN_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.4F, 1.6F);
         } else if (propia) {
@@ -225,12 +279,44 @@ public class TableroBlockEntity extends BlockEntity {
         return Vec3.atCenterOf(worldPosition).add(der.getStepX() * u + f.getStepX() * v, -0.5 + 1.5 / 16, der.getStepZ() * u + f.getStepZ() * v);
     }
 
+    /** La CPU piensa en un hilo aparte para no congelar el servidor; la jugada se aplica cuando termina. */
+    private java.util.concurrent.CompletableFuture<Integer> pensando;
+    private int[] pensandoSobre;
+
     public static void tickServidor(Level l, BlockPos pos, BlockState s, TableroBlockEntity be) {
+        if (be.pensando != null) {
+            if (!be.pensando.isDone()) return;
+            int m;
+            try {
+                m = be.pensando.getNow(-1);
+            } catch (Exception ex) {
+                m = -1;
+            }
+            boolean vigente = be.pensandoSobre == be.estado && be.resultado == 0 && !be.turnoBlancas();
+            be.pensando = null;
+            if (!vigente) return;
+            if (m < 0 && !be.legales().isEmpty()) m = be.legales().get(0);
+            if (m >= 0) be.mover(m & 63, (m >> 6) & 63);
+            return;
+        }
         if (be.cpuEn > 0 && l.getGameTime() >= be.cpuEn && be.resultado == 0) {
             be.cpuEn = 0;
             if (be.turnoBlancas()) return;
-            int m = be.ajedrez() ? be.partidaAjedrez().mejor(3, be.rnd) : be.partidaDamas().mejor(6, be.rnd);
-            if (m >= 0) be.mover(m & 63, (m >> 6) & 63);
+            final int[] copia = be.estado.clone();
+            final boolean aj = be.ajedrez();
+            final long semilla = be.rnd.nextLong();
+            be.pensandoSobre = be.estado;
+            be.pensando = java.util.concurrent.CompletableFuture.supplyAsync(() -> {
+                Random r = new Random(semilla);
+                if (aj) {
+                    Ajedrez a = new Ajedrez();
+                    a.cargar(copia);
+                    return a.mejor(3, r);
+                }
+                Damas d = new Damas();
+                d.cargar(copia);
+                return d.mejor(6, r);
+            }, net.minecraft.Util.backgroundExecutor());
         }
     }
 

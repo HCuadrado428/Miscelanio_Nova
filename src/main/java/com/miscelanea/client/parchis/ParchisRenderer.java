@@ -41,8 +41,41 @@ public class ParchisRenderer implements BlockEntityRenderer<ParchisBlockEntity> 
 
     public ParchisRenderer(BlockEntityRendererProvider.Context c) {}
 
+    private static final ResourceLocation[] FICHA_RL = new ResourceLocation[4];
+    private static final ResourceLocation DADO = new ResourceLocation(Miscelanea.MOD_ID, "block/imperio/dado");
+
     public static ResourceLocation modelo(String n) {
         return new ResourceLocation(Miscelanea.MOD_ID, "block/parchis/" + n);
+    }
+
+    private static ResourceLocation ficha(int c) {
+        if (FICHA_RL[c] == null) FICHA_RL[c] = modelo("ficha_" + COLOR_ID[c]);
+        return FICHA_RL[c];
+    }
+
+    /** Datos que solo cambian cuando llega un estado nuevo del servidor (cada actualización crea un objeto nuevo). */
+    private static final class Cache {
+        final double[][] pos = new double[16][];
+        List<Integer> opciones;
+        final int[] destino = new int[4];
+        final int[] victima = new int[4];
+    }
+
+    private static final java.util.Map<ParchisPartida, Cache> CACHE = new java.util.WeakHashMap<>();
+
+    private static Cache cache(ParchisPartida p) {
+        Cache k = CACHE.get(p);
+        if (k != null) return k;
+        k = new Cache();
+        for (int c = 0; c < 4; c++) if (p.enJuego(c)) for (int f = 0; f < 4; f++) k.pos[c * 4 + f] = ParchisGeo.ficha(p, c, f);
+        int c0 = p.colorActual();
+        k.opciones = p.fase == ParchisPartida.ELEGIR && c0 >= 0 ? p.opciones(c0, p.valor, p.esBono) : List.of();
+        for (int f : k.opciones) {
+            k.destino[f] = p.destino(c0, f, p.valor);
+            k.victima[f] = p.victima(c0, p.prog[c0][f], k.destino[f]);
+        }
+        CACHE.put(p, k);
+        return k;
     }
 
     private Vec3 local(ParchisBlockEntity be, double tx, double ty) {
@@ -64,13 +97,14 @@ public class ParchisRenderer implements BlockEntityRenderer<ParchisBlockEntity> 
         Minecraft mc = Minecraft.getInstance();
         int c0 = p.colorActual();
         boolean mio = mc.player != null && p.actual() != null && mc.player.getUUID().equals(p.actual().uuid);
-        List<Integer> opciones = p.fase == ParchisPartida.ELEGIR && c0 >= 0 ? p.opciones(c0, p.valor, p.esBono) : List.of();
+        Cache cache = cache(p);
+        List<Integer> opciones = cache.opciones;
 
         // ---------------- fichas
         for (int c = 0; c < 4; c++) {
             if (!p.enJuego(c)) continue;
             for (int k = 0; k < 4; k++) {
-                double[] pos = ParchisGeo.ficha(p, c, k);
+                double[] pos = cache.pos[c * 4 + k];
                 double alto = 0;
                 if (c == p.movColor && k == p.movFicha && t < p.tFin && t >= p.tMover) {
                     double[] r = camino(p, c, k, t);
@@ -96,32 +130,49 @@ public class ParchisRenderer implements BlockEntityRenderer<ParchisBlockEntity> 
                 ps.mulPose(Axis.YP.rotationDegrees(giro));
                 ps.scale(ESC_FICHA, ESC_FICHA, ESC_FICHA);
                 ps.translate(-0.5, 0, -0.5);
-                mr.renderModel(ps.last(), solido, null, mm.getModel(modelo("ficha_" + COLOR_ID[c])), 1F, 1F, 1F, luz, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, null);
+                mr.renderModel(ps.last(), solido, null, mm.getModel(ficha(c)), 1F, 1F, 1F, luz, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, null);
                 ps.popPose();
             }
         }
 
         // ---------------- fichas que se pueden mover y destino de la apuntada
-        if (!opciones.isEmpty() && t - p.tDado > 12) {
+        Font font = mc.font;
+        if (!opciones.isEmpty() && t - p.tDado > Math.min(12, p.dadoTicks())) {
             float pulso = 0.45F + 0.25F * Mth.sin(t * 0.35F);
-            int apunta = miro && mio ? ParchisGeo.fichaEn(p, c0, ParchisCliente.tx, ParchisCliente.ty) : -1;
+            int apunta = miro && mio ? ParchisGeo.elegir(p, c0, opciones, ParchisCliente.tx, ParchisCliente.ty) : -1;
             for (int k : opciones) {
-                double[] q = ParchisGeo.ficha(p, c0, k);
-                anillo(marca, ps, be, q[0], q[1], 10.5, 13, k == apunta ? 0xFFFFFF : COLORES[c0], k == apunta ? 0.9F : pulso);
+                double[] q = cache.pos[c0 * 4 + k];
+                anillo(marca, ps, be, q[0], q[1], 10.5, 13.5, k == apunta ? 0xFFFFFF : COLORES[c0], k == apunta ? 0.95F : pulso);
             }
-            if (apunta >= 0 && opciones.contains(apunta)) {
-                int d = p.destino(c0, apunta, p.valor);
-                boolean come = p.victima(c0, p.prog[c0][apunta], d) >= 0;
-                double[] q = ParchisGeo.paso(c0, d, apunta);
+            if (apunta >= 0) {
+                int d = cache.destino[apunta];
+                boolean come = cache.victima[apunta] >= 0;
+                double[] q = ParchisGeo.paso(c0, d, apunta), a = cache.pos[c0 * 4 + apunta];
                 anillo(marca, ps, be, q[0], q[1], 7, 11, come ? 0xFF3030 : 0xFFFFFF, 0.55F + 0.3F * Mth.sin(t * 0.5F));
                 disco(marca, ps, be, q[0], q[1], 7, come ? 0xFF3030 : 0xFFFFFF, 0.25F);
+                // línea de puntos de la ficha a su destino
+                for (int i = 1; i < 8; i++) {
+                    double e = i / 8.0;
+                    disco(marca, ps, be, Mth.lerp(e, a[0], q[0]), Mth.lerp(e, a[1], q[1]), 1.6, 0xFFFFFF, 0.6F);
+                }
+                // qué pasará
+                String que;
+                if (come) que = I18n.get("parchis.miscelanea.ver.come");
+                else if (d == ParchisPartida.META) que = I18n.get("parchis.miscelanea.ver.meta");
+                else if (d >= ParchisPartida.PASILLO) que = I18n.get("parchis.miscelanea.ver.pasillo", ParchisPartida.META - d);
+                else if (p.prog[c0][apunta] == ParchisPartida.CASA) que = I18n.get("parchis.miscelanea.ver.sale");
+                else {
+                    int g = ParchisPartida.casilla(c0, d);
+                    que = I18n.get(ParchisPartida.seguro(g) ? "parchis.miscelanea.ver.seguro" : "parchis.miscelanea.ver.casilla", g == 0 ? 68 : g);
+                }
+                cartel(ps, buf, font, local(be, q[0], q[1]).add(0, 0.16, 0), List.of(que), List.of(come ? 0xFFFF7060 : 0xFFFFFFFF), 0.009F);
             }
         }
 
         // ---------------- dado (en la esquina interior de la casa de quien tira)
         if (p.fase != ParchisPartida.LOBBY && c0 >= 0) {
             double[] dc = ParchisGeo.tex(c0, 86, 86);
-            float rodar = (t - p.tDado) / 18F;
+            float rodar = (t - p.tDado) / (float) p.dadoTicks();
             Vec3 c = local(be, dc[0], dc[1]);
             ps.pushPose();
             if (rodar < 1 && !p.esBono) {
@@ -145,13 +196,12 @@ public class ParchisRenderer implements BlockEntityRenderer<ParchisBlockEntity> 
             }
             ps.scale(0.07F, 0.07F, 0.07F);
             ps.translate(-0.5, -0.5, -0.5);
-            mr.renderModel(ps.last(), solido, null, mm.getModel(new ResourceLocation(Miscelanea.MOD_ID, "block/imperio/dado")), 1F, 1F, 1F, luz,
+            mr.renderModel(ps.last(), solido, null, mm.getModel(DADO), 1F, 1F, 1F, luz,
                     OverlayTexture.NO_OVERLAY, ModelData.EMPTY, null);
             ps.popPose();
         }
 
         // ---------------- botones con el texto hacia quien juega
-        Font font = mc.font;
         int asiento = p.fase == ParchisPartida.LOBBY || c0 < 0 ? 0 : c0;
         Direction mira = switch (asiento) {
             case 1 -> f.getClockWise();
@@ -166,6 +216,7 @@ public class ParchisRenderer implements BlockEntityRenderer<ParchisBlockEntity> 
             rect(marca, ps, be, b.x(), b.y(), b.w(), b.h(), col, 0.95F);
             rect(marca, ps, be, b.x(), b.y() - b.h() / 2 + 2, b.w() - 4, 3, 0xFFFFFF, 0.35F);
             String txt = I18n.get("parchis.miscelanea.boton." + b.clave());
+            if (b.w() < 70 && be.mundo(b.x(), b.y()).distanceToSqr(mc.player != null ? mc.player.getEyePosition() : Vec3.ZERO) > 64) continue;
             Vec3 c = local(be, b.x(), b.y());
             ps.pushPose();
             ps.translate(c.x, c.y + 0.004, c.z);
@@ -189,6 +240,10 @@ public class ParchisRenderer implements BlockEntityRenderer<ParchisBlockEntity> 
         List<Integer> cols = new ArrayList<>();
         lineas.add(estado(p));
         cols.add(0xFFFFE070);
+        if (mio && (p.fase == ParchisPartida.TIRAR || p.fase == ParchisPartida.ELEGIR)) {
+            lineas.add(I18n.get("parchis.miscelanea.pista." + (p.fase == ParchisPartida.TIRAR ? "tirar" : "elegir")));
+            cols.add(0xFF80E0FF);
+        }
         for (int i = 0; i < p.js.size(); i++) {
             ParchisPartida.Jugador j = p.js.get(i);
             int enMeta = 0;

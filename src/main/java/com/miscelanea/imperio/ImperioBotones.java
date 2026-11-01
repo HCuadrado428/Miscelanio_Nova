@@ -6,11 +6,13 @@ import java.util.List;
 /** Botones físicos del centro del tablero según el estado de la partida (los calcula igual el servidor y el cliente). */
 public final class ImperioBotones {
     public static final int UNIRSE = 1, CPU = 2, RONDAS = 3, EMPEZAR = 4, TIRAR = 5, PAGAR_CARCEL = 6, CARTA_CARCEL = 7, COMPRAR = 8, NO_COMPRAR = 9,
-            FIN_TURNO = 10, BANCARROTA = 11, NUEVA = 12, CONSTRUIR = 13, VENDER = 14, HIPOTECAR = 15, DESHIPOTECAR = 16, TERMINAR = 17;
+            FIN_TURNO = 10, BANCARROTA = 11, NUEVA = 12, CONSTRUIR = 13, VENDER = 14, HIPOTECAR = 15, DESHIPOTECAR = 16, TERMINAR = 17, VELOCIDAD = 18;
+    /** Margen extra alrededor de cada botón para que sea fácil acertar. */
+    public static final double MARGEN = 4;
 
     public record Boton(int id, double x, double y, double w, double h, String clave, Object[] args, int color) {
         public boolean dentro(double tx, double ty) {
-            return tx >= x - w / 2 && tx <= x + w / 2 && ty >= y - h / 2 && ty <= y + h / 2;
+            return tx >= x - w / 2 - MARGEN && tx <= x + w / 2 + MARGEN && ty >= y - h / 2 - MARGEN && ty <= y + h / 2 + MARGEN;
         }
     }
 
@@ -33,7 +35,8 @@ public final class ImperioBotones {
             case Partida.LOBBY -> {
                 fila(o, 330, 100, 30, new Object[]{UNIRSE, "unirse", 0x30A050}, new Object[]{CPU, "cpu", 0x3070C0},
                         new Object[]{RONDAS, Partida.LIMITES[p.limite] > 0 ? "rondas" : "rondas_inf", 0x806040, Partida.LIMITES[p.limite]});
-                fila(o, 375, 160, 32, new Object[]{EMPEZAR, "empezar", p.js.size() >= 2 ? 0xE0A020 : 0x707070});
+                fila(o, 375, 130, 32, new Object[]{VELOCIDAD, "vel_" + p.velocidad, 0x607080},
+                        new Object[]{EMPEZAR, "empezar", p.js.size() >= 2 ? 0xE0A020 : 0x707070});
             }
             case Partida.TIRAR -> {
                 if (j.carcel > 0) {
@@ -61,7 +64,10 @@ public final class ImperioBotones {
             if (p.fase != Partida.DEUDA && p.puedeDeshipotecar(q, c)) bs.add(new Object[]{DESHIPOTECAR, "deshipotecar", 0x3070C0, Partida.costeDeshipoteca(c)});
             if (!bs.isEmpty()) fila(o, 382, 100, 28, bs.toArray(new Object[0][]));
         }
-        if (p.fase != Partida.LOBBY && p.fase != Partida.FIN) o.add(new Boton(TERMINAR, 420, 428, 64, 18, "terminar", new Object[0], 0x606060));
+        if (p.fase != Partida.LOBBY && p.fase != Partida.FIN) {
+            o.add(new Boton(TERMINAR, 420, 428, 64, 18, "terminar", new Object[0], 0x606060));
+            o.add(new Boton(VELOCIDAD, 92, 428, 64, 18, "vel_" + p.velocidad, new Object[0], 0x607080));
+        }
         return o;
     }
 

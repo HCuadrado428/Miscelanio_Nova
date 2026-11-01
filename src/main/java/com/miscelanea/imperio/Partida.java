@@ -35,6 +35,26 @@ public class Partida {
     public final boolean[] hipo = new boolean[40];
     public static final int[] LIMITES = {20, 30, 50, 0};
     public int ronda, limite = 1, primero;
+    /** 0 lenta, 1 normal, 2 rápida: espera de la CPU, retardo del dado y ritmo de las fichas. */
+    public int velocidad = 1;
+    private static final int[] PASO_V = {7, 5, 3}, DADO_V = {28, 22, 12}, CARTA_V = {36, 30, 18}, CPU_V = {28, 16, 7};
+
+    public int paso() {
+        return PASO_V[Math.floorMod(velocidad, 3)];
+    }
+
+    public int esperaCpu() {
+        return CPU_V[Math.floorMod(velocidad, 3)];
+    }
+
+    /** Ticks que rueda el dado antes de que se mueva la ficha. */
+    public int dadoTicks() {
+        return DADO_V[Math.floorMod(velocidad, 3)] - 2;
+    }
+
+    public void cambiarVelocidad() {
+        velocidad = (velocidad + 1) % 3;
+    }
     public int fase = LOBBY, turno, d1 = 1, d2 = 1, dobles, sel = -1, acreedor = -1;
     public long tDados, tMover;
     public int movDesde, movPasos;
@@ -151,7 +171,7 @@ public class Partida {
             }
             tiroOtraVez = true;
         }
-        mover(j.pos, d1 + d2, false, ahora + 22);
+        mover(j.pos, d1 + d2, false, ahora + DADO_V[Math.floorMod(velocidad, 3)]);
     }
 
     private void mover(int desde, int pasos, boolean atras, long inicio) {
@@ -164,7 +184,7 @@ public class Partida {
 
     /** Llamar cada tick en el servidor: termina el movimiento cuando acaba la animación. */
     public boolean tick(long ahora, Random r) {
-        if (fase == MOVER && ahora >= tMover + movPasos * 5L + 4) {
+        if (fase == MOVER && ahora >= tMover + (long) movPasos * paso() + 4) {
             Jugador j = actual();
             int dest = movAtras ? Math.floorMod(movDesde - movPasos, 40) : (movDesde + movPasos) % 40;
             if (!movAtras && movDesde + movPasos >= 40) {
@@ -298,7 +318,7 @@ public class Partida {
                 do e = (e + 1) % 40; while (Casillas.tipo(e) != Casillas.ESTACION);
                 avanzarA(e, ahora);
             }
-            case 3 -> mover(j.pos, 3, true, ahora + 30);
+            case 3 -> mover(j.pos, 3, true, ahora + CARTA_V[Math.floorMod(velocidad, 3)]);
             case 4 -> aCarcel(j);
             case 5 -> j.libre++;
             case 6 -> pagar(turno, 150, -1);
@@ -320,7 +340,7 @@ public class Partida {
 
     private void avanzarA(int destino, long ahora) {
         Jugador j = actual();
-        mover(j.pos, Math.floorMod(destino - j.pos, 40), false, ahora + 30);
+        mover(j.pos, Math.floorMod(destino - j.pos, 40), false, ahora + CARTA_V[Math.floorMod(velocidad, 3)]);
     }
 
     // ------------------------------------------------------------------ decisiones
@@ -567,7 +587,7 @@ public class Partida {
         int[] h = new int[40];
         for (int i = 0; i < 40; i++) h[i] = hipo[i] ? 1 : 0;
         t.putIntArray("hipo", h);
-        t.putIntArray("e", new int[]{fase, turno, d1, d2, dobles, sel, acreedor, movDesde, movPasos, movAtras ? 1 : 0, tiroOtraVez ? 1 : 0, iCofre, iDestino, ronda, limite, primero});
+        t.putIntArray("e", new int[]{fase, turno, d1, d2, dobles, sel, acreedor, movDesde, movPasos, movAtras ? 1 : 0, tiroOtraVez ? 1 : 0, iCofre, iDestino, ronda, limite, primero, velocidad});
         t.putLong("tDados", tDados);
         t.putLong("tMover", tMover);
         t.putLong("tCarta", tCarta);
@@ -622,6 +642,7 @@ public class Partida {
                 p.limite = a[14];
                 p.primero = a[15];
             }
+            if (a.length >= 17) p.velocidad = a[16];
         }
         p.tDados = t.getLong("tDados");
         p.tMover = t.getLong("tMover");

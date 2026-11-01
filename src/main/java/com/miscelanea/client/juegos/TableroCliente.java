@@ -31,7 +31,11 @@ public final class TableroCliente {
         casilla = -1;
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer p = mc.player;
-        if (p == null || mc.level == null || mc.screen != null) return;
+        if (p == null || mc.level == null) return;
+        for (TableroBlockEntity be : TableroBlockEntity.Visibles.SET)
+            if (!be.isRemoved() && be.getLevel() == mc.level && be.getBlockPos().distToCenterSqr(p.position()) < 400)
+                AvisoTurno.revisar(be, TableroRenderer.esMiTurno(be), "block.miscelanea.tablero");
+        if (mc.screen != null) return;
         Vec3 ojo = p.getEyePosition();
         Vec3 dir = p.getViewVector(1F);
         double mejor = 5.0;

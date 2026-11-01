@@ -19,7 +19,8 @@ public class ParchisPartida {
     public static final int LOBBY = 0, TIRAR = 1, ELEGIR = 2, MOVER = 3, FIN = 4;
     public static final int CASA = -1, PASILLO = 64, META = 71;
     public static final int[] ORDEN_UNION = {0, 2, 1, 3};
-    public static final int PASO = 4;            // ticks por casilla al animar
+    public static final int PASO = 4;            // ticks por casilla al animar (velocidad normal)
+    private static final int[] PASO_V = {6, 4, 2}, CPU_V = {28, 16, 7}, DADO_V = {24, 18, 10};
 
     public static final class Jugador {
         public String nombre = "";
@@ -35,6 +36,25 @@ public class ParchisPartida {
     public final int[][] prog = new int[4][4];
     public final long[][] llegada = new long[4][4];
     public int fase = LOBBY, turno, dado = 1, valor = 1, seises, ganador = -1;
+    /** 0 lenta, 1 normal, 2 rápida. */
+    public int velocidad = 1;
+
+    public int paso() {
+        return PASO_V[Math.floorMod(velocidad, 3)];
+    }
+
+    public int esperaCpu() {
+        return CPU_V[Math.floorMod(velocidad, 3)];
+    }
+
+    /** Ticks que rueda el dado antes de poder mover. */
+    public int dadoTicks() {
+        return DADO_V[Math.floorMod(velocidad, 3)];
+    }
+
+    public void cambiarVelocidad() {
+        velocidad = (velocidad + 1) % 3;
+    }
     public boolean repetir, esBono;
     public final List<Integer> bonos = new ArrayList<>();
     public long tDado, tMover, tFin, contador;
@@ -225,7 +245,7 @@ public class ParchisPartida {
                     capColor = c;
                     capFicha = ultFicha;
                     capDesde = prog[c][ultFicha];
-                    tCap = ahora + 16;
+                    tCap = ahora + dadoTicks();
                     prog[c][ultFicha] = CASA;
                     movColor = -1;
                 }
@@ -245,7 +265,7 @@ public class ParchisPartida {
             anotar((esBono ? "pierde_bono|" : "no_puede|") + actual().nombre + "|" + valor);
             movColor = -1;
             fase = MOVER;
-            tFin = ahora + (esBono ? 20 : 30);
+            tFin = ahora + (esBono ? 20 : 30) * paso() / PASO;
         } else fase = ELEGIR;
     }
 
@@ -263,7 +283,7 @@ public class ParchisPartida {
         movHasta = hasta;
         tMover = ahora;
         int pasos = desde == CASA ? 2 : hasta - desde;
-        movPaso = pasos > 10 ? 2 : PASO;
+        movPaso = pasos > 10 ? Math.max(1, paso() / 2) : paso();
         tFin = ahora + (long) pasos * movPaso + 4;
         ultColor = c;
         ultFicha = f;
@@ -385,7 +405,7 @@ public class ParchisPartida {
             tirar(r, ahora);
             return true;
         }
-        if (fase == ELEGIR && ahora - tDado >= 18) {
+        if (fase == ELEGIR && ahora - tDado >= dadoTicks()) {
             int f = elegirCpu(r);
             return f >= 0 && mover(f, ahora);
         }
@@ -394,7 +414,7 @@ public class ParchisPartida {
 
     /** Si el jugador humano solo tiene una ficha que mover, se mueve sola. */
     public boolean automatico(long ahora) {
-        if (fase != ELEGIR || ahora - tDado < 20) return false;
+        if (fase != ELEGIR || ahora - tDado < dadoTicks() + 2) return false;
         List<Integer> o = opciones(colorActual(), valor, esBono);
         if (o.size() == 1) return mover(o.get(0), ahora);
         // todas las opciones iguales (p. ej. varias fichas en la misma casilla)
@@ -430,6 +450,7 @@ public class ParchisPartida {
         t.putInt("valor", valor);
         t.putInt("seises", seises);
         t.putInt("ganador", ganador);
+        t.putInt("vel", velocidad);
         t.putBoolean("rep", repetir);
         t.putBoolean("bono", esBono);
         t.putIntArray("bonos", bonos.stream().mapToInt(Integer::intValue).toArray());
@@ -466,6 +487,7 @@ public class ParchisPartida {
         p.valor = Math.max(1, t.getInt("valor"));
         p.seises = t.getInt("seises");
         p.ganador = t.getInt("ganador");
+        p.velocidad = t.contains("vel") ? t.getInt("vel") : 1;
         p.repetir = t.getBoolean("rep");
         p.esBono = t.getBoolean("bono");
         for (int b : t.getIntArray("bonos")) p.bonos.add(b);
