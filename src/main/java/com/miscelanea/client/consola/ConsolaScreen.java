@@ -37,6 +37,7 @@ public class ConsolaScreen extends Screen {
     private long ultimo;
     private double acum;
     private MusicaGB mus;
+    private LcdTextura textura;
 
     public ConsolaScreen() {
         super(Component.translatable("item.miscelanea.consola"));
@@ -76,6 +77,7 @@ public class ConsolaScreen extends Screen {
     @Override
     public void removed() {
         pararMusica();
+        if (textura != null) textura.cerrar();
         super.removed();
     }
 
@@ -215,10 +217,12 @@ public class ConsolaScreen extends Screen {
         carcasa(g);
         g.pose().pushPose();
         g.pose().translate(LX, LY, 0);
-        lcd.g = g;
         lcd.font = font;
+        lcd.empezar();
         pantalla();
-        lcd.volcarTextos();
+        if (textura == null) textura = new LcdTextura("consola");
+        textura.subir(lcd);
+        textura.dibujar(g, lcd);
         g.pose().popPose();
         g.pose().popPose();
 

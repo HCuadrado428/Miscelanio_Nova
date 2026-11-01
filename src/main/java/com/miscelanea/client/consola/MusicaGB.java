@@ -9,7 +9,11 @@ import net.minecraft.util.RandomSource;
 /** Música chiptune de la consola: en bucle, sin posición. */
 public class MusicaGB extends AbstractTickableSoundInstance {
     public MusicaGB() {
-        super(ModSounds.GB_MUSICA.get(), SoundSource.RECORDS, RandomSource.create());
+        this(ModSounds.GB_MUSICA.get());
+    }
+
+    public MusicaGB(net.minecraft.sounds.SoundEvent ev) {
+        super(ev, SoundSource.RECORDS, RandomSource.create());
         this.looping = true;
         this.delay = 0;
         this.relative = true;

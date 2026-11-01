@@ -99,6 +99,7 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.ASIENTO.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.RECREATIVA_BE.get(), com.miscelanea.client.arcade.RecreativaRenderer::new);
             event.registerEntityRenderer(ModEntities.DESATASCADOR.get(), DesatascadorRenderer::new);
             event.registerEntityRenderer(ModEntities.TINTA.get(), com.miscelanea.client.tinta.TintaProyectilRenderer::new);
             event.registerEntityRenderer(ModEntities.GANCHO.get(), com.miscelanea.client.armas.GanchoRenderer::new);

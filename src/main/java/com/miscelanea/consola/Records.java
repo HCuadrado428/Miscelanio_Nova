@@ -93,6 +93,10 @@ public final class Records {
                 .when(LootItemRandomChanceCondition.randomChance(prob));
         for (Juego j : Juego.values()) cartuchos.add(LootItem.lootTableItem(ModItems.cartucho(j)).setWeight(j.incorporado ? 1 : 3));
         e.getTable().addPool(cartuchos.build());
+        e.getTable().addPool(LootPool.lootPool().name("miscelanea_fichas").setRolls(ConstantValue.exactly(1))
+                .when(LootItemRandomChanceCondition.randomChance(Math.min(0.6F, prob * 1.6F)))
+                .add(LootItem.lootTableItem(ModItems.FICHA.get()).apply(net.minecraft.world.level.storage.loot.functions.SetItemCountFunction.setCount(
+                        net.minecraft.world.level.storage.loot.providers.number.UniformGenerator.between(1, 5)))).build());
         e.getTable().addPool(LootPool.lootPool().name("miscelanea_consola").setRolls(ConstantValue.exactly(1))
                 .when(LootItemRandomChanceCondition.randomChance(prob * 0.4F))
                 .add(LootItem.lootTableItem(ModItems.CONSOLA.get())).build());

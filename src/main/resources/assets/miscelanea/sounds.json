@@ -544,5 +544,20 @@
       "miscelanea:ocarina_exito"
     ],
     "subtitle": "subtitles.miscelanea.ocarina_exito"
+  },
+  "arcade_ficha": {
+    "sounds": [
+      "miscelanea:arcade_ficha"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "arcade_musica": {
+    "sounds": [
+      {
+        "name": "miscelanea:arcade_musica",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.gb_musica"
   }
 }

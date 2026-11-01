@@ -47,5 +47,13 @@ public final class ModBlocks {
             () -> new com.miscelanea.muebles.LamparaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(0.8F).sound(SoundType.LANTERN)
                     .noOcclusion().lightLevel(st -> st.getValue(com.miscelanea.muebles.LamparaBlock.LIT) ? 15 : 0)));
 
+    // ---- Recreativa
+    public static final RegistryObject<Block> RECREATIVA = BLOCKS.register("recreativa",
+            () -> new com.miscelanea.arcade.RecreativaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(2.0F)
+                    .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 7)));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.arcade.RecreativaBlockEntity>> RECREATIVA_BE = BLOCK_ENTITIES.register("recreativa",
+            () -> BlockEntityType.Builder.of(com.miscelanea.arcade.RecreativaBlockEntity::new, RECREATIVA.get()).build(null));
+
     private ModBlocks() {}
 }

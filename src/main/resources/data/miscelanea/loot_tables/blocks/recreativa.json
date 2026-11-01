@@ -1,0 +1,23 @@
+{
+ "type": "minecraft:block",
+ "pools": [
+  {
+   "rolls": 1,
+   "entries": [
+    {
+     "type": "minecraft:item",
+     "name": "miscelanea:recreativa"
+    }
+   ],
+   "conditions": [
+    {
+     "condition": "minecraft:block_state_property",
+     "block": "miscelanea:recreativa",
+     "properties": {
+      "half": "lower"
+     }
+    }
+   ]
+  }
+ ]
+}

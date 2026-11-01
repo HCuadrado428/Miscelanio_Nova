@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String PROTOCOLO = "18";
+    private static final String PROTOCOLO = "19";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "main"),
@@ -166,6 +166,31 @@ public final class ModNetwork {
                 .encoder(com.miscelanea.ocarina.CancionPacket::encode)
                 .decoder(com.miscelanea.ocarina.CancionPacket::new)
                 .consumerMainThread(com.miscelanea.ocarina.CancionPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.arcade.ArcadeAbrirPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.miscelanea.arcade.ArcadeAbrirPacket::encode)
+                .decoder(com.miscelanea.arcade.ArcadeAbrirPacket::new)
+                .consumerMainThread(com.miscelanea.arcade.ArcadeAbrirPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.arcade.ArcadeAccionPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.arcade.ArcadeAccionPacket::encode)
+                .decoder(com.miscelanea.arcade.ArcadeAccionPacket::new)
+                .consumerMainThread(com.miscelanea.arcade.ArcadeAccionPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.arcade.ArcadeFramePacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.arcade.ArcadeFramePacket::encode)
+                .decoder(com.miscelanea.arcade.ArcadeFramePacket::new)
+                .consumerMainThread(com.miscelanea.arcade.ArcadeFramePacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.arcade.ArcadeFrameS2CPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.miscelanea.arcade.ArcadeFrameS2CPacket::encode)
+                .decoder(com.miscelanea.arcade.ArcadeFrameS2CPacket::new)
+                .consumerMainThread(com.miscelanea.arcade.ArcadeFrameS2CPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.arcade.ArcadeRecordsPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.miscelanea.arcade.ArcadeRecordsPacket::encode)
+                .decoder(com.miscelanea.arcade.ArcadeRecordsPacket::new)
+                .consumerMainThread(com.miscelanea.arcade.ArcadeRecordsPacket::handle)
                 .add();
     }
 }

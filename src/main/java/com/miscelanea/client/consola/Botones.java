@@ -61,4 +61,25 @@ public class Botones {
         if (nuevo[b]) return true;
         return abajo[b] && tiempo[b] >= retardo && (tiempo[b] - retardo) % ritmo == 0;
     }
+
+    /** Acceso desde otros paquetes (la recreativa). */
+    public static final class Acceso {
+        private Acceso() {}
+
+        public static void pulsar(Botones b, int i) {
+            b.pulsar(i);
+        }
+
+        public static void soltar(Botones b, int i) {
+            b.soltar(i);
+        }
+
+        public static void paso(Botones b) {
+            b.paso();
+        }
+
+        public static boolean[] abajo(Botones b) {
+            return b.abajo;
+        }
+    }
 }

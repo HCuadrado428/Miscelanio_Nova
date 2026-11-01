@@ -116,6 +116,11 @@ public final class ModItems {
         return s;
     }
 
+    // ---- Recreativa
+    public static final RegistryObject<Item> RECREATIVA = ITEMS.register("recreativa",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.RECREATIVA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> FICHA = ITEMS.register("ficha", () -> new com.miscelanea.arcade.FichaItem(new Item.Properties()));
+
     // ---- Ocarina
     public static final RegistryObject<Item> OCARINA = ITEMS.register("ocarina",
             () -> new com.miscelanea.ocarina.OcarinaItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));

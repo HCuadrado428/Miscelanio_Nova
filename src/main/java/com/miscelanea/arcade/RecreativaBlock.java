@@ -1,0 +1,172 @@
+package com.miscelanea.arcade;
+
+import com.miscelanea.network.ModNetwork;
+import com.miscelanea.registry.ModBlocks;
+import com.miscelanea.registry.ModSounds;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.network.PacketDistributor;
+
+import javax.annotation.Nullable;
+
+/** Máquina recreativa de dos bloques de alto. Clic derecho con fichas para jugar. */
+public class RecreativaBlock extends BaseEntityBlock {
+    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
+    private static final VoxelShape ABAJO = Block.box(0, 0, 0, 16, 16, 16);
+    private static final VoxelShape[] ARRIBA = {Block.box(0, 0, 2, 16, 16, 16), Block.box(0, 0, 0, 16, 16, 14), Block.box(0, 0, 0, 14, 16, 16), Block.box(2, 0, 0, 16, 16, 16)};
+
+    public RecreativaBlock(Properties p) {
+        super(p);
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(HALF, DoubleBlockHalf.LOWER));
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) {
+        b.add(FACING, HALF);
+    }
+
+    @Override
+    public RenderShape getRenderShape(BlockState s) {
+        return RenderShape.MODEL;
+    }
+
+    @Override
+    public VoxelShape getShape(BlockState s, BlockGetter l, BlockPos p, CollisionContext c) {
+        if (s.getValue(HALF) == DoubleBlockHalf.LOWER) return ABAJO;
+        return ARRIBA[switch (s.getValue(FACING)) {
+            case SOUTH -> 1;
+            case EAST -> 2;
+            case WEST -> 3;
+            default -> 0;
+        }];
+    }
+
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(BlockPlaceContext c) {
+        BlockPos p = c.getClickedPos();
+        Level l = c.getLevel();
+        if (p.getY() >= l.getMaxBuildHeight() - 1 || !l.getBlockState(p.above()).canBeReplaced(c)) return null;
+        return defaultBlockState().setValue(FACING, c.getHorizontalDirection().getOpposite());
+    }
+
+    @Override
+    public void setPlacedBy(Level l, BlockPos p, BlockState s, @Nullable LivingEntity e, ItemStack st) {
+        l.setBlock(p.above(), s.setValue(HALF, DoubleBlockHalf.UPPER), 3);
+    }
+
+    @Override
+    public boolean canSurvive(BlockState s, LevelReader l, BlockPos p) {
+        if (s.getValue(HALF) == DoubleBlockHalf.LOWER) return true;
+        BlockState d = l.getBlockState(p.below());
+        return d.is(this) && d.getValue(HALF) == DoubleBlockHalf.LOWER;
+    }
+
+    @Override
+    public BlockState updateShape(BlockState s, Direction dir, BlockState otro, LevelAccessor l, BlockPos p, BlockPos po) {
+        DoubleBlockHalf h = s.getValue(HALF);
+        if (dir.getAxis() == Direction.Axis.Y && (h == DoubleBlockHalf.LOWER) == (dir == Direction.UP))
+            return otro.is(this) && otro.getValue(HALF) != h ? s : Blocks.AIR.defaultBlockState();
+        return s;
+    }
+
+    @Override
+    public void playerWillDestroy(Level l, BlockPos p, BlockState s, Player pl) {
+        if (!l.isClientSide && pl.isCreative() && s.getValue(HALF) == DoubleBlockHalf.UPPER) {
+            BlockPos d = p.below();
+            if (l.getBlockState(d).is(this)) {
+                l.setBlock(d, Blocks.AIR.defaultBlockState(), 35);
+                l.levelEvent(pl, 2001, d, Block.getId(l.getBlockState(d)));
+            }
+        }
+        super.playerWillDestroy(l, p, s, pl);
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos p, BlockState s) {
+        return s.getValue(HALF) == DoubleBlockHalf.LOWER ? new RecreativaBlockEntity(p, s) : null;
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level l, BlockState s, BlockEntityType<T> t) {
+        return l.isClientSide ? null : createTickerHelper(t, ModBlocks.RECREATIVA_BE.get(), RecreativaBlockEntity::tickServidor);
+    }
+
+    public static boolean esFicha(ItemStack s) {
+        return s.getItem() instanceof FichaItem;
+    }
+
+    public static boolean gastarFicha(Player p) {
+        var inv = p.getInventory();
+        ItemStack mano = p.getMainHandItem();
+        if (esFicha(mano)) {
+            mano.shrink(1);
+            return true;
+        }
+        for (int i = 0; i < inv.getContainerSize(); i++)
+            if (esFicha(inv.getItem(i))) {
+                inv.getItem(i).shrink(1);
+                return true;
+            }
+        return false;
+    }
+
+    @Override
+    public InteractionResult use(BlockState s, Level l, BlockPos pos, Player p, InteractionHand hand, BlockHitResult hit) {
+        if (hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
+        BlockPos abajo = s.getValue(HALF) == DoubleBlockHalf.LOWER ? pos : pos.below();
+        if (l.isClientSide) return InteractionResult.SUCCESS;
+        if (!(l.getBlockEntity(abajo) instanceof RecreativaBlockEntity be) || !(p instanceof ServerPlayer sp)) return InteractionResult.PASS;
+        if (be.ocupadaPorOtro(sp)) {
+            sp.displayClientMessage(Component.translatable("msg.miscelanea.arcade.ocupada").withStyle(ChatFormatting.RED), true);
+            return InteractionResult.CONSUME;
+        }
+        boolean libre = sp.getAbilities().instabuild;
+        if (esFicha(sp.getMainHandItem()) && gastarFicha(sp)) {
+            be.creditos++;
+            be.setChanged();
+            l.playSound(null, abajo, ModSounds.ARCADE_FICHA.get(), SoundSource.BLOCKS, 0.8F, 1.0F);
+        }
+        if (be.creditos <= 0 && !libre) {
+            sp.displayClientMessage(Component.translatable("msg.miscelanea.arcade.inserta").withStyle(ChatFormatting.YELLOW), true);
+            return InteractionResult.CONSUME;
+        }
+        be.jugador = sp.getUUID();
+        ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new ArcadeAbrirPacket(abajo, be.creditos, libre));
+        return InteractionResult.CONSUME;
+    }
+}
