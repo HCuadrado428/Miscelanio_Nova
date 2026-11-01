@@ -1,0 +1,14 @@
+{
+ "parent": "block/block",
+ "render_type": "minecraft:translucent",
+ "textures": {
+  "marco": "miscelanea:block/tanque_marco",
+  "cristal": "miscelanea:block/tanque_cristal",
+  "particle": "miscelanea:block/tanque_cristal",
+  "arena": "miscelanea:block/acuario_arena",
+  "agua": "miscelanea:block/acuario_agua",
+  "alga": "miscelanea:block/acuario_alga",
+  "piedra": "miscelanea:block/acuario_piedra"
+ },
+ "elements": []
+}

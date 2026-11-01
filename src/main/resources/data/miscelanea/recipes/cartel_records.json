@@ -1,0 +1,23 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "PPP",
+  "GFG"
+ ],
+ "key": {
+  "P": {
+   "item": "minecraft:black_stained_glass_pane"
+  },
+  "G": {
+   "item": "minecraft:glowstone_dust"
+  },
+  "F": {
+   "item": "miscelanea:ficha"
+  }
+ },
+ "result": {
+  "item": "miscelanea:cartel_records",
+  "count": 4
+ }
+}

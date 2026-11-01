@@ -6,11 +6,103 @@
    }
   },
   {
+   "apply": [
+    {
+     "model": "miscelanea:block/acuario_deco0",
+     "y": 0,
+     "weight": 1
+    },
+    {
+     "model": "miscelanea:block/acuario_deco0",
+     "y": 90,
+     "weight": 1
+    },
+    {
+     "model": "miscelanea:block/acuario_deco0",
+     "y": 180,
+     "weight": 1
+    },
+    {
+     "model": "miscelanea:block/acuario_deco0",
+     "y": 270,
+     "weight": 1
+    },
+    {
+     "model": "miscelanea:block/acuario_deco1",
+     "y": 0,
+     "weight": 1
+    },
+    {
+     "model": "miscelanea:block/acuario_deco1",
+     "y": 90,
+     "weight": 1
+    },
+    {
+     "model": "miscelanea:block/acuario_deco1",
+     "y": 180,
+     "weight": 1
+    },
+    {
+     "model": "miscelanea:block/acuario_deco1",
+     "y": 270,
+     "weight": 1
+    },
+    {
+     "model": "miscelanea:block/acuario_deco2",
+     "y": 0,
+     "weight": 1
+    },
+    {
+     "model": "miscelanea:block/acuario_deco2",
+     "y": 90,
+     "weight": 1
+    },
+    {
+     "model": "miscelanea:block/acuario_deco2",
+     "y": 180,
+     "weight": 1
+    },
+    {
+     "model": "miscelanea:block/acuario_deco2",
+     "y": 270,
+     "weight": 1
+    },
+    {
+     "model": "miscelanea:block/acuario_deco3",
+     "y": 0,
+     "weight": 1
+    },
+    {
+     "model": "miscelanea:block/acuario_deco3",
+     "y": 90,
+     "weight": 1
+    },
+    {
+     "model": "miscelanea:block/acuario_deco3",
+     "y": 180,
+     "weight": 1
+    },
+    {
+     "model": "miscelanea:block/acuario_deco3",
+     "y": 270,
+     "weight": 1
+    }
+   ]
+  },
+  {
    "when": {
     "north": "false"
    },
    "apply": {
     "model": "miscelanea:block/acuario_north"
+   }
+  },
+  {
+   "when": {
+    "north": "true"
+   },
+   "apply": {
+    "model": "miscelanea:block/acuario_union_north"
    }
   },
   {
@@ -23,10 +115,26 @@
   },
   {
    "when": {
+    "south": "true"
+   },
+   "apply": {
+    "model": "miscelanea:block/acuario_union_south"
+   }
+  },
+  {
+   "when": {
     "east": "false"
    },
    "apply": {
     "model": "miscelanea:block/acuario_east"
+   }
+  },
+  {
+   "when": {
+    "east": "true"
+   },
+   "apply": {
+    "model": "miscelanea:block/acuario_union_east"
    }
   },
   {
@@ -39,11 +147,29 @@
   },
   {
    "when": {
+    "west": "true"
+   },
+   "apply": {
+    "model": "miscelanea:block/acuario_union_west"
+   }
+  },
+  {
+   "when": {
     "north": "false",
     "west": "false"
    },
    "apply": {
     "model": "miscelanea:block/acuario_poste",
+    "y": 0
+   }
+  },
+  {
+   "when": {
+    "north": "true",
+    "west": "true"
+   },
+   "apply": {
+    "model": "miscelanea:block/acuario_union_esquina",
     "y": 0
    }
   },
@@ -59,6 +185,16 @@
   },
   {
    "when": {
+    "north": "true",
+    "east": "true"
+   },
+   "apply": {
+    "model": "miscelanea:block/acuario_union_esquina",
+    "y": 90
+   }
+  },
+  {
+   "when": {
     "south": "false",
     "east": "false"
    },
@@ -69,11 +205,31 @@
   },
   {
    "when": {
+    "south": "true",
+    "east": "true"
+   },
+   "apply": {
+    "model": "miscelanea:block/acuario_union_esquina",
+    "y": 180
+   }
+  },
+  {
+   "when": {
     "south": "false",
     "west": "false"
    },
    "apply": {
     "model": "miscelanea:block/acuario_poste",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "south": "true",
+    "west": "true"
+   },
+   "apply": {
+    "model": "miscelanea:block/acuario_union_esquina",
     "y": 270
    }
   }

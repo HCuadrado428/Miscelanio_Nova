@@ -874,5 +874,8 @@
   "comecocos.miscelanea.puntos": "PUNTOS",
   "comecocos.miscelanea.nivel": "NIVEL %s",
   "comecocos.miscelanea.preparados": "¡PREPARADOS!",
-  "comecocos.miscelanea.nivel_ok": "¡LIMPIO!"
+  "comecocos.miscelanea.nivel_ok": "¡LIMPIO!",
+  "block.miscelanea.cartel_records": "Cartel de récords",
+  "cartel.miscelanea.titulo": "★ SALÓN DE LA FAMA ★",
+  "cartel.miscelanea.vacio": "¡SÉ EL PRIMERO!"
 }

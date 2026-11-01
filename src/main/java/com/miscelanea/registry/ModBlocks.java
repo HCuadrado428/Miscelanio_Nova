@@ -54,6 +54,12 @@ public final class ModBlocks {
     public static final RegistryObject<Block> RECREATIVA_DOBLE = BLOCKS.register("recreativa_doble",
             () -> new com.miscelanea.arcade.RecreativaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(2.0F)
                     .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 7), true));
+    public static final RegistryObject<Block> CARTEL_RECORDS = BLOCKS.register("cartel_records",
+            () -> new com.miscelanea.arcade.CartelRecordsBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(1.0F)
+                    .sound(SoundType.GLASS).noOcclusion().lightLevel(st -> 9)));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.arcade.CartelRecordsBlockEntity>> CARTEL_RECORDS_BE = BLOCK_ENTITIES.register("cartel_records",
+            () -> BlockEntityType.Builder.of(com.miscelanea.arcade.CartelRecordsBlockEntity::new, CARTEL_RECORDS.get()).build(null));
     public static final RegistryObject<Block> MESA_COCTEL = BLOCKS.register("mesa_coctel",
             () -> new com.miscelanea.arcade.MesaCoctelBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(2.0F)
                     .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 6)));

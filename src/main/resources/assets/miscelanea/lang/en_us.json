@@ -874,5 +874,8 @@
   "comecocos.miscelanea.puntos": "SCORE",
   "comecocos.miscelanea.nivel": "LEVEL %s",
   "comecocos.miscelanea.preparados": "READY!",
-  "comecocos.miscelanea.nivel_ok": "CLEAR!"
+  "comecocos.miscelanea.nivel_ok": "CLEAR!",
+  "block.miscelanea.cartel_records": "High Score Board",
+  "cartel.miscelanea.titulo": "★ HALL OF FAME ★",
+  "cartel.miscelanea.vacio": "BE THE FIRST!"
 }

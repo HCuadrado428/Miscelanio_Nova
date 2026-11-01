@@ -1,0 +1,84 @@
+{
+ "parent": "block/block",
+ "render_type": "minecraft:translucent",
+ "textures": {
+  "marco": "miscelanea:block/tanque_marco",
+  "cristal": "miscelanea:block/tanque_cristal",
+  "particle": "miscelanea:block/tanque_cristal",
+  "arena": "miscelanea:block/acuario_arena",
+  "agua": "miscelanea:block/acuario_agua",
+  "alga": "miscelanea:block/acuario_alga",
+  "piedra": "miscelanea:block/acuario_piedra"
+ },
+ "elements": [
+  {
+   "from": [
+    15.5,
+    0,
+    0.5
+   ],
+   "to": [
+    16,
+    1,
+    15.5
+   ],
+   "faces": {
+    "down": {
+     "uv": [
+      15.5,
+      0.5,
+      16,
+      15.5
+     ],
+     "texture": "#marco"
+    }
+   }
+  },
+  {
+   "from": [
+    15.5,
+    0,
+    0.5
+   ],
+   "to": [
+    16,
+    3,
+    15.5
+   ],
+   "faces": {
+    "up": {
+     "uv": [
+      15.5,
+      0.5,
+      16,
+      15.5
+     ],
+     "texture": "#arena"
+    }
+   }
+  },
+  {
+   "from": [
+    15.5,
+    13.5,
+    0.5
+   ],
+   "to": [
+    16,
+    13.5,
+    15.5
+   ],
+   "faces": {
+    "up": {
+     "uv": [
+      15.5,
+      0.5,
+      16,
+      15.5
+     ],
+     "texture": "#agua"
+    }
+   }
+  }
+ ]
+}
