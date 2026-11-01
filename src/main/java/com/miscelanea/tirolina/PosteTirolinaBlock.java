@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 
 /** Poste de tirolina: únelo a otro con un carrete de cable; clic derecho con la mano vacía para lanzarte. */
 public class PosteTirolinaBlock extends BaseEntityBlock {
-    private static final VoxelShape FORMA = Shapes.or(Block.box(3, 0, 3, 13, 1, 13), Block.box(4.5, 1, 4.5, 11.5, 16, 11.5));
+    private static final VoxelShape FORMA = Shapes.or(Block.box(3, 0, 3, 13, 1, 13), Block.box(4.5, 1, 4.5, 11.5, 24, 11.5));
 
     public PosteTirolinaBlock(Properties p) {
         super(p);

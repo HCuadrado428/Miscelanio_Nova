@@ -81,8 +81,13 @@ public class Polea extends Entity {
         v -= Math.signum(v) * 0.0015F;                       // rozamiento de la polea
         v = Math.max(-1.3F, Math.min(1.3F, v));
         t += (float) (v / largo);
-        if (t >= 1F || t <= 0F) {
+        Vec3 cp = Cable.punto(a, b, Math.max(0, Math.min(1, t)));
+        // si los pies van a tocar el suelo, se suelta (el cable acaba cerca del suelo)
+        BlockPos pies = BlockPos.containing(cp.x, cp.y - 2.6, cp.z);
+        boolean suelo = t > 0.08F && t < 0.92F ? false : !level().getBlockState(pies).getCollisionShape(level(), pies).isEmpty();
+        if (t >= 1F || t <= 0F || suelo) {
             t = Math.max(0F, Math.min(1F, t));
+            entityData.set(T, t);
             llegar(jinete, u.scale(Math.signum(v)), Math.abs(v));
             return;
         }
@@ -96,8 +101,14 @@ public class Polea extends Entity {
 
     private void llegar(Entity jinete, Vec3 dir, float v) {
         jinete.stopRiding();
-        // se suelta un poco antes del poste para no chocar con él
-        Vec3 fin = Cable.punto(a(), b(), t()).subtract(dir.scale(1.0)).subtract(0, 2.4, 0);
+        // se suelta delante del poste de llegada, sobre el suelo
+        BlockPos poste = entityData.get(dir.dot(entityData.get(B).getCenter().subtract(entityData.get(A).getCenter())) >= 0 ? B : A);
+        Vec3 cp = Cable.punto(a(), b(), t());
+        Vec3 fin = new Vec3(cp.x - dir.x * 1.3, Math.min(cp.y - 2.4, poste.getY() + 1.5), cp.z - dir.z * 1.3);
+        BlockPos bp = BlockPos.containing(fin);
+        for (int i = 0; i < 6 && !level().getBlockState(bp).getCollisionShape(level(), bp).isEmpty(); i++) bp = bp.above();
+        for (int i = 0; i < 4 && level().getBlockState(bp.below()).getCollisionShape(level(), bp.below()).isEmpty(); i++) bp = bp.below();
+        fin = new Vec3(fin.x, bp.getY(), fin.z);
         jinete.teleportTo(fin.x, fin.y, fin.z);
         jinete.setDeltaMovement(dir.x * v * 0.5, 0.25, dir.z * v * 0.5);
         jinete.hurtMarked = true;
