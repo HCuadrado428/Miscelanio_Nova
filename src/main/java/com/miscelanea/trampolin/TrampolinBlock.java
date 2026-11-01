@@ -99,8 +99,8 @@ public class TrampolinBlock extends BaseEntityBlock {
         if (vout <= 0) return;
         if (local) {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.miscelanea.client.trampolin.TrampolinCliente.rebote(perfecto, vout));
-        } else if (e.level() instanceof Level l && !l.isClientSide) {
-            l.playSound(e instanceof Player pl ? pl : null, e.getX(), e.getY(), e.getZ(), ModSounds.TRAMPOLIN_BOING.get(), SoundSource.BLOCKS,
+        } else if (!e.level().isClientSide) {
+            e.level().playSound(e instanceof Player pl ? pl : null, e.getX(), e.getY(), e.getZ(), ModSounds.TRAMPOLIN_BOING.get(), SoundSource.BLOCKS,
                     0.6F, 0.8F + (float) vout * 0.5F);
         }
     }
