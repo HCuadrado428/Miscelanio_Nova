@@ -1,0 +1,26 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "LLL",
+  "SBS",
+  "I I"
+ ],
+ "key": {
+  "L": {
+   "tag": "minecraft:wool"
+  },
+  "S": {
+   "item": "minecraft:slime_ball"
+  },
+  "B": {
+   "item": "minecraft:blue_dye"
+  },
+  "I": {
+   "item": "minecraft:iron_ingot"
+  }
+ },
+ "result": {
+  "item": "miscelanea:trampolin"
+ }
+}

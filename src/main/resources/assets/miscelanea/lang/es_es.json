@@ -453,5 +453,22 @@
   "msg.miscelanea.tablero.sin_movimientos": "Esa pieza no puede moverse",
   "msg.miscelanea.tablero.mate": "¡Jaque mate! Gana %s",
   "msg.miscelanea.tablero.gana": "¡Gana %s!",
-  "msg.miscelanea.tablero.tablas": "Tablas"
+  "msg.miscelanea.tablero.tablas": "Tablas",
+  "block.miscelanea.poste_tirolina": "Poste de tirolina",
+  "item.miscelanea.cable_tirolina": "Carrete de cable",
+  "block.miscelanea.trampolin": "Trampolín",
+  "entity.miscelanea.polea": "Polea",
+  "item.miscelanea.cable_tirolina.ayuda": "Clic derecho en un poste y luego en otro (máx. 64 bloques)",
+  "item.miscelanea.cable_tirolina.desde": "Cable enganchado en %s %s %s",
+  "msg.miscelanea.tirolina.primero": "Cable enganchado. Ahora clic derecho en el otro poste",
+  "msg.miscelanea.tirolina.lista": "¡Tirolina lista! Clic derecho en un poste con la mano vacía para lanzarte",
+  "msg.miscelanea.tirolina.ocupado": "Este poste ya tiene cable",
+  "msg.miscelanea.tirolina.perdido": "El primer poste ya no está libre",
+  "msg.miscelanea.tirolina.lejos": "Demasiado lejos (máx. %s bloques)",
+  "msg.miscelanea.tirolina.sin_cable": "Este poste no tiene cable: usa un carrete de cable",
+  "hud.miscelanea.trampolin.perfecto": "¡Perfecto!",
+  "hud.miscelanea.trampolin.giro": "¡Giro de %sº!",
+  "subtitles.miscelanea.tirolina_zumbido": "Polea zumbando",
+  "subtitles.miscelanea.tirolina_enganchar": "Mosquetón",
+  "subtitles.miscelanea.trampolin_boing": "Trampolín rebota"
 }

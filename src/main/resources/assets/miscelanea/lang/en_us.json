@@ -453,5 +453,22 @@
   "msg.miscelanea.tablero.sin_movimientos": "That piece can't move",
   "msg.miscelanea.tablero.mate": "Checkmate! %s wins",
   "msg.miscelanea.tablero.gana": "%s wins!",
-  "msg.miscelanea.tablero.tablas": "Draw"
+  "msg.miscelanea.tablero.tablas": "Draw",
+  "block.miscelanea.poste_tirolina": "Zipline Post",
+  "item.miscelanea.cable_tirolina": "Cable Spool",
+  "block.miscelanea.trampolin": "Trampoline",
+  "entity.miscelanea.polea": "Pulley",
+  "item.miscelanea.cable_tirolina.ayuda": "Right-click a post, then another (max 64 blocks)",
+  "item.miscelanea.cable_tirolina.desde": "Cable attached at %s %s %s",
+  "msg.miscelanea.tirolina.primero": "Cable attached. Now right-click the other post",
+  "msg.miscelanea.tirolina.lista": "Zipline ready! Right-click a post with an empty hand to ride",
+  "msg.miscelanea.tirolina.ocupado": "This post already has a cable",
+  "msg.miscelanea.tirolina.perdido": "The first post isn't free anymore",
+  "msg.miscelanea.tirolina.lejos": "Too far (max %s blocks)",
+  "msg.miscelanea.tirolina.sin_cable": "This post has no cable: use a cable spool",
+  "hud.miscelanea.trampolin.perfecto": "Perfect!",
+  "hud.miscelanea.trampolin.giro": "%s° spin!",
+  "subtitles.miscelanea.tirolina_zumbido": "Pulley whirs",
+  "subtitles.miscelanea.tirolina_enganchar": "Carabiner clicks",
+  "subtitles.miscelanea.trampolin_boing": "Trampoline bounces"
 }

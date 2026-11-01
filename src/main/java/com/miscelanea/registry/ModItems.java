@@ -131,6 +131,11 @@ public final class ModItems {
     // ---- Juegos de mesa
     public static final RegistryObject<Item> TABLERO = ITEMS.register("tablero", () -> new net.minecraft.world.item.BlockItem(ModBlocks.TABLERO.get(), new Item.Properties()));
 
+    // ---- Tirolina y trampolín
+    public static final RegistryObject<Item> POSTE_TIROLINA = ITEMS.register("poste_tirolina", () -> new net.minecraft.world.item.BlockItem(ModBlocks.POSTE_TIROLINA.get(), new Item.Properties()));
+    public static final RegistryObject<Item> CABLE_TIROLINA = ITEMS.register("cable_tirolina", () -> new com.miscelanea.tirolina.CableTirolinaItem(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> TRAMPOLIN = ITEMS.register("trampolin", () -> new net.minecraft.world.item.BlockItem(ModBlocks.TRAMPOLIN.get(), new Item.Properties()));
+
     // ---- Recreativa
     public static final RegistryObject<Item> RECREATIVA = ITEMS.register("recreativa",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.RECREATIVA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));

@@ -1,0 +1,21 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "I",
+  "L",
+  "L"
+ ],
+ "key": {
+  "I": {
+   "item": "minecraft:iron_ingot"
+  },
+  "L": {
+   "tag": "minecraft:logs"
+  }
+ },
+ "result": {
+  "item": "miscelanea:poste_tirolina",
+  "count": 2
+ }
+}

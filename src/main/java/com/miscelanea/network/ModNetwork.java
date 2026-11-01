@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String PROTOCOLO = "21";
+    private static final String PROTOCOLO = "22";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "main"),
@@ -201,6 +201,11 @@ public final class ModNetwork {
                 .encoder(com.miscelanea.juegos.TableroClicPacket::encode)
                 .decoder(com.miscelanea.juegos.TableroClicPacket::new)
                 .consumerMainThread(com.miscelanea.juegos.TableroClicPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.trampolin.TrucoPacket.class, id++)
+                .encoder(com.miscelanea.trampolin.TrucoPacket::encode)
+                .decoder(com.miscelanea.trampolin.TrucoPacket::new)
+                .consumerMainThread(com.miscelanea.trampolin.TrucoPacket::handle)
                 .add();
     }
 }

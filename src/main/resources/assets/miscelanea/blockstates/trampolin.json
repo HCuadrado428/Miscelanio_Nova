@@ -1,0 +1,76 @@
+{
+ "multipart": [
+  {
+   "when": {
+    "north": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/trampolin_north"
+   }
+  },
+  {
+   "when": {
+    "south": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/trampolin_south"
+   }
+  },
+  {
+   "when": {
+    "west": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/trampolin_west"
+   }
+  },
+  {
+   "when": {
+    "east": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/trampolin_east"
+   }
+  },
+  {
+   "when": {
+    "north": "false",
+    "west": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/trampolin_pata",
+    "y": 0
+   }
+  },
+  {
+   "when": {
+    "north": "false",
+    "east": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/trampolin_pata",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "south": "false",
+    "east": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/trampolin_pata",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "south": "false",
+    "west": "false"
+   },
+   "apply": {
+    "model": "miscelanea:block/trampolin_pata",
+    "y": 270
+   }
+  }
+ ]
+}

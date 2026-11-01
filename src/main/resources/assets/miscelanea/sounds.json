@@ -577,5 +577,23 @@
       "miscelanea:capsula_abrir"
     ],
     "subtitle": "subtitles.miscelanea.capsula_abrir"
+  },
+  "tirolina_zumbido": {
+    "sounds": [
+      "miscelanea:tirolina_zumbido"
+    ],
+    "subtitle": "subtitles.miscelanea.tirolina_zumbido"
+  },
+  "tirolina_enganchar": {
+    "sounds": [
+      "miscelanea:tirolina_enganchar"
+    ],
+    "subtitle": "subtitles.miscelanea.tirolina_enganchar"
+  },
+  "trampolin_boing": {
+    "sounds": [
+      "miscelanea:trampolin_boing"
+    ],
+    "subtitle": "subtitles.miscelanea.trampolin_boing"
   }
 }

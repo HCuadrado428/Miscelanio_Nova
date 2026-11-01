@@ -73,5 +73,17 @@ public final class ModBlocks {
     public static final RegistryObject<BlockEntityType<com.miscelanea.juegos.TableroBlockEntity>> TABLERO_BE = BLOCK_ENTITIES.register("tablero",
             () -> BlockEntityType.Builder.of(com.miscelanea.juegos.TableroBlockEntity::new, TABLERO.get()).build(null));
 
+    // ---- Tirolina y trampolín
+    public static final RegistryObject<Block> POSTE_TIROLINA = BLOCKS.register("poste_tirolina",
+            () -> new com.miscelanea.tirolina.PosteTirolinaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.0F).sound(SoundType.WOOD).noOcclusion()));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.tirolina.PosteTirolinaBlockEntity>> POSTE_TIROLINA_BE = BLOCK_ENTITIES.register("poste_tirolina",
+            () -> BlockEntityType.Builder.of(com.miscelanea.tirolina.PosteTirolinaBlockEntity::new, POSTE_TIROLINA.get()).build(null));
+    public static final RegistryObject<Block> TRAMPOLIN = BLOCKS.register("trampolin",
+            () -> new com.miscelanea.trampolin.TrampolinBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLUE).strength(1.0F).sound(SoundType.WOOL).noOcclusion()));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.trampolin.TrampolinBlockEntity>> TRAMPOLIN_BE = BLOCK_ENTITIES.register("trampolin",
+            () -> BlockEntityType.Builder.of(com.miscelanea.trampolin.TrampolinBlockEntity::new, TRAMPOLIN.get()).build(null));
+
     private ModBlocks() {}
 }

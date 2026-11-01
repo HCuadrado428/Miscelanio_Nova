@@ -65,6 +65,12 @@ public final class ClientEvents {
             dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "ocarina"), 1350,
                     com.miscelanea.client.ocarina.AnimOcarina::new);
+            dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
+                    new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "tirolina"), 1400,
+                    com.miscelanea.client.tirolina.AnimTirolina::new);
+            dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
+                    new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "trampolin"), 1450,
+                    com.miscelanea.client.trampolin.AnimTrampolin::new);
             // Animaciones del agarre de la porra (playerAnimator)
             dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "agarre"), 1000,
@@ -98,6 +104,7 @@ public final class ClientEvents {
 
         @SubscribeEvent
         public static void modelosExtra(net.minecraftforge.client.event.ModelEvent.RegisterAdditional event) {
+            event.register(com.miscelanea.client.tirolina.PoleaRenderer.MODELO);
             for (String p : com.miscelanea.client.juegos.TableroRenderer.PIEZAS) {
                 event.register(com.miscelanea.client.juegos.TableroRenderer.modelo(p, true));
                 event.register(com.miscelanea.client.juegos.TableroRenderer.modelo(p, false));
@@ -110,6 +117,9 @@ public final class ClientEvents {
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.RECREATIVA_BE.get(), com.miscelanea.client.arcade.RecreativaRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TANQUE_BE.get(), com.miscelanea.client.tanques.TanqueRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TABLERO_BE.get(), com.miscelanea.client.juegos.TableroRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.POSTE_TIROLINA_BE.get(), com.miscelanea.client.tirolina.PosteRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TRAMPOLIN_BE.get(), com.miscelanea.client.trampolin.TrampolinRenderer::new);
+            event.registerEntityRenderer(com.miscelanea.registry.ModEntities.POLEA.get(), com.miscelanea.client.tirolina.PoleaRenderer::new);
 
             event.registerEntityRenderer(ModEntities.DESATASCADOR.get(), DesatascadorRenderer::new);
             event.registerEntityRenderer(ModEntities.TINTA.get(), com.miscelanea.client.tinta.TintaProyectilRenderer::new);
@@ -176,6 +186,7 @@ public final class ClientEvents {
             event.registerAboveAll("hacha", com.miscelanea.client.combate.HachaCliente::hud);
             event.registerAboveAll("ocarina", com.miscelanea.client.ocarina.OcarinaCliente::hud);
             event.registerAboveAll("detector", com.miscelanea.client.tesoros.DetectorCliente::hud);
+            event.registerAboveAll("trampolin", com.miscelanea.client.trampolin.TrampolinCliente::hud);
         }
     }
 
