@@ -112,7 +112,7 @@ public class ImperioRenderer implements BlockEntityRenderer<ImperioBlockEntity> 
             }
             double ox = (i % 2 == 0 ? -7 : 7), oy = (i < 2 ? -7 : 7);
             Vec3 l = local(be, pos[0] + ox, pos[1] + oy).add(0, salto, 0);
-            pieza(mr, mm, solido, ps, l, FICHAS[j.ficha % FICHAS.length], 0.11F, giro + ImperioGeo.asiento(i) * 90, luz);
+            pieza(mr, mm, solido, ps, l, FICHAS[j.ficha % FICHAS.length], 0.13F, giro + ImperioGeo.asiento(i) * 90, luz);
             // anillo del color del jugador
             rect(marca, ps, be, pos[0] + ox, pos[1] + oy, 15, 15, COLORES[i % 4], 0.55F);
         }
