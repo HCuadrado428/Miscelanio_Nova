@@ -670,5 +670,107 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "mz_escopeta": {
+    "sounds": [
+      "miscelanea:mz_escopeta"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "mz_puerta": {
+    "sounds": [
+      "miscelanea:mz_puerta"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "mz_coger": {
+    "sounds": [
+      "miscelanea:mz_coger"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "mz_dolor": {
+    "sounds": [
+      "miscelanea:mz_dolor"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "mz_grunido": {
+    "sounds": [
+      "miscelanea:mz_grunido"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "mz_muere": {
+    "sounds": [
+      "miscelanea:mz_muere"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "mz_bola": {
+    "sounds": [
+      "miscelanea:mz_bola"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "mz_salida": {
+    "sounds": [
+      "miscelanea:mz_salida"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "mz_musica": {
+    "sounds": [
+      {
+        "name": "miscelanea:mz_musica",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "tc_choque": {
+    "sounds": [
+      "miscelanea:tc_choque"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "tc_derrape": {
+    "sounds": [
+      "miscelanea:tc_derrape"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "tc_punto": {
+    "sounds": [
+      "miscelanea:tc_punto"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "tc_turbo": {
+    "sounds": [
+      "miscelanea:tc_turbo"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "tc_meta": {
+    "sounds": [
+      "miscelanea:tc_meta"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "tc_cuenta": {
+    "sounds": [
+      "miscelanea:tc_cuenta"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "tc_musica": {
+    "sounds": [
+      {
+        "name": "miscelanea:tc_musica",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
   }
 }

@@ -191,6 +191,8 @@ public class ArcadeScreen extends Screen {
         Botones[] bs = jug == 2 ? mandos : new Botones[]{invitado ? mandos[1] : mandos[0]};
         switch (juegoId) {
             case "chatarra" -> juego = new ComandoChatarra(bs, semilla, jug);
+            case "mazmorra" -> juego = new Mazmorra3D(bs, semilla, jug);
+            case "turbo" -> juego = new TurboCosta(bs, semilla, jug);
             case "astro" -> clasico = new AstroPatrulla(bot);
             default -> {
                 Juego j = Juego.TETROMINOS;
@@ -373,7 +375,7 @@ public class ArcadeScreen extends Screen {
             boolean s = i == sel;
             if (s) p.rect(4, y - 3, 248, 15, 35);
             if (s && (t / 15) % 2 == 0) for (int k = 0; k < 5; k++) p.rect(8, y + k, 3 - Math.abs(k - 2), 1, 20);
-            boolean nuevo = id.equals("chatarra") || id.equals("astro");
+            boolean nuevo = id.equals("chatarra") || id.equals("mazmorra") || id.equals("turbo") || id.equals("astro");
             p.texto(I18n.get("juego.miscelanea." + id), 16, y, nuevo ? (s ? 20 : 19) : (s ? 7 : 5));
             if (ArcadeJuegos.dosJugadores(id)) p.texto("1-2P", 150, y, s ? 39 : 37);
             ListTag tb = ArcadeCliente.tabla(id);
