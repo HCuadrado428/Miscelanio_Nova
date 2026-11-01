@@ -1,0 +1,77 @@
+{
+ "parent": "block/block",
+ "textures": {
+  "t": "miscelanea:block/feria/metal_rojo",
+  "particle": "miscelanea:block/feria/metal_rojo"
+ },
+ "elements": [
+  {
+   "from": [
+    0,
+    7.5,
+    7.5
+   ],
+   "to": [
+    16,
+    8.5,
+    8.5
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      0,
+      7.5,
+      16,
+      8.5
+     ],
+     "texture": "#t"
+    },
+    "south": {
+     "uv": [
+      0,
+      7.5,
+      16,
+      8.5
+     ],
+     "texture": "#t"
+    },
+    "east": {
+     "uv": [
+      7.5,
+      7.5,
+      8.5,
+      8.5
+     ],
+     "texture": "#t"
+    },
+    "west": {
+     "uv": [
+      7.5,
+      7.5,
+      8.5,
+      8.5
+     ],
+     "texture": "#t"
+    },
+    "up": {
+     "uv": [
+      0,
+      7.5,
+      16,
+      8.5
+     ],
+     "texture": "#t"
+    },
+    "down": {
+     "uv": [
+      0,
+      7.5,
+      16,
+      8.5
+     ],
+     "texture": "#t"
+    }
+   }
+  }
+ ]
+}

@@ -964,5 +964,16 @@
   "baile.miscelanea.subete": "Súbete encima de la pista y haz clic",
   "baile.miscelanea.menu_ayuda": "W/S: canción · A/D: dificultad · Espacio: ¡a bailar!",
   "baile.miscelanea.salir": "Agáchate para bajarte de la pista",
-  "baile.miscelanea.resultado": "%s ha bailado en la pista: %s puntos (nota %s)"
+  "baile.miscelanea.resultado": "%s ha bailado en la pista: %s puntos (nota %s)",
+  "block.miscelanea.noria": "Noria",
+  "block.miscelanea.tiovivo": "Tiovivo",
+  "item.miscelanea.coche_choque": "Coche de choque",
+  "entity.miscelanea.coche_choque": "Coche de choque",
+  "entity.miscelanea.asiento_feria": "Asiento de feria",
+  "subtitles.miscelanea.fe_arranca": "Arranca la atracción",
+  "subtitles.miscelanea.fe_para": "Se para la atracción",
+  "subtitles.miscelanea.fe_noria": "Cruje la noria",
+  "subtitles.miscelanea.fe_tiovivo": "Suena el organillo",
+  "subtitles.miscelanea.fe_choque": "Choque de coches",
+  "miscelanea.feria.ayuda": "Clic en la base para encenderla o pararla"
 }

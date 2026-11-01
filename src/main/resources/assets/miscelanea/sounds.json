@@ -1090,5 +1090,35 @@
       "miscelanea:db_gana"
     ],
     "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "fe_arranca": {
+    "sounds": [
+      "miscelanea:fe_arranca"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_arranca"
+  },
+  "fe_para": {
+    "sounds": [
+      "miscelanea:fe_para"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_para"
+  },
+  "fe_noria": {
+    "sounds": [
+      "miscelanea:fe_noria"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_noria"
+  },
+  "fe_tiovivo": {
+    "sounds": [
+      "miscelanea:fe_tiovivo"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_tiovivo"
+  },
+  "fe_choque": {
+    "sounds": [
+      "miscelanea:fe_choque"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_choque"
   }
 }

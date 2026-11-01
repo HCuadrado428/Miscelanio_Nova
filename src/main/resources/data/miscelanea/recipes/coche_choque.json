@@ -1,0 +1,26 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  " R ",
+  "IMI",
+  "SSS"
+ ],
+ "key": {
+  "R": {
+   "item": "minecraft:lightning_rod"
+  },
+  "I": {
+   "item": "minecraft:iron_ingot"
+  },
+  "M": {
+   "item": "minecraft:minecart"
+  },
+  "S": {
+   "item": "minecraft:slime_ball"
+  }
+ },
+ "result": {
+  "item": "miscelanea:coche_choque"
+ }
+}

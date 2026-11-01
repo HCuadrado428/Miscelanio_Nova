@@ -32,7 +32,7 @@ public final class Juegos {
 
     // =================================================================== TETROMINÓS
     static final class Tetrominos extends JuegoGB {
-        static final int W = 10, H = 18, C = 7, BX = 12, BY = 9;
+        static final int W = 10, H = 18, C = 7, BX = 12, BY = Lcd.H - H * C;   // el fondo del tablero toca el borde de abajo
         static final int[][][] BASE = {
                 {{0, 1}, {1, 1}, {2, 1}, {3, 1}},   // I
                 {{0, 0}, {1, 0}, {0, 1}, {1, 1}},   // O
@@ -255,7 +255,7 @@ public final class Juegos {
                     l.rect(w[0] + ((y / 4) % 2 == 0 ? 2 : 6), y, 1, 4, 3);
                 }
             }
-            l.rect(BX, BY - 9, W * C, 9, 0);
+            l.rect(BX, 0, W * C, BY, 0);
             for (int y = 0; y < H; y++)
                 for (int x = 0; x < W; x++) {
                     int v = tab[y][x];

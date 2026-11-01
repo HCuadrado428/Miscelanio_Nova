@@ -110,6 +110,7 @@ public final class ClientEvents {
                     com.miscelanea.client.mesas.FutbolinRenderer.BARRA, com.miscelanea.client.mesas.FutbolinRenderer.MANGO, com.miscelanea.client.mesas.FutbolinRenderer.ROJO,
                     com.miscelanea.client.mesas.FutbolinRenderer.AZUL, com.miscelanea.client.mesas.FutbolinRenderer.PELOTA}) event.register(rl);
             event.register(com.miscelanea.client.tirolina.PosteRenderer.CABEZA);
+            for (var rl : com.miscelanea.client.feria.FeriaPiezas.todas()) event.register(rl);
             for (String n : com.miscelanea.client.imperio.ImperioRenderer.FICHAS) event.register(com.miscelanea.client.imperio.ImperioRenderer.modelo(n));
             for (String n : new String[]{"casa", "hotel", "dado"}) event.register(com.miscelanea.client.imperio.ImperioRenderer.modelo(n));
             for (String n : com.miscelanea.client.parchis.ParchisRenderer.COLOR_ID) event.register(com.miscelanea.client.parchis.ParchisRenderer.modelo("ficha_" + n));
@@ -135,6 +136,9 @@ public final class ClientEvents {
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.BILLAR_BE.get(), com.miscelanea.client.mesas.BillarRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.FUTBOLIN_BE.get(), com.miscelanea.client.mesas.FutbolinRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.PISTA_BAILE_BE.get(), com.miscelanea.client.baile.PistaBaileRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.ATRACCION_BE.get(), com.miscelanea.client.feria.AtraccionRenderer::new);
+            event.registerEntityRenderer(com.miscelanea.registry.ModEntities.ASIENTO_FERIA.get(), com.miscelanea.client.feria.AsientoFeriaRenderer::new);
+            event.registerEntityRenderer(com.miscelanea.registry.ModEntities.COCHE_CHOQUE.get(), com.miscelanea.client.feria.CocheChoqueRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TANQUE_BE.get(), com.miscelanea.client.tanques.TanqueRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TABLERO_BE.get(), com.miscelanea.client.juegos.TableroRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.IMPERIO_BE.get(), com.miscelanea.client.imperio.ImperioRenderer::new);

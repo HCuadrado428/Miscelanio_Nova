@@ -964,5 +964,16 @@
   "baile.miscelanea.subete": "Stand on the dance floor and click it",
   "baile.miscelanea.menu_ayuda": "W/S: song · A/D: difficulty · Space: dance!",
   "baile.miscelanea.salir": "Sneak to step off the floor",
-  "baile.miscelanea.resultado": "%s danced: %s points (grade %s)"
+  "baile.miscelanea.resultado": "%s danced: %s points (grade %s)",
+  "block.miscelanea.noria": "Ferris Wheel",
+  "block.miscelanea.tiovivo": "Carousel",
+  "item.miscelanea.coche_choque": "Bumper Car",
+  "entity.miscelanea.coche_choque": "Bumper Car",
+  "entity.miscelanea.asiento_feria": "Ride Seat",
+  "subtitles.miscelanea.fe_arranca": "Ride starts",
+  "subtitles.miscelanea.fe_para": "Ride stops",
+  "subtitles.miscelanea.fe_noria": "Ferris wheel creaks",
+  "subtitles.miscelanea.fe_tiovivo": "Band organ plays",
+  "subtitles.miscelanea.fe_choque": "Bumper cars crash",
+  "miscelanea.feria.ayuda": "Click the base to start or stop it"
 }
