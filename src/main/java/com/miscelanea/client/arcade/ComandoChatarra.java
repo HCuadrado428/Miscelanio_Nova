@@ -336,7 +336,7 @@ public class ComandoChatarra extends JuegoArcade {
                 e.cad = 90;
             }
             case 5 -> {
-                e.hp = e.hpMax = 340;
+                e.hp = e.hpMax = 240;
                 e.x = ARENA + 210;
                 e.y = SUELO;
                 e.vx = -0.3F;
@@ -985,12 +985,17 @@ public class ComandoChatarra extends JuegoArcade {
         // cielo: degradado por bandas (más rojizo al acercarse a la base)
         boolean tarde = cam > BASE - 300;
         int[] cielo = tarde ? new int[]{41, 42, 45, 13, 16} : new int[]{37, 38, 39, 39, 40};
-        for (int y = 0; y < 120; y++) p.rect(0, y, Pantalla.W, 1, cielo[Math.min(4, y / 24)]);
+        for (int y = 0; y < 120; y++) {
+            int banda = Math.min(4, y / 24), sig = Math.min(4, banda + 1), f = y % 24;
+            p.rect(0, y, Pantalla.W, 1, cielo[banda]);
+            // tramado entre bandas para que el degradado no tenga escalones
+            if (f >= 16 && banda != sig) for (int x = (y % 2) + (f >= 20 ? 0 : (y / 2) % 2); x < Pantalla.W; x += f >= 20 ? 2 : 4) p.px(x, y, cielo[sig]);
+        }
         // capas lejanas
         int ox = Math.floorMod(-(int) (sx * 0.15F), 256);
         p.spr(lejos, ox - 256, 40, false);
         p.spr(lejos, ox, 40, false);
-        Sprite medio = sx > 1000 && sx < 2000 ? ruinas : cerca;
+        Sprite medio = sx > 1000 && (sx < 2100 || sx > BASE - 200) ? ruinas : cerca;
         int ox2 = Math.floorMod(-(int) (sx * 0.4F), 256);
         p.spr(medio, ox2 - 256, 80, false);
         p.spr(medio, ox2, 80, false);
