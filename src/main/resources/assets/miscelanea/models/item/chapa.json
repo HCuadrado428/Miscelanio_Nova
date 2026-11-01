@@ -1,0 +1,56 @@
+{
+ "parent": "item/generated",
+ "textures": {
+  "layer0": "miscelanea:item/chapa_0"
+ },
+ "overrides": [
+  {
+   "predicate": {
+    "miscelanea:chapa": 0.05
+   },
+   "model": "miscelanea:item/chapa_1"
+  },
+  {
+   "predicate": {
+    "miscelanea:chapa": 0.15000000000000002
+   },
+   "model": "miscelanea:item/chapa_2"
+  },
+  {
+   "predicate": {
+    "miscelanea:chapa": 0.25
+   },
+   "model": "miscelanea:item/chapa_3"
+  },
+  {
+   "predicate": {
+    "miscelanea:chapa": 0.35000000000000003
+   },
+   "model": "miscelanea:item/chapa_4"
+  },
+  {
+   "predicate": {
+    "miscelanea:chapa": 0.45
+   },
+   "model": "miscelanea:item/chapa_5"
+  },
+  {
+   "predicate": {
+    "miscelanea:chapa": 0.5499999999999999
+   },
+   "model": "miscelanea:item/chapa_6"
+  },
+  {
+   "predicate": {
+    "miscelanea:chapa": 0.6499999999999999
+   },
+   "model": "miscelanea:item/chapa_7"
+  },
+  {
+   "predicate": {
+    "miscelanea:chapa": 0.75
+   },
+   "model": "miscelanea:item/chapa_8"
+  }
+ ]
+}

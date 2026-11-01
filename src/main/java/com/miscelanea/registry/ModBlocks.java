@@ -96,6 +96,18 @@ public final class ModBlocks {
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.feria.MaquinaFeriaBlockEntity>> MAQUINA_FERIA_BE = BLOCK_ENTITIES.register("maquina_feria",
             () -> BlockEntityType.Builder.of(com.miscelanea.feria.MaquinaFeriaBlockEntity::new, ALGODONERA.get(), PALOMITERA.get(), CASTILLO_FUEGOS.get()).build(null));
+    public static final RegistryObject<Block> MAQUINA_GANCHO = BLOCKS.register("maquina_gancho",
+            () -> new com.miscelanea.feria.MaquinaAltaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(2.0F)
+                    .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 9), com.miscelanea.feria.MaquinaAltaBlock.GANCHO));
+    public static final RegistryObject<Block> TRAGAPERRAS = BLOCKS.register("tragaperras",
+            () -> new com.miscelanea.feria.MaquinaAltaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).strength(2.0F)
+                    .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 9), com.miscelanea.feria.MaquinaAltaBlock.TRAGAPERRAS));
+    public static final RegistryObject<Block> GACHAPON = BLOCKS.register("gachapon",
+            () -> new com.miscelanea.feria.MaquinaAltaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(2.0F)
+                    .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 6), com.miscelanea.feria.MaquinaAltaBlock.GACHAPON));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.feria.MaquinaAltaBlockEntity>> MAQUINA_ALTA_BE = BLOCK_ENTITIES.register("maquina_alta",
+            () -> BlockEntityType.Builder.of(com.miscelanea.feria.MaquinaAltaBlockEntity::new, MAQUINA_GANCHO.get(), TRAGAPERRAS.get(), GACHAPON.get()).build(null));
     public static final RegistryObject<Block> BILLAR = BLOCKS.register("billar",
             () -> new com.miscelanea.mesas.BillarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(2.5F)
                     .sound(SoundType.WOOD).noOcclusion()));

@@ -48,6 +48,8 @@ public final class ClientEvents {
             event.enqueueWork(PoseAspiradora::init); // crea el ArmPose a dos manos
             com.miscelanea.client.combate.LlaveCliente.init();
             com.miscelanea.client.combate.HachaCliente.init();
+            event.enqueueWork(() -> net.minecraft.client.renderer.item.ItemProperties.register(com.miscelanea.registry.ModItems.CHAPA.get(),
+                    new net.minecraft.resources.ResourceLocation(com.miscelanea.Miscelanea.MOD_ID, "chapa"), (st, l, e, s) -> com.miscelanea.feria.ChapaItem.dibujo(st) / 10F));
             event.enqueueWork(() -> net.minecraft.client.renderer.item.ItemProperties.register(com.miscelanea.registry.ModItems.CANA.get(),
                     new net.minecraft.resources.ResourceLocation("cast"), (stack, level, ent, seed) -> {
                         if (!(ent instanceof net.minecraft.world.entity.player.Player pl)) return 0F;
@@ -93,6 +95,7 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void coloresItem(net.minecraftforge.client.event.RegisterColorHandlersEvent.Item event) {
             event.register((st, tinte) -> tinte == 1 ? com.miscelanea.feria.AlgodonItem.color(st) : -1, com.miscelanea.registry.ModItems.ALGODON.get());
+            event.register((st, tinte) -> tinte == 1 ? com.miscelanea.feria.CapsulaGachaItem.color(st) : -1, com.miscelanea.registry.ModItems.CAPSULA_GACHA.get());
             event.register((st, tinte) -> {
                 if (tinte != 0) return -1;
                 net.minecraft.world.item.DyeColor def = st.is(com.miscelanea.registry.ModItems.LAMPARA.get()) ? net.minecraft.world.item.DyeColor.WHITE : net.minecraft.world.item.DyeColor.RED;
@@ -143,6 +146,7 @@ public final class ClientEvents {
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.VAGONETA_BRUJA.get(), com.miscelanea.client.feria.VagonetaBrujaRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.SUSTO_BE.get(), com.miscelanea.client.feria.SustoRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.MAQUINA_FERIA_BE.get(), com.miscelanea.client.feria.MaquinaFeriaRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.MAQUINA_ALTA_BE.get(), com.miscelanea.client.feria.MaquinaAltaRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.CASETA_TIRO_BE.get(), com.miscelanea.client.feria.CasetaTiroRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TANQUE_BE.get(), com.miscelanea.client.tanques.TanqueRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TABLERO_BE.get(), com.miscelanea.client.juegos.TableroRenderer::new);

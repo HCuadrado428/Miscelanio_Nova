@@ -1,0 +1,36 @@
+{
+ "variants": {
+  "facing=north,half=lower": {
+   "model": "miscelanea:block/gachapon_abajo",
+   "y": 0
+  },
+  "facing=east,half=lower": {
+   "model": "miscelanea:block/gachapon_abajo",
+   "y": 90
+  },
+  "facing=south,half=lower": {
+   "model": "miscelanea:block/gachapon_abajo",
+   "y": 180
+  },
+  "facing=west,half=lower": {
+   "model": "miscelanea:block/gachapon_abajo",
+   "y": 270
+  },
+  "facing=north,half=upper": {
+   "model": "miscelanea:block/gachapon_arriba",
+   "y": 0
+  },
+  "facing=east,half=upper": {
+   "model": "miscelanea:block/gachapon_arriba",
+   "y": 90
+  },
+  "facing=south,half=upper": {
+   "model": "miscelanea:block/gachapon_arriba",
+   "y": 180
+  },
+  "facing=west,half=upper": {
+   "model": "miscelanea:block/gachapon_arriba",
+   "y": 270
+  }
+ }
+}

@@ -174,6 +174,16 @@ public final class ModItems {
             () -> new com.miscelanea.feria.AlgodonItem(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> PALOMITAS = ITEMS.register("palomitas",
             () -> new Item(new Item.Properties().stacksTo(16).food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(6).saturationMod(0.5F).build())));
+    public static final RegistryObject<Item> MAQUINA_GANCHO = ITEMS.register("maquina_gancho",
+            () -> new net.minecraft.world.item.DoubleHighBlockItem(ModBlocks.MAQUINA_GANCHO.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> TRAGAPERRAS = ITEMS.register("tragaperras",
+            () -> new net.minecraft.world.item.DoubleHighBlockItem(ModBlocks.TRAGAPERRAS.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> GACHAPON = ITEMS.register("gachapon",
+            () -> new net.minecraft.world.item.DoubleHighBlockItem(ModBlocks.GACHAPON.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> CAPSULA_GACHA = ITEMS.register("capsula_gacha",
+            () -> new com.miscelanea.feria.CapsulaGachaItem(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> CHAPA = ITEMS.register("chapa",
+            () -> new com.miscelanea.feria.ChapaItem(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> PISTA_BAILE = ITEMS.register("pista_baile",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PISTA_BAILE.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> BILLAR = ITEMS.register("billar",

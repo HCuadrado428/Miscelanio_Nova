@@ -102,6 +102,11 @@ public class Miscelanea {
             event.accept(ModItems.CASTILLO_FUEGOS);
             event.accept(ModItems.ALGODON);
             event.accept(ModItems.PALOMITAS);
+            event.accept(ModItems.MAQUINA_GANCHO);
+            event.accept(ModItems.TRAGAPERRAS);
+            event.accept(ModItems.GACHAPON);
+            event.accept(ModItems.CAPSULA_GACHA);
+            for (int i = 0; i < com.miscelanea.feria.ChapaItem.DIBUJOS.length; i++) event.accept(com.miscelanea.feria.ChapaItem.de(i));
             event.accept(ModItems.FICHA);
             event.accept(ModItems.CONSOLA);
             for (var c : ModItems.cartuchosJuego()) event.accept(c);

@@ -1186,5 +1186,59 @@
       "miscelanea:fe_masclet_final"
     ],
     "subtitle": "subtitles.miscelanea.fe_masclet_final"
+  },
+  "fe_gancho": {
+    "sounds": [
+      "miscelanea:fe_gancho"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_gancho"
+  },
+  "fe_gancho_musica": {
+    "sounds": [
+      "miscelanea:fe_gancho_musica"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_gancho_musica"
+  },
+  "fe_premio": {
+    "sounds": [
+      "miscelanea:fe_premio"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_premio"
+  },
+  "fe_premio_gordo": {
+    "sounds": [
+      "miscelanea:fe_premio_gordo"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_premio_gordo"
+  },
+  "fe_rodillos": {
+    "sounds": [
+      "miscelanea:fe_rodillos"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_rodillos"
+  },
+  "fe_rodillo_para": {
+    "sounds": [
+      "miscelanea:fe_rodillo_para"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_rodillo_para"
+  },
+  "fe_manivela": {
+    "sounds": [
+      "miscelanea:fe_manivela"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_manivela"
+  },
+  "fe_capsula": {
+    "sounds": [
+      "miscelanea:fe_capsula"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_capsula"
+  },
+  "fe_capsula_abre": {
+    "sounds": [
+      "miscelanea:fe_capsula_abre"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_capsula_abre"
   }
 }
