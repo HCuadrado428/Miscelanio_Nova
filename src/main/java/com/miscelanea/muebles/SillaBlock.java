@@ -65,7 +65,7 @@ public class SillaBlock extends Block {
     public InteractionResult use(BlockState s, Level level, BlockPos pos, Player p, InteractionHand hand, BlockHitResult hit) {
         InteractionResult r = Muebles.tenir(s, level, pos, p, hand);
         if (r != InteractionResult.PASS) return r;
-        return Muebles.sentar(level, pos, p, 10.5 / 16.0, s.getValue(FACING).getOpposite());
+        return Muebles.sentar(level, pos, p, 10.5 / 16.0, s.getValue(FACING));
     }
 
     @Override
