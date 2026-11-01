@@ -463,5 +463,86 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.gb_musica"
+  },
+  "ocarina_0": {
+    "sounds": [
+      "miscelanea:ocarina_0"
+    ],
+    "subtitle": "subtitles.miscelanea.ocarina"
+  },
+  "ocarina_1": {
+    "sounds": [
+      "miscelanea:ocarina_1"
+    ],
+    "subtitle": "subtitles.miscelanea.ocarina"
+  },
+  "ocarina_2": {
+    "sounds": [
+      "miscelanea:ocarina_2"
+    ],
+    "subtitle": "subtitles.miscelanea.ocarina"
+  },
+  "ocarina_3": {
+    "sounds": [
+      "miscelanea:ocarina_3"
+    ],
+    "subtitle": "subtitles.miscelanea.ocarina"
+  },
+  "ocarina_4": {
+    "sounds": [
+      "miscelanea:ocarina_4"
+    ],
+    "subtitle": "subtitles.miscelanea.ocarina"
+  },
+  "cancion_sol": {
+    "sounds": [
+      {
+        "name": "miscelanea:cancion_sol",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.cancion"
+  },
+  "cancion_luna": {
+    "sounds": [
+      {
+        "name": "miscelanea:cancion_luna",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.cancion"
+  },
+  "cancion_tormenta": {
+    "sounds": [
+      {
+        "name": "miscelanea:cancion_tormenta",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.cancion"
+  },
+  "cancion_despejar": {
+    "sounds": [
+      {
+        "name": "miscelanea:cancion_despejar",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.cancion"
+  },
+  "cancion_regreso": {
+    "sounds": [
+      {
+        "name": "miscelanea:cancion_regreso",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.cancion"
+  },
+  "ocarina_exito": {
+    "sounds": [
+      "miscelanea:ocarina_exito"
+    ],
+    "subtitle": "subtitles.miscelanea.ocarina_exito"
   }
 }

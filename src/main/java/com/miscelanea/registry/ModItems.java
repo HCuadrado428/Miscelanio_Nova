@@ -101,6 +101,10 @@ public final class ModItems {
             BICHOS.put(e, ITEMS.register(e.item(), () -> new com.miscelanea.bichos.BichoItem(e, new Item.Properties().stacksTo(e.esPez() ? 16 : 64))));
     }
 
+    // ---- Ocarina
+    public static final RegistryObject<Item> OCARINA = ITEMS.register("ocarina",
+            () -> new com.miscelanea.ocarina.OcarinaItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+
     // ---- Consola de bolsillo
     public static final RegistryObject<Item> CONSOLA = ITEMS.register("consola",
             () -> new com.miscelanea.consola.ConsolaItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));

@@ -70,6 +70,10 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> PIPBOY_PONER = register("pipboy_poner");
 
 
+    // ---- Ocarina
+    public static final RegistryObject<SoundEvent>[] OCARINA = new RegistryObject[]{register("ocarina_0"), register("ocarina_1"), register("ocarina_2"), register("ocarina_3"), register("ocarina_4")};
+    public static final RegistryObject<SoundEvent>[] CANCION = new RegistryObject[]{register("cancion_sol"), register("cancion_luna"), register("cancion_tormenta"), register("cancion_despejar"), register("cancion_regreso")};
+    public static final RegistryObject<SoundEvent> OCARINA_EXITO = register("ocarina_exito");
     // ---- Consola de bolsillo
     public static final RegistryObject<SoundEvent> GB_MOVER = register("gb_mover");
     public static final RegistryObject<SoundEvent> GB_GIRAR = register("gb_girar");

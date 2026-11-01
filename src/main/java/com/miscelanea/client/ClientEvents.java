@@ -62,6 +62,9 @@ public final class ClientEvents {
             dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "pipboy"), 1300,
                     com.miscelanea.client.pipboy.AnimPipBoy::new);
+            dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
+                    new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "ocarina"), 1350,
+                    com.miscelanea.client.ocarina.AnimOcarina::new);
             // Animaciones del agarre de la porra (playerAnimator)
             dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "agarre"), 1000,
@@ -139,6 +142,7 @@ public final class ClientEvents {
             event.registerAboveAll("armas", com.miscelanea.client.armas.ArmasCliente::hud);
             event.registerAboveAll("llave", com.miscelanea.client.combate.LlaveCliente::hud);
             event.registerAboveAll("hacha", com.miscelanea.client.combate.HachaCliente::hud);
+            event.registerAboveAll("ocarina", com.miscelanea.client.ocarina.OcarinaCliente::hud);
         }
     }
 
