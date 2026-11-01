@@ -203,6 +203,9 @@ public class ArcadeScreen extends Screen {
             case "barrio" -> juego = new PunosBarrio(bs, semilla, jug);
             case "duelo" -> juego = new DueloFinal(bs, semilla, jug);
             case "comecocos" -> juego = new Comecocos(bs, semilla, jug);
+            case "pinball" -> juego = new Pinball(bs, semilla, jug);
+            case "bloques" -> juego = new DueloBloques(bs, semilla, jug);
+            case "paso" -> juego = new PasoDoble(bs, semilla, jug);
             case "astro" -> clasico = new AstroPatrulla(bot);
             default -> {
                 Juego j = Juego.TETROMINOS;
@@ -279,6 +282,15 @@ public class ArcadeScreen extends Screen {
                     for (Botones b : mandos) Botones.Acceso.paso(b);
                 } else clasico.paso();
             }
+        }
+        if (estado == Estado.JUEGO && juego != null && (juego.cambiarMusica != null || juego.pararMusica)) {
+            pararMusica();
+            if (juego.cambiarMusica != null) {
+                mus = new MusicaGB(juego.cambiarMusica);
+                Minecraft.getInstance().getSoundManager().play(mus);
+            }
+            juego.cambiarMusica = null;
+            juego.pararMusica = false;
         }
         // retransmitir la pantalla a los que miran (10 imágenes por segundo); el invitado no retransmite
         if (++pasos % 6 == 0 && (!invitado || !propia.equals(pos)))

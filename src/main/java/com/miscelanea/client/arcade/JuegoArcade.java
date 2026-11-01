@@ -19,6 +19,9 @@ public abstract class JuegoArcade {
     public int puntos;
     public boolean fin;
     public String mensajeFin;
+    /** El juego pide cambiar la música (la pantalla la pone y lo vuelve a null); pararMusica la quita. */
+    public SoundEvent cambiarMusica;
+    public boolean pararMusica;
 
     protected JuegoArcade(Botones[] b, long semilla, int jugadores) {
         this.b = b;
