@@ -61,7 +61,9 @@ public final class ArcadeCliente {
     public static void frame(BlockPos pos, byte[] datos) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null || !(mc.level.getBlockEntity(pos) instanceof RecreativaBlockEntity be)) return;
-        if (!(be.pantallaCliente instanceof Remota r)) {
+        Remota r;
+        if (be.pantallaCliente instanceof Remota existente) r = existente;
+        else {
             r = new Remota();
             be.pantallaCliente = r;
         }
