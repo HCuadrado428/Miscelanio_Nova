@@ -30,6 +30,7 @@ import java.util.List;
 
 /** Piezas 3D, resaltes (selección, jugadas posibles, última jugada, jaque, casilla apuntada) y el marcador flotante. */
 public class TableroRenderer implements BlockEntityRenderer<TableroBlockEntity> {
+    private static int capa;
     public static final String[] PIEZAS = {"peon", "caballo", "alfil", "torre", "dama", "rey", "ficha", "ficha_reina"};
     private static final ResourceLocation BLANCO = new ResourceLocation("textures/misc/white.png");
 
@@ -43,6 +44,7 @@ public class TableroRenderer implements BlockEntityRenderer<TableroBlockEntity> 
 
     @Override
     public void render(TableroBlockEntity be, float pt, PoseStack ps, MultiBufferSource buf, int luz, int ov) {
+        capa = 0;
         if (be.estado.length == 0 || be.getLevel() == null) return;
         Direction f = be.getBlockState().getValue(TableroBlock.FACING);
         float giro = 180 - f.toYRot();
@@ -191,7 +193,7 @@ public class TableroRenderer implements BlockEntityRenderer<TableroBlockEntity> 
     private static void casilla(VertexConsumer vc, PoseStack ps, TableroBlockEntity be, int sq, Vec3 base, double s, int rgb, float a, float tam, int luz) {
         Vec3 c = be.centroCasilla(sq).subtract(base);
         float h = (float) (s / 2 * tam * 0.96);
-        float y = (float) c.y + 0.003F;
+        float y = (float) c.y + 0.003F + (capa++ % 64) * 0.0002F;
         Matrix4f m = ps.last().pose();
         Matrix3f n = ps.last().normal();
         float r = ((rgb >> 16) & 255) / 255F, g = ((rgb >> 8) & 255) / 255F, b = (rgb & 255) / 255F;

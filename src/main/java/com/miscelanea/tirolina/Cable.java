@@ -8,7 +8,7 @@ public final class Cable {
     private Cable() {}
 
     public static Vec3 anclaje(BlockPos p) {
-        return new Vec3(p.getX() + 0.5, p.getY() + 30.4 / 16, p.getZ() + 0.5);
+        return new Vec3(p.getX() + 0.5, p.getY() + 46.4 / 16, p.getZ() + 0.5);
     }
 
     public static double caida(Vec3 a, Vec3 b) {

@@ -105,6 +105,7 @@ public final class ClientEvents {
         @SubscribeEvent
         public static void modelosExtra(net.minecraftforge.client.event.ModelEvent.RegisterAdditional event) {
             event.register(com.miscelanea.client.tirolina.PoleaRenderer.MODELO);
+            event.register(com.miscelanea.client.tirolina.PosteRenderer.CABEZA);
             for (String n : com.miscelanea.client.imperio.ImperioRenderer.FICHAS) event.register(com.miscelanea.client.imperio.ImperioRenderer.modelo(n));
             for (String n : new String[]{"casa", "hotel", "dado"}) event.register(com.miscelanea.client.imperio.ImperioRenderer.modelo(n));
             for (String n : com.miscelanea.client.parchis.ParchisRenderer.COLOR_ID) event.register(com.miscelanea.client.parchis.ParchisRenderer.modelo("ficha_" + n));

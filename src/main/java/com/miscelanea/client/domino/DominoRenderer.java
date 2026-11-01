@@ -34,6 +34,8 @@ import java.util.List;
 
 /** Cadena de fichas sobre el tapete, manos de pie (cada uno ve las suyas), pozo boca abajo, huecos donde encajar y paneles. */
 public class DominoRenderer implements BlockEntityRenderer<DominoBlockEntity> {
+    /** Las marcas planas se apilan con un desplazamiento mínimo para que no parpadeen al pisarse. */
+    private int capa;
     private static final ResourceLocation BLANCO = new ResourceLocation("textures/misc/white.png");
     public static final ResourceLocation[] FICHA = new ResourceLocation[28];
     private static final float ESC = 0.125F;
@@ -68,6 +70,7 @@ public class DominoRenderer implements BlockEntityRenderer<DominoBlockEntity> {
 
     @Override
     public void render(DominoBlockEntity be, float pt, PoseStack ps, MultiBufferSource buf, int luz, int ov) {
+        capa = 0;
         if (be.getLevel() == null) return;
         DominoPartida p = be.p;
         float t = be.getLevel().getGameTime() + pt;
@@ -256,9 +259,10 @@ public class DominoRenderer implements BlockEntityRenderer<DominoBlockEntity> {
         float r = ((rgb >> 16) & 255) / 255F, g = ((rgb >> 8) & 255) / 255F, b = (rgb & 255) / 255F;
         Matrix4f m = ps.last().pose();
         Matrix3f n = ps.last().normal();
+        float dy = 0.003F + (capa++ % 64) * 0.0002F;
         for (double[] pt : pts) {
             Vec3 q = local(be, pt[0], pt[1]);
-            vc.vertex(m, (float) q.x, (float) q.y + 0.003F, (float) q.z).color(r, g, b, a).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(0xF000F0)
+            vc.vertex(m, (float) q.x, (float) q.y + dy, (float) q.z).color(r, g, b, a).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(0xF000F0)
                     .normal(n, 0, 1, 0).endVertex();
         }
     }

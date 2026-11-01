@@ -28,10 +28,20 @@ import javax.annotation.Nullable;
 
 /** Poste de tirolina: únelo a otro con un carrete de cable; clic derecho con la mano vacía para lanzarte. */
 public class PosteTirolinaBlock extends BaseEntityBlock {
-    private static final VoxelShape FORMA = Shapes.or(Block.box(3, 0, 3, 13, 1, 13), Block.box(4.5, 1, 4.5, 11.5, 24, 11.5));
+    private static final VoxelShape FORMA = Shapes.or(Block.box(3, 0, 3, 13, 1, 13), Block.box(4.5, 1, 4.5, 11.5, 32, 11.5));
 
     public PosteTirolinaBlock(Properties p) {
         super(p);
+    }
+
+    /** El poste mide tres bloques: hace falta sitio libre encima. */
+    @Nullable
+    @Override
+    public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext c) {
+        BlockPos p = c.getClickedPos();
+        Level l = c.getLevel();
+        for (int k = 1; k <= 2; k++) if (!l.getBlockState(p.above(k)).canBeReplaced()) return null;
+        return defaultBlockState();
     }
 
     @Override

@@ -58,7 +58,7 @@ public class PosteTirolinaBlockEntity extends BlockEntity {
 
     @Override
     public AABB getRenderBoundingBox() {
-        if (destino == null) return new AABB(worldPosition);
+        if (destino == null) return new AABB(worldPosition).expandTowards(0, 3, 0);
         return new AABB(worldPosition, destino).inflate(1, 4, 1);
     }
 }

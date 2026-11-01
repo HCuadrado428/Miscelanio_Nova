@@ -33,6 +33,8 @@ import java.util.List;
 
 /** Fichas, casas, dados que ruedan, botones físicos, marcas de propietario y paneles flotantes del juego de propiedades. */
 public class ImperioRenderer implements BlockEntityRenderer<ImperioBlockEntity> {
+    /** Las marcas planas se apilan con un desplazamiento mínimo para que no parpadeen al pisarse. */
+    private int capa;
     public static final String[] FICHAS = {"carrito", "gallina", "diamante", "barca", "campana", "cohete"};
     public static final int[] COLORES = {0xE04848, 0x4878E0, 0x48C060, 0xE0C040};
     private static final ResourceLocation BLANCO = new ResourceLocation("textures/misc/white.png");
@@ -51,6 +53,7 @@ public class ImperioRenderer implements BlockEntityRenderer<ImperioBlockEntity> 
 
     @Override
     public void render(ImperioBlockEntity be, float pt, PoseStack ps, MultiBufferSource buf, int luz, int ov) {
+        capa = 0;
         if (be.getLevel() == null) return;
         Partida p = be.p;
         long ahora = be.getLevel().getGameTime();
@@ -287,9 +290,10 @@ public class ImperioRenderer implements BlockEntityRenderer<ImperioBlockEntity> 
         float r = ((rgb >> 16) & 255) / 255F, g = ((rgb >> 8) & 255) / 255F, b = (rgb & 255) / 255F;
         Matrix4f m = ps.last().pose();
         Matrix3f n = ps.last().normal();
+        float dy = 0.003F + (capa++ % 64) * 0.0002F;
         float y = 0.003F;
         for (Vec3 q : new Vec3[]{p01, p11, p10, p00})
-            vc.vertex(m, (float) q.x, (float) q.y + y, (float) q.z).color(r, g, b, a).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(0xF000F0).normal(n, 0, 1, 0).endVertex();
+            vc.vertex(m, (float) q.x, (float) q.y + dy, (float) q.z).color(r, g, b, a).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(0xF000F0).normal(n, 0, 1, 0).endVertex();
     }
 
     private static void cartel(PoseStack ps, MultiBufferSource buf, Font font, Vec3 donde, List<String> lineas, List<Integer> cols, float esc) {

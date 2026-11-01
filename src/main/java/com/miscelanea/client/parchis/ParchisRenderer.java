@@ -34,6 +34,8 @@ import java.util.List;
 
 /** Fichas que saltan casilla a casilla, fichas comidas que vuelven volando a casa, dado, botones y paneles del parchís. */
 public class ParchisRenderer implements BlockEntityRenderer<ParchisBlockEntity> {
+    /** Las marcas planas se apilan con un desplazamiento mínimo para que no parpadeen al pisarse. */
+    private int capa;
     public static final String[] COLOR_ID = {"amarillo", "azul", "rojo", "verde"};
     public static final int[] COLORES = {0xF2C420, 0x3478E8, 0xE23A30, 0x2EB052};
     private static final ResourceLocation BLANCO = new ResourceLocation("textures/misc/white.png");
@@ -84,6 +86,7 @@ public class ParchisRenderer implements BlockEntityRenderer<ParchisBlockEntity> 
 
     @Override
     public void render(ParchisBlockEntity be, float pt, PoseStack ps, MultiBufferSource buf, int luz, int ov) {
+        capa = 0;
         if (be.getLevel() == null) return;
         ParchisPartida p = be.p;
         float t = be.getLevel().getGameTime() + pt;
@@ -325,6 +328,7 @@ public class ParchisRenderer implements BlockEntityRenderer<ParchisBlockEntity> 
         float r = ((rgb >> 16) & 255) / 255F, g = ((rgb >> 8) & 255) / 255F, b = (rgb & 255) / 255F;
         Matrix4f m = ps.last().pose();
         Matrix3f n = ps.last().normal();
+        float dy = 0.003F + (capa++ % 64) * 0.0002F;
         Vec3 q0 = local(be, pts[0][0], pts[0][1]), q1 = local(be, pts[1][0], pts[1][1]);
         Vec3 q2 = local(be, pts[2][0], pts[2][1]);
         // orientar hacia arriba sea cual sea el giro del tablero
@@ -332,7 +336,7 @@ public class ParchisRenderer implements BlockEntityRenderer<ParchisBlockEntity> 
         int[] orden = arriba ? new int[]{0, 1, 2, 3} : new int[]{3, 2, 1, 0};
         for (int i : orden) {
             Vec3 q = local(be, pts[i][0], pts[i][1]);
-            vc.vertex(m, (float) q.x, (float) q.y + 0.003F, (float) q.z).color(r, g, b, a).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(0xF000F0)
+            vc.vertex(m, (float) q.x, (float) q.y + dy, (float) q.z).color(r, g, b, a).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(0xF000F0)
                     .normal(n, 0, 1, 0).endVertex();
         }
     }

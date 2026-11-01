@@ -20,12 +20,22 @@ import org.joml.Matrix4f;
 /** El cable de acero entre dos postes, colgando, con la luz de cada tramo. */
 public class PosteRenderer implements BlockEntityRenderer<PosteTirolinaBlockEntity> {
     private static final ResourceLocation TEX = new ResourceLocation(Miscelanea.MOD_ID, "textures/block/tirolina_cable.png");
+    public static final ResourceLocation CABEZA = new ResourceLocation(Miscelanea.MOD_ID, "block/poste_tirolina_cabeza");
 
     public PosteRenderer(BlockEntityRendererProvider.Context c) {}
 
     @Override
     public void render(PosteTirolinaBlockEntity be, float pt, PoseStack ps, MultiBufferSource buf, int luz, int ov) {
-        if (be.destino == null || be.getLevel() == null) return;
+        if (be.getLevel() == null) return;
+        // cabeza del poste (tercer bloque) con la polea
+        var mc = net.minecraft.client.Minecraft.getInstance();
+        ps.pushPose();
+        ps.translate(0, 2, 0);
+        mc.getBlockRenderer().getModelRenderer().renderModel(ps.last(), buf.getBuffer(net.minecraft.client.renderer.Sheets.cutoutBlockSheet()), null,
+                mc.getModelManager().getModel(CABEZA), 1F, 1F, 1F, LevelRenderer.getLightColor(be.getLevel(), be.getBlockPos().above(2)), OverlayTexture.NO_OVERLAY,
+                net.minecraftforge.client.model.data.ModelData.EMPTY, null);
+        ps.popPose();
+        if (be.destino == null) return;
         Vec3 a = Cable.anclaje(be.getBlockPos()), b = Cable.anclaje(be.destino);
         Vec3 o = Vec3.atLowerCornerOf(be.getBlockPos());
         int n = Math.max(8, (int) (a.distanceTo(b) * 1.5));

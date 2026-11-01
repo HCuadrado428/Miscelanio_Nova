@@ -34,6 +34,8 @@ import java.util.List;
 
 /** Barcos 3D (solo los ve su dueño hasta que se hunden), proyectiles que caen, clavijas de agua y tocado, mira y paneles. */
 public class FlotaRenderer implements BlockEntityRenderer<FlotaBlockEntity> {
+    /** Las marcas planas se apilan con un desplazamiento mínimo para que no parpadeen al pisarse. */
+    private int capa;
     private static final ResourceLocation BLANCO = new ResourceLocation("textures/misc/white.png");
     public static final ResourceLocation[] BARCO = new ResourceLocation[6];
     public static final ResourceLocation PIN_AGUA = new ResourceLocation(Miscelanea.MOD_ID, "block/flota/pin_agua"),
@@ -53,6 +55,7 @@ public class FlotaRenderer implements BlockEntityRenderer<FlotaBlockEntity> {
 
     @Override
     public void render(FlotaBlockEntity be, float pt, PoseStack ps, MultiBufferSource buf, int luz, int ov) {
+        capa = 0;
         if (be.getLevel() == null) return;
         FlotaPartida p = be.p;
         float t = be.getLevel().getGameTime() + pt;
@@ -240,10 +243,11 @@ public class FlotaRenderer implements BlockEntityRenderer<FlotaBlockEntity> {
         float r = ((rgb >> 16) & 255) / 255F, g = ((rgb >> 8) & 255) / 255F, b = (rgb & 255) / 255F;
         Matrix4f m = ps.last().pose();
         Matrix3f n = ps.last().normal();
+        float dy = 0.003F + (capa++ % 64) * 0.0002F;
         double[][] pts = {{cx - w / 2, cy + h / 2}, {cx + w / 2, cy + h / 2}, {cx + w / 2, cy - h / 2}, {cx - w / 2, cy - h / 2}};
         for (double[] pt : pts) {
             Vec3 q = local(be, pt[0], pt[1]);
-            vc.vertex(m, (float) q.x, (float) q.y + 0.003F, (float) q.z).color(r, g, b, a).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(0xF000F0)
+            vc.vertex(m, (float) q.x, (float) q.y + dy, (float) q.z).color(r, g, b, a).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(0xF000F0)
                     .normal(n, 0, 1, 0).endVertex();
         }
     }
