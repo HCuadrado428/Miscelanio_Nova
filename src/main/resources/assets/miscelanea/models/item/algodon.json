@@ -1,0 +1,7 @@
+{
+ "parent": "item/generated",
+ "textures": {
+  "layer0": "miscelanea:item/algodon_palo",
+  "layer1": "miscelanea:item/algodon_nube"
+ }
+}

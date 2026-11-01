@@ -1162,5 +1162,29 @@
       "miscelanea:fe_tren"
     ],
     "subtitle": "subtitles.miscelanea.fe_tren"
+  },
+  "fe_algodon": {
+    "sounds": [
+      "miscelanea:fe_algodon"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_algodon"
+  },
+  "fe_pop": {
+    "sounds": [
+      "miscelanea:fe_pop"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_pop"
+  },
+  "fe_masclet": {
+    "sounds": [
+      "miscelanea:fe_masclet"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_masclet"
+  },
+  "fe_masclet_final": {
+    "sounds": [
+      "miscelanea:fe_masclet_final"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_masclet_final"
   }
 }

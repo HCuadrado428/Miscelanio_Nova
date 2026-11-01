@@ -164,6 +164,16 @@ public final class ModItems {
             () -> new com.miscelanea.feria.EscopetaCorchoItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> PELUCHE = ITEMS.register("peluche",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PELUCHE.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> ALGODONERA = ITEMS.register("algodonera",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.ALGODONERA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> PALOMITERA = ITEMS.register("palomitera",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.PALOMITERA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> CASTILLO_FUEGOS = ITEMS.register("castillo_fuegos",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.CASTILLO_FUEGOS.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> ALGODON = ITEMS.register("algodon",
+            () -> new com.miscelanea.feria.AlgodonItem(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> PALOMITAS = ITEMS.register("palomitas",
+            () -> new Item(new Item.Properties().stacksTo(16).food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(6).saturationMod(0.5F).build())));
     public static final RegistryObject<Item> PISTA_BAILE = ITEMS.register("pista_baile",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PISTA_BAILE.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> BILLAR = ITEMS.register("billar",

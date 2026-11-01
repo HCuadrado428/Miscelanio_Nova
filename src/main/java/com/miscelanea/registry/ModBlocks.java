@@ -84,6 +84,18 @@ public final class ModBlocks {
     public static final RegistryObject<Block> PELUCHE = BLOCKS.register("peluche",
             () -> new com.miscelanea.feria.PelucheBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOL).strength(0.5F)
                     .sound(SoundType.WOOL).noOcclusion()));
+    public static final RegistryObject<Block> ALGODONERA = BLOCKS.register("algodonera",
+            () -> new com.miscelanea.feria.MaquinaFeriaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(2.0F)
+                    .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 6), com.miscelanea.feria.MaquinaFeriaBlock.ALGODON));
+    public static final RegistryObject<Block> PALOMITERA = BLOCKS.register("palomitera",
+            () -> new com.miscelanea.feria.MaquinaFeriaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(2.0F)
+                    .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 8), com.miscelanea.feria.MaquinaFeriaBlock.PALOMITAS));
+    public static final RegistryObject<Block> CASTILLO_FUEGOS = BLOCKS.register("castillo_fuegos",
+            () -> new com.miscelanea.feria.MaquinaFeriaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).strength(2.0F)
+                    .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 0), com.miscelanea.feria.MaquinaFeriaBlock.FUEGOS));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.feria.MaquinaFeriaBlockEntity>> MAQUINA_FERIA_BE = BLOCK_ENTITIES.register("maquina_feria",
+            () -> BlockEntityType.Builder.of(com.miscelanea.feria.MaquinaFeriaBlockEntity::new, ALGODONERA.get(), PALOMITERA.get(), CASTILLO_FUEGOS.get()).build(null));
     public static final RegistryObject<Block> BILLAR = BLOCKS.register("billar",
             () -> new com.miscelanea.mesas.BillarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(2.5F)
                     .sound(SoundType.WOOD).noOcclusion()));

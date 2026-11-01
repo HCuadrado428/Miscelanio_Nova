@@ -26,8 +26,27 @@ public final class FeriaHud {
         return 1 - dt / 20;
     }
 
+    /** Temblor del suelo en el final de la mascletà (más fuerte cuanto más cerca). */
+    static float terremoto(float pt) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null) return 0;
+        float t = mc.level.getGameTime() + pt - com.miscelanea.feria.MaquinaFeriaBlockEntity.mascletaIni;
+        if (t < 250 || t > 410) return 0;
+        double d = Math.sqrt(mc.player.blockPosition().distSqr(com.miscelanea.feria.MaquinaFeriaBlockEntity.mascletaPos));
+        if (d > 40) return 0;
+        float k = t < 380 ? (t - 250) / 130F : (t > 384 && t < 410 ? 1.4F : 0.3F);
+        return k * (float) Math.max(0, 1 - d / 40);
+    }
+
     @SubscribeEvent
     public static void camara(ViewportEvent.ComputeCameraAngles e) {
+        float tm = terremoto((float) e.getPartialTick());
+        if (tm > 0) {
+            float t = (float) (Minecraft.getInstance().level.getGameTime() + e.getPartialTick());
+            e.setRoll(e.getRoll() + Mth.sin(t * 4.3F) * 1.2F * tm);
+            e.setPitch(e.getPitch() + Mth.sin(t * 5.7F + 1) * 1.0F * tm);
+            e.setYaw(e.getYaw() + Mth.cos(t * 3.9F) * 0.6F * tm);
+        }
         float f = fuerza((float) e.getPartialTick());
         if (f <= 0) return;
         float t = (float) (Minecraft.getInstance().level.getGameTime() + e.getPartialTick());

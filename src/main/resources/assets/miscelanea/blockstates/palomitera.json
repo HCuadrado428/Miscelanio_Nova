@@ -1,0 +1,20 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/palomitera",
+   "y": 0
+  },
+  "facing=east": {
+   "model": "miscelanea:block/palomitera",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/palomitera",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/palomitera",
+   "y": 270
+  }
+ }
+}
