@@ -128,6 +128,9 @@ public final class ModItems {
     public static final RegistryObject<Item> ACUARIO = ITEMS.register("acuario", () -> new net.minecraft.world.item.BlockItem(ModBlocks.ACUARIO.get(), new Item.Properties()));
     public static final RegistryObject<Item> TERRARIO = ITEMS.register("terrario", () -> new net.minecraft.world.item.BlockItem(ModBlocks.TERRARIO.get(), new Item.Properties()));
 
+    // ---- Juegos de mesa
+    public static final RegistryObject<Item> TABLERO = ITEMS.register("tablero", () -> new net.minecraft.world.item.BlockItem(ModBlocks.TABLERO.get(), new Item.Properties()));
+
     // ---- Recreativa
     public static final RegistryObject<Item> RECREATIVA = ITEMS.register("recreativa",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.RECREATIVA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));

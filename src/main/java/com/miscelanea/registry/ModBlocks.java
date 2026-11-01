@@ -66,5 +66,12 @@ public final class ModBlocks {
     public static final RegistryObject<BlockEntityType<com.miscelanea.tanques.TanqueBlockEntity>> TANQUE_BE = BLOCK_ENTITIES.register("tanque",
             () -> BlockEntityType.Builder.of(com.miscelanea.tanques.TanqueBlockEntity::new, ACUARIO.get(), TERRARIO.get()).build(null));
 
+    // ---- Juegos de mesa
+    public static final RegistryObject<Block> TABLERO = BLOCKS.register("tablero",
+            () -> new com.miscelanea.juegos.TableroBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(0.8F).sound(SoundType.WOOD).noOcclusion()));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.juegos.TableroBlockEntity>> TABLERO_BE = BLOCK_ENTITIES.register("tablero",
+            () -> BlockEntityType.Builder.of(com.miscelanea.juegos.TableroBlockEntity::new, TABLERO.get()).build(null));
+
     private ModBlocks() {}
 }

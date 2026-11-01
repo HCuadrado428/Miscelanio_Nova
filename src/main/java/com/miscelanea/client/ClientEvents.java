@@ -101,6 +101,15 @@ public final class ClientEvents {
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.ASIENTO.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.RECREATIVA_BE.get(), com.miscelanea.client.arcade.RecreativaRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TANQUE_BE.get(), com.miscelanea.client.tanques.TanqueRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TABLERO_BE.get(), com.miscelanea.client.juegos.TableroRenderer::new);
+        }
+
+        @SubscribeEvent
+        public static void modelosExtra(net.minecraftforge.client.event.ModelEvent.RegisterAdditional event) {
+            for (String p : com.miscelanea.client.juegos.TableroRenderer.PIEZAS) {
+                event.register(com.miscelanea.client.juegos.TableroRenderer.modelo(p, true));
+                event.register(com.miscelanea.client.juegos.TableroRenderer.modelo(p, false));
+            }
             event.registerEntityRenderer(ModEntities.DESATASCADOR.get(), DesatascadorRenderer::new);
             event.registerEntityRenderer(ModEntities.TINTA.get(), com.miscelanea.client.tinta.TintaProyectilRenderer::new);
             event.registerEntityRenderer(ModEntities.GANCHO.get(), com.miscelanea.client.armas.GanchoRenderer::new);

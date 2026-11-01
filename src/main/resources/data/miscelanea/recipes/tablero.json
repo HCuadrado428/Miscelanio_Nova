@@ -1,0 +1,23 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "BDB",
+  "DGD",
+  "BDB"
+ ],
+ "key": {
+  "B": {
+   "item": "minecraft:birch_planks"
+  },
+  "D": {
+   "item": "minecraft:dark_oak_planks"
+  },
+  "G": {
+   "item": "minecraft:gold_ingot"
+  }
+ },
+ "result": {
+  "item": "miscelanea:tablero"
+ }
+}

@@ -1,0 +1,20 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/tablero",
+   "y": 0
+  },
+  "facing=east": {
+   "model": "miscelanea:block/tablero",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/tablero",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/tablero",
+   "y": 270
+  }
+ }
+}
