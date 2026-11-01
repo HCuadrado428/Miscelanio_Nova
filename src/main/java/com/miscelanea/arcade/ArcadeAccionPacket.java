@@ -40,25 +40,39 @@ public class ArcadeAccionPacket {
         ServerPlayer p = ctx.get().getSender();
         if (p == null || p.distanceToSqr(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5) > 64) return;
         if (!(p.level().getBlockEntity(pos) instanceof RecreativaBlockEntity be)) return;
-        if (be.jugador == null || !be.jugador.equals(p.getUUID())) return;
+        boolean soy2 = p.getUUID().equals(be.jugador2);
+        if (!soy2 && (be.jugador == null || !be.jugador.equals(p.getUUID()))) return;
         boolean libre = p.getAbilities().instabuild;
+        if (soy2 && accion == EMPEZAR) return;
         switch (accion) {
-            case CERRAR -> be.jugador = null;
+            case CERRAR -> {
+                if (soy2) be.jugador2 = null;
+                else {
+                    be.jugador = null;
+                    be.jugador2 = null;
+                }
+                be.avisarCompaneros();
+            }
             case FICHA -> {
                 if (RecreativaBlock.gastarFicha(p)) {
                     be.creditos++;
                     be.setChanged();
                     p.level().playSound(null, pos, ModSounds.ARCADE_FICHA.get(), SoundSource.BLOCKS, 0.8F, 1.0F);
                 }
-                ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> p), new ArcadeAbrirPacket(pos, be.creditos, libre, 1));
+                ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> p), new ArcadeAbrirPacket(pos, be.creditos, libre, 1, be.doble(), 0, "", "", 1));
             }
             case EMPEZAR -> {
-                boolean ok = libre || be.creditos > 0;
+                ServerPlayer p2 = be.jugador2 == null ? null : p.server.getPlayerList().getPlayer(be.jugador2);
+                int jug = p2 != null && ArcadeJuegos.dosJugadores(juego) ? 2 : 1;
+                boolean ok = libre || be.creditos >= jug;
                 if (ok && !libre) {
-                    be.creditos--;
+                    be.creditos -= jug;
                     be.setChanged();
                 }
-                ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> p), new ArcadeAbrirPacket(pos, be.creditos, libre, ok ? 2 : 3));
+                long semilla = p.getRandom().nextLong();
+                ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> p), new ArcadeAbrirPacket(pos, be.creditos, libre, ok ? 2 : 3, be.doble(), semilla, juego, "", jug));
+                if (ok && jug == 2)
+                    ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> p2), new ArcadeAbrirPacket(pos, be.creditos, libre, 2, true, semilla, juego, "", 2));
             }
             case RECORD -> ArcadeRecords.registrar(p, juego, puntos);
         }

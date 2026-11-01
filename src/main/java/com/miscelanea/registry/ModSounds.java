@@ -72,6 +72,18 @@ public final class ModSounds {
 
     public static final RegistryObject<SoundEvent> ARCADE_FICHA = register("arcade_ficha");
     public static final RegistryObject<SoundEvent> ARCADE_MUSICA = register("arcade_musica");
+    public static final RegistryObject<SoundEvent> CH_DISPARO = register("ch_disparo");
+    public static final RegistryObject<SoundEvent> CH_METRALLA = register("ch_metralla");
+    public static final RegistryObject<SoundEvent> CH_COHETE = register("ch_cohete");
+    public static final RegistryObject<SoundEvent> CH_EXPLOSION = register("ch_explosion");
+    public static final RegistryObject<SoundEvent> CH_GRANADA = register("ch_granada");
+    public static final RegistryObject<SoundEvent> CH_SALTO = register("ch_salto");
+    public static final RegistryObject<SoundEvent> CH_RESCATE = register("ch_rescate");
+    public static final RegistryObject<SoundEvent> CH_ARMA = register("ch_arma");
+    public static final RegistryObject<SoundEvent> CH_MUERTE = register("ch_muerte");
+    public static final RegistryObject<SoundEvent> CH_GOLPE = register("ch_golpe");
+    public static final RegistryObject<SoundEvent> CH_JEFE = register("ch_jefe");
+    public static final RegistryObject<SoundEvent> CH_MUSICA = register("ch_musica");
     public static final RegistryObject<SoundEvent> DETECTOR_PITIDO = register("detector_pitido");
     public static final RegistryObject<SoundEvent> TESORO = register("tesoro");
     public static final RegistryObject<SoundEvent> CAPSULA_ABRIR = register("capsula_abrir");

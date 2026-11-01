@@ -16,6 +16,9 @@ public class RecreativaBlockEntity extends BlockEntity {
     public int creditos;
     @Nullable
     public UUID jugador;
+    /** Compañero en la recreativa doble (jugador 2). */
+    @Nullable
+    public UUID jugador2;
     public long ultimoFrame;     // servidor: para limitar el ritmo de retransmisión
     /** Cliente: datos de pantalla (los gestiona el renderizador). */
     public Object pantallaCliente;
@@ -42,10 +45,43 @@ public class RecreativaBlockEntity extends BlockEntity {
         return o != null && o.distanceToSqr(worldPosition.getX() + 0.5, worldPosition.getY() + 1, worldPosition.getZ() + 0.5) < 64;
     }
 
+    public boolean doble() {
+        return getBlockState().getBlock() instanceof RecreativaBlock r && r.doble;
+    }
+
+    private static boolean cerca(Level l, BlockPos pos, @Nullable UUID u) {
+        if (u == null) return false;
+        ServerPlayer o = l.getServer().getPlayerList().getPlayer(u);
+        return o != null && o.level() == l && o.distanceToSqr(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5) <= 64;
+    }
+
+    /** Avisa a los dos jugadores de quién es su compañero (o de que se fue). */
+    public void avisarCompaneros() {
+        if (level == null || level.isClientSide) return;
+        var lista = level.getServer().getPlayerList();
+        ServerPlayer a = jugador == null ? null : lista.getPlayer(jugador), b = jugador2 == null ? null : lista.getPlayer(jugador2);
+        if (a != null) com.miscelanea.network.ModNetwork.CHANNEL.send(net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> a),
+                new ArcadeAbrirPacket(worldPosition, creditos, false, 5, true, 0, "", b == null ? "" : b.getGameProfile().getName(), 1));
+        if (b != null) com.miscelanea.network.ModNetwork.CHANNEL.send(net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> b),
+                new ArcadeAbrirPacket(worldPosition, creditos, false, 5, true, 0, "", a == null ? "" : a.getGameProfile().getName(), 1));
+    }
+
     public static void tickServidor(Level l, BlockPos pos, BlockState s, RecreativaBlockEntity be) {
-        if (be.jugador == null || l.getGameTime() % 20 != 0) return;
-        ServerPlayer o = l.getServer().getPlayerList().getPlayer(be.jugador);
-        if (o == null || o.level() != l || o.distanceToSqr(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5) > 64) be.jugador = null;
+        if (l.getGameTime() % 20 != 0) return;
+        boolean cambio = false;
+        if (be.jugador != null && !cerca(l, pos, be.jugador)) {
+            be.jugador = null;
+            cambio = true;
+        }
+        if (be.jugador2 != null && !cerca(l, pos, be.jugador2)) {
+            be.jugador2 = null;
+            cambio = true;
+        }
+        if (cambio) {
+            be.avisarCompaneros();
+            // sin jugador 1 no hay partida: el compañero también se queda fuera (se le avisa al cerrar)
+            if (be.jugador == null) be.jugador2 = null;
+        }
     }
 
     @Override

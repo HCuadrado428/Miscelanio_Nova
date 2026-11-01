@@ -4,10 +4,10 @@ import org.lwjgl.glfw.GLFW;
 
 /** Estado de los botones de la consola (cruceta, A, B, Start, Select) a 60 pasos por segundo. */
 public class Botones {
-    public static final int ARRIBA = 0, ABAJO = 1, IZQ = 2, DER = 3, A = 4, B = 5, START = 6, SELECT = 7;
-    final boolean[] abajo = new boolean[8];
-    final boolean[] nuevo = new boolean[8];
-    final int[] tiempo = new int[8];
+    public static final int ARRIBA = 0, ABAJO = 1, IZQ = 2, DER = 3, A = 4, B = 5, START = 6, SELECT = 7, C = 8, N = 9;
+    final boolean[] abajo = new boolean[N];
+    final boolean[] nuevo = new boolean[N];
+    final int[] tiempo = new int[N];
 
     public static int boton(int tecla) {
         return switch (tecla) {
@@ -19,6 +19,7 @@ public class Botones {
             case GLFW.GLFW_KEY_X, GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_RIGHT_SHIFT, GLFW.GLFW_KEY_K -> B;
             case GLFW.GLFW_KEY_ENTER, GLFW.GLFW_KEY_KP_ENTER -> START;
             case GLFW.GLFW_KEY_TAB, GLFW.GLFW_KEY_BACKSPACE -> SELECT;
+            case GLFW.GLFW_KEY_C, GLFW.GLFW_KEY_L -> C;
             default -> -1;
         };
     }
@@ -37,7 +38,7 @@ public class Botones {
 
     /** Fin de un paso de lógica: avanza contadores y borra las pulsaciones nuevas. */
     void paso() {
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < N; i++) {
             if (abajo[i]) tiempo[i]++;
             nuevo[i] = false;
         }
@@ -80,6 +81,21 @@ public class Botones {
 
         public static boolean[] abajo(Botones b) {
             return b.abajo;
+        }
+
+        /** Botones mantenidos como máscara de bits (para enviarlos por red). */
+        public static int mascara(Botones b) {
+            int m = 0;
+            for (int i = 0; i < N; i++) if (b.abajo[i] || b.nuevo[i]) m |= 1 << i;
+            return m;
+        }
+
+        /** Pone los botones tal como indica una máscara (pulsaciones nuevas incluidas). */
+        public static void aplicar(Botones b, int m) {
+            for (int i = 0; i < N; i++) {
+                if ((m >> i & 1) != 0) b.pulsar(i);
+                else b.soltar(i);
+            }
         }
     }
 }

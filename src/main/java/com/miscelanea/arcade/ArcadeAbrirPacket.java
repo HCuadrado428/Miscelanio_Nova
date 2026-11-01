@@ -8,26 +8,42 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-/** Servidor → cliente: abre la pantalla de la recreativa (también actualiza los créditos con empezar=true/false). */
+/**
+ * Servidor → cliente de la recreativa. Modos: 0 abrir como jugador 1, 1 créditos (respuesta a ficha), 2 empezar partida
+ * (con semilla, juego y número de jugadores), 3 no hay créditos, 4 abrir como jugador 2, 5 cambia el compañero (nombre o vacío).
+ */
 public class ArcadeAbrirPacket {
     public final BlockPos pos;
     public final int creditos;
     public final boolean libre;
-    public final int modo;   // 0 abrir, 1 créditos (respuesta a ficha), 2 empezar partida, 3 no hay créditos
+    public final int modo;
+    public final boolean doble;
+    public final long semilla;
+    public final String juego, companero;
+    public final int jugadores;
 
     public ArcadeAbrirPacket(BlockPos pos, int creditos, boolean libre) {
         this(pos, creditos, libre, 0);
     }
 
     public ArcadeAbrirPacket(BlockPos pos, int creditos, boolean libre, int modo) {
+        this(pos, creditos, libre, modo, false, 0, "", "", 1);
+    }
+
+    public ArcadeAbrirPacket(BlockPos pos, int creditos, boolean libre, int modo, boolean doble, long semilla, String juego, String companero, int jugadores) {
         this.pos = pos;
         this.creditos = creditos;
         this.libre = libre;
         this.modo = modo;
+        this.doble = doble;
+        this.semilla = semilla;
+        this.juego = juego;
+        this.companero = companero;
+        this.jugadores = jugadores;
     }
 
     public ArcadeAbrirPacket(FriendlyByteBuf b) {
-        this(b.readBlockPos(), b.readVarInt(), b.readBoolean(), b.readByte());
+        this(b.readBlockPos(), b.readVarInt(), b.readBoolean(), b.readByte(), b.readBoolean(), b.readLong(), b.readUtf(32), b.readUtf(32), b.readByte());
     }
 
     public void encode(FriendlyByteBuf b) {
@@ -35,6 +51,11 @@ public class ArcadeAbrirPacket {
         b.writeVarInt(creditos);
         b.writeBoolean(libre);
         b.writeByte(modo);
+        b.writeBoolean(doble);
+        b.writeLong(semilla);
+        b.writeUtf(juego, 32);
+        b.writeUtf(companero, 32);
+        b.writeByte(jugadores);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

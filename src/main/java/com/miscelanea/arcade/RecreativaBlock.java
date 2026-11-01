@@ -47,8 +47,16 @@ public class RecreativaBlock extends BaseEntityBlock {
     private static final VoxelShape ABAJO = Block.box(0, 0, 0, 16, 16, 16);
     private static final VoxelShape[] ARRIBA = {Block.box(0, 0, 2, 16, 16, 16), Block.box(0, 0, 0, 16, 16, 14), Block.box(0, 0, 0, 14, 16, 16), Block.box(2, 0, 0, 16, 16, 16)};
 
+    /** Recreativa doble: un mueble ancho con dos juegos de mandos. */
+    public final boolean doble;
+
     public RecreativaBlock(Properties p) {
+        this(p, false);
+    }
+
+    public RecreativaBlock(Properties p, boolean doble) {
         super(p);
+        this.doble = doble;
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(HALF, DoubleBlockHalf.LOWER));
     }
 
@@ -151,6 +159,20 @@ public class RecreativaBlock extends BaseEntityBlock {
         BlockPos abajo = s.getValue(HALF) == DoubleBlockHalf.LOWER ? pos : pos.below();
         if (l.isClientSide) return InteractionResult.SUCCESS;
         if (!(l.getBlockEntity(abajo) instanceof RecreativaBlockEntity be) || !(p instanceof ServerPlayer sp)) return InteractionResult.PASS;
+        if (doble && be.ocupadaPorOtro(sp) && (be.jugador2 == null || be.jugador2.equals(sp.getUUID()))) {
+            // se une como jugador 2
+            be.jugador2 = sp.getUUID();
+            if (esFicha(sp.getMainHandItem()) && gastarFicha(sp)) {
+                be.creditos++;
+                be.setChanged();
+                l.playSound(null, abajo, ModSounds.ARCADE_FICHA.get(), SoundSource.BLOCKS, 0.8F, 1.0F);
+            }
+            ServerPlayer host = sp.server.getPlayerList().getPlayer(be.jugador);
+            ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new ArcadeAbrirPacket(abajo, be.creditos, sp.getAbilities().instabuild, 4, true, 0, "",
+                    host == null ? "" : host.getGameProfile().getName(), 2));
+            be.avisarCompaneros();
+            return InteractionResult.CONSUME;
+        }
         if (be.ocupadaPorOtro(sp)) {
             sp.displayClientMessage(Component.translatable("msg.miscelanea.arcade.ocupada").withStyle(ChatFormatting.RED), true);
             return InteractionResult.CONSUME;
@@ -166,7 +188,8 @@ public class RecreativaBlock extends BaseEntityBlock {
             return InteractionResult.CONSUME;
         }
         be.jugador = sp.getUUID();
-        ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new ArcadeAbrirPacket(abajo, be.creditos, libre));
+        if (sp.getUUID().equals(be.jugador2)) be.jugador2 = null;
+        ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new ArcadeAbrirPacket(abajo, be.creditos, libre, 0, doble, 0, "", "", 1));
         return InteractionResult.CONSUME;
     }
 }

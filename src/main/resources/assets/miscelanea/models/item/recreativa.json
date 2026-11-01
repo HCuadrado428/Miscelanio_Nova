@@ -423,98 +423,6 @@
   },
   {
    "from": [
-    5,
-    4,
-    3.5
-   ],
-   "to": [
-    11,
-    10,
-    4
-   ],
-   "faces": {
-    "north": {
-     "uv": [
-      5,
-      6,
-      11,
-      12
-     ],
-     "texture": "#monedas",
-     "forge_data": {
-      "block_light": 15,
-      "sky_light": 15
-     }
-    },
-    "south": {
-     "uv": [
-      5,
-      6,
-      11,
-      12
-     ],
-     "texture": "#monedas",
-     "forge_data": {
-      "block_light": 15,
-      "sky_light": 15
-     }
-    },
-    "east": {
-     "uv": [
-      12,
-      6,
-      12.5,
-      12
-     ],
-     "texture": "#monedas",
-     "forge_data": {
-      "block_light": 15,
-      "sky_light": 15
-     }
-    },
-    "west": {
-     "uv": [
-      3.5,
-      6,
-      4,
-      12
-     ],
-     "texture": "#monedas",
-     "forge_data": {
-      "block_light": 15,
-      "sky_light": 15
-     }
-    },
-    "up": {
-     "uv": [
-      5,
-      3.5,
-      11,
-      4
-     ],
-     "texture": "#monedas",
-     "forge_data": {
-      "block_light": 15,
-      "sky_light": 15
-     }
-    },
-    "down": {
-     "uv": [
-      5,
-      12,
-      11,
-      12.5
-     ],
-     "texture": "#monedas",
-     "forge_data": {
-      "block_light": 15,
-      "sky_light": 15
-     }
-    }
-   }
-  },
-  {
-   "from": [
     0.988,
     12.5,
     0.5
@@ -651,30 +559,30 @@
   },
   {
    "from": [
-    10.6,
+    10.1,
     15.5,
     2.6
    ],
    "to": [
-    11.4,
+    10.9,
     17.5,
     3.4
    ],
    "faces": {
     "north": {
      "uv": [
-      4.6,
+      5.1,
       14.5,
-      5.4,
+      5.9,
       16
      ],
      "texture": "#negro"
     },
     "south": {
      "uv": [
-      10.6,
+      10.1,
       14.5,
-      11.4,
+      10.9,
       16
      ],
      "texture": "#negro"
@@ -699,18 +607,18 @@
     },
     "up": {
      "uv": [
-      10.6,
+      10.1,
       2.6,
-      11.4,
+      10.9,
       3.4
      ],
      "texture": "#negro"
     },
     "down": {
      "uv": [
-      10.6,
+      10.1,
       12.6,
-      11.4,
+      10.9,
       13.4
      ],
      "texture": "#negro"
@@ -719,30 +627,30 @@
   },
   {
    "from": [
-    10,
+    9.5,
     17.3,
     2
    ],
    "to": [
-    12,
+    11.5,
     19.3,
     4
    ],
    "faces": {
     "north": {
      "uv": [
-      4,
+      4.5,
       12.7,
-      6,
+      6.5,
       14.7
      ],
      "texture": "#rojo"
     },
     "south": {
      "uv": [
-      10,
+      9.5,
       12.7,
-      12,
+      11.5,
       14.7
      ],
      "texture": "#rojo"
@@ -767,18 +675,18 @@
     },
     "up": {
      "uv": [
-      10,
+      9.5,
       2,
-      12,
+      11.5,
       4
      ],
      "texture": "#rojo"
     },
     "down": {
      "uv": [
-      10,
+      9.5,
       12,
-      12,
+      11.5,
       14
      ],
      "texture": "#rojo"
@@ -923,137 +831,93 @@
   },
   {
    "from": [
-    6.5,
-    15.5,
-    4.2
+    5,
+    4,
+    3.5
    ],
    "to": [
-    7.5,
-    15.9,
-    5.0
+    11,
+    10,
+    4
    ],
    "faces": {
     "north": {
      "uv": [
-      8.5,
-      0.1,
-      9.5,
-      0.5
+      5,
+      6,
+      11,
+      12
      ],
-     "texture": "#negro"
+     "texture": "#monedas",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
     },
     "south": {
      "uv": [
-      6.5,
-      0.1,
-      7.5,
-      0.5
+      5,
+      6,
+      11,
+      12
      ],
-     "texture": "#negro"
+     "texture": "#monedas",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
     },
     "east": {
      "uv": [
-      11.0,
-      0.1,
-      11.8,
-      0.5
-     ],
-     "texture": "#negro"
-    },
-    "west": {
-     "uv": [
-      4.2,
-      0.1,
-      5.0,
-      0.5
-     ],
-     "texture": "#negro"
-    },
-    "up": {
-     "uv": [
-      6.5,
-      4.2,
-      7.5,
-      5.0
-     ],
-     "texture": "#negro"
-    },
-    "down": {
-     "uv": [
-      6.5,
-      11.0,
-      7.5,
-      11.8
-     ],
-     "texture": "#negro"
-    }
-   }
-  },
-  {
-   "from": [
-    3.5,
-    15.5,
-    4.2
-   ],
-   "to": [
-    4.5,
-    15.9,
-    5.0
-   ],
-   "faces": {
-    "north": {
-     "uv": [
-      11.5,
-      0.1,
+      12,
+      6,
       12.5,
-      0.5
+      12
      ],
-     "texture": "#negro"
-    },
-    "south": {
-     "uv": [
-      3.5,
-      0.1,
-      4.5,
-      0.5
-     ],
-     "texture": "#negro"
-    },
-    "east": {
-     "uv": [
-      11.0,
-      0.1,
-      11.8,
-      0.5
-     ],
-     "texture": "#negro"
+     "texture": "#monedas",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
     },
     "west": {
      "uv": [
-      4.2,
-      0.1,
-      5.0,
-      0.5
+      3.5,
+      6,
+      4,
+      12
      ],
-     "texture": "#negro"
+     "texture": "#monedas",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
     },
     "up": {
      "uv": [
+      5,
       3.5,
-      4.2,
-      4.5,
-      5.0
+      11,
+      4
      ],
-     "texture": "#negro"
+     "texture": "#monedas",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
     },
     "down": {
      "uv": [
-      3.5,
-      11.0,
-      4.5,
-      11.8
+      5,
+      12,
+      11,
+      12.5
      ],
-     "texture": "#negro"
+     "texture": "#monedas",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
     }
    }
   },
@@ -1404,14 +1268,14 @@
     5.5
    ],
    "to": [
-    2.5,
+    2,
     29,
     9.012
    ],
    "faces": {
     "north": {
      "uv": [
-      13.5,
+      14,
       3,
       15,
       16
@@ -1422,7 +1286,7 @@
      "uv": [
       1,
       3,
-      2.5,
+      2,
       16
      ],
      "texture": "#negro"
@@ -1449,7 +1313,7 @@
      "uv": [
       1,
       5.5,
-      2.5,
+      2,
       9
      ],
      "texture": "#negro"
@@ -1458,7 +1322,7 @@
      "uv": [
       1,
       7,
-      2.5,
+      2,
       10.5
      ],
      "texture": "#negro"
@@ -1467,7 +1331,7 @@
   },
   {
    "from": [
-    13.5,
+    14,
     15.988,
     5.5
    ],
@@ -1481,14 +1345,14 @@
      "uv": [
       1,
       3,
-      2.5,
+      2,
       16
      ],
      "texture": "#negro"
     },
     "south": {
      "uv": [
-      13.5,
+      14,
       3,
       15,
       16
@@ -1515,7 +1379,7 @@
     },
     "up": {
      "uv": [
-      13.5,
+      14,
       5.5,
       15,
       9
@@ -1524,7 +1388,7 @@
     },
     "down": {
      "uv": [
-      13.5,
+      14,
       7,
       15,
       10.5

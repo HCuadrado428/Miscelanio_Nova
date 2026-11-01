@@ -595,5 +595,80 @@
       "miscelanea:trampolin_boing"
     ],
     "subtitle": "subtitles.miscelanea.trampolin_boing"
+  },
+  "ch_disparo": {
+    "sounds": [
+      "miscelanea:ch_disparo"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "ch_metralla": {
+    "sounds": [
+      "miscelanea:ch_metralla"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "ch_cohete": {
+    "sounds": [
+      "miscelanea:ch_cohete"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "ch_explosion": {
+    "sounds": [
+      "miscelanea:ch_explosion"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "ch_granada": {
+    "sounds": [
+      "miscelanea:ch_granada"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "ch_salto": {
+    "sounds": [
+      "miscelanea:ch_salto"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "ch_rescate": {
+    "sounds": [
+      "miscelanea:ch_rescate"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "ch_arma": {
+    "sounds": [
+      "miscelanea:ch_arma"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "ch_muerte": {
+    "sounds": [
+      "miscelanea:ch_muerte"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "ch_golpe": {
+    "sounds": [
+      "miscelanea:ch_golpe"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "ch_jefe": {
+    "sounds": [
+      "miscelanea:ch_jefe"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "ch_musica": {
+    "sounds": [
+      {
+        "name": "miscelanea:ch_musica",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
   }
 }

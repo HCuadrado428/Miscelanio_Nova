@@ -19,7 +19,7 @@ public class ArcadeFrameS2CPacket {
     }
 
     public ArcadeFrameS2CPacket(FriendlyByteBuf b) {
-        this(b.readBlockPos(), b.readByteArray(30000));
+        this(b.readBlockPos(), b.readByteArray(200000));
     }
 
     public void encode(FriendlyByteBuf b) {
