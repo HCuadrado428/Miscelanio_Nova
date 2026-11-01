@@ -1,0 +1,29 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "RWR",
+  "LBL",
+  "PPP"
+ ],
+ "key": {
+  "R": {
+   "item": "minecraft:red_wool"
+  },
+  "W": {
+   "item": "minecraft:white_wool"
+  },
+  "L": {
+   "item": "minecraft:lantern"
+  },
+  "B": {
+   "item": "minecraft:bow"
+  },
+  "P": {
+   "tag": "minecraft:planks"
+  }
+ },
+ "result": {
+  "item": "miscelanea:caseta_tiro"
+ }
+}

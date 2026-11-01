@@ -1,0 +1,23 @@
+{
+ "type": "minecraft:block",
+ "pools": [
+  {
+   "rolls": 1,
+   "entries": [
+    {
+     "type": "minecraft:item",
+     "name": "miscelanea:peluche",
+     "functions": [
+      {
+       "function": "minecraft:copy_state",
+       "block": "miscelanea:peluche",
+       "properties": [
+        "color"
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

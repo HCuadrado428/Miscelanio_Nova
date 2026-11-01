@@ -69,6 +69,21 @@ public final class ModBlocks {
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.feria.AtraccionBlockEntity>> ATRACCION_BE = BLOCK_ENTITIES.register("atraccion",
             () -> BlockEntityType.Builder.of(com.miscelanea.feria.AtraccionBlockEntity::new, NORIA.get(), TIOVIVO.get()).build(null));
+    public static final RegistryObject<Block> SUSTO = BLOCKS.register("susto",
+            () -> new com.miscelanea.feria.SustoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(1.5F)
+                    .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 3)));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.feria.SustoBlockEntity>> SUSTO_BE = BLOCK_ENTITIES.register("susto",
+            () -> BlockEntityType.Builder.of(com.miscelanea.feria.SustoBlockEntity::new, SUSTO.get()).build(null));
+    public static final RegistryObject<Block> CASETA_TIRO = BLOCKS.register("caseta_tiro",
+            () -> new com.miscelanea.feria.CasetaTiroBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(2.0F)
+                    .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 9)));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.feria.CasetaTiroBlockEntity>> CASETA_TIRO_BE = BLOCK_ENTITIES.register("caseta_tiro",
+            () -> BlockEntityType.Builder.of(com.miscelanea.feria.CasetaTiroBlockEntity::new, CASETA_TIRO.get()).build(null));
+    public static final RegistryObject<Block> PELUCHE = BLOCKS.register("peluche",
+            () -> new com.miscelanea.feria.PelucheBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOL).strength(0.5F)
+                    .sound(SoundType.WOOL).noOcclusion()));
     public static final RegistryObject<Block> BILLAR = BLOCKS.register("billar",
             () -> new com.miscelanea.mesas.BillarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(2.5F)
                     .sound(SoundType.WOOD).noOcclusion()));

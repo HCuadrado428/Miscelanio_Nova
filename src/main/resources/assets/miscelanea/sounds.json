@@ -1120,5 +1120,47 @@
       "miscelanea:fe_choque"
     ],
     "subtitle": "subtitles.miscelanea.fe_choque"
+  },
+  "fe_bruja": {
+    "sounds": [
+      "miscelanea:fe_bruja"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_bruja"
+  },
+  "fe_huesos": {
+    "sounds": [
+      "miscelanea:fe_huesos"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_huesos"
+  },
+  "fe_trueno": {
+    "sounds": [
+      "miscelanea:fe_trueno"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_trueno"
+  },
+  "fe_fantasma": {
+    "sounds": [
+      "miscelanea:fe_fantasma"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_fantasma"
+  },
+  "fe_corcho": {
+    "sounds": [
+      "miscelanea:fe_corcho"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_corcho"
+  },
+  "fe_diana": {
+    "sounds": [
+      "miscelanea:fe_diana"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_diana"
+  },
+  "fe_tren": {
+    "sounds": [
+      "miscelanea:fe_tren"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_tren"
   }
 }

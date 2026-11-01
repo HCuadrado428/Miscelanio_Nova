@@ -21,6 +21,9 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<com.miscelanea.feria.CocheChoque>> COCHE_CHOQUE = ENTITIES.register("coche_choque",
             () -> EntityType.Builder.<com.miscelanea.feria.CocheChoque>of(com.miscelanea.feria.CocheChoque::new, MobCategory.MISC)
                     .sized(1.3F, 0.7F).clientTrackingRange(10).updateInterval(1).build("coche_choque"));
+    public static final RegistryObject<EntityType<com.miscelanea.feria.VagonetaBruja>> VAGONETA_BRUJA = ENTITIES.register("vagoneta_bruja",
+            () -> EntityType.Builder.<com.miscelanea.feria.VagonetaBruja>of(com.miscelanea.feria.VagonetaBruja::new, MobCategory.MISC)
+                    .sized(0.98F, 0.7F).clientTrackingRange(8).build("vagoneta_bruja"));
     public static final RegistryObject<EntityType<com.miscelanea.muebles.Asiento>> ASIENTO = ENTITIES.register("asiento",
             () -> EntityType.Builder.<com.miscelanea.muebles.Asiento>of(com.miscelanea.muebles.Asiento::new, MobCategory.MISC)
                     .sized(0.01F, 0.01F).clientTrackingRange(10).noSummon().build("asiento"));

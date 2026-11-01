@@ -92,6 +92,11 @@ public class Miscelanea {
             event.accept(ModItems.NORIA);
             event.accept(ModItems.TIOVIVO);
             event.accept(ModItems.COCHE_CHOQUE);
+            event.accept(ModItems.VAGONETA_BRUJA);
+            event.accept(ModItems.SUSTO);
+            event.accept(ModItems.CASETA_TIRO);
+            event.accept(ModItems.ESCOPETA_CORCHO);
+            event.accept(ModItems.PELUCHE);
             event.accept(ModItems.FICHA);
             event.accept(ModItems.CONSOLA);
             for (var c : ModItems.cartuchosJuego()) event.accept(c);

@@ -15,9 +15,10 @@ import java.util.List;
 
 /** Piezas sueltas de la feria (barras, bombillas, cabinas, caballitos, coches) y cómo dibujarlas. */
 public final class FeriaPiezas {
-    public static final String[] BARRAS = {"metal_blanco", "metal_rojo", "dorado", "madera_a", "madera_b", "lona_roja", "lona_blanca"};
+    public static final String[] BARRAS = {"metal_blanco", "metal_rojo", "dorado", "madera_a", "madera_b", "lona_roja", "lona_blanca", "agua"};
     public static final ResourceLocation BOMBILLA = rl("bombilla");
     public static final ResourceLocation[] CABINA = new ResourceLocation[4], CABALLO = new ResourceLocation[4], COCHE = new ResourceLocation[4];
+    public static final String[] SUELTOS = {"bruja", "esqueleto", "calabaza", "fantasma", "ojos", "vagoneta", "pato", "pato_oro", "diana"};
 
     static {
         for (int i = 0; i < 4; i++) {
@@ -41,6 +42,8 @@ public final class FeriaPiezas {
         List<ResourceLocation> l = new ArrayList<>();
         for (String b : BARRAS) l.add(barra(b));
         l.add(BOMBILLA);
+        for (String n : SUELTOS) l.add(rl(n));
+        for (int i = 0; i < 4; i++) l.add(new ResourceLocation(Miscelanea.MOD_ID, "block/peluche" + i));
         for (int i = 0; i < 4; i++) {
             l.add(CABINA[i]);
             l.add(CABALLO[i]);
@@ -67,6 +70,16 @@ public final class FeriaPiezas {
         ps.mulPose(Axis.ZP.rotation((float) Math.atan2(dy, h)));
         ps.scale((float) len, alto * 16, ancho * 16);
         ps.translate(0, -0.5, -0.5);
+        modelo(ps, vc, barra(tex), 1, 1, 1, luz);
+        ps.popPose();
+    }
+
+    /** Caja de tamaño sx, sy, sz centrada en (cx, cy, cz), sin girar. */
+    public static void caja(PoseStack ps, VertexConsumer vc, String tex, double cx, double cy, double cz, double sx, double sy, double sz, int luz) {
+        ps.pushPose();
+        ps.translate(cx, cy, cz);
+        ps.scale((float) sx, (float) sy * 16, (float) sz * 16);
+        ps.translate(-0.5, -0.5, -0.5);
         modelo(ps, vc, barra(tex), 1, 1, 1, luz);
         ps.popPose();
     }

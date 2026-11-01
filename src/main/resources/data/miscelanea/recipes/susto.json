@@ -1,0 +1,23 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "PSP",
+  "PBP",
+  "PPP"
+ ],
+ "key": {
+  "P": {
+   "item": "minecraft:dark_oak_planks"
+  },
+  "S": {
+   "item": "minecraft:string"
+  },
+  "B": {
+   "item": "minecraft:bone"
+  }
+ },
+ "result": {
+  "item": "miscelanea:susto"
+ }
+}

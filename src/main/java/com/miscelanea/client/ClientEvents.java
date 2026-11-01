@@ -139,6 +139,9 @@ public final class ClientEvents {
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.ATRACCION_BE.get(), com.miscelanea.client.feria.AtraccionRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.ASIENTO_FERIA.get(), com.miscelanea.client.feria.AsientoFeriaRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.COCHE_CHOQUE.get(), com.miscelanea.client.feria.CocheChoqueRenderer::new);
+            event.registerEntityRenderer(com.miscelanea.registry.ModEntities.VAGONETA_BRUJA.get(), com.miscelanea.client.feria.VagonetaBrujaRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.SUSTO_BE.get(), com.miscelanea.client.feria.SustoRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.CASETA_TIRO_BE.get(), com.miscelanea.client.feria.CasetaTiroRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TANQUE_BE.get(), com.miscelanea.client.tanques.TanqueRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TABLERO_BE.get(), com.miscelanea.client.juegos.TableroRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.IMPERIO_BE.get(), com.miscelanea.client.imperio.ImperioRenderer::new);

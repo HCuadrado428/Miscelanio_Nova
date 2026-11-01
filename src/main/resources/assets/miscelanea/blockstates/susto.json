@@ -1,0 +1,68 @@
+{
+ "variants": {
+  "facing=north,tipo=0": {
+   "model": "miscelanea:block/susto",
+   "y": 0
+  },
+  "facing=east,tipo=0": {
+   "model": "miscelanea:block/susto",
+   "y": 90
+  },
+  "facing=south,tipo=0": {
+   "model": "miscelanea:block/susto",
+   "y": 180
+  },
+  "facing=west,tipo=0": {
+   "model": "miscelanea:block/susto",
+   "y": 270
+  },
+  "facing=north,tipo=1": {
+   "model": "miscelanea:block/susto",
+   "y": 0
+  },
+  "facing=east,tipo=1": {
+   "model": "miscelanea:block/susto",
+   "y": 90
+  },
+  "facing=south,tipo=1": {
+   "model": "miscelanea:block/susto",
+   "y": 180
+  },
+  "facing=west,tipo=1": {
+   "model": "miscelanea:block/susto",
+   "y": 270
+  },
+  "facing=north,tipo=2": {
+   "model": "miscelanea:block/susto",
+   "y": 0
+  },
+  "facing=east,tipo=2": {
+   "model": "miscelanea:block/susto",
+   "y": 90
+  },
+  "facing=south,tipo=2": {
+   "model": "miscelanea:block/susto",
+   "y": 180
+  },
+  "facing=west,tipo=2": {
+   "model": "miscelanea:block/susto",
+   "y": 270
+  },
+  "facing=north,tipo=3": {
+   "model": "miscelanea:block/susto",
+   "y": 0
+  },
+  "facing=east,tipo=3": {
+   "model": "miscelanea:block/susto",
+   "y": 90
+  },
+  "facing=south,tipo=3": {
+   "model": "miscelanea:block/susto",
+   "y": 180
+  },
+  "facing=west,tipo=3": {
+   "model": "miscelanea:block/susto",
+   "y": 270
+  }
+ }
+}

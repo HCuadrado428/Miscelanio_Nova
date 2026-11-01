@@ -1,0 +1,22 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  " C ",
+  "DMD"
+ ],
+ "key": {
+  "C": {
+   "item": "minecraft:carved_pumpkin"
+  },
+  "D": {
+   "item": "minecraft:purple_dye"
+  },
+  "M": {
+   "item": "minecraft:minecart"
+  }
+ },
+ "result": {
+  "item": "miscelanea:vagoneta_bruja"
+ }
+}

@@ -154,6 +154,16 @@ public final class ModItems {
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.TIOVIVO.get(), new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> COCHE_CHOQUE = ITEMS.register("coche_choque",
             () -> new com.miscelanea.feria.CocheChoqueItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> VAGONETA_BRUJA = ITEMS.register("vagoneta_bruja",
+            () -> new com.miscelanea.feria.VagonetaBrujaItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> SUSTO = ITEMS.register("susto",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.SUSTO.get(), new Item.Properties()));
+    public static final RegistryObject<Item> CASETA_TIRO = ITEMS.register("caseta_tiro",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.CASETA_TIRO.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> ESCOPETA_CORCHO = ITEMS.register("escopeta_corcho",
+            () -> new com.miscelanea.feria.EscopetaCorchoItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> PELUCHE = ITEMS.register("peluche",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.PELUCHE.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> PISTA_BAILE = ITEMS.register("pista_baile",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PISTA_BAILE.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> BILLAR = ITEMS.register("billar",
