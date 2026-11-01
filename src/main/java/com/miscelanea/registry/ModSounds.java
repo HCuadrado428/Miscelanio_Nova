@@ -113,6 +113,14 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> LU_ROMPER = register("lu_romper");
     public static final RegistryObject<SoundEvent> LU_DUELO = register("lu_duelo");
     public static final RegistryObject<SoundEvent> LU_BARRIO = register("lu_barrio");
+    public static final RegistryObject<SoundEvent> CC_PUNTO = register("cc_punto");
+    public static final RegistryObject<SoundEvent> CC_PILA = register("cc_pila");
+    public static final RegistryObject<SoundEvent> CC_ROBOT = register("cc_robot");
+    public static final RegistryObject<SoundEvent> CC_MUERTE = register("cc_muerte");
+    public static final RegistryObject<SoundEvent> CC_FRUTA = register("cc_fruta");
+    public static final RegistryObject<SoundEvent> CC_EXTRA = register("cc_extra");
+    public static final RegistryObject<SoundEvent> CC_INICIO = register("cc_inicio");
+    public static final RegistryObject<SoundEvent> CC_MUSICA = register("cc_musica");
     public static final RegistryObject<SoundEvent> DETECTOR_PITIDO = register("detector_pitido");
     public static final RegistryObject<SoundEvent> TESORO = register("tesoro");
     public static final RegistryObject<SoundEvent> CAPSULA_ABRIR = register("capsula_abrir");

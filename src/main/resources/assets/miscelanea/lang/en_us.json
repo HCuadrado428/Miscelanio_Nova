@@ -868,5 +868,11 @@
   "barrio.miscelanea.puntos": "SCORE",
   "barrio.miscelanea.j2": "2P: JOIN IN!",
   "block.miscelanea.mesa_coctel": "Cocktail Arcade Table (2 players)",
-  "msg.miscelanea.arcade.enlace": "%s is playing next door: sneak and click to link the cabinets and play together"
+  "msg.miscelanea.arcade.enlace": "%s is playing next door: sneak and click to link the cabinets and play together",
+  "juego.miscelanea.comecocos": "GOBBLER",
+  "comecocos.miscelanea.fin": "CAUGHT!",
+  "comecocos.miscelanea.puntos": "SCORE",
+  "comecocos.miscelanea.nivel": "LEVEL %s",
+  "comecocos.miscelanea.preparados": "READY!",
+  "comecocos.miscelanea.nivel_ok": "CLEAR!"
 }

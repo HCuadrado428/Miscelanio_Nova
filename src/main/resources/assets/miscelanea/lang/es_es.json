@@ -868,5 +868,11 @@
   "barrio.miscelanea.puntos": "PUNTOS",
   "barrio.miscelanea.j2": "2P: ¡ÚNETE!",
   "block.miscelanea.mesa_coctel": "Mesa cóctel arcade (2 jugadores)",
-  "msg.miscelanea.arcade.enlace": "%s juega al lado: agáchate y haz clic para enlazar las recreativas y jugar a dos"
+  "msg.miscelanea.arcade.enlace": "%s juega al lado: agáchate y haz clic para enlazar las recreativas y jugar a dos",
+  "juego.miscelanea.comecocos": "COMECOCOS",
+  "comecocos.miscelanea.fin": "¡TE HAN PILLADO!",
+  "comecocos.miscelanea.puntos": "PUNTOS",
+  "comecocos.miscelanea.nivel": "NIVEL %s",
+  "comecocos.miscelanea.preparados": "¡PREPARADOS!",
+  "comecocos.miscelanea.nivel_ok": "¡LIMPIO!"
 }

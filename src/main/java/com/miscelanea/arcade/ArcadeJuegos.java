@@ -2,9 +2,9 @@ package com.miscelanea.arcade;
 
 /** Juegos de la recreativa: los exclusivos (a todo color) y los de la consola (aquí no hacen falta cartuchos). */
 public final class ArcadeJuegos {
-    public static final String[] IDS = {"chatarra", "barrio", "duelo", "mazmorra", "turbo", "astro", "tetrominos", "serpiente", "ladrillos", "pong", "pajaro", "invasores"};
+    public static final String[] IDS = {"chatarra", "barrio", "duelo", "comecocos", "mazmorra", "turbo", "astro", "tetrominos", "serpiente", "ladrillos", "pong", "pajaro", "invasores"};
     /** Juegos que se pueden jugar a la vez entre dos en la recreativa doble. */
-    public static final String[] DOS = {"chatarra", "barrio", "duelo"};
+    public static final String[] DOS = {"chatarra", "barrio", "duelo", "comecocos"};
 
     private ArcadeJuegos() {}
 

@@ -856,5 +856,56 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "cc_punto": {
+    "sounds": [
+      "miscelanea:cc_punto"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "cc_pila": {
+    "sounds": [
+      "miscelanea:cc_pila"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "cc_robot": {
+    "sounds": [
+      "miscelanea:cc_robot"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "cc_muerte": {
+    "sounds": [
+      "miscelanea:cc_muerte"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "cc_fruta": {
+    "sounds": [
+      "miscelanea:cc_fruta"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "cc_extra": {
+    "sounds": [
+      "miscelanea:cc_extra"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "cc_inicio": {
+    "sounds": [
+      "miscelanea:cc_inicio"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "cc_musica": {
+    "sounds": [
+      {
+        "name": "miscelanea:cc_musica",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
   }
 }

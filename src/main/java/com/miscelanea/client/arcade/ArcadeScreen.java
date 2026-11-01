@@ -202,6 +202,7 @@ public class ArcadeScreen extends Screen {
             case "turbo" -> juego = new TurboCosta(bs, semilla, jug);
             case "barrio" -> juego = new PunosBarrio(bs, semilla, jug);
             case "duelo" -> juego = new DueloFinal(bs, semilla, jug);
+            case "comecocos" -> juego = new Comecocos(bs, semilla, jug);
             case "astro" -> clasico = new AstroPatrulla(bot);
             default -> {
                 Juego j = Juego.TETROMINOS;
