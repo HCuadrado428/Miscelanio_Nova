@@ -69,6 +69,7 @@ public class Miscelanea {
             event.accept(ModItems.OCARINA);
             event.accept(ModItems.TABLERO);
             event.accept(ModItems.IMPERIO);
+            event.accept(ModItems.PARCHIS);
             event.accept(ModItems.POSTE_TIROLINA);
             event.accept(ModItems.CABLE_TIROLINA);
             event.accept(ModItems.TRAMPOLIN);

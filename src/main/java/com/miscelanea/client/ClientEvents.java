@@ -107,6 +107,7 @@ public final class ClientEvents {
             event.register(com.miscelanea.client.tirolina.PoleaRenderer.MODELO);
             for (String n : com.miscelanea.client.imperio.ImperioRenderer.FICHAS) event.register(com.miscelanea.client.imperio.ImperioRenderer.modelo(n));
             for (String n : new String[]{"casa", "hotel", "dado"}) event.register(com.miscelanea.client.imperio.ImperioRenderer.modelo(n));
+            for (String n : com.miscelanea.client.parchis.ParchisRenderer.COLOR_ID) event.register(com.miscelanea.client.parchis.ParchisRenderer.modelo("ficha_" + n));
             for (String p : com.miscelanea.client.juegos.TableroRenderer.PIEZAS) {
                 event.register(com.miscelanea.client.juegos.TableroRenderer.modelo(p, true));
                 event.register(com.miscelanea.client.juegos.TableroRenderer.modelo(p, false));
@@ -120,6 +121,7 @@ public final class ClientEvents {
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TANQUE_BE.get(), com.miscelanea.client.tanques.TanqueRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TABLERO_BE.get(), com.miscelanea.client.juegos.TableroRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.IMPERIO_BE.get(), com.miscelanea.client.imperio.ImperioRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.PARCHIS_BE.get(), com.miscelanea.client.parchis.ParchisRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.POSTE_TIROLINA_BE.get(), com.miscelanea.client.tirolina.PosteRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TRAMPOLIN_BE.get(), com.miscelanea.client.trampolin.TrampolinRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.POLEA.get(), com.miscelanea.client.tirolina.PoleaRenderer::new);

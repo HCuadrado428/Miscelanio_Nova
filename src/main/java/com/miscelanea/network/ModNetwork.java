@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String PROTOCOLO = "23";
+    private static final String PROTOCOLO = "24";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "main"),
@@ -211,6 +211,11 @@ public final class ModNetwork {
                 .encoder(com.miscelanea.imperio.ImperioClicPacket::encode)
                 .decoder(com.miscelanea.imperio.ImperioClicPacket::new)
                 .consumerMainThread(com.miscelanea.imperio.ImperioClicPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.parchis.ParchisClicPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.parchis.ParchisClicPacket::encode)
+                .decoder(com.miscelanea.parchis.ParchisClicPacket::new)
+                .consumerMainThread(com.miscelanea.parchis.ParchisClicPacket::handle)
                 .add();
     }
 }

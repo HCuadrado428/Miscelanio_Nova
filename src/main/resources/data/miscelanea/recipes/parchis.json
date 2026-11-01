@@ -1,0 +1,35 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "YLR",
+  "DBD",
+  "GDA"
+ ],
+ "key": {
+  "Y": {
+   "item": "minecraft:yellow_dye"
+  },
+  "L": {
+   "item": "minecraft:lapis_lazuli"
+  },
+  "R": {
+   "item": "minecraft:red_dye"
+  },
+  "G": {
+   "item": "minecraft:green_dye"
+  },
+  "D": {
+   "item": "minecraft:paper"
+  },
+  "B": {
+   "item": "miscelanea:tablero"
+  },
+  "A": {
+   "item": "minecraft:bone"
+  }
+ },
+ "result": {
+  "item": "miscelanea:parchis"
+ }
+}
