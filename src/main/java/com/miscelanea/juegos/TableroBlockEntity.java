@@ -145,7 +145,7 @@ public class TableroBlockEntity extends BlockEntity {
         }
         if (propia && !destinos(sq).isEmpty() && (ajedrez() || partidaDamas().obligada < 0)) {
             sel = sq;
-            level.playSound(null, worldPosition, SoundEvents.WOOD_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.4F, 1.6F);
+            level.playSound(null, worldPosition, SoundEvents.WOODEN_BUTTON_CLICK_ON, SoundSource.BLOCKS, 0.4F, 1.6F);
         } else if (propia) {
             p.displayClientMessage(Component.translatable("msg.miscelanea.tablero.sin_movimientos").withStyle(ChatFormatting.GRAY), true);
         } else sel = -1;
