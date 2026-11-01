@@ -1,0 +1,19 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "GGG",
+  " R "
+ ],
+ "key": {
+  "G": {
+   "item": "minecraft:glass_pane"
+  },
+  "R": {
+   "item": "miscelanea:recreativa"
+  }
+ },
+ "result": {
+  "item": "miscelanea:mesa_coctel"
+ }
+}

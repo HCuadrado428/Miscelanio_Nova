@@ -38,7 +38,7 @@ public class ArcadeAccionPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ServerPlayer p = ctx.get().getSender();
-        if (p == null || p.distanceToSqr(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5) > 64) return;
+        if (p == null || p.distanceToSqr(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5) > 100) return;
         if (!(p.level().getBlockEntity(pos) instanceof RecreativaBlockEntity be)) return;
         boolean soy2 = p.getUUID().equals(be.jugador2);
         if (!soy2 && (be.jugador == null || !be.jugador.equals(p.getUUID()))) return;
@@ -46,6 +46,7 @@ public class ArcadeAccionPacket {
         if (soy2 && accion == EMPEZAR) return;
         switch (accion) {
             case CERRAR -> {
+                be.soltarEnlace(be.jugador2);
                 if (soy2) be.jugador2 = null;
                 else {
                     be.jugador = null;

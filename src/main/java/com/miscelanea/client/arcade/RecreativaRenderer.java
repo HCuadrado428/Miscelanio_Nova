@@ -38,13 +38,20 @@ public class RecreativaRenderer implements BlockEntityRenderer<RecreativaBlockEn
         ps.translate(0.5, 0, 0.5);
         ps.mulPose(Axis.YP.rotationDegrees(180 - f.toYRot()));
         ps.translate(-0.5, 0, -0.5);
-        // plano de la pantalla (mitad de arriba, inclinada hacia atrás); en la doble es más ancha
-        boolean doble = be.getBlockState().getBlock() instanceof RecreativaBlock rb && rb.doble;
         float s = 1 / 16F;
-        float ancho = doble ? 14F : 12F, alto = doble ? 10.5F : 9F, x0 = doble ? 15F : 14F, y0 = doble ? 28.8F : 28.4F;
-        float ux = -ancho / Pantalla.W, vy = -alto / Pantalla.H, vz = (alto * 0.21F) / Pantalla.H;
-        float nz = -0.05F;
-        Matrix4f m = new Matrix4f(ux * s, 0, 0, 0, 0, vy * s, vz * s, 0, 0, 0, nz * s, 0, x0 * s, y0 * s, 8.7F * s, 1);
+        Matrix4f m;
+        if (be.getBlockState().getBlock() instanceof com.miscelanea.arcade.MesaCoctelBlock) {
+            // mesa cóctel: pantalla tumbada en el tablero, derecha para el jugador 1 (lado de delante)
+            float ancho = 12F, alto = 9F;
+            m = new Matrix4f(-ancho / Pantalla.W * s, 0, 0, 0, 0, 0, -alto / Pantalla.H * s, 0, 0, 0.05F * s, 0, 0, 14F * s, 12.56F * s, 12.5F * s, 1);
+        } else {
+            // plano de la pantalla (mitad de arriba, inclinada hacia atrás); en la doble es más ancha
+            boolean doble = be.getBlockState().getBlock() instanceof RecreativaBlock rb && rb.doble;
+            float ancho = doble ? 14F : 12F, alto = doble ? 10.5F : 9F, x0 = doble ? 15F : 14F, y0 = doble ? 28.8F : 28.4F;
+            float ux = -ancho / Pantalla.W, vy = -alto / Pantalla.H, vz = (alto * 0.21F) / Pantalla.H;
+            float nz = -0.05F;
+            m = new Matrix4f(ux * s, 0, 0, 0, 0, vy * s, vz * s, 0, 0, 0, nz * s, 0, x0 * s, y0 * s, 8.7F * s, 1);
+        }
         ps.last().pose().mul(m);
         Matrix4f pm = ps.last().pose();
         VertexConsumer vc = buf.getBuffer(RenderType.text(tex.rl));

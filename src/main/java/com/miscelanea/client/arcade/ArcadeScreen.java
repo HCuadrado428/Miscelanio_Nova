@@ -50,6 +50,8 @@ public class ArcadeScreen extends Screen {
     private static int ultimoSel;
 
     final BlockPos pos;
+    /** Recreativa propia del jugador 2 enlazado con cable (si no, la misma pos): allí se ve lo que juega. */
+    private final BlockPos propia;
     private int creditos;
     private final boolean libre, doble, invitado;
     private String companero;
@@ -78,8 +80,13 @@ public class ArcadeScreen extends Screen {
     private ArcadeCliente.Remota remota;
 
     public ArcadeScreen(BlockPos pos, int creditos, boolean libre, boolean doble, boolean invitado, String companero) {
+        this(pos, creditos, libre, doble, invitado, companero, pos);
+    }
+
+    public ArcadeScreen(BlockPos pos, int creditos, boolean libre, boolean doble, boolean invitado, String companero, BlockPos propia) {
         super(Component.translatable("block.miscelanea.recreativa"));
         this.pos = pos;
+        this.propia = propia;
         this.creditos = creditos;
         this.libre = libre;
         this.doble = doble;
@@ -193,6 +200,8 @@ public class ArcadeScreen extends Screen {
             case "chatarra" -> juego = new ComandoChatarra(bs, semilla, jug);
             case "mazmorra" -> juego = new Mazmorra3D(bs, semilla, jug);
             case "turbo" -> juego = new TurboCosta(bs, semilla, jug);
+            case "barrio" -> juego = new PunosBarrio(bs, semilla, jug);
+            case "duelo" -> juego = new DueloFinal(bs, semilla, jug);
             case "astro" -> clasico = new AstroPatrulla(bot);
             default -> {
                 Juego j = Juego.TETROMINOS;
@@ -271,7 +280,8 @@ public class ArcadeScreen extends Screen {
             }
         }
         // retransmitir la pantalla a los que miran (10 imágenes por segundo); el invitado no retransmite
-        if (!invitado && ++pasos % 6 == 0) ModNetwork.CHANNEL.sendToServer(new ArcadeFramePacket(pos, Trama.codificar(pant)));
+        if (++pasos % 6 == 0 && (!invitado || !propia.equals(pos)))
+            ModNetwork.CHANNEL.sendToServer(new ArcadeFramePacket(invitado ? propia : pos, Trama.codificar(pant)));
     }
 
     /** Un paso de la partida a dos: manda los mandos de un paso futuro y avanza solo si ya tiene los del compañero. */
@@ -369,13 +379,16 @@ public class ArcadeScreen extends Screen {
         p.limpiar(33);
         for (int y = 0; y < 24; y++) p.rect(0, y, Pantalla.W, 1, y < 22 ? 42 : 45);
         p.textoC("MISCELÁNEA ARCADE", 128, 7, 20);
-        for (int i = 0; i < ArcadeJuegos.IDS.length; i++) {
+        int visibles = 8, primero = Math.max(0, Math.min(sel - 3, ArcadeJuegos.IDS.length - visibles));
+        if (primero > 0 && (t / 15) % 2 == 0) p.textoC("▲", 128, 24, 6);
+        if (primero + visibles < ArcadeJuegos.IDS.length && (t / 15) % 2 == 0) p.textoC("▼", 128, 156, 6);
+        for (int i = primero; i < Math.min(ArcadeJuegos.IDS.length, primero + visibles); i++) {
             String id = ArcadeJuegos.IDS[i];
-            int y = 30 + i * 16;
+            int y = 31 + (i - primero) * 16;
             boolean s = i == sel;
             if (s) p.rect(4, y - 3, 248, 15, 35);
             if (s && (t / 15) % 2 == 0) for (int k = 0; k < 5; k++) p.rect(8, y + k, 3 - Math.abs(k - 2), 1, 20);
-            boolean nuevo = id.equals("chatarra") || id.equals("mazmorra") || id.equals("turbo") || id.equals("astro");
+            boolean nuevo = !id.equals("tetrominos") && !id.equals("serpiente") && !id.equals("ladrillos") && !id.equals("pong") && !id.equals("pajaro") && !id.equals("invasores");
             p.texto(I18n.get("juego.miscelanea." + id), 16, y, nuevo ? (s ? 20 : 19) : (s ? 7 : 5));
             if (ArcadeJuegos.dosJugadores(id)) p.texto("1-2P", 150, y, s ? 39 : 37);
             ListTag tb = ArcadeCliente.tabla(id);
@@ -389,11 +402,11 @@ public class ArcadeScreen extends Screen {
             String cr = libre ? I18n.get("consola.miscelanea.libre") : creditos > 0 ? I18n.get("consola.miscelanea.creditos", creditos)
                     : (t / 20) % 2 == 0 ? I18n.get("consola.miscelanea.start_ficha") : "";
             p.textoC(cr, 128, 170, creditos > 0 || libre ? 19 : 15);
-            if (doble) p.textoC(companero.isEmpty() ? I18n.get("consola.miscelanea.sin_companero") : I18n.get("consola.miscelanea.con_companero", companero),
+            if (doble || !companero.isEmpty()) p.textoC(companero.isEmpty() ? I18n.get("consola.miscelanea.sin_companero") : I18n.get("consola.miscelanea.con_companero", companero),
                     128, 181, companero.isEmpty() ? 4 : 29);
         }
         ListTag tb = ArcadeCliente.tabla(ArcadeJuegos.IDS[sel]);
-        if (!tb.isEmpty() && aviso == 0 && estado == Estado.MENU && !doble) {
+        if (!tb.isEmpty() && aviso == 0 && estado == Estado.MENU && !doble && companero.isEmpty()) {
             CompoundTag c = tb.getCompound(0);
             p.textoC("♛ " + c.getString("n"), 128, 181, 20);
         }

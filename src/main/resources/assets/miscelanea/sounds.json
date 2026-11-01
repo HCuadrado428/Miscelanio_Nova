@@ -772,5 +772,89 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "lu_aire": {
+    "sounds": [
+      "miscelanea:lu_aire"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "lu_golpe": {
+    "sounds": [
+      "miscelanea:lu_golpe"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "lu_golpe2": {
+    "sounds": [
+      "miscelanea:lu_golpe2"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "lu_bloqueo": {
+    "sounds": [
+      "miscelanea:lu_bloqueo"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "lu_caida": {
+    "sounds": [
+      "miscelanea:lu_caida"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "lu_ko": {
+    "sounds": [
+      "miscelanea:lu_ko"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "lu_ronda": {
+    "sounds": [
+      "miscelanea:lu_ronda"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "lu_especial": {
+    "sounds": [
+      "miscelanea:lu_especial"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "lu_selec": {
+    "sounds": [
+      "miscelanea:lu_selec"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "lu_comer": {
+    "sounds": [
+      "miscelanea:lu_comer"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "lu_romper": {
+    "sounds": [
+      "miscelanea:lu_romper"
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "lu_duelo": {
+    "sounds": [
+      {
+        "name": "miscelanea:lu_duelo",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "lu_barrio": {
+    "sounds": [
+      {
+        "name": "miscelanea:lu_barrio",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
   }
 }

@@ -19,6 +19,9 @@ public class RecreativaBlockEntity extends BlockEntity {
     /** Compañero en la recreativa doble (jugador 2). */
     @Nullable
     public UUID jugador2;
+    /** Recreativa enlazada con cable desde la que juega el jugador 2 (servidor). */
+    @Nullable
+    public BlockPos enlazada;
     public long ultimoFrame;     // servidor: para limitar el ritmo de retransmisión
     /** Cliente: datos de pantalla (los gestiona el renderizador). */
     public Object pantallaCliente;
@@ -46,7 +49,14 @@ public class RecreativaBlockEntity extends BlockEntity {
     }
 
     public boolean doble() {
-        return getBlockState().getBlock() instanceof RecreativaBlock r && r.doble;
+        return getBlockState().getBlock() instanceof RecreativaBlock r && r.doble || getBlockState().getBlock() instanceof MesaCoctelBlock;
+    }
+
+    /** El jugador 2 se ha ido: la recreativa enlazada desde la que jugaba queda libre. */
+    public void soltarEnlace(@Nullable UUID quien) {
+        if (enlazada != null && level != null && level.getBlockEntity(enlazada) instanceof RecreativaBlockEntity v && v.jugador != null
+                && (quien == null || v.jugador.equals(quien))) v.jugador = null;
+        enlazada = null;
     }
 
     private static boolean cerca(Level l, BlockPos pos, @Nullable UUID u) {
@@ -73,14 +83,18 @@ public class RecreativaBlockEntity extends BlockEntity {
             be.jugador = null;
             cambio = true;
         }
-        if (be.jugador2 != null && !cerca(l, pos, be.jugador2)) {
+        if (be.jugador2 != null && !cerca(l, pos, be.jugador2) && !(be.enlazada != null && cerca(l, be.enlazada, be.jugador2))) {
+            be.soltarEnlace(be.jugador2);
             be.jugador2 = null;
             cambio = true;
         }
         if (cambio) {
             be.avisarCompaneros();
             // sin jugador 1 no hay partida: el compañero también se queda fuera (se le avisa al cerrar)
-            if (be.jugador == null) be.jugador2 = null;
+            if (be.jugador == null) {
+                be.soltarEnlace(be.jugador2);
+                be.jugador2 = null;
+            }
         }
     }
 

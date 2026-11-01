@@ -158,24 +158,35 @@ public class RecreativaBlock extends BaseEntityBlock {
         if (hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
         BlockPos abajo = s.getValue(HALF) == DoubleBlockHalf.LOWER ? pos : pos.below();
         if (l.isClientSide) return InteractionResult.SUCCESS;
-        if (!(l.getBlockEntity(abajo) instanceof RecreativaBlockEntity be) || !(p instanceof ServerPlayer sp)) return InteractionResult.PASS;
+        if (!(p instanceof ServerPlayer sp)) return InteractionResult.PASS;
+        return usar(l, abajo, sp, doble);
+    }
+
+    /** Uso de una máquina (recreativa, doble o mesa cóctel): jugar, unirse como 2P o enlazarse con la de al lado. */
+    public static InteractionResult usar(Level l, BlockPos abajo, ServerPlayer sp, boolean doble) {
+        if (!(l.getBlockEntity(abajo) instanceof RecreativaBlockEntity be)) return InteractionResult.PASS;
         if (doble && be.ocupadaPorOtro(sp) && (be.jugador2 == null || be.jugador2.equals(sp.getUUID()))) {
-            // se une como jugador 2
-            be.jugador2 = sp.getUUID();
-            if (esFicha(sp.getMainHandItem()) && gastarFicha(sp)) {
-                be.creditos++;
-                be.setChanged();
-                l.playSound(null, abajo, ModSounds.ARCADE_FICHA.get(), SoundSource.BLOCKS, 0.8F, 1.0F);
-            }
-            ServerPlayer host = sp.server.getPlayerList().getPlayer(be.jugador);
-            ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new ArcadeAbrirPacket(abajo, be.creditos, sp.getAbilities().instabuild, 4, true, 0, "",
-                    host == null ? "" : host.getGameProfile().getName(), 2));
-            be.avisarCompaneros();
+            unirse(l, be, sp, null);
             return InteractionResult.CONSUME;
         }
         if (be.ocupadaPorOtro(sp)) {
             sp.displayClientMessage(Component.translatable("msg.miscelanea.arcade.ocupada").withStyle(ChatFormatting.RED), true);
             return InteractionResult.CONSUME;
+        }
+        // recreativa normal junto a otra en la que alguien juega: agachado, se enlazan con un cable y se juega a dos
+        if (!doble) {
+            RecreativaBlockEntity vecina = vecinaConPartida(l, abajo, sp);
+            if (vecina != null) {
+                if (sp.isShiftKeyDown()) {
+                    be.jugador = sp.getUUID();
+                    vecina.enlazada = abajo;
+                    unirse(l, vecina, sp, abajo);
+                    return InteractionResult.CONSUME;
+                }
+                ServerPlayer host = sp.server.getPlayerList().getPlayer(vecina.jugador);
+                sp.displayClientMessage(Component.translatable("msg.miscelanea.arcade.enlace", host == null ? "?" : host.getGameProfile().getName())
+                        .withStyle(ChatFormatting.AQUA), true);
+            }
         }
         boolean libre = sp.getAbilities().instabuild;
         if (esFicha(sp.getMainHandItem()) && gastarFicha(sp)) {
@@ -191,5 +202,34 @@ public class RecreativaBlock extends BaseEntityBlock {
         if (sp.getUUID().equals(be.jugador2)) be.jugador2 = null;
         ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new ArcadeAbrirPacket(abajo, be.creditos, libre, 0, doble, 0, "", "", 1));
         return InteractionResult.CONSUME;
+    }
+
+    /** Se une como jugador 2 a la partida de be (en la misma máquina o, si propia no es null, desde la recreativa enlazada). */
+    private static void unirse(Level l, RecreativaBlockEntity be, ServerPlayer sp, @Nullable BlockPos propia) {
+        BlockPos host = be.getBlockPos();
+        be.jugador2 = sp.getUUID();
+        if (esFicha(sp.getMainHandItem()) && gastarFicha(sp)) {
+            be.creditos++;
+            be.setChanged();
+            l.playSound(null, propia != null ? propia : host, ModSounds.ARCADE_FICHA.get(), SoundSource.BLOCKS, 0.8F, 1.0F);
+        }
+        ServerPlayer anfitrion = sp.server.getPlayerList().getPlayer(be.jugador);
+        ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new ArcadeAbrirPacket(host, be.creditos, sp.getAbilities().instabuild, 4, propia == null, 0, "",
+                anfitrion == null ? "" : anfitrion.getGameProfile().getName(), 2, propia == null ? host : propia));
+        be.avisarCompaneros();
+    }
+
+    /** Recreativa normal a uno o dos bloques (mismo nivel) en la que juega otro y que aún no tiene compañero. */
+    @Nullable
+    static RecreativaBlockEntity vecinaConPartida(Level l, BlockPos abajo, ServerPlayer sp) {
+        for (Direction d : Direction.Plane.HORIZONTAL)
+            for (int k = 1; k <= 2; k++) {
+                BlockPos q = abajo.relative(d, k);
+                BlockState st = l.getBlockState(q);
+                if (!(st.getBlock() instanceof RecreativaBlock rb) || rb.doble || st.getValue(HALF) != DoubleBlockHalf.LOWER) continue;
+                if (l.getBlockEntity(q) instanceof RecreativaBlockEntity v && v.ocupadaPorOtro(sp) && (v.jugador2 == null || v.jugador2.equals(sp.getUUID())))
+                    return v;
+            }
+        return null;
     }
 }

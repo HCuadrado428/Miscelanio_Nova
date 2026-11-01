@@ -52,7 +52,7 @@ public final class ArcadeCliente {
     public static void abrir(ArcadeAbrirPacket m) {
         Minecraft mc = Minecraft.getInstance();
         if (m.modo == 0) mc.setScreen(new ArcadeScreen(m.pos, m.creditos, m.libre, m.doble, false, ""));
-        else if (m.modo == 4) mc.setScreen(new ArcadeScreen(m.pos, m.creditos, m.libre, true, true, m.companero));
+        else if (m.modo == 4) mc.setScreen(new ArcadeScreen(m.pos, m.creditos, m.libre, m.doble, true, m.companero, m.propia));
         else if (mc.screen instanceof ArcadeScreen s && s.pos.equals(m.pos)) s.respuesta(m);
     }
 

@@ -21,6 +21,8 @@ public class ArcadeAbrirPacket {
     public final long semilla;
     public final String juego, companero;
     public final int jugadores;
+    /** Máquina desde la que juega este jugador (la enlazada, en el modo 4 con cable); si no, la misma pos. */
+    public final BlockPos propia;
 
     public ArcadeAbrirPacket(BlockPos pos, int creditos, boolean libre) {
         this(pos, creditos, libre, 0);
@@ -31,6 +33,12 @@ public class ArcadeAbrirPacket {
     }
 
     public ArcadeAbrirPacket(BlockPos pos, int creditos, boolean libre, int modo, boolean doble, long semilla, String juego, String companero, int jugadores) {
+        this(pos, creditos, libre, modo, doble, semilla, juego, companero, jugadores, pos);
+    }
+
+    public ArcadeAbrirPacket(BlockPos pos, int creditos, boolean libre, int modo, boolean doble, long semilla, String juego, String companero, int jugadores,
+                             BlockPos propia) {
+        this.propia = propia;
         this.pos = pos;
         this.creditos = creditos;
         this.libre = libre;
@@ -43,7 +51,7 @@ public class ArcadeAbrirPacket {
     }
 
     public ArcadeAbrirPacket(FriendlyByteBuf b) {
-        this(b.readBlockPos(), b.readVarInt(), b.readBoolean(), b.readByte(), b.readBoolean(), b.readLong(), b.readUtf(32), b.readUtf(32), b.readByte());
+        this(b.readBlockPos(), b.readVarInt(), b.readBoolean(), b.readByte(), b.readBoolean(), b.readLong(), b.readUtf(32), b.readUtf(32), b.readByte(), b.readBlockPos());
     }
 
     public void encode(FriendlyByteBuf b) {
@@ -56,6 +64,7 @@ public class ArcadeAbrirPacket {
         b.writeUtf(juego, 32);
         b.writeUtf(companero, 32);
         b.writeByte(jugadores);
+        b.writeBlockPos(propia);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
