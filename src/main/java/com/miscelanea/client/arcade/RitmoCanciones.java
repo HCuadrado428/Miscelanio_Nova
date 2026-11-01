@@ -1,13 +1,13 @@
 package com.miscelanea.client.arcade;
 
 /** Coreografías de Paso Doble (generadas junto con la música): paso << 3 | carril, + 4 si es doble. */
-final class RitmoCanciones {
+public final class RitmoCanciones {
     private RitmoCanciones() {}
 
-    static final String[] ID = {"ri_verbena", "ri_neon", "ri_tormenta"};
-    static final int[] BPM = {118, 136, 158};
-    static final int[] DURACION = {3661, 3176, 2734};
-    static final int[][][] NOTAS = {
+    public static final String[] ID = {"ri_verbena", "ri_neon", "ri_tormenta"};
+    public static final int[] BPM = {118, 136, 158};
+    public static final int[] DURACION = {3661, 3176, 2734};
+    public static final int[][][] NOTAS = {
             {
                     {3904, 4882, 5858, 6833, 7322, 7808, 8786, 9760, 10251, 10737, 11715, 12690, 13178, 13665, 14650, 15624, 16114, 16600, 17578, 18555, 19531, 20507, 21481, 22459, 22946, 23432, 24410, 25386, 26363, 26850},
                     {3907, 4393, 4883, 5130, 5369, 5857, 6106, 6344, 6834, 7083, 7323, 7813, 8296, 8786, 9035, 9273, 9761, 10251, 10737, 11227, 11715, 11963, 12202, 12689, 12938, 13178, 13664, 14153, 14650, 14890, 15139, 15625, 16114, 16603, 17089, 17579, 18066, 18555, 18795, 19041, 19529, 20016, 20506, 20747, 20993, 21481, 21723, 21970, 22457, 22698, 22946, 23433, 23922, 24410, 24651, 24897, 25388, 25626, 25875, 26362, 26603, 26851},

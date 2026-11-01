@@ -12,10 +12,10 @@ import net.minecraft.sounds.SoundEvent;
 public class PasoDoble extends JuegoArcade {
     static final int MENU = 0, BAILE = 1, RESULTADO = 2;
     static final int OBJ_Y = 30, LATENCIA = 5, VENTANA = 10;
-    static final int[] CARRIL_BOTON = {Botones.IZQ, Botones.ABAJO, Botones.ARRIBA, Botones.DER};
+    public static final int[] CARRIL_BOTON = {Botones.IZQ, Botones.ABAJO, Botones.ARRIBA, Botones.DER};
     static final int[] CARRIL_COLOR = {43, 63, 28, 11}, CARRIL_LUZ = {44, 40, 29, 12};
     static final float[] VELOCIDAD = {1.7F, 2.2F, 2.7F};
-    static final String[] FLECHA = {
+    public static final String[] FLECHA = {
             "......##......", ".....####.....", "....######....", "...########...", "..##########..", ".############.",
             "##############", "....######....", "....######....", "....######....", "....######....", "....######....", "....######....", "....######...."};
     static boolean[][][] mascaras;

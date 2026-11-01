@@ -958,5 +958,11 @@
   "paso.miscelanea.fallo": "FALLO",
   "paso.miscelanea.fuera": "¡TE HAS QUEDADO SIN AIRE!",
   "paso.miscelanea.resultado": "RESULTADO",
-  "paso.miscelanea.nota": "NOTA: %s"
+  "paso.miscelanea.nota": "NOTA: %s",
+  "block.miscelanea.pista_baile": "Pista de baile",
+  "baile.miscelanea.ocupada": "Ya hay alguien bailando en esta pista",
+  "baile.miscelanea.subete": "Súbete encima de la pista y haz clic",
+  "baile.miscelanea.menu_ayuda": "W/S: canción · A/D: dificultad · Espacio: ¡a bailar!",
+  "baile.miscelanea.salir": "Agáchate para bajarte de la pista",
+  "baile.miscelanea.resultado": "%s ha bailado en la pista: %s puntos (nota %s)"
 }

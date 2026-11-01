@@ -134,6 +134,7 @@ public final class ClientEvents {
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.CARTEL_RECORDS_BE.get(), com.miscelanea.client.arcade.CartelRecordsRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.BILLAR_BE.get(), com.miscelanea.client.mesas.BillarRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.FUTBOLIN_BE.get(), com.miscelanea.client.mesas.FutbolinRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.PISTA_BAILE_BE.get(), com.miscelanea.client.baile.PistaBaileRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TANQUE_BE.get(), com.miscelanea.client.tanques.TanqueRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TABLERO_BE.get(), com.miscelanea.client.juegos.TableroRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.IMPERIO_BE.get(), com.miscelanea.client.imperio.ImperioRenderer::new);

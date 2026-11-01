@@ -54,6 +54,12 @@ public final class ModBlocks {
     public static final RegistryObject<Block> RECREATIVA_DOBLE = BLOCKS.register("recreativa_doble",
             () -> new com.miscelanea.arcade.RecreativaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(2.0F)
                     .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 7), true));
+    public static final RegistryObject<Block> PISTA_BAILE = BLOCKS.register("pista_baile",
+            () -> new com.miscelanea.baile.PistaBaileBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(1.5F)
+                    .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 8)));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.baile.PistaBaileBlockEntity>> PISTA_BAILE_BE = BLOCK_ENTITIES.register("pista_baile",
+            () -> BlockEntityType.Builder.of(com.miscelanea.baile.PistaBaileBlockEntity::new, PISTA_BAILE.get()).build(null));
     public static final RegistryObject<Block> BILLAR = BLOCKS.register("billar",
             () -> new com.miscelanea.mesas.BillarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(2.5F)
                     .sound(SoundType.WOOD).noOcclusion()));

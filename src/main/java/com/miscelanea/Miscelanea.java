@@ -88,6 +88,7 @@ public class Miscelanea {
             event.accept(ModItems.CARTEL_RECORDS);
             event.accept(ModItems.BILLAR);
             event.accept(ModItems.FUTBOLIN);
+            event.accept(ModItems.PISTA_BAILE);
             event.accept(ModItems.FICHA);
             event.accept(ModItems.CONSOLA);
             for (var c : ModItems.cartuchosJuego()) event.accept(c);

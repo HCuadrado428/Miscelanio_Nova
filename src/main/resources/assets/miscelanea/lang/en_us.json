@@ -958,5 +958,11 @@
   "paso.miscelanea.fallo": "MISS",
   "paso.miscelanea.fuera": "OUT OF BREATH!",
   "paso.miscelanea.resultado": "RESULTS",
-  "paso.miscelanea.nota": "GRADE: %s"
+  "paso.miscelanea.nota": "GRADE: %s",
+  "block.miscelanea.pista_baile": "Dance Floor",
+  "baile.miscelanea.ocupada": "Someone is already dancing here",
+  "baile.miscelanea.subete": "Stand on the dance floor and click it",
+  "baile.miscelanea.menu_ayuda": "W/S: song · A/D: difficulty · Space: dance!",
+  "baile.miscelanea.salir": "Sneak to step off the floor",
+  "baile.miscelanea.resultado": "%s danced: %s points (grade %s)"
 }

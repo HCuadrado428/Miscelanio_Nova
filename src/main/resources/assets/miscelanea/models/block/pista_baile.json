@@ -1,0 +1,78 @@
+{
+ "parent": "block/block",
+ "textures": {
+  "top": "miscelanea:block/mesas/pista_baile",
+  "lado": "miscelanea:block/mesas/pista_baile_lado",
+  "particle": "miscelanea:block/mesas/pista_baile"
+ },
+ "elements": [
+  {
+   "from": [
+    0,
+    0,
+    0
+   ],
+   "to": [
+    16,
+    2,
+    16
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      0,
+      14,
+      16,
+      16
+     ],
+     "texture": "#lado"
+    },
+    "south": {
+     "uv": [
+      0,
+      14,
+      16,
+      16
+     ],
+     "texture": "#lado"
+    },
+    "east": {
+     "uv": [
+      0,
+      14,
+      16,
+      16
+     ],
+     "texture": "#lado"
+    },
+    "west": {
+     "uv": [
+      0,
+      14,
+      16,
+      16
+     ],
+     "texture": "#lado"
+    },
+    "up": {
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "texture": "#top"
+    },
+    "down": {
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "texture": "#lado"
+    }
+   }
+  }
+ ]
+}

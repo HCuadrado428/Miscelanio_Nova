@@ -148,6 +148,8 @@ public final class ModItems {
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.RECREATIVA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> RECREATIVA_DOBLE = ITEMS.register("recreativa_doble",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.RECREATIVA_DOBLE.get(), new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> PISTA_BAILE = ITEMS.register("pista_baile",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.PISTA_BAILE.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> BILLAR = ITEMS.register("billar",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.BILLAR.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> FUTBOLIN = ITEMS.register("futbolin",

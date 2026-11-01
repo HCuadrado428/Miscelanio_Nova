@@ -5,6 +5,12 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "miscelanea.refmap.json",
   "mixins": [],
-  "client": ["CameraMixin", "MouseHandlerMixin"],
-  "injectors": {"defaultRequire": 1}
+  "client": [
+    "CameraMixin",
+    "MouseHandlerMixin",
+    "HumanoidModelMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
 }
