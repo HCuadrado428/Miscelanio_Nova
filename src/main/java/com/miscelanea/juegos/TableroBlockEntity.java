@@ -32,7 +32,7 @@ import java.util.UUID;
  * El primero que toca una pieza juega con blancas; en 2 jugadores el segundo con negras.
  */
 public class TableroBlockEntity extends BlockEntity {
-    public static final int MODOS = 4;
+    public static final int MODOS = 6;
     public static final double LADO = 1.5, ZONA = 1.5 * 108 / 128;   // tamaño del tablero y de la zona de casillas (en bloques)
 
     public int modo;
@@ -56,6 +56,22 @@ public class TableroBlockEntity extends BlockEntity {
         return modo < 2;
     }
 
+    /** 0 ajedrez, 1 damas, 2 reversi. */
+    public int juego() {
+        return Math.min(2, modo / 2);
+    }
+
+    public boolean reversi() {
+        return juego() == 2;
+    }
+
+    public Reversi partidaReversi() {
+        Reversi r = new Reversi();
+        if (estado.length >= 68) r.cargar(estado);
+        else r.inicial();
+        return r;
+    }
+
     public boolean contraCpu() {
         return modo % 2 == 0;
     }
@@ -76,18 +92,20 @@ public class TableroBlockEntity extends BlockEntity {
 
     // ---- vista de solo lectura: se reconstruye únicamente cuando cambia el estado (antes se rehacía varias veces por fotograma)
     private int[] vistaDe;
-    private boolean vistaAjedrez;
+    private int vistaJuego = -1;
     private Ajedrez vistaA;
     private Damas vistaD;
+    private Reversi vistaR;
     private List<Integer> vistaLegales;
 
     private void vista() {
-        if (vistaDe == estado && vistaAjedrez == ajedrez()) return;
+        if (vistaDe == estado && vistaJuego == juego()) return;
         vistaDe = estado;
-        vistaAjedrez = ajedrez();
+        vistaJuego = juego();
         vistaLegales = null;
-        vistaA = vistaAjedrez ? partidaAjedrez() : null;
-        vistaD = vistaAjedrez ? null : partidaDamas();
+        vistaA = vistaJuego == 0 ? partidaAjedrez() : null;
+        vistaD = vistaJuego == 1 ? partidaDamas() : null;
+        vistaR = vistaJuego == 2 ? partidaReversi() : null;
     }
 
     /** Partida de ajedrez para consultar (no modificar). */
@@ -102,14 +120,37 @@ public class TableroBlockEntity extends BlockEntity {
         return vistaD != null ? vistaD : partidaDamas();
     }
 
+    /** Partida de reversi para consultar (no modificar). */
+    public Reversi verReversi() {
+        vista();
+        return vistaR != null ? vistaR : partidaReversi();
+    }
+
+    /** Tablero de piezas del juego actual (solo lectura). */
+    public int[] piezas() {
+        return switch (juego()) {
+            case 0 -> verAjedrez().t;
+            case 1 -> verDamas().t;
+            default -> verReversi().t;
+        };
+    }
+
     public List<Integer> legales() {
         vista();
-        if (vistaLegales == null) vistaLegales = vistaAjedrez ? vistaA.legales() : vistaD.legales();
+        if (vistaLegales == null) vistaLegales = switch (vistaJuego) {
+            case 0 -> vistaA.legales();
+            case 1 -> vistaD.legales();
+            default -> vistaR.legales();
+        };
         return vistaLegales;
     }
 
     public boolean turnoBlancas() {
-        return ajedrez() ? verAjedrez().blancas : verDamas().blancas;
+        return switch (juego()) {
+            case 0 -> verAjedrez().blancas;
+            case 1 -> verDamas().blancas;
+            default -> verReversi().blancas;
+        };
     }
 
     /** Movimientos legales desde una casilla (lista de casillas destino). */
@@ -132,6 +173,10 @@ public class TableroBlockEntity extends BlockEntity {
             Ajedrez a = new Ajedrez();
             a.inicial();
             estado = a.guardar();
+        } else if (reversi()) {
+            Reversi r = new Reversi();
+            r.inicial();
+            estado = r.guardar();
         } else {
             Damas d = new Damas();
             d.inicial();
@@ -176,9 +221,9 @@ public class TableroBlockEntity extends BlockEntity {
             cambiado();
             return;
         }
-        int pieza = ajedrez() ? verAjedrez().t[sq] : verDamas().t[sq];
-        boolean propia = pieza != 0 && (ajedrez() ? !Ajedrez.esNegra(pieza) == tb : Damas.esBlanca(pieza) == tb);
-        if (!ajedrez() && verDamas().obligada >= 0) sel = verDamas().obligada;
+        int pieza = piezas()[sq];
+        boolean propia = !reversi() && pieza != 0 && (ajedrez() ? !Ajedrez.esNegra(pieza) == tb : Damas.esBlanca(pieza) == tb);
+        if (juego() == 1 && verDamas().obligada >= 0) sel = verDamas().obligada;
         if (sel >= 0 && destinos(sel).contains(sq)) {
             mover(sel, sq);
             return;
@@ -196,6 +241,10 @@ public class TableroBlockEntity extends BlockEntity {
                 cambiado();
                 return;
             }
+        }
+        if (reversi()) {
+            p.displayClientMessage(Component.translatable("msg.miscelanea.tablero.reversi_no").withStyle(ChatFormatting.GRAY), true);
+            return;
         }
         if (propia && !destinos(sq).isEmpty() && (ajedrez() || verDamas().obligada < 0)) {
             sel = sq;
@@ -216,6 +265,19 @@ public class TableroBlockEntity extends BlockEntity {
             if (m < 0) return;
             captura = aj.hacer(m);
             estado = aj.guardar();
+        } else if (reversi()) {
+            Reversi r = partidaReversi();
+            if (!r.legales().contains(de | (a << 6))) return;
+            boolean antes = r.blancas;
+            r.hacer(de | (a << 6));
+            captura = 0;
+            sigueTurno = r.blancas == antes;
+            estado = r.guardar();
+            if (sigueTurno) {
+                Component m = Component.translatable("msg.miscelanea.tablero.pasa", antes ? nombreN : nombreB).withStyle(ChatFormatting.GRAY);
+                for (ServerPlayer o : ((ServerLevel) level).getEntitiesOfClass(ServerPlayer.class, new AABB(worldPosition).inflate(10)))
+                    o.displayClientMessage(m, true);
+            }
         } else {
             Damas d = partidaDamas();
             int m = -1;
@@ -233,7 +295,8 @@ public class TableroBlockEntity extends BlockEntity {
         ultDe = de;
         ultA = a;
         ultT = level.getGameTime();
-        sel = sigueTurno ? a : -1;
+        sel = sigueTurno && !reversi() ? a : -1;
+        if (reversi()) level.playSound(null, worldPosition, SoundEvents.ITEM_FRAME_ROTATE_ITEM, SoundSource.BLOCKS, 0.8F, 1.2F);
         level.playSound(null, worldPosition, captura != 0 ? SoundEvents.ARMOR_EQUIP_GENERIC : SoundEvents.WOOD_PLACE, SoundSource.BLOCKS, 0.8F,
                 captura != 0 ? 1.3F : 1.5F + rnd.nextFloat() * 0.2F);
         comprobarFin();
@@ -245,14 +308,21 @@ public class TableroBlockEntity extends BlockEntity {
         boolean tb = turnoBlancas();
         boolean sinMov;
         boolean jaque = false;
-        if (ajedrez()) {
+        if (reversi()) {
+            Reversi r = partidaReversi();
+            if (r.terminado()) {
+                int b = r.cuenta(1), n = r.cuenta(3);
+                resultado = b > n ? 1 : n > b ? 2 : 3;
+            }
+            sinMov = false;
+        } else if (ajedrez()) {
             Ajedrez aj = partidaAjedrez();
             sinMov = aj.legales().isEmpty();
             jaque = aj.enJaque(tb);
             if (!sinMov && jaque) level.playSound(null, worldPosition, SoundEvents.NOTE_BLOCK_BELL.get(), SoundSource.BLOCKS, 0.7F, 1.2F);
         } else sinMov = partidaDamas().legales().isEmpty();
         if (sinMov) resultado = (ajedrez() && !jaque) ? 3 : (tb ? 2 : 1);
-        else if (sinCapturas >= (ajedrez() ? 100 : 50)) resultado = 3;
+        else if (!reversi() && sinCapturas >= (ajedrez() ? 100 : 50)) resultado = 3;
         if (resultado != 0) {
             level.playSound(null, worldPosition, resultado == 3 ? SoundEvents.NOTE_BLOCK_CHIME.get() : SoundEvents.PLAYER_LEVELUP, SoundSource.BLOCKS, 0.9F, 1.0F);
             String clave = resultado == 3 ? "msg.miscelanea.tablero.tablas" : (ajedrez() ? "msg.miscelanea.tablero.mate" : "msg.miscelanea.tablero.gana");
@@ -303,15 +373,20 @@ public class TableroBlockEntity extends BlockEntity {
             be.cpuEn = 0;
             if (be.turnoBlancas()) return;
             final int[] copia = be.estado.clone();
-            final boolean aj = be.ajedrez();
+            final int juego = be.juego();
             final long semilla = be.rnd.nextLong();
             be.pensandoSobre = be.estado;
             be.pensando = java.util.concurrent.CompletableFuture.supplyAsync(() -> {
                 Random r = new Random(semilla);
-                if (aj) {
+                if (juego == 0) {
                     Ajedrez a = new Ajedrez();
                     a.cargar(copia);
                     return a.mejor(3, r);
+                }
+                if (juego == 2) {
+                    Reversi rv = new Reversi();
+                    rv.cargar(copia);
+                    return rv.mejor(5, r);
                 }
                 Damas d = new Damas();
                 d.cargar(copia);

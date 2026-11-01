@@ -1,0 +1,149 @@
+{
+ "parent": "block/block",
+ "textures": {
+  "casco": "miscelanea:block/imp_hierro",
+  "oscuro": "miscelanea:block/imp_negro",
+  "madera": "miscelanea:block/imp_madera",
+  "blanco": "miscelanea:block/imp_blanco",
+  "rojo": "miscelanea:block/imp_rojo",
+  "particle": "miscelanea:block/imp_hierro"
+ },
+ "elements": [
+  {
+   "from": [
+    7.2,
+    0,
+    7.2
+   ],
+   "to": [
+    8.8,
+    4,
+    8.8
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      7.2,
+      12,
+      8.8,
+      16
+     ],
+     "texture": "#blanco"
+    },
+    "south": {
+     "uv": [
+      7.2,
+      12,
+      8.8,
+      16
+     ],
+     "texture": "#blanco"
+    },
+    "east": {
+     "uv": [
+      7.2,
+      12,
+      8.8,
+      16
+     ],
+     "texture": "#blanco"
+    },
+    "west": {
+     "uv": [
+      7.2,
+      12,
+      8.8,
+      16
+     ],
+     "texture": "#blanco"
+    },
+    "up": {
+     "uv": [
+      7.2,
+      7.2,
+      8.8,
+      8.8
+     ],
+     "texture": "#blanco"
+    },
+    "down": {
+     "uv": [
+      7.2,
+      7.2,
+      8.8,
+      8.8
+     ],
+     "texture": "#blanco"
+    }
+   }
+  },
+  {
+   "from": [
+    6.4,
+    4,
+    6.4
+   ],
+   "to": [
+    9.6,
+    6.4,
+    9.6
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      6.4,
+      9.6,
+      9.6,
+      12
+     ],
+     "texture": "#blanco"
+    },
+    "south": {
+     "uv": [
+      6.4,
+      9.6,
+      9.6,
+      12
+     ],
+     "texture": "#blanco"
+    },
+    "east": {
+     "uv": [
+      6.4,
+      9.6,
+      9.6,
+      12
+     ],
+     "texture": "#blanco"
+    },
+    "west": {
+     "uv": [
+      6.4,
+      9.6,
+      9.6,
+      12
+     ],
+     "texture": "#blanco"
+    },
+    "up": {
+     "uv": [
+      6.4,
+      6.4,
+      9.6,
+      9.6
+     ],
+     "texture": "#blanco"
+    },
+    "down": {
+     "uv": [
+      6.4,
+      6.4,
+      9.6,
+      9.6
+     ],
+     "texture": "#blanco"
+    }
+   }
+  }
+ ]
+}

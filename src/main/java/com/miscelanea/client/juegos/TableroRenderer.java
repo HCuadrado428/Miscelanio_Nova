@@ -58,11 +58,17 @@ public class TableroRenderer implements BlockEntityRenderer<TableroBlockEntity> 
             t = a.t;
             jaque = be.resultado == 0 && a.enJaque(a.blancas);
             if (jaque) rey = a.rey(a.blancas);
-        } else t = be.verDamas().t;
+        } else t = be.piezas();
+        boolean rev = be.reversi();
+        com.miscelanea.juegos.Reversi rv = rev ? be.verReversi() : null;
 
         // ---------------- resaltes en el tablero
         VertexConsumer hv = buf.getBuffer(RenderType.entityTranslucent(BLANCO));
         double s = TableroBlockEntity.ZONA / 8;
+        if (rev) {
+            // tapete verde de reversi sobre el tablero
+            for (int q = 0; q < 64; q++) casilla(hv, ps, be, q, base, s, 0x2E7D32, 0.92F, 0.93F, luz);
+        }
         if (be.ultDe >= 0) {
             casilla(hv, ps, be, be.ultDe, base, s, 0xE0C060, 0.30F, 1F, luz);
             casilla(hv, ps, be, be.ultA, base, s, 0xE0C060, 0.38F, 1F, luz);
@@ -74,10 +80,17 @@ public class TableroRenderer implements BlockEntityRenderer<TableroBlockEntity> 
             for (int d : ds) casilla(hv, ps, be, d, base, s, t[d] != 0 ? 0xFF6040 : 0x50E070, 0.65F, t[d] != 0 ? 1F : 0.34F, luz);
         }
         boolean mio = esMiTurno(be);
+        long vol = 0;
+        if (rev && be.resultado == 0) {
+            // jugadas posibles siempre visibles; al apuntar una, se marcan las fichas que se voltearían
+            for (int m : be.legales()) casilla(hv, ps, be, m & 63, base, s, mio ? 0xFFFFFF : 0xA0A0A0, 0.35F, 0.28F, luz);
+            if (mio && TableroCliente.apuntado == be && TableroCliente.casilla >= 0) vol = rv.simular(TableroCliente.casilla);
+            for (int q = 0; q < 64; q++) if ((vol >> q & 1) != 0) casilla(hv, ps, be, q, base, s, 0xFFE040, 0.45F, 1F, luz);
+        }
         if (TableroCliente.apuntado == be && TableroCliente.casilla >= 0) {
             float pul = 0.25F + 0.1F * Mth.sin((ahora + pt) * 0.3F);
             casilla(hv, ps, be, TableroCliente.casilla, base, s, 0xFFFFFF, pul, 1F, luz);
-            if (mio && be.sel < 0 && be.resultado == 0) {
+            if (mio && be.sel < 0 && be.resultado == 0 && !rev) {
                 int sq = TableroCliente.casilla;
                 List<Integer> ds = be.destinos(sq);
                 if (!ds.isEmpty()) for (int d : ds) casilla(hv, ps, be, d, base, s, t[d] != 0 ? 0xFF6040 : 0x50E070, 0.35F, t[d] != 0 ? 1F : 0.26F, luz);
@@ -97,6 +110,7 @@ public class TableroRenderer implements BlockEntityRenderer<TableroBlockEntity> 
             if (p == 0) continue;
             String nombre;
             boolean blanca;
+            BakedModel m;
             if (aj) {
                 nombre = PIEZAS[Ajedrez.tipo(p) - 1];
                 blanca = !Ajedrez.esNegra(p);
@@ -104,6 +118,7 @@ public class TableroRenderer implements BlockEntityRenderer<TableroBlockEntity> 
                 nombre = Damas.esDama(p) ? "ficha_reina" : "ficha";
                 blanca = Damas.esBlanca(p);
             }
+            m = mm.getModel(modelo(nombre, blanca));
             Vec3 c = be.centroCasilla(sq).subtract(base);
             double alto = 0;
             if (sq == be.ultA && anim < 1 && be.ultDe >= 0) {
@@ -113,10 +128,22 @@ public class TableroRenderer implements BlockEntityRenderer<TableroBlockEntity> 
                 alto = Math.sin(anim * Math.PI) * 0.18;
             }
             float flotar = sq == be.sel ? 0.03F + 0.015F * Mth.sin((ahora + pt) * 0.25F) : 0;
-            BakedModel m = mm.getModel(modelo(nombre, blanca));
+            float voltear = 0;
+            if (rev && anim < 1 && (rv.volteadas >> sq & 1) != 0) {
+                // la ficha da la vuelta: primero se ve el color anterior
+                voltear = anim * 180;
+                if (anim < 0.5F) blanca = !blanca;
+                alto = Math.sin(anim * Math.PI) * 0.06;
+                m = mm.getModel(modelo(nombre, blanca));
+            }
             ps.pushPose();
             ps.translate(c.x, c.y + alto + flotar, c.z);
             ps.mulPose(Axis.YP.rotationDegrees(giro + (blanca ? 0 : 180)));
+            if (voltear != 0) {
+                ps.translate(0, s * 0.12, 0);
+                ps.mulPose(Axis.XP.rotationDegrees(voltear));
+                ps.translate(0, -s * 0.12, 0);
+            }
             float esc = (float) (s * 0.94);
             ps.scale(esc, esc, esc);
             ps.translate(-0.5, 0, -0.5);
@@ -129,6 +156,7 @@ public class TableroRenderer implements BlockEntityRenderer<TableroBlockEntity> 
         if (mc.player == null || mc.player.distanceToSqr(Vec3.atCenterOf(be.getBlockPos())) > 100) return;
         String l1 = I18n.get("tablero.miscelanea.modo." + be.modo);
         String l2;
+        if (rev) l1 += "  ·  ○ " + rv.cuenta(1) + "  ● " + rv.cuenta(3);
         if (be.resultado == 3) l2 = I18n.get("tablero.miscelanea.tablas");
         else if (be.resultado != 0) l2 = I18n.get("tablero.miscelanea.gana", be.resultado == 1 ? be.nombreB : be.nombreN);
         else if (be.blancas == null) l2 = I18n.get("tablero.miscelanea.toca");
@@ -146,7 +174,7 @@ public class TableroRenderer implements BlockEntityRenderer<TableroBlockEntity> 
         font.drawInBatch(l1, -font.width(l1) / 2F, 0, 0xFFFFE070, false, mx, buf, Font.DisplayMode.NORMAL, 0x60000000, 0xF000F0);
         font.drawInBatch(l2, -font.width(l2) / 2F, 11, jaque ? 0xFFFF6060 : 0xFFFFFFFF, false, mx, buf, Font.DisplayMode.NORMAL, 0x60000000, 0xF000F0);
         if (mio) {
-            String l3 = I18n.get("tablero.miscelanea.pista");
+            String l3 = I18n.get(rev ? "tablero.miscelanea.pista_reversi" : "tablero.miscelanea.pista");
             font.drawInBatch(l3, -font.width(l3) / 2F, 22, 0xFF80E0FF, false, mx, buf, Font.DisplayMode.NORMAL, 0x60000000, 0xF000F0);
         }
         ps.popPose();

@@ -1,0 +1,23 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "BBB",
+  "QTQ",
+  "BBB"
+ ],
+ "key": {
+  "B": {
+   "item": "minecraft:bone"
+  },
+  "Q": {
+   "item": "minecraft:quartz"
+  },
+  "T": {
+   "item": "miscelanea:tablero"
+  }
+ },
+ "result": {
+  "item": "miscelanea:domino"
+ }
+}

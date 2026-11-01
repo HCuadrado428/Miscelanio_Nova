@@ -111,6 +111,11 @@ public final class ClientEvents {
             for (int c = 0; c < 4; c++) event.register(com.miscelanea.client.oca.OcaRenderer.modelo(c));
             event.register(com.miscelanea.client.cuatro.CuatroRenderer.ROJA);
             event.register(com.miscelanea.client.cuatro.CuatroRenderer.AMARILLA);
+            for (int n = 2; n <= 5; n++) event.register(com.miscelanea.client.flota.FlotaRenderer.BARCO[n]);
+            event.register(com.miscelanea.client.flota.FlotaRenderer.PIN_AGUA);
+            event.register(com.miscelanea.client.flota.FlotaRenderer.PIN_TOCADO);
+            event.register(com.miscelanea.client.flota.FlotaRenderer.PROYECTIL);
+            for (var rl : com.miscelanea.client.domino.DominoRenderer.FICHA) event.register(rl);
             for (String p : com.miscelanea.client.juegos.TableroRenderer.PIEZAS) {
                 event.register(com.miscelanea.client.juegos.TableroRenderer.modelo(p, true));
                 event.register(com.miscelanea.client.juegos.TableroRenderer.modelo(p, false));
@@ -127,6 +132,8 @@ public final class ClientEvents {
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.PARCHIS_BE.get(), com.miscelanea.client.parchis.ParchisRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.OCA_BE.get(), com.miscelanea.client.oca.OcaRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.CUATRO_BE.get(), com.miscelanea.client.cuatro.CuatroRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.FLOTA_BE.get(), com.miscelanea.client.flota.FlotaRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.DOMINO_BE.get(), com.miscelanea.client.domino.DominoRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.POSTE_TIROLINA_BE.get(), com.miscelanea.client.tirolina.PosteRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TRAMPOLIN_BE.get(), com.miscelanea.client.trampolin.TrampolinRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.POLEA.get(), com.miscelanea.client.tirolina.PoleaRenderer::new);

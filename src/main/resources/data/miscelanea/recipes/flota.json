@@ -1,0 +1,26 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "IWI",
+  "BTB",
+  "IWI"
+ ],
+ "key": {
+  "I": {
+   "item": "minecraft:iron_ingot"
+  },
+  "W": {
+   "item": "minecraft:water_bucket"
+  },
+  "B": {
+   "item": "minecraft:oak_boat"
+  },
+  "T": {
+   "item": "miscelanea:tablero"
+  }
+ },
+ "result": {
+  "item": "miscelanea:flota"
+ }
+}

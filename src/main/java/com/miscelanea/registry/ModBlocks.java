@@ -109,5 +109,17 @@ public final class ModBlocks {
     public static final RegistryObject<BlockEntityType<com.miscelanea.cuatro.CuatroBlockEntity>> CUATRO_BE = BLOCK_ENTITIES.register("cuatro",
             () -> BlockEntityType.Builder.of(com.miscelanea.cuatro.CuatroBlockEntity::new, CUATRO.get()).build(null));
 
+    public static final RegistryObject<Block> FLOTA = BLOCKS.register("flota",
+            () -> new com.miscelanea.flota.FlotaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLUE).strength(0.8F).sound(SoundType.WOOD).noOcclusion()));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.flota.FlotaBlockEntity>> FLOTA_BE = BLOCK_ENTITIES.register("flota",
+            () -> BlockEntityType.Builder.of(com.miscelanea.flota.FlotaBlockEntity::new, FLOTA.get()).build(null));
+
+    public static final RegistryObject<Block> DOMINO = BLOCKS.register("domino",
+            () -> new com.miscelanea.domino.DominoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(0.8F).sound(SoundType.WOOD).noOcclusion()));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.domino.DominoBlockEntity>> DOMINO_BE = BLOCK_ENTITIES.register("domino",
+            () -> BlockEntityType.Builder.of(com.miscelanea.domino.DominoBlockEntity::new, DOMINO.get()).build(null));
+
     private ModBlocks() {}
 }
