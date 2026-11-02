@@ -121,7 +121,14 @@ public class MaquinaAltaBlock extends BaseEntityBlock {
     @Override
     public InteractionResult use(BlockState s, Level l, BlockPos pos, Player p, InteractionHand hand, BlockHitResult hit) {
         if (hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
+        // con un balón en la mano el clic es para tirar a canasta (antes, apuntando al tablero, no dejaba tirar)
+        if (tipo == CANASTA && p.getMainHandItem().getItem() instanceof BalonItem) return InteractionResult.PASS;
         BlockPos abajo = s.getValue(HALF) == DoubleBlockHalf.LOWER ? pos : pos.below();
+        if (l.isClientSide && tipo == MARTILLO && l.getBlockEntity(abajo) instanceof MaquinaAltaBlockEntity be && be.activo && be.fase == 1
+                && p.getUUID().equals(be.jugador)) {
+            // mazazo: el cliente manda el instante que vio en el medidor (el servidor lo valida a ±3 tics)
+            com.miscelanea.network.ModNetwork.CHANNEL.sendToServer(new GanchoPacket(GanchoPacket.GOLPE, abajo, FeriaEventos.golpeT(l.getGameTime(), be), 0));
+        }
         if (!l.isClientSide && l.getBlockEntity(abajo) instanceof MaquinaAltaBlockEntity be) be.usar(p, p.getItemInHand(hand));
         return InteractionResult.sidedSuccess(l.isClientSide);
     }

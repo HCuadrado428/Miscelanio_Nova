@@ -1186,11 +1186,11 @@
   "airhockey.miscelanea.gol_grande": "GOAL!!",
   "airhockey.miscelanea.gana": "%s wins!",
   "airhockey.miscelanea.a_siete": "First to 7",
-  "miscelanea.canasta.empieza": "30 seconds! Hold right-click with the ball and release to shoot",
+  "miscelanea.canasta.empieza": "30 seconds, 3 balls! Click the machine with an empty hand to grab one; hold right-click and release to shoot",
   "miscelanea.canasta.fin": "Time! %s points",
   "miscelanea.canasta.marcador": "%s pts · %ss",
   "miscelanea.canasta.cartel": "HOOPS",
-  "miscelanea.boxeo.empieza": "Hit the bag! (left-click; running or jumping hits harder)",
+  "miscelanea.boxeo.empieza": "Punch the bag when all the lights are on! (left click, fully charged)",
   "miscelanea.boxeo.resultado": "Strength: %s",
   "miscelanea.martillo.empieza": "Watch the meter and right-click when it's at the top",
   "miscelanea.martillo.resultado": "Strength: %s",
@@ -1219,7 +1219,7 @@
   "item.miscelanea.boliche": "Jack",
   "item.miscelanea.metro": "Tape Measure",
   "entity.miscelanea.bola_petanca": "Pétanque Ball",
-  "miscelanea.patitos.empieza": "3 tries! Aim at a duck with the rod and right-click",
+  "miscelanea.patitos.empieza": "3 tries (misses count too)! Aim at a duck with the rod and right-click",
   "miscelanea.patitos.quedan": "%s left",
   "miscelanea.patitos.ocupado": "Someone is fishing right now",
   "miscelanea.patitos.premio.0": "A token",
@@ -1305,5 +1305,9 @@
   "oca.miscelanea.log.oca_atras": "%s bounces onto a goose: back to the previous goose and roll again!",
   "domino.miscelanea.log.empate": "Blocked game: tied at %s points, it's a draw!",
   "msg.miscelanea.domino.empate": "Blocked game tied on points: it's a draw",
-  "miscelanea.chinchon.no_misma": "You can't discard the card you just took from the discard pile"
+  "miscelanea.chinchon.no_misma": "You can't discard the card you just took from the discard pile",
+  "miscelanea.dardos.ocupada": "%s is playing on this dartboard",
+  "miscelanea.dardos.no_turno": "Not your turn: it's %s's turn",
+  "miscelanea.dardos.unido": "%s joins the darts game",
+  "miscelanea.dardos.turno": "Your turn, %s!"
 }

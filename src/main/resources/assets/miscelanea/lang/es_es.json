@@ -1186,11 +1186,11 @@
   "airhockey.miscelanea.gol_grande": "¡¡GOL!!",
   "airhockey.miscelanea.gana": "¡Gana %s!",
   "airhockey.miscelanea.a_siete": "Partido a 7",
-  "miscelanea.canasta.empieza": "¡30 segundos! Mantén clic derecho con el balón y suelta para tirar",
+  "miscelanea.canasta.empieza": "¡30 segundos y 3 balones! Clic en la máquina con la mano vacía para coger uno; mantén clic derecho y suelta para tirar",
   "miscelanea.canasta.fin": "¡Tiempo! %s puntos",
   "miscelanea.canasta.marcador": "%s pts · %ss",
   "miscelanea.canasta.cartel": "CANASTAS",
-  "miscelanea.boxeo.empieza": "¡Dale al saco! (clic izquierdo; corriendo o saltando pega más)",
+  "miscelanea.boxeo.empieza": "¡Dale al saco cuando se enciendan todas las luces! (clic izquierdo, con el golpe cargado)",
   "miscelanea.boxeo.resultado": "Fuerza: %s",
   "miscelanea.martillo.empieza": "Mira el medidor y haz clic derecho cuando esté arriba del todo",
   "miscelanea.martillo.resultado": "Fuerza: %s",
@@ -1219,7 +1219,7 @@
   "item.miscelanea.boliche": "Boliche",
   "item.miscelanea.metro": "Metro",
   "entity.miscelanea.bola_petanca": "Bola de petanca",
-  "miscelanea.patitos.empieza": "¡3 intentos! Apunta a un pato con la caña y clic derecho",
+  "miscelanea.patitos.empieza": "¡3 intentos (fallar también cuenta)! Apunta a un pato con la caña y clic derecho",
   "miscelanea.patitos.quedan": "Te quedan %s",
   "miscelanea.patitos.ocupado": "Alguien está pescando ahora",
   "miscelanea.patitos.premio.0": "Una ficha",
@@ -1305,5 +1305,9 @@
   "oca.miscelanea.log.oca_atras": "%s rebota y cae en una oca: ¡vuelve a la oca anterior y tira otra vez!",
   "domino.miscelanea.log.empate": "Partida cerrada: empate a %s puntos, ¡tablas!",
   "msg.miscelanea.domino.empate": "Partida cerrada con empate a puntos: tablas",
-  "miscelanea.chinchon.no_misma": "No puedes tirar la carta que acabas de coger del descarte"
+  "miscelanea.chinchon.no_misma": "No puedes tirar la carta que acabas de coger del descarte",
+  "miscelanea.dardos.ocupada": "%s está jugando en esta diana",
+  "miscelanea.dardos.no_turno": "No es tu turno: le toca a %s",
+  "miscelanea.dardos.unido": "%s se une a la partida de dardos",
+  "miscelanea.dardos.turno": "¡Te toca, %s!"
 }

@@ -186,16 +186,16 @@ public class MaquinaAltaRenderer implements BlockEntityRenderer<MaquinaAltaBlock
     private void canasta(MaquinaAltaBlockEntity be, PoseStack ps, VertexConsumer vc, MultiBufferSource buf, float t, int luz) {
         float tt = be.activo ? t - be.inicio : 0;
         double[] a = MaquinaAltaBlockEntity.aro(tt);
-        // tablero
+        // tablero (su cara delantera está donde rebota el balón)
         ps.pushPose();
-        ps.translate(0, 2.02, 0.44);
-        ps.scale(0.92F, 0.62F, 1F);
+        ps.translate(0, 1.78, 0.44);
+        ps.scale(0.86F, 0.5F, 1F);
         ps.translate(-0.5, -0.5, -0.5);
         FeriaPiezas.modelo(ps, vc, FeriaPiezas.rl("tablero"), 1, 1, 1, luz);
         ps.popPose();
-        FeriaPiezas.caja(ps, vc, "cromo", 0, 2.02, 0.48, 0.96, 0.66, 0.02, luz);
+        FeriaPiezas.caja(ps, vc, "cromo", 0, 1.78, 0.48, 0.9, 0.54, 0.02, luz);
         // aro y red
-        double r = 0.17;
+        double r = MaquinaAltaBlockEntity.ARO_R;
         FeriaPiezas.barra(ps, vc, "metal_rojo", a[0], a[1], a[2] + r, a[0], a[1], 0.42, 0.03F, 0.03F, luz);
         for (int k = 0; k < 14; k++) {
             double a0 = k * Math.PI * 2 / 14, a1 = (k + 1) * Math.PI * 2 / 14;
@@ -203,8 +203,18 @@ public class MaquinaAltaRenderer implements BlockEntityRenderer<MaquinaAltaBlock
             {
                 double vaiven = Math.sin(t * 0.3 + k) * 0.01;
                 FeriaPiezas.barra(ps, vc, "lona_blanca", a[0] + Math.cos(a0) * r, a[1], a[2] + Math.sin(a0) * r,
-                        a[0] + Math.cos(a0) * r * 0.55 + vaiven, a[1] - 0.2, a[2] + Math.sin(a0) * r * 0.55, 0.012F, 0.012F, luz);
+                        a[0] + Math.cos(a0) * r * 0.65 + vaiven, a[1] - 0.22, a[2] + Math.sin(a0) * r * 0.65, 0.012F, 0.012F, luz);
             }
+        }
+        // balones esperando en la bandeja de delante
+        for (int k = 0; k < Math.min(be.bandeja, BALONES); k++) {
+            ps.pushPose();
+            ps.translate(0.2625 - k * 0.2625, 0.27, -0.6625);
+            ps.mulPose(Axis.YP.rotationDegrees(k * 70 + 20));
+            ps.scale(0.24F, 0.24F, 0.24F);
+            ps.translate(-0.5, -0.5, -0.5);
+            FeriaPiezas.modelo(ps, vc, FeriaPiezas.rl("balon"), 1, 1, 1, luz);
+            ps.popPose();
         }
         // marcador encima
         String txt = be.activo ? I18n.get("miscelanea.canasta.marcador", be.puntos, Math.max(0, (int) ((MaquinaAltaBlockEntity.CANASTA_DURA - tt) / 20)))
@@ -243,8 +253,10 @@ public class MaquinaAltaRenderer implements BlockEntityRenderer<MaquinaAltaBlock
         String num = String.format("%03d", mostrado);
         int col = be.fase == 2 && dt > 30 && be.valor >= 900 && ((int) t / 3) % 2 == 0 ? 0xFFFFFF60 : 0xFFFF3020;
         letrero(ps, buf, num, 1.86, -0.47, col);
+        // mientras espera el golpe, las bombillas hacen de medidor (hay que pegar cuando se encienden todas)
+        float med = be.activo && be.fase == 1 ? MaquinaAltaBlockEntity.medidorBoxeo(t - be.inicio) : -1;
         for (int k = 0; k < 7; k++) {
-            boolean enc = be.fase == 2 && mostrado >= (k + 1) * 140;
+            boolean enc = be.fase == 2 ? mostrado >= (k + 1) * 140 : med >= 0 && med * 7.2F >= k + 1;
             FeriaPiezas.bombilla(ps, vc, -0.36 + k * 0.12, 1.08, -0.47, 0.06F, enc ? new int[]{0x40FF40, 0x80FF40, 0xC0FF40, 0xFFE040, 0xFFA020, 0xFF6020, 0xFF2020}[k] : 0x302020);
         }
     }

@@ -9,9 +9,12 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-/** Mandos de la máquina de gancho. Servidor → cliente: ABRIR (toma los mandos). Cliente → servidor: MOVER, SOLTAR. */
+/**
+ * Mandos de las máquinas altas. Servidor → cliente: ABRIR (toma los mandos del gancho). Cliente → servidor: MOVER,
+ * SOLTAR (gancho) y GOLPE (boxeo y martillo: x = tic del juego en que el cliente golpeó).
+ */
 public class GanchoPacket {
-    public static final int ABRIR = 0, MOVER = 1, SOLTAR = 2;
+    public static final int ABRIR = 0, MOVER = 1, SOLTAR = 2, GOLPE = 3;
     public final int tipo, x, z;
     public final BlockPos pos;
 
@@ -43,5 +46,6 @@ public class GanchoPacket {
         if (!(p.level().getBlockEntity(pos) instanceof MaquinaAltaBlockEntity be)) return;
         if (tipo == MOVER) be.moverGarra(p, x / 1000F, z / 1000F);
         else if (tipo == SOLTAR) be.soltarGarra(p);
+        else if (tipo == GOLPE) be.golpeCliente(p, x);
     }
 }

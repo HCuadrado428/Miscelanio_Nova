@@ -92,7 +92,7 @@ public class BalonEntity extends Entity {
                 Vec3[] r = simular(be, c, lv);
                 c = r[0];
                 lv = r[1];
-                Vec3 w = be.mundoV(c.x, c.y, c.z);
+                Vec3 w = be.mundo(c.x, c.y, c.z);
                 setPos(w.x, w.y - CENTRO, w.z);
                 setDeltaMovement(be.mundoDir(lv));
                 sonidos();

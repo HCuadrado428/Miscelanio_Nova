@@ -57,9 +57,15 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
     public int colorCapsula;
     // ---- canastas, boxeo y martillo
     public static final int CANASTA_DURA = 600;
+    /** Balones de la máquina (no se pueden duplicar: se cogen de la bandeja y vuelven a ella rodando por la rampa). */
+    public static final int BALONES = 3;
+    /** Aro: radio, altura y distancia al fondo (locales). */
+    public static final double ARO_R = 0.19, ARO_Y = 1.6, ARO_Z = 0.2;
+    /** Margen (tics) que se acepta entre lo que vio el cliente al golpear y el reloj del servidor. */
+    public static final int MARGEN_GOLPE = 3;
     public int puntos, valor;
+    public int bandeja = BALONES;
     public long golpeT = -1000;
-    private final java.util.Map<Integer, Double> alturaAntes = new java.util.HashMap<>();
     private boolean iniciado;
 
     public MaquinaAltaBlockEntity(BlockPos p, BlockState s) {
@@ -77,6 +83,25 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
     public Vec3 mundo(double x, double y, double z) {
         double a = CasetaTiroBlockEntity.giro(facing()), c = Math.cos(a), s = Math.sin(a);
         return new Vec3(worldPosition.getX() + 0.5 + x * c + z * s, worldPosition.getY() + y, worldPosition.getZ() + 0.5 - x * s + z * c);
+    }
+
+    /** Dirección local → mundo (sin desplazar). */
+    public Vec3 mundoDir(Vec3 v) {
+        double a = CasetaTiroBlockEntity.giro(facing()), c = Math.cos(a), s = Math.sin(a);
+        return new Vec3(v.x * c + v.z * s, v.y, -v.x * s + v.z * c);
+    }
+
+    /** Punto del mundo → coordenadas locales de la máquina. */
+    public Vec3 local(Vec3 w) {
+        double a = CasetaTiroBlockEntity.giro(facing()), c = Math.cos(a), s = Math.sin(a);
+        double dx = w.x - worldPosition.getX() - 0.5, dz = w.z - worldPosition.getZ() - 0.5;
+        return new Vec3(dx * c - dz * s, w.y - worldPosition.getY(), dx * s + dz * c);
+    }
+
+    /** Dirección del mundo → local. */
+    public Vec3 localDir(Vec3 v) {
+        double a = CasetaTiroBlockEntity.giro(facing()), c = Math.cos(a), s = Math.sin(a);
+        return new Vec3(v.x * c - v.z * s, v.y, v.x * s + v.z * c);
     }
 
     private void prepararPremios(RandomSource r) {
@@ -113,7 +138,8 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
         RandomSource r = level.random;
         if (!iniciado && tipo() == MaquinaAltaBlock.GANCHO) prepararPremios(r);
         if (activo && tipo() == MaquinaAltaBlock.MARTILLO && fase == 1 && p.getUUID().equals(jugador)) {
-            golpeMartillo(p);
+            // normalmente el cliente ya ha mandado el instante que vio (GanchoPacket.GOLPE); esto es por si no llega
+            golpeMartillo(p, -1);
             return;
         }
         if (activo && tipo() == MaquinaAltaBlock.CANASTA && p.getUUID().equals(jugador)) {
@@ -146,7 +172,7 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
             }
             case MaquinaAltaBlock.CANASTA -> {
                 puntos = 0;
-                alturaAntes.clear();
+                bandeja = BALONES;
                 darBalon(p);
                 p.displayClientMessage(Component.translatable("miscelanea.canasta.empieza"), true);
                 level.playSound(null, worldPosition, ModSounds.FE_ARRANCA.get(), SoundSource.BLOCKS, 0.7F, 1.3F);
@@ -372,21 +398,58 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
     }
 
     // ------------------------------------------------------------------ canastas
+    /** Coge un balón de la bandeja (si queda alguno). Va marcado con esta máquina y esta partida. */
     private void darBalon(Player p) {
-        if (!p.getInventory().hasAnyMatching(st -> st.is(ModItems.BALON.get()))) p.getInventory().add(new ItemStack(ModItems.BALON.get()));
+        if (bandeja <= 0) return;
+        ItemStack st = BalonItem.nuevo(this);
+        if (p.getMainHandItem().isEmpty()) p.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, st);
+        else if (!p.getInventory().add(st)) return;
+        bandeja--;
+        level.playSound(null, worldPosition, ModSounds.FE_BOTE.get(), SoundSource.BLOCKS, 0.4F, 1.3F);
+        cambio();
+    }
+
+    /** Un balón de esta partida vuelve a la bandeja (ha bajado por la rampa, se ha salido o lo han tirado al suelo). */
+    void devolverBalon(long juego) {
+        if (!activo || tipo() != MaquinaAltaBlock.CANASTA || juego != inicio) return;
+        bandeja = Math.min(BALONES, bandeja + 1);
+        cambio();
+    }
+
+    /** Al acabar: los balones se quedan en la máquina (se quitan del inventario del jugador). */
+    private void quitarBalones(@Nullable Player p) {
+        if (p == null) return;
+        var inv = p.getInventory();
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack st = inv.getItem(i);
+            if (st.is(ModItems.BALON.get()) && BalonItem.deMaquina(st, worldPosition)) inv.setItem(i, ItemStack.EMPTY);
+        }
     }
 
     /** Centro del aro (local) en el instante t del juego: en los últimos 10 s se mueve de lado a lado. */
     public static double[] aro(float t) {
-        double x = t > 400 ? Math.sin((t - 400) * 0.07) * 0.24 : 0;
-        return new double[]{x, 1.78, 0.18};
+        double x = t > 400 && t < CANASTA_DURA ? Math.sin((t - 400) * 0.07) * 0.2 : 0;
+        return new double[]{x, ARO_Y, ARO_Z};
+    }
+
+    /** El balón ha pasado hacia abajo por dentro del aro. */
+    void anotar(BalonEntity b) {
+        if (!activo || tipo() != MaquinaAltaBlock.CANASTA) return;
+        int v = b.distancia > 2.6 ? 3 : 2;
+        puntos += v;
+        double[] a = aro(level.getGameTime() - inicio);
+        Vec3 c = mundo(a[0], a[1], a[2]);
+        level.playSound(null, c.x, c.y, c.z, ModSounds.FE_CANASTA.get(), SoundSource.BLOCKS, 1F, v == 3 ? 1.2F : 1F);
+        if (level instanceof ServerLevel l) l.sendParticles(ParticleTypes.HAPPY_VILLAGER, c.x, c.y, c.z, 8, 0.15, 0.1, 0.15, 0);
+        cambio();
     }
 
     private void tickCanasta(ServerLevel l, int t) {
         if (t >= CANASTA_DURA) {
             activo = false;
-            alturaAntes.clear();
+            bandeja = BALONES;
             Player p = jugador != null ? l.getPlayerByUUID(jugador) : null;
+            quitarBalones(p);
             if (p != null) {
                 p.displayClientMessage(Component.translatable("miscelanea.canasta.fin", puntos), false);
                 if (p instanceof ServerPlayer sp) com.miscelanea.arcade.ArcadeRecords.registrar(sp, "canasta", puntos);
@@ -400,23 +463,6 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
             cambio();
             return;
         }
-        double[] a = aro(t);
-        Vec3 c = mundo(a[0], a[1], a[2]);
-        for (BalonEntity b : l.getEntitiesOfClass(BalonEntity.class, new AABB(c, c).inflate(0.6))) {
-            if (b.anotado) continue;
-            Double previa = alturaAntes.put(b.getId(), b.getY());
-            if (previa == null || b.getDeltaMovement().y >= 0) continue;   // solo cuenta si cae a través del aro
-            double antes = previa;
-            double y = b.getY() + 0.12;
-            if (antes + 0.12 > c.y && y <= c.y && Math.hypot(b.getX() - c.x, b.getZ() - c.z) < 0.17) {
-                b.anotado = true;
-                int v = b.distancia > 3.5 ? 3 : 2;
-                puntos += v;
-                l.playSound(null, c.x, c.y, c.z, ModSounds.FE_CANASTA.get(), SoundSource.BLOCKS, 1F, v == 3 ? 1.2F : 1F);
-                l.sendParticles(ParticleTypes.HAPPY_VILLAGER, c.x, c.y, c.z, 8, 0.15, 0.1, 0.15, 0);
-                cambio();
-            }
-        }
         if (t % 20 == 0) cambio();
     }
 
@@ -429,13 +475,33 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
     }
 
     // ------------------------------------------------------------------ boxeo y martillo
-    /** Puñetazo al saco: fuerza según lo cargado del golpe, si vas corriendo o cayendo (crítico) y lo que lleves en la mano. */
-    public void golpeBoxeo(Player p) {
+    /**
+     * Instante (tics desde que empezó) en que golpeó el jugador: el que vio su cliente si se le manda (tCliente >= 0)
+     * y está a ±{@link #MARGEN_GOLPE} del reloj del servidor; si no, el del servidor (recortado al margen).
+     */
+    private int instanteGolpe(int tCliente) {
+        int ts = (int) (level.getGameTime() - inicio);
+        if (tCliente < 0) return ts;
+        return Math.max(ts - MARGEN_GOLPE, Math.min(ts + MARGEN_GOLPE, tCliente));
+    }
+
+    /** Medidor del boxeo (0..1): sube y baja solo; hay que pegar arriba del todo. */
+    public static float medidorBoxeo(float t) {
+        return (float) ((1 - Math.cos(t * 0.23)) / 2);
+    }
+
+    /**
+     * Puñetazo al saco. La fuerza sale sobre todo de pegar en el momento justo (medidor arriba) y con el golpe cargado;
+     * correr, saltar (crítico) y el arma solo dan un pequeño extra con tope. Así una espada de netherite no regala el premio.
+     */
+    public void golpeBoxeo(Player p, int tCliente) {
         if (!activo || fase != 1 || tipo() != MaquinaAltaBlock.BOXEO || !p.getUUID().equals(jugador)) return;
         float carga = p.getAttackStrengthScale(0.5F);
+        float m = medidorBoxeo(instanteGolpe(tCliente));
         double dano = p.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
-        double f = carga * carga * (0.55 + Math.min(0.25, dano * 0.025)) * (p.isSprinting() ? 1.15 : 1) * (p.fallDistance > 0 && !p.onGround() ? 1.3 : 1);
-        valor = (int) Math.max(1, Math.min(999, f * 1000 + level.random.nextInt(60) - 30));
+        double extra = (p.isSprinting() ? 0.03 : 0) + (p.fallDistance > 0 && !p.onGround() ? 0.05 : 0) + Math.min(0.04, Math.max(0, dano - 1) * 0.006);
+        double f = carga * carga * (0.2 + 0.7 * m * m) + extra * carga;
+        valor = (int) Math.max(1, Math.min(999, f * 1000 + level.random.nextInt(41) - 20));
         fase = 2;
         golpeT = level.getGameTime();
         level.playSound(null, worldPosition, ModSounds.FE_PUNETAZO.get(), SoundSource.BLOCKS, 1.2F, 1F);
@@ -448,12 +514,20 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
         return (float) ((1 - Math.cos((tiempo - inicio) * 0.19)) / 2 * 100);
     }
 
-    void golpeMartillo(Player p) {
-        valor = Math.round(medidor(level.getGameTime()));
+    /** Mazazo: vale lo que marque el medidor en el instante en que el jugador hizo clic (visto por su cliente). */
+    void golpeMartillo(Player p, int tCliente) {
+        if (!activo || fase != 1 || tipo() != MaquinaAltaBlock.MARTILLO || !p.getUUID().equals(jugador)) return;
+        valor = Math.round(medidor(inicio + instanteGolpe(tCliente)));
         fase = 2;
         golpeT = level.getGameTime();
         level.playSound(null, worldPosition, ModSounds.FE_MAZAZO.get(), SoundSource.BLOCKS, 1.2F, 1F);
         cambio();
+    }
+
+    /** Golpe mandado por el cliente con el instante que vio (GanchoPacket.GOLPE). */
+    void golpeCliente(ServerPlayer p, int tCliente) {
+        if (tipo() == MaquinaAltaBlock.MARTILLO) golpeMartillo(p, tCliente);
+        else if (tipo() == MaquinaAltaBlock.BOXEO) golpeBoxeo(p, tCliente);
     }
 
     void premioFuerza(ServerLevel l, String juego, int puntos, int gordo, int premio) {
@@ -501,6 +575,7 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
         t.putInt("cap", colorCapsula);
         t.putInt("pts", puntos);
         t.putInt("val", valor);
+        t.putInt("band", bandeja);
         t.putLong("golpe", golpeT);
         t.putBoolean("ini0", iniciado);
     }
@@ -532,6 +607,7 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
         colorCapsula = t.getInt("cap");
         puntos = t.getInt("pts");
         valor = t.getInt("val");
+        bandeja = t.contains("band") ? t.getInt("band") : BALONES;
         golpeT = t.contains("golpe") ? t.getLong("golpe") : -1000;
         iniciado = t.getBoolean("ini0");
     }

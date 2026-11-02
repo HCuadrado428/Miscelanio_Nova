@@ -20,6 +20,15 @@ public final class FeriaEventos {
         BlockPos abajo = s.getValue(MaquinaAltaBlock.HALF) == DoubleBlockHalf.LOWER ? e.getPos() : e.getPos().below();
         if (!(e.getLevel().getBlockEntity(abajo) instanceof MaquinaAltaBlockEntity be) || !be.activo || be.fase != 1) return;
         e.setCanceled(true);
-        if (!e.getLevel().isClientSide) be.golpeBoxeo(e.getEntity());
+        if (e.getLevel().isClientSide) {
+            // el cliente manda el instante exacto en que pegó (el servidor lo acepta si está a ±3 tics de su reloj)
+            if (e.getEntity().getUUID().equals(be.jugador))
+                com.miscelanea.network.ModNetwork.CHANNEL.sendToServer(new GanchoPacket(GanchoPacket.GOLPE, abajo, golpeT(e.getLevel().getGameTime(), be), 0));
+        } else be.golpeBoxeo(e.getEntity(), -1);
+    }
+
+    /** Tics desde que empezó el juego de la máquina (cabe en un short). */
+    static int golpeT(long ahora, MaquinaAltaBlockEntity be) {
+        return (int) Math.max(0, Math.min(Short.MAX_VALUE, ahora - be.inicio));
     }
 }
