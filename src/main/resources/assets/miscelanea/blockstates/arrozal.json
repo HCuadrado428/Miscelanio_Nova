@@ -1,0 +1,28 @@
+{
+ "variants": {
+  "age=0": {
+   "model": "miscelanea:block/cocina/arroz0"
+  },
+  "age=1": {
+   "model": "miscelanea:block/cocina/arroz0"
+  },
+  "age=2": {
+   "model": "miscelanea:block/cocina/arroz1"
+  },
+  "age=3": {
+   "model": "miscelanea:block/cocina/arroz1"
+  },
+  "age=4": {
+   "model": "miscelanea:block/cocina/arroz2"
+  },
+  "age=5": {
+   "model": "miscelanea:block/cocina/arroz2"
+  },
+  "age=6": {
+   "model": "miscelanea:block/cocina/arroz2"
+  },
+  "age=7": {
+   "model": "miscelanea:block/cocina/arroz3"
+  }
+ }
+}

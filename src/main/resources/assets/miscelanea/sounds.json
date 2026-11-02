@@ -1282,5 +1282,11 @@
       "miscelanea:to_derrumbe"
     ],
     "subtitle": "subtitles.miscelanea.to_derrumbe"
+  },
+  "co_chisporroteo": {
+    "sounds": [
+      "miscelanea:co_chisporroteo"
+    ],
+    "subtitle": "subtitles.miscelanea.co_chisporroteo"
   }
 }

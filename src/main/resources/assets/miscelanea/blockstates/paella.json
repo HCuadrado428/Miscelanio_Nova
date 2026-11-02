@@ -1,0 +1,68 @@
+{
+ "variants": {
+  "facing=north,raciones=1": {
+   "model": "miscelanea:block/cocina/paella1",
+   "y": 0
+  },
+  "facing=east,raciones=1": {
+   "model": "miscelanea:block/cocina/paella1",
+   "y": 90
+  },
+  "facing=south,raciones=1": {
+   "model": "miscelanea:block/cocina/paella1",
+   "y": 180
+  },
+  "facing=west,raciones=1": {
+   "model": "miscelanea:block/cocina/paella1",
+   "y": 270
+  },
+  "facing=north,raciones=2": {
+   "model": "miscelanea:block/cocina/paella2",
+   "y": 0
+  },
+  "facing=east,raciones=2": {
+   "model": "miscelanea:block/cocina/paella2",
+   "y": 90
+  },
+  "facing=south,raciones=2": {
+   "model": "miscelanea:block/cocina/paella2",
+   "y": 180
+  },
+  "facing=west,raciones=2": {
+   "model": "miscelanea:block/cocina/paella2",
+   "y": 270
+  },
+  "facing=north,raciones=3": {
+   "model": "miscelanea:block/cocina/paella3",
+   "y": 0
+  },
+  "facing=east,raciones=3": {
+   "model": "miscelanea:block/cocina/paella3",
+   "y": 90
+  },
+  "facing=south,raciones=3": {
+   "model": "miscelanea:block/cocina/paella3",
+   "y": 180
+  },
+  "facing=west,raciones=3": {
+   "model": "miscelanea:block/cocina/paella3",
+   "y": 270
+  },
+  "facing=north,raciones=4": {
+   "model": "miscelanea:block/cocina/paella4",
+   "y": 0
+  },
+  "facing=east,raciones=4": {
+   "model": "miscelanea:block/cocina/paella4",
+   "y": 90
+  },
+  "facing=south,raciones=4": {
+   "model": "miscelanea:block/cocina/paella4",
+   "y": 180
+  },
+  "facing=west,raciones=4": {
+   "model": "miscelanea:block/cocina/paella4",
+   "y": 270
+  }
+ }
+}

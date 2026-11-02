@@ -126,6 +126,19 @@ public final class ModBlocks {
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.torre.TorreBlockEntity>> TORRE_BE = BLOCK_ENTITIES.register("torre_bloques",
             () -> BlockEntityType.Builder.of(com.miscelanea.torre.TorreBlockEntity::new, TORRE.get()).build(null));
+    public static final RegistryObject<Block> TOMATERA = BLOCKS.register("tomatera",
+            () -> new com.miscelanea.cocina.Cultivo(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.WHEAT), () -> ModItems.SEMILLAS_TOMATE.get()));
+    public static final RegistryObject<Block> ARROZAL = BLOCKS.register("arrozal",
+            () -> new com.miscelanea.cocina.Cultivo(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.WHEAT), () -> ModItems.ARROZ.get()));
+    public static final RegistryObject<Block> FOGON = BLOCKS.register("fogon",
+            () -> new com.miscelanea.cocina.FogonBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(2.5F)
+                    .sound(SoundType.STONE).noOcclusion().lightLevel(st -> st.getValue(com.miscelanea.cocina.FogonBlock.LIT) ? 12 : 0)));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.cocina.FogonBlockEntity>> FOGON_BE = BLOCK_ENTITIES.register("fogon",
+            () -> BlockEntityType.Builder.of(com.miscelanea.cocina.FogonBlockEntity::new, FOGON.get()).build(null));
+    public static final RegistryObject<Block> PAELLA = BLOCKS.register("paella",
+            () -> new com.miscelanea.cocina.PaellaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).strength(0.5F)
+                    .sound(SoundType.METAL).noOcclusion()));
     public static final RegistryObject<Block> BILLAR = BLOCKS.register("billar",
             () -> new com.miscelanea.mesas.BillarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(2.5F)
                     .sound(SoundType.WOOD).noOcclusion()));

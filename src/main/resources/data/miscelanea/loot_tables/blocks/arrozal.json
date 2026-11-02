@@ -1,0 +1,51 @@
+{
+ "type": "minecraft:block",
+ "pools": [
+  {
+   "rolls": 1,
+   "entries": [
+    {
+     "type": "minecraft:alternatives",
+     "children": [
+      {
+       "type": "minecraft:item",
+       "name": "miscelanea:arroz",
+       "conditions": [
+        {
+         "condition": "minecraft:block_state_property",
+         "block": "miscelanea:arrozal",
+         "properties": {
+          "age": "7"
+         }
+        }
+       ],
+       "functions": [
+        {
+         "function": "minecraft:set_count",
+         "count": {
+          "type": "minecraft:uniform",
+          "min": 2,
+          "max": 4
+         }
+        },
+        {
+         "function": "minecraft:apply_bonus",
+         "enchantment": "minecraft:fortune",
+         "formula": "minecraft:binomial_with_bonus_count",
+         "parameters": {
+          "extra": 1,
+          "probability": 0.5
+         }
+        }
+       ]
+      },
+      {
+       "type": "minecraft:item",
+       "name": "miscelanea:arroz"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

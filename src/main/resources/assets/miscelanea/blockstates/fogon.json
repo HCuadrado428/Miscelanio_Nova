@@ -1,0 +1,36 @@
+{
+ "variants": {
+  "facing=north,lit=false": {
+   "model": "miscelanea:block/cocina/fogon",
+   "y": 0
+  },
+  "facing=east,lit=false": {
+   "model": "miscelanea:block/cocina/fogon",
+   "y": 90
+  },
+  "facing=south,lit=false": {
+   "model": "miscelanea:block/cocina/fogon",
+   "y": 180
+  },
+  "facing=west,lit=false": {
+   "model": "miscelanea:block/cocina/fogon",
+   "y": 270
+  },
+  "facing=north,lit=true": {
+   "model": "miscelanea:block/cocina/fogon_encendido",
+   "y": 0
+  },
+  "facing=east,lit=true": {
+   "model": "miscelanea:block/cocina/fogon_encendido",
+   "y": 90
+  },
+  "facing=south,lit=true": {
+   "model": "miscelanea:block/cocina/fogon_encendido",
+   "y": 180
+  },
+  "facing=west,lit=true": {
+   "model": "miscelanea:block/cocina/fogon_encendido",
+   "y": 270
+  }
+ }
+}

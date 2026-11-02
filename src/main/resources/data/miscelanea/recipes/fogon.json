@@ -1,0 +1,23 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "I I",
+  "ICI",
+  "BBB"
+ ],
+ "key": {
+  "I": {
+   "item": "minecraft:iron_ingot"
+  },
+  "C": {
+   "item": "minecraft:campfire"
+  },
+  "B": {
+   "item": "minecraft:bricks"
+  }
+ },
+ "result": {
+  "item": "miscelanea:fogon"
+ }
+}

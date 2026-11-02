@@ -1,0 +1,79 @@
+{
+ "type": "minecraft:block",
+ "pools": [
+  {
+   "rolls": 1,
+   "entries": [
+    {
+     "type": "minecraft:alternatives",
+     "children": [
+      {
+       "type": "minecraft:item",
+       "name": "miscelanea:tomate",
+       "conditions": [
+        {
+         "condition": "minecraft:block_state_property",
+         "block": "miscelanea:tomatera",
+         "properties": {
+          "age": "7"
+         }
+        }
+       ],
+       "functions": [
+        {
+         "function": "minecraft:set_count",
+         "count": {
+          "type": "minecraft:uniform",
+          "min": 1,
+          "max": 3
+         }
+        },
+        {
+         "function": "minecraft:apply_bonus",
+         "enchantment": "minecraft:fortune",
+         "formula": "minecraft:binomial_with_bonus_count",
+         "parameters": {
+          "extra": 1,
+          "probability": 0.5
+         }
+        }
+       ]
+      },
+      {
+       "type": "minecraft:item",
+       "name": "miscelanea:semillas_tomate"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "rolls": 1,
+   "conditions": [
+    {
+     "condition": "minecraft:block_state_property",
+     "block": "miscelanea:tomatera",
+     "properties": {
+      "age": "7"
+     }
+    }
+   ],
+   "entries": [
+    {
+     "type": "minecraft:item",
+     "name": "miscelanea:semillas_tomate",
+     "functions": [
+      {
+       "function": "minecraft:set_count",
+       "count": {
+        "type": "minecraft:uniform",
+        "min": 0,
+        "max": 2
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

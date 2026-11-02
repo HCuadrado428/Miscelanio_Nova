@@ -194,6 +194,27 @@ public final class ModItems {
             () -> new com.miscelanea.dardos.DardoItem(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> TORRE = ITEMS.register("torre_bloques",
             () -> new net.minecraft.world.item.DoubleHighBlockItem(ModBlocks.TORRE.get(), new Item.Properties()));
+    public static final RegistryObject<Item> TOMATE = ITEMS.register("tomate",
+            () -> new Item(new Item.Properties().food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(2).saturationMod(0.4F).build())));
+    public static final RegistryObject<Item> SEMILLAS_TOMATE = ITEMS.register("semillas_tomate",
+            () -> new net.minecraft.world.item.ItemNameBlockItem(ModBlocks.TOMATERA.get(), new Item.Properties()));
+    public static final RegistryObject<Item> ARROZ = ITEMS.register("arroz",
+            () -> new net.minecraft.world.item.ItemNameBlockItem(ModBlocks.ARROZAL.get(), new Item.Properties()));
+    public static final RegistryObject<Item> FOGON = ITEMS.register("fogon",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.FOGON.get(), new Item.Properties()));
+    public static final RegistryObject<Item> PAELLA = ITEMS.register("paella",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.PAELLA.get(), new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> TORTILLA = ITEMS.register("tortilla",
+            () -> new Item(new Item.Properties().food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(8).saturationMod(0.8F).build())));
+    public static final RegistryObject<Item> GAZPACHO = ITEMS.register("gazpacho",
+            () -> new com.miscelanea.cocina.GazpachoItem(new Item.Properties().stacksTo(1).food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(5).saturationMod(0.6F).alwaysEat()
+                    .effect(() -> new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.FIRE_RESISTANCE, 20 * 60, 0), 1F).build())));
+    public static final RegistryObject<Item> CHURROS = ITEMS.register("churros",
+            () -> new Item(new Item.Properties().food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(3).saturationMod(0.3F).fast().build())));
+    public static final RegistryObject<Item> CHURROS_CHOCOLATE = ITEMS.register("churros_chocolate",
+            () -> new Item(new Item.Properties().food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(8).saturationMod(0.9F)
+                    .effect(() -> new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SPEED, 20 * 30, 0), 1F)
+                    .effect(() -> new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.DIG_SPEED, 20 * 30, 0), 1F).build())));
     public static final RegistryObject<Item> PISTA_BAILE = ITEMS.register("pista_baile",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PISTA_BAILE.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> BILLAR = ITEMS.register("billar",

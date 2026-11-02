@@ -111,6 +111,15 @@ public class Miscelanea {
             event.accept(ModItems.DIANA_DARDOS);
             event.accept(ModItems.DARDO);
             event.accept(ModItems.TORRE);
+            event.accept(ModItems.FOGON);
+            event.accept(ModItems.SEMILLAS_TOMATE);
+            event.accept(ModItems.TOMATE);
+            event.accept(ModItems.ARROZ);
+            event.accept(ModItems.PAELLA);
+            event.accept(ModItems.TORTILLA);
+            event.accept(ModItems.GAZPACHO);
+            event.accept(ModItems.CHURROS);
+            event.accept(ModItems.CHURROS_CHOCOLATE);
             for (int i = 0; i < com.miscelanea.feria.ChapaItem.DIBUJOS.length; i++) event.accept(com.miscelanea.feria.ChapaItem.de(i));
             event.accept(ModItems.FICHA);
             event.accept(ModItems.CONSOLA);
