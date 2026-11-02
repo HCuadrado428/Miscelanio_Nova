@@ -23,6 +23,16 @@ public final class TorturaRed {
         // ejecución de la trampa de oso (va el último para no mover los ids de los demás)
         ch.messageBuilder(EjecucionPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(EjecucionPacket::encode).decoder(EjecucionPacket::new).consumerMainThread(EjecucionPacket::handle).add();
+        // castigos: manchas de tomate / huevo, esquiva del cepo y lanzar la bola de preso (al final, para no mover ids)
+        ch.messageBuilder(com.miscelanea.tortura.castigo.ManchasPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.miscelanea.tortura.castigo.ManchasPacket::encode).decoder(com.miscelanea.tortura.castigo.ManchasPacket::new)
+                .consumerMainThread(com.miscelanea.tortura.castigo.ManchasPacket::handle).add();
+        ch.messageBuilder(com.miscelanea.tortura.castigo.EsquivaPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.miscelanea.tortura.castigo.EsquivaPacket::encode).decoder(com.miscelanea.tortura.castigo.EsquivaPacket::new)
+                .consumerMainThread(com.miscelanea.tortura.castigo.EsquivaPacket::handle).add();
+        ch.messageBuilder(com.miscelanea.tortura.castigo.BolaLanzarPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.tortura.castigo.BolaLanzarPacket::encode).decoder(com.miscelanea.tortura.castigo.BolaLanzarPacket::new)
+                .consumerMainThread(com.miscelanea.tortura.castigo.BolaLanzarPacket::handle).add();
         return id;
     }
 }

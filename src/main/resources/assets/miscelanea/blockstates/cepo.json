@@ -1,0 +1,36 @@
+{
+ "variants": {
+  "facing=north,locked=false": {
+   "model": "miscelanea:block/tortura/cepo",
+   "y": 0
+  },
+  "facing=north,locked=true": {
+   "model": "miscelanea:block/tortura/cepo_cerrado",
+   "y": 0
+  },
+  "facing=east,locked=false": {
+   "model": "miscelanea:block/tortura/cepo",
+   "y": 90
+  },
+  "facing=east,locked=true": {
+   "model": "miscelanea:block/tortura/cepo_cerrado",
+   "y": 90
+  },
+  "facing=south,locked=false": {
+   "model": "miscelanea:block/tortura/cepo",
+   "y": 180
+  },
+  "facing=south,locked=true": {
+   "model": "miscelanea:block/tortura/cepo_cerrado",
+   "y": 180
+  },
+  "facing=west,locked=false": {
+   "model": "miscelanea:block/tortura/cepo",
+   "y": 270
+  },
+  "facing=west,locked=true": {
+   "model": "miscelanea:block/tortura/cepo_cerrado",
+   "y": 270
+  }
+ }
+}

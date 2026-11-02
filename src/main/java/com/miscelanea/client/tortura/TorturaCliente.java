@@ -156,9 +156,13 @@ public final class TorturaCliente {
             return;
         }
         if (!atado(mc.player.getId())) return;
+        // con grilletes se puede coger la bola de preso (Shift + clic derecho a la bola)
+        if (e.isUseItem() && mc.hitResult instanceof net.minecraft.world.phys.EntityHitResult eh
+                && eh.getEntity() instanceof com.miscelanea.tortura.castigo.BolaPresoEntity) return;
         if (e.isUseItem()) {
             ItemStack s = mc.player.getItemInHand(e.getHand());
-            if (s.getItem() instanceof GanzuaItem || s.getItem() instanceof LlaveTrampaItem) return;
+            if (s.getItem() instanceof GanzuaItem || s.getItem() instanceof LlaveTrampaItem
+                    || s.getItem() instanceof com.miscelanea.tortura.castigo.SierraItem) return;
         }
         e.setCanceled(true);
         e.setSwingHand(false);

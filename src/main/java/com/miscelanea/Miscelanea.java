@@ -163,6 +163,13 @@ public class Miscelanea {
             event.accept(com.miscelanea.tortura.TorturaRegistro.CADENA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.GANZUA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.LAZO);
+            event.accept(com.miscelanea.tortura.TorturaRegistro.JAULA_COLGANTE_ITEM);
+            event.accept(com.miscelanea.tortura.TorturaRegistro.CEPO_ITEM);
+            event.accept(com.miscelanea.tortura.TorturaRegistro.LLAVE_CARCELERO);
+            event.accept(com.miscelanea.tortura.TorturaRegistro.TOMATE_PODRIDO);
+            event.accept(com.miscelanea.tortura.TorturaRegistro.HUEVO_PODRIDO);
+            event.accept(com.miscelanea.tortura.TorturaRegistro.BOLA_PRESO);
+            event.accept(com.miscelanea.tortura.TorturaRegistro.SIERRA);
             event.accept(ModItems.COHETE);
             event.accept(ModItems.LLAVE_ESPADA);
             event.accept(ModItems.HACHA_LEVIATAN);

@@ -1672,5 +1672,119 @@
       "miscelanea:lazo_romper"
     ],
     "subtitle": "subtitles.miscelanea.lazo_romper"
+  },
+  "jaula_crujido": {
+    "sounds": [
+      "miscelanea:jaula_crujido"
+    ],
+    "subtitle": "subtitles.miscelanea.jaula_crujido"
+  },
+  "jaula_balanceo": {
+    "sounds": [
+      "miscelanea:jaula_balanceo"
+    ],
+    "subtitle": "subtitles.miscelanea.jaula_balanceo"
+  },
+  "jaula_cadena": {
+    "sounds": [
+      "miscelanea:jaula_cadena"
+    ],
+    "subtitle": "subtitles.miscelanea.jaula_cadena"
+  },
+  "jaula_rota": {
+    "sounds": [
+      "miscelanea:jaula_rota"
+    ],
+    "subtitle": "subtitles.miscelanea.jaula_rota"
+  },
+  "jaula_puerta": {
+    "sounds": [
+      "miscelanea:jaula_puerta"
+    ],
+    "subtitle": "subtitles.miscelanea.jaula_puerta"
+  },
+  "jaula_cerrojo": {
+    "sounds": [
+      "miscelanea:jaula_cerrojo"
+    ],
+    "subtitle": "subtitles.miscelanea.jaula_cerrojo"
+  },
+  "cepo_cerrar": {
+    "sounds": [
+      "miscelanea:cepo_cerrar"
+    ],
+    "subtitle": "subtitles.miscelanea.cepo_cerrar"
+  },
+  "cepo_abrir": {
+    "sounds": [
+      "miscelanea:cepo_abrir"
+    ],
+    "subtitle": "subtitles.miscelanea.cepo_abrir"
+  },
+  "tomate_lanzar": {
+    "sounds": [
+      "miscelanea:tomate_lanzar"
+    ],
+    "subtitle": "subtitles.miscelanea.tomate_lanzar"
+  },
+  "tomate_splat": {
+    "sounds": [
+      "miscelanea:tomate_splat"
+    ],
+    "subtitle": "subtitles.miscelanea.tomate_splat"
+  },
+  "huevo_splat": {
+    "sounds": [
+      "miscelanea:huevo_splat"
+    ],
+    "subtitle": "subtitles.miscelanea.huevo_splat"
+  },
+  "lluvia_tomates": {
+    "sounds": [
+      "miscelanea:lluvia_tomates"
+    ],
+    "subtitle": "subtitles.miscelanea.lluvia_tomates"
+  },
+  "esquiva": {
+    "sounds": [
+      "miscelanea:esquiva"
+    ],
+    "subtitle": "subtitles.miscelanea.esquiva"
+  },
+  "bola_arrastre": {
+    "sounds": [
+      "miscelanea:bola_arrastre"
+    ],
+    "subtitle": "subtitles.miscelanea.bola_arrastre"
+  },
+  "bola_golpe": {
+    "sounds": [
+      "miscelanea:bola_golpe"
+    ],
+    "subtitle": "subtitles.miscelanea.bola_golpe"
+  },
+  "bola_poner": {
+    "sounds": [
+      "miscelanea:bola_poner"
+    ],
+    "subtitle": "subtitles.miscelanea.bola_poner"
+  },
+  "sierra_serrar": {
+    "sounds": [
+      "miscelanea:sierra_serrar"
+    ],
+    "subtitle": "subtitles.miscelanea.sierra_serrar"
+  },
+  "cadena_rota": {
+    "sounds": [
+      "miscelanea:cadena_rota"
+    ],
+    "subtitle": "subtitles.miscelanea.cadena_rota"
+  },
+  "lavar": {
+    "sounds": [
+      "miscelanea:lavar"
+    ],
+    "subtitle": "subtitles.miscelanea.lavar"
   }
 }

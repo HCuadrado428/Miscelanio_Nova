@@ -156,6 +156,55 @@ public final class QteLogica {
         return (int) Math.ceil(n * lerp(d, 0.6F, 0.8F));
     }
 
+    // ------------------------------------------------------------------ SERRAR
+    public static final int SERRAR_PREVIO_MS = 500, SERRAR_TIEMPO_MS = 30000;
+
+    /** Lo que tarda la marca en ir y volver (ms). */
+    public static int serrarPeriodo(float d) {
+        return Math.round(lerp(d, 1500F, 900F));
+    }
+
+    /** Distancia máxima (en la barra de -1 a 1) entre la sierra y la marca para que el corte avance. */
+    public static float serrarTolerancia(float d) {
+        return lerp(d, 0.42F, 0.22F);
+    }
+
+    /** Lo que avanza el corte por tick bueno (1 = cortado). */
+    public static float serrarGanancia(float d) {
+        return lerp(d, 0.0125F, 0.0075F);
+    }
+
+    public static float serrarPierde(float d) {
+        return lerp(d, 0.003F, 0.006F);
+    }
+
+    public static int serrarNecesarios(float d) {
+        return (int) Math.ceil(1F / serrarGanancia(d));
+    }
+
+    // ------------------------------------------------------------------ ESQUIVA
+    public static final int ESQUIVA_REACCION_MIN_MS = 90;
+
+    /** Tiempo para reaccionar (ms) según la dificultad. */
+    public static int esquivaVentana(float d) {
+        return Math.round(lerp(d, 1100F, 330F));
+    }
+
+    /** Dificultad que da una ventana de 'ms' milisegundos (inversa de {@link #esquivaVentana}). */
+    public static float esquivaDificultad(int ms) {
+        return Math.max(0F, Math.min(1F, (1100F - ms) / (1100F - 330F)));
+    }
+
+    /** true si viene por la izquierda (hay que pulsar DERECHA). */
+    public static boolean esquivaPorIzquierda(long semilla) {
+        return (semilla & 2L) != 0;
+    }
+
+    /** Dirección que hay que pulsar: 2 = izquierda, 3 = derecha (como en SECUENCIA). */
+    public static int esquivaTecla(long semilla) {
+        return esquivaPorIzquierda(semilla) ? 3 : 2;
+    }
+
     // ------------------------------------------------------------------ validación
     /** Lo mínimo que tiene que durar una partida GANADA (el servidor mide siempre más que el cliente). */
     public static long minimoMs(QteTipo t, float d, int rondas, long semilla) {
@@ -180,6 +229,10 @@ public final class QteLogica {
                 int k = Math.max(0, Math.min(notas.length - 1, ritmoNecesarias(notas.length, d) - 1));
                 return RITMO_PREVIO_MS + notas[k] - ritmoVentana(d);
             }
+            case SERRAR:
+                return SERRAR_PREVIO_MS + (long) serrarNecesarios(d) * 50L;
+            case ESQUIVA:
+                return ESQUIVA_REACCION_MIN_MS;
         }
         return 0;
     }
@@ -202,6 +255,10 @@ public final class QteLogica {
                 int[] notas = ritmoNotas(semilla, d);
                 return RITMO_PREVIO_MS + notas[notas.length - 1] + 1500L;
             }
+            case SERRAR:
+                return SERRAR_PREVIO_MS + SERRAR_TIEMPO_MS;
+            case ESQUIVA:
+                return esquivaVentana(d) + 250L;
         }
         return 60000;
     }
@@ -209,7 +266,7 @@ public final class QteLogica {
     /**
      * ¿Es creíble este éxito? 'datos' depende del tipo:
      * CIRCULO [aciertos, perfectos] · SECUENCIA [pulsadas] · MACHACAR/ALTERNAR [pulsaciones] · GANZUA [ángulo×10]
-     * BARRA_ZONA [] · RITMO [aciertos, perfectos].
+     * BARRA_ZONA [] · RITMO [aciertos, perfectos] · SERRAR [vaivenes, ticks buenos] · ESQUIVA [tecla, ms de reacción].
      */
     public static boolean plausible(QteTipo t, float d, int rondas, long semilla, int[] datos, long ms) {
         if (ms + HOLGURA_MS < minimoMs(t, d, rondas, semilla)) return false;
@@ -232,6 +289,14 @@ public final class QteLogica {
                 int n = ritmoNotas(semilla, d).length;
                 return a >= ritmoNecesarias(n, d) && a <= n && b >= 0 && b <= a;
             }
+            case SERRAR: {
+                // cada tick bueno dura 50 ms; y no se puede serrar sin ir y venir: al menos medio vaivén por cada medio periodo
+                int nec = serrarNecesarios(d);
+                long minVaivenes = (long) nec * 50L / Math.max(1, serrarPeriodo(d) / 2) / 2L - 1L;
+                return b >= nec && (long) b * 50L <= ms + HOLGURA_MS && a >= minVaivenes;
+            }
+            case ESQUIVA:
+                return a == esquivaTecla(semilla) && b >= ESQUIVA_REACCION_MIN_MS - 40 && b <= esquivaVentana(d) + 100;
         }
         return false;
     }

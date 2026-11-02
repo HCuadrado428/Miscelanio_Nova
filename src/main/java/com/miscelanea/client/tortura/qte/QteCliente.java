@@ -36,6 +36,8 @@ public final class QteCliente {
             case GANZUA -> new JuegoGanzua(p);
             case BARRA_ZONA -> new JuegoBarraZona(p);
             case RITMO -> new JuegoRitmo(p);
+            case SERRAR -> new JuegoSerrar(p);
+            case ESQUIVA -> new JuegoEsquiva(p);
         };
     }
 
