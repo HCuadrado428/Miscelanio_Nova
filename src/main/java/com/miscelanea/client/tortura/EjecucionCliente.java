@@ -370,7 +370,7 @@ public final class EjecucionCliente {
     }
 
     private static void estallido(Minecraft mc, Entity en, float t) {
-        RandomSource r = en.getRandom();
+        RandomSource r = en.level().getRandom();
         Vec3 c = en.getEyePosition().subtract(0, bajada(en, t), 0);
         // nube de sangre que sale disparada de la cabeza
         for (int i = 0; i < 80; i++) {
@@ -401,7 +401,7 @@ public final class EjecucionCliente {
     private static void chorro(Minecraft mc, Entity en, float t) {
         float k = 1F - (t - ESTALLIDO) / 45F;
         if (k <= 0) return;
-        RandomSource r = en.getRandom();
+        RandomSource r = en.level().getRandom();
         Vec3 c = cuello(en, t);
         int n = Math.round(1 + 3 * k);
         for (int i = 0; i < n; i++)
