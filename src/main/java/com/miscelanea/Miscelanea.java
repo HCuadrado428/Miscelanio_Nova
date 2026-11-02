@@ -176,6 +176,8 @@ public class Miscelanea {
             event.accept(com.miscelanea.tortura.TorturaRegistro.HUEVO_PODRIDO);
             event.accept(com.miscelanea.tortura.TorturaRegistro.BOLA_PRESO);
             event.accept(com.miscelanea.tortura.TorturaRegistro.SIERRA);
+            event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.PENDULO_ITEM);
+            event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.INMERSION_ITEM);
             event.accept(ModItems.COHETE);
             event.accept(ModItems.LLAVE_ESPADA);
             event.accept(ModItems.HACHA_LEVIATAN);

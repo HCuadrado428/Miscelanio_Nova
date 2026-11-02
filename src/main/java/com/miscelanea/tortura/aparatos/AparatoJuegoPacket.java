@@ -8,9 +8,9 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-/** Servidor → víctima: empieza (o se para) su minijuego dentro del aparato. */
+/** Servidor → víctima: empieza (o se para) su minijuego dentro del aparato. INMERSION: aguantar la respiración. */
 public class AparatoJuegoPacket {
-    public static final int PARAR = 0, DONCELLA = 1, PULSO = 2;
+    public static final int PARAR = 0, DONCELLA = 1, PULSO = 2, INMERSION = 3;
     public final int juego;
     public final BlockPos pos;
     public final long semilla;

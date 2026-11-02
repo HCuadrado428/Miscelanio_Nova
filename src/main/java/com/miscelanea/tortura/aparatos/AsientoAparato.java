@@ -74,6 +74,7 @@ public class AsientoAparato extends Entity {
     public void tick() {
         super.tick();
         setDeltaMovement(Vec3.ZERO);
+        seguirAparato();
         if (level().isClientSide) return;
         if (getPassengers().isEmpty()) {
             if (++vacio > 5) discard();
@@ -87,6 +88,34 @@ public class AsientoAparato extends Entity {
                 discard();
             }
         }
+    }
+
+    /**
+     * Aparatos con el asiento móvil ({@link AparatoBlockEntity#sitioMovil}): se coloca cada tick donde diga el aparato,
+     * en los dos lados (en el cliente el aparato se busca por la víctima, con lo sincronizado en {@link AparatosVictimas}),
+     * así la víctima (que se coloca después que su asiento) se mueve suave y sin esperar a las posiciones del servidor.
+     */
+    private void seguirAparato() {
+        if (getPassengers().isEmpty() || !(getPassengers().get(0) instanceof LivingEntity v)) return;
+        BlockPos bp;
+        if (level().isClientSide) {
+            AparatosVictimas.Entrada en = AparatosVictimas.de(v.getId());
+            if (en == null) return;
+            bp = en.pos();
+        } else bp = aparato;
+        if (!level().isLoaded(bp) || !(level().getBlockEntity(bp) instanceof AparatoBlockEntity be)) return;
+        Vec3 s = be.sitioMovil(v);
+        if (s != null) setPos(s.x, s.y, s.z);
+    }
+
+    // La silla de inmersión mete el asiento bajo el agua: que el juego no baje de él a la víctima por eso (sin @Override
+    // a propósito: según la versión existe uno u otro método; si no existe, no pasa nada).
+    public boolean dismountsUnderwater() {
+        return false;
+    }
+
+    public boolean rideableUnderWater() {
+        return true;
     }
 
     @Override

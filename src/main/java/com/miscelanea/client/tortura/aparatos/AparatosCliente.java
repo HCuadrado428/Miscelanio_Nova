@@ -68,9 +68,11 @@ public final class AparatosCliente {
         switch (p.juego) {
             case AparatoJuegoPacket.DONCELLA -> doncella = new JuegoDoncella(p.pos, p.semilla);
             case AparatoJuegoPacket.PULSO -> pulso = new JuegoPulso(p.pos, p.semilla, p.dificultad);
+            case AparatoJuegoPacket.INMERSION -> PenduloInmersionCliente.juego(p);
             default -> {
                 if (doncella != null && doncella.pos.equals(p.pos)) doncella = null;
                 if (pulso != null && pulso.pos.equals(p.pos)) pulso = null;
+                PenduloInmersionCliente.parar(p.pos);
             }
         }
     }
@@ -85,6 +87,8 @@ public final class AparatosCliente {
         } else if (p.efecto == AparatoEfectoPacket.DESCARGA) {
             int ticks = p.valor & 0xFFFF, v = p.valor >>> 16;
             DESCARGAS.put(p.entidad, new int[]{reloj + ticks, v, ticks});
+        } else if (p.efecto == AparatoEfectoPacket.CORTE) {
+            PenduloInmersionCliente.efecto(p);
         }
     }
 
