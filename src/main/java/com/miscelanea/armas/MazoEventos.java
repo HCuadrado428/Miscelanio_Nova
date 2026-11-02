@@ -39,8 +39,17 @@ public final class MazoEventos {
         MazoItem.sumarTrueno(p, s);
         if (p.isFallFlying() || p.fallDistance <= 1.5F) return;
         float caida = p.fallDistance;
-        e.setAmount(e.getAmount() + MazoItem.extraCaida(caida));
         LivingEntity objetivo = e.getEntity();
+        // golpe en caída del mazo + Densidad V (0,5 por nivel y bloque caído)
+        float dano = e.getAmount() + MazoItem.extraCaida(caida) + MazoItem.DENSIDAD * 0.5F * caida;
+        // Brecha IV: la armadura del objetivo protege un 15 % menos por nivel
+        float armadura = objetivo.getArmorValue(), dureza = (float) objetivo.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR_TOUGHNESS);
+        if (armadura > 0) {
+            float normal = net.minecraft.world.damagesource.CombatRules.getDamageAfterAbsorb(dano, armadura, dureza);
+            float conBrecha = net.minecraft.world.damagesource.CombatRules.getDamageAfterAbsorb(dano, armadura * Math.max(0, 1 - 0.15F * MazoItem.BRECHA), dureza);
+            if (normal > 0.01F) dano *= conBrecha / normal;
+        }
+        e.setAmount(dano);
         Vec3 c = objetivo.position();
         BlockState suelo = sl.getBlockState(objetivo.blockPosition().below());
         if (!suelo.isAir()) sl.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, suelo), c.x, c.y + 0.1, c.z, 60, 1.4, 0.1, 1.4, 0.2);
@@ -48,10 +57,10 @@ public final class MazoEventos {
         sl.playSound(null, c.x, c.y, c.z, caida > 5 ? ModSounds.MAZO_GOLPE_FUERTE.get() : ModSounds.MAZO_GOLPE.get(), SoundSource.PLAYERS, 1.6F, 1F);
         empujar(sl, c, 3.5, p, objetivo, 0.35);
         TemblorPacket.enviar(sl, c, 12, Math.min(2.5F, caida * 0.2F), 12);
-        // ráfaga de viento: te devuelve al aire para encadenar otro golpe
+        // Ráfaga de viento III: te devuelve muy alto para encadenar otro golpe
         p.resetFallDistance();
         Vec3 v = p.getDeltaMovement();
-        p.setDeltaMovement(v.x * 0.5, 1.15, v.z * 0.5);
+        p.setDeltaMovement(v.x * 0.5, 0.95 + 0.5 * MazoItem.RAFAGA, v.z * 0.5);
         p.hurtMarked = true;
         sl.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.VIENTO_RAFAGA.get(), SoundSource.PLAYERS, 1.0F, 1.2F);
     }

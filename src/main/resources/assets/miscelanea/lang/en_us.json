@@ -1286,5 +1286,8 @@
   "subtitles.miscelanea.mazo_lanzar": "Mace thrown",
   "subtitles.miscelanea.mazo_vuelve": "Mace returns",
   "subtitles.miscelanea.mazo_sismo": "Seismic slam",
-  "subtitles.miscelanea.mazo_cargado": "Mace charged with thunder"
+  "subtitles.miscelanea.mazo_cargado": "Mace charged with thunder",
+  "item.miscelanea.mazo_wemmbu.densidad": "Density V",
+  "item.miscelanea.mazo_wemmbu.brecha": "Breach IV",
+  "item.miscelanea.mazo_wemmbu.rafaga": "Wind Burst III"
 }

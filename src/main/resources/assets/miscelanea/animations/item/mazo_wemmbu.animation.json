@@ -4,27 +4,7 @@
   "animation.mazo_wemmbu.idle": {
    "loop": true,
    "animation_length": 2.0,
-   "bones": {
-    "correa": {
-     "rotation": {
-      "0.0": [
-       0,
-       0,
-       -6
-      ],
-      "1.0": [
-       0,
-       0,
-       6
-      ],
-      "2.0": [
-       0,
-       0,
-       -6
-      ]
-     }
-    }
-   }
+   "bones": {}
   },
   "animation.mazo_wemmbu.cargado": {
    "loop": true,

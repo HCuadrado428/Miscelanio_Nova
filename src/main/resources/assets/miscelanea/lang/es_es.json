@@ -1286,5 +1286,8 @@
   "subtitles.miscelanea.mazo_lanzar": "Mazo lanzado",
   "subtitles.miscelanea.mazo_vuelve": "El mazo vuelve a la mano",
   "subtitles.miscelanea.mazo_sismo": "Golpe sísmico",
-  "subtitles.miscelanea.mazo_cargado": "Mazo cargado de trueno"
+  "subtitles.miscelanea.mazo_cargado": "Mazo cargado de trueno",
+  "item.miscelanea.mazo_wemmbu.densidad": "Densidad V",
+  "item.miscelanea.mazo_wemmbu.brecha": "Brecha IV",
+  "item.miscelanea.mazo_wemmbu.rafaga": "Ráfaga de viento III"
 }
