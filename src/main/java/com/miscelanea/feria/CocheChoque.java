@@ -168,6 +168,17 @@ public class CocheChoque extends Entity {
     }
 
     @Override
+    protected void positionRider(Entity p, Entity.MoveFunction mover) {
+        super.positionRider(p, mover);
+        Montar.seguir(p, Mth.wrapDegrees(getYRot() - yRotO), getYRot());
+    }
+
+    @Override
+    public void onPassengerTurned(Entity p) {
+        Montar.encarar(p, getYRot());
+    }
+
+    @Override
     protected boolean canAddPassenger(Entity e) {
         return getPassengers().isEmpty();
     }

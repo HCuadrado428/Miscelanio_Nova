@@ -15,6 +15,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.Mth;
 import net.minecraftforge.network.NetworkHooks;
 
 /**
@@ -130,14 +131,24 @@ public class AsientoFeria extends Entity {
     protected void positionRider(Entity p, MoveFunction mover) {
         if (!hasPassenger(p)) return;
         boolean pulpo = esPulpo();
+        float giro = Mth.wrapDegrees(getYRot() - yRotO);
         if (!esNoria() && !pulpo) {
             super.positionRider(p, mover);
+            Montar.seguir(p, giro, getYRot());
             return;
         }
         int i = getPassengers().indexOf(p);
         double ox = i % 2 == 0 ? -0.45 : 0.45, oz = pulpo ? 0.1 : i < 2 ? -0.6 : 0.6;
         double yaw = Math.toRadians(getYRot()), c = Math.cos(yaw), s = Math.sin(yaw);
         mover.accept(p, getX() + ox * c - oz * s, getY() + getPassengersRidingOffset() + p.getMyRidingOffset(), getZ() + oz * c + ox * s);
+        // en la noria el banco de delante mira hacia atrás (los dos bancos, frente a frente)
+        Montar.seguir(p, giro, getYRot() + (!pulpo && i >= 2 ? 180F : 0F));
+    }
+
+    @Override
+    public void onPassengerTurned(Entity p) {
+        int i = getPassengers().indexOf(p);
+        Montar.encarar(p, getYRot() + (esNoria() && i >= 2 ? 180F : 0F));
     }
 
     @Override
