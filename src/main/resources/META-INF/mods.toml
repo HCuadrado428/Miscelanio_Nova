@@ -36,3 +36,11 @@ description='''${mod_description}'''
     versionRange="${player_anim_version_range}"
     ordering="AFTER"
     side="BOTH"
+
+# Opcional: Customizable Player Models (si está, se respeta su modelo de jugador)
+[[dependencies.${mod_id}]]
+    modId="cpm"
+    mandatory=false
+    versionRange="[0,)"
+    ordering="AFTER"
+    side="BOTH"
