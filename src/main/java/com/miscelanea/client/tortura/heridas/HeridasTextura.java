@@ -3,6 +3,7 @@ package com.miscelanea.client.tortura.heridas;
 import com.miscelanea.Miscelanea;
 import com.miscelanea.tortura.heridas.Herida;
 import com.miscelanea.tortura.heridas.HeridasDatos;
+import com.miscelanea.tortura.heridas.Marca;
 import com.miscelanea.tortura.heridas.Parte;
 import com.miscelanea.tortura.heridas.Tipo;
 import com.mojang.blaze3d.platform.NativeImage;
@@ -179,6 +180,7 @@ public final class HeridasTextura {
             h = h * 31 + (int) (w.progreso() * 40);       // ~40 pasos de color a lo largo de la curación
         }
         for (int v : d.vendas) h = h * 31 + (v > 0 ? 1 + v / 400 : 0);
+        for (Marca m : d.marcas) h = h * 31 + Long.hashCode(m.bits) + m.parte.ordinal() * 7 + m.cara;
         return h;
     }
 
@@ -208,6 +210,7 @@ public final class HeridasTextura {
             for (Herida h : d.lista) estampar(img, h, fino);
         }
         for (Parte p : Parte.V) if (d.vendada(p)) venda(img, p, fino, d.vendas[p.ordinal()]);
+        for (Marca m : d.marcas) marca(img, m, fino);
         tex.upload();
     }
 
@@ -255,6 +258,58 @@ public final class HeridasTextura {
                 img.setPixelRGBA(u, v, argb);
             }
         }
+    }
+
+    // ------------------------------------------------------------------ marcas a fuego (hierro de marcar)
+    /**
+     * Columnas (u) de la skin donde va cada columna del símbolo: en el torso, la cara de delante o la de atrás (8 de
+     * ancho); en los brazos, rodeando la cara de fuera y la de delante (4 + 4, o 4 + 3 con brazos finos: se salta una).
+     */
+    private static int[] columnas(Marca m, boolean fino) {
+        int[] u = new int[8];
+        if (m.parte == Parte.TORSO || m.parte == Parte.CABEZA) {
+            int[] c = cara(m.parte, m.cara == Herida.ESPALDA ? Herida.ESPALDA : Herida.FRENTE, fino);
+            for (int i = 0; i < 8; i++) u[i] = i < c[2] ? c[0] + i : -1;
+            return u;
+        }
+        boolean der = m.parte == Parte.BRAZO_DER || m.parte == Parte.PIERNA_DER;
+        int[] fuera = cara(m.parte, der ? Herida.DERECHA : Herida.IZQUIERDA, fino);
+        int[] frente = cara(m.parte, Herida.FRENTE, fino);
+        // brazo derecho: fuera | delante (contiguas en la skin); izquierdo: delante | fuera
+        int[] a = der ? fuera : frente, b = der ? frente : fuera;
+        int k = 0;
+        for (int i = 0; i < a[2] && k < 8; i++) u[k++] = a[0] + i;
+        for (int i = 0; i < b[2] && k < 8; i++) u[k++] = b[0] + i;
+        if (k < 8) {
+            // brazo fino (7 columnas): se quita la del centro del dibujo
+            int[] r = new int[8];
+            for (int i = 0, j = 0; i < 8; i++) r[i] = i == 4 ? -1 : (j < k ? u[j++] : -1);
+            return r;
+        }
+        return u;
+    }
+
+    private static void marca(NativeImage img, Marca m, boolean fino) {
+        int[] u = columnas(m, fino);
+        int[] ref = cara(m.parte, m.parte.esExtremidad() ? Herida.FRENTE : (m.cara == Herida.ESPALDA ? Herida.ESPALDA : Herida.FRENTE), fino);
+        int v0 = ref[1] + (m.parte == Parte.TORSO ? 2 : 1);
+        int nucleo = abgr(70, 18, 12, 250), quemado = abgr(118, 38, 26, 245), borde = abgr(168, 92, 76, 150);
+        // primero el halo de piel quemada alrededor, luego el surco
+        for (int y = 0; y < 8; y++)
+            for (int x = 0; x < 8; x++) {
+                if (m.pixel(x, y) || u[x] < 0) continue;
+                boolean junto = m.pixel(x - 1, y) || m.pixel(x + 1, y) || m.pixel(x, y - 1) || m.pixel(x, y + 1);
+                if (!junto) continue;
+                int previo = img.getPixelRGBA(u[x], v0 + y);
+                if (((previo >>> 24) & 255) < 150) img.setPixelRGBA(u[x], v0 + y, borde);
+            }
+        for (int y = 0; y < 8; y++)
+            for (int x = 0; x < 8; x++) {
+                if (!m.pixel(x, y) || u[x] < 0) continue;
+                // los píxeles rodeados del todo son el fondo del surco (más oscuro)
+                boolean dentro = m.pixel(x - 1, y) && m.pixel(x + 1, y) && m.pixel(x, y - 1) && m.pixel(x, y + 1);
+                img.setPixelRGBA(u[x], v0 + y, dentro ? nucleo : quemado);
+            }
     }
 
     private static int[] celda(int fila, int col) {

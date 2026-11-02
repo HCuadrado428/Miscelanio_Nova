@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "miscelanea:trampa_oso"
+    "miscelanea:trampa_oso",
+    "miscelanea:doncella",
+    "miscelanea:potro",
+    "miscelanea:silla_electrica"
   ]
 }

@@ -74,6 +74,6 @@ public class HeridasLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<
     }
 
     static boolean tiene(HeridasDatos d, Parte p) {
-        return d.vendada(p) || d.cuantas(p) > 0;
+        return d.vendada(p) || d.cuantas(p) > 0 || d.marcada(p);
     }
 }

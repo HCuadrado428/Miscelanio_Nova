@@ -18,11 +18,25 @@ public class HeridasDatos {
 
     public final List<Herida> lista = new ArrayList<>();
     public final int[] vendas = new int[Parte.V.length];
+    /** Marcas a fuego (hierro de marcar): no se curan, duran hasta la muerte. */
+    public final List<Marca> marcas = new ArrayList<>();
 
     public boolean vacio() {
-        if (!lista.isEmpty()) return false;
+        if (!lista.isEmpty() || !marcas.isEmpty()) return false;
         for (int v : vendas) if (v > 0) return false;
         return true;
+    }
+
+    public boolean marcada(Parte p) {
+        for (Marca m : marcas) if (m.parte == p) return true;
+        return false;
+    }
+
+    /** Añade una marca: sustituye a la que hubiera en el mismo sitio; si ya hay {@link Marca#MAX}, se va la más vieja. */
+    public void ponerMarca(Marca m) {
+        marcas.removeIf(o -> o.mismoSitio(m));
+        while (marcas.size() >= Marca.MAX) marcas.remove(0);
+        marcas.add(m);
     }
 
     public boolean vendada(Parte p) {
@@ -64,6 +78,11 @@ public class HeridasDatos {
         for (Herida h : lista) l.add(h.guardar());
         t.put("l", l);
         t.putIntArray("v", vendas.clone());
+        if (!marcas.isEmpty()) {
+            ListTag m = new ListTag();
+            for (Marca x : marcas) m.add(x.guardar());
+            t.put("m", m);
+        }
         return t;
     }
 
@@ -73,6 +92,8 @@ public class HeridasDatos {
         for (int i = 0; i < l.size() && i < MAX_TOTAL; i++) d.lista.add(Herida.cargar(l.getCompound(i)));
         int[] v = t.getIntArray("v");
         for (int i = 0; i < Math.min(v.length, d.vendas.length); i++) d.vendas[i] = v[i];
+        ListTag m = t.getList("m", Tag.TAG_COMPOUND);
+        for (int i = 0; i < m.size() && i < Marca.MAX; i++) d.marcas.add(Marca.cargar(m.getCompound(i)));
         return d;
     }
 
@@ -81,6 +102,9 @@ public class HeridasDatos {
         b.writeByte(n);
         for (int i = 0; i < n; i++) lista.get(i).escribir(b);
         for (int v : vendas) b.writeVarInt(Math.max(0, v));
+        int nm = Math.min(Marca.MAX, marcas.size());
+        b.writeByte(nm);
+        for (int i = 0; i < nm; i++) marcas.get(i).escribir(b);
     }
 
     public static HeridasDatos leer(FriendlyByteBuf b) {
@@ -88,6 +112,8 @@ public class HeridasDatos {
         int n = Math.min(MAX_TOTAL, b.readUnsignedByte());
         for (int i = 0; i < n; i++) d.lista.add(Herida.leer(b));
         for (int i = 0; i < d.vendas.length; i++) d.vendas[i] = b.readVarInt();
+        int nm = Math.min(Marca.MAX, b.readUnsignedByte());
+        for (int i = 0; i < nm; i++) d.marcas.add(Marca.leer(b));
         return d;
     }
 }

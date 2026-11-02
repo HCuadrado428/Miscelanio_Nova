@@ -2,6 +2,9 @@
   "replace": false,
   "values": [
     "miscelanea:enemigo",
-    "miscelanea:descarga"
+    "miscelanea:descarga",
+    "miscelanea:doncella",
+    "miscelanea:potro",
+    "miscelanea:silla_electrica"
   ]
 }
