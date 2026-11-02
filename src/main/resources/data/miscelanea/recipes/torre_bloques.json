@@ -1,0 +1,20 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "PPP",
+  "PPP",
+  " S "
+ ],
+ "key": {
+  "P": {
+   "item": "minecraft:birch_slab"
+  },
+  "S": {
+   "tag": "minecraft:wooden_slabs"
+  }
+ },
+ "result": {
+  "item": "miscelanea:torre_bloques"
+ }
+}

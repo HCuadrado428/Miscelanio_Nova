@@ -23,6 +23,7 @@ public class BolaBolos extends Entity {
 
     public BolaBolos(EntityType<? extends BolaBolos> t, Level l) {
         super(t, l);
+        setMaxUpStep(0.25F);
     }
 
     @Override

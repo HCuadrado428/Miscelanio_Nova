@@ -192,6 +192,8 @@ public final class ModItems {
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.DIANA_DARDOS.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> DARDO = ITEMS.register("dardo",
             () -> new com.miscelanea.dardos.DardoItem(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> TORRE = ITEMS.register("torre_bloques",
+            () -> new net.minecraft.world.item.DoubleHighBlockItem(ModBlocks.TORRE.get(), new Item.Properties()));
     public static final RegistryObject<Item> PISTA_BAILE = ITEMS.register("pista_baile",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PISTA_BAILE.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> BILLAR = ITEMS.register("billar",

@@ -110,6 +110,7 @@ public class Miscelanea {
             event.accept(ModItems.BOLA_BOLOS);
             event.accept(ModItems.DIANA_DARDOS);
             event.accept(ModItems.DARDO);
+            event.accept(ModItems.TORRE);
             for (int i = 0; i < com.miscelanea.feria.ChapaItem.DIBUJOS.length; i++) event.accept(com.miscelanea.feria.ChapaItem.de(i));
             event.accept(ModItems.FICHA);
             event.accept(ModItems.CONSOLA);

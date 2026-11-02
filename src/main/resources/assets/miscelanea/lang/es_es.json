@@ -1079,5 +1079,12 @@
   "subtitles.miscelanea.bo_rueda": "Rueda la bola",
   "subtitles.miscelanea.bo_pleno": "¡Pleno!",
   "subtitles.miscelanea.da_clava": "Se clava un dardo",
-  "subtitles.miscelanea.da_lanza": "Silba un dardo"
+  "subtitles.miscelanea.da_lanza": "Silba un dardo",
+  "block.miscelanea.torre_bloques": "Torre de bloques",
+  "miscelanea.torre.montada": "Torre montada: saca piezas por turnos sin tirarla",
+  "miscelanea.torre.arriba": "De arriba no se puede (ni del nivel de debajo si arriba no está completo)",
+  "miscelanea.torre.caida": "¡%s ha tirado la torre! (%s piezas sacadas)",
+  "miscelanea.torre.tiembla": "¡La torre se tambalea!",
+  "subtitles.miscelanea.to_clac": "Pieza de madera",
+  "subtitles.miscelanea.to_derrumbe": "Se cae la torre"
 }

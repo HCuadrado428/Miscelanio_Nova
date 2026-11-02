@@ -1079,5 +1079,12 @@
   "subtitles.miscelanea.bo_rueda": "Ball rolls",
   "subtitles.miscelanea.bo_pleno": "Strike!",
   "subtitles.miscelanea.da_clava": "Dart hits",
-  "subtitles.miscelanea.da_lanza": "Dart whooshes"
+  "subtitles.miscelanea.da_lanza": "Dart whooshes",
+  "block.miscelanea.torre_bloques": "Block Tower",
+  "miscelanea.torre.montada": "Tower set up: take turns pulling blocks without knocking it down",
+  "miscelanea.torre.arriba": "Not from the top (nor the level below it while the top is incomplete)",
+  "miscelanea.torre.caida": "%s knocked the tower down! (%s blocks pulled)",
+  "miscelanea.torre.tiembla": "The tower wobbles!",
+  "subtitles.miscelanea.to_clac": "Wooden block",
+  "subtitles.miscelanea.to_derrumbe": "Tower collapses"
 }

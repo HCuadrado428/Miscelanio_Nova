@@ -1,0 +1,10 @@
+{
+ "variants": {
+  "half=lower": {
+   "model": "miscelanea:block/torre_bloques"
+  },
+  "half=upper": {
+   "model": "miscelanea:block/torre_bloques"
+  }
+ }
+}

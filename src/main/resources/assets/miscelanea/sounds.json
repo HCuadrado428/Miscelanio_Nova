@@ -1270,5 +1270,17 @@
       "miscelanea:da_lanza"
     ],
     "subtitle": "subtitles.miscelanea.da_lanza"
+  },
+  "to_clac": {
+    "sounds": [
+      "miscelanea:to_clac"
+    ],
+    "subtitle": "subtitles.miscelanea.to_clac"
+  },
+  "to_derrumbe": {
+    "sounds": [
+      "miscelanea:to_derrumbe"
+    ],
+    "subtitle": "subtitles.miscelanea.to_derrumbe"
   }
 }

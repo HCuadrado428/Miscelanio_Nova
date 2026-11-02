@@ -120,6 +120,12 @@ public final class ModBlocks {
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.dardos.DianaDardosBlockEntity>> DIANA_DARDOS_BE = BLOCK_ENTITIES.register("diana_dardos",
             () -> BlockEntityType.Builder.of(com.miscelanea.dardos.DianaDardosBlockEntity::new, DIANA_DARDOS.get()).build(null));
+    public static final RegistryObject<Block> TORRE = BLOCKS.register("torre_bloques",
+            () -> new com.miscelanea.torre.TorreBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.0F)
+                    .sound(SoundType.WOOD).noOcclusion()));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.torre.TorreBlockEntity>> TORRE_BE = BLOCK_ENTITIES.register("torre_bloques",
+            () -> BlockEntityType.Builder.of(com.miscelanea.torre.TorreBlockEntity::new, TORRE.get()).build(null));
     public static final RegistryObject<Block> BILLAR = BLOCKS.register("billar",
             () -> new com.miscelanea.mesas.BillarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(2.5F)
                     .sound(SoundType.WOOD).noOcclusion()));
