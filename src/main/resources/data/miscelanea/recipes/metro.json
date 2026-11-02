@@ -1,0 +1,19 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "Y S"
+ ],
+ "key": {
+  "Y": {
+   "item": "minecraft:yellow_dye"
+  },
+  "S": {
+   "item": "minecraft:string"
+  }
+ },
+ "result": {
+  "item": "miscelanea:metro",
+  "count": 1
+ }
+}

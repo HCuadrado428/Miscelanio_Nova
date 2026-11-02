@@ -118,7 +118,10 @@ public class CocheChoque extends Entity {
         golpeCd = 10;
         sacudida = (float) Math.min(1, fuerza * 3);
         float vol = (float) Math.min(1, 0.3 + fuerza * 2), tono = 0.9F + random.nextFloat() * 0.2F;
-        if (level().isClientSide) level().playLocalSound(getX(), getY(), getZ(), ModSounds.FE_CHOQUE.get(), SoundSource.NEUTRAL, vol, tono, false);
+        if (level().isClientSide) {
+            level().playLocalSound(getX(), getY(), getZ(), ModSounds.FE_CHOQUE.get(), SoundSource.NEUTRAL, vol, tono, false);
+            if (isControlledByLocalInstance()) com.miscelanea.network.ModNetwork.CHANNEL.sendToServer(new ChoquePacket(getId(), (float) fuerza));
+        }
         else level().playSound(null, getX(), getY(), getZ(), ModSounds.FE_CHOQUE.get(), SoundSource.NEUTRAL, vol, tono);
         for (int i = 0; i < 6; i++)
             level().addParticle(ParticleTypes.ELECTRIC_SPARK, getX() + random.nextGaussian() * 0.4, getY() + 0.5, getZ() + random.nextGaussian() * 0.4, 0, 0.1, 0);

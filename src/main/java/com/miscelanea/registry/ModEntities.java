@@ -36,6 +36,9 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<com.miscelanea.feria.BalonEntity>> BALON = ENTITIES.register("balon",
             () -> EntityType.Builder.<com.miscelanea.feria.BalonEntity>of(com.miscelanea.feria.BalonEntity::new, MobCategory.MISC)
                     .sized(0.24F, 0.24F).clientTrackingRange(8).updateInterval(1).noSummon().build("balon"));
+    public static final RegistryObject<EntityType<com.miscelanea.petanca.BolaPetanca>> BOLA_PETANCA = ENTITIES.register("bola_petanca",
+            () -> EntityType.Builder.<com.miscelanea.petanca.BolaPetanca>of(com.miscelanea.petanca.BolaPetanca::new, MobCategory.MISC)
+                    .sized(0.26F, 0.26F).clientTrackingRange(8).updateInterval(1).noSummon().build("bola_petanca"));
     public static final RegistryObject<EntityType<com.miscelanea.muebles.Asiento>> ASIENTO = ENTITIES.register("asiento",
             () -> EntityType.Builder.<com.miscelanea.muebles.Asiento>of(com.miscelanea.muebles.Asiento::new, MobCategory.MISC)
                     .sized(0.01F, 0.01F).clientTrackingRange(10).noSummon().build("asiento"));

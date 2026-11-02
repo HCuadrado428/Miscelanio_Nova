@@ -1354,5 +1354,29 @@
       "miscelanea:ah_gol"
     ],
     "subtitle": "subtitles.miscelanea.ah_gol"
+  },
+  "fe_bombo": {
+    "sounds": [
+      "miscelanea:fe_bombo"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_bombo"
+  },
+  "fe_cuac": {
+    "sounds": [
+      "miscelanea:fe_cuac"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_cuac"
+  },
+  "pe_cae": {
+    "sounds": [
+      "miscelanea:pe_cae"
+    ],
+    "subtitle": "subtitles.miscelanea.pe_cae"
+  },
+  "pe_choque": {
+    "sounds": [
+      "miscelanea:pe_choque"
+    ],
+    "subtitle": "subtitles.miscelanea.pe_choque"
   }
 }

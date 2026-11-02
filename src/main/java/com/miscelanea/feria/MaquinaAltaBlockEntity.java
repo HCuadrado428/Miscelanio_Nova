@@ -385,6 +385,7 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
     private void tickCanasta(ServerLevel l, int t) {
         if (t >= CANASTA_DURA) {
             activo = false;
+            alturaAntes.clear();
             Player p = jugador != null ? l.getPlayerByUUID(jugador) : null;
             if (p != null) {
                 p.displayClientMessage(Component.translatable("miscelanea.canasta.fin", puntos), false);

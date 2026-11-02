@@ -41,21 +41,21 @@ public class AtraccionBlockEntity extends BlockEntity {
     }
 
     public int asientos() {
-        return tipo() == AtraccionBlock.NORIA ? 10 : 8;
+        return tipo() == AtraccionBlock.NORIA ? 10 : tipo() == AtraccionBlock.PULPO ? 5 : 8;
     }
 
     public float velMax() {
-        return tipo() == AtraccionBlock.NORIA ? (float) (2 * Math.PI / (20 * 60)) : (float) (2 * Math.PI / (20 * 12));
+        return tipo() == AtraccionBlock.PULPO ? (float) (2 * Math.PI / (20 * 7)) : tipo() == AtraccionBlock.NORIA ? (float) (2 * Math.PI / (20 * 60)) : (float) (2 * Math.PI / (20 * 12));
     }
 
     /** Ángulo en un instante (tics con fracción). */
-    public float angulo(float tiempo) {
-        return angulo0 + vel * (tiempo - t0);
+    public float angulo(double tiempo) {
+        return (float) (angulo0 + vel * (tiempo - t0));
     }
 
     void alternar() {
         if (level == null) return;
-        float ahora = level.getGameTime();
+        long ahora = level.getGameTime();
         angulo0 = (float) (angulo(ahora) % (2 * Math.PI));
         t0 = level.getGameTime();
         gira = !gira;
@@ -72,7 +72,7 @@ public class AtraccionBlockEntity extends BlockEntity {
         // arranque y frenada suaves: la velocidad cambia poco a poco (se rehace la referencia para que no salte)
         float objetivo = be.gira ? be.velMax() : 0;
         if (be.vel != objetivo) {
-            float ahora = l.getGameTime();
+            long ahora = l.getGameTime();
             be.angulo0 = (float) (be.angulo(ahora) % (2 * Math.PI));
             be.t0 = l.getGameTime();
             float paso = be.velMax() / 80;
@@ -86,15 +86,24 @@ public class AtraccionBlockEntity extends BlockEntity {
             l.playSound(null, pos, ModSounds.FE_NORIA.get(), SoundSource.BLOCKS, 0.5F, 0.9F + l.random.nextFloat() * 0.2F);
     }
 
+    /** Zona donde pueden estar los asientos de una atracción (la noria llega a más de 20 bloques de alto). */
+    public static AABB zona(BlockPos p) {
+        return new AABB(p).inflate(R_NORIA + 3, CY_NORIA + R_NORIA + 3, R_NORIA + 3);
+    }
+
     void revisarAsientos() {
-        boolean[] hay = new boolean[asientos()];
-        for (AsientoFeria a : level.getEntitiesOfClass(AsientoFeria.class, new AABB(worldPosition).inflate(14)))
-            if (a.atraccion().equals(worldPosition) && a.indice() < hay.length) {
-                if (hay[a.indice()]) a.discard();
-                hay[a.indice()] = true;
-            }
+        AsientoFeria[] hay = new AsientoFeria[asientos()];
+        for (AsientoFeria a : level.getEntitiesOfClass(AsientoFeria.class, zona(worldPosition))) {
+            if (!a.atraccion().equals(worldPosition) || a.indice() >= hay.length) continue;
+            AsientoFeria antes = hay[a.indice()];
+            if (antes == null) hay[a.indice()] = a;
+            else if (a.isVehicle() && !antes.isVehicle()) {
+                antes.discard();
+                hay[a.indice()] = a;
+            } else if (!a.isVehicle()) a.discard();
+        }
         for (int i = 0; i < hay.length; i++) {
-            if (hay[i]) continue;
+            if (hay[i] != null) continue;
             AsientoFeria a = new AsientoFeria(tipo() == AtraccionBlock.NORIA ? ModEntities.CABINA_NORIA.get() : ModEntities.ASIENTO_FERIA.get(), level);
             a.preparar(worldPosition, i);
             level.addFreshEntity(a);
@@ -102,7 +111,7 @@ public class AtraccionBlockEntity extends BlockEntity {
     }
 
     /** Posición del asiento i (dónde va la entidad) en un instante, y hacia dónde mira. {x, y, z, yaw} */
-    public double[] puesto(int i, float tiempo) {
+    public double[] puesto(int i, double tiempo) {
         Direction f = facing();
         Direction u = f.getClockWise();
         double a = angulo(tiempo) + 2 * Math.PI * i / asientos();
@@ -111,11 +120,26 @@ public class AtraccionBlockEntity extends BlockEntity {
             double x = Math.cos(a) * R_NORIA, y = Math.sin(a) * R_NORIA;
             return new double[]{base.x + u.getStepX() * x, base.y + CY_NORIA + y - ALTO_CABINA, base.z + u.getStepZ() * x, f.toYRot()};
         }
+        if (tipo() == AtraccionBlock.PULPO) {
+            double[] e = brazo(i, tiempo);
+            return new double[]{base.x + e[0], base.y + e[1] - CUELGA_CESTA, base.z + e[2], (float) Math.toDegrees(angulo(tiempo) * 2.6 + i)};
+        }
         double R = 2.6;
         double bob = 0.62 + 0.3 * Math.sin(angulo(tiempo) * 5 + i * 1.7);
         double x = Math.cos(a) * R, z = Math.sin(a) * R;
         float yaw = (float) Math.toDegrees(a);
         return new double[]{base.x + x, base.y + bob, base.z + z, yaw};
+    }
+
+    // ------------------------------------------------------------------ pulpo
+    public static final double HUB_PULPO = 3.6, LARGO_BRAZO = 4.6, CUELGA_CESTA = 1.1;
+
+    /** Punta del brazo i del pulpo (relativa a la base): los brazos giran y suben y bajan como olas. */
+    public double[] brazo(int i, double tiempo) {
+        double ang = angulo(tiempo), a = ang + 2 * Math.PI * i / asientos();
+        double elev = vel == 0 && !gira ? -0.32 : Math.sin(ang * 2.2 + i * 1.26) * 0.42 * Math.min(1, vel / velMax()) - 0.32 * (1 - Math.min(1, vel / velMax()));
+        double h = Math.cos(elev) * LARGO_BRAZO;
+        return new double[]{Math.cos(a) * h, HUB_PULPO + Math.sin(elev) * LARGO_BRAZO, Math.sin(a) * h};
     }
 
     @Override

@@ -1,0 +1,16 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "B"
+ ],
+ "key": {
+  "B": {
+   "tag": "minecraft:wooden_buttons"
+  }
+ },
+ "result": {
+  "item": "miscelanea:boliche",
+  "count": 1
+ }
+}

@@ -149,6 +149,8 @@ public final class ClientEvents {
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.MAQUINA_FERIA_BE.get(), com.miscelanea.client.feria.MaquinaFeriaRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.MAQUINA_ALTA_BE.get(), com.miscelanea.client.feria.MaquinaAltaRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.AIRHOCKEY_BE.get(), com.miscelanea.client.mesas.AirHockeyRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.PUESTO_FERIA_BE.get(), com.miscelanea.client.feria.PuestoFeriaRenderer::new);
+            event.registerEntityRenderer(com.miscelanea.registry.ModEntities.BOLA_PETANCA.get(), com.miscelanea.client.feria.BolaPetancaRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.BALON.get(), com.miscelanea.client.feria.BalonRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.BOLERA_BE.get(), com.miscelanea.client.bolos.BoleraRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TORRE_BE.get(), com.miscelanea.client.torre.TorreRenderer::new);

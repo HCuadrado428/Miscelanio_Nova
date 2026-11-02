@@ -47,6 +47,10 @@ public class BolaBolosItem extends Item {
         b.setDeltaMovement(dir.scale(0.22 + 0.36 * fuerza));
         b.efecto = p.isShiftKeyDown() ? (p.getMainArm() == net.minecraft.world.entity.HumanoidArm.RIGHT ? 1 : -1) : 0;
         BoleraBlockEntity be = BolaBolos.buscarBolera(l, p.position(), dir);
+        if (be == null) {
+            p.displayClientMessage(net.minecraft.network.chat.Component.translatable("miscelanea.bolos.sin_bolera"), true);
+            return;
+        }
         l.addFreshEntity(b);
         if (be != null && !be.lanzamiento(p, b.getId())) {
             p.displayClientMessage(Component.translatable("miscelanea.bolos.ocupada", be.nombre), true);

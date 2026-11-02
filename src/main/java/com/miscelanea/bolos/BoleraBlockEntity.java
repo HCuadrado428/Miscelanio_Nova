@@ -57,6 +57,7 @@ public class BoleraBlockEntity extends BlockEntity {
     public long contacto = -1, lanzado;
     private int dePieAntes = N;
     private int bolaId = -1;
+    private double[] qAntes;
 
     public BoleraBlockEntity(BlockPos p, BlockState s) {
         super(com.miscelanea.registry.ModBlocks.BOLERA_BE.get(), p, s);
@@ -118,6 +119,7 @@ public class BoleraBlockEntity extends BlockEntity {
         lanzado = level.getGameTime();
         dePieAntes = dePie();
         bolaId = idBola;
+        qAntes = null;
         cambio();
         return true;
     }
@@ -134,9 +136,12 @@ public class BoleraBlockEntity extends BlockEntity {
                 if (be.contacto < 0) be.contacto = ahora;
                 Vec3 v = bola.getDeltaMovement();
                 double[] vl = be.localDir(v.x, v.z);
+                double[] q0 = be.qAntes != null ? be.qAntes : q;
+                double sx = q[0] - q0[0], sz = q[1] - q0[1], l2 = sx * sx + sz * sz;
                 for (int k = 0; k < N; k++) {
                     if (be.estado[k] != 0) continue;
-                    double dx = BX[k] - q[0], dz = BZ[k] - q[1];
+                    double u = l2 < 1e-9 ? 1 : Math.max(0, Math.min(1, ((BX[k] - q0[0]) * sx + (BZ[k] - q0[1]) * sz) / l2));
+                    double dx = BX[k] - (q0[0] + sx * u), dz = BZ[k] - (q0[1] + sz * u);
                     if (Math.hypot(dx, dz) < RADIO_BOLA + RADIO_BOLO + 0.02) {
                         double ang = Math.atan2(vl[1] * 2 + dz / (Math.hypot(dx, dz) + 1e-6), vl[0] * 2 + dx / (Math.hypot(dx, dz) + 1e-6));
                         be.tumbar(k, ahora, (float) ang);
@@ -145,6 +150,7 @@ public class BoleraBlockEntity extends BlockEntity {
                     }
                 }
             }
+            be.qAntes = q;
             if (be.contacto < 0 && ahora - be.lanzado > 400) bola.discard();
         }
         // los bolos que caen tiran a los de al lado
@@ -190,7 +196,7 @@ public class BoleraBlockEntity extends BlockEntity {
         tiradas.add(tumbados);
         Player p = jugador != null ? l.getPlayerByUUID(jugador) : null;
         if (bola != null && bola.isAlive()) bola.discard();
-        if (p != null && !p.getInventory().add(new ItemStack(ModItems.BOLA_BOLOS.get()))) p.drop(new ItemStack(ModItems.BOLA_BOLOS.get()), false);
+        if (p != null && !p.getAbilities().instabuild && !p.getInventory().add(new ItemStack(ModItems.BOLA_BOLOS.get()))) p.drop(new ItemStack(ModItems.BOLA_BOLOS.get()), false);
         boolean pleno = tumbados == N && dePieAntes == N, semipleno = !pleno && dePie() == 0;
         Vec3 c = mundo(0, 1, 0);
         if (pleno || semipleno) {
@@ -250,7 +256,7 @@ public class BoleraBlockEntity extends BlockEntity {
         if (c.length == N) caida = c;
         int[] d = t.getIntArray("dir");
         if (d.length == N) for (int k = 0; k < N; k++) dir[k] = d[k] / 1000F;
-        enJuego = t.getBoolean("juego");
+        enJuego = t.getBoolean("juego") && level != null && level.isClientSide;
     }
 
     @Override

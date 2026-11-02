@@ -112,6 +112,15 @@ public class Miscelanea {
             event.accept(ModItems.MARTILLO_FUERZA);
             event.accept(ModItems.BALON);
             event.accept(ModItems.AIRHOCKEY);
+            event.accept(ModItems.PULPO);
+            event.accept(ModItems.PESCA_PATITOS);
+            event.accept(ModItems.CANA_PATITOS);
+            event.accept(ModItems.TOMBOLA);
+            event.accept(ModItems.CHURRERIA);
+            event.accept(ModItems.TABURETE);
+            event.accept(ModItems.BOLAS_PETANCA);
+            event.accept(ModItems.BOLICHE);
+            event.accept(ModItems.METRO);
             event.accept(ModItems.BOLERA);
             event.accept(ModItems.BOLA_BOLOS);
             event.accept(ModItems.DIANA_DARDOS);

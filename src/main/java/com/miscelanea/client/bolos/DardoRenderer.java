@@ -21,7 +21,7 @@ public class DardoRenderer extends EntityRenderer<Dardo> {
     @Override
     public void render(Dardo e, float yaw, float pt, PoseStack ps, MultiBufferSource buf, int luz) {
         ps.pushPose();
-        ps.mulPose(Axis.YP.rotationDegrees(180 - Mth.lerp(pt, e.yRotO, e.getYRot())));
+        ps.mulPose(Axis.YP.rotationDegrees(Mth.lerp(pt, e.yRotO, e.getYRot()) + 180F));
         ps.mulPose(Axis.XP.rotationDegrees(Mth.lerp(pt, e.xRotO, e.getXRot())));
         ps.scale(0.55F, 0.55F, 0.55F);
         ps.translate(-0.5, -0.5, -0.25);

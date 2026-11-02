@@ -33,7 +33,8 @@ public class Asiento extends Entity {
         super.tick();
         if (!level().isClientSide) {
             BlockPos b = BlockPos.containing(getX(), getY() + 0.65, getZ());
-            boolean mueble = level().getBlockState(b).getBlock() instanceof SillaBlock || level().getBlockState(b).getBlock() instanceof SofaBlock;
+            boolean mueble = level().getBlockState(b).getBlock() instanceof SillaBlock || level().getBlockState(b).getBlock() instanceof SofaBlock
+                    || level().getBlockState(b).getBlock() instanceof TabureteBlock;
             if (getPassengers().isEmpty() || !mueble) discard();
         }
     }

@@ -25,7 +25,7 @@ public class SustoRenderer implements BlockEntityRenderer<SustoBlockEntity> {
         if (t < 0 || t > SustoBlockEntity.DURA) {
             // ojos que parpadean dentro de la caja
             float g = be.getLevel().getGameTime() + pt;
-            if ((int) (g / 7 + be.getBlockPos().asLong()) % 23 != 0) {
+            if (Math.floorMod((long) (g / 7) + (be.getBlockPos().asLong() ^ (be.getBlockPos().asLong() >>> 32)), 23L) != 0) {
                 ps.translate(-0.5, 0, -0.5);
                 FeriaPiezas.modelo(ps, vc, FeriaPiezas.rl("ojos"), 1, 1, 1, 0xF000F0);
             }

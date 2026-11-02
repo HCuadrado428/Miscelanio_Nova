@@ -68,7 +68,7 @@ public final class ModBlocks {
                     .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 10), com.miscelanea.feria.AtraccionBlock.TIOVIVO));
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.feria.AtraccionBlockEntity>> ATRACCION_BE = BLOCK_ENTITIES.register("atraccion",
-            () -> BlockEntityType.Builder.of(com.miscelanea.feria.AtraccionBlockEntity::new, NORIA.get(), TIOVIVO.get()).build(null));
+            () -> BlockEntityType.Builder.of(com.miscelanea.feria.AtraccionBlockEntity::new, NORIA.get(), TIOVIVO.get(), PULPO.get()).build(null));
     public static final RegistryObject<Block> SUSTO = BLOCKS.register("susto",
             () -> new com.miscelanea.feria.SustoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(1.5F)
                     .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 3)));
@@ -155,6 +155,23 @@ public final class ModBlocks {
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.cartas.MesaCartasBlockEntity>> MESA_CARTAS_BE = BLOCK_ENTITIES.register("mesa_cartas",
             () -> BlockEntityType.Builder.of(com.miscelanea.cartas.MesaCartasBlockEntity::new, MESA_CARTAS.get()).build(null));
+    public static final RegistryObject<Block> PULPO = BLOCKS.register("pulpo",
+            () -> new com.miscelanea.feria.AtraccionBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(3.0F)
+                    .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 10), com.miscelanea.feria.AtraccionBlock.PULPO));
+    public static final RegistryObject<Block> PESCA_PATITOS = BLOCKS.register("pesca_patitos",
+            () -> new com.miscelanea.feria.PuestoFeriaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WATER).strength(2.0F)
+                    .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 4), com.miscelanea.feria.PuestoFeriaBlock.PATITOS));
+    public static final RegistryObject<Block> TOMBOLA = BLOCKS.register("tombola",
+            () -> new com.miscelanea.feria.PuestoFeriaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).strength(2.0F)
+                    .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 8), com.miscelanea.feria.PuestoFeriaBlock.TOMBOLA));
+    public static final RegistryObject<Block> CHURRERIA = BLOCKS.register("churreria",
+            () -> new com.miscelanea.feria.PuestoFeriaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(2.0F)
+                    .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 8), com.miscelanea.feria.PuestoFeriaBlock.CHURRERIA));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.feria.PuestoFeriaBlockEntity>> PUESTO_FERIA_BE = BLOCK_ENTITIES.register("puesto_feria",
+            () -> BlockEntityType.Builder.of(com.miscelanea.feria.PuestoFeriaBlockEntity::new, PESCA_PATITOS.get(), TOMBOLA.get(), CHURRERIA.get()).build(null));
+    public static final RegistryObject<Block> TABURETE = BLOCKS.register("taburete",
+            () -> new com.miscelanea.muebles.TabureteBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.0F).sound(SoundType.WOOD).noOcclusion()));
     public static final RegistryObject<Block> BILLAR = BLOCKS.register("billar",
             () -> new com.miscelanea.mesas.BillarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(2.5F)
                     .sound(SoundType.WOOD).noOcclusion()));

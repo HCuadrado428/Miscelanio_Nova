@@ -23,16 +23,19 @@ public class AsientoFeriaRenderer extends EntityRenderer<AsientoFeria> {
     public void render(AsientoFeria e, float yaw, float pt, PoseStack ps, MultiBufferSource buf, int luz) {
         AtraccionBlockEntity b = e.be();
         if (b == null) return;
-        double[] p = b.puesto(e.indice(), e.level().getGameTime() + pt);
+        double[] p = b.puesto(e.indice(), e.level().getGameTime() + (double) pt);
         double ex = Mth.lerp(pt, e.xo, e.getX()), ey = Mth.lerp(pt, e.yo, e.getY()), ez = Mth.lerp(pt, e.zo, e.getZ());
         ps.pushPose();
         ps.translate(p[0] - ex, p[1] - ey, p[2] - ez);
         ps.mulPose(Axis.YP.rotationDegrees((float) -p[3]));
         var vc = buf.getBuffer(Sheets.cutoutBlockSheet());
         int c = e.indice() % 4;
-        if (e.esNoria()) {
+        if (e.esPulpo()) {
+            ps.translate(-0.5, 0, -0.5);
+            FeriaPiezas.modelo(ps, vc, FeriaPiezas.rl("cesta" + c), 1, 1, 1, luz);
+        } else if (e.esNoria()) {
             // un leve balanceo al girar
-            float t = e.level().getGameTime() + pt;
+            float t = (float) (e.level().getGameTime() % 100000L) + pt;
             ps.translate(0, 3.0, 0);
             ps.mulPose(Axis.XP.rotationDegrees((b.gira ? 2.5F : 0.6F) * Mth.sin(t * 0.07F + e.indice())));
             ps.scale(2, 2, 2);

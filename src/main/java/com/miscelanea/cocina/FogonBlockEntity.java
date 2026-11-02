@@ -69,8 +69,7 @@ public class FogonBlockEntity extends BlockEntity {
         ItemStack uno = st.copyWithCount(1);
         dentro.add(uno);
         if (!p.getAbilities().instabuild) {
-            if (st.is(Items.MILK_BUCKET)) p.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(Items.BUCKET));
-            else st.shrink(1);
+            st.shrink(1);
         }
         level.playSound(null, worldPosition, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 0.7F, 1.2F);
         Recetas.Receta r = Recetas.buscar(dentro);
@@ -92,6 +91,8 @@ public class FogonBlockEntity extends BlockEntity {
         if (t >= COCCION) {
             Recetas.Receta r = Recetas.buscar(be.dentro);
             be.hecho = r != null ? r.plato().get() : ItemStack.EMPTY;
+            if (be.dentro.stream().anyMatch(x -> x.is(Items.MILK_BUCKET)))
+                Containers.dropItemStack(l, pos.getX() + 0.5, pos.getY() + 1.1, pos.getZ() + 0.5, new ItemStack(Items.BUCKET));
             be.dentro.clear();
             be.inicio = -1;
             l.setBlock(pos, s.setValue(FogonBlock.LIT, false), 3);

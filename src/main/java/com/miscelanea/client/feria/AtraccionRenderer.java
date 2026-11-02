@@ -28,10 +28,12 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
     public void render(AtraccionBlockEntity be, float pt, PoseStack ps, MultiBufferSource buf, int luz, int overlay) {
         if (be.getLevel() == null) return;
         VertexConsumer vc = buf.getBuffer(Sheets.cutoutBlockSheet());
-        float t = be.getLevel().getGameTime() + pt;
-        float ang = be.angulo(t);
+        double tt = be.getLevel().getGameTime() + (double) pt;
+        float t = (float) (be.getLevel().getGameTime() % 100000L) + pt;
+        float ang = be.angulo(tt);
         int brillo = Math.max(luz & 0xFFFF, 0xA0) | (luz & 0xFFFF0000);
         if (be.tipo() == AtraccionBlock.NORIA) noria(be, ps, vc, t, ang, brillo);
+        else if (be.tipo() == AtraccionBlock.PULPO) pulpo(be, ps, vc, t, ang, brillo);
         else tiovivo(be, ps, vc, t, ang, brillo);
     }
 
@@ -108,6 +110,44 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
                         FeriaPiezas.luz(k, t * 1.3F, be.gira));
             }
             FeriaPiezas.bombilla(ps, vc, cx + fx * cara * (w + 0.62), cy, cz + fz * cara * (w + 0.62), 0.6F, FeriaPiezas.luz(cara + 2, t, be.gira));
+        }
+    }
+
+    private void pulpo(AtraccionBlockEntity be, PoseStack ps, VertexConsumer vc, float t, float ang, int luz) {
+        double cx = 0.5, cz = 0.5, hub = AtraccionBlockEntity.HUB_PULPO;
+        // base octogonal y columna
+        for (int k = 0; k < 8; k++) {
+            double a0 = k * Math.PI / 4, a1 = (k + 1) * Math.PI / 4;
+            FeriaPiezas.barra(ps, vc, k % 2 == 0 ? "metal_rojo" : "dorado", cx + Math.cos(a0) * 1.6, 0.15, cz + Math.sin(a0) * 1.6, cx + Math.cos(a1) * 1.6, 0.15, cz + Math.sin(a1) * 1.6, 0.3F, 0.3F, luz);
+            FeriaPiezas.barra(ps, vc, "metal_blanco", cx, 0.12, cz, cx + Math.cos(a0 + 0.39) * 1.55, 0.12, cz + Math.sin(a0 + 0.39) * 1.55, 0.2F, 0.9F, luz);
+        }
+        FeriaPiezas.barra(ps, vc, "metal_rojo", cx, 0.2, cz, cx, hub, cz, 0.9F, 0.9F, luz);
+        for (int k = 0; k < 5; k++) FeriaPiezas.barra(ps, vc, "dorado", cx, 0.6 + k * 0.6, cz, cx, 0.75 + k * 0.6, cz, 1.0F, 1.0F, luz);
+        // cabeza del pulpo: cúpula con ojos que gira
+        ps.pushPose();
+        ps.translate(cx, hub, cz);
+        ps.mulPose(com.mojang.math.Axis.YP.rotation(-ang));
+        FeriaPiezas.caja(ps, vc, "color0", 0, 0.3, 0, 1.6, 0.6, 1.6, luz);
+        FeriaPiezas.caja(ps, vc, "color0", 0, 0.75, 0, 1.2, 0.4, 1.2, luz);
+        FeriaPiezas.caja(ps, vc, "color0", 0, 1.05, 0, 0.7, 0.3, 0.7, luz);
+        for (int k = 0; k < 4; k++) {
+            double a = k * Math.PI / 2;
+            FeriaPiezas.bombilla(ps, vc, Math.cos(a) * 0.82, 0.5, Math.sin(a) * 0.82, 0.22F, 0xFFFFFF);
+            FeriaPiezas.bombilla(ps, vc, Math.cos(a) * 0.9, 0.5, Math.sin(a) * 0.9, 0.1F, 0x101020);
+        }
+        ps.popPose();
+        // brazos con bombillas y barra de la cesta
+        int n = be.asientos();
+        for (int i = 0; i < n; i++) {
+            double[] e = be.brazo(i, be.getLevel().getGameTime() + (double) pt);
+            double ex = cx + e[0], ey = e[1], ez = cz + e[2];
+            FeriaPiezas.barra(ps, vc, "metal_blanco", cx, hub + 0.2, cz, ex, ey, ez, 0.32F, 0.32F, luz);
+            FeriaPiezas.barra(ps, vc, "color0", cx, hub + 0.45, cz, ex, ey + 0.1, ez, 0.12F, 0.12F, luz);
+            FeriaPiezas.barra(ps, vc, "dorado", ex, ey, ez, ex, ey - AtraccionBlockEntity.CUELGA_CESTA + 0.9, ez, 0.14F, 0.14F, luz);
+            for (int j = 1; j <= 6; j++) {
+                double k = j / 7.0;
+                FeriaPiezas.bombilla(ps, vc, cx + (ex - cx) * k, hub + 0.42 + (ey - hub - 0.42) * k, cz + (ez - cz) * k, 0.12F, FeriaPiezas.luz(i * 3 + j, t, be.gira));
+            }
         }
     }
 

@@ -227,6 +227,24 @@ public final class ModItems {
             () -> new com.miscelanea.feria.BalonItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> AIRHOCKEY = ITEMS.register("air_hockey",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.AIRHOCKEY.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> PULPO = ITEMS.register("pulpo",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.PULPO.get(), new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> PESCA_PATITOS = ITEMS.register("pesca_patitos",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.PESCA_PATITOS.get(), new Item.Properties()));
+    public static final RegistryObject<Item> TOMBOLA = ITEMS.register("tombola",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.TOMBOLA.get(), new Item.Properties()));
+    public static final RegistryObject<Item> CHURRERIA = ITEMS.register("churreria",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.CHURRERIA.get(), new Item.Properties()));
+    public static final RegistryObject<Item> TABURETE = ITEMS.register("taburete",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.TABURETE.get(), new Item.Properties()));
+    public static final RegistryObject<Item> CANA_PATITOS = ITEMS.register("cana_patitos",
+            () -> new com.miscelanea.feria.CanaPatitosItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> BOLAS_PETANCA = ITEMS.register("bolas_petanca",
+            () -> new com.miscelanea.petanca.PetancaItem(new Item.Properties().stacksTo(3), com.miscelanea.petanca.PetancaItem.BOLA));
+    public static final RegistryObject<Item> BOLICHE = ITEMS.register("boliche",
+            () -> new com.miscelanea.petanca.PetancaItem(new Item.Properties().stacksTo(1), com.miscelanea.petanca.PetancaItem.BOLICHE));
+    public static final RegistryObject<Item> METRO = ITEMS.register("metro",
+            () -> new com.miscelanea.petanca.PetancaItem(new Item.Properties().stacksTo(1), com.miscelanea.petanca.PetancaItem.METRO));
     public static final RegistryObject<Item> PISTA_BAILE = ITEMS.register("pista_baile",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PISTA_BAILE.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> BILLAR = ITEMS.register("billar",

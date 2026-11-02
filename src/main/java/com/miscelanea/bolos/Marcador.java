@@ -101,18 +101,19 @@ public final class Marcador {
                 }
             } else {
                 int quedan = 10;
+                boolean primera = true;
                 for (int k = i; k < t.size(); k++) {
                     int v = t.get(k);
-                    if (quedan == 10 && v == 10) sb.append("X");
-                    else if (v == quedan) {
-                        sb.append("/");
-                        quedan = 0;
-                    } else {
+                    if (primera && v == 10) sb.append("X");
+                    else if (!primera && v == quedan) sb.append("/");
+                    else {
                         sb.append(v == 0 ? "-" : String.valueOf(v));
                         quedan -= v;
+                        primera = false;
                         continue;
                     }
                     quedan = 10;
+                    primera = true;
                 }
                 i = t.size();
             }

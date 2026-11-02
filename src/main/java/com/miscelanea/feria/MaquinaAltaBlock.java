@@ -109,9 +109,10 @@ public class MaquinaAltaBlock extends BaseEntityBlock {
     public void playerWillDestroy(Level l, BlockPos p, BlockState s, Player pl) {
         if (!l.isClientSide && pl.isCreative() && s.getValue(HALF) == DoubleBlockHalf.UPPER) {
             BlockPos d = p.below();
-            if (l.getBlockState(d).is(this)) {
+            BlockState ds = l.getBlockState(d);
+            if (ds.is(this)) {
                 l.setBlock(d, Blocks.AIR.defaultBlockState(), 35);
-                l.levelEvent(pl, 2001, d, Block.getId(l.getBlockState(d)));
+                l.levelEvent(pl, 2001, d, Block.getId(ds));
             }
         }
         super.playerWillDestroy(l, p, s, pl);

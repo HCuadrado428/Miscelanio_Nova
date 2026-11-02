@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  */
 public class AtraccionBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
-    public static final int NORIA = 0, TIOVIVO = 1;
+    public static final int NORIA = 0, TIOVIVO = 1, PULPO = 2;
     public final int tipo;
 
     public AtraccionBlock(Properties p, int tipo) {
@@ -85,7 +85,7 @@ public class AtraccionBlock extends BaseEntityBlock {
     @Override
     public void onRemove(BlockState s, Level l, BlockPos pos, BlockState n, boolean mov) {
         if (!s.is(n.getBlock()) && !l.isClientSide)
-            for (AsientoFeria a : l.getEntitiesOfClass(AsientoFeria.class, new net.minecraft.world.phys.AABB(pos).inflate(14)))
+            for (AsientoFeria a : l.getEntitiesOfClass(AsientoFeria.class, AtraccionBlockEntity.zona(pos)))
                 if (a.atraccion().equals(pos)) a.discard();
         super.onRemove(s, l, pos, n, mov);
     }
