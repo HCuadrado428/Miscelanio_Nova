@@ -33,8 +33,9 @@ public class AsientoFeriaRenderer extends EntityRenderer<AsientoFeria> {
         if (e.esNoria()) {
             // un leve balanceo al girar
             float t = e.level().getGameTime() + pt;
-            ps.translate(0, 1.5, 0);
-            ps.mulPose(Axis.XP.rotationDegrees((b.gira ? 3F : 0.8F) * Mth.sin(t * 0.09F + e.indice())));
+            ps.translate(0, 3.0, 0);
+            ps.mulPose(Axis.XP.rotationDegrees((b.gira ? 2.5F : 0.6F) * Mth.sin(t * 0.07F + e.indice())));
+            ps.scale(2, 2, 2);
             ps.translate(-0.5, -1.5, -0.5);
             FeriaPiezas.modelo(ps, vc, FeriaPiezas.CABINA[c], 1, 1, 1, luz);
         } else {

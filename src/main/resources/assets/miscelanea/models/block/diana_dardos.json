@@ -4,7 +4,9 @@
   "d": "miscelanea:block/feria/diana_dardos",
   "n": "miscelanea:block/feria/negro",
   "m": "miscelanea:block/feria/metal_blanco",
-  "particle": "miscelanea:block/feria/diana_dardos"
+  "particle": "miscelanea:block/feria/diana_dardos",
+  "w": "miscelanea:block/feria/madera_b",
+  "z": "miscelanea:block/feria/pizarra"
  },
  "elements": [
   {
@@ -146,13 +148,13 @@
   {
    "from": [
     7,
-    15.5,
+    15.488,
     15
    ],
    "to": [
     9,
     16,
-    16
+    16.012
    ],
    "faces": {
     "north": {
@@ -208,6 +210,324 @@
       1
      ],
      "texture": "#m"
+    }
+   }
+  },
+  {
+   "from": [
+    -6,
+    0,
+    14.6
+   ],
+   "to": [
+    0,
+    16,
+    15.4
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      0,
+      0,
+      6,
+      16
+     ],
+     "texture": "#w"
+    },
+    "south": {
+     "uv": [
+      10,
+      0,
+      16,
+      16
+     ],
+     "texture": "#w"
+    },
+    "east": {
+     "uv": [
+      0.6,
+      0,
+      1.4,
+      16
+     ],
+     "texture": "#w"
+    },
+    "west": {
+     "uv": [
+      14.6,
+      0,
+      15.4,
+      16
+     ],
+     "texture": "#w"
+    },
+    "up": {
+     "uv": [
+      10,
+      14.6,
+      16,
+      15.4
+     ],
+     "texture": "#w"
+    },
+    "down": {
+     "uv": [
+      10,
+      0.6,
+      16,
+      1.4
+     ],
+     "texture": "#w"
+    }
+   }
+  },
+  {
+   "from": [
+    -5.5,
+    1,
+    14.5
+   ],
+   "to": [
+    -0.5,
+    15,
+    14.6
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      0.5,
+      1,
+      5.5,
+      15
+     ],
+     "texture": "#z"
+    }
+   }
+  },
+  {
+   "from": [
+    16,
+    0,
+    14.6
+   ],
+   "to": [
+    22,
+    16,
+    15.4
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      10,
+      0,
+      16,
+      16
+     ],
+     "texture": "#w"
+    },
+    "south": {
+     "uv": [
+      0,
+      0,
+      6,
+      16
+     ],
+     "texture": "#w"
+    },
+    "east": {
+     "uv": [
+      0.6,
+      0,
+      1.4,
+      16
+     ],
+     "texture": "#w"
+    },
+    "west": {
+     "uv": [
+      14.6,
+      0,
+      15.4,
+      16
+     ],
+     "texture": "#w"
+    },
+    "up": {
+     "uv": [
+      0,
+      14.6,
+      6,
+      15.4
+     ],
+     "texture": "#w"
+    },
+    "down": {
+     "uv": [
+      0,
+      0.6,
+      6,
+      1.4
+     ],
+     "texture": "#w"
+    }
+   }
+  },
+  {
+   "from": [
+    16.5,
+    1,
+    14.5
+   ],
+   "to": [
+    21.5,
+    15,
+    14.6
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      10.5,
+      1,
+      15.5,
+      15
+     ],
+     "texture": "#z"
+    }
+   }
+  },
+  {
+   "from": [
+    -0.5,
+    15.5,
+    14
+   ],
+   "to": [
+    16.5,
+    16.5,
+    16
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      15.5,
+      15.5,
+      16,
+      16
+     ],
+     "texture": "#w"
+    },
+    "south": {
+     "uv": [
+      15.5,
+      15.5,
+      16,
+      16
+     ],
+     "texture": "#w"
+    },
+    "east": {
+     "uv": [
+      0,
+      15.5,
+      2,
+      16
+     ],
+     "texture": "#w"
+    },
+    "west": {
+     "uv": [
+      14,
+      15.5,
+      16,
+      16
+     ],
+     "texture": "#w"
+    },
+    "up": {
+     "uv": [
+      15.5,
+      14,
+      16,
+      16
+     ],
+     "texture": "#w"
+    },
+    "down": {
+     "uv": [
+      15.5,
+      0,
+      16,
+      2
+     ],
+     "texture": "#w"
+    }
+   }
+  },
+  {
+   "from": [
+    -0.5,
+    -0.5,
+    14
+   ],
+   "to": [
+    16.5,
+    0.5,
+    16
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      15.5,
+      15.5,
+      16,
+      16
+     ],
+     "texture": "#w"
+    },
+    "south": {
+     "uv": [
+      15.5,
+      15.5,
+      16,
+      16
+     ],
+     "texture": "#w"
+    },
+    "east": {
+     "uv": [
+      0,
+      15.5,
+      2,
+      16
+     ],
+     "texture": "#w"
+    },
+    "west": {
+     "uv": [
+      14,
+      15.5,
+      16,
+      16
+     ],
+     "texture": "#w"
+    },
+    "up": {
+     "uv": [
+      15.5,
+      14,
+      16,
+      16
+     ],
+     "texture": "#w"
+    },
+    "down": {
+     "uv": [
+      15.5,
+      0,
+      16,
+      2
+     ],
+     "texture": "#w"
     }
    }
   }

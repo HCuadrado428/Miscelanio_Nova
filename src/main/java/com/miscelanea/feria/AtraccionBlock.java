@@ -85,7 +85,7 @@ public class AtraccionBlock extends BaseEntityBlock {
     @Override
     public void onRemove(BlockState s, Level l, BlockPos pos, BlockState n, boolean mov) {
         if (!s.is(n.getBlock()) && !l.isClientSide)
-            for (AsientoFeria a : l.getEntitiesOfClass(AsientoFeria.class, new net.minecraft.world.phys.AABB(pos).inflate(10)))
+            for (AsientoFeria a : l.getEntitiesOfClass(AsientoFeria.class, new net.minecraft.world.phys.AABB(pos).inflate(14)))
                 if (a.atraccion().equals(pos)) a.discard();
         super.onRemove(s, l, pos, n, mov);
     }

@@ -101,12 +101,26 @@ public class AsientoFeria extends Entity {
 
     @Override
     public double getPassengersRidingOffset() {
-        return esNoria() ? 0.35 : 0.85;
+        return esNoria() ? 0.75 : 0.85;
     }
 
     @Override
     protected boolean canAddPassenger(Entity e) {
-        return getPassengers().isEmpty();
+        return getPassengers().size() < (esNoria() ? 4 : 1);
+    }
+
+    /** En la cabina de la noria caben cuatro: dos bancos, uno frente a otro. */
+    @Override
+    protected void positionRider(Entity p, MoveFunction mover) {
+        if (!hasPassenger(p)) return;
+        if (!esNoria()) {
+            super.positionRider(p, mover);
+            return;
+        }
+        int i = getPassengers().indexOf(p);
+        double ox = i % 2 == 0 ? -0.45 : 0.45, oz = i < 2 ? -0.6 : 0.6;
+        double yaw = Math.toRadians(getYRot()), c = Math.cos(yaw), s = Math.sin(yaw);
+        mover.accept(p, getX() + ox * c - oz * s, getY() + getPassengersRidingOffset() + p.getMyRidingOffset(), getZ() + oz * c + ox * s);
     }
 
     @Override
@@ -114,7 +128,7 @@ public class AsientoFeria extends Entity {
         AtraccionBlockEntity b = be();
         if (b != null && b.tipo() == AtraccionBlock.NORIA) {
             // al bajar de la noria se baja en el suelo, delante de la base
-            return Vec3.atBottomCenterOf(atraccion().relative(b.facing(), 2));
+            return Vec3.atBottomCenterOf(atraccion().relative(b.facing(), 3));
         }
         return super.getDismountLocationForPassenger(e);
     }

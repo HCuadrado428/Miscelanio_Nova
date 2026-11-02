@@ -142,6 +142,7 @@ public final class ClientEvents {
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.PISTA_BAILE_BE.get(), com.miscelanea.client.baile.PistaBaileRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.ATRACCION_BE.get(), com.miscelanea.client.feria.AtraccionRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.ASIENTO_FERIA.get(), com.miscelanea.client.feria.AsientoFeriaRenderer::new);
+            event.registerEntityRenderer(com.miscelanea.registry.ModEntities.CABINA_NORIA.get(), com.miscelanea.client.feria.AsientoFeriaRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.COCHE_CHOQUE.get(), com.miscelanea.client.feria.CocheChoqueRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.VAGONETA_BRUJA.get(), com.miscelanea.client.feria.VagonetaBrujaRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.SUSTO_BE.get(), com.miscelanea.client.feria.SustoRenderer::new);

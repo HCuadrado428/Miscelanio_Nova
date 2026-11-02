@@ -3,9 +3,10 @@
  "textures": {
   "m": "miscelanea:block/feria/madera_b",
   "c": "miscelanea:block/feria/corcho",
-  "p": "miscelanea:block/feria/papel",
+  "p": "miscelanea:block/feria/poster_torneo",
   "r": "miscelanea:block/feria/metal_rojo",
-  "particle": "miscelanea:block/feria/corcho"
+  "particle": "miscelanea:block/feria/corcho",
+  "q": "miscelanea:block/feria/lona_blanca"
  },
  "elements": [
   {
@@ -640,6 +641,142 @@
       1.9
      ],
      "texture": "#r"
+    }
+   }
+  },
+  {
+   "from": [
+    1.6,
+    2,
+    14.35
+   ],
+   "to": [
+    3.2,
+    4.5,
+    14.45
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      12.8,
+      11.5,
+      14.4,
+      14
+     ],
+     "texture": "#q"
+    },
+    "south": {
+     "uv": [
+      1.6,
+      11.5,
+      3.2,
+      14
+     ],
+     "texture": "#q"
+    },
+    "east": {
+     "uv": [
+      1.55,
+      11.5,
+      1.65,
+      14
+     ],
+     "texture": "#q"
+    },
+    "west": {
+     "uv": [
+      14.35,
+      11.5,
+      14.45,
+      14
+     ],
+     "texture": "#q"
+    },
+    "up": {
+     "uv": [
+      1.6,
+      14.35,
+      3.2,
+      14.45
+     ],
+     "texture": "#q"
+    },
+    "down": {
+     "uv": [
+      1.6,
+      1.55,
+      3.2,
+      1.65
+     ],
+     "texture": "#q"
+    }
+   }
+  },
+  {
+   "from": [
+    12.6,
+    2.4,
+    14.35
+   ],
+   "to": [
+    14.4,
+    4.4,
+    14.45
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      1.6,
+      11.6,
+      3.4,
+      13.6
+     ],
+     "texture": "#q"
+    },
+    "south": {
+     "uv": [
+      12.6,
+      11.6,
+      14.4,
+      13.6
+     ],
+     "texture": "#q"
+    },
+    "east": {
+     "uv": [
+      1.55,
+      11.6,
+      1.65,
+      13.6
+     ],
+     "texture": "#q"
+    },
+    "west": {
+     "uv": [
+      14.35,
+      11.6,
+      14.45,
+      13.6
+     ],
+     "texture": "#q"
+    },
+    "up": {
+     "uv": [
+      12.6,
+      14.35,
+      14.4,
+      14.45
+     ],
+     "texture": "#q"
+    },
+    "down": {
+     "uv": [
+      12.6,
+      1.55,
+      14.4,
+      1.65
+     ],
+     "texture": "#q"
     }
    }
   }

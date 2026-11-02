@@ -6,7 +6,10 @@
   "f": "miscelanea:block/feria/fondo_gancho",
   "c": "miscelanea:block/feria/cartel_gancho",
   "o": "miscelanea:block/feria/dorado",
-  "particle": "miscelanea:block/feria/gancho_cuerpo"
+  "particle": "miscelanea:block/feria/gancho_cuerpo",
+  "e": "miscelanea:block/feria/neon_rosa",
+  "a": "miscelanea:block/feria/neon_azul",
+  "y": "miscelanea:block/feria/neon_amarillo"
  },
  "elements": [
   {
@@ -754,6 +757,466 @@
       15.7
      ],
      "texture": "#o"
+    }
+   }
+  },
+  {
+   "from": [
+    0.288,
+    15.2,
+    0.188
+   ],
+   "to": [
+    15.712,
+    15.512,
+    0.4
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      0.3,
+      0.5,
+      15.7,
+      0.8
+     ],
+     "texture": "#e",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "south": {
+     "uv": [
+      0.3,
+      0.5,
+      15.7,
+      0.8
+     ],
+     "texture": "#e",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "east": {
+     "uv": [
+      15.6,
+      0.5,
+      15.8,
+      0.8
+     ],
+     "texture": "#e",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "west": {
+     "uv": [
+      0.2,
+      0.5,
+      0.4,
+      0.8
+     ],
+     "texture": "#e",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "up": {
+     "uv": [
+      0.3,
+      0.2,
+      15.7,
+      0.4
+     ],
+     "texture": "#e",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "down": {
+     "uv": [
+      0.3,
+      15.6,
+      15.7,
+      15.8
+     ],
+     "texture": "#e",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    }
+   }
+  },
+  {
+   "from": [
+    0.4,
+    0,
+    0.6
+   ],
+   "to": [
+    0.9,
+    12,
+    0.9
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      15.1,
+      4,
+      15.6,
+      16
+     ],
+     "texture": "#a",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "south": {
+     "uv": [
+      0.4,
+      4,
+      0.9,
+      16
+     ],
+     "texture": "#a",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "east": {
+     "uv": [
+      15.1,
+      4,
+      15.4,
+      16
+     ],
+     "texture": "#a",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "west": {
+     "uv": [
+      0.6,
+      4,
+      0.9,
+      16
+     ],
+     "texture": "#a",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "up": {
+     "uv": [
+      0.4,
+      0.6,
+      0.9,
+      0.9
+     ],
+     "texture": "#a",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "down": {
+     "uv": [
+      0.4,
+      15.1,
+      0.9,
+      15.4
+     ],
+     "texture": "#a",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    }
+   }
+  },
+  {
+   "from": [
+    15.1,
+    0,
+    0.6
+   ],
+   "to": [
+    15.6,
+    12,
+    0.9
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      0.4,
+      4,
+      0.9,
+      16
+     ],
+     "texture": "#a",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "south": {
+     "uv": [
+      15.1,
+      4,
+      15.6,
+      16
+     ],
+     "texture": "#a",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "east": {
+     "uv": [
+      15.1,
+      4,
+      15.4,
+      16
+     ],
+     "texture": "#a",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "west": {
+     "uv": [
+      0.6,
+      4,
+      0.9,
+      16
+     ],
+     "texture": "#a",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "up": {
+     "uv": [
+      15.1,
+      0.6,
+      15.6,
+      0.9
+     ],
+     "texture": "#a",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "down": {
+     "uv": [
+      15.1,
+      15.1,
+      15.6,
+      15.4
+     ],
+     "texture": "#a",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    }
+   }
+  },
+  {
+   "from": [
+    2,
+    13.2,
+    0.1
+   ],
+   "to": [
+    3,
+    14.2,
+    0.2
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      13,
+      1.8,
+      14,
+      2.8
+     ],
+     "texture": "#y",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "south": {
+     "uv": [
+      2,
+      1.8,
+      3,
+      2.8
+     ],
+     "texture": "#y",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "east": {
+     "uv": [
+      15.8,
+      1.8,
+      15.9,
+      2.8
+     ],
+     "texture": "#y",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "west": {
+     "uv": [
+      0.1,
+      1.8,
+      0.2,
+      2.8
+     ],
+     "texture": "#y",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "up": {
+     "uv": [
+      2,
+      0.1,
+      3,
+      0.2
+     ],
+     "texture": "#y",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "down": {
+     "uv": [
+      2,
+      15.8,
+      3,
+      15.9
+     ],
+     "texture": "#y",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    }
+   }
+  },
+  {
+   "from": [
+    13,
+    13.2,
+    0.1
+   ],
+   "to": [
+    14,
+    14.2,
+    0.2
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      2,
+      1.8,
+      3,
+      2.8
+     ],
+     "texture": "#y",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "south": {
+     "uv": [
+      13,
+      1.8,
+      14,
+      2.8
+     ],
+     "texture": "#y",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "east": {
+     "uv": [
+      15.8,
+      1.8,
+      15.9,
+      2.8
+     ],
+     "texture": "#y",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "west": {
+     "uv": [
+      0.1,
+      1.8,
+      0.2,
+      2.8
+     ],
+     "texture": "#y",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "up": {
+     "uv": [
+      13,
+      0.1,
+      14,
+      0.2
+     ],
+     "texture": "#y",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "down": {
+     "uv": [
+      13,
+      15.8,
+      14,
+      15.9
+     ],
+     "texture": "#y",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
     }
    }
   }

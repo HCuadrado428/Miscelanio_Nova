@@ -38,57 +38,77 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
     private void noria(AtraccionBlockEntity be, PoseStack ps, VertexConsumer vc, float t, float ang, int luz) {
         Direction f = be.facing(), u = f.getClockWise();
         double ux = u.getStepX(), uz = u.getStepZ(), fx = f.getStepX(), fz = f.getStepZ();
-        double cx = 0.5, cy = 8.5, cz = 0.5, R = 6;
-        // patas en A a cada lado de la rueda
+        double cx = 0.5, cy = AtraccionBlockEntity.CY_NORIA, cz = 0.5, R = AtraccionBlockEntity.R_NORIA, w = AtraccionBlockEntity.MEDIA_RUEDA;
+        // patas en A a cada lado de la rueda, con travesaños y escalera
         for (int lado = -1; lado <= 1; lado += 2) {
-            double ox = fx * lado * 0.9, oz = fz * lado * 0.9;
-            for (int pie = -1; pie <= 1; pie += 2)
-                FeriaPiezas.barra(ps, vc, "metal_rojo", cx + ox + ux * pie * 3.6, 0, cz + oz + uz * pie * 3.6, cx + ox, cy, cz + oz, 0.3F, 0.3F, luz);
-            FeriaPiezas.barra(ps, vc, "metal_blanco", cx + ox - ux * 1.8, 4.25, cz + oz - uz * 1.8, cx + ox + ux * 1.8, 4.25, cz + oz + uz * 1.8, 0.18F, 0.18F, luz);
+            double ox = fx * lado * (w + 0.45), oz = fz * lado * (w + 0.45);
+            for (int pie = -1; pie <= 1; pie += 2) {
+                FeriaPiezas.barra(ps, vc, "metal_rojo", cx + ox + ux * pie * 5.6, 0, cz + oz + uz * pie * 5.6, cx + ox, cy, cz + oz, 0.45F, 0.45F, luz);
+                FeriaPiezas.caja(ps, vc, "metal_blanco", cx + ox + ux * pie * 5.6, 0.25, cz + oz + uz * pie * 5.6, 1.1, 0.5, 1.1, luz);
+            }
+            for (double h : new double[]{4.5, 9})
+                FeriaPiezas.barra(ps, vc, "metal_blanco", cx + ox - ux * 5.6 * (1 - h / cy), h, cz + oz - uz * 5.6 * (1 - h / cy),
+                        cx + ox + ux * 5.6 * (1 - h / cy), h, cz + oz + uz * 5.6 * (1 - h / cy), 0.22F, 0.22F, luz);
+            for (int k = 0; k < 6; k++) {
+                double h0 = 0.5 + k * 2, h1 = h0 + 2;
+                FeriaPiezas.barra(ps, vc, "metal_rojo", cx + ox - ux * 5.6 * (1 - h0 / cy), h0, cz + oz - uz * 5.6 * (1 - h0 / cy),
+                        cx + ox + ux * 5.6 * (1 - h1 / cy), h1, cz + oz + uz * 5.6 * (1 - h1 / cy), 0.12F, 0.12F, luz);
+            }
         }
-        // eje
-        FeriaPiezas.barra(ps, vc, "dorado", cx - fx * 1.1, cy, cz - fz * 1.1, cx + fx * 1.1, cy, cz + fz * 1.1, 0.4F, 0.4F, luz);
-        // rueda: dos aros, radios y travesaños
-        int seg = 24, n = be.asientos();
+        // eje y buje
+        FeriaPiezas.barra(ps, vc, "dorado", cx - fx * (w + 0.8), cy, cz - fz * (w + 0.8), cx + fx * (w + 0.8), cy, cz + fz * (w + 0.8), 0.55F, 0.55F, luz);
+        FeriaPiezas.barra(ps, vc, "metal_rojo", cx - fx * (w + 0.1), cy, cz - fz * (w + 0.1), cx + fx * (w + 0.1), cy, cz + fz * (w + 0.1), 1.1F, 1.1F, luz);
+        // rueda: dos caras con aro exterior, aro interior, radios dobles y tirantes
+        int seg = 40, n = be.asientos();
         for (int cara = -1; cara <= 1; cara += 2) {
-            double ox = fx * cara * 0.55, oz = fz * cara * 0.55;
+            double ox = fx * cara * w, oz = fz * cara * w;
             for (int k = 0; k < seg; k++) {
                 double a0 = ang + 2 * Math.PI * k / seg, a1 = ang + 2 * Math.PI * (k + 1) / seg;
-                FeriaPiezas.barra(ps, vc, "metal_blanco", cx + ox + ux * Math.cos(a0) * R, cy + Math.sin(a0) * R, cz + oz + uz * Math.cos(a0) * R,
-                        cx + ox + ux * Math.cos(a1) * R, cy + Math.sin(a1) * R, cz + oz + uz * Math.cos(a1) * R, 0.2F, 0.2F, luz);
-                double ri = R * 0.55;
+                for (double r : new double[]{R, R * 0.93})
+                    FeriaPiezas.barra(ps, vc, "metal_blanco", cx + ox + ux * Math.cos(a0) * r, cy + Math.sin(a0) * r, cz + oz + uz * Math.cos(a0) * r,
+                            cx + ox + ux * Math.cos(a1) * r, cy + Math.sin(a1) * r, cz + oz + uz * Math.cos(a1) * r, 0.22F, 0.22F, luz);
+                double ri = R * 0.45;
                 FeriaPiezas.barra(ps, vc, "metal_rojo", cx + ox + ux * Math.cos(a0) * ri, cy + Math.sin(a0) * ri, cz + oz + uz * Math.cos(a0) * ri,
-                        cx + ox + ux * Math.cos(a1) * ri, cy + Math.sin(a1) * ri, cz + oz + uz * Math.cos(a1) * ri, 0.12F, 0.12F, luz);
+                        cx + ox + ux * Math.cos(a1) * ri, cy + Math.sin(a1) * ri, cz + oz + uz * Math.cos(a1) * ri, 0.16F, 0.16F, luz);
             }
-            for (int k = 0; k < n * 2; k++) {
-                double a = ang + Math.PI * k / n;
-                FeriaPiezas.barra(ps, vc, "metal_blanco", cx + ox, cy, cz + oz, cx + ox + ux * Math.cos(a) * R, cy + Math.sin(a) * R, cz + oz + uz * Math.cos(a) * R,
-                        0.12F, 0.12F, luz);
+            for (int k = 0; k < n; k++) {
+                double a = ang + 2 * Math.PI * k / n, b = a + Math.PI / n;
+                FeriaPiezas.barra(ps, vc, "metal_blanco", cx + ox, cy, cz + oz, cx + ox + ux * Math.cos(a) * R, cy + Math.sin(a) * R, cz + oz + uz * Math.cos(a) * R, 0.14F, 0.14F, luz);
+                // zigzag entre aros
+                FeriaPiezas.barra(ps, vc, "metal_rojo", cx + ox + ux * Math.cos(a) * R * 0.45, cy + Math.sin(a) * R * 0.45, cz + oz + uz * Math.cos(a) * R * 0.45,
+                        cx + ox + ux * Math.cos(b) * R * 0.93, cy + Math.sin(b) * R * 0.93, cz + oz + uz * Math.cos(b) * R * 0.93, 0.1F, 0.1F, luz);
+                FeriaPiezas.barra(ps, vc, "metal_rojo", cx + ox + ux * Math.cos(b) * R * 0.93, cy + Math.sin(b) * R * 0.93, cz + oz + uz * Math.cos(b) * R * 0.93,
+                        cx + ox + ux * Math.cos(a + 2 * Math.PI / n) * R * 0.45, cy + Math.sin(a + 2 * Math.PI / n) * R * 0.45, cz + oz + uz * Math.cos(a + 2 * Math.PI / n) * R * 0.45, 0.1F, 0.1F, luz);
             }
         }
         for (int k = 0; k < n; k++) {
             double a = ang + 2 * Math.PI * k / n;
             double px = cx + ux * Math.cos(a) * R, py = cy + Math.sin(a) * R, pz = cz + uz * Math.cos(a) * R;
-            FeriaPiezas.barra(ps, vc, "dorado", px - fx * 0.6, py, pz - fz * 0.6, px + fx * 0.6, py, pz + fz * 0.6, 0.16F, 0.16F, luz);
+            FeriaPiezas.barra(ps, vc, "dorado", px - fx * w, py, pz - fz * w, px + fx * w, py, pz + fz * w, 0.2F, 0.2F, luz);
+            double b = a + Math.PI / n;
+            double qx = cx + ux * Math.cos(b) * R * 0.93, qy = cy + Math.sin(b) * R * 0.93, qz = cz + uz * Math.cos(b) * R * 0.93;
+            FeriaPiezas.barra(ps, vc, "metal_blanco", qx - fx * w, qy, qz - fz * w, qx + fx * w, qy, qz + fz * w, 0.12F, 0.12F, luz);
         }
-        // bombillas por el aro y los radios
-        int b = 0;
+        // bombillas por los aros y los radios, y estrella en el buje
         for (int cara = -1; cara <= 1; cara += 2) {
-            double ox = fx * cara * 0.68, oz = fz * cara * 0.68;
-            for (int k = 0; k < 48; k++, b++) {
-                double a = ang + 2 * Math.PI * k / 48;
-                FeriaPiezas.bombilla(ps, vc, cx + ox + ux * Math.cos(a) * R, cy + Math.sin(a) * R, cz + oz + uz * Math.cos(a) * R, 0.16F,
-                        FeriaPiezas.luz(k, t, be.gira));
+            double ox = fx * cara * (w + 0.14), oz = fz * cara * (w + 0.14);
+            for (int k = 0; k < 80; k++) {
+                double a = ang + 2 * Math.PI * k / 80;
+                FeriaPiezas.bombilla(ps, vc, cx + ox + ux * Math.cos(a) * R, cy + Math.sin(a) * R, cz + oz + uz * Math.cos(a) * R, 0.2F, FeriaPiezas.luz(k, t, be.gira));
             }
             for (int k = 0; k < n; k++)
-                for (int j = 1; j <= 4; j++, b++) {
-                    double a = ang + 2 * Math.PI * k / n + Math.PI / n, r = R * j / 5.0;
-                    FeriaPiezas.bombilla(ps, vc, cx + ox + ux * Math.cos(a) * r, cy + Math.sin(a) * r, cz + oz + uz * Math.cos(a) * r, 0.13F,
+                for (int j = 1; j <= 6; j++) {
+                    double a = ang + 2 * Math.PI * k / n, r = R * j / 7.0;
+                    FeriaPiezas.bombilla(ps, vc, cx + ox + ux * Math.cos(a) * r, cy + Math.sin(a) * r, cz + oz + uz * Math.cos(a) * r, 0.16F,
                             FeriaPiezas.luz(j * 2 + k, t * 0.7F, be.gira));
                 }
+            for (int k = 0; k < 8; k++) {
+                double a = -ang * 0.5 + Math.PI * k / 4;
+                FeriaPiezas.bombilla(ps, vc, cx + fx * cara * (w + 0.62) + ux * Math.cos(a) * 0.5, cy + Math.sin(a) * 0.5, cz + fz * cara * (w + 0.62) + uz * Math.cos(a) * 0.5, 0.18F,
+                        FeriaPiezas.luz(k, t * 1.3F, be.gira));
+            }
+            FeriaPiezas.bombilla(ps, vc, cx + fx * cara * (w + 0.62), cy, cz + fz * cara * (w + 0.62), 0.6F, FeriaPiezas.luz(cara + 2, t, be.gira));
         }
-        FeriaPiezas.bombilla(ps, vc, cx + fx * 1.15, cy, cz + fz * 1.15, 0.5F, FeriaPiezas.luz(0, t, be.gira));
-        FeriaPiezas.bombilla(ps, vc, cx - fx * 1.15, cy, cz - fz * 1.15, 0.5F, FeriaPiezas.luz(3, t, be.gira));
     }
 
     private void tiovivo(AtraccionBlockEntity be, PoseStack ps, VertexConsumer vc, float t, float ang, int luz) {

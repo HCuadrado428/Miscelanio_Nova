@@ -20,6 +20,8 @@ import net.minecraft.world.phys.Vec3;
  * los tics desde que se cambió), así cliente y servidor lo calculan igual sin mandar nada cada tic.
  */
 public class AtraccionBlockEntity extends BlockEntity {
+    /** Noria: radio, altura del eje, cuánto cuelga la cabina (gancho → suelo) y media anchura de la rueda. */
+    public static final double R_NORIA = 9, CY_NORIA = 13.5, ALTO_CABINA = 3.0, MEDIA_RUEDA = 1.35;
     public boolean gira;
     public float angulo0;
     public long t0;
@@ -39,11 +41,11 @@ public class AtraccionBlockEntity extends BlockEntity {
     }
 
     public int asientos() {
-        return tipo() == AtraccionBlock.NORIA ? 8 : 8;
+        return tipo() == AtraccionBlock.NORIA ? 10 : 8;
     }
 
     public float velMax() {
-        return tipo() == AtraccionBlock.NORIA ? (float) (2 * Math.PI / (20 * 40)) : (float) (2 * Math.PI / (20 * 12));
+        return tipo() == AtraccionBlock.NORIA ? (float) (2 * Math.PI / (20 * 60)) : (float) (2 * Math.PI / (20 * 12));
     }
 
     /** Ángulo en un instante (tics con fracción). */
@@ -86,14 +88,14 @@ public class AtraccionBlockEntity extends BlockEntity {
 
     void revisarAsientos() {
         boolean[] hay = new boolean[asientos()];
-        for (AsientoFeria a : level.getEntitiesOfClass(AsientoFeria.class, new AABB(worldPosition).inflate(10)))
+        for (AsientoFeria a : level.getEntitiesOfClass(AsientoFeria.class, new AABB(worldPosition).inflate(14)))
             if (a.atraccion().equals(worldPosition) && a.indice() < hay.length) {
                 if (hay[a.indice()]) a.discard();
                 hay[a.indice()] = true;
             }
         for (int i = 0; i < hay.length; i++) {
             if (hay[i]) continue;
-            AsientoFeria a = new AsientoFeria(ModEntities.ASIENTO_FERIA.get(), level);
+            AsientoFeria a = new AsientoFeria(tipo() == AtraccionBlock.NORIA ? ModEntities.CABINA_NORIA.get() : ModEntities.ASIENTO_FERIA.get(), level);
             a.preparar(worldPosition, i);
             level.addFreshEntity(a);
         }
@@ -106,9 +108,8 @@ public class AtraccionBlockEntity extends BlockEntity {
         double a = angulo(tiempo) + 2 * Math.PI * i / asientos();
         Vec3 base = Vec3.atBottomCenterOf(worldPosition);
         if (tipo() == AtraccionBlock.NORIA) {
-            double R = 6, cy = 8.5;
-            double x = Math.cos(a) * R, y = Math.sin(a) * R;
-            return new double[]{base.x + u.getStepX() * x, base.y + cy + y - 1.5, base.z + u.getStepZ() * x, f.toYRot()};
+            double x = Math.cos(a) * R_NORIA, y = Math.sin(a) * R_NORIA;
+            return new double[]{base.x + u.getStepX() * x, base.y + CY_NORIA + y - ALTO_CABINA, base.z + u.getStepZ() * x, f.toYRot()};
         }
         double R = 2.6;
         double bob = 0.62 + 0.3 * Math.sin(angulo(tiempo) * 5 + i * 1.7);
@@ -147,6 +148,6 @@ public class AtraccionBlockEntity extends BlockEntity {
 
     @Override
     public AABB getRenderBoundingBox() {
-        return new AABB(worldPosition).inflate(8, 16, 8);
+        return new AABB(worldPosition).inflate(14, 26, 14);
     }
 }

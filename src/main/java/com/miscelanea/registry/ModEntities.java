@@ -18,6 +18,9 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<com.miscelanea.feria.AsientoFeria>> ASIENTO_FERIA = ENTITIES.register("asiento_feria",
             () -> EntityType.Builder.<com.miscelanea.feria.AsientoFeria>of(com.miscelanea.feria.AsientoFeria::new, MobCategory.MISC)
                     .sized(1.0F, 1.0F).clientTrackingRange(10).updateInterval(1).noSummon().build("asiento_feria"));
+    public static final RegistryObject<EntityType<com.miscelanea.feria.AsientoFeria>> CABINA_NORIA = ENTITIES.register("cabina_noria",
+            () -> EntityType.Builder.<com.miscelanea.feria.AsientoFeria>of(com.miscelanea.feria.AsientoFeria::new, MobCategory.MISC)
+                    .sized(1.9F, 2.6F).clientTrackingRange(12).updateInterval(1).noSummon().build("cabina_noria"));
     public static final RegistryObject<EntityType<com.miscelanea.feria.CocheChoque>> COCHE_CHOQUE = ENTITIES.register("coche_choque",
             () -> EntityType.Builder.<com.miscelanea.feria.CocheChoque>of(com.miscelanea.feria.CocheChoque::new, MobCategory.MISC)
                     .sized(1.3F, 0.7F).clientTrackingRange(10).updateInterval(1).build("coche_choque"));

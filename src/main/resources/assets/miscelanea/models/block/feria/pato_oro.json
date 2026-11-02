@@ -4,7 +4,8 @@
   "p": "miscelanea:block/feria/pato_oro",
   "o": "miscelanea:block/feria/naranja",
   "n": "miscelanea:block/feria/negro",
-  "particle": "miscelanea:block/feria/pato_oro"
+  "particle": "miscelanea:block/feria/pato_oro",
+  "w": "miscelanea:block/feria/lona_blanca"
  },
  "elements": [
   {
@@ -354,7 +355,7 @@
     5.8
    ],
    "to": [
-    9,
+    9.012,
     5,
     10.2
    ],
@@ -480,6 +481,142 @@
       9
      ],
      "texture": "#o"
+    }
+   }
+  },
+  {
+   "from": [
+    4.5,
+    2.5,
+    5.7
+   ],
+   "to": [
+    9,
+    4.2,
+    10.3
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      7,
+      11.8,
+      11.5,
+      13.5
+     ],
+     "texture": "#p"
+    },
+    "south": {
+     "uv": [
+      4.5,
+      11.8,
+      9,
+      13.5
+     ],
+     "texture": "#p"
+    },
+    "east": {
+     "uv": [
+      5.7,
+      11.8,
+      10.3,
+      13.5
+     ],
+     "texture": "#p"
+    },
+    "west": {
+     "uv": [
+      5.7,
+      11.8,
+      10.3,
+      13.5
+     ],
+     "texture": "#p"
+    },
+    "up": {
+     "uv": [
+      4.5,
+      5.7,
+      9,
+      10.3
+     ],
+     "texture": "#p"
+    },
+    "down": {
+     "uv": [
+      4.5,
+      5.7,
+      9,
+      10.3
+     ],
+     "texture": "#p"
+    }
+   }
+  },
+  {
+   "from": [
+    10.9,
+    6.4,
+    6.3
+   ],
+   "to": [
+    11.6,
+    7.2,
+    9.7
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      4.4,
+      8.8,
+      5.1,
+      9.6
+     ],
+     "texture": "#w"
+    },
+    "south": {
+     "uv": [
+      10.9,
+      8.8,
+      11.6,
+      9.6
+     ],
+     "texture": "#w"
+    },
+    "east": {
+     "uv": [
+      6.3,
+      8.8,
+      9.7,
+      9.6
+     ],
+     "texture": "#w"
+    },
+    "west": {
+     "uv": [
+      6.3,
+      8.8,
+      9.7,
+      9.6
+     ],
+     "texture": "#w"
+    },
+    "up": {
+     "uv": [
+      10.9,
+      6.3,
+      11.6,
+      9.7
+     ],
+     "texture": "#w"
+    },
+    "down": {
+     "uv": [
+      10.9,
+      6.3,
+      11.6,
+      9.7
+     ],
+     "texture": "#w"
     }
    }
   }
