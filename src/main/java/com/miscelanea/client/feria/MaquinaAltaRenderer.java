@@ -251,7 +251,7 @@ public class MaquinaAltaRenderer implements BlockEntityRenderer<MaquinaAltaBlock
         double base = 1.0, alto = 3.3;
         FeriaPiezas.caja(ps, vc, "lona_blanca", 0, base + alto / 2 + 0.25, 0.26, 0.26, alto + 0.5, 0.1, luz);
         for (int k = 0; k < 10; k++) {
-            String c = k < 4 ? "color2" : k < 7 ? "color3" : "metal_rojo";
+            String c = k < 4 ? "agua" : k < 7 ? "dorado" : "metal_rojo";
             FeriaPiezas.caja(ps, vc, c, 0, base + 0.2 + k * alto / 10 + alto / 20, 0.2, 0.2, alto / 10 - 0.03, 0.02, luz);
         }
         FeriaPiezas.barra(ps, vc, "metal_blanco", -0.13, base, 0.17, -0.13, base + alto + 0.3, 0.17, 0.025F, 0.025F, luz);

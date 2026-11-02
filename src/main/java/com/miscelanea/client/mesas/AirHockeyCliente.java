@@ -40,8 +40,12 @@ public final class AirHockeyCliente {
             ultimo = -1;
             return;
         }
-        if (mc.screen != null) return;
         int m = 0;
+        if (mc.screen != null) {
+            // con el chat o la pausa abiertos se sigue avisando al servidor (sin mover) para no perder la mesa
+            if (mc.player.tickCount % 10 == 0) ModNetwork.CHANNEL.sendToServer(new AirHockeyMandoPacket(jugando.getBlockPos(), 0));
+            return;
+        }
         if (mc.options.keyUp.isDown()) m |= 1;
         if (mc.options.keyDown.isDown()) m |= 2;
         if (mc.options.keyLeft.isDown()) m |= 4;

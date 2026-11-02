@@ -404,8 +404,9 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
         Vec3 c = mundo(a[0], a[1], a[2]);
         for (BalonEntity b : l.getEntitiesOfClass(BalonEntity.class, new AABB(c, c).inflate(0.6))) {
             if (b.anotado) continue;
-            double antes = alturaAntes.getOrDefault(b.getId(), b.getY() + 1);
-            alturaAntes.put(b.getId(), b.getY());
+            Double previa = alturaAntes.put(b.getId(), b.getY());
+            if (previa == null || b.getDeltaMovement().y >= 0) continue;   // solo cuenta si cae a través del aro
+            double antes = previa;
             double y = b.getY() + 0.12;
             if (antes + 0.12 > c.y && y <= c.y && Math.hypot(b.getX() - c.x, b.getZ() - c.z) < 0.17) {
                 b.anotado = true;

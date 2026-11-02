@@ -1254,5 +1254,6 @@
   "subtitles.miscelanea.pi_robot": "Scrap robot",
   "subtitles.miscelanea.pi_dano": "You get hit",
   "subtitles.miscelanea.pi_explosion": "Explosion",
-  "subtitles.miscelanea.pi_musica": "Arcade music"
+  "subtitles.miscelanea.pi_musica": "Arcade music",
+  "entity.miscelanea.cabina_noria": "Ferris Wheel Cabin"
 }

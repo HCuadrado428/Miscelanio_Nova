@@ -127,9 +127,9 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
         ps.pushPose();
         ps.translate(cx, hub, cz);
         ps.mulPose(com.mojang.math.Axis.YP.rotation(-ang));
-        FeriaPiezas.caja(ps, vc, "color0", 0, 0.3, 0, 1.6, 0.6, 1.6, luz);
-        FeriaPiezas.caja(ps, vc, "color0", 0, 0.75, 0, 1.2, 0.4, 1.2, luz);
-        FeriaPiezas.caja(ps, vc, "color0", 0, 1.05, 0, 0.7, 0.3, 0.7, luz);
+        FeriaPiezas.caja(ps, vc, "metal_rojo", 0, 0.3, 0, 1.6, 0.6, 1.6, luz);
+        FeriaPiezas.caja(ps, vc, "dorado", 0, 0.75, 0, 1.2, 0.4, 1.2, luz);
+        FeriaPiezas.caja(ps, vc, "metal_rojo", 0, 1.05, 0, 0.7, 0.3, 0.7, luz);
         for (int k = 0; k < 4; k++) {
             double a = k * Math.PI / 2;
             FeriaPiezas.bombilla(ps, vc, Math.cos(a) * 0.82, 0.5, Math.sin(a) * 0.82, 0.22F, 0xFFFFFF);
@@ -142,7 +142,7 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
             double[] e = be.brazo(i, be.getLevel().getGameTime() + (double) (t - (float) Math.floor(t)));
             double ex = cx + e[0], ey = e[1], ez = cz + e[2];
             FeriaPiezas.barra(ps, vc, "metal_blanco", cx, hub + 0.2, cz, ex, ey, ez, 0.32F, 0.32F, luz);
-            FeriaPiezas.barra(ps, vc, "color0", cx, hub + 0.45, cz, ex, ey + 0.1, ez, 0.12F, 0.12F, luz);
+            FeriaPiezas.barra(ps, vc, "dorado", cx, hub + 0.45, cz, ex, ey + 0.1, ez, 0.12F, 0.12F, luz);
             FeriaPiezas.barra(ps, vc, "dorado", ex, ey, ez, ex, ey - AtraccionBlockEntity.CUELGA_CESTA + 0.9, ez, 0.14F, 0.14F, luz);
             for (int j = 1; j <= 6; j++) {
                 double k = j / 7.0;

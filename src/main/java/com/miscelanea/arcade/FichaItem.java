@@ -20,4 +20,10 @@ public class FichaItem extends Item {
     public void appendHoverText(ItemStack s, @Nullable Level l, List<Component> lista, TooltipFlag f) {
         lista.add(Component.translatable("item.miscelanea.ficha.ayuda").withStyle(ChatFormatting.GRAY));
     }
+
+    /** Agachado con una ficha en la mano también se usa el puesto de feria (churrería: chocolate con churros). */
+    @Override
+    public boolean doesSneakBypassUse(net.minecraft.world.item.ItemStack st, net.minecraft.world.level.LevelReader l, net.minecraft.core.BlockPos pos, net.minecraft.world.entity.player.Player p) {
+        return l.getBlockState(pos).getBlock() instanceof com.miscelanea.feria.PuestoFeriaBlock;
+    }
 }

@@ -64,7 +64,7 @@ public class CabinaArcadeBlock extends RecreativaBlock {
         if (!(p instanceof ServerPlayer sp)) return InteractionResult.PASS;
         InteractionResult r = usar(l, abajo, sp, false, fijo);
         if (asiento && !sp.isPassenger() && l.getBlockEntity(abajo) instanceof RecreativaBlockEntity be && sp.getUUID().equals(be.jugador)
-                && l.getEntitiesOfClass(Asiento.class, new AABB(abajo)).isEmpty()) {
+                && l.getEntitiesOfClass(Asiento.class, new AABB(abajo).inflate(0, 0.5, 0)).isEmpty()) {
             // al asiento de la cabina, mirando a la pantalla
             Direction f = s.getValue(FACING);
             Asiento a = new Asiento(ModEntities.ASIENTO.get(), l);
