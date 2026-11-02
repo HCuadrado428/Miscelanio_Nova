@@ -68,6 +68,10 @@ public final class ModItems {
             () -> new com.miscelanea.armas.EscopetaItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
     public static final RegistryObject<Item> LANZACOHETES = ITEMS.register("lanzacohetes",
             () -> new com.miscelanea.armas.LanzacohetesItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+    public static final RegistryObject<Item> BFG = ITEMS.register("bfg",
+            () -> new com.miscelanea.armas.BfgItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+    public static final RegistryObject<Item> MAZO_WEMMBU = ITEMS.register("mazo_wemmbu",
+            () -> new com.miscelanea.armas.MazoItem(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
     public static final RegistryObject<Item> CARTUCHOS = ITEMS.register("cartuchos", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> COHETE = ITEMS.register("cohete", () -> new Item(new Item.Properties().stacksTo(16)));
 

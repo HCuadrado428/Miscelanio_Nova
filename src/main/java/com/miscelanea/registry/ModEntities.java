@@ -57,6 +57,12 @@ public final class ModEntities {
             () -> EntityType.Builder.<com.miscelanea.armas.GanchoEntity>of(com.miscelanea.armas.GanchoEntity::new, MobCategory.MISC)
                     .sized(0.3F, 0.3F).clientTrackingRange(8).updateInterval(1).build("gancho"));
 
+    public static final RegistryObject<EntityType<com.miscelanea.armas.PlasmaEntity>> PLASMA = ENTITIES.register("plasma",
+            () -> EntityType.Builder.<com.miscelanea.armas.PlasmaEntity>of(com.miscelanea.armas.PlasmaEntity::new, MobCategory.MISC)
+                    .sized(0.7F, 0.7F).clientTrackingRange(10).updateInterval(1).build("plasma"));
+    public static final RegistryObject<EntityType<com.miscelanea.armas.VientoEntity>> VIENTO = ENTITIES.register("viento",
+            () -> EntityType.Builder.<com.miscelanea.armas.VientoEntity>of(com.miscelanea.armas.VientoEntity::new, MobCategory.MISC)
+                    .sized(0.3F, 0.3F).clientTrackingRange(8).updateInterval(1).build("viento"));
     public static final RegistryObject<EntityType<com.miscelanea.armas.CoheteEntity>> COHETE = ENTITIES.register("cohete",
             () -> EntityType.Builder.<com.miscelanea.armas.CoheteEntity>of(com.miscelanea.armas.CoheteEntity::new, MobCategory.MISC)
                     .sized(0.3F, 0.3F).clientTrackingRange(8).updateInterval(1).build("cohete"));

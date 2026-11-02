@@ -1258,5 +1258,22 @@
   "entity.miscelanea.cabina_noria": "Cabina de noria",
   "turbo.miscelanea.gana": "¡GANA %s!",
   "turbo.miscelanea.empate": "¡EMPATE!",
-  "turbo.miscelanea.meta_corta": "¡META!"
+  "turbo.miscelanea.meta_corta": "¡META!",
+  "item.miscelanea.bfg": "Cañón de plasma BFG",
+  "item.miscelanea.bfg.ayuda": "Mantén clic derecho para cargar y disparar una esfera de plasma",
+  "item.miscelanea.mazo_wemmbu": "Mazo de Wemmbu",
+  "item.miscelanea.mazo_wemmbu.ayuda1": "Golpea cayendo: más daño cuanto más alto, y la ráfaga te lanza arriba",
+  "item.miscelanea.mazo_wemmbu.ayuda2": "Clic derecho: carga de viento (tírala a tus pies para saltar)",
+  "item.miscelanea.solo_creativo": "Solo en creativo",
+  "entity.miscelanea.plasma": "Esfera de plasma",
+  "entity.miscelanea.viento": "Carga de viento",
+  "subtitles.miscelanea.bfg_carga": "BFG cargando",
+  "subtitles.miscelanea.bfg_disparo": "Disparo de plasma",
+  "subtitles.miscelanea.bfg_zumbido": "Plasma zumbando",
+  "subtitles.miscelanea.bfg_rayo": "Rayo de plasma",
+  "subtitles.miscelanea.bfg_estallido": "Estallido de plasma",
+  "subtitles.miscelanea.mazo_golpe": "Mazazo",
+  "subtitles.miscelanea.mazo_golpe_fuerte": "Mazazo brutal",
+  "subtitles.miscelanea.viento_lanza": "Carga de viento lanzada",
+  "subtitles.miscelanea.viento_rafaga": "Ráfaga de viento"
 }

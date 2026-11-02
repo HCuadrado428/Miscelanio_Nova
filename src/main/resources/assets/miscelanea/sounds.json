@@ -1426,5 +1426,59 @@
       "miscelanea:pi_musica"
     ],
     "subtitle": "subtitles.miscelanea.pi_musica"
+  },
+  "bfg_carga": {
+    "sounds": [
+      "miscelanea:bfg_carga"
+    ],
+    "subtitle": "subtitles.miscelanea.bfg_carga"
+  },
+  "bfg_disparo": {
+    "sounds": [
+      "miscelanea:bfg_disparo"
+    ],
+    "subtitle": "subtitles.miscelanea.bfg_disparo"
+  },
+  "bfg_zumbido": {
+    "sounds": [
+      "miscelanea:bfg_zumbido"
+    ],
+    "subtitle": "subtitles.miscelanea.bfg_zumbido"
+  },
+  "bfg_rayo": {
+    "sounds": [
+      "miscelanea:bfg_rayo"
+    ],
+    "subtitle": "subtitles.miscelanea.bfg_rayo"
+  },
+  "bfg_estallido": {
+    "sounds": [
+      "miscelanea:bfg_estallido"
+    ],
+    "subtitle": "subtitles.miscelanea.bfg_estallido"
+  },
+  "mazo_golpe": {
+    "sounds": [
+      "miscelanea:mazo_golpe"
+    ],
+    "subtitle": "subtitles.miscelanea.mazo_golpe"
+  },
+  "mazo_golpe_fuerte": {
+    "sounds": [
+      "miscelanea:mazo_golpe_fuerte"
+    ],
+    "subtitle": "subtitles.miscelanea.mazo_golpe_fuerte"
+  },
+  "viento_lanza": {
+    "sounds": [
+      "miscelanea:viento_lanza"
+    ],
+    "subtitle": "subtitles.miscelanea.viento_lanza"
+  },
+  "viento_rafaga": {
+    "sounds": [
+      "miscelanea:viento_rafaga"
+    ],
+    "subtitle": "subtitles.miscelanea.viento_rafaga"
   }
 }

@@ -39,6 +39,15 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> LANZACOHETES_DISPARO = register("lanzacohetes_disparo");
     public static final RegistryObject<SoundEvent> LANZACOHETES_RECARGA = register("lanzacohetes_recarga");
     public static final RegistryObject<SoundEvent> COHETE_EXPLOSION = register("cohete_explosion");
+    public static final RegistryObject<SoundEvent> BFG_CARGA = register("bfg_carga");
+    public static final RegistryObject<SoundEvent> BFG_DISPARO = register("bfg_disparo");
+    public static final RegistryObject<SoundEvent> BFG_ZUMBIDO = register("bfg_zumbido");
+    public static final RegistryObject<SoundEvent> BFG_RAYO = register("bfg_rayo");
+    public static final RegistryObject<SoundEvent> BFG_ESTALLIDO = register("bfg_estallido");
+    public static final RegistryObject<SoundEvent> MAZO_GOLPE = register("mazo_golpe");
+    public static final RegistryObject<SoundEvent> MAZO_GOLPE_FUERTE = register("mazo_golpe_fuerte");
+    public static final RegistryObject<SoundEvent> VIENTO_LANZA = register("viento_lanza");
+    public static final RegistryObject<SoundEvent> VIENTO_RAFAGA = register("viento_rafaga");
 
     public static final RegistryObject<SoundEvent> LLAVE_GOLPE = register("llave_golpe");
     public static final RegistryObject<SoundEvent> LLAVE_IMPACTO = register("llave_impacto");

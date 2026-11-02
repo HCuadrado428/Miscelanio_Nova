@@ -1258,5 +1258,22 @@
   "entity.miscelanea.cabina_noria": "Ferris Wheel Cabin",
   "turbo.miscelanea.gana": "%s WINS!",
   "turbo.miscelanea.empate": "DRAW!",
-  "turbo.miscelanea.meta_corta": "FINISH!"
+  "turbo.miscelanea.meta_corta": "FINISH!",
+  "item.miscelanea.bfg": "BFG Plasma Cannon",
+  "item.miscelanea.bfg.ayuda": "Hold right-click to charge and fire a plasma orb",
+  "item.miscelanea.mazo_wemmbu": "Wemmbu's Mace",
+  "item.miscelanea.mazo_wemmbu.ayuda1": "Hit while falling: more damage the higher you fall, and the burst launches you up",
+  "item.miscelanea.mazo_wemmbu.ayuda2": "Right-click: wind charge (aim at your feet to jump)",
+  "item.miscelanea.solo_creativo": "Creative only",
+  "entity.miscelanea.plasma": "Plasma Orb",
+  "entity.miscelanea.viento": "Wind Charge",
+  "subtitles.miscelanea.bfg_carga": "BFG charging",
+  "subtitles.miscelanea.bfg_disparo": "Plasma shot",
+  "subtitles.miscelanea.bfg_zumbido": "Plasma hums",
+  "subtitles.miscelanea.bfg_rayo": "Plasma arc",
+  "subtitles.miscelanea.bfg_estallido": "Plasma blast",
+  "subtitles.miscelanea.mazo_golpe": "Mace smash",
+  "subtitles.miscelanea.mazo_golpe_fuerte": "Heavy mace smash",
+  "subtitles.miscelanea.viento_lanza": "Wind charge thrown",
+  "subtitles.miscelanea.viento_rafaga": "Wind burst"
 }
