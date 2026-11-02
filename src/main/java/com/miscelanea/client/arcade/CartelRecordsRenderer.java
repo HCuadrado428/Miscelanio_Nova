@@ -78,17 +78,17 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
         Matrix4f m = ps.last().pose();
         VertexConsumer vc = buf.getBuffer(RenderType.textBackground());
         // carcasa de plástico gris oscuro y pantalla negra con esquinas redondeadas
-        quad(vc, m, 0, 0, W, H, 0, 0xFF2A2A30);
-        quad(vc, m, 1, 1, W - 1, 2, 0.05F, 0xFF4A4A54);
-        quad(vc, m, 1, 1, 2, H - 1, 0.05F, 0xFF4A4A54);
-        quad(vc, m, 1, H - 2, W - 1, H - 1, 0.05F, 0xFF18181C);
-        quad(vc, m, W - 2, 1, W - 1, H - 1, 0.05F, 0xFF18181C);
-        quad(vc, m, 5, 4, W - 5, H - 4, 0.1F, 0xFF04060A);
-        quad(vc, m, 4, 5, W - 4, H - 5, 0.1F, 0xFF04060A);
+        quad(buf.getBuffer(RenderType.textBackground()), m, 0, 0, W, H, 0, 0xFF2A2A30);
+        quad(buf.getBuffer(RenderType.textBackground()), m, 1, 1, W - 1, 2, 0.05F, 0xFF4A4A54);
+        quad(buf.getBuffer(RenderType.textBackground()), m, 1, 1, 2, H - 1, 0.05F, 0xFF4A4A54);
+        quad(buf.getBuffer(RenderType.textBackground()), m, 1, H - 2, W - 1, H - 1, 0.05F, 0xFF18181C);
+        quad(buf.getBuffer(RenderType.textBackground()), m, W - 2, 1, W - 1, H - 1, 0.05F, 0xFF18181C);
+        quad(buf.getBuffer(RenderType.textBackground()), m, 5, 4, W - 5, H - 4, 0.1F, 0xFF04060A);
+        quad(buf.getBuffer(RenderType.textBackground()), m, 4, 5, W - 4, H - 5, 0.1F, 0xFF04060A);
         // líneas de barrido y un brillo que baja
-        for (float y = 5; y < H - 5; y += 2) quad(vc, m, 5, y, W - 5, y + 0.6F, 0.12F, 0x14FFFFFF);
+        for (float y = 5; y < H - 5; y += 2) quad(buf.getBuffer(RenderType.textBackground()), m, 5, y, W - 5, y + 0.6F, 0.12F, 0x14FFFFFF);
         float barrido = (ms / 30F) % (H + 20) - 10;
-        quad(vc, m, 5, Math.max(5, barrido), W - 5, Math.min(H - 5, barrido + 6), 0.13F, 0x0C9FFFC8);
+        quad(buf.getBuffer(RenderType.textBackground()), m, 5, Math.max(5, barrido), W - 5, Math.min(H - 5, barrido + 6), 0.13F, 0x0C9FFFC8);
         int pagina = (int) (ms / 8000);
         boolean ruido = ms % 8000 < 220;
         int y0 = 8;
@@ -120,7 +120,7 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
             java.util.Random r = new java.util.Random(ms / 40);
             for (int k = 0; k < 60; k++) {
                 float x = 5 + r.nextFloat() * (W - 12), y = 5 + r.nextFloat() * (H - 12);
-                quad(vc, m, x, y, x + 1 + r.nextFloat() * 6, y + 1, 0.5F, r.nextBoolean() ? 0xA0FFFFFF : 0xA0404060);
+                quad(buf.getBuffer(RenderType.textBackground()), m, x, y, x + 1 + r.nextFloat() * 6, y + 1, 0.5F, r.nextBoolean() ? 0xA0FFFFFF : 0xA0404060);
             }
         }
     }
@@ -131,7 +131,7 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
         VertexConsumer vc = buf.getBuffer(RenderType.textBackground());
         String nombre = I18n.get("juego.miscelanea." + id).toUpperCase();
         texto(ps, buf, font, nombre, x + pw / 2, y + 1, kk, 0xFF3BE6FF, true);
-        for (float dx = 2; dx < pw - 2; dx += 3 * kk) quad(vc, m, x + dx, y + 10 * kk, x + dx + 1.5F * kk, y + 10.6F * kk, 0.2F, 0xFF3B7BFF);
+        for (float dx = 2; dx < pw - 2; dx += 3 * kk) quad(buf.getBuffer(RenderType.textBackground()), m, x + dx, y + 10 * kk, x + dx + 1.5F * kk, y + 10.6F * kk, 0.2F, 0xFF3B7BFF);
         ListTag tb = ArcadeCliente.tabla(id);
         float yy = y + 13 * kk, linea = 9.5F * kk;
         int max = Math.max(1, Math.min(10, (int) ((y + ph - yy - 2) / linea)));
@@ -165,37 +165,37 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
         Matrix4f m = ps.last().pose();
         VertexConsumer vc = buf.getBuffer(RenderType.textBackground());
         // marco de madera con vetas
-        quad(vc, m, 0, 0, W, H, 0, 0xFF7A4A24);
+        quad(buf.getBuffer(RenderType.textBackground()), m, 0, 0, W, H, 0, 0xFF7A4A24);
         for (int k = 0; k < 6; k++) {
             float y = 1 + k * 0.7F;
-            quad(vc, m, 0, y, W, y + 0.25F, 0.02F, 0xFF5E3618);
-            quad(vc, m, 0, H - y - 0.25F, W, H - y, 0.02F, 0xFF5E3618);
+            quad(buf.getBuffer(RenderType.textBackground()), m, 0, y, W, y + 0.25F, 0.02F, 0xFF5E3618);
+            quad(buf.getBuffer(RenderType.textBackground()), m, 0, H - y - 0.25F, W, H - y, 0.02F, 0xFF5E3618);
         }
-        quad(vc, m, 0, 0, W, 0.8F, 0.03F, 0xFF9A6434);
+        quad(buf.getBuffer(RenderType.textBackground()), m, 0, 0, W, 0.8F, 0.03F, 0xFF9A6434);
         // pizarra verde con manchas de borrador
-        quad(vc, m, 5, 5, W - 5, H - 7, 0.1F, 0xFF1F3A2C);
+        quad(buf.getBuffer(RenderType.textBackground()), m, 5, 5, W - 5, H - 7, 0.1F, 0xFF1F3A2C);
         java.util.Random r = new java.util.Random(W * 31L + H);
         for (int k = 0; k < (w * h) * 6; k++) {
             float x = 6 + r.nextFloat() * (W - 22), y = 6 + r.nextFloat() * (H - 24), sw = 6 + r.nextFloat() * 14;
-            quad(vc, m, x, y, x + sw, y + 2 + r.nextFloat() * 4, 0.11F, 0x0EFFFFFF);
+            quad(buf.getBuffer(RenderType.textBackground()), m, x, y, x + sw, y + 2 + r.nextFloat() * 4, 0.11F, 0x0EFFFFFF);
         }
         // repisa con tizas y borrador
-        quad(vc, m, 3, H - 7, W - 3, H - 4, 0.15F, 0xFF8A5530);
-        quad(vc, m, 3, H - 4, W - 3, H - 3.2F, 0.15F, 0xFF5E3618);
-        for (int k = 0; k < Math.min(5, w + 1); k++) quad(vc, m, 8 + k * 7, H - 8.6F, 13 + k * 7, H - 7, 0.2F, TIZAS[k % TIZAS.length] | 0xFF000000);
-        quad(vc, m, W - 20, H - 9.5F, W - 9, H - 7, 0.2F, 0xFF3A3A44);
-        quad(vc, m, W - 20, H - 10.5F, W - 9, H - 9.5F, 0.2F, 0xFFD8C090);
+        quad(buf.getBuffer(RenderType.textBackground()), m, 3, H - 7, W - 3, H - 4, 0.15F, 0xFF8A5530);
+        quad(buf.getBuffer(RenderType.textBackground()), m, 3, H - 4, W - 3, H - 3.2F, 0.15F, 0xFF5E3618);
+        for (int k = 0; k < Math.min(5, w + 1); k++) quad(buf.getBuffer(RenderType.textBackground()), m, 8 + k * 7, H - 8.6F, 13 + k * 7, H - 7, 0.2F, TIZAS[k % TIZAS.length] | 0xFF000000);
+        quad(buf.getBuffer(RenderType.textBackground()), m, W - 20, H - 9.5F, W - 9, H - 7, 0.2F, 0xFF3A3A44);
+        quad(buf.getBuffer(RenderType.textBackground()), m, W - 20, H - 10.5F, W - 9, H - 9.5F, 0.2F, 0xFFD8C090);
         // guirnalda de banderines
         int nb = Math.max(4, w * 4);
         float paso = (W - 10) / (float) nb;
-        quad(vc, m, 5, 6.2F, W - 5, 6.6F, 0.2F, 0xFFF0E8D0);
+        quad(buf.getBuffer(RenderType.textBackground()), m, 5, 6.2F, W - 5, 6.6F, 0.2F, 0xFFF0E8D0);
         int[] bandera = {0xFFE03030, 0xFFFFD040, 0xFF3070E0, 0xFFF4F4F4, 0xFF40B060};
         for (int k = 0; k < nb; k++) {
             float bx = 5 + k * paso + paso * 0.15F, bw = paso * 0.7F;
             int c = bandera[k % bandera.length];
             for (int s = 0; s < 4; s++) {
                 float inset = bw * s / 8F;
-                quad(vc, m, bx + inset, 6.6F + s * 1.2F, bx + bw - inset, 6.6F + (s + 1) * 1.2F, 0.21F, c);
+                quad(buf.getBuffer(RenderType.textBackground()), m, bx + inset, 6.6F + s * 1.2F, bx + bw - inset, 6.6F + (s + 1) * 1.2F, 0.21F, c);
             }
         }
         int y0 = 13;
@@ -206,7 +206,7 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
             float tw = font.width(tit) * kk;
             for (float dx = 0; dx < tw; dx += 2) {
                 float yy = y0 + 10 * kk + (float) Math.sin(dx * 0.4F) * 0.6F;
-                quad(vc, m, W / 2F - tw / 2 + dx, yy, W / 2F - tw / 2 + dx + 2.2F, yy + 0.7F, 0.2F, 0xC0FFFFFF);
+                quad(buf.getBuffer(RenderType.textBackground()), m, W / 2F - tw / 2 + dx, yy, W / 2F - tw / 2 + dx + 2.2F, yy + 0.7F, 0.2F, 0xC0FFFFFF);
             }
             y0 += (int) (12 * kk) + 3;
         }
@@ -229,7 +229,7 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
         String nombre = "★ " + I18n.get("juego.miscelanea." + id) + " ★";
         texto(ps, buf, font, nombre, x + pw / 2, y + 1, kk, tiza, true);
         float tw = font.width(nombre) * kk;
-        quad(vc, m, x + pw / 2 - tw / 2, y + 10 * kk, x + pw / 2 + tw / 2, y + 10.6F * kk, 0.2F, (tiza & 0x00FFFFFF) | 0xA0000000);
+        quad(buf.getBuffer(RenderType.textBackground()), m, x + pw / 2 - tw / 2, y + 10 * kk, x + pw / 2 + tw / 2, y + 10.6F * kk, 0.2F, (tiza & 0x00FFFFFF) | 0xA0000000);
         ListTag tb = ArcadeCliente.tabla(id);
         float yy = y + 13 * kk, linea = 9.5F * kk;
         int max = Math.max(1, Math.min(10, (int) ((y + ph - yy - 2) / linea)));
@@ -251,7 +251,7 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
             if (i == 0) {
                 // subrayado de tiza bajo el ganador
                 for (float dx = 0; dx < pw - 6 * kk; dx += 2)
-                    quad(vc, m, x + 3 * kk + dx, yy + 8.4F * kk + (float) Math.sin(dx * 0.5F) * 0.4F, x + 3 * kk + dx + 2.2F, yy + 9F * kk + (float) Math.sin(dx * 0.5F) * 0.4F, 0.19F, 0xB0FFE97A);
+                    quad(buf.getBuffer(RenderType.textBackground()), m, x + 3 * kk + dx, yy + 8.4F * kk + (float) Math.sin(dx * 0.5F) * 0.4F, x + 3 * kk + dx + 2.2F, yy + 9F * kk + (float) Math.sin(dx * 0.5F) * 0.4F, 0.19F, 0xB0FFE97A);
             }
             yy += linea;
         }

@@ -78,8 +78,10 @@ public class BolaPetanca extends Entity {
         if (onGround()) {
             if (antes.y < -0.15 && !level().isClientSide)
                 level().playSound(null, getX(), getY(), getZ(), ModSounds.PE_CAE.get(), SoundSource.NEUTRAL, (float) Math.min(1, -antes.y), boliche() ? 1.5F : 1F);
-            d = new Vec3(d.x * 0.72, 0, d.z * 0.72);
-        } else d = d.scale(0.99);
+            // rueda un poco por el suelo y se para; nunca rebota hacia arriba
+            d = new Vec3(d.x * 0.8, 0, d.z * 0.8);
+            if (d.horizontalDistanceSqr() < 1e-4) d = Vec3.ZERO;
+        } else d = new Vec3(d.x * 0.99, Math.min(d.y, 0.8), d.z * 0.99);
         if (horizontalCollision) d = new Vec3(-antes.x * 0.3, d.y, -antes.z * 0.3);
         setDeltaMovement(d);
         if (!level().isClientSide && d.horizontalDistance() > 0.01) chocar();

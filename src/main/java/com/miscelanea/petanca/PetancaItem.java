@@ -65,8 +65,12 @@ public class PetancaItem extends Item {
         Vec3 mira = p.getLookAngle();
         BolaPetanca b = new BolaPetanca(ModEntities.BOLA_PETANCA.get(), l);
         b.preparar(p, tipo == BOLICHE);
-        b.setPos(p.getX() + mira.x * 0.5, p.getEyeY() - 0.4, p.getZ() + mira.z * 0.5);
-        b.setDeltaMovement(mira.x * (0.25 + 0.5 * fuerza), 0.22 + mira.y * 0.4 + 0.15 * fuerza, mira.z * (0.25 + 0.5 * fuerza));
+        // lanzamiento de petanca: por debajo, en arco bajo, hacia donde miras (en horizontal)
+        Vec3 hor = new Vec3(mira.x, 0, mira.z);
+        hor = hor.lengthSqr() < 1e-4 ? new Vec3(0, 0, 1) : hor.normalize();
+        double alcance = 0.16 + 0.38 * fuerza, sube = 0.16 + 0.1 * fuerza + 0.2 * Math.max(0, mira.y);
+        b.setPos(p.getX() + hor.x * 0.6, p.getY() + 0.9, p.getZ() + hor.z * 0.6);
+        b.setDeltaMovement(hor.x * alcance, sube, hor.z * alcance);
         l.addFreshEntity(b);
         l.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.DA_LANZA.get(), SoundSource.PLAYERS, 0.5F, 0.7F);
         if (!p.getAbilities().instabuild) st.shrink(1);
