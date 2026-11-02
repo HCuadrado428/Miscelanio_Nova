@@ -1480,5 +1480,41 @@
       "miscelanea:viento_rafaga"
     ],
     "subtitle": "subtitles.miscelanea.viento_rafaga"
+  },
+  "bfg_listo": {
+    "sounds": [
+      "miscelanea:bfg_listo"
+    ],
+    "subtitle": "subtitles.miscelanea.bfg_listo"
+  },
+  "bfg_vortice": {
+    "sounds": [
+      "miscelanea:bfg_vortice"
+    ],
+    "subtitle": "subtitles.miscelanea.bfg_vortice"
+  },
+  "mazo_lanzar": {
+    "sounds": [
+      "miscelanea:mazo_lanzar"
+    ],
+    "subtitle": "subtitles.miscelanea.mazo_lanzar"
+  },
+  "mazo_vuelve": {
+    "sounds": [
+      "miscelanea:mazo_vuelve"
+    ],
+    "subtitle": "subtitles.miscelanea.mazo_vuelve"
+  },
+  "mazo_sismo": {
+    "sounds": [
+      "miscelanea:mazo_sismo"
+    ],
+    "subtitle": "subtitles.miscelanea.mazo_sismo"
+  },
+  "mazo_cargado": {
+    "sounds": [
+      "miscelanea:mazo_cargado"
+    ],
+    "subtitle": "subtitles.miscelanea.mazo_cargado"
   }
 }

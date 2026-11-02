@@ -31,8 +31,9 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Cañón de plasma (inspirado en la BFG de Doom). Solo del creativo. Mantén clic derecho: se carga un segundo con un
- * zumbido que sube y suelta una esfera verde lenta que lanza rayos a todo lo que pasa cerca y estalla al chocar.
+ * Cañón de plasma (inspirado en la BFG de Doom). Solo del creativo. Mantén clic derecho para cargar y suelta para
+ * disparar una esfera verde lenta que lanza rayos a todo lo que pasa cerca y estalla en un agujero negro.
+ * Si aguantas hasta la sobrecarga, la esfera es gigante, atraviesa paredes y su agujero negro es mucho mayor.
  */
 public class BfgItem extends Item implements GeoItem {
     public static final int CARGA = 22, ENFRIAR = 60;
@@ -65,32 +66,51 @@ public class BfgItem extends Item implements GeoItem {
         return InteractionResultHolder.consume(s);
     }
 
+    /** Carga máxima: si mantienes hasta aquí se dispara sola en modo sobrecarga. */
+    public static final int SOBRECARGA = 75, FORZADO = 100;
+
     @Override
     public void onUseTick(Level level, LivingEntity e, ItemStack s, int restante) {
         int t = getUseDuration(s) - restante;
-        if (level instanceof ServerLevel sl && t % 3 == 0) {
+        if (level instanceof ServerLevel sl) {
             Vec3 boca = e.getEyePosition().add(e.getViewVector(1).scale(1.2)).add(0, -0.25, 0);
-            sl.sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.3F, 1F, 0.3F), 1.2F), boca.x, boca.y, boca.z,
-                    3 + t / 4, 0.2, 0.2, 0.2, 0);
+            if (t % 3 == 0) sl.sendParticles(t >= SOBRECARGA ? PlasmaEntity.VERDE : PlasmaEntity.VERDE_P, boca.x, boca.y, boca.z, 2 + t / 6, 0.2, 0.2, 0.2, 0);
+            if (t == CARGA) level.playSound(null, e.getX(), e.getY(), e.getZ(), ModSounds.BFG_LISTO.get(), SoundSource.PLAYERS, 1F, 1F);
+            if (t == SOBRECARGA) level.playSound(null, e.getX(), e.getY(), e.getZ(), ModSounds.BFG_LISTO.get(), SoundSource.PLAYERS, 1.4F, 0.6F);
+            if (t > SOBRECARGA && t % 10 == 0) TemblorPacket.enviar(sl, e.position(), 4, 0.4F, 10);
         }
-        if (t >= CARGA) {
-            if (!level.isClientSide && e instanceof Player p) disparar(p, s);
+        if (t >= FORZADO) {
+            if (!level.isClientSide && e instanceof Player p) disparar(p, s, true);
             e.stopUsingItem();
-            if (e instanceof Player p) p.getCooldowns().addCooldown(this, ENFRIAR);
+            if (e instanceof Player p) p.getCooldowns().addCooldown(this, ENFRIAR * 2);
         }
     }
 
-    private static void disparar(Player p, ItemStack s) {
+    @Override
+    public void releaseUsing(ItemStack s, Level level, LivingEntity e, int restante) {
+        int t = getUseDuration(s) - restante;
+        if (!(e instanceof Player p)) return;
+        if (t < CARGA) {
+            if (!level.isClientSide) level.playSound(null, p.getX(), p.getY(), p.getZ(), net.minecraft.sounds.SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 0.6F, 1.6F);
+            return;
+        }
+        boolean sobre = t >= SOBRECARGA;
+        if (!level.isClientSide) disparar(p, s, sobre);
+        p.getCooldowns().addCooldown(this, sobre ? ENFRIAR * 2 : ENFRIAR);
+    }
+
+    private static void disparar(Player p, ItemStack s, boolean sobre) {
         s.getOrCreateTag().putInt(DISPARO, 12);
         Vec3 mira = p.getViewVector(1);
         Vec3 inicio = p.getEyePosition().add(mira.scale(1.1)).add(0, -0.3, 0);
-        PlasmaEntity b = new PlasmaEntity(p.level(), p);
+        PlasmaEntity b = new PlasmaEntity(p.level(), p, sobre);
         b.setPos(inicio.x, inicio.y, inicio.z);
-        b.setDeltaMovement(mira.scale(0.55));
+        b.setDeltaMovement(mira.scale(sobre ? 0.4 : 0.55));
         p.level().addFreshEntity(b);
-        p.level().playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.BFG_DISPARO.get(), SoundSource.PLAYERS, 2.5F, 1F);
-        p.setDeltaMovement(p.getDeltaMovement().subtract(mira.scale(0.35)));
+        p.level().playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.BFG_DISPARO.get(), SoundSource.PLAYERS, sobre ? 4F : 2.5F, sobre ? 0.7F : 1F);
+        p.setDeltaMovement(p.getDeltaMovement().subtract(mira.scale(sobre ? 0.9 : 0.35)));
         p.hurtMarked = true;
+        if (p.level() instanceof ServerLevel sl) TemblorPacket.enviar(sl, p.position(), 6, sobre ? 1.6F : 0.6F, 10);
     }
 
     @Override
