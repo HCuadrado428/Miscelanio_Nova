@@ -4,7 +4,9 @@ import com.miscelanea.muebles.Asiento;
 import com.miscelanea.registry.ModEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -63,18 +65,37 @@ public class CabinaArcadeBlock extends RecreativaBlock {
         if (l.isClientSide) return InteractionResult.SUCCESS;
         if (!(p instanceof ServerPlayer sp)) return InteractionResult.PASS;
         InteractionResult r = usar(l, abajo, sp, false, fijo);
-        if (asiento && !sp.isPassenger() && l.getBlockEntity(abajo) instanceof RecreativaBlockEntity be && sp.getUUID().equals(be.jugador)
-                && l.getEntitiesOfClass(Asiento.class, new AABB(abajo).inflate(0, 0.5, 0)).isEmpty()) {
-            // al asiento de la cabina, mirando a la pantalla
-            Direction f = s.getValue(FACING);
-            Asiento a = new Asiento(ModEntities.ASIENTO.get(), l);
-            a.setPos(abajo.getX() + 0.5 + f.getStepX() * 0.22, abajo.getY() + 0.42 - 0.6, abajo.getZ() + 0.5 + f.getStepZ() * 0.22);
-            a.setYRot(f.getOpposite().toYRot());
-            l.addFreshEntity(a);
-            sp.startRiding(a);
-            sp.setYRot(f.getOpposite().toYRot());
-            sp.setYHeadRot(f.getOpposite().toYRot());
+        if (asiento && l.getBlockEntity(abajo) instanceof RecreativaBlockEntity be && sp.getUUID().equals(be.jugador)) {
+            // agachado (el jugador 2 que se enlaza con la cabina de al lado) se levantaría al momento: se le sienta un poco después
+            if (sp.isShiftKeyDown()) l.scheduleTick(abajo, this, 4);
+            else sentar(l, abajo, s, sp);
         }
         return r;
+    }
+
+    /** Sienta al jugador en el asiento de la cabina, mirando a la pantalla (si no está sentado ya y el asiento está libre). */
+    private static void sentar(Level l, BlockPos abajo, BlockState s, ServerPlayer sp) {
+        if (sp.isPassenger() || !l.getEntitiesOfClass(Asiento.class, new AABB(abajo).inflate(0, 0.5, 0)).isEmpty()) return;
+        Direction f = s.getValue(FACING);
+        Asiento a = new Asiento(ModEntities.ASIENTO.get(), l);
+        a.setPos(abajo.getX() + 0.5 + f.getStepX() * 0.22, abajo.getY() + 0.42 - 0.6, abajo.getZ() + 0.5 + f.getStepZ() * 0.22);
+        a.setYRot(f.getOpposite().toYRot());
+        l.addFreshEntity(a);
+        sp.startRiding(a);
+        sp.setYRot(f.getOpposite().toYRot());
+        sp.setYHeadRot(f.getOpposite().toYRot());
+    }
+
+    /** Asiento aplazado: espera a que el jugador de la cabina suelte la tecla de agacharse. */
+    @Override
+    public void tick(BlockState s, ServerLevel l, BlockPos pos, RandomSource r) {
+        if (!asiento || s.getValue(HALF) != DoubleBlockHalf.LOWER || !(l.getBlockEntity(pos) instanceof RecreativaBlockEntity be) || be.jugador == null) return;
+        ServerPlayer sp = l.getServer().getPlayerList().getPlayer(be.jugador);
+        if (sp == null || sp.level() != l || sp.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 9) return;
+        if (sp.isShiftKeyDown()) {
+            l.scheduleTick(pos, this, 4);
+            return;
+        }
+        sentar(l, pos, s, sp);
     }
 }

@@ -1,6 +1,7 @@
 {
  "parent": "block/block",
  "textures": {
+  "v": "miscelanea:block/feria/cuero_rojo",
   "r": "miscelanea:block/feria/metal_rojo",
   "k": "miscelanea:block/feria/negro",
   "o": "miscelanea:block/feria/dorado",
@@ -12,7 +13,7 @@
   "w": "miscelanea:block/feria/lona_blanca",
   "l": "miscelanea:block/feria/bombilla",
   "g": "miscelanea:block/feria/goma",
-  "particle": "miscelanea:block/feria/metal_rojo"
+  "particle": "miscelanea:block/feria/cuero_rojo"
  },
  "elements": [
   {

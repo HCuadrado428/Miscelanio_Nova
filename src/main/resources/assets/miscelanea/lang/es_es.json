@@ -1255,5 +1255,8 @@
   "subtitles.miscelanea.pi_dano": "Te alcanzan",
   "subtitles.miscelanea.pi_explosion": "Explosión",
   "subtitles.miscelanea.pi_musica": "Música de recreativa",
-  "entity.miscelanea.cabina_noria": "Cabina de noria"
+  "entity.miscelanea.cabina_noria": "Cabina de noria",
+  "turbo.miscelanea.gana": "¡GANA %s!",
+  "turbo.miscelanea.empate": "¡EMPATE!",
+  "turbo.miscelanea.meta_corta": "¡META!"
 }

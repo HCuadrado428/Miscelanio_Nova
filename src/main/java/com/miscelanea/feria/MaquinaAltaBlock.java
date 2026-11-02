@@ -62,7 +62,7 @@ public class MaquinaAltaBlock extends BaseEntityBlock {
         boolean arriba = s.getValue(HALF) == DoubleBlockHalf.UPPER;
         Direction f = s.getValue(FACING);
         if (tipo == CANASTA && arriba) return girada(f, 0, 0, 13, 16, 16, 16);
-        if (tipo == MARTILLO) return arriba ? girada(f, 6, 0, 10, 10, 16, 14) : net.minecraft.world.phys.shapes.Shapes.or(girada(f, 1, 0, 1, 15, 4, 15), girada(f, 6, 4, 10, 10, 16, 14));
+        if (tipo == MARTILLO) return arriba ? girada(f, 6, 0, 12, 10, 16, 16) : net.minecraft.world.phys.shapes.Shapes.or(girada(f, 0, 0, 0, 16, 3, 16), girada(f, 5.5, 3, 12.5, 10.5, 16, 16));
         return FORMA;
     }
 

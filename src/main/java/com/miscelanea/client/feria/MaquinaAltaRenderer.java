@@ -187,18 +187,20 @@ public class MaquinaAltaRenderer implements BlockEntityRenderer<MaquinaAltaBlock
         float tt = be.activo ? t - be.inicio : 0;
         double[] a = MaquinaAltaBlockEntity.aro(tt);
         // tablero
-        FeriaPiezas.caja(ps, vc, "lona_blanca", 0, 2.02, 0.44, 0.92, 0.62, 0.05, luz);
-        FeriaPiezas.caja(ps, vc, "metal_rojo", 0, 1.86, 0.41, 0.34, 0.03, 0.02, luz);
-        FeriaPiezas.caja(ps, vc, "metal_rojo", 0, 2.12, 0.41, 0.34, 0.03, 0.02, luz);
-        FeriaPiezas.caja(ps, vc, "metal_rojo", -0.16, 1.99, 0.41, 0.03, 0.29, 0.02, luz);
-        FeriaPiezas.caja(ps, vc, "metal_rojo", 0.16, 1.99, 0.41, 0.03, 0.29, 0.02, luz);
+        ps.pushPose();
+        ps.translate(0, 2.02, 0.44);
+        ps.scale(0.92F, 0.62F, 1F);
+        ps.translate(-0.5, -0.5, -0.5);
+        FeriaPiezas.modelo(ps, vc, FeriaPiezas.rl("tablero"), 1, 1, 1, luz);
+        ps.popPose();
+        FeriaPiezas.caja(ps, vc, "cromo", 0, 2.02, 0.48, 0.96, 0.66, 0.02, luz);
         // aro y red
         double r = 0.17;
         FeriaPiezas.barra(ps, vc, "metal_rojo", a[0], a[1], a[2] + r, a[0], a[1], 0.42, 0.03F, 0.03F, luz);
         for (int k = 0; k < 14; k++) {
             double a0 = k * Math.PI * 2 / 14, a1 = (k + 1) * Math.PI * 2 / 14;
             FeriaPiezas.barra(ps, vc, "metal_rojo", a[0] + Math.cos(a0) * r, a[1], a[2] + Math.sin(a0) * r, a[0] + Math.cos(a1) * r, a[1], a[2] + Math.sin(a1) * r, 0.025F, 0.025F, luz);
-            if (k % 2 == 0) {
+            {
                 double vaiven = Math.sin(t * 0.3 + k) * 0.01;
                 FeriaPiezas.barra(ps, vc, "lona_blanca", a[0] + Math.cos(a0) * r, a[1], a[2] + Math.sin(a0) * r,
                         a[0] + Math.cos(a0) * r * 0.55 + vaiven, a[1] - 0.2, a[2] + Math.sin(a0) * r * 0.55, 0.012F, 0.012F, luz);
@@ -231,10 +233,11 @@ public class MaquinaAltaRenderer implements BlockEntityRenderer<MaquinaAltaBlock
         ps.pushPose();
         ps.translate(0, 1.62, fuera ? -0.36 : -0.22);
         ps.mulPose(Axis.XP.rotationDegrees(-ang));
-        FeriaPiezas.barra(ps, vc, "metal_blanco", 0, 0, 0.02, 0, -0.18, -0.04, 0.05F, 0.05F, luz);
-        FeriaPiezas.caja(ps, vc, "metal_rojo", 0, -0.3, -0.1, 0.34, 0.3, 0.26, luz);
-        FeriaPiezas.caja(ps, vc, "metal_rojo", 0, -0.3, -0.1, 0.26, 0.38, 0.2, luz);
-        FeriaPiezas.caja(ps, vc, "lona_blanca", 0, -0.3, -0.23, 0.14, 0.14, 0.02, luz);
+        // pera de cuero colgada de la correa (el modelo tiene el punto de giro arriba)
+        ps.translate(0, 0, -0.08);
+        ps.scale(0.66F, 0.66F, 0.66F);
+        ps.translate(-0.5, -1, -0.5);
+        FeriaPiezas.modelo(ps, vc, FeriaPiezas.rl("saco"), 1, 1, 1, luz);
         ps.popPose();
         int mostrado = be.fase == 2 ? (int) Math.min(be.valor, be.valor * Math.max(0, dt) / 30) : 0;
         String num = String.format("%03d", mostrado);
@@ -250,9 +253,14 @@ public class MaquinaAltaRenderer implements BlockEntityRenderer<MaquinaAltaBlock
     private void martillo(MaquinaAltaBlockEntity be, PoseStack ps, VertexConsumer vc, MultiBufferSource buf, float t, int luz) {
         double base = 1.0, alto = 3.3;
         FeriaPiezas.caja(ps, vc, "lona_blanca", 0, base + alto / 2 + 0.25, 0.26, 0.26, alto + 0.5, 0.1, luz);
-        for (int k = 0; k < 10; k++) {
-            String c = k < 4 ? "agua" : k < 7 ? "dorado" : "metal_rojo";
-            FeriaPiezas.caja(ps, vc, c, 0, base + 0.2 + k * alto / 10 + alto / 20, 0.2, 0.2, alto / 10 - 0.03, 0.02, luz);
+        // escala pintada: BEBÉ, FLOJO, NORMAL, FUERTE y ¡CAMPEÓN!
+        for (int k = 0; k < 5; k++) {
+            ps.pushPose();
+            ps.translate(0, base + 0.2 + (k + 0.5) * alto / 5, 0.2);
+            ps.scale(0.22F, (float) (alto / 5 - 0.03), 1F);
+            ps.translate(-0.5, -0.5, -0.5);
+            FeriaPiezas.modelo(ps, vc, FeriaPiezas.rl("escala" + k), 1, 1, 1, luz);
+            ps.popPose();
         }
         FeriaPiezas.barra(ps, vc, "metal_blanco", -0.13, base, 0.17, -0.13, base + alto + 0.3, 0.17, 0.025F, 0.025F, luz);
         FeriaPiezas.barra(ps, vc, "metal_blanco", 0.13, base, 0.17, 0.13, base + alto + 0.3, 0.17, 0.025F, 0.025F, luz);
@@ -269,10 +277,9 @@ public class MaquinaAltaRenderer implements BlockEntityRenderer<MaquinaAltaBlock
         ps.pushPose();
         ps.translate(0, top, 0.17);
         if (suena) ps.mulPose(Axis.ZP.rotationDegrees((float) Math.sin(dt * 1.5) * 12));
-        FeriaPiezas.caja(ps, vc, "dorado", 0, 0.02, 0, 0.32, 0.08, 0.32, luz);
-        FeriaPiezas.caja(ps, vc, "dorado", 0, 0.1, 0, 0.26, 0.1, 0.26, luz);
-        FeriaPiezas.caja(ps, vc, "dorado", 0, 0.19, 0, 0.18, 0.08, 0.18, luz);
-        FeriaPiezas.caja(ps, vc, "metal_blanco", 0, 0.26, 0, 0.05, 0.08, 0.05, luz);
+        ps.scale(0.42F, 0.42F, 0.42F);
+        ps.translate(-0.5, 0, -0.5);
+        FeriaPiezas.modelo(ps, vc, FeriaPiezas.rl("campana"), 1, 1, 1, luz);
         ps.popPose();
         FeriaPiezas.caja(ps, vc, "dorado", 0, h, 0.16, 0.2, 0.1, 0.12, luz);
         // medidor en la base
@@ -289,8 +296,8 @@ public class MaquinaAltaRenderer implements BlockEntityRenderer<MaquinaAltaBlock
         ps.translate(-0.62, 0.0, -0.3);
         float golpe = be.fase == 2 && dt < 8 ? (float) Math.sin(dt / 8 * Math.PI) * 50 : 0;
         ps.mulPose(Axis.ZP.rotationDegrees(-25 + golpe));
-        FeriaPiezas.barra(ps, vc, "madera_a", 0, 0, 0, 0, 0.9, 0, 0.05F, 0.05F, luz);
-        FeriaPiezas.caja(ps, vc, "madera_b", 0, 0.95, 0, 0.32, 0.16, 0.16, luz);
+        ps.translate(-0.5, 0, -0.5);
+        FeriaPiezas.modelo(ps, vc, FeriaPiezas.rl("mazo"), 1, 1, 1, luz);
         ps.popPose();
         letrero(ps, buf, be.fase == 2 && dt > 12 ? String.valueOf(be.valor * 10) : I18n.get("miscelanea.martillo.cartel"), top + 0.45, 0.08, 0xFFFFD040);
     }

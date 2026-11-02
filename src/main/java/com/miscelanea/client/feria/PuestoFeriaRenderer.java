@@ -70,12 +70,21 @@ public class PuestoFeriaRenderer implements BlockEntityRenderer<PuestoFeriaBlock
         ps.pushPose();
         ps.translate(0, 1.35, 0.05);
         ps.mulPose(Axis.XP.rotationDegrees(giro));
-        for (int k = 0; k < 8; k++) {
-            double a0 = k * Math.PI / 4, a1 = (k + 1) * Math.PI / 4, r = 0.3;
-            for (double x : new double[]{-0.25, 0.25})
-                FeriaPiezas.barra(ps, vc, "dorado", x, Math.cos(a0) * r, Math.sin(a0) * r, x, Math.cos(a1) * r, Math.sin(a1) * r, 0.03F, 0.03F, luz);
-            FeriaPiezas.barra(ps, vc, "cromo", -0.25, Math.cos(a0) * r, Math.sin(a0) * r, 0.25, Math.cos(a0) * r, Math.sin(a0) * r, 0.02F, 0.02F, luz);
+        for (int k = 0; k < 12; k++) {
+            double a0 = k * Math.PI / 6, a1 = (k + 1) * Math.PI / 6, r = 0.3;
+            for (double x : new double[]{-0.25, 0, 0.25})
+                FeriaPiezas.barra(ps, vc, x == 0 ? "cromo" : "dorado", x, Math.cos(a0) * r, Math.sin(a0) * r, x, Math.cos(a1) * r, Math.sin(a1) * r, x == 0 ? 0.015F : 0.035F, x == 0 ? 0.015F : 0.035F, luz);
+            FeriaPiezas.barra(ps, vc, "cromo", -0.25, Math.cos(a0) * r, Math.sin(a0) * r, 0.25, Math.cos(a0) * r, Math.sin(a0) * r, 0.015F, 0.015F, luz);
         }
+        // tapas con radios, eje y manivela
+        for (double x : new double[]{-0.26, 0.26})
+            for (int k = 0; k < 4; k++) {
+                double a = k * Math.PI / 4;
+                FeriaPiezas.barra(ps, vc, "dorado", x, Math.cos(a) * 0.3, Math.sin(a) * 0.3, x, -Math.cos(a) * 0.3, -Math.sin(a) * 0.3, 0.02F, 0.02F, luz);
+            }
+        FeriaPiezas.barra(ps, vc, "cromo", -0.36, 0, 0, 0.42, 0, 0, 0.04F, 0.04F, luz);
+        FeriaPiezas.barra(ps, vc, "metal_rojo", 0.42, 0, 0, 0.42, 0.14, 0, 0.035F, 0.035F, luz);
+        FeriaPiezas.barra(ps, vc, "madera_b", 0.42, 0.14, 0, 0.5, 0.14, 0, 0.04F, 0.04F, luz);
         ps.popPose();
         for (int k = 0; k < 12; k++) {
             double a = k * 2.4 + (dt < 55 ? dt * 0.4 : 0), rr = 0.12 + (k % 3) * 0.05;

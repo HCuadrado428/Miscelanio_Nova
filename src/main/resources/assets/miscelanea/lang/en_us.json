@@ -1255,5 +1255,8 @@
   "subtitles.miscelanea.pi_dano": "You get hit",
   "subtitles.miscelanea.pi_explosion": "Explosion",
   "subtitles.miscelanea.pi_musica": "Arcade music",
-  "entity.miscelanea.cabina_noria": "Ferris Wheel Cabin"
+  "entity.miscelanea.cabina_noria": "Ferris Wheel Cabin",
+  "turbo.miscelanea.gana": "%s WINS!",
+  "turbo.miscelanea.empate": "DRAW!",
+  "turbo.miscelanea.meta_corta": "FINISH!"
 }

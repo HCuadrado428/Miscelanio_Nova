@@ -846,10 +846,10 @@
    "faces": {
     "north": {
      "uv": [
-      5,
-      7,
-      11,
-      10
+      0,
+      0,
+      16,
+      16
      ],
      "texture": "#monedas",
      "forge_data": {

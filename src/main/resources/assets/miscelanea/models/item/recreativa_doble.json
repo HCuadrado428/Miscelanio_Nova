@@ -1115,10 +1115,10 @@
    "faces": {
     "north": {
      "uv": [
-      12,
-      6,
+      0,
+      0,
       16,
-      12
+      16
      ],
      "texture": "#monedas",
      "forge_data": {
@@ -1207,10 +1207,10 @@
    "faces": {
     "north": {
      "uv": [
-      15,
-      6,
+      0,
+      0,
       16,
-      12
+      16
      ],
      "texture": "#monedas",
      "forge_data": {

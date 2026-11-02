@@ -4,7 +4,7 @@ package com.miscelanea.arcade;
 public final class ArcadeJuegos {
     public static final String[] IDS = {"chatarra", "barrio", "duelo", "comecocos", "bloques", "paso", "pinball", "pistola", "mazmorra", "turbo", "astro", "tetrominos", "serpiente", "ladrillos", "pong", "pajaro", "invasores"};
     /** Juegos que se pueden jugar a la vez entre dos en la recreativa doble. */
-    public static final String[] DOS = {"chatarra", "barrio", "duelo", "comecocos", "bloques", "paso"};
+    public static final String[] DOS = {"chatarra", "barrio", "duelo", "comecocos", "bloques", "paso", "turbo"};
 
     private ArcadeJuegos() {}
 

@@ -167,7 +167,10 @@ public class RecreativaBlock extends BaseEntityBlock {
         return usar(l, abajo, sp, doble, "");
     }
 
-    /** Igual, pero en una máquina de un solo juego (fijo no vacío): sin enlace por cable y sin menú de juegos. */
+    /**
+     * Igual, pero en una máquina de un solo juego (fijo no vacío): sin menú de juegos, y solo se enlaza por cable con otra
+     * máquina igual (dos cabinas de carreras) si su juego es de dos jugadores.
+     */
     public static InteractionResult usar(Level l, BlockPos abajo, ServerPlayer sp, boolean doble, String fijo) {
         if (!(l.getBlockEntity(abajo) instanceof RecreativaBlockEntity be)) return InteractionResult.PASS;
         if (doble && be.ocupadaPorOtro(sp) && (be.jugador2 == null || be.jugador2.equals(sp.getUUID()))) {
@@ -178,8 +181,9 @@ public class RecreativaBlock extends BaseEntityBlock {
             sp.displayClientMessage(Component.translatable("msg.miscelanea.arcade.ocupada").withStyle(ChatFormatting.RED), true);
             return InteractionResult.CONSUME;
         }
-        // recreativa normal junto a otra en la que alguien juega: agachado, se enlazan con un cable y se juega a dos
-        if (!doble && fijo.isEmpty()) {
+        // recreativa normal (o cabina de un juego a dos) junto a otra igual en la que alguien juega: agachado, se enlazan
+        // con un cable y se juega a dos
+        if (!doble && (fijo.isEmpty() || ArcadeJuegos.dosJugadores(fijo))) {
             RecreativaBlockEntity vecina = vecinaConPartida(l, abajo, sp);
             if (vecina != null) {
                 if (sp.isShiftKeyDown()) {
@@ -224,14 +228,20 @@ public class RecreativaBlock extends BaseEntityBlock {
         be.avisarCompaneros();
     }
 
-    /** Recreativa normal a uno o dos bloques (mismo nivel) en la que juega otro y que aún no tiene compañero. */
+    /**
+     * Máquina enlazable a uno o dos bloques (mismo nivel) en la que juega otro y que aún no tiene compañero: desde una
+     * recreativa normal, otra recreativa normal; desde una cabina, otra cabina del mismo bloque (nunca se mezclan).
+     */
     @Nullable
     static RecreativaBlockEntity vecinaConPartida(Level l, BlockPos abajo, ServerPlayer sp) {
+        Block propio = l.getBlockState(abajo).getBlock();
+        boolean cabina = propio instanceof CabinaArcadeBlock;
         for (Direction d : Direction.Plane.HORIZONTAL)
             for (int k = 1; k <= 2; k++) {
                 BlockPos q = abajo.relative(d, k);
                 BlockState st = l.getBlockState(q);
-                if (!(st.getBlock() instanceof RecreativaBlock rb) || rb.doble || rb instanceof CabinaArcadeBlock || st.getValue(HALF) != DoubleBlockHalf.LOWER) continue;
+                if (!(st.getBlock() instanceof RecreativaBlock rb) || rb.doble || st.getValue(HALF) != DoubleBlockHalf.LOWER) continue;
+                if (cabina ? rb != propio : rb instanceof CabinaArcadeBlock) continue;
                 if (l.getBlockEntity(q) instanceof RecreativaBlockEntity v && v.ocupadaPorOtro(sp) && (v.jugador2 == null || v.jugador2.equals(sp.getUUID())))
                     return v;
             }
