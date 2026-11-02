@@ -75,6 +75,8 @@ public class PistolaChatarra extends JuegoArcade {
         mensajeT = 120;
     }
 
+    static final int[] BAYER = {0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5};
+
     static double escala(double z) {
         return 0.3 + (1 - z) * 1.1;
     }
@@ -152,6 +154,10 @@ public class PistolaChatarra extends JuegoArcade {
                 if (++l.explota > 24) latas.remove(i);
                 continue;
             }
+            if (l.bidon && ++l.vida > 600) {
+                latas.remove(i);
+                continue;
+            }
             l.x += l.vx;
             l.y += l.vy;
             if (!l.bidon) l.vy += 0.06;
@@ -164,7 +170,7 @@ public class PistolaChatarra extends JuegoArcade {
             aciertos = tiros = 0;
             siguienteOleada();
         }
-        if (oleada > 1 && t % 600 == 0) {
+        if (oleada > 1 && t % 600 == 0 && latas.stream().filter(x -> x.bidon).count() < 2) {
             Lata l = new Lata();
             l.bidon = true;
             l.x = 30 + rnd.nextInt(196);
@@ -274,9 +280,23 @@ public class PistolaChatarra extends JuegoArcade {
     @Override
     public void dibujar(Pantalla p) {
         // cielo de noche, luna y montañas de chatarra
-        for (int y = 0; y < HORIZONTE; y++) p.rect(0, y, 256, 1, y < 30 ? 33 : y < 60 ? 41 : y < 80 ? 42 : 45);
-        p.circulo(206, 26, 13, 62);
-        p.circulo(201, 23, 11, 59);
+        int[] cielo = {33, 41, 42, 45};
+        for (int y = 0; y < HORIZONTE; y++) {
+            double v = y / (double) HORIZONTE * 3.2;
+            int k = (int) v;
+            double fr = v - k;
+            for (int x = 0; x < 256; x++) {
+                boolean sig = fr > BAYER[(y & 3) * 4 + (x & 3)] / 16.0;
+                p.px(x, y, cielo[Math.min(3, sig ? k + 1 : k)]);
+            }
+        }
+        for (int i = 0; i < 40; i++) {
+            int ex = (i * 97 + 13) % 256, ey = (i * 53 + 7) % 50;
+            p.px(ex, ey, (t / 20 + i) % 7 == 0 ? 5 : 7);
+        }
+        for (int dy = -12; dy <= 12; dy++)
+            for (int dx = -12; dx <= 12; dx++)
+                if (dx * dx + dy * dy <= 144 && (dx + 6) * (dx + 6) + (dy + 4) * (dy + 4) > 100) p.px(206 + dx, 26 + dy, dx * dx + dy * dy > 110 ? 59 : 62);
         for (int x = 0; x < 256; x += 4) {
             int h = (int) (18 + 10 * Math.sin(x * 0.05) + 6 * Math.sin(x * 0.13 + 1));
             p.rect(x, HORIZONTE - h, 4, h, 1);
@@ -288,7 +308,13 @@ public class PistolaChatarra extends JuegoArcade {
         p.linea(33, 40, 44, 34, 2);
         p.rect(66, 37, 1, 18, 3);
         // suelo con charcos y valla
-        for (int y = HORIZONTE; y < SUELO; y++) p.rect(0, y, 256, 1, y < HORIZONTE + 20 ? 49 : y < HORIZONTE + 50 ? 50 : 51);
+        for (int y = HORIZONTE; y < SUELO; y++) {
+            double v = (y - HORIZONTE) / (double) (SUELO - HORIZONTE) * 2.2;
+            int k = (int) v;
+            double fr = v - k;
+            for (int x = 0; x < 256; x++) p.px(x, y, 49 + Math.min(2, fr > BAYER[(y & 3) * 4 + (x & 3)] / 16.0 ? k + 1 : k));
+        }
+        for (int i = 0; i < 30; i++) p.px((i * 71 + 5) % 256, HORIZONTE + 6 + (i * 37) % (SUELO - HORIZONTE - 8), 48);
         for (int x = 0; x < 256; x += 12) p.rect(x, HORIZONTE - 14, 1, 14, 4);
         p.rect(0, HORIZONTE - 13, 256, 1, 4);
         p.rect(0, HORIZONTE - 7, 256, 1, 4);
@@ -296,7 +322,7 @@ public class PistolaChatarra extends JuegoArcade {
         p.rect(170, 160, 40, 3, 38);
         // robots de lejos a cerca
         robots.sort((a, c) -> Double.compare(c.z, a.z));
-        for (Robot r : robots) robot(p, r);
+        for (Robot r : robots) if (r.z > 0.88 && !r.jefe) robot(p, r);
         // cajas de cobertura (delante de los que salen)
         for (int k = 0; k < 3; k++) {
             int cx = new int[]{50, 128, 206}[k];
@@ -304,7 +330,9 @@ public class PistolaChatarra extends JuegoArcade {
             p.rect(cx - 16, py - 16, 32, 16, 51);
             p.marco(cx - 16, py - 16, 32, 16, 49);
             p.linea(cx - 16, py - 16, cx + 15, py - 1, 49);
+            p.rect(cx - 16, py - 16, 32, 1, 52);
         }
+        for (Robot r : robots) if (r.z <= 0.88 || r.jefe) robot(p, r);
         for (Lata l : latas) {
             int x = (int) l.x, y = (int) l.y;
             if (l.explota >= 0) {
@@ -357,6 +385,17 @@ public class PistolaChatarra extends JuegoArcade {
         if (mensajeT > 0 && (mensajeT > 30 || (mensajeT / 6) % 2 == 0)) p.textoC(mensaje, 128, 40, 20);
     }
 
+    /** Rectángulo con contorno negro y brillo arriba e izquierda. */
+    static void caja(Pantalla p, int x, int y, int w, int h, int c, int luz) {
+        if (w <= 0 || h <= 0) return;
+        p.rect(x - 1, y - 1, w + 2, h + 2, 0);
+        p.rect(x, y, w, h, c);
+        if (w > 2 && h > 2) {
+            p.rect(x, y, w, 1, luz);
+            p.rect(x, y, 1, h, luz);
+        }
+    }
+
     void robot(Pantalla p, Robot r) {
         double s = escala(r.z) * (r.jefe ? 2.4 : r.tipo == 2 ? 1.3 : 1);
         int py = pie(r.z), cx = (int) r.x;
@@ -374,11 +413,14 @@ public class PistolaChatarra extends JuegoArcade {
         int cuerpo = r.jefe ? 17 : r.tipo == 1 ? 3 : r.tipo == 2 ? 13 : 14, oscuro = r.jefe ? 13 : r.tipo == 1 ? 2 : 49;
         if (blanco) cuerpo = oscuro = 7;
         int paso = (int) (Math.sin(r.t * (r.tipo == 1 ? 0.3 : 0.15)) * 3 * s);
+        int luz = blanco ? 7 : cuerpo + 1;
+        // sombra en el suelo
+        p.rect(cx - w / 2 - 1, py - 1, w + 2, Math.max(1, (int) (2 * s)), 48);
         // piernas
-        p.rect(cx - w / 3, py - h / 3, Math.max(1, w / 4), h / 3 + paso, oscuro);
-        p.rect(cx + w / 3 - Math.max(1, w / 4), py - h / 3, Math.max(1, w / 4), h / 3 - paso, oscuro);
+        caja(p, cx - w / 3, py - h / 3, Math.max(1, w / 4), h / 3 + paso, oscuro, oscuro);
+        caja(p, cx + w / 3 - Math.max(1, w / 4), py - h / 3, Math.max(1, w / 4), h / 3 - paso, oscuro, oscuro);
         // tronco
-        p.rect(cx - w / 2, (int) (py - h * 0.75), w, (int) (h * 0.45), cuerpo);
+        caja(p, cx - w / 2, (int) (py - h * 0.75), w, (int) (h * 0.45), cuerpo, luz);
         p.rect(cx - w / 2, (int) (py - h * 0.75), w, Math.max(1, h / 14), oscuro);
         p.rect(cx - w / 4, (int) (py - h * 0.6), Math.max(1, w / 2), Math.max(1, h / 10), oscuro);
         // brazos estirados hacia ti
@@ -387,7 +429,7 @@ public class PistolaChatarra extends JuegoArcade {
         p.rect(cx + w / 2, by - paso / 2, (int) (5 * s), Math.max(1, (int) (3 * s)), oscuro);
         // cabeza con ojos verdes
         int hw = (int) (w * 0.8), hh = (int) (h * 0.22);
-        p.rect(cx - hw / 2, py - h, hw, hh, cuerpo);
+        caja(p, cx - hw / 2, py - h, hw, hh, cuerpo, luz);
         p.rect(cx - hw / 2 + Math.max(1, hw / 6), py - h + hh / 3, Math.max(1, hw / 5), Math.max(1, hh / 4), 29);
         p.rect(cx + hw / 2 - Math.max(1, hw / 6) - Math.max(1, hw / 5), py - h + hh / 3, Math.max(1, hw / 5), Math.max(1, hh / 4), 29);
         p.rect(cx - 1, py - h - (int) (4 * s), Math.max(1, (int) s), (int) (4 * s), oscuro);

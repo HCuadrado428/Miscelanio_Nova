@@ -31,6 +31,8 @@ public class AsientoFeriaRenderer extends EntityRenderer<AsientoFeria> {
         var vc = buf.getBuffer(Sheets.cutoutBlockSheet());
         int c = e.indice() % 4;
         if (e.esPulpo()) {
+            // cesta para dos: más ancha que un bloque
+            ps.scale(1.6F, 1.0F, 1.6F);
             ps.translate(-0.5, 0, -0.5);
             FeriaPiezas.modelo(ps, vc, FeriaPiezas.rl("cesta" + c), 1, 1, 1, luz);
         } else if (e.esNoria()) {
