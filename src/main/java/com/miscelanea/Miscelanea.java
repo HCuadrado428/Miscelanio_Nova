@@ -33,6 +33,7 @@ public class Miscelanea {
         com.miscelanea.registry.ModRecipes.SERIALIZERS.register(modBus);
         com.miscelanea.registry.ModBlocks.BLOCKS.register(modBus);
         com.miscelanea.registry.ModBlocks.BLOCK_ENTITIES.register(modBus);
+        com.miscelanea.tortura.TorturaRegistro.registrar(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::creativeTabs);
@@ -155,6 +156,12 @@ public class Miscelanea {
             event.accept(ModItems.BFG);
             event.accept(ModItems.VENDA);
             event.accept(ModItems.MAZO_WEMMBU);
+            event.accept(com.miscelanea.tortura.TorturaRegistro.TRAMPA_OSO);
+            event.accept(com.miscelanea.tortura.TorturaRegistro.LLAVE_TRAMPA);
+            event.accept(com.miscelanea.tortura.TorturaRegistro.CAJA_JIGSAW_ITEM);
+            event.accept(com.miscelanea.tortura.TorturaRegistro.GRILLETES);
+            event.accept(com.miscelanea.tortura.TorturaRegistro.CADENA);
+            event.accept(com.miscelanea.tortura.TorturaRegistro.GANZUA);
             event.accept(ModItems.COHETE);
             event.accept(ModItems.LLAVE_ESPADA);
             event.accept(ModItems.HACHA_LEVIATAN);
