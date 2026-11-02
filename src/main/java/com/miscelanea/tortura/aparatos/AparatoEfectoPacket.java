@@ -9,10 +9,11 @@ import java.util.function.Supplier;
 
 /**
  * Servidor → clientes: efectos visuales sobre una entidad. DESMAYO (solo a la víctima: pantalla a negro 'valor' ticks),
- * DESCARGA (a todos los que la ven: tiembla y echa chispas; valor = ticks | voltaje &lt;&lt; 16).
+ * DESCARGA (a todos los que la ven: tiembla y echa chispas; valor = ticks | voltaje &lt;&lt; 16), CORTE (solo a la
+ * víctima del péndulo: destello rojo; valor = fuerza 1..3).
  */
 public class AparatoEfectoPacket {
-    public static final int DESMAYO = 1, DESCARGA = 2;
+    public static final int DESMAYO = 1, DESCARGA = 2, CORTE = 3;
     public final int entidad, efecto, valor;
 
     public AparatoEfectoPacket(int entidad, int efecto, int valor) {

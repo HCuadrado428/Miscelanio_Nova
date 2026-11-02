@@ -2,11 +2,13 @@ package com.miscelanea.client.tortura.aparatos;
 
 import com.miscelanea.tortura.aparatos.AparatosVictimas;
 import com.miscelanea.tortura.aparatos.DoncellaBlockEntity;
+import com.miscelanea.tortura.aparatos.PenduloBlockEntity;
 import com.miscelanea.tortura.aparatos.PotroBlockEntity;
 import dev.kosmx.playerAnim.api.TransformType;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.core.util.Vec3f;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,6 +19,9 @@ import org.jetbrains.annotations.NotNull;
  *   <li>potro: brazos estirados por encima de la cabeza y piernas juntas; con la tensión, los hombros y las caderas se
  *       separan (el cuerpo, además, se alarga al dibujarlo tumbado en AparatosCliente);</li>
  *   <li>silla: sentado (lo hace el juego) con los antebrazos en los reposabrazos; durante la descarga, convulsiones.</li>
+ *   <li>péndulo: tumbado (en PenduloInmersionCliente), brazos a los costados y piernas juntas; tirones contra las
+ *       correas, más fuertes cuanto más baja la cuchilla;</li>
+ *   <li>silla de inmersión: sentado con los brazos en los reposabrazos; bajo el agua, se debate.</li>
  * </ul>
  */
 public class AnimAparato implements IAnimation {
@@ -105,6 +110,34 @@ public class AnimAparato implements IAnimation {
                     case "body" -> mezclar(k, v, j1 * 0.25F, 0F, j3 * 0.25F);
                     case "rightLeg" -> d > 0 ? new Vec3f(v.getX() + j2 * 0.4F, v.getY(), v.getZ() + j1 * 0.2F) : v;
                     case "leftLeg" -> d > 0 ? new Vec3f(v.getX() + j3 * 0.4F, v.getY(), v.getZ() + j2 * 0.2F) : v;
+                    default -> v;
+                };
+            }
+            case AparatosVictimas.PENDULO: {
+                if (tt != TransformType.ROTATION) return v;
+                float baj = en != null && p.level().getBlockEntity(en.pos()) instanceof PenduloBlockEntity pb ? Mth.lerp(td, pb.bajadaVisO, pb.bajadaVis) : 0F;
+                float tiron = Mth.sin(t * 1.9F) * Math.max(0F, Mth.sin(t * 0.31F)) * (0.03F + baj * 0.12F);
+                return switch (parte) {
+                    case "rightArm" -> mezclar(k, v, tiron, 0F, 0.12F);
+                    case "leftArm" -> mezclar(k, v, -tiron, 0F, -0.12F);
+                    case "rightLeg" -> mezclar(k, v, tiron * 0.5F, 0F, 0.03F);
+                    case "leftLeg" -> mezclar(k, v, -tiron * 0.5F, 0F, -0.03F);
+                    case "head" -> mezclar(k, v, Mth.clamp(v.getX() + 1.45F, -0.4F, 0.6F) * 0.5F, v.getY() * 0.5F, tiron * 0.6F);
+                    case "body" -> mezclar(k, v, 0F, 0F, tiron * 0.25F);
+                    default -> v;
+                };
+            }
+            case AparatosVictimas.INMERSION: {
+                if (tt != TransformType.ROTATION) return v;
+                float a = p.isEyeInFluid(FluidTags.WATER) ? 0.22F : 0.02F;
+                float j1 = Mth.sin(t * 3.1F) * a, j2 = Mth.sin(t * 3.7F + 1.1F) * a, j3 = Mth.sin(t * 2.3F + 2.0F) * a;
+                return switch (parte) {
+                    case "rightArm" -> mezclar(k, v, -0.62F + j1, 0.1F, 0.08F + j2 * 0.4F);
+                    case "leftArm" -> mezclar(k, v, -0.62F + j2, -0.1F, -0.08F + j3 * 0.4F);
+                    case "head" -> mezclar(k, v, v.getX() * 0.6F + j3, v.getY() * 0.6F + j1, j2 * 0.5F);
+                    case "body" -> mezclar(k, v, j1 * 0.2F, 0F, j3 * 0.2F);
+                    case "rightLeg" -> new Vec3f(v.getX() + j2 * 0.5F, v.getY(), v.getZ() + j1 * 0.2F);
+                    case "leftLeg" -> new Vec3f(v.getX() + j3 * 0.5F, v.getY(), v.getZ() + j2 * 0.2F);
                     default -> v;
                 };
             }

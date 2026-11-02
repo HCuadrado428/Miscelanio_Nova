@@ -82,6 +82,15 @@ public abstract class AparatoBlockEntity extends BlockEntity {
 
     protected void tickVisual() {}
 
+    /**
+     * Para los aparatos cuyo asiento se mueve (la silla de inmersión): dónde tiene que estar AHORA el asiento de la
+     * víctima. {@link AsientoAparato} lo consulta cada tick en el servidor y en el cliente. null = asiento fijo.
+     */
+    @Nullable
+    public Vec3 sitioMovil(LivingEntity v) {
+        return null;
+    }
+
     protected void guardar(CompoundTag t) {}
 
     protected void cargar(CompoundTag t) {}

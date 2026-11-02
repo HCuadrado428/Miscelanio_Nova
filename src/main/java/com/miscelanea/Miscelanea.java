@@ -181,6 +181,8 @@ public class Miscelanea {
             event.accept(com.miscelanea.tortura.efectos.EfectosRegistro.ALICATES);
             event.accept(com.miscelanea.tortura.efectos.EfectosRegistro.GRANADA_MIEDO);
             event.accept(com.miscelanea.tortura.efectos.EfectosRegistro.DARDO_MIEDO);
+            event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.PENDULO_ITEM);
+            event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.INMERSION_ITEM);
             event.accept(ModItems.COHETE);
             event.accept(ModItems.LLAVE_ESPADA);
             event.accept(ModItems.HACHA_LEVIATAN);

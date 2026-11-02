@@ -1932,5 +1932,71 @@
       "miscelanea:miedo_zumbido"
     ],
     "subtitle": "subtitles.miscelanea.miedo_zumbido"
+  },
+  "pendulo_silbido": {
+    "sounds": [
+      "miscelanea:pendulo_silbido"
+    ],
+    "subtitle": "subtitles.miscelanea.pendulo_silbido"
+  },
+  "pendulo_carraca": {
+    "sounds": [
+      "miscelanea:pendulo_carraca"
+    ],
+    "subtitle": "subtitles.miscelanea.pendulo_carraca"
+  },
+  "pendulo_tictac": {
+    "sounds": [
+      "miscelanea:pendulo_tictac"
+    ],
+    "subtitle": "subtitles.miscelanea.pendulo_tictac"
+  },
+  "pendulo_correa": {
+    "sounds": [
+      "miscelanea:pendulo_correa"
+    ],
+    "subtitle": "subtitles.miscelanea.pendulo_correa"
+  },
+  "pendulo_corte": {
+    "sounds": [
+      "miscelanea:pendulo_corte"
+    ],
+    "subtitle": "subtitles.miscelanea.pendulo_corte"
+  },
+  "pendulo_palanca": {
+    "sounds": [
+      "miscelanea:pendulo_palanca"
+    ],
+    "subtitle": "subtitles.miscelanea.pendulo_palanca"
+  },
+  "inmersion_chapuzon": {
+    "sounds": [
+      "miscelanea:inmersion_chapuzon"
+    ],
+    "subtitle": "subtitles.miscelanea.inmersion_chapuzon"
+  },
+  "inmersion_burbujas": {
+    "sounds": [
+      "miscelanea:inmersion_burbujas"
+    ],
+    "subtitle": "subtitles.miscelanea.inmersion_burbujas"
+  },
+  "inmersion_tos": {
+    "sounds": [
+      "miscelanea:inmersion_tos"
+    ],
+    "subtitle": "subtitles.miscelanea.inmersion_tos"
+  },
+  "inmersion_crujido": {
+    "sounds": [
+      "miscelanea:inmersion_crujido"
+    ],
+    "subtitle": "subtitles.miscelanea.inmersion_crujido"
+  },
+  "inmersion_goteo": {
+    "sounds": [
+      "miscelanea:inmersion_goteo"
+    ],
+    "subtitle": "subtitles.miscelanea.inmersion_goteo"
   }
 }
