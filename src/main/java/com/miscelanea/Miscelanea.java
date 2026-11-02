@@ -153,6 +153,7 @@ public class Miscelanea {
             event.accept(ModItems.CARTUCHOS);
             event.accept(ModItems.LANZACOHETES);
             event.accept(ModItems.BFG);
+            event.accept(ModItems.VENDA);
             event.accept(ModItems.MAZO_WEMMBU);
             event.accept(ModItems.COHETE);
             event.accept(ModItems.LLAVE_ESPADA);

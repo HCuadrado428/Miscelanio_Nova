@@ -296,5 +296,9 @@ public final class ModItems {
         return BICHOS.values();
     }
 
+    // ---- Heridas en la skin: venda (sin receta)
+    public static final RegistryObject<Item> VENDA = ITEMS.register("venda",
+            () -> new com.miscelanea.tortura.heridas.VendaItem(new Item.Properties().stacksTo(16)));
+
     private ModItems() {}
 }
