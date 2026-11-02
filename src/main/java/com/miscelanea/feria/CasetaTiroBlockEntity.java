@@ -112,7 +112,7 @@ public class CasetaTiroBlockEntity extends BlockEntity {
         inicio = ahora;
         puntos = 0;
         java.util.Arrays.fill(caido, -10000);
-        if (!p.getInventory().hasAnyMatching(st -> st.is(ModItems.ESCOPETA_CORCHO.get())))
+        if (!p.getInventory().hasAnyMatching(s2 -> s2.is(ModItems.ESCOPETA_CORCHO.get())))
             p.getInventory().add(new ItemStack(ModItems.ESCOPETA_CORCHO.get()));
         p.displayClientMessage(Component.translatable("miscelanea.tiro.empieza"), true);
         level.playSound(null, worldPosition, ModSounds.FE_ARRANCA.get(), SoundSource.BLOCKS, 0.6F, 1.4F);
