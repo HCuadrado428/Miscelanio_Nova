@@ -9,13 +9,11 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.model.DefaultedEntityGeoModel;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
-import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
 /** El mazo lanzado: da vueltas de campana hacia donde va (y al revés cuando vuelve). */
 public class MazoLanzadoRenderer extends GeoEntityRenderer<MazoLanzado> {
     public MazoLanzadoRenderer(EntityRendererProvider.Context ctx) {
         super(ctx, new DefaultedEntityGeoModel<>(new ResourceLocation(Miscelanea.MOD_ID, "mazo_lanzado")));
-        addRenderLayer(new AutoGlowingGeoLayer<>(this));
     }
 
     @Override

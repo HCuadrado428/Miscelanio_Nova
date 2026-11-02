@@ -223,7 +223,7 @@ public class MazoItem extends Item implements GeoItem {
 
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if (r == null) r = new com.miscelanea.client.armas.ArmaGeoRenderer<>("mazo_wemmbu", true);
+                if (r == null) r = new com.miscelanea.client.armas.ArmaGeoRenderer<>("mazo_wemmbu", false);
                 return r;
             }
         });
