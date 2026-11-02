@@ -1,0 +1,23 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "SSS",
+  "PGP",
+  "SSS"
+ ],
+ "key": {
+  "S": {
+   "item": "minecraft:stick"
+  },
+  "P": {
+   "item": "minecraft:paper"
+  },
+  "G": {
+   "item": "minecraft:gold_ingot"
+  }
+ },
+ "result": {
+  "item": "miscelanea:tablon_torneo"
+ }
+}

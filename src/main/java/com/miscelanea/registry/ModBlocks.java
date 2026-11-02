@@ -145,6 +145,12 @@ public final class ModBlocks {
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.cartas.MesaCartasBlockEntity>> MESA_CARTAS_BE = BLOCK_ENTITIES.register("mesa_cartas",
             () -> BlockEntityType.Builder.of(com.miscelanea.cartas.MesaCartasBlockEntity::new, MESA_CARTAS.get()).build(null));
+    public static final RegistryObject<Block> TORNEO = BLOCKS.register("tablon_torneo",
+            () -> new com.miscelanea.torneo.TorneoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.0F)
+                    .sound(SoundType.WOOD).noOcclusion()));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.torneo.TorneoBlockEntity>> TORNEO_BE = BLOCK_ENTITIES.register("tablon_torneo",
+            () -> BlockEntityType.Builder.of(com.miscelanea.torneo.TorneoBlockEntity::new, TORNEO.get()).build(null));
     public static final RegistryObject<Block> BILLAR = BLOCKS.register("billar",
             () -> new com.miscelanea.mesas.BillarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(2.5F)
                     .sound(SoundType.WOOD).noOcclusion()));

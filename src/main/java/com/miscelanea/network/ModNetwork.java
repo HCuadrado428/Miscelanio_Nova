@@ -197,6 +197,11 @@ public final class ModNetwork {
                 .decoder(com.miscelanea.cartas.CartasPacket::new)
                 .consumerMainThread(com.miscelanea.cartas.CartasPacket::handle)
                 .add();
+        CHANNEL.messageBuilder(com.miscelanea.torneo.TorneoPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.torneo.TorneoPacket::encode)
+                .decoder(com.miscelanea.torneo.TorneoPacket::new)
+                .consumerMainThread(com.miscelanea.torneo.TorneoPacket::handle)
+                .add();
         CHANNEL.messageBuilder(com.miscelanea.baile.BailePacket.class, id++)
                 .encoder(com.miscelanea.baile.BailePacket::encode)
                 .decoder(com.miscelanea.baile.BailePacket::new)
