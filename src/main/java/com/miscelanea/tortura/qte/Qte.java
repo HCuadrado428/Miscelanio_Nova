@@ -57,6 +57,8 @@ public final class Qte {
 
     private static final Map<UUID, Sesion> SESIONES = new HashMap<>();
     private static final List<Programada> PROGRAMADAS = new ArrayList<>();
+    /** Lo que tardó (ms, medido en el servidor) la última partida que mandó cada jugador: para puntuar dentro del callback. */
+    private static final Map<UUID, Long> DURACIONES = new HashMap<>();
     private static int siguiente = 1;
     private static long ticks;
 
@@ -85,6 +87,15 @@ public final class Qte {
     /** Cancela el minijuego en curso (si hay): el callback recibe CANCELADO y el cliente lo cierra. */
     public static void cancelar(ServerPlayer p) {
         terminar(p, QteResultado.CANCELADO, true);
+    }
+
+    /**
+     * Dentro de un callback: cuántos ms tardó el jugador en terminar la partida que acaba de mandar (o -1 si el minijuego
+     * no terminó por un resultado del cliente: plazo, cancelación...). Sirve para puntuar (p. ej. MACHACAR más rápido = mejor).
+     */
+    public static long ultimaDuracionMs(ServerPlayer p) {
+        Long ms = DURACIONES.get(p.getUUID());
+        return ms == null ? -1 : ms;
     }
 
     /** Ejecuta algo en el servidor dentro de unos ticks. */
@@ -119,7 +130,9 @@ public final class Qte {
             }
         }
         if (r == QteResultado.ROTO && s.tipo != QteTipo.GANZUA) r = QteResultado.FALLO;
+        DURACIONES.put(p.getUUID(), ms);
         terminar(p, r, false);
+        DURACIONES.remove(p.getUUID());
     }
 
     /** Cada tick del servidor: plazos, anclas y tareas programadas. */
@@ -176,5 +189,6 @@ public final class Qte {
     public static void limpiar() {
         SESIONES.clear();
         PROGRAMADAS.clear();
+        DURACIONES.clear();
     }
 }

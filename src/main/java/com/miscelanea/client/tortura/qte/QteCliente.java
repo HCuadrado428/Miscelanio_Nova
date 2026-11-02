@@ -75,6 +75,8 @@ public final class QteCliente {
     @SubscribeEvent
     public static void interaccion(InputEvent.InteractionKeyMappingTriggered e) {
         if (!activo()) return;
+        // tira y afloja del lazo: el clic derecho sigue sirviendo para tirar de la cuerda
+        if (e.isUseItem() && com.miscelanea.client.tortura.LazoCliente.puedeTirar(e.getHand())) return;
         e.setCanceled(true);
         e.setSwingHand(false);
     }

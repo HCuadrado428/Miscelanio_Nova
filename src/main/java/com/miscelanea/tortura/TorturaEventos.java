@@ -9,9 +9,12 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingChangeTargetEvent;
@@ -27,7 +30,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-/** Eventos del servidor (y comunes) de la trampa, los grilletes y los minijuegos. */
+/** Eventos del servidor (y comunes) de la trampa, los grilletes, el lazo y los minijuegos. */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID)
 public final class TorturaEventos {
     private TorturaEventos() {}
@@ -41,16 +44,22 @@ public final class TorturaEventos {
     @SubscribeEvent
     public static void pararServidor(ServerStoppedEvent e) {
         Qte.limpiar();
+        Lazo.limpiarMemoria();
     }
 
     @SubscribeEvent
     public static void salir(PlayerEvent.PlayerLoggedOutEvent e) {
-        if (e.getEntity() instanceof ServerPlayer sp) Qte.desconectar(sp);
+        if (e.getEntity() instanceof ServerPlayer sp) {
+            Lazo.cortarTodo(sp);   // antes de que se guarde: vuelve libre
+            Qte.desconectar(sp);
+        }
     }
 
     // ------------------------------------------------------------------ sincronizar estado
     @SubscribeEvent
     public static void entrar(PlayerEvent.PlayerLoggedInEvent e) {
+        // el lazo no sobrevive a desconectarse (por si el servidor se cerró de golpe)
+        if (Lazo.estado(e.getEntity()) != 0) Lazo.limpiar(e.getEntity());
         if (Cautivos.tieneAlgo(e.getEntity())) Cautivos.sincronizar(e.getEntity());
     }
 
@@ -61,6 +70,7 @@ public final class TorturaEventos {
 
     @SubscribeEvent
     public static void cambiarDimension(PlayerEvent.PlayerChangedDimensionEvent e) {
+        if (e.getEntity() instanceof ServerPlayer sp) Lazo.cortarTodo(sp);
         Cautivos.sincronizar(e.getEntity());
     }
 
@@ -86,11 +96,13 @@ public final class TorturaEventos {
         if (v.level().isClientSide || !Cautivos.tieneAlgo(v)) return;
         if (Cautivos.conTrampa(v)) TrampaOso.tick(v);
         if (v.isAlive() && Cautivos.atado(v)) Grilletes.tick(v);
+        if (v.isAlive() && Lazo.estado(v) != 0) Lazo.tick(v);
     }
 
     @SubscribeEvent
     public static void morir(LivingDeathEvent e) {
         if (e.getEntity().level().isClientSide) return;
+        Lazo.alMorir(e.getEntity());
         if (e.getEntity() instanceof ServerPlayer sp) Qte.cancelar(sp);
     }
 
@@ -99,7 +111,7 @@ public final class TorturaEventos {
     public static void interactuar(PlayerInteractEvent.EntityInteract e) {
         Player p = e.getEntity();
         if (!(e.getTarget() instanceof LivingEntity t)) return;
-        if (Cautivos.atado(p)) {
+        if (Cautivos.atado(p) || Lazo.sinManos(p)) {
             e.setCanceled(true);
             e.setCancellationResult(InteractionResult.FAIL);
             return;
@@ -107,6 +119,12 @@ public final class TorturaEventos {
         ItemStack st = e.getItemStack();
         Item it = st.getItem();
         boolean servidor = !p.level().isClientSide;
+        // lazo: soltar (creativo), maniatar al derribado, cargarlo al hombro, subirlo al caballo / montar con él
+        if (servidor ? usoLazo(p, t, st, e.getHand()) : usoLazoCliente(p, t, st, e.getHand())) {
+            e.setCanceled(true);
+            e.setCancellationResult(InteractionResult.SUCCESS);
+            return;
+        }
         if (it instanceof TrampaOsoItem) {
             if (servidor) TrampaOsoItem.usarSobre(p, st, t);
         } else if (it instanceof GrilletesItem) {
@@ -129,9 +147,28 @@ public final class TorturaEventos {
         e.setCancellationResult(InteractionResult.SUCCESS);
     }
 
+    private static boolean usoLazo(Player p, LivingEntity t, ItemStack st, InteractionHand mano) {
+        // (un caballo enlazado o derribado se trata como cualquier otro mob)
+        if (t instanceof AbstractHorse caballo && Lazo.estado(caballo) == 0) return mano == InteractionHand.MAIN_HAND && Lazo.caballo(p, caballo, st);
+        return Lazo.interactuar(p, t, st, mano);
+    }
+
+    /** Lo mismo con el estado que conoce el cliente (para que no haga otra cosa con ese clic). */
+    private static boolean usoLazoCliente(Player p, LivingEntity t, ItemStack st, InteractionHand mano) {
+        Boolean r = DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> com.miscelanea.client.tortura.LazoCliente.interactuaria(p, t, st, mano));
+        return r != null && r;
+    }
+
     // ------------------------------------------------------------------ manos atadas
     private static boolean atado(Entity e) {
-        return e != null && Cautivos.atado(e);
+        return e != null && (Cautivos.atado(e) || Lazo.sinManos(e));
+    }
+
+    /** Con grilletes se puede usar la ganzúa y la llave; con el lazo, nada. */
+    private static boolean bloqueado(Entity e, ItemStack s) {
+        if (e == null) return false;
+        if (Lazo.sinManos(e)) return true;
+        return Cautivos.atado(e) && !permitido(s);
     }
 
     private static boolean permitido(ItemStack s) {
@@ -158,7 +195,7 @@ public final class TorturaEventos {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void clicBloque(PlayerInteractEvent.RightClickBlock e) {
-        if (atado(e.getEntity()) && !permitido(e.getItemStack())) {
+        if (bloqueado(e.getEntity(), e.getItemStack())) {
             e.setCanceled(true);
             e.setCancellationResult(InteractionResult.FAIL);
             aviso(e.getEntity());
@@ -167,7 +204,7 @@ public final class TorturaEventos {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void clicObjeto(PlayerInteractEvent.RightClickItem e) {
-        if (atado(e.getEntity()) && !permitido(e.getItemStack())) {
+        if (bloqueado(e.getEntity(), e.getItemStack())) {
             e.setCanceled(true);
             e.setCancellationResult(InteractionResult.FAIL);
             aviso(e.getEntity());
@@ -196,7 +233,7 @@ public final class TorturaEventos {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void usarObjeto(LivingEntityUseItemEvent.Start e) {
-        if (atado(e.getEntity()) && !permitido(e.getItem())) e.setCanceled(true);
+        if (bloqueado(e.getEntity(), e.getItem())) e.setCanceled(true);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)

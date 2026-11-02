@@ -19,7 +19,8 @@ import java.util.UUID;
  * miscelanea_tortura: {
  *   Trampa: ticks que quedan (>0 = la lleva), TrampaId, TrampaCaptor (UUID), TrampaCaja (pos con la llave), SinCajas,
  *   Buscadas: [pos...], Esperas: {pos: tick},
- *   Grilletes: bool, GrilletesCaptor (UUID), Cadena (UUID de quien tira), Cerradura (semilla de la ganzúa)
+ *   Grilletes: bool, GrilletesCaptor (UUID), Cadena (UUID de quien tira), Cerradura (semilla de la ganzúa),
+ *   Lazo: 1 enlazado / 2 derribado / 3 maniatado, LazoCaptor (UUID), LazoT (ticks que quedan del estado)
  * }
  * </pre>
  */
@@ -57,6 +58,18 @@ public final class Cautivos {
         return d.hasUUID("Cadena") ? d.getUUID("Cadena") : null;
     }
 
+    /** Estado del lazo (0 = nada; ver {@link Lazo#ENLAZADO}, {@link Lazo#DERRIBADO}, {@link Lazo#MANIATADO}). */
+    public static int lazo(Entity e) {
+        return tieneAlgo(e) ? leer(e).getInt("Lazo") : 0;
+    }
+
+    @Nullable
+    public static UUID lazoCaptor(Entity e) {
+        if (!tieneAlgo(e)) return null;
+        CompoundTag d = leer(e);
+        return d.hasUUID("LazoCaptor") ? d.getUUID("LazoCaptor") : null;
+    }
+
     /** Manda el estado a quien ve a la entidad (y a ella misma si es un jugador). */
     public static void sincronizar(LivingEntity e) {
         if (e.level().isClientSide) return;
@@ -75,6 +88,12 @@ public final class Cautivos {
             Entity h = sl.getEntity(d.getUUID("Cadena"));
             if (h != null) cad = h.getId();
         }
-        return new EstadoCautivoPacket(e.getId(), d.getInt("Trampa"), d.getBoolean("SinCajas"), d.getBoolean("Grilletes"), cad);
+        int lazoCap = -1;
+        if (d.hasUUID("LazoCaptor") && e.level() instanceof ServerLevel sl) {
+            Entity h = sl.getEntity(d.getUUID("LazoCaptor"));
+            if (h != null) lazoCap = h.getId();
+        }
+        return new EstadoCautivoPacket(e.getId(), d.getInt("Trampa"), d.getBoolean("SinCajas"), d.getBoolean("Grilletes"), cad,
+                d.getInt("Lazo"), lazoCap, d.getInt("LazoT"));
     }
 }

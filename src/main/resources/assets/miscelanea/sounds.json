@@ -1618,5 +1618,41 @@
       "miscelanea:llave_encontrada"
     ],
     "subtitle": "subtitles.miscelanea.llave_encontrada"
+  },
+  "lazo_girar": {
+    "sounds": [
+      "miscelanea:lazo_girar"
+    ],
+    "subtitle": "subtitles.miscelanea.lazo_girar"
+  },
+  "lazo_lanzar": {
+    "sounds": [
+      "miscelanea:lazo_lanzar"
+    ],
+    "subtitle": "subtitles.miscelanea.lazo_lanzar"
+  },
+  "lazo_atrapar": {
+    "sounds": [
+      "miscelanea:lazo_atrapar"
+    ],
+    "subtitle": "subtitles.miscelanea.lazo_atrapar"
+  },
+  "lazo_tension": {
+    "sounds": [
+      "miscelanea:lazo_tension"
+    ],
+    "subtitle": "subtitles.miscelanea.lazo_tension"
+  },
+  "lazo_atar": {
+    "sounds": [
+      "miscelanea:lazo_atar"
+    ],
+    "subtitle": "subtitles.miscelanea.lazo_atar"
+  },
+  "lazo_romper": {
+    "sounds": [
+      "miscelanea:lazo_romper"
+    ],
+    "subtitle": "subtitles.miscelanea.lazo_romper"
   }
 }

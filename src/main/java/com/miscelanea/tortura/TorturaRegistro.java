@@ -3,6 +3,8 @@ package com.miscelanea.tortura;
 import com.miscelanea.Miscelanea;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
@@ -17,7 +19,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 /**
- * Registro propio de la "sala de juegos" (trampa de oso invertida, grilletes y minijuegos QTE). Va aparte de
+ * Registro propio de la "sala de juegos" (trampa de oso invertida, grilletes, lazo y minijuegos QTE). Va aparte de
  * ModItems/ModBlocks/ModSounds para no pisar otras ramas: solo hace falta llamar a {@link #registrar(IEventBus)}.
  * Todo es solo de creativo (sin recetas).
  */
@@ -29,6 +31,12 @@ public final class TorturaRegistro {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
             DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Miscelanea.MOD_ID);
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, Miscelanea.MOD_ID);
+    public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Miscelanea.MOD_ID);
+
+    // ---- entidades
+    public static final RegistryObject<EntityType<LazoEntity>> LAZO_LANZADO = ENTITIES.register("lazo_lanzado",
+            () -> EntityType.Builder.<LazoEntity>of(LazoEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F).clientTrackingRange(8).updateInterval(1).noSummon().build("lazo_lanzado"));
 
     // ---- bloques
     public static final RegistryObject<Block> CAJA_JIGSAW = BLOCKS.register("caja_jigsaw",
@@ -50,6 +58,8 @@ public final class TorturaRegistro {
             () -> new CadenaItem(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> GANZUA = ITEMS.register("ganzua",
             () -> new GanzuaItem(new Item.Properties().stacksTo(64).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> LAZO = ITEMS.register("lazo",
+            () -> new LazoItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
 
     // ---- sonidos
     public static final RegistryObject<SoundEvent> QTE_TIC = sonido("qte_tic");
@@ -69,6 +79,12 @@ public final class TorturaRegistro {
     public static final RegistryObject<SoundEvent> CADENA_TINTINEO = sonido("cadena_tintineo");
     public static final RegistryObject<SoundEvent> CAJA_BUSCAR = sonido("caja_buscar");
     public static final RegistryObject<SoundEvent> LLAVE_ENCONTRADA = sonido("llave_encontrada");
+    public static final RegistryObject<SoundEvent> LAZO_GIRAR = sonido("lazo_girar");
+    public static final RegistryObject<SoundEvent> LAZO_LANZAR = sonido("lazo_lanzar");
+    public static final RegistryObject<SoundEvent> LAZO_ATRAPAR = sonido("lazo_atrapar");
+    public static final RegistryObject<SoundEvent> LAZO_TENSION = sonido("lazo_tension");
+    public static final RegistryObject<SoundEvent> LAZO_ATAR = sonido("lazo_atar");
+    public static final RegistryObject<SoundEvent> LAZO_ROMPER = sonido("lazo_romper");
 
     private static RegistryObject<SoundEvent> sonido(String n) {
         return SOUNDS.register(n, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Miscelanea.MOD_ID, n)));
@@ -79,5 +95,6 @@ public final class TorturaRegistro {
         BLOCKS.register(modBus);
         BLOCK_ENTITIES.register(modBus);
         SOUNDS.register(modBus);
+        ENTITIES.register(modBus);
     }
 }

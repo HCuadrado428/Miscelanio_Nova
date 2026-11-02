@@ -162,6 +162,7 @@ public class Miscelanea {
             event.accept(com.miscelanea.tortura.TorturaRegistro.GRILLETES);
             event.accept(com.miscelanea.tortura.TorturaRegistro.CADENA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.GANZUA);
+            event.accept(com.miscelanea.tortura.TorturaRegistro.LAZO);
             event.accept(ModItems.COHETE);
             event.accept(ModItems.LLAVE_ESPADA);
             event.accept(ModItems.HACHA_LEVIATAN);

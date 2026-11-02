@@ -25,11 +25,20 @@ public final class TorturaClienteMod {
     public static void setup(FMLClientSetupEvent e) {
         dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                 new ResourceLocation(Miscelanea.MOD_ID, "grilletes"), 1250, AnimGrilletes::new);
+        // el lazo, por encima de los grilletes (tumbado manda sobre los brazos atados)
+        dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
+                new ResourceLocation(Miscelanea.MOD_ID, "lazo"), 1260, AnimLazo::new);
+    }
+
+    @SubscribeEvent
+    public static void renderers(EntityRenderersEvent.RegisterRenderers e) {
+        e.registerEntityRenderer(com.miscelanea.tortura.TorturaRegistro.LAZO_LANZADO.get(), LazoRenderer::new);
     }
 
     @SubscribeEvent
     public static void overlays(RegisterGuiOverlaysEvent e) {
         e.registerAboveAll("tortura_trampa", TrampaHud::render);
+        e.registerAboveAll("tortura_lazo", LazoCliente::hud);
         e.registerAboveAll("tortura_qte", QteCliente::hud);
     }
 

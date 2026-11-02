@@ -30,7 +30,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Lo que el cliente sabe de los cautivos (trampa, grilletes, cadena) y la cadena-correa dibujada en el mundo. */
+/** Lo que el cliente sabe de los cautivos (trampa, grilletes, cadena, lazo), la cadena-correa y la cuerda del lazo en el mundo. */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
 public final class TorturaCliente {
     private TorturaCliente() {}
@@ -39,16 +39,20 @@ public final class TorturaCliente {
         public int trampa;
         public boolean sinCajas, grilletes;
         public int cadena = -1;
+        /** Lazo: estado (0..3, ver Lazo), quién lo lleva (id o -1) y ticks que le quedan al estado. */
+        public int lazo, lazoCaptor = -1, lazoT;
     }
 
     private static final Map<Integer, Estado> ESTADOS = new HashMap<>();
     /** Punto de las muñecas (en espacio de vista) capturado al dibujar a la entidad en este fotograma. */
     private static final Map<Integer, Vector3f> MUNECAS = new HashMap<>();
     private static final Map<Integer, Vector3f> MANOS = new HashMap<>();
+    /** Punto del torso (donde se cierra el lazo), también en espacio de vista. */
+    private static final Map<Integer, Vector3f> TORSOS = new HashMap<>();
     private static int fotograma, fotogramaCaptura;
 
     public static void recibir(EstadoCautivoPacket p) {
-        if (p.trampa <= 0 && !p.grilletes) {
+        if (p.trampa <= 0 && !p.grilletes && p.lazo == 0) {
             ESTADOS.remove(p.entidad);
             return;
         }
@@ -57,6 +61,9 @@ public final class TorturaCliente {
         e.sinCajas = p.sinCajas;
         e.grilletes = p.grilletes;
         e.cadena = p.grilletes ? p.cadena : -1;
+        e.lazo = p.lazo;
+        e.lazoCaptor = p.lazo != 0 ? p.lazoCaptor : -1;
+        e.lazoT = p.lazoT;
     }
 
     @Nullable
@@ -70,27 +77,45 @@ public final class TorturaCliente {
     }
 
     public static boolean esQuienTira(int id) {
-        for (Estado e : ESTADOS.values()) if (e.cadena == id) return true;
+        for (Estado e : ESTADOS.values()) if (e.cadena == id || (e.lazo == 1 && e.lazoCaptor == id)) return true;
+        return false;
+    }
+
+    /** Estado del lazo de esa entidad (0 = nada). */
+    public static int lazo(int id) {
+        Estado e = ESTADOS.get(id);
+        return e == null ? 0 : e.lazo;
+    }
+
+    /** ¿Tiene a alguien enlazado (tira y afloja)? */
+    public static boolean esCaptorTirando(int id) {
+        for (Estado e : ESTADOS.values()) if (e.lazo == 1 && e.lazoCaptor == id) return true;
         return false;
     }
 
     // ------------------------------------------------------------------ captura de puntos desde la capa
     static void capturarMunecas(int id, Vector3f vista) {
-        if (fotogramaCaptura != fotograma) {
-            MUNECAS.clear();
-            MANOS.clear();
-            fotogramaCaptura = fotograma;
-        }
+        nuevoFotograma();
         MUNECAS.put(id, vista);
     }
 
     static void capturarMano(int id, Vector3f vista) {
+        nuevoFotograma();
+        MANOS.put(id, vista);
+    }
+
+    static void capturarTorso(int id, Vector3f vista) {
+        nuevoFotograma();
+        TORSOS.put(id, vista);
+    }
+
+    private static void nuevoFotograma() {
         if (fotogramaCaptura != fotograma) {
             MUNECAS.clear();
             MANOS.clear();
+            TORSOS.clear();
             fotogramaCaptura = fotograma;
         }
-        MANOS.put(id, vista);
     }
 
     // ------------------------------------------------------------------ eventos
@@ -103,7 +128,10 @@ public final class TorturaCliente {
             return;
         }
         if (mc.isPaused()) return;
-        for (Estado s : ESTADOS.values()) if (s.trampa > 0) s.trampa--;
+        for (Estado s : ESTADOS.values()) {
+            if (s.trampa > 0) s.trampa--;
+            if (s.lazoT > 0) s.lazoT--;
+        }
     }
 
     @SubscribeEvent
@@ -111,13 +139,23 @@ public final class TorturaCliente {
         ESTADOS.clear();
         MUNECAS.clear();
         MANOS.clear();
+        TORSOS.clear();
     }
 
-    /** Con las manos atadas no se puede pegar ni usar nada (salvo la ganzúa o la llave): ni siquiera se mueve el brazo. */
+    /**
+     * Con las manos atadas no se puede pegar ni usar nada (salvo la ganzúa o la llave con grilletes; con el lazo, nada):
+     * ni siquiera se mueve el brazo.
+     */
     @SubscribeEvent
     public static void interaccion(InputEvent.InteractionKeyMappingTriggered e) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || !atado(mc.player.getId())) return;
+        if (mc.player == null) return;
+        if (lazo(mc.player.getId()) != 0) {
+            e.setCanceled(true);
+            e.setSwingHand(false);
+            return;
+        }
+        if (!atado(mc.player.getId())) return;
         if (e.isUseItem()) {
             ItemStack s = mc.player.getItemInHand(e.getHand());
             if (s.getItem() instanceof GanzuaItem || s.getItem() instanceof LlaveTrampaItem) return;
@@ -127,7 +165,7 @@ public final class TorturaCliente {
     }
 
     // ------------------------------------------------------------------ cadena-correa
-    private static float yawCuerpo(Entity e, float pt) {
+    static float yawCuerpo(Entity e, float pt) {
         return e instanceof LivingEntity le ? Mth.rotLerp(pt, le.yBodyRotO, le.yBodyRot) : e.getViewYRot(pt);
     }
 
@@ -139,7 +177,7 @@ public final class TorturaCliente {
     }
 
     /** Mano derecha aproximada de quien tira. */
-    private static Vec3 manoMundo(Entity h, float pt) {
+    static Vec3 manoMundo(Entity h, float pt) {
         Minecraft mc = Minecraft.getInstance();
         if (h == mc.player && mc.options.getCameraType().isFirstPerson()) {
             Vec3 mira = h.getViewVector(pt);
@@ -169,9 +207,13 @@ public final class TorturaCliente {
         boolean frescos = fotogramaCaptura == fotograma;
         Vector3f abajo = rot.transformDirection(new Vector3f(0, -1, 0));
         MultiBufferSource.BufferSource buffers = mc.renderBuffers().bufferSource();
-        boolean algo = false;
+        boolean algo = false, cuerda = false;
         for (Map.Entry<Integer, Estado> en : ESTADOS.entrySet()) {
             Estado s = en.getValue();
+            if (s.lazo == 1 && s.lazoCaptor >= 0) {
+                cuerda |= cuerdaLazo(level, en.getKey(), s, pt, cam, rot, frescos, abajo, buffers);
+                continue;
+            }
             if (s.cadena < 0) continue;
             Entity v = level.getEntity(en.getKey()), h = level.getEntity(s.cadena);
             if (v == null || h == null) continue;
@@ -187,6 +229,26 @@ public final class TorturaCliente {
             algo = true;
         }
         if (algo) buffers.endBatch(Cadenas.TIPO);
+        if (cuerda) buffers.endBatch(Cuerdas.TIPO);
+    }
+
+    /** Tira y afloja: cuerda tensa de la mano del captor al lazo cerrado en el torso de la víctima. */
+    private static boolean cuerdaLazo(ClientLevel level, int idVictima, Estado s, float pt, Vec3 cam, Matrix4f rot, boolean frescos,
+                                      Vector3f abajo, MultiBufferSource.BufferSource buffers) {
+        Entity v = level.getEntity(idVictima), h = level.getEntity(s.lazoCaptor);
+        if (v == null || h == null) return false;
+        Vec3 a = v.getPosition(pt).add(0, v.getBbHeight() * 0.62, 0), b = manoMundo(h, pt);
+        Vector3f va = frescos ? TORSOS.get(v.getId()) : null;
+        Vector3f vb = frescos ? MANOS.get(h.getId()) : null;
+        if (va == null) va = vista(rot, a, cam);
+        if (vb == null) vb = vista(rot, b, cam);
+        double dist = a.distanceTo(b);
+        // casi tensa; vibra un poco con el forcejeo
+        float t = h.tickCount + pt;
+        float cuelga = (float) Mth.clamp(0.05 + dist * 0.012, 0.03, 0.3) + Mth.sin(t * 1.7F) * 0.015F;
+        int luz = LevelRenderer.getLightColor(level, BlockPos.containing(a.add(b).scale(0.5)));
+        Cuerdas.dibujar(new PoseStack(), buffers.getBuffer(Cuerdas.TIPO), vb, va, abajo, cuelga, luz, 0.05F, -t * 0.08F);
+        return true;
     }
 
     private static Vector3f vista(Matrix4f rot, Vec3 mundo, Vec3 cam) {
