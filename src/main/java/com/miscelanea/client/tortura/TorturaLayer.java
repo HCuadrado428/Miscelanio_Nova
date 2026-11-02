@@ -26,6 +26,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.client.model.data.ModelData;
 import org.joml.Vector3f;
 
+import javax.annotation.Nullable;
+
 /**
  * Capa para TODAS las entidades vivas: la trampa de oso en la cabeza (con engranajes que giran y el reloj encendido
  * detrás), los grilletes en las muñecas con su cadenita, la captura de puntos para la cadena-correa y el lazo (cerrado
@@ -36,6 +38,12 @@ public class TorturaLayer<T extends LivingEntity, M extends EntityModel<T>> exte
     public static final ResourceLocation TRAMPA = new ResourceLocation(Miscelanea.MOD_ID, "block/tortura/trampa_oso_puesta");
     public static final ResourceLocation ENGRANAJE = new ResourceLocation(Miscelanea.MOD_ID, "block/tortura/trampa_oso_engranaje");
     public static final ResourceLocation GRILLETE = new ResourceLocation(Miscelanea.MOD_ID, "block/tortura/grillete_muneca");
+    /** Las mandíbulas van aparte del marco para poder abrirlas (gen_tortura_ejecucion.py) y el muñón del cuello. */
+    public static final ResourceLocation MANDIBULA_SUP = new ResourceLocation(Miscelanea.MOD_ID, "block/tortura/trampa_oso_mandibula_sup");
+    public static final ResourceLocation MANDIBULA_INF = new ResourceLocation(Miscelanea.MOD_ID, "block/tortura/trampa_oso_mandibula_inf");
+    public static final ResourceLocation MUNON = new ResourceLocation(Miscelanea.MOD_ID, "block/tortura/trampa_oso_munon");
+    /** Eje de las bisagras de las mandíbulas (y, z en píxeles de bloque: el perno de latón). */
+    static final float BISAGRA_Y = 5.5F, BISAGRA_Z = 6.5F;
 
     /** Centros de los engranajes (x, y, z) y sentido de giro. La cabeza ocupa 4..12 en los tres ejes; delante = z pequeña. */
     static final float[][] ENGRANAJES = {{2.0F, 10.3F, 8.4F, 1F}, {14.0F, 10.3F, 8.4F, -1F}};
@@ -51,11 +59,12 @@ public class TorturaLayer<T extends LivingEntity, M extends EntityModel<T>> exte
     @Override
     public void render(PoseStack ps, MultiBufferSource buf, int luz, T e, float limb, float limbAmt, float pt, float edad, float yawCabeza, float pitchCabeza) {
         TorturaCliente.Estado est = TorturaCliente.estado(e.getId());
+        EjecucionCliente.Ejec ej = EjecucionCliente.de(e.getId());
         boolean tira = TorturaCliente.esQuienTira(e.getId());
         boolean girando = LazoCliente.girando(e);
-        if ((est == null && !tira && !girando) || e.isInvisible()) return;
+        if ((est == null && ej == null && !tira && !girando) || e.isInvisible()) return;
         M m = getParentModel();
-        if (est != null && est.trampa > 0) trampa(ps, buf, luz, e, m, est, pt);
+        if ((est != null && est.trampa > 0) || ej != null) trampa(ps, buf, luz, e, m, est, ej, pt);
         if (est != null && est.grilletes) grilletes(ps, buf, luz, e, m, est);
         if (est != null && est.lazo != 0) lazo(ps, buf, luz, e, m, est);
         if (tira && m instanceof ArmedModel am) {
@@ -73,13 +82,42 @@ public class TorturaLayer<T extends LivingEntity, M extends EntityModel<T>> exte
     }
 
     private static void modelo(PoseStack ps, MultiBufferSource buf, ResourceLocation rl, int luz) {
+        modelo(ps, buf, rl, luz, 1F, 1F, 1F);
+    }
+
+    /** Con tinte (la trampa ensangrentada después de reventar). */
+    private static void modelo(PoseStack ps, MultiBufferSource buf, ResourceLocation rl, int luz, float r, float g, float b) {
         BakedModel bm = Minecraft.getInstance().getModelManager().getModel(rl);
         Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(ps.last(), buf.getBuffer(Sheets.cutoutBlockSheet()), null, bm,
-                1F, 1F, 1F, luz, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, null);
+                r, g, b, luz, OverlayTexture.NO_OVERLAY, ModelData.EMPTY, null);
+    }
+
+    /** Apertura de las mandíbulas (grados) 'x' ticks después de reventar: de golpe, se pasa un poco y rebota. */
+    static float abrirMandibulas(float x) {
+        if (x <= 0) return 0F;
+        return 82F * (1F - (float) Math.exp(-1.6F * x) * Mth.cos(2.2F * x));
+    }
+
+    private static void mandibula(PoseStack ps, MultiBufferSource buf, ResourceLocation rl, float grados, int luz, boolean sangre) {
+        ps.pushPose();
+        if (grados != 0F) {
+            ps.translate(0, BISAGRA_Y / 16F, BISAGRA_Z / 16F);
+            ps.mulPose(Axis.XP.rotationDegrees(grados));
+            ps.translate(0, -BISAGRA_Y / 16F, -BISAGRA_Z / 16F);
+        }
+        if (sangre) modelo(ps, buf, rl, luz, 0.85F, 0.3F, 0.27F);
+        else modelo(ps, buf, rl, luz);
+        ps.popPose();
     }
 
     // ------------------------------------------------------------------ trampa
-    private void trampa(PoseStack ps, MultiBufferSource buf, int luz, T e, M m, TorturaCliente.Estado est, float pt) {
+    private void trampa(PoseStack ps, MultiBufferSource buf, int luz, T e, M m, @Nullable TorturaCliente.Estado est,
+                        @Nullable EjecucionCliente.Ejec ej, float pt) {
+        float te = ej == null ? -1F : EjecucionCliente.tiempo(ej, pt);
+        boolean forcejeo = ej != null && te < EjecucionCliente.ESTALLIDO;
+        float tras = ej == null ? -1F : te - EjecucionCliente.ESTALLIDO;
+        boolean revento = tras >= 0F;
+        float t = e.tickCount + pt;
         ps.pushPose();
         if (m instanceof HeadedModel hm) {
             hm.getHead().translateAndRotate(ps);
@@ -90,31 +128,57 @@ public class TorturaLayer<T extends LivingEntity, M extends EntityModel<T>> exte
         // del espacio del modelo (y hacia abajo) al de los modelos de bloque, centrado en la cabeza
         ps.translate(0, -0.25F, 0);
         ps.mulPose(Axis.ZP.rotationDegrees(180));
+        if (forcejeo) {
+            // la trampa traquetea en la cabeza mientras forcejea
+            float a = 0.5F + 0.5F * te / EjecucionCliente.ESTALLIDO;
+            ps.translate(Mth.sin(t * 4.3F) * 0.012F * a, Mth.sin(t * 5.7F + 1F) * 0.01F * a, Mth.sin(t * 3.9F + 2F) * 0.008F * a);
+            ps.mulPose(Axis.ZP.rotationDegrees(Mth.sin(t * 6.1F) * 4F * a));
+            ps.mulPose(Axis.XP.rotationDegrees(Mth.sin(t * 4.7F + 0.7F) * 3F * a));
+        }
         ps.translate(-0.5F, -0.5F, -0.5F);
-        modelo(ps, buf, TRAMPA, luz);
-        // engranajes girando (más deprisa al final)
-        float t = e.tickCount + pt;
-        float vel = est.trampa <= 200 ? 14F : 5F;
+        if (revento) {
+            // sin cabeza: el muñón del cuello, y la trampa abierta cae sobre él
+            modelo(ps, buf, MUNON, luz);
+            float caida = Math.min(1F, tras / 4F);
+            caida = caida * caida;
+            ps.translate(0, -caida * 3.2F / 16F, 0);
+            ps.translate(0.5F, 0.25F, 0.5F);
+            ps.mulPose(Axis.XP.rotationDegrees(caida * 14F));
+            ps.mulPose(Axis.ZP.rotationDegrees(caida * 6F));
+            ps.translate(-0.5F, -0.25F, -0.5F);
+            modelo(ps, buf, TRAMPA, luz, 1F, 0.62F, 0.58F);
+        } else {
+            modelo(ps, buf, TRAMPA, luz);
+        }
+        // mandíbulas: cerradas, traqueteando al forcejear o abiertas de golpe al reventar
+        float ang = forcejeo ? Math.abs(Mth.sin(t * 7.3F)) * 3F : revento ? abrirMandibulas(tras) : 0F;
+        mandibula(ps, buf, MANDIBULA_SUP, ang, luz, revento);
+        mandibula(ps, buf, MANDIBULA_INF, -ang * 0.92F, luz, revento);
+        // engranajes girando (más deprisa al final, desbocados al forcejear, parados al reventar)
+        float vel = revento ? 0F : forcejeo ? 32F : est != null && est.trampa <= 200 ? 14F : 5F;
         for (float[] g : ENGRANAJES) {
             ps.pushPose();
             ps.translate(g[0] / 16F, g[1] / 16F, g[2] / 16F);
             ps.mulPose(Axis.XP.rotationDegrees(t * vel * g[3]));
             ps.translate(-0.5F, -0.5F, -0.5F);
-            modelo(ps, buf, ENGRANAJE, luz);
+            if (revento) modelo(ps, buf, ENGRANAJE, luz, 1F, 0.62F, 0.58F);
+            else modelo(ps, buf, ENGRANAJE, luz);
             ps.popPose();
         }
-        // reloj encendido en la caja de atrás
-        int seg = Math.max(0, (est.trampa + 19) / 20);
-        boolean parpadeo = seg <= 10 && (e.tickCount / 5) % 2 == 0;
-        String txt = String.format("%d:%02d", seg / 60, seg % 60);
-        Font f = Minecraft.getInstance().font;
-        ps.pushPose();
-        ps.translate(RELOJ_X / 16F, RELOJ_Y / 16F, RELOJ_Z / 16F);
-        float s = (1.05F / 16F) / 7F;
-        ps.scale(s, -s, s);
-        f.drawInBatch(txt, -f.width(txt) / 2F, -3.5F, parpadeo ? 0xFF7A0A0A : 0xFFFF2A20, false, ps.last().pose(), buf,
-                Font.DisplayMode.POLYGON_OFFSET, 0, 0xF000F0);
-        ps.popPose();
+        // reloj encendido en la caja de atrás (en la ejecución, 0:00 parpadeando; al reventar se apaga)
+        if (!revento) {
+            int seg = forcejeo || est == null ? 0 : Math.max(0, (est.trampa + 19) / 20);
+            boolean parpadeo = seg <= 10 && (e.tickCount / (forcejeo ? 2 : 5)) % 2 == 0;
+            String txt = String.format("%d:%02d", seg / 60, seg % 60);
+            Font f = Minecraft.getInstance().font;
+            ps.pushPose();
+            ps.translate(RELOJ_X / 16F, RELOJ_Y / 16F, RELOJ_Z / 16F);
+            float s = (1.05F / 16F) / 7F;
+            ps.scale(s, -s, s);
+            f.drawInBatch(txt, -f.width(txt) / 2F, -3.5F, parpadeo ? 0xFF7A0A0A : 0xFFFF2A20, false, ps.last().pose(), buf,
+                    Font.DisplayMode.POLYGON_OFFSET, 0, 0xF000F0);
+            ps.popPose();
+        }
         ps.popPose();
     }
 

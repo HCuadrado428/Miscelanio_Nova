@@ -28,6 +28,9 @@ public final class TorturaClienteMod {
         // el lazo, por encima de los grilletes (tumbado manda sobre los brazos atados)
         dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                 new ResourceLocation(Miscelanea.MOD_ID, "lazo"), 1260, AnimLazo::new);
+        // la ejecución de la trampa de oso manda sobre todo lo demás
+        dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
+                new ResourceLocation(Miscelanea.MOD_ID, "ejecucion"), 1400, AnimEjecucion::new);
     }
 
     @SubscribeEvent
@@ -37,6 +40,7 @@ public final class TorturaClienteMod {
 
     @SubscribeEvent
     public static void overlays(RegisterGuiOverlaysEvent e) {
+        e.registerAboveAll("tortura_ejecucion", EjecucionCliente::hud);
         e.registerAboveAll("tortura_trampa", TrampaHud::render);
         e.registerAboveAll("tortura_lazo", LazoCliente::hud);
         e.registerAboveAll("tortura_qte", QteCliente::hud);
@@ -47,6 +51,9 @@ public final class TorturaClienteMod {
         e.register(TorturaLayer.TRAMPA);
         e.register(TorturaLayer.ENGRANAJE);
         e.register(TorturaLayer.GRILLETE);
+        e.register(TorturaLayer.MANDIBULA_SUP);
+        e.register(TorturaLayer.MANDIBULA_INF);
+        e.register(TorturaLayer.MUNON);
     }
 
     @SubscribeEvent

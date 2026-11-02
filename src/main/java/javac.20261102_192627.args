@@ -1,0 +1,8 @@
+-proc:none
+-sourcepath
+.
+-d
+/tmp/claude-0/-home-claude/27bd49c1-1e65-512c-b012-0669bc8cda4c/scratchpad/jsyn_out
+-Xmaxerrs
+9000
+com/miscelanea/client/tortura/TorturaClienteMod.java

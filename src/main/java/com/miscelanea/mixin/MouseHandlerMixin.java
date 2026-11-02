@@ -12,6 +12,8 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 public class MouseHandlerMixin {
     @Redirect(method = "turnPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;turn(DD)V"))
     private void miscelanea$girar(LocalPlayer jugador, double dy, double dx) {
+        // en la ejecución de la trampa de oso el ratón no hace nada
+        if (com.miscelanea.client.tortura.EjecucionCliente.raton()) return;
         if (!CamaraCombate.girar(dy, dx) && !com.miscelanea.client.tortura.qte.QteCliente.raton(dy, dx)) jugador.turn(dy, dx);
     }
 }

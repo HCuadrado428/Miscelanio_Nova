@@ -1589,6 +1589,24 @@
     ],
     "subtitle": "subtitles.miscelanea.trampa_quitar"
   },
+  "trampa_forcejeo": {
+    "sounds": [
+      "miscelanea:trampa_forcejeo"
+    ],
+    "subtitle": "subtitles.miscelanea.trampa_forcejeo"
+  },
+  "trampa_ejecucion": {
+    "sounds": [
+      "miscelanea:trampa_ejecucion"
+    ],
+    "subtitle": "subtitles.miscelanea.trampa_ejecucion"
+  },
+  "trampa_latido": {
+    "sounds": [
+      "miscelanea:trampa_latido"
+    ],
+    "subtitle": "subtitles.miscelanea.trampa_latido"
+  },
   "grilletes_poner": {
     "sounds": [
       "miscelanea:grilletes_poner"

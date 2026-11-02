@@ -26,7 +26,8 @@ public final class TrampaHud {
         if (p == null || mc.options.hideGui) return;
         TorturaCliente.Estado est = TorturaCliente.estado(p.getId());
         if (est == null) return;
-        if (est.trampa > 0) reloj(mc, g, w, h, est, pt);
+        // en la ejecución ya no hay reloj (lo pinta EjecucionCliente)
+        if (est.trampa > 0 && !EjecucionCliente.activa(p.getId())) reloj(mc, g, w, h, est, pt);
         if (est.grilletes) grilletes(mc, g, w, h);
     }
 

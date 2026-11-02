@@ -27,4 +27,14 @@ public abstract class CameraMixin {
         setRotation((float) r[3], (float) r[4]);
         setPosition(r[0], r[1], r[2]);
     }
+
+    /** Ejecución de la trampa de oso: tercera persona de frente, más cerca y más baja (ver EjecucionCliente). */
+    @Inject(method = "setup", at = @At("TAIL"))
+    private void miscelanea$camaraEjecucion(BlockGetter level, Entity entity, boolean detached, boolean reverse, float partial, CallbackInfo ci) {
+        if (!detached || !reverse) return;
+        double[] r = com.miscelanea.client.tortura.EjecucionCliente.colocarCamara(level, entity, partial);
+        if (r == null) return;
+        setRotation((float) r[3], (float) r[4]);
+        setPosition(r[0], r[1], r[2]);
+    }
 }

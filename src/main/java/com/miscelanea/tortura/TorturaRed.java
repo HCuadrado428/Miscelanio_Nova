@@ -20,6 +20,9 @@ public final class TorturaRed {
                 .encoder(QteResultadoPacket::encode).decoder(QteResultadoPacket::new).consumerMainThread(QteResultadoPacket::handle).add();
         ch.messageBuilder(EstadoCautivoPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(EstadoCautivoPacket::encode).decoder(EstadoCautivoPacket::new).consumerMainThread(EstadoCautivoPacket::handle).add();
+        // ejecución de la trampa de oso (va el último para no mover los ids de los demás)
+        ch.messageBuilder(EjecucionPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(EjecucionPacket::encode).decoder(EjecucionPacket::new).consumerMainThread(EjecucionPacket::handle).add();
         return id;
     }
 }

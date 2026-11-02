@@ -74,6 +74,10 @@ public final class TorturaRegistro {
     public static final RegistryObject<SoundEvent> TRAMPA_CHASQUIDO = sonido("trampa_chasquido");
     public static final RegistryObject<SoundEvent> TRAMPA_PONER = sonido("trampa_poner");
     public static final RegistryObject<SoundEvent> TRAMPA_QUITAR = sonido("trampa_quitar");
+    /** Ejecución: forcejeo (engranajes disparados, 2,6 s), el PLASH de las mandíbulas y el latido (solo la víctima). */
+    public static final RegistryObject<SoundEvent> TRAMPA_FORCEJEO = sonido("trampa_forcejeo");
+    public static final RegistryObject<SoundEvent> TRAMPA_EJECUCION = sonido("trampa_ejecucion");
+    public static final RegistryObject<SoundEvent> TRAMPA_LATIDO = sonido("trampa_latido");
     public static final RegistryObject<SoundEvent> GRILLETES_PONER = sonido("grilletes_poner");
     public static final RegistryObject<SoundEvent> GRILLETES_QUITAR = sonido("grilletes_quitar");
     public static final RegistryObject<SoundEvent> CADENA_TINTINEO = sonido("cadena_tintineo");

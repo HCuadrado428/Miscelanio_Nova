@@ -9,7 +9,9 @@
     "CameraMixin",
     "MouseHandlerMixin",
     "HumanoidModelMixin",
-    "LivingEntityRendererMixin"
+    "LivingEntityRendererMixin",
+    "HumanoidArmorLayerMixin",
+    "CustomHeadLayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

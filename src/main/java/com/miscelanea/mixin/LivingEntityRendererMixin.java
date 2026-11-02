@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
  * Justo antes de dibujar el modelo (después de TODAS las animaciones, también las propias de cada mob): pose de brazos
- * atados de los mobs humanoides con grilletes. require = 0: si otra versión cambia el método, solo se pierde la pose.
+ * atados de los mobs humanoides con grilletes y su forcejeo en la ejecución de la trampa de oso. require = 0: si otra versión cambia el método, solo se pierde la pose.
  */
 @Mixin(LivingEntityRenderer.class)
 public abstract class LivingEntityRendererMixin {
@@ -20,5 +20,6 @@ public abstract class LivingEntityRendererMixin {
             require = 0)
     private void miscelanea$grilletes(LivingEntity e, float yaw, float pt, PoseStack ps, MultiBufferSource buf, int luz, CallbackInfo ci) {
         com.miscelanea.client.tortura.PoseGrilletes.posar(((LivingEntityRenderer<?, ?>) (Object) this).getModel(), e);
+        com.miscelanea.client.tortura.EjecucionCliente.posar(((LivingEntityRenderer<?, ?>) (Object) this).getModel(), e, pt);
     }
 }

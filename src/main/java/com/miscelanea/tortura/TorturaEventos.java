@@ -5,6 +5,7 @@ import com.miscelanea.tortura.qte.Qte;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -50,6 +51,8 @@ public final class TorturaEventos {
     @SubscribeEvent
     public static void salir(PlayerEvent.PlayerLoggedOutEvent e) {
         if (e.getEntity() instanceof ServerPlayer sp) {
+            // en plena ejecución de la trampa no se escapa nadie: muere ya (antes de que se guarde)
+            TrampaOso.ejecutarYa(sp);
             Lazo.cortarTodo(sp);   // antes de que se guarde: vuelve libre
             Qte.desconectar(sp);
         }
@@ -66,6 +69,8 @@ public final class TorturaEventos {
     @SubscribeEvent
     public static void reaparecer(PlayerEvent.PlayerRespawnEvent e) {
         Cautivos.sincronizar(e.getEntity());
+        // el cuerpo nuevo tiene el mismo id: que todos vuelvan a dibujarle la cabeza
+        TrampaOso.enviarEjecucion(e.getEntity(), false, 0);
     }
 
     @SubscribeEvent
@@ -76,8 +81,10 @@ public final class TorturaEventos {
 
     @SubscribeEvent
     public static void verEntidad(PlayerEvent.StartTracking e) {
-        if (e.getTarget() instanceof LivingEntity le && Cautivos.tieneAlgo(le) && e.getEntity() instanceof ServerPlayer sp)
+        if (e.getTarget() instanceof LivingEntity le && Cautivos.tieneAlgo(le) && e.getEntity() instanceof ServerPlayer sp) {
             Cautivos.sincronizarCon(le, sp);
+            if (TrampaOso.ejecutando(le)) TrampaOso.enviarEjecucionA(le, sp);
+        }
     }
 
     /** Volver del End crea otro jugador: se copia el estado. Al morir NO (la trampa y los grilletes se pierden). */
@@ -102,6 +109,7 @@ public final class TorturaEventos {
     @SubscribeEvent
     public static void morir(LivingDeathEvent e) {
         if (e.getEntity().level().isClientSide) return;
+        TrampaOso.alMorir(e.getEntity());
         Lazo.alMorir(e.getEntity());
         if (e.getEntity() instanceof ServerPlayer sp) Qte.cancelar(sp);
     }
@@ -111,7 +119,7 @@ public final class TorturaEventos {
     public static void interactuar(PlayerInteractEvent.EntityInteract e) {
         Player p = e.getEntity();
         if (!(e.getTarget() instanceof LivingEntity t)) return;
-        if (Cautivos.atado(p) || Lazo.sinManos(p)) {
+        if (Cautivos.atado(p) || Lazo.sinManos(p) || TrampaOso.ejecutando(p)) {
             e.setCanceled(true);
             e.setCancellationResult(InteractionResult.FAIL);
             return;
@@ -161,13 +169,13 @@ public final class TorturaEventos {
 
     // ------------------------------------------------------------------ manos atadas
     private static boolean atado(Entity e) {
-        return e != null && (Cautivos.atado(e) || Lazo.sinManos(e));
+        return e != null && (Cautivos.atado(e) || Lazo.sinManos(e) || TrampaOso.ejecutando(e));
     }
 
     /** Con grilletes se puede usar la ganzúa y la llave; con el lazo, nada. */
     private static boolean bloqueado(Entity e, ItemStack s) {
         if (e == null) return false;
-        if (Lazo.sinManos(e)) return true;
+        if (Lazo.sinManos(e) || TrampaOso.ejecutando(e)) return true;
         return Cautivos.atado(e) && !permitido(s);
     }
 
@@ -190,7 +198,13 @@ public final class TorturaEventos {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void recibirAtaque(LivingAttackEvent e) {
-        if (atado(e.getSource().getEntity())) e.setCanceled(true);
+        if (atado(e.getSource().getEntity())) {
+            e.setCanceled(true);
+            return;
+        }
+        // en plena ejecución solo la trampa (o /kill, el vacío...) puede matarla
+        if (!e.getEntity().level().isClientSide && TrampaOso.ejecutando(e.getEntity())
+                && !e.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) e.setCanceled(true);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGH)
