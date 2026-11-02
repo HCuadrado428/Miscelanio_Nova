@@ -14,6 +14,13 @@ import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.AmethystClusterBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.BuddingAmethystBlock;
+import net.minecraft.world.level.block.InfestedBlock;
+import net.minecraft.world.level.block.SpawnerBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
@@ -21,7 +28,14 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityTravelToDimensionEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.joml.Vector3f;
@@ -38,6 +52,7 @@ import java.util.*;
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID)
 public final class Gravedad {
     public static final double ALCANCE = 14.0, DISTANCIA = 2.6, EMPUJON = 5.0;
+    private static final int MAX_JUGADOR = 60;                                  // ticks maximos sosteniendo a otro jugador
     private static final Map<UUID, UUID> SOSTIENE = new HashMap<>();          // jugador -> entidad sostenida
     private static final Map<UUID, Lanzado> LANZADOS = new HashMap<>();        // entidad lanzada -> quién y cuánto queda
     private static final Map<UUID, Integer> ATRAYENDO = new HashMap<>();       // ticks atrayendo (antes de agarrar)
@@ -56,11 +71,25 @@ public final class Gravedad {
         return ItemStack.EMPTY;
     }
 
-    /** ¿Se puede coger este bloque? (ni muy duros, ni irrompibles, ni con inventario/datos). */
+    /** ¿Se puede coger este bloque? (ni muy duros, ni irrompibles, ni con inventario/datos, ni valiosos/imposibles de obtener). */
     public static boolean bloqueCogible(ServerLevel l, BlockPos p, BlockState s) {
         if (s.isAir() || !s.getFluidState().isEmpty()) return false;
         float dureza = s.getDestroySpeed(l, p);
-        return dureza >= 0 && dureza <= 5.0F && !s.hasBlockEntity();
+        if (dureza < 0 || dureza > 5.0F || s.hasBlockEntity()) return false;
+        Block b = s.getBlock();
+        if (b.asItem() == Items.AIR) return false;                                  // no tiene objeto (fuego, portales...)
+        if (s.is(Tags.Blocks.ORES)) return false;                                    // menas: seria toque de seda gratis
+        if (b instanceof InfestedBlock || b instanceof BuddingAmethystBlock || b instanceof AmethystClusterBlock
+                || b instanceof SpawnerBlock || s.is(BlockTags.WITHER_IMMUNE) || s.is(BlockTags.DRAGON_IMMUNE)) return false;
+        return true;
+    }
+
+    /** Igual que {@link #bloqueCogible(ServerLevel, BlockPos, BlockState)} pero respetando protecciones y modo aventura. */
+    public static boolean bloqueCogible(ServerPlayer jugador, ServerLevel l, BlockPos p, BlockState s) {
+        if (!bloqueCogible(l, p, s)) return false;
+        if (!jugador.mayInteract(l, p) || jugador.blockActionRestricted(l, p, jugador.gameMode.getGameModeForPlayer())) return false;
+        // que los mods de proteccion (claims, spawn...) puedan impedirlo como si se rompiera el bloque
+        return !MinecraftForge.EVENT_BUS.post(new BlockEvent.BreakEvent(l, p, s, jugador));
     }
 
     /** Lo que hay en la mira (entidad primero, si no bloque). */
@@ -88,7 +117,7 @@ public final class Gravedad {
         if (o instanceof Entity en) e = en;
         else if (o instanceof BlockPos bp) {
             BlockState st = l.getBlockState(bp);
-            if (!bloqueCogible(l, bp, st)) {
+            if (!bloqueCogible(p, l, bp, st)) {
                 l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.DISPENSER_FAIL, SoundSource.PLAYERS, 0.7F, 0.6F);
                 return;
             }
@@ -121,7 +150,7 @@ public final class Gravedad {
         } else {
             Object o = objetivo(p, EMPUJON);
             if (o instanceof Entity en) e = en;
-            else if (o instanceof BlockPos bp && bloqueCogible(l, bp, l.getBlockState(bp))) e = FallingBlockEntity.fall(l, bp, l.getBlockState(bp));
+            else if (o instanceof BlockPos bp && bloqueCogible(p, l, bp, l.getBlockState(bp))) e = FallingBlockEntity.fall(l, bp, l.getBlockState(bp));
         }
         s.getOrCreateTag().putInt(GravedadItem.PUNT, 8);
         l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.45F, 1.9F);
@@ -147,7 +176,7 @@ public final class Gravedad {
         ItemStack s = pistola(p);
         if (!s.isEmpty() && s.hasTag()) s.getTag().remove(GravedadItem.AGARRADO);
         if (id == null) return;
-        Entity e = p.serverLevel().getEntity(id);
+        Entity e = buscar(p.getServer(), id);
         if (e != null) {
             e.setNoGravity(false);
             if (!lanzando) {
@@ -157,6 +186,48 @@ public final class Gravedad {
         }
     }
 
+    private static Entity buscar(net.minecraft.server.MinecraftServer srv, UUID id) {
+        if (srv == null || id == null) return null;
+        for (ServerLevel l : srv.getAllLevels()) {
+            Entity e = l.getEntity(id);
+            if (e != null) return e;
+        }
+        return null;
+    }
+
+    /** Suelta lo sostenido (y le devuelve la gravedad) al desconectarse, morir o cambiar de dimension. */
+    @SubscribeEvent
+    public static void salir(PlayerEvent.PlayerLoggedOutEvent ev) {
+        if (ev.getEntity() instanceof ServerPlayer p) soltar(p, false);
+    }
+
+    @SubscribeEvent
+    public static void morir(LivingDeathEvent ev) {
+        if (ev.getEntity() instanceof ServerPlayer p && sostiene(p)) soltar(p, false);
+    }
+
+    @SubscribeEvent
+    public static void viajar(EntityTravelToDimensionEvent ev) {
+        if (ev.getEntity() instanceof ServerPlayer p && sostiene(p)) soltar(p, false);
+    }
+
+    @SubscribeEvent
+    public static void cambiarDimension(PlayerEvent.PlayerChangedDimensionEvent ev) {
+        if (ev.getEntity() instanceof ServerPlayer p && sostiene(p)) soltar(p, false);
+    }
+
+    /** Al parar el servidor, que nada se guarde flotando sin gravedad. */
+    @SubscribeEvent
+    public static void parar(ServerStoppingEvent ev) {
+        for (UUID pid : new ArrayList<>(SOSTIENE.keySet())) {
+            Entity e = buscar(ev.getServer(), SOSTIENE.get(pid));
+            if (e != null) e.setNoGravity(false);
+        }
+        SOSTIENE.clear();
+        ATRAYENDO.clear();
+        LANZADOS.clear();
+    }
+
     @SubscribeEvent
     public static void tick(TickEvent.ServerTickEvent ev) {
         if (ev.phase != TickEvent.Phase.END) return;
@@ -164,11 +235,20 @@ public final class Gravedad {
         for (UUID pid : new ArrayList<>(SOSTIENE.keySet())) {
             ServerPlayer p = srv.getPlayerList().getPlayer(pid);
             if (p == null) {
-                SOSTIENE.remove(pid);
+                // el jugador ya no esta: devolver la gravedad a lo que sostenia
+                Entity suelto = buscar(srv, SOSTIENE.remove(pid));
+                ATRAYENDO.remove(pid);
+                if (suelto != null) suelto.setNoGravity(false);
                 continue;
             }
             Entity e = p.serverLevel().getEntity(SOSTIENE.get(pid));
-            if (e == null || !e.isAlive() || pistola(p).isEmpty() || e.distanceTo(p) > ALCANCE + 4) {
+            if (e == null || !e.isAlive() || !p.isAlive() || pistola(p).isEmpty() || e.distanceTo(p) > ALCANCE + 4) {
+                soltar(p, false);
+                continue;
+            }
+            // a otros jugadores no se les puede tener colgados: se sueltan solos o agachandose
+            int sujeto = ATRAYENDO.getOrDefault(pid, 0);
+            if (e instanceof Player otro && (sujeto >= MAX_JUGADOR || (sujeto > 10 && otro.isShiftKeyDown()))) {
                 soltar(p, false);
                 continue;
             }

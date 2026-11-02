@@ -62,6 +62,8 @@ public class PuestoFeriaBlock extends BaseEntityBlock {
     @Override
     public InteractionResult use(BlockState s, Level l, BlockPos pos, Player p, InteractionHand hand, BlockHitResult hit) {
         if (hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
+        // con la caña en la mano el clic es para pescar, no para el puesto
+        if (tipo == PATITOS && p.getMainHandItem().is(com.miscelanea.registry.ModItems.CANA_PATITOS.get())) return InteractionResult.PASS;
         if (!l.isClientSide && l.getBlockEntity(pos) instanceof PuestoFeriaBlockEntity be) be.usar(p, p.getItemInHand(hand));
         return InteractionResult.sidedSuccess(l.isClientSide);
     }

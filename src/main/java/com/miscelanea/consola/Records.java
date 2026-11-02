@@ -45,9 +45,24 @@ public final class Records {
         return d;
     }
 
+    /** Último récord aceptado de cada jugador (tic del servidor), para no aceptar ráfagas. */
+    private static final Map<java.util.UUID, Long> ULTIMO = new java.util.HashMap<>();
+    /** Como mucho un récord cada 5 s por jugador (una partida dura bastante más). */
+    private static final int ESPERA_TICS = 100;
+
+    /** Tope de cada juego: el tetrominós puede subir mucho con los niveles; el resto no llega ni de lejos a esto. */
+    private static int maximo(Juego j) {
+        return j == Juego.TETROMINOS ? MAXIMO : 999_999;
+    }
+
     public static void registrar(ServerPlayer p, Juego j, int puntos) {
-        if (puntos <= 0 || puntos > MAXIMO) return;
-        if (!tieneConsola(p)) return;
+        // los puntos los cuenta el cliente: al menos se exige la consola (y el cartucho), un tope por juego y un ritmo
+        if (puntos <= 0 || puntos > maximo(j)) return;
+        if (!tieneConsola(p) || !j.incorporado && !p.getAbilities().instabuild && !tieneCartucho(p, j)) return;
+        long ahora = p.server.getTickCount();
+        Long antes = ULTIMO.get(p.getUUID());
+        if (antes != null && ahora - antes < ESPERA_TICS) return;
+        ULTIMO.put(p.getUUID(), ahora);
         CompoundTag d = datos(p);
         if (puntos <= d.getInt(j.id)) return;
         boolean habia = d.getInt(j.id) > 0;
@@ -61,6 +76,17 @@ public final class Records {
         var inv = p.getInventory();
         for (int i = 0; i < inv.getContainerSize(); i++) if (inv.getItem(i).getItem() instanceof ConsolaItem) return true;
         return false;
+    }
+
+    private static boolean tieneCartucho(ServerPlayer p, Juego j) {
+        var inv = p.getInventory();
+        for (int i = 0; i < inv.getContainerSize(); i++) if (inv.getItem(i).getItem() instanceof CartuchoItem c && c.juego == j) return true;
+        return false;
+    }
+
+    @SubscribeEvent
+    public static void salir(PlayerEvent.PlayerLoggedOutEvent e) {
+        ULTIMO.remove(e.getEntity().getUUID());
     }
 
     public static void sync(ServerPlayer p) {

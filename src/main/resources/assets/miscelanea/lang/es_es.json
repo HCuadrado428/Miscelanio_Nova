@@ -1293,5 +1293,17 @@
   "item.miscelanea.mazo_wemmbu.ajeno": "Este mazo es de %s: no te obedece",
   "item.miscelanea.mazo_wemmbu.vuelve": "El Gambito se escapa volando hacia %s",
   "item.miscelanea.mazo_wemmbu.dueno": "Dueño: %s",
-  "entity.miscelanea.onda": "Onda de choque"
+  "entity.miscelanea.onda": "Onda de choque",
+  "msg.miscelanea.tablero.no_reiniciar": "Solo los jugadores pueden cambiar esta partida",
+  "msg.miscelanea.record_pez": "¡Nuevo récord de tamaño de %s: %s cm!",
+  "miscelanea.fogon.espera": "Puedes añadir algo más: empieza a cocinar en %s s",
+  "msg.miscelanea.turno.cpu": "%s no está o no juega: la CPU juega por él",
+  "msg.miscelanea.turno.vuelve": "%s ha vuelto y retoma su turno",
+  "msg.miscelanea.turno.voto_fin": "%s quiere terminar la partida: faltan %s jugadores por pulsar «Terminar»",
+  "parchis.miscelanea.boton.salir": "Salir",
+  "parchis.miscelanea.log.sale": "%s deja la partida",
+  "oca.miscelanea.log.oca_atras": "%s rebota y cae en una oca: ¡vuelve a la oca anterior y tira otra vez!",
+  "domino.miscelanea.log.empate": "Partida cerrada: empate a %s puntos, ¡tablas!",
+  "msg.miscelanea.domino.empate": "Partida cerrada con empate a puntos: tablas",
+  "miscelanea.chinchon.no_misma": "No puedes tirar la carta que acabas de coger del descarte"
 }

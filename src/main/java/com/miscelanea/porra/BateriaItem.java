@@ -74,9 +74,10 @@ public class BateriaItem extends ArmorItem implements GeoItem {
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
         if (level.isClientSide) return;
-        if (!stack.getTag().contains("GeckoLibID") && level instanceof net.minecraft.server.level.ServerLevel sl) {
+        if ((!stack.hasTag() || !stack.getTag().contains("GeckoLibID")) && level instanceof net.minecraft.server.level.ServerLevel sl) {
             GeoItem.getOrAssignId(stack, sl);
         }
+        if (!stack.hasTag()) return; // recién creada (/give, creativo) y sin id todavía
         int d = stack.getTag().getInt(DESCARGANDO);
         if (d > 0) {
             if (d == 1) stack.getTag().remove(DESCARGANDO);

@@ -205,6 +205,28 @@ public class ParchisPartida {
         return true;
     }
 
+    /** Deja la partida mientras se prepara. Si ya no queda ningún humano, se quitan también las CPU. */
+    public boolean salir(UUID u) {
+        if (fase != LOBBY) return false;
+        Jugador fuera = null;
+        for (Jugador j : js) if (u.equals(j.uuid)) fuera = j;
+        if (fuera == null) return false;
+        js.remove(fuera);
+        anotar("sale|" + fuera.nombre);
+        boolean humanos = false;
+        for (Jugador j : js) if (!j.cpu()) humanos = true;
+        if (!humanos) js.clear();
+        turno = 0;
+        return true;
+    }
+
+    /** Humanos de la partida (para votar terminar). */
+    public List<UUID> humanos() {
+        List<UUID> l = new ArrayList<>();
+        for (Jugador j : js) if (j.uuid != null) l.add(j.uuid);
+        return l;
+    }
+
     public boolean anadirCpu() {
         if (fase != LOBBY || js.size() >= 4) return false;
         Jugador j = new Jugador();

@@ -32,16 +32,40 @@ public final class Recetas {
 
     private Recetas() {}
 
+    /** Receta con exactamente estos ingredientes (en cualquier orden); si hubiera varias, la de más ingredientes. */
     public static Receta buscar(List<ItemStack> dentro) {
+        Receta mejor = null;
         for (Receta r : TODAS) {
             if (r.ingredientes().size() != dentro.size()) continue;
-            List<Item> faltan = new ArrayList<>();
-            for (var s : r.ingredientes()) faltan.add(s.get());
-            boolean ok = true;
-            for (ItemStack st : dentro) if (!faltan.remove(st.getItem())) ok = false;
-            if (ok && faltan.isEmpty()) return r;
+            List<Item> f = faltan(r, dentro);
+            if (f == null || !f.isEmpty()) continue;
+            if (mejor == null || r.ingredientes().size() > mejor.ingredientes().size()) mejor = r;
         }
-        return null;
+        return mejor;
+    }
+
+    /**
+     * Ingredientes de la receta que aún no están en la sartén, o null si en la sartén hay algo que la receta no lleva
+     * (el orden da igual).
+     */
+    private static List<Item> faltan(Receta r, List<ItemStack> dentro) {
+        List<Item> faltan = new ArrayList<>();
+        for (var s : r.ingredientes()) faltan.add(s.get());
+        for (ItemStack st : dentro) if (!faltan.remove(st.getItem())) return null;
+        return faltan;
+    }
+
+    /**
+     * ¿Hay una receta más grande que contiene todo lo que hay en la sartén y para la que aún cabe lo que falta? (p. ej. la
+     * paella con bacalao cuando ya está lo de la paella normal): entonces el fogón espera un poco antes de empezar.
+     */
+    public static boolean ampliable(List<ItemStack> dentro, int max) {
+        for (Receta r : TODAS) {
+            if (r.ingredientes().size() <= dentro.size() || r.ingredientes().size() > max) continue;
+            List<Item> f = faltan(r, dentro);
+            if (f != null && !f.isEmpty()) return true;
+        }
+        return false;
     }
 
     /** ¿Este objeto aparece en alguna receta? */

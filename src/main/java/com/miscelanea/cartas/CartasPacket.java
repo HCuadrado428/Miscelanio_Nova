@@ -10,7 +10,7 @@ import net.minecraftforge.network.NetworkEvent;
 import java.util.function.Supplier;
 
 /**
- * Cliente → servidor: JUGAR (carta de la mano), CPU (contra la máquina), NUEVA, LEVANTARSE.
+ * Cliente → servidor: JUGAR (carta de la mano, por su valor 0..39), CPU (contra la máquina), NUEVA, LEVANTARSE.
  * Servidor → cliente: ESTADO de la partida vista por ese jugador (con su mano), y si hay que abrir la pantalla.
  */
 public class CartasPacket {
@@ -115,14 +115,16 @@ public class CartasPacket {
         }
         if (p.distanceToSqr(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5) > 64) return;
         if (!(p.level().getBlockEntity(pos) instanceof MesaCartasBlockEntity be)) return;
+        be.despertar(p);
+        // JUGAR, DESCARTAR y CERRAR llevan la carta (0..39), no su posición en la mano
         switch (tipo) {
-            case JUGAR -> be.jugar(p, arg);
+            case JUGAR -> be.jugar(p, be.indiceCarta(be.asiento(p), arg));
             case CPU -> be.contraCpu(p);
             case NUEVA -> be.nueva(p);
             case LEVANTARSE -> be.levantarse(p);
             case ROBAR -> be.robar(be.asiento(p), arg == 1);
-            case DESCARTAR -> be.descartar(be.asiento(p), arg, false);
-            case CERRAR -> be.descartar(be.asiento(p), arg, true);
+            case DESCARTAR -> be.descartar(be.asiento(p), be.indiceCarta(be.asiento(p), arg), false);
+            case CERRAR -> be.descartar(be.asiento(p), be.indiceCarta(be.asiento(p), arg), true);
             case JUEGO -> be.cambiarJuego(p);
             default -> {}
         }

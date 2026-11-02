@@ -32,11 +32,13 @@ public class Dardo extends ThrowableItemProjectile {
         super.onHitBlock(r);
         if (level().isClientSide) return;
         Player p = getOwner() instanceof Player pl ? pl : null;
-        if (level().getBlockEntity(r.getBlockPos()) instanceof DianaDardosBlockEntity be) {
+        boolean creativo = p != null && p.getAbilities().instabuild;
+        // solo se clava si da en la cara de la diana (no por detrás ni por los cantos)
+        if (level().getBlockEntity(r.getBlockPos()) instanceof DianaDardosBlockEntity be && r.getDirection() == be.facing()) {
             be.clavar(p, r.getLocation());
-            if (p != null && !p.getAbilities().instabuild && !p.getInventory().add(new ItemStack(ModItems.DARDO.get())))
+            if (p != null && !creativo && !p.getInventory().add(new ItemStack(ModItems.DARDO.get())))
                 p.drop(new ItemStack(ModItems.DARDO.get()), false);
-        } else if (p == null || !p.getAbilities().instabuild) spawnAtLocation(new ItemStack(ModItems.DARDO.get()), 0.1F);
+        } else if (!creativo) spawnAtLocation(new ItemStack(ModItems.DARDO.get()), 0.1F);
         discard();
     }
 
@@ -49,7 +51,8 @@ public class Dardo extends ThrowableItemProjectile {
     protected void onHit(HitResult r) {
         super.onHit(r);
         if (r.getType() == HitResult.Type.ENTITY && !level().isClientSide) {
-            spawnAtLocation(new ItemStack(ModItems.DARDO.get()), 0.1F);
+            // en creativo el dardo no se gastó, así que tampoco se suelta
+            if (!(getOwner() instanceof Player pl && pl.getAbilities().instabuild)) spawnAtLocation(new ItemStack(ModItems.DARDO.get()), 0.1F);
             discard();
         }
     }

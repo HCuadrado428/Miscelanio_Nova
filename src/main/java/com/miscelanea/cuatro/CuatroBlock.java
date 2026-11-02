@@ -75,6 +75,10 @@ public class CuatroBlock extends BaseEntityBlock {
     public InteractionResult use(BlockState s, Level l, BlockPos pos, Player p, InteractionHand hand, BlockHitResult hit) {
         if (!p.isShiftKeyDown() || hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
         if (!l.isClientSide && l.getBlockEntity(pos) instanceof CuatroBlockEntity be) {
+            if (!be.puedeReiniciar(p)) {
+                p.displayClientMessage(Component.translatable("msg.miscelanea.tablero.ocupado").withStyle(ChatFormatting.GRAY), true);
+                return InteractionResult.SUCCESS;
+            }
             be.reiniciar(be.modo + 1);
             p.displayClientMessage(Component.translatable("msg.miscelanea.cuatro.modo", Component.translatable("cuatro.miscelanea.modo." + be.modo))
                     .withStyle(ChatFormatting.YELLOW), true);

@@ -12,8 +12,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.level.ChunkWatchEvent;
 import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.PacketDistributor;
@@ -107,6 +109,58 @@ public final class Tinta {
                 return;
             }
         }
+    }
+
+    /** Quita la tinta de una cara (solo servidor) y la apunta para mandarla a los clientes. */
+    private static void quitar(ServerLevel level, long ck, Map<Long, Mancha> ch, long pos, Mancha m, int i) {
+        if (m.color[i] == 0) return;
+        m.color[i] = 0;
+        PENDIENTES.computeIfAbsent(level.dimension(), k -> new HashMap<>()).computeIfAbsent(ck, k -> new ArrayList<>())
+                .add(new TintaPacket.Cambio(pos, (byte) i, 0));
+        if (m.vacia()) {
+            ch.remove(pos);
+            if (ch.isEmpty()) mapa(level).remove(ck);
+        }
+    }
+
+    /** Borra la tinta de las caras que ya no se pueden ver/pintar ('todas' = todas las del bloque, p. ej. al romperlo). */
+    private static void revisar(ServerLevel level, BlockPos pos, boolean todas, int soloCara) {
+        long ck = ChunkPos.asLong(pos.getX() >> 4, pos.getZ() >> 4);
+        Map<Long, Mancha> ch = mapa(level).get(ck);
+        if (ch == null) return;
+        long key = pos.asLong();
+        Mancha m = ch.get(key);
+        if (m == null) return;
+        for (int i = 0; i < 6; i++) {
+            if (m.color[i] == 0 || (soloCara >= 0 && i != soloCara)) continue;
+            if (todas || !pintable(level, pos, Direction.from3DDataValue(i))) quitar(level, ck, ch, key, m, i);
+        }
+    }
+
+    /** El bloque de 'pos' ha cambiado: limpia su tinta si ya no tiene caras pintables y la de los vecinos que tapa. */
+    public static void bloqueCambiado(ServerLevel level, BlockPos pos) {
+        Map<Long, Map<Long, Mancha>> mapa = SERVIDOR.get(level.dimension());
+        if (mapa == null || mapa.isEmpty()) return;
+        revisar(level, pos, level.getBlockState(pos).isAir(), -1);
+        for (Direction d : Direction.values()) revisar(level, pos.relative(d), false, d.getOpposite().get3DDataValue());
+    }
+
+    /** Romper un bloque pintado le quita la tinta (para que no quede flotando ni pase al siguiente bloque). */
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void romper(BlockEvent.BreakEvent e) {
+        if (!e.isCanceled() && e.getLevel() instanceof ServerLevel sl && SERVIDOR.containsKey(sl.dimension())) revisar(sl, e.getPos(), true, -1);
+    }
+
+    /** Cualquier cambio de bloque (explosiones, pistones, colocar, la pistola de gravedad...) pasa por aquí. */
+    @SubscribeEvent
+    public static void vecinos(BlockEvent.NeighborNotifyEvent e) {
+        if (e.getLevel() instanceof ServerLevel sl) bloqueCambiado(sl, e.getPos());
+    }
+
+    /** Colocar un bloque tapa la tinta de las caras vecinas contra las que se apoya. */
+    @SubscribeEvent
+    public static void colocar(BlockEvent.EntityPlaceEvent e) {
+        if (e.getLevel() instanceof ServerLevel sl) bloqueCambiado(sl, e.getPos());
     }
 
     // ------------------------------------------------------------------ servidor: envío y secado

@@ -94,12 +94,19 @@ public class CasetaTiroBlockEntity extends BlockEntity {
         return k < PATOS ? mundo(x(k, t), PATO_Y + 0.25, PATO_Z) : mundo(x(k, t), DIANA_Y + 0.28, DIANA_Z);
     }
 
-    void empezar(Player p) {
+    void empezar(Player p, ItemStack st) {
         long ahora = level.getGameTime();
         if (activa(ahora) && !p.getUUID().equals(jugador)) {
             p.displayClientMessage(Component.translatable("miscelanea.tiro.ocupada", nombre), true);
             return;
         }
+        // como los demás puestos: cada partida cuesta una ficha
+        if (!st.is(ModItems.FICHA.get())) {
+            p.displayClientMessage(Component.translatable("miscelanea.maquina.ficha"), true);
+            return;
+        }
+        if (!p.getAbilities().instabuild) st.shrink(1);
+        level.playSound(null, worldPosition, ModSounds.ARCADE_FICHA.get(), SoundSource.BLOCKS, 0.8F, 1F);
         jugador = p.getUUID();
         nombre = p.getGameProfile().getName();
         inicio = ahora;

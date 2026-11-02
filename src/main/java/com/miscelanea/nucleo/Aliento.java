@@ -279,4 +279,12 @@ public final class Aliento {
     public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         ACTIVOS.remove(event.getEntity().getUUID());
     }
+
+    /** Al morir (o volver del End) la recarga no se pierde: si no, morir era una forma de saltársela. */
+    @SubscribeEvent
+    public static void onClone(PlayerEvent.Clone event) {
+        var viejo = event.getOriginal().getPersistentData();
+        var nuevo = event.getEntity().getPersistentData();
+        if (viejo.contains(CD)) nuevo.putLong(CD, viejo.getLong(CD));
+    }
 }

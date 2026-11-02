@@ -130,7 +130,9 @@ public class AirHockeyBlockEntity extends BlockEntity implements MesaGrandeBlock
         p.golpes = p.paredes = 0;
         if (p.fase != AirHockeyPartida.GOL) p.gol = 0;
         if (p.fase != faseAntes) be.cambio();
-        ModNetwork.CHANNEL.send(PacketDistributor.TRACKING_CHUNK.with(() -> l.getChunkAt(pos)), new MesaFisicaPacket(pos, p.estado()));
+        // la física solo se manda mientras se juega (y una última vez al acabar, para dejar el disco en su sitio)
+        if (p.fase != AirHockeyPartida.FIN || faseAntes != AirHockeyPartida.FIN)
+            ModNetwork.CHANNEL.send(PacketDistributor.TRACKING_CHUNK.with(() -> l.getChunkAt(pos)), new MesaFisicaPacket(pos, p.estado()));
     }
 
     // ------------------------------------------------------------------ cliente

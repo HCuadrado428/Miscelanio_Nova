@@ -15,6 +15,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -31,6 +35,9 @@ public class MangueraLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
     /** Boca de la boquilla en coordenadas del mundo, por id de jugador (se actualiza cada frame que se dibuja). */
     private static final Map<Integer, Vec3> BOCAS = new HashMap<>();
     private static final Map<Integer, Long> BOCAS_T = new HashMap<>();
+    /** Las entradas de jugadores que ya no se dibujan (se fueron, murieron...) se limpian de vez en cuando. */
+    private static final long CADUCA = 5000L;
+    private static long ultimaLimpieza;
 
     public MangueraLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent) {
         super(parent);
@@ -82,7 +89,36 @@ public class MangueraLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         double px = Mth.lerp(partialTick, player.xo, player.getX());
         double py = Mth.lerp(partialTick, player.yo, player.getY()) + (player.isCrouching() ? -0.125 : 0.0);
         double pz = Mth.lerp(partialTick, player.zo, player.getZ());
+        long ahora = System.currentTimeMillis();
         BOCAS.put(player.getId(), new Vec3(px + w.x, py + w.y, pz + w.z));
-        BOCAS_T.put(player.getId(), System.currentTimeMillis());
+        BOCAS_T.put(player.getId(), ahora);
+        limpiar(ahora);
+    }
+
+    /** Quita las bocas de entidades que llevan un rato sin dibujarse. */
+    private static void limpiar(long ahora) {
+        if (ahora - ultimaLimpieza < 1000L) return;
+        ultimaLimpieza = ahora;
+        BOCAS_T.entrySet().removeIf(en -> {
+            if (ahora - en.getValue() > CADUCA) {
+                BOCAS.remove(en.getKey());
+                return true;
+            }
+            return false;
+        });
+    }
+
+    /** Al salir del mundo (o cambiar de dimensión) los ids de entidad dejan de valer: se vacía todo. */
+    @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
+    public static final class Limpieza {
+        private Limpieza() {}
+
+        @SubscribeEvent
+        public static void descargar(LevelEvent.Unload e) {
+            if (e.getLevel().isClientSide()) {
+                BOCAS.clear();
+                BOCAS_T.clear();
+            }
+        }
     }
 }

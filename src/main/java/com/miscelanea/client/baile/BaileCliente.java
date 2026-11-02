@@ -61,15 +61,44 @@ public final class BaileCliente {
             }
             case BailePacket.EMPIEZA -> {
                 BailePoses.empezar(m.entidad, RitmoCanciones.BPM[Math.max(0, Math.min(2, m.a))]);
+                ponerMusica(m.pos, m.a);
                 if (m.entidad == yo.getId() && modo != NADA) empezarCancion(m.a);
             }
             case BailePacket.PASO -> BailePoses.paso(m.entidad, m.a, m.b);
             case BailePacket.PARA -> {
                 BailePoses.parar(m.entidad);
+                quitarMusica(m.pos);
                 if (m.entidad == yo.getId()) cerrar();
             }
             default -> {}
         }
+    }
+
+    /** Canción que suena en cada pista (solo se corta la de esa pista, no las de las demás). */
+    static final java.util.Map<BlockPos, MusicaPista> MUSICA = new java.util.HashMap<>();
+
+    static void ponerMusica(BlockPos pos, int c) {
+        quitarMusica(pos);
+        if (c < 0 || c >= RitmoCanciones.ID.length) return;
+        net.minecraft.sounds.SoundEvent ev = net.minecraftforge.registries.ForgeRegistries.SOUND_EVENTS.getValue(
+                new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, RitmoCanciones.ID[c]));
+        if (ev == null) return;
+        MusicaPista mp = new MusicaPista(ev, pos, c);
+        MUSICA.put(mp.pista, mp);
+        Minecraft.getInstance().getSoundManager().play(mp);
+    }
+
+    static void quitarMusica(BlockPos pos) {
+        MusicaPista antes = MUSICA.remove(pos);
+        if (antes != null) Minecraft.getInstance().getSoundManager().stop(antes);
+    }
+
+    @SubscribeEvent
+    public static void limpiarMusica(TickEvent.ClientTickEvent e) {
+        if (e.phase != TickEvent.Phase.END || MUSICA.isEmpty()) return;
+        // las que ya se han parado solas (pista rota, canción terminada...) se olvidan
+        MUSICA.values().removeIf(mp -> mp.isStopped() || !Minecraft.getInstance().getSoundManager().isActive(mp) && mp.edadTics() > 40);
+        if (Minecraft.getInstance().level == null) MUSICA.clear();
     }
 
     static void empezarCancion(int c) {

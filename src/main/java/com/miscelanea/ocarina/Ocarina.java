@@ -7,6 +7,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -15,8 +17,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,14 +29,29 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 /** Efectos de las canciones: se aplican al acabar de sonar la melodía. El paso del tiempo se ve acelerado en el cielo. */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID)
 public final class Ocarina {
     private static final String CLAVE = "MiscelaneaOcarina";
     private static final int RETARDO = 70;           // lo que dura la melodía grabada
-    private static final List<Object[]> PENDIENTES = new ArrayList<>();   // {jugador, cancion, ticks}
-    private static final Map<ServerLevel, Long> AVANCE = new HashMap<>();  // nivel → dayTime objetivo
+    /** Canción sonando: se guarda el UUID del jugador (no el ServerPlayer, que se queda viejo al reaparecer o salir). */
+    private static final class Pendiente {
+        final UUID jugador;
+        final Cancion cancion;
+        int ticks;
+
+        Pendiente(ServerPlayer p, Cancion c, int ticks) {
+            this.jugador = p.getUUID();
+            this.cancion = c;
+            this.ticks = ticks;
+        }
+    }
+
+    private static final List<Pendiente> PENDIENTES = new ArrayList<>();
+    /** dimensión → dayTime objetivo (con la clave, no el ServerLevel, para no retener mundos descargados). */
+    private static final Map<ResourceKey<Level>, Long> AVANCE = new HashMap<>();
 
     private Ocarina() {}
 
@@ -53,7 +73,7 @@ public final class Ocarina {
         d.putLong(c.id, ahora + c.espera);
         p.getPersistentData().put(CLAVE, d);
         p.level().playSound(null, p.getX(), p.getEyeY(), p.getZ(), ModSounds.CANCION[c.ordinal()].get(), SoundSource.PLAYERS, 1.2F, 1.0F);
-        PENDIENTES.add(new Object[]{p, c, RETARDO});
+        PENDIENTES.add(new Pendiente(p, c, RETARDO));
     }
 
     private static String motivoFallo(ServerPlayer p, Cancion c) {
@@ -84,7 +104,7 @@ public final class Ocarina {
         long base = t - Math.floorMod(t, 24000L);
         long objetivo = base + Math.floorMod(hora, 24000);
         if (objetivo <= t + 200) objetivo += 24000;
-        AVANCE.put(l, objetivo);
+        AVANCE.put(l.dimension(), objetivo);
     }
 
     private static void regresar(ServerPlayer p) {
@@ -111,23 +131,28 @@ public final class Ocarina {
     @SubscribeEvent
     public static void tick(TickEvent.ServerTickEvent e) {
         if (e.phase != TickEvent.Phase.END) return;
-        for (Iterator<Object[]> it = PENDIENTES.iterator(); it.hasNext(); ) {
-            Object[] o = it.next();
-            int t = (int) o[2] - 1;
-            o[2] = t;
-            ServerPlayer p = (ServerPlayer) o[0];
-            if (p.isRemoved() || !p.isAlive()) {
-                it.remove();
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server == null) return;
+        // Copia: efecto() puede teletransportar y no queremos líos si algo toca la lista
+        for (Pendiente o : new ArrayList<>(PENDIENTES)) {
+            int t = --o.ticks;
+            ServerPlayer p = server.getPlayerList().getPlayer(o.jugador);
+            if (p == null || p.isRemoved() || !p.isAlive()) {
+                PENDIENTES.remove(o);
                 continue;
             }
             if (t <= 0) {
-                it.remove();
-                efecto(p, (Cancion) o[1]);
+                PENDIENTES.remove(o);
+                efecto(p, o.cancion);
             }
         }
-        for (Iterator<Map.Entry<ServerLevel, Long>> it = AVANCE.entrySet().iterator(); it.hasNext(); ) {
+        for (Iterator<Map.Entry<ResourceKey<Level>, Long>> it = AVANCE.entrySet().iterator(); it.hasNext(); ) {
             var en = it.next();
-            ServerLevel l = en.getKey();
+            ServerLevel l = server.getLevel(en.getKey());
+            if (l == null) {
+                it.remove();
+                continue;
+            }
             long t = l.getDayTime(), obj = en.getValue();
             if (t >= obj) {
                 it.remove();
@@ -135,5 +160,17 @@ public final class Ocarina {
             }
             l.setDayTime(Math.min(obj, t + 240));
         }
+    }
+
+    /** Si muere mientras suena, la canción se pierde (como antes, cuando se miraba el jugador viejo). */
+    @SubscribeEvent
+    public static void muerte(LivingDeathEvent e) {
+        if (e.getEntity() instanceof ServerPlayer p) PENDIENTES.removeIf(o -> o.jugador.equals(p.getUUID()));
+    }
+
+    @SubscribeEvent
+    public static void parado(ServerStoppedEvent e) {
+        PENDIENTES.clear();
+        AVANCE.clear();
     }
 }

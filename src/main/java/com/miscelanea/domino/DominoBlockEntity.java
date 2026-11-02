@@ -1,5 +1,7 @@
 package com.miscelanea.domino;
 
+import com.miscelanea.mesas.PrivadoPacket;
+import com.miscelanea.mesas.Turnos;
 import com.miscelanea.registry.ModBlocks;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -23,10 +25,18 @@ import net.minecraft.world.phys.Vec3;
 import java.util.Random;
 
 /** Una partida de dominó sobre una mesa colocada en el mundo. */
-public class DominoBlockEntity extends BlockEntity {
+public class DominoBlockEntity extends BlockEntity implements PrivadoPacket.Receptor {
     public DominoPartida p = new DominoPartida();
     private final Random rnd = new Random();
     private int esperaCpu;
+    /** Juega por quien se va de la mesa o no juega; votos para terminar antes de tiempo (no se guardan). */
+    private final Turnos.Vigia vigia = new Turnos.Vigia();
+    private final Turnos.Votacion votos = new Turnos.Votacion();
+    /** Servidor: hay que mandar a cada jugador su mano (se manda en el tick siguiente, tras la actualización pública). */
+    private boolean privadoPendiente;
+    private int privadoCada;
+    /** Cliente: última mano propia recibida (se vuelve a poner tras cada actualización pública). */
+    private CompoundTag privadoCli;
 
     public DominoBlockEntity(BlockPos pos, BlockState s) {
         super(ModBlocks.DOMINO_BE.get(), pos, s);
@@ -48,7 +58,23 @@ public class DominoBlockEntity extends BlockEntity {
 
     public void cambiado() {
         setChanged();
+        privadoPendiente = true;
         if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+    }
+
+    /** Manda a cada humano de la partida su propia mano. */
+    private void enviarPrivados() {
+        if (level == null || level.isClientSide || p.fase == DominoPartida.LOBBY) return;
+        for (int i = 0; i < p.js.size(); i++) {
+            DominoPartida.Jugador j = p.js.get(i);
+            if (j.uuid != null && level.getPlayerByUUID(j.uuid) instanceof ServerPlayer sp) PrivadoPacket.enviar(sp, worldPosition, p.privado(i));
+        }
+    }
+
+    @Override
+    public void recibirPrivado(CompoundTag t) {
+        privadoCli = t;
+        p.aplicarPrivado(t);
     }
 
     private int indice(ServerPlayer pl) {
@@ -63,6 +89,7 @@ public class DominoBlockEntity extends BlockEntity {
     public void clic(ServerPlayer pl, double tx, double ty) {
         long ahora = level.getGameTime();
         int yo = indice(pl);
+        if (yo >= 0) vigia.despertar(pl.getUUID());
         DominoBotones.Boton b = DominoBotones.en(p, tx, ty);
         if (b == null) {
             if (yo < 0 || p.fase != DominoPartida.JUGAR) return;
@@ -106,10 +133,19 @@ public class DominoBlockEntity extends BlockEntity {
             case DominoBotones.UNIRSE -> hecho = p.unir(pl.getUUID(), pl.getGameProfile().getName());
             case DominoBotones.CPU -> hecho = yo >= 0 && p.anadirCpu();
             case DominoBotones.EMPEZAR -> hecho = yo >= 0 && p.empezar(rnd, ahora);
-            case DominoBotones.NUEVA -> p = new DominoPartida();
+            case DominoBotones.NUEVA -> {
+                p = new DominoPartida();
+                vigia.limpiar();
+                votos.limpiar();
+            }
             case DominoBotones.TERMINAR -> {
-                if (yo >= 0) p.terminar();
-                else hecho = false;
+                // hace falta que estén de acuerdo todos los humanos que siguen en la mesa
+                if (yo < 0) hecho = false;
+                else {
+                    int faltan = votos.votar(level, worldPosition, pl.getUUID(), p.humanos());
+                    if (faltan == 0) p.terminar();
+                    else Turnos.avisar(level, worldPosition, Turnos.AVISO_VOTO, pl.getGameProfile().getName(), faltan);
+                }
             }
             default -> hecho = false;
         }
@@ -128,25 +164,41 @@ public class DominoBlockEntity extends BlockEntity {
 
     private void fin() {
         sonar(SoundEvents.PLAYER_LEVELUP, 1F, 1F);
-        if (p.ganador < 0) return;
+        if (p.ganador < 0) {
+            // cierre con empate a puntos: tablas
+            if (!p.log.isEmpty() && p.log.get(p.log.size() - 1).startsWith("empate|"))
+                for (ServerPlayer o : ((ServerLevel) level).getEntitiesOfClass(ServerPlayer.class, new AABB(worldPosition).inflate(12)))
+                    o.displayClientMessage(Component.translatable("msg.miscelanea.domino.empate").withStyle(ChatFormatting.GOLD), false);
+            return;
+        }
         for (ServerPlayer o : ((ServerLevel) level).getEntitiesOfClass(ServerPlayer.class, new AABB(worldPosition).inflate(12)))
             o.displayClientMessage(Component.translatable("msg.miscelanea.domino.gana", p.js.get(p.ganador).nombre).withStyle(ChatFormatting.GOLD), false);
     }
 
     public static void tickServidor(Level l, BlockPos pos, BlockState s, DominoBlockEntity be) {
+        // las manos se mandan después de la actualización pública (y de vez en cuando, por si alguien acaba de llegar)
+        if (be.privadoPendiente || ++be.privadoCada >= 40) {
+            be.privadoPendiente = false;
+            be.privadoCada = 0;
+            be.enviarPrivados();
+        }
         DominoPartida p = be.p;
         long ahora = l.getGameTime();
         if (p.fase != DominoPartida.JUGAR) return;
         DominoPartida.Jugador j = p.actual();
         boolean atascado = !p.puedeJugar(j);
-        if (!j.cpu() && !atascado) {
+        // si el humano de turno se ha ido (o no juega) la CPU juega por él
+        boolean porEl = !j.cpu() && !atascado && be.vigia.vigilar(l, pos, j.uuid, j.nombre,
+                (long) p.turno * 100000L + (p.izq.size() + p.der.size()) * 100L + j.mano.size());
+        if (!j.cpu() && !atascado && !porEl) {
             be.esperaCpu = 0;
             return;
         }
-        if (++be.esperaCpu < (j.cpu() ? 18 : 22)) return;
+        boolean comoCpu = j.cpu() || porEl;
+        if (++be.esperaCpu < (comoCpu ? 18 : 22)) return;
         be.esperaCpu = 0;
         int fase = p.fase;
-        boolean hecho = j.cpu() ? p.cpu(ahora) : (p.robar() || p.pasarSiHaceFalta());
+        boolean hecho = comoCpu ? p.cpu(ahora) : (p.robar() || p.pasarSiHaceFalta());
         if (hecho) {
             be.sonar(p.tUlt == ahora ? SoundEvents.STONE_PLACE : SoundEvents.BOOK_PAGE_TURN, 0.8F, 1.6F);
             if (p.fase == DominoPartida.FIN && fase != DominoPartida.FIN) be.fin();
@@ -164,11 +216,15 @@ public class DominoBlockEntity extends BlockEntity {
     public void load(CompoundTag t) {
         super.load(t);
         p = t.contains("partida") ? DominoPartida.cargar(t.getCompound("partida")) : new DominoPartida();
+        if (privadoCli != null) p.aplicarPrivado(privadoCli);
     }
 
+    /** A los clientes no se les mandan las manos ajenas ni el orden del pozo. */
     @Override
     public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+        CompoundTag t = new CompoundTag();
+        t.put("partida", p.guardarPublico());
+        return t;
     }
 
     @Override

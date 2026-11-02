@@ -5,6 +5,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -75,6 +76,12 @@ public class TableroBlock extends BaseEntityBlock {
     public InteractionResult use(BlockState s, Level l, BlockPos pos, Player p, InteractionHand hand, BlockHitResult hit) {
         if (!p.isShiftKeyDown() || hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
         if (!l.isClientSide && l.getBlockEntity(pos) instanceof TableroBlockEntity be) {
+            // en mitad de una partida solo la pueden cambiar sus jugadores (o cualquiera si la han abandonado)
+            if (p instanceof ServerPlayer sp && !be.puedeReiniciar(sp)) {
+                p.displayClientMessage(Component.translatableWithFallback("msg.miscelanea.tablero.no_reiniciar",
+                        "Solo los jugadores pueden cambiar esta partida").withStyle(ChatFormatting.RED), true);
+                return InteractionResult.CONSUME;
+            }
             be.reiniciar(be.modo + 1);
             p.displayClientMessage(Component.translatable("msg.miscelanea.tablero.modo", Component.translatable("tablero.miscelanea.modo." + be.modo))
                     .withStyle(ChatFormatting.YELLOW), true);

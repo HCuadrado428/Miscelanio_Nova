@@ -184,13 +184,23 @@ public final class AgarreEventos {
 
         // Teclas que parpadean alternándose
         boolean izq = ((int) (t / 3.0F)) % 2 == 0;
-        tecla(g, x - 16, y - 4, "A", izq);
-        tecla(g, x + ancho + 4, y - 4, "D", !izq);
+        // las teclas reales que tiene asignadas el jugador (no siempre A/D)
+        var opciones = Minecraft.getInstance().options;
+        net.minecraft.network.chat.Component tIzq = opciones.keyLeft.getTranslatedKeyMessage();
+        net.minecraft.network.chat.Component tDer = opciones.keyRight.getTranslatedKeyMessage();
+        tecla(g, x - 4 - anchoTecla(tIzq), y - 4, tIzq, izq);
+        tecla(g, x + ancho + 4, y - 4, tDer, !izq);
     }
 
-    private static void tecla(GuiGraphics g, int x, int y, String letra, boolean activa) {
-        g.fill(x, y, x + 12, y + 12, activa ? 0xFFFFFFFF : 0x80FFFFFF);
-        g.fill(x + 1, y + 1, x + 11, y + 11, activa ? 0xFF303030 : 0x80303030);
-        g.drawString(Minecraft.getInstance().font, letra, x + 3, y + 2, activa ? 0xFFFFFFFF : 0xFF909090, false);
+    private static int anchoTecla(net.minecraft.network.chat.Component letra) {
+        return Math.max(12, Minecraft.getInstance().font.width(letra) + 6);
+    }
+
+    private static void tecla(GuiGraphics g, int x, int y, net.minecraft.network.chat.Component letra, boolean activa) {
+        int an = anchoTecla(letra);
+        g.fill(x, y, x + an, y + 12, activa ? 0xFFFFFFFF : 0x80FFFFFF);
+        g.fill(x + 1, y + 1, x + an - 1, y + 11, activa ? 0xFF303030 : 0x80303030);
+        int tw = Minecraft.getInstance().font.width(letra);
+        g.drawString(Minecraft.getInstance().font, letra, x + (an - tw + 1) / 2, y + 2, activa ? 0xFFFFFFFF : 0xFF909090, false);
     }
 }

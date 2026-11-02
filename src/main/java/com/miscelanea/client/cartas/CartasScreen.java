@@ -18,7 +18,8 @@ public class CartasScreen extends Screen {
     static final int CW = 40, CH = 60;
     private final BlockPos pos;
     private Button cpu, nueva, levantarse, juego, cerrar;
-    private int hover = -1, hoverPila = -1;
+    /** hover: posición en la mano de la carta bajo el ratón; hoverCarta: qué carta es (se manda la carta, no la posición). */
+    private int hover = -1, hoverPila = -1, hoverCarta = -1;
     private boolean modoCerrar;
 
     public CartasScreen(BlockPos pos) {
@@ -108,6 +109,7 @@ public class CartasScreen extends Screen {
             boolean sobre = mx >= x && mx < x + CW && my >= y - 8 && my < y + CH;
             if (sobre && miTurno) {
                 hover = i;
+                hoverCarta = e.mano[i];
                 y -= 8;
             }
             carta(g, e.mano[i], x, y);
@@ -161,6 +163,7 @@ public class CartasScreen extends Screen {
             boolean sobre = mx >= x && mx < x + (i == n - 1 ? CW : paso) && my >= y - 8 && my < y + CH;
             if (sobre && descartando) {
                 hover = i;
+                hoverCarta = e.mano[i];
                 y -= 8;
             }
             carta(g, e.mano[i], x, y);
@@ -197,9 +200,11 @@ public class CartasScreen extends Screen {
             hoverPila = -1;
             return true;
         }
-        if (b == 0 && hover >= 0) {
-            enviar(chin ? (modoCerrar ? CartasPacket.CERRAR : CartasPacket.DESCARTAR) : CartasPacket.JUGAR, hover);
+        if (b == 0 && hover >= 0 && hoverCarta >= 0) {
+            // se manda la carta en sí: si la mano ha cambiado mientras tanto, el servidor no se equivoca de carta
+            enviar(chin ? (modoCerrar ? CartasPacket.CERRAR : CartasPacket.DESCARTAR) : CartasPacket.JUGAR, hoverCarta);
             hover = -1;
+            hoverCarta = -1;
             modoCerrar = false;
             return true;
         }

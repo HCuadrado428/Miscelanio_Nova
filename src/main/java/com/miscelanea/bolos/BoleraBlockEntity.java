@@ -58,6 +58,9 @@ public class BoleraBlockEntity extends BlockEntity {
     private int dePieAntes = N;
     private int bolaId = -1;
     private double[] qAntes;
+    /** Última vez que alguien jugó en esta calle (para dejar empezar a otro tras un minuto sin tirar). */
+    public long actividad;
+    public static final int INACTIVA = 1200;
 
     public BoleraBlockEntity(BlockPos p, BlockState s) {
         super(com.miscelanea.registry.ModBlocks.BOLERA_BE.get(), p, s);
@@ -79,8 +82,21 @@ public class BoleraBlockEntity extends BlockEntity {
         return new double[]{dx * c - dz * s, dx * s + dz * c};
     }
 
+    /** ¿Puede este jugador quitarle la calle al que está jugando? Solo si es suya, si acabó o si lleva 1 min sin tirar. */
+    boolean puedeEmpezar(Player p) {
+        if (jugador == null || p.getUUID().equals(jugador) || terminada()) return true;
+        if (level.getGameTime() - actividad > INACTIVA) return true;
+        Player dueno = level.getPlayerByUUID(jugador);
+        return dueno == null || dueno.distanceToSqr(Vec3.atCenterOf(worldPosition)) > 48 * 48;
+    }
+
     void nueva(Player p) {
         if (enJuego) return;
+        if (!puedeEmpezar(p)) {
+            p.displayClientMessage(Component.translatable("miscelanea.bolos.ocupada", nombre), true);
+            return;
+        }
+        actividad = level.getGameTime();
         jugador = p.getUUID();
         nombre = p.getGameProfile().getName();
         tiradas.clear();
@@ -107,8 +123,7 @@ public class BoleraBlockEntity extends BlockEntity {
     boolean lanzamiento(Player p, int idBola) {
         if (enJuego) return false;
         if (jugador == null || terminada() || !p.getUUID().equals(jugador)) {
-            if (jugador != null && !terminada() && !p.getUUID().equals(jugador) && level.getPlayerByUUID(jugador) != null
-                    && level.getPlayerByUUID(jugador).distanceToSqr(Vec3.atCenterOf(worldPosition)) < 48 * 48) return false;
+            if (!puedeEmpezar(p)) return false;
             jugador = p.getUUID();
             nombre = p.getGameProfile().getName();
             tiradas.clear();
@@ -117,6 +132,7 @@ public class BoleraBlockEntity extends BlockEntity {
         enJuego = true;
         contacto = -1;
         lanzado = level.getGameTime();
+        actividad = lanzado;
         dePieAntes = dePie();
         bolaId = idBola;
         qAntes = null;
@@ -132,7 +148,8 @@ public class BoleraBlockEntity extends BlockEntity {
         BolaBolos bola = l.getEntity(be.bolaId) instanceof BolaBolos b ? b : null;
         if (bola != null && bola.isAlive()) {
             double[] q = be.local(bola.getX(), bola.getZ());
-            if (Math.abs(q[0]) < 0.75 && q[1] > -0.75 && q[1] < 0.75 && bola.getY() < pos.getY() + 0.8) {
+            // solo cuenta la bola dentro de ESTA calle (antes el margen pillaba media calle de al lado)
+            if (Math.abs(q[0]) < 0.5 && q[1] > -0.75 && q[1] < 0.75 && bola.getY() < pos.getY() + 0.8) {
                 if (be.contacto < 0) be.contacto = ahora;
                 Vec3 v = bola.getDeltaMovement();
                 double[] vl = be.localDir(v.x, v.z);
@@ -151,7 +168,10 @@ public class BoleraBlockEntity extends BlockEntity {
                 }
             }
             be.qAntes = q;
-            if (be.contacto < 0 && ahora - be.lanzado > 400) bola.discard();
+            if (be.contacto < 0 && ahora - be.lanzado > 400) {
+                bola.devolver();
+                bola.discard();
+            }
         }
         // los bolos que caen tiran a los de al lado
         for (int k = 0; k < N; k++) {
@@ -192,11 +212,15 @@ public class BoleraBlockEntity extends BlockEntity {
 
     private void finTirada(ServerLevel l, @Nullable BolaBolos bola) {
         enJuego = false;
+        actividad = l.getGameTime();
         int tumbados = dePieAntes - dePie();
         tiradas.add(tumbados);
         Player p = jugador != null ? l.getPlayerByUUID(jugador) : null;
-        if (bola != null && bola.isAlive()) bola.discard();
-        if (p != null && !p.getAbilities().instabuild && !p.getInventory().add(new ItemStack(ModItems.BOLA_BOLOS.get()))) p.drop(new ItemStack(ModItems.BOLA_BOLOS.get()), false);
+        // la bola vuelve a quien la tiró; si ya no está (se paró sola o se fue lejos) se devuelve ella misma al pararse
+        if (bola != null && bola.isAlive()) {
+            bola.devolver();
+            bola.discard();
+        }
         boolean pleno = tumbados == N && dePieAntes == N, semipleno = !pleno && dePie() == 0;
         Vec3 c = mundo(0, 1, 0);
         if (pleno || semipleno) {
@@ -241,6 +265,7 @@ public class BoleraBlockEntity extends BlockEntity {
         for (int k = 0; k < N; k++) d[k] = Math.round(dir[k] * 1000);
         t.putIntArray("dir", d);
         t.putBoolean("juego", enJuego);
+        t.putLong("activ", actividad);
     }
 
     @Override
@@ -257,6 +282,7 @@ public class BoleraBlockEntity extends BlockEntity {
         int[] d = t.getIntArray("dir");
         if (d.length == N) for (int k = 0; k < N; k++) dir[k] = d[k] / 1000F;
         enJuego = t.getBoolean("juego") && level != null && level.isClientSide;
+        actividad = t.getLong("activ");
     }
 
     @Override

@@ -43,7 +43,8 @@ public final class Coleccion {
             p.displayClientMessage(Component.translatable("msg.miscelanea.nueva_entrada").withStyle(ChatFormatting.GOLD), false);
             p.level().playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.6F, 1.4F);
         } else if (e.esPez() && cm > antes) {
-            p.displayClientMessage(Component.translatable("msg.miscelanea.record", cm).withStyle(ChatFormatting.GOLD), false);
+            p.displayClientMessage(Component.translatableWithFallback("msg.miscelanea.record_pez", "¡Nuevo récord de tamaño de %s: %s cm!", nombre, cm)
+                    .withStyle(ChatFormatting.GOLD), false);
         }
         sync(p);
         return nuevo;

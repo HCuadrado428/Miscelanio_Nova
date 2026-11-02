@@ -87,7 +87,7 @@ public class BichoEntity extends Mob {
 
     @Override
     public boolean removeWhenFarAway(double d) {
-        return true;
+        return !hasCustomName() && !isPersistenceRequired();
     }
 
     @Override
@@ -95,7 +95,8 @@ public class BichoEntity extends Mob {
         Especie e = especie();
         vida++;
         if (casa == null) casa = position();
-        if (isInWater() || vida > 20 * 60 * 4) {
+        // con nombre (etiqueta) o persistente no se va por viejo; en el agua sí se pierde
+        if (isInWater() || vida > 20 * 60 * 4 && !hasCustomName() && !isPersistenceRequired()) {
             discard();
             return;
         }

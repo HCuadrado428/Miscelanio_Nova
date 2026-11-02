@@ -82,7 +82,9 @@ public class Tesoros extends SavedData {
         if ((h & 1023) < 410) {
             int x = (cx << 4) + (int) ((h >>> 10) & 15), z = (cz << 4) + (int) ((h >>> 14) & 15);
             int prof = 1 + (int) ((h >>> 18) % 3);
-            int sup = l.getHeight(Heightmap.Types.WORLD_SURFACE, x, z) - 1;
+            // Sin hojas (árboles encima) y sin capas de nieve: si no, la "superficie" no era suelo y no salía nunca tesoro
+            int sup = l.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1;
+            while (sup > l.getMinBuildHeight() && l.getBlockState(new BlockPos(x, sup, z)).is(Blocks.SNOW)) sup--;
             BlockPos p = new BlockPos(x, sup - prof, z);
             if (suelo(l.getBlockState(p)) && suelo(l.getBlockState(new BlockPos(x, sup, z)))) {
                 int r = (int) ((h >>> 24) % 100);
@@ -95,6 +97,18 @@ public class Tesoros extends SavedData {
         datos.put(k, t);
         setDirty();
         return t.contains("x") ? t : null;
+    }
+
+    /** Solo lectura: el tesoro (sin cavar) de un chunk ya mirado por un detector, o null. No crea ni guarda nada. */
+    CompoundTag existente(int cx, int cz) {
+        String k = cx + "," + cz;
+        if (!datos.contains(k)) return null;
+        CompoundTag t = datos.getCompound(k);
+        return t.contains("x") && !t.getBoolean("cavado") ? t : null;
+    }
+
+    private static boolean llevaDetector(ServerPlayer p) {
+        return p.getMainHandItem().getItem() instanceof DetectorItem || p.getOffhandItem().getItem() instanceof DetectorItem;
     }
 
     /** Tesoro más cercano en un radio de ~1 chunk: {distancia, dx, dz} o null. */
@@ -119,7 +133,7 @@ public class Tesoros extends SavedData {
     @SubscribeEvent
     public static void tick(TickEvent.PlayerTickEvent e) {
         if (e.phase != TickEvent.Phase.END || !(e.player instanceof ServerPlayer p) || p.tickCount % 8 != 0) return;
-        if (!(p.getMainHandItem().getItem() instanceof DetectorItem) && !(p.getOffhandItem().getItem() instanceof DetectorItem)) return;
+        if (!llevaDetector(p)) return;
         // el plato va un poco por delante de los pies
         Vec3 v = p.getLookAngle();
         Vec3 plato = p.position().add(v.x * 1.2, 0, v.z * 1.2);
@@ -139,7 +153,11 @@ public class Tesoros extends SavedData {
         if (!(e.getLevel() instanceof ServerLevel l) || !(e.getPlayer() instanceof ServerPlayer p)) return;
         BlockPos pos = e.getPos();
         Tesoros ts = de(l);
-        CompoundTag t = ts.tesoro(l, pos.getX() >> 4, pos.getZ() >> 4);
+        int cx = pos.getX() >> 4, cz = pos.getZ() >> 4;
+        // Antes se llamaba a tesoro() en CADA bloque roto, creando y guardando una entrada por chunk minado.
+        // Ahora solo se lee lo que ya existe; solo se genera si el jugador lleva el detector (como al pasar con él).
+        CompoundTag t = ts.existente(cx, cz);
+        if (t == null && llevaDetector(p)) t = ts.tesoro(l, cx, cz);
         if (t == null || t.getInt("x") != pos.getX() || t.getInt("y") != pos.getY() || t.getInt("z") != pos.getZ()) return;
         t.putBoolean("cavado", true);
         ts.setDirty();

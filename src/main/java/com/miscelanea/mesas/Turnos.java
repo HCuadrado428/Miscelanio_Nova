@@ -1,0 +1,155 @@
+package com.miscelanea.mesas;
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+
+import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+/**
+ * Utilidades comunes a los juegos de mesa por turnos: saber si un jugador sigue en la mesa, jugar por él si se ha ido
+ * (o lleva demasiado sin jugar) y votar para terminar la partida antes de tiempo.
+ */
+public final class Turnos {
+    /** Ticks que puede estar ausente (desconectado o lejos) el jugador de turno antes de que se juegue por él (60 s). */
+    public static final int AUSENTE_MAX = 1200;
+    /** Ticks que puede estar sin jugar, aunque esté cerca, antes de que se juegue por él (120 s). */
+    public static final int INACTIVO_MAX = 2400;
+    /** Distancia (bloques) a partir de la que se considera que el jugador se ha ido de la mesa. */
+    public static final double RADIO = 16;
+
+    public static final String AVISO_CPU = "msg.miscelanea.turno.cpu", AVISO_VUELVE = "msg.miscelanea.turno.vuelve",
+            AVISO_VOTO = "msg.miscelanea.turno.voto_fin";
+
+    private Turnos() {}
+
+    /** El jugador está conectado, en este mundo y a menos de {@link #RADIO} bloques de la mesa. */
+    public static boolean presente(Level l, BlockPos pos, @Nullable UUID u) {
+        if (u == null || l == null) return false;
+        Player p = l.getPlayerByUUID(u);
+        return p != null && !p.isRemoved() && p.distanceToSqr(Vec3.atCenterOf(pos)) <= RADIO * RADIO;
+    }
+
+    /** Mensaje en el chat a quienes estén alrededor de la mesa. */
+    public static void avisar(Level l, BlockPos pos, String clave, Object... args) {
+        if (l == null || l.isClientSide) return;
+        for (ServerPlayer o : l.getEntitiesOfClass(ServerPlayer.class, new AABB(pos).inflate(12)))
+            o.displayClientMessage(Component.translatable(clave, args).withStyle(ChatFormatting.YELLOW), false);
+    }
+
+    /**
+     * Vigila al jugador humano de turno. Si se va (o no juega) durante demasiado tiempo queda "dormido" y la CPU juega
+     * por él hasta que vuelva (si se fue) o hasta que haga algo en la mesa (si estaba cerca sin jugar).
+     * No se guarda: tras recargar el mundo se vuelve a contar desde cero.
+     */
+    public static final class Vigia {
+        /** Dormidos: true si fue por ausencia (se despierta al volver), false si por inactividad (se despierta al jugar). */
+        private final Map<UUID, Boolean> dormidos = new HashMap<>();
+        private long clave = Long.MIN_VALUE;
+        private int espera, ausente;
+        @Nullable
+        private UUID vigilado;
+
+        /**
+         * Llamar cada tick mientras haya que esperar a un humano.
+         *
+         * @param u          jugador humano que debe actuar (null si no hay que vigilar a nadie ahora)
+         * @param claveTurno valor que cambia con cada acción (reinicia la cuenta)
+         * @return true si hay que jugar por él en este momento
+         */
+        public boolean vigilar(Level l, BlockPos pos, @Nullable UUID u, String nombre, long claveTurno) {
+            if (u == null) {
+                clave = Long.MIN_VALUE;
+                espera = ausente = 0;
+                vigilado = null;
+                return false;
+            }
+            if (!u.equals(vigilado)) {
+                vigilado = u;
+                clave = Long.MIN_VALUE;
+            }
+            boolean pres = presente(l, pos, u);
+            Boolean d = dormidos.get(u);
+            if (d != null) {
+                if (d && pres) {
+                    // ha vuelto: vuelve a jugar él
+                    dormidos.remove(u);
+                    clave = claveTurno;
+                    espera = ausente = 0;
+                    avisar(l, pos, AVISO_VUELVE, nombre);
+                    return false;
+                }
+                return true;
+            }
+            if (claveTurno != clave) {
+                clave = claveTurno;
+                espera = ausente = 0;
+            }
+            espera++;
+            ausente = pres ? 0 : ausente + 1;
+            if (ausente >= AUSENTE_MAX || espera >= INACTIVO_MAX) {
+                dormidos.put(u, ausente >= AUSENTE_MAX);
+                avisar(l, pos, AVISO_CPU, nombre);
+                return true;
+            }
+            return false;
+        }
+
+        /** El jugador ha hecho algo en la mesa: vuelve a jugar él (y si es el de turno, empieza a contar de nuevo). */
+        public void despertar(@Nullable UUID u) {
+            if (u == null) return;
+            dormidos.remove(u);
+            if (u.equals(vigilado)) espera = ausente = 0;
+        }
+
+        public boolean dormido(@Nullable UUID u) {
+            return u != null && dormidos.containsKey(u);
+        }
+
+        public void limpiar() {
+            dormidos.clear();
+            clave = Long.MIN_VALUE;
+            espera = ausente = 0;
+            vigilado = null;
+        }
+    }
+
+    /** Votación para terminar antes de tiempo: hace falta el acuerdo de todos los humanos que siguen en la mesa. */
+    public static final class Votacion {
+        private final Set<UUID> votos = new HashSet<>();
+
+        /**
+         * Registra el voto de quien pulsa "Terminar".
+         *
+         * @param humanos jugadores humanos que siguen en la partida
+         * @return cuántos humanos presentes faltan por estar de acuerdo (0: se puede terminar)
+         */
+        public int votar(Level l, BlockPos pos, UUID quien, Collection<UUID> humanos) {
+            votos.add(quien);
+            votos.retainAll(humanos);
+            int faltan = 0;
+            for (UUID u : humanos) if (!votos.contains(u) && presente(l, pos, u)) faltan++;
+            if (faltan == 0) votos.clear();
+            return faltan;
+        }
+
+        public int votos() {
+            return votos.size();
+        }
+
+        public void limpiar() {
+            votos.clear();
+        }
+    }
+}

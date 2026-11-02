@@ -62,6 +62,8 @@ public class BoleraBlock extends BaseEntityBlock {
     @Override
     public InteractionResult use(BlockState s, Level l, BlockPos pos, Player p, InteractionHand hand, BlockHitResult hit) {
         if (hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
+        // con la bola en la mano el clic es para tirar (antes reiniciaba la partida al apuntar a la bolera)
+        if (p.getMainHandItem().getItem() instanceof BolaBolosItem) return InteractionResult.PASS;
         if (!l.isClientSide && l.getBlockEntity(pos) instanceof BoleraBlockEntity be) be.nueva(p);
         return InteractionResult.sidedSuccess(l.isClientSide);
     }

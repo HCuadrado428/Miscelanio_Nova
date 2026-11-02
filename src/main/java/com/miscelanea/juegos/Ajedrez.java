@@ -128,6 +128,39 @@ public final class Ajedrez {
         return false;
     }
 
+    /** Clave de la posición para las tablas por repetición: piezas, turno, enroques y captura al paso. */
+    public int clave() {
+        return java.util.Arrays.hashCode(guardar());
+    }
+
+    /**
+     * ¿Nadie puede dar mate? Rey contra rey, rey y una pieza menor contra rey, o solo alfiles (de cualquier bando) todos en
+     * casillas del mismo color.
+     */
+    public boolean materialInsuficiente() {
+        int caballos = 0, alfiles = 0, colorAlfil = -1;
+        boolean mezcla = false;
+        for (int i = 0; i < 64; i++) {
+            int p = t[i];
+            if (p == 0) continue;
+            switch (tipo(p)) {
+                case P, R, Q -> {
+                    return false;
+                }
+                case N -> caballos++;
+                case B -> {
+                    alfiles++;
+                    int color = ((i >> 3) + (i & 7)) & 1;
+                    if (colorAlfil < 0) colorAlfil = color;
+                    else if (colorAlfil != color) mezcla = true;
+                }
+                default -> {}
+            }
+        }
+        if (caballos + alfiles <= 1) return true;
+        return caballos == 0 && !mezcla;
+    }
+
     public int rey(boolean b) {
         for (int i = 0; i < 64; i++) if (t[i] == (K | (b ? 0 : NEGRA))) return i;
         return -1;

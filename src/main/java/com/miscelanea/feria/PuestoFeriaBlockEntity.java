@@ -129,15 +129,22 @@ public class PuestoFeriaBlockEntity extends BlockEntity {
                 mejor = i;
             }
         }
+        // si la caña cae lejos del estanque no cuenta como intento
+        if (Math.hypot(donde.x - worldPosition.getX() - 0.5, donde.z - worldPosition.getZ() - 0.5) > RADIO + 0.9) return;
+        // fallar también gasta intento (antes no, y con la ficha de premio salía a cuenta jugar sin parar)
+        intentos--;
         if (mejor < 0) {
             level.playSound(null, donde.x, donde.y, donde.z, net.minecraft.sounds.SoundEvents.FISHING_BOBBER_SPLASH, SoundSource.BLOCKS, 0.5F, 1.4F);
             if (level instanceof ServerLevel sl) sl.sendParticles(ParticleTypes.SPLASH, donde.x, donde.y, donde.z, 8, 0.1, 0, 0.1, 0.1);
+            p.displayClientMessage(Component.translatable("miscelanea.patitos.quedan", intentos), true);
+            if (intentos <= 0) activo = false;
+            cambio();
             return;
         }
-        intentos--;
         pescado[mejor] = ahora;
         float r = level.random.nextFloat();
-        int premio = r < 0.01F ? 4 : r < 0.1F ? 3 : r < 0.3F ? 2 : r < 0.6F ? 1 : 0;
+        // como mucho 3 patos x 25 % de ficha = 0,75 fichas devueltas por ficha gastada: nunca sale a cuenta
+        int premio = r < 0.01F ? 4 : r < 0.08F ? 3 : r < 0.25F ? 2 : r < 0.75F ? 1 : 0;
         premioPato[mejor] = premio;
         ItemStack st = switch (premio) {
             case 4 -> ChapaItem.de(ChapaItem.ORO);

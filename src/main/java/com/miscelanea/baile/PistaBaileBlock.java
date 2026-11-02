@@ -69,6 +69,13 @@ public class PistaBaileBlock extends BaseEntityBlock {
     }
 
     @Override
+    public void onRemove(BlockState s, Level l, BlockPos pos, BlockState n, boolean mov) {
+        // al romper la pista se baja el bailarín y se avisa a los de alrededor (su música se corta en el cliente)
+        if (!s.is(n.getBlock()) && !l.isClientSide && l.getBlockEntity(pos) instanceof PistaBaileBlockEntity be && be.bailarin != null) be.salir();
+        super.onRemove(s, l, pos, n, mov);
+    }
+
+    @Override
     public InteractionResult use(BlockState s, Level l, BlockPos pos, Player p, InteractionHand hand, BlockHitResult hit) {
         if (hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
         if (l.isClientSide) return InteractionResult.SUCCESS;

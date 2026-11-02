@@ -151,6 +151,24 @@ public class ArcadeScreen extends Screen {
     }
 
     @Override
+    public void tick() {
+        super.tick();
+        // si la recreativa desaparece (rota, chunk descargado) o el jugador se aleja, se cierra la pantalla y para la música
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || mc.player == null) return;
+        // (la máquina del anfitrión con cable puede quedar lejos: solo cuenta si su chunk está cargado aquí)
+        boolean anfitrionFuera = (mc.level.isLoaded(pos) || propia.equals(pos)) && !existe(mc, pos);
+        if (anfitrionFuera || !existe(mc, propia) || mc.player.distanceToSqr(propia.getX() + 0.5, propia.getY() + 1, propia.getZ() + 0.5) > 12 * 12) {
+            pararMusica();
+            onClose();
+        }
+    }
+
+    private static boolean existe(Minecraft mc, BlockPos p) {
+        return mc.level != null && mc.level.isLoaded(p) && mc.level.getBlockEntity(p) instanceof com.miscelanea.arcade.RecreativaBlockEntity be && !be.isRemoved();
+    }
+
+    @Override
     public void removed() {
         ModNetwork.CHANNEL.sendToServer(new ArcadeAccionPacket(pos, ArcadeAccionPacket.CERRAR, "", 0));
         pararMusica();

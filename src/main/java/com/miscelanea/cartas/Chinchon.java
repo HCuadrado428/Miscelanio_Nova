@@ -87,8 +87,14 @@ public final class Chinchon {
 
     /** Qué carta descartar para quedarse con menos sueltos (a igualdad, la de más valor). {índice, sueltos tras descartar} */
     public static int[] mejorDescarte(List<Integer> mano) {
-        int mejor = 0, minimo = Integer.MAX_VALUE;
+        return mejorDescarte(mano, -1);
+    }
+
+    /** Igual, pero sin tirar la carta prohibida (la que se acaba de coger del descarte). */
+    public static int[] mejorDescarte(List<Integer> mano, int prohibida) {
+        int mejor = -1, minimo = Integer.MAX_VALUE;
         for (int i = 0; i < mano.size(); i++) {
+            if (mano.get(i) == prohibida && mano.size() > 1) continue;
             List<Integer> resto = new ArrayList<>(mano);
             resto.remove(i);
             int s = sueltos(resto);
@@ -97,6 +103,6 @@ public final class Chinchon {
                 mejor = i;
             }
         }
-        return new int[]{mejor, minimo};
+        return new int[]{Math.max(0, mejor), minimo};
     }
 }

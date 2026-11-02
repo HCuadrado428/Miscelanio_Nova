@@ -113,8 +113,11 @@ public final class Agarres {
         Agarre a = POR_AGRESOR.get(p.getUUID());
         if (a != null) {
             if (a.ejecucion >= 0) return;
-            if (a.victima.getHealth() <= a.victima.getMaxHealth() * UMBRAL_EJECUCION) iniciarEjecucion(a);
-            else soltar(a, true);
+            if (a.victima.getHealth() <= a.victima.getMaxHealth() * UMBRAL_EJECUCION) {
+                // la ejecución necesita batería para la descarga final
+                if (BateriaItem.tiene(p, COSTE_DESCARGA * 2)) iniciarEjecucion(a);
+                else fallo(p);
+            } else soltar(a, true);
             return;
         }
         if (esVictima(p) || !BateriaItem.tiene(p, COSTE_DESCARGA)) {
@@ -233,8 +236,13 @@ public final class Agarres {
                 level.playSound(null, p.x, p.y, p.z, ModSounds.CHISPAZO.get(), SoundSource.PLAYERS, 0.5F, 1.0F + a.ejecucion * 0.02F);
             }
         } else if (a.ejecucion == 30) {
+            // sin batería no hay descarga final: se cancela la ejecución y la suelta (los mobs no necesitan batería)
+            if (a.agresor instanceof Player && !BateriaItem.gastar(a.agresor, COSTE_DESCARGA * 2)) {
+                if (a.agresor instanceof Player pl) fallo(pl);
+                soltar(a, true);
+                return;
+            }
             PorraItem.marcarDescarga(a.agresor.getMainHandItem());
-            BateriaItem.gastar(a.agresor, COSTE_DESCARGA * 2);
         } else if (a.ejecucion < DURACION_EJECUCION) {
             level.sendParticles(ParticleTypes.ELECTRIC_SPARK, c.x, c.y, c.z, 12, 0.3, 0.5, 0.3, 0.3);
             if (a.ejecucion % 4 == 0) {

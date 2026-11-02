@@ -56,6 +56,8 @@ public class Partida {
         velocidad = (velocidad + 1) % 3;
     }
     public int fase = LOBBY, turno, d1 = 1, d2 = 1, dobles, sel = -1, acreedor = -1;
+    /** Lo que el jugador de turno debe a cada rival y aún no ha podido pagar (se cobra cuando salga de la deuda). */
+    public final int[] debe = new int[MAX_JUGADORES];
     public long tDados, tMover;
     public int movDesde, movPasos;
     public boolean movAtras, tiroOtraVez;
@@ -195,6 +197,7 @@ public class Partida {
             fase = GESTION;
             aterrizar(r, ahora);
             if (fase != MOVER && j.dinero < 0) fase = DEUDA;
+            else if (j.dinero >= 0) liquidar();
             return true;
         }
         return false;
@@ -264,14 +267,43 @@ public class Partida {
         tiroOtraVez = false;
     }
 
+    /**
+     * El jugador paga una cantidad al banco (a = -1) o a otro jugador. El acreedor solo cobra lo que el deudor tiene
+     * ahora; el resto queda apuntado en {@link #debe} y se cobra cuando el deudor consiga el dinero (o con lo que se
+     * liquide si quiebra). Así nunca se crea dinero de la nada.
+     */
     private void pagar(int quien, int cant, int a) {
+        if (cant <= 0) return;
         Jugador j = js.get(quien);
+        if (a >= 0) {
+            int ya = Math.max(0, Math.min(cant, j.dinero));
+            js.get(a).dinero += ya;
+            debe[a] += cant - ya;
+        }
         j.dinero -= cant;
-        if (a >= 0) js.get(a).dinero += cant;
         if (j.dinero < 0) {
             fase = DEUDA;
-            acreedor = a;
+            acreedor = principalAcreedor();
         }
+    }
+
+    /** Jugador al que más se le debe, o -1 si solo se debe al banco. */
+    private int principalAcreedor() {
+        int m = -1;
+        for (int i = 0; i < debe.length; i++) if (debe[i] > 0 && (m < 0 || debe[i] > debe[m])) m = i;
+        return m;
+    }
+
+    /** Si el deudor ya tiene dinero suficiente, paga lo que quedaba pendiente con los rivales. */
+    private void liquidar() {
+        Jugador j = actual();
+        if (j == null || j.dinero < 0) return;
+        for (int i = 0; i < debe.length; i++)
+            if (debe[i] > 0) {
+                if (i < js.size()) js.get(i).dinero += debe[i];
+                debe[i] = 0;
+            }
+        acreedor = -1;
     }
 
     // ------------------------------------------------------------------ cartas
@@ -325,13 +357,9 @@ public class Partida {
             case 7 -> j.dinero += 150;
             case 8 -> avanzarA(16, ahora);
             case 9 -> {
-                int n = 0;
+                // paga 25 a cada rival (lo que no pueda pagar queda como deuda con él)
                 for (int i = 0; i < js.size(); i++)
-                    if (i != turno && !js.get(i).fuera) {
-                        js.get(i).dinero += 25;
-                        n++;
-                    }
-                pagar(turno, n * 25, -1);
+                    if (i != turno && !js.get(i).fuera) pagar(turno, 25, i);
             }
             case 10 -> avanzarA(24, ahora);
             default -> pagar(turno, casasT * 40 + hoteles * 115, -1);
@@ -422,7 +450,10 @@ public class Partida {
     }
 
     private void salirDeuda() {
-        if (fase == DEUDA && actual().dinero >= 0) fase = GESTION;
+        if (fase == DEUDA && actual().dinero >= 0) {
+            liquidar();
+            fase = GESTION;
+        }
     }
 
     public void pagarCarcel() {
@@ -444,13 +475,33 @@ public class Partida {
     public void bancarrota() {
         if (fase != DEUDA) return;
         Jugador j = actual();
+        int a = principalAcreedor();
+        // liquidación: las casas se venden al banco a mitad de precio y con eso se paga lo que se debe a los rivales
+        int caja = 0;
         for (int i = 0; i < 40; i++)
             if (dueno[i] == turno) {
+                caja += casas[i] * Casillas.casa(i) / 2;
                 casas[i] = 0;
-                dueno[i] = acreedor;
-                if (acreedor < 0) hipo[i] = false;
             }
-        if (acreedor >= 0) js.get(acreedor).dinero += Math.max(0, j.dinero + 0);
+        while (caja > 0) {
+            int m = principalAcreedor();
+            if (m < 0) break;
+            int q = Math.min(caja, debe[m]);
+            js.get(m).dinero += q;
+            debe[m] -= q;
+            caja -= q;
+        }
+        // lo que sobre (y las propiedades) es para el acreedor principal; si solo se debía al banco, vuelve al banco
+        if (a >= 0 && caja > 0) js.get(a).dinero += caja;
+        for (int i = 0; i < 40; i++)
+            if (dueno[i] == turno) {
+                dueno[i] = a;
+                if (a < 0) hipo[i] = false;
+            }
+        if (a >= 0) js.get(a).libre += j.libre;
+        java.util.Arrays.fill(debe, 0);
+        acreedor = -1;
+        j.libre = 0;
         j.fuera = true;
         j.dinero = 0;
         anotar("quiebra|" + j.nombre);
@@ -507,7 +558,20 @@ public class Partida {
     /** Un paso de la CPU si es su turno (devuelve true si ha hecho algo). */
     public boolean cpu(Random r, long ahora) {
         Jugador j = actual();
-        if (j == null || !j.cpu() || fase == LOBBY || fase == FIN || fase == MOVER) return false;
+        if (j == null || !j.cpu()) return false;
+        return jugarPor(r, ahora);
+    }
+
+    public List<UUID> humanos() {
+        List<UUID> l = new ArrayList<>();
+        for (Jugador j : js) if (j.uuid != null && !j.fuera) l.add(j.uuid);
+        return l;
+    }
+
+    /** Un paso jugado por la CPU en nombre del jugador de turno (también si es humano y se ha ido de la mesa). */
+    public boolean jugarPor(Random r, long ahora) {
+        Jugador j = actual();
+        if (j == null || fase == LOBBY || fase == FIN || fase == MOVER) return false;
         int me = turno;
         switch (fase) {
             case TIRAR -> {
@@ -594,9 +658,18 @@ public class Partida {
         t.putString("carta", carta);
         t.putIntArray("mc", mazoCofre);
         t.putIntArray("md", mazoDestino);
+        t.putIntArray("debe", debe);
         ListTag lg = new ListTag();
         for (String s : log) lg.add(StringTag.valueOf(s));
         t.put("log", lg);
+        return t;
+    }
+
+    /** Lo que se manda a los clientes: todo menos el orden de los mazos de cartas. */
+    public CompoundTag guardarPublico() {
+        CompoundTag t = guardar();
+        t.remove("mc");
+        t.remove("md");
         return t;
     }
 
@@ -652,6 +725,8 @@ public class Partida {
         if (a.length == 12) System.arraycopy(a, 0, p.mazoCofre, 0, 12);
         a = t.getIntArray("md");
         if (a.length == 12) System.arraycopy(a, 0, p.mazoDestino, 0, 12);
+        a = t.getIntArray("debe");
+        if (a.length == MAX_JUGADORES) System.arraycopy(a, 0, p.debe, 0, MAX_JUGADORES);
         ListTag lg = t.getList("log", Tag.TAG_STRING);
         for (int i = 0; i < lg.size(); i++) p.log.add(lg.getString(i));
         return p;

@@ -73,8 +73,23 @@ public class CuatroBlockEntity extends BlockEntity {
         if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
     }
 
+    /** Ticks sin jugadas tras los que cualquiera puede reiniciar una partida ajena (60 s). */
+    public static final int INACTIVO = 1200;
+
+    /** Solo los participantes pueden reiniciar; los demás, si no hay partida o lleva un rato parada. */
+    public boolean puedeReiniciar(net.minecraft.world.entity.player.Player p) {
+        if (rojo == null) return true;
+        UUID u = p.getUUID();
+        if (u.equals(rojo) || u.equals(amarillo)) return true;
+        return level != null && level.getGameTime() - ultT >= INACTIVO;
+    }
+
     public void clic(ServerPlayer p, int col) {
         if (resultado != 0) {
+            if (!puedeReiniciar(p)) {
+                p.displayClientMessage(Component.translatable("msg.miscelanea.tablero.ocupado").withStyle(ChatFormatting.GRAY), true);
+                return;
+            }
             int m = modo;
             reiniciar(m);
             p.displayClientMessage(Component.translatable("msg.miscelanea.tablero.nueva"), true);
@@ -143,6 +158,9 @@ public class CuatroBlockEntity extends BlockEntity {
             be.soltar(c);
             return;
         }
+        // cpuEn y pensando no se guardan: si tras recargar le toca a la CPU, se reprograma
+        if (be.cpuEn == 0 && be.contraCpu() && be.j.turno == 2 && be.resultado == 0 && be.rojo != null)
+            be.cpuEn = l.getGameTime() + 14;
         if (be.cpuEn > 0 && l.getGameTime() >= be.cpuEn && be.resultado == 0 && be.j.turno == 2 && be.contraCpu()) {
             be.cpuEn = 0;
             Cuatro copia = new Cuatro();

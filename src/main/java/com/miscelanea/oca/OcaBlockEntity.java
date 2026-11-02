@@ -27,6 +27,9 @@ public class OcaBlockEntity extends BlockEntity {
     public OcaPartida p = new OcaPartida();
     private final Random rnd = new Random();
     private int esperaCpu;
+    /** Juega por quien se va de la mesa o no juega; votos para terminar antes de tiempo (no se guardan). */
+    private final com.miscelanea.mesas.Turnos.Vigia vigia = new com.miscelanea.mesas.Turnos.Vigia();
+    private final com.miscelanea.mesas.Turnos.Votacion votos = new com.miscelanea.mesas.Turnos.Votacion();
 
     public OcaBlockEntity(BlockPos pos, BlockState s) {
         super(ModBlocks.OCA_BE.get(), pos, s);
@@ -64,6 +67,7 @@ public class OcaBlockEntity extends BlockEntity {
         long ahora = level.getGameTime();
         int yo = indice(pl);
         boolean miTurno = yo >= 0 && yo == p.turno && p.fase == OcaPartida.TIRAR;
+        if (yo >= 0) vigia.despertar(pl.getUUID());
         OcaBotones.Boton b = OcaBotones.en(p, tx, ty);
         if (b == null) {
             if (miTurno) {
@@ -84,14 +88,22 @@ public class OcaBlockEntity extends BlockEntity {
                 int v = p.velocidad;
                 p = new OcaPartida();
                 p.velocidad = v;
+                vigia.limpiar();
+                votos.limpiar();
             }
             case OcaBotones.VELOCIDAD -> {
                 if (yo >= 0 || p.fase == OcaPartida.LOBBY) p.cambiarVelocidad();
                 else hecho = false;
             }
             case OcaBotones.TERMINAR -> {
-                if (yo >= 0) p.terminar();
-                else hecho = false;
+                // hace falta que estén de acuerdo todos los humanos que siguen en la mesa
+                if (yo < 0) hecho = false;
+                else {
+                    int faltan = votos.votar(level, worldPosition, pl.getUUID(), p.humanos());
+                    if (faltan == 0) p.terminar();
+                    else com.miscelanea.mesas.Turnos.avisar(level, worldPosition, com.miscelanea.mesas.Turnos.AVISO_VOTO,
+                            pl.getGameProfile().getName(), faltan);
+                }
             }
             default -> hecho = false;
         }
@@ -104,10 +116,14 @@ public class OcaBlockEntity extends BlockEntity {
         long ahora = l.getGameTime();
         int antes = p.fase;
         boolean cambio = p.tick(ahora);
-        if (p.fase == OcaPartida.TIRAR && p.actual().cpu()) {
+        OcaPartida.Jugador a = p.fase == OcaPartida.TIRAR ? p.actual() : null;
+        // si el humano de turno se ha ido (o no juega) se tira por él
+        boolean porEl = a != null && !a.cpu() && be.vigia.vigilar(l, pos, a.uuid, a.nombre, p.tDado * 8 + p.turno);
+        if (a == null || a.cpu()) be.vigia.vigilar(l, pos, null, "", 0);
+        if (a != null && (a.cpu() || porEl)) {
             if (++be.esperaCpu >= p.esperaCpu()) {
                 be.esperaCpu = 0;
-                if (p.cpu(be.rnd, ahora)) {
+                if (p.jugarPor(be.rnd, ahora)) {
                     cambio = true;
                     be.sonar(SoundEvents.BONE_BLOCK_HIT, 0.8F, 1.5F);
                 }

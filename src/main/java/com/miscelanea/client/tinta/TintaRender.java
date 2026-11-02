@@ -61,6 +61,8 @@ public final class TintaRender {
             if (Math.abs(cp.x - cc.x) > dist || Math.abs(cp.z - cc.z) > dist) continue;
             for (Map.Entry<Long, Tinta.Mancha> eb : ech.getValue().entrySet()) {
                 BlockPos p = BlockPos.of(eb.getKey());
+                // bloque roto (el servidor ya manda borrar la tinta, pero que no se vea flotando mientras llega)
+                if (mc.level.getBlockState(p).isAir()) continue;
                 Tinta.Mancha mancha = eb.getValue();
                 for (int i = 0; i < 6; i++) {
                     int col = mancha.color[i];

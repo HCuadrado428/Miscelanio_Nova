@@ -19,6 +19,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -29,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Todo lo que se guarda en la mochila: los mobs capturados (máx. 3) y el tanque de pociones.
@@ -62,6 +65,19 @@ public final class Deposito {
         return e instanceof LivingEntity && !(e instanceof Player) && e.getType().is(CAPTURABLE);
     }
 
+    /**
+     * Igual que {@link #esCapturable(Entity)} pero además no deja meter en la mochila
+     * las mascotas/monturas de OTRO jugador (lobos, gatos, caballos domados...). Las propias sí.
+     */
+    public static boolean esCapturable(Entity e, Player player) {
+        if (!esCapturable(e)) return false;
+        if (e instanceof OwnableEntity ownable) {
+            UUID dueno = ownable.getOwnerUUID();
+            if (dueno != null && !dueno.equals(player.getUUID())) return false;
+        }
+        return true;
+    }
+
     public static int numCapturados(ItemStack mochila) {
         return mochila.hasTag() ? mochila.getTag().getList(CAPTURADOS, Tag.TAG_COMPOUND).size() : 0;
     }
@@ -73,7 +89,10 @@ public final class Deposito {
     /** Guarda el mob en la mochila y lo quita del mundo. */
     public static boolean capturar(Player player, LivingEntity mob) {
         ItemStack mochila = mochila(player);
-        if (mochila.isEmpty() || lleno(mochila) || !esCapturable(mob)) return false;
+        if (mochila.isEmpty() || lleno(mochila) || !esCapturable(mob, player)) return false;
+
+        // Si iba atado con una correa, la correa se cae al suelo (si no, se perdía)
+        if (mob instanceof Mob m && m.isLeashed()) m.dropLeash(true, true);
 
         CompoundTag data = new CompoundTag();
         mob.saveWithoutId(data);

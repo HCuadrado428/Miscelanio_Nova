@@ -50,7 +50,9 @@ public class CasetaTiroBlock extends BaseEntityBlock {
     @Override
     public InteractionResult use(BlockState s, Level l, BlockPos pos, Player p, InteractionHand hand, BlockHitResult hit) {
         if (hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
-        if (!l.isClientSide && l.getBlockEntity(pos) instanceof CasetaTiroBlockEntity be) be.empezar(p);
+        // con la escopeta en la mano el clic es para disparar, no para volver a empezar
+        if (p.getMainHandItem().is(com.miscelanea.registry.ModItems.ESCOPETA_CORCHO.get())) return InteractionResult.PASS;
+        if (!l.isClientSide && l.getBlockEntity(pos) instanceof CasetaTiroBlockEntity be) be.empezar(p, p.getItemInHand(hand));
         return InteractionResult.sidedSuccess(l.isClientSide);
     }
 

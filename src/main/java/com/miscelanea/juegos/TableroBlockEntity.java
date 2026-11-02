@@ -46,6 +46,12 @@ public class TableroBlockEntity extends BlockEntity {
     public int resultado;
     public int sinCapturas;
     private long cpuEn;
+    /** Ajedrez: claves de las posiciones desde la última captura (tablas por triple repetición). */
+    private final java.util.List<Integer> repeticiones = new java.util.ArrayList<>();
+    /** Servidor: último tic en que uno de los jugadores hizo algo (para dejar reiniciar a otros si abandonan). */
+    private long actividad;
+    /** Tras un minuto sin que los jugadores toquen nada, cualquiera puede cambiar o reiniciar la partida. */
+    public static final int ABANDONO_TICS = 20 * 60;
     private final Random rnd = new Random();
 
     public TableroBlockEntity(BlockPos p, BlockState s) {
@@ -188,7 +194,20 @@ public class TableroBlockEntity extends BlockEntity {
         resultado = 0;
         sinCapturas = 0;
         cpuEn = 0;
+        repeticiones.clear();
+        if (ajedrez()) repeticiones.add(partidaAjedrez().clave());
         cambiado();
+    }
+
+    /**
+     * ¿Puede este jugador reiniciar o cambiar de juego? Sí si la partida terminó, si nadie ha empezado a jugar, si es uno de
+     * los jugadores, o si los jugadores llevan un minuto sin tocar nada (partida abandonada).
+     */
+    public boolean puedeReiniciar(ServerPlayer p) {
+        if (resultado != 0 || blancas == null) return true;
+        UUID u = p.getUUID();
+        if (u.equals(blancas) || u.equals(negras)) return true;
+        return level == null || level.getGameTime() - Math.max(actividad, ultT) > ABANDONO_TICS;
     }
 
     public void cambiado() {
@@ -215,6 +234,7 @@ public class TableroBlockEntity extends BlockEntity {
         }
         boolean tb = turnoBlancas();
         boolean suyo = tb ? u.equals(blancas) : (!contraCpu() && u.equals(negras));
+        if (u.equals(blancas) || u.equals(negras)) actividad = level.getGameTime();
         if (!suyo) {
             p.displayClientMessage(Component.translatable(u.equals(blancas) || u.equals(negras) ? "msg.miscelanea.tablero.no_turno" : "msg.miscelanea.tablero.ocupado")
                     .withStyle(ChatFormatting.GRAY), true);
@@ -265,6 +285,9 @@ public class TableroBlockEntity extends BlockEntity {
             if (m < 0) return;
             captura = aj.hacer(m);
             estado = aj.guardar();
+            // una captura no tiene vuelta atrás: las posiciones de antes ya no se pueden repetir
+            if (captura != 0) repeticiones.clear();
+            if (repeticiones.size() < 400) repeticiones.add(aj.clave());
         } else if (reversi()) {
             Reversi r = partidaReversi();
             if (!r.legales().contains(de | (a << 6))) return;
@@ -320,8 +343,16 @@ public class TableroBlockEntity extends BlockEntity {
             sinMov = aj.legales().isEmpty();
             jaque = aj.enJaque(tb);
             if (!sinMov && jaque) level.playSound(null, worldPosition, SoundEvents.NOTE_BLOCK_BELL.get(), SoundSource.BLOCKS, 0.7F, 1.2F);
+            // tablas por triple repetición de la posición o porque a nadie le queda material para dar mate
+            if (!sinMov) {
+                int clave = aj.clave(), veces = 0;
+                for (int k : repeticiones) if (k == clave) veces++;
+                if (veces >= 3 || aj.materialInsuficiente()) resultado = 3;
+            }
         } else sinMov = partidaDamas().legales().isEmpty();
-        if (sinMov) resultado = (ajedrez() && !jaque) ? 3 : (tb ? 2 : 1);
+        if (resultado != 0) {
+            // ya decidido (tablas del ajedrez)
+        } else if (sinMov) resultado = (ajedrez() && !jaque) ? 3 : (tb ? 2 : 1);
         else if (!reversi() && sinCapturas >= (ajedrez() ? 100 : 50)) resultado = 3;
         if (resultado != 0) {
             level.playSound(null, worldPosition, resultado == 3 ? SoundEvents.NOTE_BLOCK_CHIME.get() : SoundEvents.PLAYER_LEVELUP, SoundSource.BLOCKS, 0.9F, 1.0F);
@@ -411,6 +442,7 @@ public class TableroBlockEntity extends BlockEntity {
         t.putLong("ut", ultT);
         t.putInt("res", resultado);
         t.putInt("sc", sinCapturas);
+        t.putIntArray("rep", repeticiones.stream().mapToInt(Integer::intValue).toArray());
     }
 
     @Override
@@ -428,6 +460,8 @@ public class TableroBlockEntity extends BlockEntity {
         ultT = t.getLong("ut");
         resultado = t.getInt("res");
         sinCapturas = t.getInt("sc");
+        repeticiones.clear();
+        for (int k : t.getIntArray("rep")) repeticiones.add(k);
     }
 
     @Override

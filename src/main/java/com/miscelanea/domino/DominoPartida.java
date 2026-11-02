@@ -39,7 +39,7 @@ public class DominoPartida {
 
         public int puntos() {
             int s = 0;
-            for (int f : mano) s += A[f] + B[f];
+            for (int f : mano) if (f >= 0) s += A[f] + B[f];
             return s;
         }
     }
@@ -78,6 +78,7 @@ public class DominoPartida {
     }
 
     public boolean encaja(int f, int lado) {
+        if (f < 0 || f >= 28) return false;   // ficha oculta (en el cliente)
         int e = extremo(lado);
         return e >= 0 && (A[f] == e || B[f] == e);
     }
@@ -216,12 +217,24 @@ public class DominoPartida {
         if (puedeJugar(j) || !pozo.isEmpty()) return false;
         anotar("pasa|" + j.nombre);
         if (++pasadas >= js.size()) {
-            // cierre: gana quien menos puntos tenga
+            // cierre: gana quien menos puntos tenga; si empatan los que menos tienen, la partida queda en tablas
             int mejor = 0;
-            for (int i = 1; i < js.size(); i++) if (js.get(i).puntos() < js.get(mejor).puntos()) mejor = i;
-            ganador = mejor;
+            boolean empate = false;
+            for (int i = 1; i < js.size(); i++) {
+                int pi = js.get(i).puntos(), pm = js.get(mejor).puntos();
+                if (pi < pm) {
+                    mejor = i;
+                    empate = false;
+                } else if (pi == pm) empate = true;
+            }
             fase = FIN;
-            anotar("cierre|" + js.get(mejor).nombre);
+            if (empate) {
+                ganador = -1;
+                anotar("empate|" + js.get(mejor).puntos());
+            } else {
+                ganador = mejor;
+                anotar("cierre|" + js.get(mejor).nombre);
+            }
             return true;
         }
         siguiente();
@@ -231,6 +244,12 @@ public class DominoPartida {
     private void siguiente() {
         turno = (turno + 1) % js.size();
         sel = -1;
+    }
+
+    public List<UUID> humanos() {
+        List<UUID> l = new ArrayList<>();
+        for (Jugador j : js) if (j.uuid != null) l.add(j.uuid);
+        return l;
     }
 
     public void terminar() {
@@ -285,6 +304,49 @@ public class DominoPartida {
         for (String s : log) lg.add(StringTag.valueOf(s));
         t.put("log", lg);
         return t;
+    }
+
+    /**
+     * Lo que pueden ver todos: las manos ajenas y el pozo van como fichas ocultas (-1), solo se cuenta cuántas hay.
+     * Al acabar la partida se enseñan todas las manos.
+     */
+    public CompoundTag guardarPublico() {
+        CompoundTag t = guardar();
+        ListTag l = t.getList("js", Tag.TAG_COMPOUND);
+        if (fase != FIN) for (int i = 0; i < l.size(); i++) l.getCompound(i).putIntArray("m", ocultas(js.get(i).mano.size()));
+        t.putIntArray("pozo", ocultas(pozo.size()));
+        t.putIntArray("e", new int[]{centro, fase, turno, ganador, pasadas, -1, ultLado});
+        return t;
+    }
+
+    private static int[] ocultas(int n) {
+        int[] o = new int[n];
+        java.util.Arrays.fill(o, -1);
+        return o;
+    }
+
+    /** Lo que solo ve el jugador i: su mano y la ficha que tiene elegida. */
+    public CompoundTag privado(int i) {
+        CompoundTag t = new CompoundTag();
+        Jugador j = js.get(i);
+        if (j.uuid != null) t.putUUID("u", j.uuid);
+        t.putInt("i", i);
+        t.putIntArray("m", j.mano.stream().mapToInt(Integer::intValue).toArray());
+        t.putInt("sel", turno == i ? sel : -1);
+        return t;
+    }
+
+    /** En el cliente: pone la mano propia recibida aparte (si sigue correspondiendo a esta partida). */
+    public void aplicarPrivado(CompoundTag t) {
+        int i = t.getInt("i");
+        if (i < 0 || i >= js.size() || !t.hasUUID("u")) return;
+        Jugador j = js.get(i);
+        if (j.uuid == null || !j.uuid.equals(t.getUUID("u"))) return;
+        int[] m = t.getIntArray("m");
+        if (m.length != j.mano.size()) return;
+        j.mano.clear();
+        for (int f : m) j.mano.add(f);
+        if (turno == i && fase == JUGAR) sel = t.getInt("sel");
     }
 
     private static int[] piezas(List<Pieza> l) {

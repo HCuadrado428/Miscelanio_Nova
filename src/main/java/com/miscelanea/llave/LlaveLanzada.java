@@ -97,7 +97,11 @@ public class LlaveLanzada extends Projectile implements GeoEntity {
         setDeltaMovement(v);
         // golpea a todo lo que pilla en el camino (una vez a la ida y otra a la vuelta)
         for (Entity e : level().getEntities(this, getBoundingBox().expandTowards(v).inflate(0.6))) {
-            if (!(e instanceof LivingEntity le) || e == p || !le.isAlive() || !golpeados.add(e.getId())) continue;
+            if (!(e instanceof LivingEntity le) || e == p || !le.isAlive() || golpeados.contains(e.getId())) continue;
+            // a la vuelta atraviesa paredes como un bumeran, pero solo hiere lo que tiene a la vista
+            Vec3 centro = le.position().add(0, le.getBbHeight() * 0.5, 0);
+            if (level().clip(new ClipContext(position(), centro, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getType() != HitResult.Type.MISS) continue;
+            golpeados.add(e.getId());
             le.invulnerableTime = 0;
             if (le.hurt(damageSources().playerAttack(p), 6.0F)) {
                 le.knockback(0.4, -v.x, -v.z);

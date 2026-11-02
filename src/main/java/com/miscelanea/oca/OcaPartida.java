@@ -151,8 +151,17 @@ public class OcaPartida {
         saltoDesde = saltoA = -1;
         casillaEspecial = tipo(p);
         int salto = -1;
+        boolean rebote = desde + dado > META;
         switch (casillaEspecial) {
             case "oca" -> {
+                if (rebote) {
+                    // rebotando desde el jardín, la oca manda hacia atrás a la oca anterior (y se vuelve a tirar)
+                    salto = OCAS[0];
+                    for (int o : OCAS) if (o < p) salto = o;
+                    otraVez = true;
+                    anotar("oca_atras|" + j.nombre);
+                    break;
+                }
                 salto = META;
                 for (int o : OCAS) if (o > p) {
                     salto = o;
@@ -197,7 +206,7 @@ public class OcaPartida {
             }
             case "jardin" -> anotar("gana|" + j.nombre);
             default -> {
-                if (desde + dado > META) anotar("rebota|" + j.nombre);
+                if (rebote) anotar("rebota|" + j.nombre);
             }
         }
         if (salto == META) anotar("gana|" + j.nombre);
@@ -245,6 +254,19 @@ public class OcaPartida {
         fase = FIN;
         ganador = -1;
         anotar("terminada");
+    }
+
+    /** Tira por el jugador de turno aunque sea humano (cuando se ha ido de la mesa). */
+    public boolean jugarPor(Random r, long ahora) {
+        if (fase != TIRAR) return false;
+        tirar(r, ahora);
+        return true;
+    }
+
+    public List<UUID> humanos() {
+        List<UUID> l = new ArrayList<>();
+        for (Jugador j : js) if (j.uuid != null) l.add(j.uuid);
+        return l;
     }
 
     public boolean cpu(Random r, long ahora) {

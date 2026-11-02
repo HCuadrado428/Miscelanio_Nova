@@ -148,7 +148,7 @@ public final class Succion {
                 AspiraUtil.empujar(orb, haciaBoca.scale(0.45));
                 if (dist < 1.6) orb.playerTouch(player);
             } else if (e instanceof LivingEntity le && !(e instanceof ArmorStand)) {
-                if (Deposito.esCapturable(le) && dist < DIST_AGARRE && !Deposito.lleno(Deposito.mochila(player))) {
+                if (Deposito.esCapturable(le, player) && dist < DIST_AGARRE && !Deposito.lleno(Deposito.mochila(player))) {
                     CAPTURAS.put(player.getUUID(), new Captura(le, player.getYRot()));
                     level.playSound(null, le.getX(), le.getY(), le.getZ(),
                             SoundEvents.FISHING_BOBBER_RETRIEVE, SoundSource.PLAYERS, 1.0F, 0.7F);
@@ -376,6 +376,7 @@ public final class Succion {
     @SubscribeEvent
     public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         CAPTURAS.remove(event.getEntity().getUUID());
+        CAMARA.remove(event.getEntity().getUUID());
         DesatascadorEntity d = DESATASCADORES.remove(event.getEntity().getUUID());
         if (d != null) d.discard();
     }

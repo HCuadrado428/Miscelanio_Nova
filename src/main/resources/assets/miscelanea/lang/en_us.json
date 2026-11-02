@@ -1293,5 +1293,17 @@
   "item.miscelanea.mazo_wemmbu.ajeno": "This mace belongs to %s: it won't obey you",
   "item.miscelanea.mazo_wemmbu.vuelve": "Gambit flies back to %s",
   "item.miscelanea.mazo_wemmbu.dueno": "Owner: %s",
-  "entity.miscelanea.onda": "Shockwave"
+  "entity.miscelanea.onda": "Shockwave",
+  "msg.miscelanea.tablero.no_reiniciar": "Only the players can change this game",
+  "msg.miscelanea.record_pez": "New size record for %s: %s cm!",
+  "miscelanea.fogon.espera": "You can add something else: cooking starts in %s s",
+  "msg.miscelanea.turno.cpu": "%s is away or idle: the CPU plays for them",
+  "msg.miscelanea.turno.vuelve": "%s is back and takes over again",
+  "msg.miscelanea.turno.voto_fin": "%s wants to end the game: %s more players must press \"End\"",
+  "parchis.miscelanea.boton.salir": "Leave",
+  "parchis.miscelanea.log.sale": "%s leaves the game",
+  "oca.miscelanea.log.oca_atras": "%s bounces onto a goose: back to the previous goose and roll again!",
+  "domino.miscelanea.log.empate": "Blocked game: tied at %s points, it's a draw!",
+  "msg.miscelanea.domino.empate": "Blocked game tied on points: it's a draw",
+  "miscelanea.chinchon.no_misma": "You can't discard the card you just took from the discard pile"
 }

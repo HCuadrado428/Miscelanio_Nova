@@ -32,7 +32,7 @@ import org.joml.Quaternionf;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Cadena de fichas sobre el tapete, manos de pie (cada uno ve las suyas), pozo boca abajo, huecos donde encajar y paneles. */
+/** Cadena de fichas sobre el tapete, mano propia de pie y las ajenas boca abajo, pozo boca abajo, huecos donde encajar y paneles. */
 public class DominoRenderer implements BlockEntityRenderer<DominoBlockEntity> {
     /** Las marcas planas se apilan con un desplazamiento mínimo para que no parpadeen al pisarse. */
     private int capa;
@@ -130,9 +130,16 @@ public class DominoRenderer implements BlockEntityRenderer<DominoBlockEntity> {
             double[] fuera = DominoGeo.haciaFuera(j.asiento);
             float theta = (float) Math.atan2(fuera[1], -fuera[0]);
             int apunta = miro && i == yo ? DominoGeo.manoEn(j, DominoCliente.tx, DominoCliente.ty) : -1;
+            // solo se ven de cara las fichas propias (las ajenas ni siquiera llegan al cliente hasta el final)
+            boolean descubiertas = i == yo || p.fase == DominoPartida.FIN;
             for (int k = 0; k < j.mano.size(); k++) {
                 int fi = j.mano.get(k);
                 double[] q = DominoGeo.mano(j, k);
+                if (fi < 0 || !descubiertas) {
+                    // boca abajo, tumbada a lo largo hacia su dueño
+                    tumbada(mr, mm, solido, ps, be, giro, 0, q[0], q[1], 0, Math.atan2(fuera[1], fuera[0]), true, luz);
+                    continue;
+                }
                 double alto = 0;
                 boolean jugable = miTurno && i == yo && p.jugable(fi);
                 if (jugable) alto = 0.012 + (fi == p.sel ? 0.03 + 0.008 * Mth.sin(t * 0.3F) : 0);
@@ -152,7 +159,7 @@ public class DominoRenderer implements BlockEntityRenderer<DominoBlockEntity> {
                 ps.popPose();
                 if (jugable) rect(marca, ps, be, q[0], q[1], i % 2 == 0 ? 14 : 14, 14, fi == p.sel ? 0x50FF70 : 0xFFFFFF, fi == p.sel ? 0.6F : 0.25F);
             }
-            if (apunta >= 0) {
+            if (apunta >= 0 && j.mano.get(apunta) >= 0) {
                 int fi = j.mano.get(apunta);
                 boolean iz = p.encaja(fi, -1), de = p.encaja(fi, 1);
                 String txt = "[" + DominoPartida.A[fi] + "|" + DominoPartida.B[fi] + "] " + I18n.get(!miTurno ? "domino.miscelanea.ver.espera"
@@ -166,7 +173,8 @@ public class DominoRenderer implements BlockEntityRenderer<DominoBlockEntity> {
         int n = p.pozo.size();
         for (int k = 0; k < n; k++) {
             int col = k % 2, piso = k / 2 % 7, capa = k / 14;
-            tumbada(mr, mm, solido, ps, be, giro, p.pozo.get(k), DominoGeo.POZO_X - 9 + col * 18, DominoGeo.POZO_Y - 24 + piso * 8, capa * 0.022,
+            // boca abajo: el cliente no sabe qué fichas son
+            tumbada(mr, mm, solido, ps, be, giro, Math.max(0, p.pozo.get(k)), DominoGeo.POZO_X - 9 + col * 18, DominoGeo.POZO_Y - 24 + piso * 8, capa * 0.022,
                     Math.PI / 2, true, luz);
         }
         if (n > 0 && miro && Math.hypot(DominoCliente.tx - DominoGeo.POZO_X, DominoCliente.ty - DominoGeo.POZO_Y) < 34)

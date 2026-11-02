@@ -48,6 +48,10 @@ public class MesaCartasBlockEntity extends BlockEntity {
     public final List<Integer> descarte = new ArrayList<>();
     public final int[] acumulado = new int[2], ultSueltos = {-1, -1};
     public boolean chinchon;
+    /** Chinchón: carta que se acaba de coger del descarte (no se puede volver a tirar en el mismo turno), o -1. */
+    public int robadaDescarte = -1;
+    /** Juega por quien se va de la mesa o no juega (no se guarda). */
+    private final com.miscelanea.mesas.Turnos.Vigia vigia = new com.miscelanea.mesas.Turnos.Vigia();
 
     public MesaCartasBlockEntity(BlockPos p, BlockState s) {
         super(com.miscelanea.registry.ModBlocks.MESA_CARTAS_BE.get(), p, s);
@@ -97,13 +101,25 @@ public class MesaCartasBlockEntity extends BlockEntity {
         int a = asiento(p);
         if (a < 0 || estado == JUGANDO) return;
         int otro = 1 - a;
-        if (jugador[otro] == null || estado == FIN) {
-            jugador[otro] = null;
-            cpu[otro] = true;
-            nombre[otro] = Component.translatable("miscelanea.cartas.maquina").getString();
+        // la máquina solo ocupa un asiento vacío (o el de alguien que se ha ido); nunca echa a un rival que sigue ahí
+        if (jugador[otro] != null && com.miscelanea.mesas.Turnos.presente(level, worldPosition, jugador[otro])) {
+            p.displayClientMessage(Component.translatable("miscelanea.cartas.llena"), true);
+            return;
         }
+        jugador[otro] = null;
+        cpu[otro] = true;
+        nombre[otro] = Component.translatable("miscelanea.cartas.maquina").getString();
         empezar();
         cambio();
+    }
+
+    /** Posición en la mano del asiento a de la carta indicada (el cliente manda la carta, no la posición), o -1. */
+    int indiceCarta(int a, int carta) {
+        return a < 0 ? -1 : mano[a].indexOf(carta);
+    }
+
+    void despertar(ServerPlayer p) {
+        vigia.despertar(p.getUUID());
     }
 
     void nueva(ServerPlayer p) {
@@ -174,15 +190,20 @@ public class MesaCartasBlockEntity extends BlockEntity {
     public static void tick(Level l, BlockPos pos, BlockState s, MesaCartasBlockEntity be) {
         if (be.estado != JUGANDO) return;
         long ahora = l.getGameTime();
+        // si el humano de turno se ha ido (o no juega) la máquina juega por él
+        int tt = be.turno;
+        boolean espera = !be.cpu[tt] && be.jugador[tt] != null && (be.juego == CHINCHON ? be.fase != FIN_RONDA : be.resolver < 0);
+        boolean porEl = espera && be.vigia.vigilar(l, pos, be.jugador[tt], be.nombre[tt], be.cpuDesde);
+        if (!espera) be.vigia.vigilar(l, pos, null, "", 0);
         if (be.juego == CHINCHON) {
-            be.tickChinchon(ahora);
+            be.tickChinchon(ahora, porEl);
             return;
         }
         if (be.resolver >= 0) {
             if (ahora - be.resolver >= PAUSA_BAZA) be.resolverBaza();
             return;
         }
-        if (be.cpu[be.turno] && ahora - be.cpuDesde >= PAUSA_CPU) {
+        if ((be.cpu[be.turno] || porEl) && ahora - be.cpuDesde >= PAUSA_CPU) {
             int t = be.turno;
             be.echar(t, Baraja.elegirCpu(be.mano[t], be.mesa[1 - t], Baraja.palo(be.triunfo)));
         }
@@ -214,6 +235,7 @@ public class MesaCartasBlockEntity extends BlockEntity {
         descarte.add(mazo.remove(0));
         turno = salida;
         fase = ROBAR;
+        robadaDescarte = -1;
         chinchon = false;
         estado = JUGANDO;
         resolver = -1;
@@ -239,6 +261,7 @@ public class MesaCartasBlockEntity extends BlockEntity {
         }
         mano[a].add(c);
         ordenar(mano[a]);
+        robadaDescarte = deDescarte ? c : -1;
         fase = DESCARTAR;
         cpuDesde = level.getGameTime();
         level.playSound(null, worldPosition, ModSounds.CA_CARTA.get(), SoundSource.BLOCKS, 0.8F, 1.2F);
@@ -247,6 +270,12 @@ public class MesaCartasBlockEntity extends BlockEntity {
 
     void descartar(int a, int idx, boolean cerrar) {
         if (juego != CHINCHON || estado != JUGANDO || turno != a || fase != DESCARTAR || idx < 0 || idx >= mano[a].size()) return;
+        if (mano[a].get(idx) == robadaDescarte) {
+            // la carta cogida del descarte no se puede tirar en el mismo turno
+            if (jugador[a] != null && level.getPlayerByUUID(jugador[a]) != null)
+                level.getPlayerByUUID(jugador[a]).displayClientMessage(Component.translatable("miscelanea.chinchon.no_misma"), true);
+            return;
+        }
         int c = mano[a].remove(idx);
         if (cerrar) {
             int s = Chinchon.sueltos(mano[a]);
@@ -260,10 +289,12 @@ public class MesaCartasBlockEntity extends BlockEntity {
                 return;
             }
             descarte.add(c);
+            robadaDescarte = -1;
             finRonda(a, s, chin);
             return;
         }
         descarte.add(c);
+        robadaDescarte = -1;
         turno = 1 - a;
         fase = ROBAR;
         cpuDesde = level.getGameTime();
@@ -295,7 +326,7 @@ public class MesaCartasBlockEntity extends BlockEntity {
         cambio();
     }
 
-    private void tickChinchon(long ahora) {
+    private void tickChinchon(long ahora, boolean porEl) {
         if (fase == FIN_RONDA) {
             if (ahora - resolver < 80) return;
             if (acumulado[0] > LIMITE || acumulado[1] > LIMITE) {
@@ -312,7 +343,7 @@ public class MesaCartasBlockEntity extends BlockEntity {
             return;
         }
         int t = turno;
-        if (!cpu[t] || ahora - cpuDesde < PAUSA_CPU) return;
+        if (!(cpu[t] || porEl) || ahora - cpuDesde < PAUSA_CPU) return;
         if (fase == ROBAR) {
             boolean coger = false;
             if (!descarte.isEmpty()) {
@@ -322,7 +353,7 @@ public class MesaCartasBlockEntity extends BlockEntity {
             }
             robar(t, coger);
         } else {
-            int[] md = Chinchon.mejorDescarte(mano[t]);
+            int[] md = Chinchon.mejorDescarte(mano[t], robadaDescarte);
             List<Integer> resto = new ArrayList<>(mano[t]);
             resto.remove(md[0]);
             boolean cierra = Chinchon.esChinchon(resto) || md[1] <= 1 || (md[1] <= 3 && level.random.nextInt(3) == 0);
@@ -411,6 +442,7 @@ public class MesaCartasBlockEntity extends BlockEntity {
         }
         t.putIntArray("baraja", mazo.stream().mapToInt(Integer::intValue).toArray());
         t.putIntArray("pila", descarte.stream().mapToInt(Integer::intValue).toArray());
+        t.putInt("robDesc", robadaDescarte);
     }
 
     @Override
@@ -442,6 +474,7 @@ public class MesaCartasBlockEntity extends BlockEntity {
         descarteTop = t.contains("desc") ? t.getInt("desc") : -1;
         int[] ac = t.getIntArray("acum");
         if (ac.length == 2) System.arraycopy(ac, 0, acumulado, 0, 2);
+        robadaDescarte = t.contains("robDesc") ? t.getInt("robDesc") : -1;
         if (t.contains("pila")) {
             descarte.clear();
             for (int c : t.getIntArray("pila")) descarte.add(c);

@@ -102,7 +102,8 @@ public class FlotaPartida {
     }
 
     public boolean hundido(Jugador j, int i) {
-        for (int c : celdas(j.barcos[i], TAM[i])) if (j.recibidos[c] != TOCADO) return false;
+        // en el cliente los barcos ajenos que siguen a flote llegan fuera del mar (ocultos)
+        for (int c : celdas(j.barcos[i], TAM[i])) if (c < 0 || c >= 100 || j.recibidos[c] != TOCADO) return false;
         return true;
     }
 
@@ -291,6 +292,54 @@ public class FlotaPartida {
         for (String s : log) lg.add(StringTag.valueOf(s));
         t.put("log", lg);
         return t;
+    }
+
+    /** Barco escondido: fuera del mar, para que el cliente no sepa dónde está. */
+    private static final int[] OCULTO = {-20, -20, 1};
+
+    /**
+     * Lo que pueden ver todos: solo los barcos ya hundidos (y todos al acabar). Los barcos propios de cada jugador le
+     * llegan aparte con {@link #privado(int)}.
+     */
+    public CompoundTag guardarPublico() {
+        CompoundTag t = guardar();
+        if (fase == FIN) return t;
+        ListTag l = t.getList("js", Tag.TAG_COMPOUND);
+        for (int k = 0; k < l.size() && k < js.size(); k++) {
+            Jugador j = js.get(k);
+            int[] b = new int[TAM.length * 3];
+            for (int i = 0; i < TAM.length; i++) System.arraycopy(hundido(j, i) ? j.barcos[i] : OCULTO, 0, b, i * 3, 3);
+            l.getCompound(k).putIntArray("b", b);
+        }
+        return t;
+    }
+
+    /** Lo que solo ve el jugador i: dónde están sus barcos. */
+    public CompoundTag privado(int i) {
+        CompoundTag t = new CompoundTag();
+        Jugador j = js.get(i);
+        if (j.uuid != null) t.putUUID("u", j.uuid);
+        t.putInt("i", i);
+        int[] b = new int[TAM.length * 3];
+        for (int k = 0; k < TAM.length; k++) System.arraycopy(j.barcos[k], 0, b, k * 3, 3);
+        t.putIntArray("b", b);
+        return t;
+    }
+
+    /** En el cliente: pone los barcos propios recibidos aparte (si siguen correspondiendo a esta partida). */
+    public void aplicarPrivado(CompoundTag t) {
+        int i = t.getInt("i");
+        if (i < 0 || i >= js.size() || !t.hasUUID("u")) return;
+        Jugador j = js.get(i);
+        if (j.uuid == null || !j.uuid.equals(t.getUUID("u"))) return;
+        int[] b = t.getIntArray("b");
+        if (b.length == TAM.length * 3) for (int k = 0; k < TAM.length; k++) System.arraycopy(b, k * 3, j.barcos[k], 0, 3);
+    }
+
+    public List<UUID> humanos() {
+        List<UUID> l = new ArrayList<>();
+        for (Jugador j : js) if (j.uuid != null) l.add(j.uuid);
+        return l;
     }
 
     public static FlotaPartida cargar(CompoundTag t) {

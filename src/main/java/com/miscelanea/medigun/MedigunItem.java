@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 
 /**
  * Medigun. Necesita la mochila médica puesta.
- * - Mantén clic derecho apuntando a un jugador: se engancha el rayo y le cura (y le sobrecura un poco).
+ * - Mantén clic derecho apuntando a un aliado (jugador, mascota, aldeano...): se engancha el rayo y le cura (y le sobrecura un poco).
  *   El rayo aguanta aunque dejes de apuntarle, mientras esté cerca y a la vista.
  * - Curando se llena la ÜberCarga (la barra del objeto). Llena: Shift + clic derecho → tú y tu paciente
  *   sois invulnerables 8 segundos.

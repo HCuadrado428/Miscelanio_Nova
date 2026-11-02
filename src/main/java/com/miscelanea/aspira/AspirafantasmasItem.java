@@ -128,6 +128,35 @@ public class AspirafantasmasItem extends Item implements GeoItem {
         }
     }
 
+    /** Boquilla que lleva el jugador (primero en las manos, luego en el inventario) o EMPTY. */
+    public static ItemStack boquilla(Player player) {
+        for (InteractionHand hand : InteractionHand.values()) {
+            ItemStack s = player.getItemInHand(hand);
+            if (s.getItem() instanceof AspirafantasmasItem) return s;
+        }
+        for (ItemStack s : player.getInventory().items) {
+            if (s.getItem() instanceof AspirafantasmasItem) return s;
+        }
+        return ItemStack.EMPTY;
+    }
+
+    /**
+     * Botón "rociar" de la ventana de la mochila: pasa por las mismas comprobaciones que la boquilla
+     * (tiene que haber boquilla, no estar sobrecalentada ni en enfriamiento) y calienta igual que un cañonazo.
+     */
+    public static boolean rociarDesdeMochila(Player player) {
+        ItemStack stack = boquilla(player);
+        if (stack.isEmpty() || !(stack.getItem() instanceof AspirafantasmasItem item)
+                || Calor.sobrecalentada(stack) || player.getCooldowns().isOnCooldown(item)) {
+            player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                    net.minecraft.sounds.SoundEvents.DISPENSER_FAIL, net.minecraft.sounds.SoundSource.PLAYERS, 0.5F, 1.4F);
+            return false;
+        }
+        if (!Modos.rociar(player)) return false;
+        item.calentar(player, stack, 15.0F);
+        return true;
+    }
+
     @Override
     public int getUseDuration(ItemStack stack) {
         return 72000;

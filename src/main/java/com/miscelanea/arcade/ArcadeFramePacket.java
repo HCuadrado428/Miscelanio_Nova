@@ -16,6 +16,9 @@ public class ArcadeFramePacket {
     final BlockPos pos;
     final byte[] datos;
 
+    /** Una pantalla de 256×192 comprimida (aun sin comprimir nada) más los textos cabe de sobra en esto. */
+    static final int MAX_BYTES = 65_536;
+
     public ArcadeFramePacket(BlockPos pos, byte[] datos) {
         this.pos = pos;
         this.datos = datos;
@@ -32,10 +35,14 @@ public class ArcadeFramePacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ServerPlayer p = ctx.get().getSender();
-        if (p == null || !(p.level().getBlockEntity(pos) instanceof RecreativaBlockEntity be)) return;
+        // primero lo barato: que esté al lado de la máquina y su chunk cargado (si no, getBlockEntity cargaría chunks)
+        if (p == null || datos.length > MAX_BYTES || p.distanceToSqr(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5) >= 8 * 8
+                || !p.level().isLoaded(pos)) return;
+        if (!(p.level().getBlockEntity(pos) instanceof RecreativaBlockEntity be)) return;
         if (be.jugador == null || !be.jugador.equals(p.getUUID())) return;
         long ahora = System.currentTimeMillis();
-        if (ahora - be.ultimoFrame < 60) return;
+        // el cliente manda 10 imágenes por segundo: no se reenvían más (ni más grandes de lo que ocupa una pantalla)
+        if (ahora - be.ultimoFrame < 90) return;
         be.ultimoFrame = ahora;
         ServerLevel l = p.serverLevel();
         ArcadeFrameS2CPacket m = new ArcadeFrameS2CPacket(pos, datos);

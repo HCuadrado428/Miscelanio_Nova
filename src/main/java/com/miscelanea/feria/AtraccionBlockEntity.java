@@ -60,7 +60,16 @@ public class AtraccionBlockEntity extends BlockEntity {
         t0 = level.getGameTime();
         gira = !gira;
         level.playSound(null, worldPosition, gira ? ModSounds.FE_ARRANCA.get() : ModSounds.FE_PARA.get(), SoundSource.BLOCKS, 1F, 1F);
+        if (!gira && tipo() == AtraccionBlock.TIOVIVO) callarMusica(level, worldPosition);
         cambio();
+    }
+
+    /** Corta la música del tiovivo a los que la oyen (al pararlo o al romperlo; si hay otro cerca vuelve a sonar en su siguiente vuelta). */
+    static void callarMusica(Level l, BlockPos pos) {
+        if (!(l instanceof net.minecraft.server.level.ServerLevel sl)) return;
+        var m = new net.minecraft.network.protocol.game.ClientboundStopSoundPacket(ModSounds.FE_TIOVIVO.getId(), SoundSource.RECORDS);
+        for (net.minecraft.server.level.ServerPlayer o : sl.players())
+            if (o.distanceToSqr(Vec3.atCenterOf(pos)) < 32 * 32) o.connection.send(m);
     }
 
     void cambio() {

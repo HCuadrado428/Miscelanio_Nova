@@ -14,6 +14,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
@@ -23,6 +25,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.Tags;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -48,7 +51,9 @@ public class HachaLanzada extends Projectile implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final Set<Integer> golpeados = new HashSet<>();
     private boolean helada, rebotada;
-    private int vida, vuelta;
+    private int vida, vuelta, clavadaDesde;
+    /** Ticks que sigue congelando al mob en el que está clavada. */
+    private static final int CONGELA_CLAVADA = 60;
     private Vec3 lado = Vec3.ZERO;
 
     public HachaLanzada(EntityType<? extends HachaLanzada> type, Level level) {
@@ -162,7 +167,9 @@ public class HachaLanzada extends Projectile implements GeoEntity {
                     }
                 } else {
                     setPos(t.getX(), t.getY() + t.getBbHeight() * 0.6, t.getZ());
-                    if (servidor && t instanceof LivingEntity le && vida % 10 == 0) Leviatan.helar(le, 20, 6);
+                    // congela mientras está clavada, pero solo unos segundos y nunca a los jefes
+                    if (servidor && t instanceof LivingEntity le && vida % 10 == 0 && vida - clavadaDesde <= CONGELA_CLAVADA && !esJefe(le))
+                        Leviatan.helar(le, 20, 6);
                 }
             }
         } else {
@@ -211,8 +218,10 @@ public class HachaLanzada extends Projectile implements GeoEntity {
         sl.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.ICE.defaultBlockState()), v.getX(), v.getY() + v.getBbHeight() * 0.6, v.getZ(), 14, 0.3, 0.3, 0.3, 0.15);
         level().playSound(null, v.getX(), v.getY(), v.getZ(), ModSounds.HACHA_IMPACTO.get(), SoundSource.PLAYERS, 1.1F, 0.9F);
         if (pesado()) {
-            // se clava y congela
-            Leviatan.helar(v, 100, 6);
+            // se clava y congela (a los jefes solo los ralentiza un poco)
+            if (esJefe(v)) Leviatan.helar(v, 40, 1);
+            else Leviatan.helar(v, 100, 6);
+            clavadaDesde = vida;
             entityData.set(ESTADO, CLAVADA);
             entityData.set(CLAVADA_EN, v.getId());
             setDeltaMovement(Vec3.ZERO);
@@ -223,6 +232,10 @@ public class HachaLanzada extends Projectile implements GeoEntity {
             setDeltaMovement(getDeltaMovement().scale(-0.25).add(0, 0.25, 0));
             rebotada = true;
         }
+    }
+
+    static boolean esJefe(LivingEntity e) {
+        return e.getType().is(Tags.EntityTypes.BOSSES) || e instanceof EnderDragon || e instanceof WitherBoss;
     }
 
     @Override

@@ -14,7 +14,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -42,23 +44,23 @@ public final class CombateLlave {
 
     public static void accion(ServerPlayer p, AccionLlave a, float yaw, int objetivo) {
         var s = p.getMainHandItem();
-        LOG.info("[Llave] servidor recibe {} de {}", a, p.getName().getString());
+        LOG.debug("[Llave] servidor recibe {} de {}", a, p.getName().getString());
         if (!(s.getItem() instanceof LlaveEspadaItem) || p.isSpectator()) {
-            LOG.info("[Llave] rechazada: no lleva la llave en la mano principal");
+            LOG.debug("[Llave] rechazada: no lleva la llave en la mano principal");
             return;
         }
         long ahora = p.level().getGameTime();
         if (ahora < LIBRE.getOrDefault(p.getUUID(), 0L) - 3) {
-            LOG.info("[Llave] rechazada: aun ocupado");
+            LOG.debug("[Llave] rechazada: aun ocupado");
             return;
         }
         boolean lanzada = LlaveEspadaItem.lanzada(s);
         if (lanzada && a != AccionLlave.CURA && a != AccionLlave.PIRO && a != AccionLlave.HIELO) {
-            LOG.info("[Llave] rechazada: la llave esta lanzada");
+            LOG.debug("[Llave] rechazada: la llave esta lanzada");
             return;
         }
         if (a.coste > 0 && !Magia.gastar(p, a.coste)) {
-            LOG.info("[Llave] rechazada: sin PM");
+            LOG.debug("[Llave] rechazada: sin PM");
             return;
         }
         LIBRE.put(p.getUUID(), ahora + a.recuperacion);
@@ -104,6 +106,7 @@ public final class CombateLlave {
         AABB caja = p.getBoundingBox().inflate(g.alcance() + 1, 2.0, g.alcance() + 1);
         for (LivingEntity v : sl.getEntitiesOfClass(LivingEntity.class, caja, x -> x != p && x.isAlive() && !x.isSpectator())) {
             if (v instanceof TamableAnimal t && t.isOwnedBy(p)) continue;
+            if (!aLaVista(p, v)) continue; // no golpear a traves de paredes
             Vec3 d = v.position().subtract(p.position());
             double hd = d.horizontalDistance() - v.getBbWidth() * 0.5;
             if (hd > g.alcance() || Math.abs(d.y) > 2.6) continue;
@@ -135,6 +138,16 @@ public final class CombateLlave {
             sl.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.LLAVE_IMPACTO.get(), SoundSource.PLAYERS, 0.9F, 0.9F + p.getRandom().nextFloat() * 0.2F);
             Magia.ganar(p, 2F);
         }
+    }
+
+    /** Linea de vision desde los ojos del atacante al centro (o a los ojos) del objetivo. */
+    public static boolean aLaVista(Entity desde, Entity v) {
+        Vec3 ojo = desde.getEyePosition();
+        for (Vec3 fin : new Vec3[]{v.position().add(0, v.getBbHeight() * 0.5, 0), v.getEyePosition()}) {
+            if (desde.level().clip(new ClipContext(ojo, fin, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, desde)).getType() == HitResult.Type.MISS)
+                return true;
+        }
+        return false;
     }
 
     private static void efecto(ServerPlayer p, LivingEntity v, AccionLlave.Efecto e) {

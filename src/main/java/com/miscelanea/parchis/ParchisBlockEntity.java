@@ -27,6 +27,9 @@ public class ParchisBlockEntity extends BlockEntity {
     public ParchisPartida p = new ParchisPartida();
     private final Random rnd = new Random();
     private int esperaCpu;
+    /** Juega por quien se va de la mesa o no juega; votos para terminar antes de tiempo (no se guardan). */
+    private final com.miscelanea.mesas.Turnos.Vigia vigia = new com.miscelanea.mesas.Turnos.Vigia();
+    private final com.miscelanea.mesas.Turnos.Votacion votos = new com.miscelanea.mesas.Turnos.Votacion();
 
     public ParchisBlockEntity(BlockPos pos, BlockState s) {
         super(ModBlocks.PARCHIS_BE.get(), pos, s);
@@ -64,6 +67,7 @@ public class ParchisBlockEntity extends BlockEntity {
         long ahora = level.getGameTime();
         int yo = indice(pl);
         boolean miTurno = yo >= 0 && yo == p.turno && p.fase != ParchisPartida.LOBBY && p.fase != ParchisPartida.FIN;
+        if (yo >= 0) vigia.despertar(pl.getUUID());
         ParchisBotones.Boton b = ParchisBotones.en(p, tx, ty);
         if (b == null) {
             if (miTurno && p.fase == ParchisPartida.TIRAR) {
@@ -85,20 +89,29 @@ public class ParchisBlockEntity extends BlockEntity {
         boolean hecho = true;
         switch (b.id()) {
             case ParchisBotones.UNIRSE -> hecho = p.unir(pl.getUUID(), pl.getGameProfile().getName());
+            case ParchisBotones.SALIR -> hecho = p.salir(pl.getUUID());
             case ParchisBotones.CPU -> hecho = yo >= 0 && p.anadirCpu();
             case ParchisBotones.EMPEZAR -> hecho = yo >= 0 && p.empezar(rnd);
             case ParchisBotones.NUEVA -> {
                 int v = p.velocidad;
                 p = new ParchisPartida();
                 p.velocidad = v;
+                vigia.limpiar();
+                votos.limpiar();
             }
             case ParchisBotones.VELOCIDAD -> {
                 if (yo >= 0 || p.fase == ParchisPartida.LOBBY) p.cambiarVelocidad();
                 else hecho = false;
             }
             case ParchisBotones.TERMINAR -> {
-                if (yo >= 0) p.terminar();
-                else hecho = false;
+                // hace falta que estén de acuerdo todos los humanos que siguen en la mesa
+                if (yo < 0) hecho = false;
+                else {
+                    int faltan = votos.votar(level, worldPosition, pl.getUUID(), p.humanos());
+                    if (faltan == 0) p.terminar();
+                    else com.miscelanea.mesas.Turnos.avisar(level, worldPosition, com.miscelanea.mesas.Turnos.AVISO_VOTO,
+                            pl.getGameProfile().getName(), faltan);
+                }
             }
             case ParchisBotones.TIRAR -> {
                 if (!miTurno) {
@@ -122,7 +135,10 @@ public class ParchisBlockEntity extends BlockEntity {
         for (int[] c : p.prog) for (int q : c) if (q == ParchisPartida.META) metaAntes++;
         boolean cambio = p.tick(ahora);
         if (p.fase != ParchisPartida.LOBBY && p.fase != ParchisPartida.FIN && p.fase != ParchisPartida.MOVER) {
-            if (p.actual().cpu()) {
+            ParchisPartida.Jugador a = p.actual();
+            // si el humano de turno se ha ido (o no juega) la CPU juega por él
+            boolean porEl = !a.cpu() && be.vigia.vigilar(l, pos, a.uuid, a.nombre, p.tDado * 31 + p.tMover * 7 + p.fase * 5L + p.turno);
+            if (a.cpu() || porEl) {
                 if (++be.esperaCpu >= p.esperaCpu()) {
                     be.esperaCpu = 0;
                     int f0 = p.fase;

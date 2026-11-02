@@ -30,6 +30,10 @@ public class FogonBlockEntity extends BlockEntity {
     public String receta = "";
     public int color;
     public long inicio = -1;
+    /** Servidor: hay receta, pero se espera hasta este tic por si se añade lo que falta para una más grande (-1 = no). */
+    private long esperaHasta = -1;
+    /** Lo que se espera antes de empezar cuando aún se puede ampliar la receta. */
+    public static final int ESPERA = 60;
 
     public FogonBlockEntity(BlockPos p, BlockState s) {
         super(com.miscelanea.registry.ModBlocks.FOGON_BE.get(), p, s);
@@ -73,18 +77,39 @@ public class FogonBlockEntity extends BlockEntity {
         }
         level.playSound(null, worldPosition, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 0.7F, 1.2F);
         Recetas.Receta r = Recetas.buscar(dentro);
-        if (r != null) {
-            receta = r.id();
-            color = r.color();
-            inicio = level.getGameTime();
-            level.setBlock(worldPosition, getBlockState().setValue(FogonBlock.LIT, true), 3);
-            level.playSound(null, worldPosition, ModSounds.CO_CHISPORROTEO.get(), SoundSource.BLOCKS, 0.8F, 1F);
+        esperaHasta = -1;
+        if (r != null && Recetas.ampliable(dentro, MAX)) {
+            // ya hay plato, pero aún se le puede añadir algo (la paella admite bacalao): se espera un poco antes de encender
+            esperaHasta = level.getGameTime() + ESPERA;
+            p.displayClientMessage(Component.translatableWithFallback("miscelanea.fogon.espera",
+                    "Puedes añadir algo más: empieza a cocinar en %s s", ESPERA / 20), true);
+        } else if (r != null) {
+            empezar(r);
             p.displayClientMessage(Component.translatable("miscelanea.fogon.empieza", Component.translatable("miscelanea.plato." + r.id())), true);
         }
         cambio();
     }
 
+    private void empezar(Recetas.Receta r) {
+        esperaHasta = -1;
+        receta = r.id();
+        color = r.color();
+        inicio = level.getGameTime();
+        level.setBlock(worldPosition, getBlockState().setValue(FogonBlock.LIT, true), 3);
+        level.playSound(null, worldPosition, ModSounds.CO_CHISPORROTEO.get(), SoundSource.BLOCKS, 0.8F, 1F);
+    }
+
     public static void tick(Level l, BlockPos pos, BlockState s, FogonBlockEntity be) {
+        if (be.esperaHasta >= 0 && !be.cocinando() && l.getGameTime() >= be.esperaHasta) {
+            // pasó la espera sin añadir nada más: se cocina lo que hay (si sigue siendo una receta)
+            be.esperaHasta = -1;
+            Recetas.Receta r = Recetas.buscar(be.dentro);
+            if (r != null) {
+                be.empezar(r);
+                be.cambio();
+            }
+            return;
+        }
         if (!be.cocinando()) return;
         long t = l.getGameTime() - be.inicio;
         if (t % 60 == 0 && t > 0) l.playSound(null, pos, ModSounds.CO_CHISPORROTEO.get(), SoundSource.BLOCKS, 0.6F, 0.9F + l.random.nextFloat() * 0.2F);

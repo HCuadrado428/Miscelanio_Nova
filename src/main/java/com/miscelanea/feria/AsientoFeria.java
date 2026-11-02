@@ -81,7 +81,18 @@ public class AsientoFeria extends Entity {
         super.tick();
         AtraccionBlockEntity b = be();
         if (b == null) {
-            if (!level().isClientSide && tickCount > 20) discard();
+            // si el chunk de la atracción no está cargado el asiento se queda quieto esperando (antes desaparecía
+            // y tiraba a la gente desde lo alto de la noria)
+            if (!level().isClientSide && tickCount > 20 && level().isLoaded(atraccion())) {
+                // la atracción ya no existe: baja a los pasajeros al suelo, junto a donde estaba la base
+                for (Entity p : java.util.List.copyOf(getPassengers())) {
+                    p.stopRiding();
+                    Vec3 s = sueloSeguro();
+                    p.teleportTo(s.x, s.y, s.z);
+                    p.fallDistance = 0;
+                }
+                discard();
+            }
             return;
         }
         colocar(0);
@@ -137,7 +148,16 @@ public class AsientoFeria extends Entity {
             // al bajar de la noria se baja en el suelo, delante de la base
             return Vec3.atBottomCenterOf(atraccion().relative(b.facing(), 3));
         }
+        if (b == null) return sueloSeguro();
         return super.getDismountLocationForPassenger(e);
+    }
+
+    /** Un sitio en el suelo junto a la base de la atracción (si no se sabe nada mejor). */
+    private Vec3 sueloSeguro() {
+        BlockPos q = atraccion().above();
+        for (int i = 0; i < 8 && !level().getBlockState(q).getCollisionShape(level(), q).isEmpty(); i++) q = q.above();
+        for (int i = 0; i < 24 && level().getBlockState(q.below()).getCollisionShape(level(), q.below()).isEmpty(); i++) q = q.below();
+        return Vec3.atBottomCenterOf(q);
     }
 
     @Override

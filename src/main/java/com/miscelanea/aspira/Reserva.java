@@ -109,13 +109,27 @@ public final class Reserva {
         if (i < 0 || i >= list.size()) return;
         CompoundTag t = list.getCompound(i);
         MobEffect ef = ForgeRegistries.MOB_EFFECTS.getValue(new ResourceLocation(t.getString("Id")));
-        list.remove(i);
-        mochila.getTag().put(RESERVA, list);
-        if (ef == null) return;
+        if (ef == null) {
+            list.remove(i);
+            mochila.getTag().put(RESERVA, list);
+            return;
+        }
         int amp = t.getInt("Amp");
         if (ef.isInstantenous()) {
-            for (int k = 0; k < Math.min(3, t.getInt("T")); k++) ef.applyInstantenousEffect(null, null, p, amp, 1.0);
+            // Mismo enfriamiento que el uso automático: no se pueden encadenar dosis pulsando el botón
+            long ahora = p.level().getGameTime();
+            if (p.getPersistentData().getLong(CD_INSTANT) > ahora) return;
+            p.getPersistentData().putLong(CD_INSTANT, ahora + 40);
+            // Como mucho 3 dosis de golpe; el resto se queda en la reserva
+            int total = t.getInt("T");
+            int dosis = Math.min(3, total);
+            for (int k = 0; k < dosis; k++) ef.applyInstantenousEffect(null, null, p, amp, 1.0);
+            if (total - dosis <= 0) list.remove(i);
+            else t.putInt("T", total - dosis);
+            mochila.getTag().put(RESERVA, list);
         } else {
+            list.remove(i);
+            mochila.getTag().put(RESERVA, list);
             p.addEffect(new MobEffectInstance(ef, t.getInt("T"), amp));
         }
         p.level().playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.GENERIC_DRINK, SoundSource.PLAYERS, 0.8F, 1.0F);

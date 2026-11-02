@@ -71,20 +71,54 @@ public class BolaPetanca extends Entity {
     @Override
     public void tick() {
         super.tick();
-        Vec3 v = getDeltaMovement().add(0, -0.05, 0);
+        Vec3 v = getDeltaMovement();
+        boolean enSuelo = onGround();
+        // quieta en el suelo: no hace falta simular nada (solo comprobar que sigue habiendo suelo debajo)
+        if (enSuelo && v.horizontalDistanceSqr() < 1e-6 && Math.abs(v.y) < 1e-3) {
+            v = new Vec3(0, -0.04, 0);
+            move(MoverType.SELF, v);
+            if (onGround()) {
+                setDeltaMovement(Vec3.ZERO);
+                return;
+            }
+            setDeltaMovement(v);
+            return;
+        }
+        // la gravedad se ACUMULA en la velocidad (antes se calculaba pero nunca se guardaba y la bola subía sin fin)
+        v = new Vec3(v.x, v.y - 0.04, v.z);
+        setDeltaMovement(v);
         Vec3 antes = v;
         move(MoverType.SELF, v);
+        // move() anula las componentes que chocan con bloques (la Y al caer al suelo)
         Vec3 d = getDeltaMovement();
         if (onGround()) {
-            if (antes.y < -0.15 && !level().isClientSide)
-                level().playSound(null, getX(), getY(), getZ(), ModSounds.PE_CAE.get(), SoundSource.NEUTRAL, (float) Math.min(1, -antes.y), boliche() ? 1.5F : 1F);
-            // rueda un poco por el suelo y se para; nunca rebota hacia arriba
-            d = new Vec3(d.x * 0.8, 0, d.z * 0.8);
-            if (d.horizontalDistanceSqr() < 1e-4) d = Vec3.ZERO;
-        } else d = new Vec3(d.x * 0.99, Math.min(d.y, 0.8), d.z * 0.99);
-        if (horizontalCollision) d = new Vec3(-antes.x * 0.3, d.y, -antes.z * 0.3);
+            if (!enSuelo) {
+                // impacto contra el suelo: la tierra se come buena parte de la velocidad (la bola "muerde" y no rebota)
+                if (antes.y < -0.15 && !level().isClientSide)
+                    level().playSound(null, getX(), getY(), getZ(), ModSounds.PE_CAE.get(), SoundSource.NEUTRAL, (float) Math.min(1, -antes.y), boliche() ? 1.5F : 1F);
+                double frena = antes.y < -0.2 ? 0.45 : 0.7;
+                d = new Vec3(d.x * frena, 0, d.z * frena);
+            }
+            // rodando: rozamiento con el suelo, se para enseguida; nunca rebota hacia arriba
+            d = new Vec3(d.x * 0.82, 0, d.z * 0.82);
+            if (d.horizontalDistanceSqr() < 4e-4) d = Vec3.ZERO;
+        } else {
+            // en el aire: un pelín de resistencia del aire
+            d = new Vec3(d.x * 0.99, Math.max(-1.5, d.y * 0.99), d.z * 0.99);
+        }
+        // contra una pared: rebota flojito hacia atrás
+        if (horizontalCollision) {
+            double nx = Math.abs(d.x) < 1e-6 && Math.abs(antes.x) > 1e-6 ? -antes.x * 0.3 : d.x;
+            double nz = Math.abs(d.z) < 1e-6 && Math.abs(antes.z) > 1e-6 ? -antes.z * 0.3 : d.z;
+            d = new Vec3(nx, d.y, nz);
+        }
         setDeltaMovement(d);
         if (!level().isClientSide && d.horizontalDistance() > 0.01) chocar();
+    }
+
+    /** Clave para agrupar bolas por jugador: el UUID si se conoce (bolas antiguas: el nombre). */
+    public Object clave() {
+        return duenoId != null ? duenoId : dueno();
     }
 
     private void chocar() {

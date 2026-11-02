@@ -23,6 +23,11 @@ public class RecreativaBlockEntity extends BlockEntity {
     @Nullable
     public BlockPos enlazada;
     public long ultimoFrame;     // servidor: para limitar el ritmo de retransmisión
+    /** Servidor: partida en marcha empezada por el jugador 1 (gastando crédito), para validar su récord. */
+    @Nullable
+    public UUID partidaDe;
+    public String partidaJuego = "";
+    public long partidaInicio, partidaSemilla;
     /** Cliente: datos de pantalla (los gestiona el renderizador). */
     public Object pantallaCliente;
 
@@ -40,6 +45,18 @@ public class RecreativaBlockEntity extends BlockEntity {
     public void load(CompoundTag t) {
         super.load(t);
         creditos = t.getInt("creditos");
+    }
+
+    public void empezarPartida(UUID quien, String juego, long ahora, long semilla) {
+        partidaDe = quien;
+        partidaJuego = juego;
+        partidaInicio = ahora;
+        partidaSemilla = semilla;
+    }
+
+    public void acabarPartida() {
+        partidaDe = null;
+        partidaJuego = "";
     }
 
     public boolean ocupadaPorOtro(ServerPlayer p) {
@@ -81,6 +98,7 @@ public class RecreativaBlockEntity extends BlockEntity {
         boolean cambio = false;
         if (be.jugador != null && !cerca(l, pos, be.jugador)) {
             be.jugador = null;
+            be.acabarPartida();
             cambio = true;
         }
         if (be.jugador2 != null && !cerca(l, pos, be.jugador2) && !(be.enlazada != null && cerca(l, be.enlazada, be.jugador2))) {

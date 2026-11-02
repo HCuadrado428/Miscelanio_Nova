@@ -13,6 +13,13 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.animal.AbstractGolem;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.animal.allay.Allay;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
@@ -20,6 +27,7 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -138,14 +146,24 @@ public final class Medigun {
         return true;
     }
 
-    /** El jugador más cerca de la línea de mira (no hace falta apuntarle con precisión). */
+    /** ¿Se le puede curar? Jugadores, mascotas domadas, aldeanos, gólems, allays y animales pacíficos; nunca monstruos. */
+    static boolean amigable(LivingEntity o) {
+        if (o instanceof Player) return true;
+        if (o instanceof Enemy) return false;
+        if (o instanceof TamableAnimal ta) return ta.isTame();
+        // gólems (de hierro y de nieve; el shulker ya es Enemy), aldeanos, allays y animales (caballos incluidos)
+        return o instanceof AbstractVillager || o instanceof AbstractGolem || o instanceof Allay
+                || o instanceof Animal || o instanceof WaterAnimal;
+    }
+
+    /** El aliado más cerca de la línea de mira (no hace falta apuntarle con precisión). */
     private static LivingEntity buscar(ServerPlayer p) {
         Vec3 ojo = p.getEyePosition();
         Vec3 mira = p.getViewVector(1.0F);
         LivingEntity mejor = null;
         double mejorDist = Double.MAX_VALUE;
-        for (Player o : p.serverLevel().getEntitiesOfClass(Player.class, p.getBoundingBox().inflate(ENGANCHE),
-                o -> o != p && o.isAlive() && !o.isSpectator())) {
+        for (LivingEntity o : p.serverLevel().getEntitiesOfClass(LivingEntity.class, p.getBoundingBox().inflate(ENGANCHE),
+                o -> o != p && o.isAlive() && !o.isSpectator() && amigable(o))) {
             Vec3 c = o.position().add(0, o.getBbHeight() * 0.55, 0);
             Vec3 d = c.subtract(ojo);
             double a = d.dot(mira);
@@ -222,6 +240,8 @@ public final class Medigun {
     static void tickObjeto(LivingEntity dueno, ItemStack gun) {
         if (!gun.hasTag()) return;
         CompoundTag tag = gun.getTag();
+        // como en TF2: la Über se sigue gastando, pero solo protege mientras llevas la medigun en la mano
+        boolean enMano = dueno.getMainHandItem() == gun || dueno.getOffhandItem() == gun;
         if (tag.getBoolean(UBER_ACTIVA)) {
             long quedan = tag.getLong(UBER_HASTA) - dueno.level().getGameTime();
             if (quedan <= 0) {
@@ -231,11 +251,14 @@ public final class Medigun {
                 if (dueno instanceof ServerPlayer sp) avisar(sp, gun);
             } else {
                 tag.putFloat(CARGA, MAX * quedan / DURACION_UBER);
-                dueno.addEffect(new MobEffectInstance(ModEffects.UBERCARGA.get(), 12, 0, false, false, true));
+                if (enMano) dueno.addEffect(new MobEffectInstance(ModEffects.UBERCARGA.get(), 12, 0, false, false, true));
             }
         }
         boolean usando = dueno.isUsingItem() && dueno.getUseItem() == gun;
         if (!usando && tag.getBoolean(CURANDO)) tag.remove(CURANDO);
+        // sin la medigun en la mano (ni usandose otra) el rayo se corta
+        if (!enMano && dueno instanceof ServerPlayer sp && ENGANCHES.containsKey(sp.getUUID())
+                && !(sp.isUsingItem() && sp.getUseItem().getItem() instanceof MedigunItem)) soltar(sp, gun);
     }
 
     private static void avisar(ServerPlayer p, ItemStack gun) {
@@ -254,8 +277,9 @@ public final class Medigun {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onHurt(LivingHurtEvent event) {
-        if (!event.isCanceled() && event.getEntity() instanceof Player p && !p.level().isClientSide) {
-            ULTIMO_DANO.put(p.getUUID(), p.level().getGameTime());
+        LivingEntity e = event.getEntity();
+        if (!event.isCanceled() && !e.level().isClientSide && (e instanceof Player || ULTIMA_CURA.containsKey(e.getUUID()))) {
+            ULTIMO_DANO.put(e.getUUID(), e.level().getGameTime());
         }
     }
 
@@ -283,7 +307,15 @@ public final class Medigun {
         Iterator<Map.Entry<UUID, float[]>> it = SOBRECURA.entrySet().iterator();
         while (it.hasNext()) {
             var en = it.next();
-            ServerPlayer p = server.getPlayerList().getPlayer(en.getKey());
+            LivingEntity p = server.getPlayerList().getPlayer(en.getKey());
+            if (p == null) {
+                for (ServerLevel l : server.getAllLevels()) {
+                    if (l.getEntity(en.getKey()) instanceof LivingEntity le) {
+                        p = le;
+                        break;
+                    }
+                }
+            }
             if (p == null) {
                 it.remove();
                 continue;
@@ -295,6 +327,20 @@ public final class Medigun {
             p.setAbsorptionAmount(Math.max(0.0F, abs - quitar));
             s[0] -= quitar;
             if (s[0] <= 0.001F || abs <= 0.0F) it.remove();
+        }
+    }
+
+    /** Limpia los datos de los mobs curados cuando desaparecen (los jugadores se limpian al salir). */
+    @SubscribeEvent
+    public static void onLeave(EntityLeaveLevelEvent event) {
+        if (event.getLevel().isClientSide() || event.getEntity() instanceof Player) return;
+        if (event.getEntity() instanceof LivingEntity le && le.isRemoved() && le.getRemovalReason() != null
+                && le.getRemovalReason().shouldDestroy()) {
+            UUID id = le.getUUID();
+            ULTIMO_DANO.remove(id);
+            SOBRECURA.remove(id);
+            ULTIMA_CURA.remove(id);
+            ULTIMO_REBOTE.remove(id);
         }
     }
 

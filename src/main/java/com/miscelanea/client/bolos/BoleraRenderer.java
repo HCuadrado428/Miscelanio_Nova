@@ -65,7 +65,8 @@ public class BoleraRenderer implements BlockEntityRenderer<BoleraBlockEntity> {
         // marcador
         ps.pushPose();
         ps.translate(0, 1.85, 0.4);
-        FeriaPiezas.caja(ps, vc, "negro", 0, 0, 0.03, 1.2, 0.5, 0.04, luz);
+        // no más ancho que el bloque: con dos calles juntas los marcadores no se pisan
+        FeriaPiezas.caja(ps, vc, "negro", 0, 0, 0.03, 0.98, 0.5, 0.04, luz);
         ps.mulPose(Axis.YP.rotationDegrees(180));
         ps.scale(0.0085F, -0.0085F, 0.0085F);
         String[] fr = Marcador.frames(be.tiradas);
@@ -82,7 +83,7 @@ public class BoleraRenderer implements BlockEntityRenderer<BoleraBlockEntity> {
     }
 
     private void linea(PoseStack ps, MultiBufferSource buf, String s, float y, int c) {
-        float esc = Math.min(1, 132F / Math.max(1, font.width(s)));
+        float esc = Math.min(1, 112F / Math.max(1, font.width(s)));
         ps.pushPose();
         ps.scale(esc, esc, esc);
         font.drawInBatch(s, -font.width(s) / 2F, y / esc, c, false, ps.last().pose(), buf, Font.DisplayMode.NORMAL, 0, 0xF000F0);

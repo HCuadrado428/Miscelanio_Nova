@@ -30,6 +30,8 @@ public class BillarBlockEntity extends BlockEntity implements MesaGrandeBlock.Me
     public final String[] nombre = {"", ""};
     public boolean cpu;
     int esperaCpu;
+    /** Ticks que lleva cada jugador lejos de la mesa o desconectado (a los 200 se le levanta). */
+    private final int[] ausente = new int[2];
     final Random rnd = new Random();
     // cliente: posiciones del tic anterior para suavizar
     public final float[] antesX = new float[16], antesY = new float[16];
@@ -67,9 +69,16 @@ public class BillarBlockEntity extends BlockEntity implements MesaGrandeBlock.Me
         UUID u = sp.getUUID();
         int l = lado(u);
         if (p.fase == BillarPartida.FIN) {
-            if (l < 0 && jug[0] != null) return;
-            empezar();
-            return;
+            // cualquiera de los sentados puede empezar otra; si ya no queda nadie sentado, la mesa vuelve a estar libre
+            if (l >= 0) {
+                empezar();
+                return;
+            }
+            if (jug[0] != null || jug[1] != null) {
+                aviso(sp, "billar.miscelanea.ocupada");
+                return;
+            }
+            reiniciar();
         }
         if (p.fase == BillarPartida.ESPERA) {
             if (l < 0 && jug[0] == null) {
@@ -91,11 +100,39 @@ public class BillarBlockEntity extends BlockEntity implements MesaGrandeBlock.Me
             return;
         }
         if (l < 0) aviso(sp, "billar.miscelanea.ocupada");
-        else if (sp.isShiftKeyDown() && l == 0 && p.fase == BillarPartida.APUNTA) {
-            // abandonar: se reinicia la mesa
-            reiniciar();
+        else if (sp.isShiftKeyDown() && p.fase == BillarPartida.APUNTA) {
+            // abandonar (cualquiera de los dos)
+            soltar(l);
             aviso(sp, "billar.miscelanea.reiniciada");
         }
+    }
+
+    /**
+     * Levanta a un jugador. Si se va el segundo en plena partida, sigue la máquina en su lugar; si se va el primero y
+     * queda un rival humano, este pasa a esperar un nuevo rival; si no queda nadie, la mesa queda libre.
+     */
+    void soltar(int l) {
+        int otro = 1 - l;
+        ausente[l] = 0;
+        if (jug[otro] == null) {
+            reiniciar();
+            return;
+        }
+        if (l == 1 && (p.fase == BillarPartida.APUNTA || p.fase == BillarPartida.MUEVE)) {
+            jug[1] = null;
+            cpu = true;
+            nombre[1] = "CPU";
+            esperaCpu = 0;
+            cambio();
+            return;
+        }
+        UUID u = jug[otro];
+        String n = nombre[otro];
+        reiniciar();
+        jug[0] = u;
+        nombre[0] = n;
+        p.mensaje = "billar.miscelanea.msg.espera_rival";
+        cambio();
     }
 
     void empezar() {
@@ -120,7 +157,7 @@ public class BillarBlockEntity extends BlockEntity implements MesaGrandeBlock.Me
 
     public void tiro(ServerPlayer sp, float angulo, float fuerza) {
         if (p.fase != BillarPartida.APUNTA || lado(sp.getUUID()) != p.turno || esCpu(p.turno)) return;
-        if (Float.isNaN(angulo) || Float.isNaN(fuerza)) return;
+        if (!Float.isFinite(angulo) || !Float.isFinite(fuerza)) return;
         tirar(angulo, fuerza);
     }
 
@@ -131,6 +168,17 @@ public class BillarBlockEntity extends BlockEntity implements MesaGrandeBlock.Me
     }
 
     public static void tickServidor(Level l, BlockPos pos, BlockState s, BillarBlockEntity be) {
+        // quien se va de la mesa (o se desconecta) más de 200 ticks deja su sitio
+        for (int i = 0; i < 2; i++) {
+            if (be.jug[i] == null) {
+                be.ausente[i] = 0;
+                continue;
+            }
+            ServerPlayer sp = l.getServer().getPlayerList().getPlayer(be.jug[i]);
+            boolean cerca = sp != null && sp.level() == l && sp.distanceToSqr(Vec3.atCenterOf(pos)) <= 12 * 12;
+            be.ausente[i] = cerca ? 0 : be.ausente[i] + 1;
+            if (be.ausente[i] > 200) be.soltar(i);
+        }
         BillarPartida p = be.p;
         if (p.fase == BillarPartida.MUEVE) {
             boolean parado = p.tic();

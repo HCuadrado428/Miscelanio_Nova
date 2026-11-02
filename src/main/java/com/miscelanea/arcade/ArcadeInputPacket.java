@@ -38,6 +38,8 @@ public class ArcadeInputPacket {
     public void handle(java.util.function.Supplier<NetworkEvent.Context> ctx) {
         ServerPlayer p = ctx.get().getSender();
         if (p != null) {
+            // primero distancia y chunk cargado (el invitado por cable está en la máquina de al lado, a 2 bloques como mucho)
+            if (p.distanceToSqr(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5) >= 11 * 11 || !p.level().isLoaded(pos)) return;
             if (!(p.level().getBlockEntity(pos) instanceof RecreativaBlockEntity be)) return;
             UUID otro = p.getUUID().equals(be.jugador) ? be.jugador2 : p.getUUID().equals(be.jugador2) ? be.jugador : null;
             if (otro == null) return;

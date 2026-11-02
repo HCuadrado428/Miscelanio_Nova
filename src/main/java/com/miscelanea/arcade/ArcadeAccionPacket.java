@@ -18,6 +18,21 @@ public class ArcadeAccionPacket {
     private final int accion, puntos;
     private final String juego;
 
+    /** Una partida de menos de 3 s no entra en la tabla. */
+    static final int MIN_TICS = 60;
+
+    /**
+     * Tope de puntos para una partida que ha durado tantos tics: una base más un ritmo por segundo muy generoso (los juegos
+     * con multiplicadores o niveles altos, más). Por encima de eso no es una partida normal.
+     */
+    static long maxPuntos(String juego, long tics) {
+        long porSegundo = switch (juego) {
+            case "pinball", "tetrominos", "bloques" -> 15_000;
+            default -> 5_000;
+        };
+        return Math.min(9_999_999L, 30_000L + porSegundo * (tics / 20));
+    }
+
     public ArcadeAccionPacket(BlockPos pos, int accion, String juego, int puntos) {
         this.pos = pos;
         this.accion = accion;
@@ -38,7 +53,7 @@ public class ArcadeAccionPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         ServerPlayer p = ctx.get().getSender();
-        if (p == null || p.distanceToSqr(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5) > 100) return;
+        if (p == null || p.distanceToSqr(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5) > 100 || !p.level().isLoaded(pos)) return;
         if (!(p.level().getBlockEntity(pos) instanceof RecreativaBlockEntity be)) return;
         boolean soy2 = p.getUUID().equals(be.jugador2);
         if (!soy2 && (be.jugador == null || !be.jugador.equals(p.getUUID()))) return;
@@ -51,6 +66,7 @@ public class ArcadeAccionPacket {
                 else {
                     be.jugador = null;
                     be.jugador2 = null;
+                    be.acabarPartida();
                 }
                 be.avisarCompaneros();
             }
@@ -71,12 +87,20 @@ public class ArcadeAccionPacket {
                     be.setChanged();
                 }
                 long semilla = p.getRandom().nextLong();
+                // el servidor apunta la partida: solo se aceptará un récord de este jugador, en este juego y en esta máquina
+                if (ok && ArcadeJuegos.esArcade(juego)) be.empezarPartida(p.getUUID(), juego, p.level().getGameTime(), semilla);
                 ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> p), new ArcadeAbrirPacket(pos, be.creditos, libre, ok ? 2 : 3, be.doble(), semilla, juego, "", jug));
                 if (ok && jug == 2)
                     ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> p2), new ArcadeAbrirPacket(pos, be.creditos, libre, 2, true, semilla, juego, "", 2));
             }
             case RECORD -> {
-                if (ArcadeJuegos.esArcade(juego)) ArcadeRecords.registrar(p, juego, puntos);
+                // solo vale si hay una partida empezada aquí por este jugador (con crédito gastado) y una vez por partida;
+                // los puntos no pueden pasar de lo que da de sí el tiempo jugado
+                if (soy2 || !ArcadeJuegos.esArcade(juego) || !p.getUUID().equals(be.partidaDe) || !juego.equals(be.partidaJuego)) return;
+                long tics = p.level().getGameTime() - be.partidaInicio;
+                be.acabarPartida();
+                if (tics < MIN_TICS || puntos <= 0) return;
+                ArcadeRecords.registrar(p, juego, (int) Math.min(puntos, maxPuntos(juego, tics)));
             }
         }
     }

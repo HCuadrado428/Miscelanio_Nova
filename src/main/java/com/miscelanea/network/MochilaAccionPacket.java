@@ -1,7 +1,8 @@
 package com.miscelanea.network;
 
+import com.miscelanea.aspira.AspiraUtil;
+import com.miscelanea.aspira.AspirafantasmasItem;
 import com.miscelanea.aspira.Deposito;
-import com.miscelanea.aspira.Modos;
 import com.miscelanea.aspira.Reserva;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -42,9 +43,11 @@ public class MochilaAccionPacket {
             case SOLTAR -> {
                 Vec3 mira = p.getViewVector(1.0F);
                 Vec3 pos = p.position().add(mira.x * 1.6, 0.2, mira.z * 1.6);
+                // Igual que SoltarCapturaPacket: que no aparezca dentro de un bloque o al otro lado de una pared
+                if (!AspiraUtil.lineaDeVision(p, pos)) pos = p.position();
                 Deposito.soltar(p, indice, pos, new Vec3(mira.x * 0.15, 0.15, mira.z * 0.15));
             }
-            case ROCIAR -> Modos.rociar(p);
+            case ROCIAR -> AspirafantasmasItem.rociarDesdeMochila(p);
             case VACIAR -> {
                 if (!Deposito.tanque(mochila).isEmpty()) {
                     Deposito.vaciarTanque(mochila);

@@ -109,6 +109,7 @@ public class PlasmaEntity extends Projectile {
             Vec3 obj = e.position().add(0, e.getBbHeight() * 0.5, 0);
             if (obj.distanceTo(c) > alcance) continue;
             if (!sobre() && sl.clip(new ClipContext(c, obj, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getType() != HitResult.Type.MISS) continue;
+            e.invulnerableTime = 0; // los rayos van cada 5 ticks: sin esto la invulnerabilidad se los comeria
             e.hurt(damageSources().indirectMagic(this, duenyo), DANO_RAYO);
             Vec3 d = obj.subtract(c);
             int pasos = (int) (d.length() * 4);
@@ -139,11 +140,12 @@ public class PlasmaEntity extends Projectile {
         sl.sendParticles(ParticleTypes.END_ROD, c.x, c.y, c.z, 60, 0.3, 0.3, 0.3, 0.45);
         sl.sendParticles(ParticleTypes.EXPLOSION_EMITTER, c.x, c.y, c.z, 1, 0, 0, 0, 0);
         sl.playSound(null, c.x, c.y, c.z, ModSounds.BFG_ESTALLIDO.get(), SoundSource.PLAYERS, 4F, 1F);
-        for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, new AABB(c, c).inflate(RADIO + 1), x -> x.isAlive() && !x.isSpectator())) {
+        for (LivingEntity e : sl.getEntitiesOfClass(LivingEntity.class, new AABB(c, c).inflate(radio + 1), x -> x.isAlive() && !x.isSpectator())) {
             Vec3 centro = e.position().add(0, e.getBbHeight() * 0.5, 0);
             double d = centro.distanceTo(c);
             if (d > radio) continue;
             float f = (float) (1 - 0.6 * d / radio);
+            e.invulnerableTime = 0; // que el ultimo rayo no reduzca el estallido
             e.hurt(damageSources().indirectMagic(this, duenyo), DANO * (sobre() ? 1.7F : 1F) * f * (e == duenyo ? 0.25F : 1F));
             Vec3 emp = centro.subtract(c);
             emp = emp.lengthSqr() < 1e-4 ? new Vec3(0, 1, 0) : emp.normalize();

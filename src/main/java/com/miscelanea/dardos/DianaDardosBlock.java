@@ -22,7 +22,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 
-/** Diana de dardos de pared (se cuelga mirando hacia ti). Clic derecho: partida nueva a 301. */
+/** Diana de dardos de pared (se cuelga mirando hacia ti). Clic derecho: partida nueva a 301 (uno o dos jugadores). */
 public class DianaDardosBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     private static final VoxelShape[] FORMA = {Block.box(0, 0, 14, 16, 16, 16), Block.box(0, 0, 0, 16, 16, 2), Block.box(0, 0, 0, 2, 16, 16), Block.box(14, 0, 0, 16, 16, 16)};
@@ -62,6 +62,8 @@ public class DianaDardosBlock extends BaseEntityBlock {
     @Override
     public InteractionResult use(BlockState s, Level l, BlockPos pos, Player p, InteractionHand hand, BlockHitResult hit) {
         if (hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
+        // con un dardo en la mano el clic es para tirarlo, no para empezar otra partida
+        if (p.getMainHandItem().getItem() instanceof DardoItem) return InteractionResult.PASS;
         if (!l.isClientSide && l.getBlockEntity(pos) instanceof DianaDardosBlockEntity be) be.nueva(p);
         return InteractionResult.sidedSuccess(l.isClientSide);
     }

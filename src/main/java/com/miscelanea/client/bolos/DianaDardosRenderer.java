@@ -39,7 +39,14 @@ public class DianaDardosRenderer implements BlockEntityRenderer<DianaDardosBlock
         FeriaPiezas.caja(ps, vc, "negro", 0, 0, 0.0, 0.7, 0.2, 0.04, luz);
         ps.translate(0, 0, 0.03);
         ps.scale(0.0075F, -0.0075F, 0.0075F);
-        String s = be.nombre.isEmpty() ? "301" : be.nombre + ": " + be.quedan + (be.ultimo.isEmpty() ? "" : "  (" + be.ultimo + ")");
+        // con dos jugadores, el que tira lleva la flechita
+        String s;
+        if (be.jugadores <= 0) s = "301";
+        else if (be.jugadores == 1) s = be.nom[0] + ": " + be.puntos[0] + (be.ultimo.isEmpty() ? "" : "  (" + be.ultimo + ")");
+        else {
+            int toca = be.dardos >= 3 && !be.fin ? (be.actual + 1) % 2 : be.actual;
+            s = (toca == 0 ? "> " : "") + be.nom[0] + " " + be.puntos[0] + "   " + (toca == 1 ? "> " : "") + be.nom[1] + " " + be.puntos[1];
+        }
         float esc = Math.min(1, 86F / Math.max(1, font.width(s)));
         ps.scale(esc, esc, esc);
         font.drawInBatch(s, -font.width(s) / 2F, -4, 0xFFFFFFFF, false, ps.last().pose(), buf, Font.DisplayMode.NORMAL, 0, 0xF000F0);

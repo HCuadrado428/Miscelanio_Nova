@@ -105,8 +105,10 @@ public final class PipBoy {
 
     @SubscribeEvent
     public static void verJugador(PlayerEvent.StartTracking e) {
-        if (e.getTarget() instanceof ServerPlayer otro && e.getEntity() instanceof ServerPlayer yo && lleva(otro)) {
-            ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> yo), new PipBoyEstadoPacket(otro.getId(), (byte) 1));
+        // Se manda siempre (también "no lo lleva"): si se lo quitó mientras estaba fuera de tu vista,
+        // tu cliente seguía teniendo el estado viejo y lo dibujaba en su brazo
+        if (e.getTarget() instanceof ServerPlayer otro && e.getEntity() instanceof ServerPlayer yo) {
+            ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> yo), new PipBoyEstadoPacket(otro.getId(), (byte) (lleva(otro) ? 1 : 0)));
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.miscelanea.imperio;
 
+import com.miscelanea.mesas.Turnos;
 import com.miscelanea.registry.ModBlocks;
 import com.miscelanea.registry.ModSounds;
 import net.minecraft.ChatFormatting;
@@ -27,6 +28,9 @@ public class ImperioBlockEntity extends BlockEntity {
     public Partida p = new Partida();
     private final Random rnd = new Random();
     private int esperaCpu;
+    /** Juega por quien se va de la mesa o no juega; votos para terminar antes de tiempo (no se guardan). */
+    private final Turnos.Vigia vigia = new Turnos.Vigia();
+    private final Turnos.Votacion votos = new Turnos.Votacion();
 
     public ImperioBlockEntity(BlockPos pos, BlockState s) {
         super(ModBlocks.IMPERIO_BE.get(), pos, s);
@@ -65,6 +69,7 @@ public class ImperioBlockEntity extends BlockEntity {
     public void clic(ServerPlayer pl, double tx, double ty) {
         long ahora = level.getGameTime();
         int yo = indice(pl);
+        if (yo >= 0) vigia.despertar(pl.getUUID());
         ImperioBotones.Boton b = ImperioBotones.en(p, tx, ty);
         int c = ImperioGeo.casillaEn(tx, ty);
         boolean miTurno = yo >= 0 && yo == p.turno && p.fase != Partida.LOBBY;
@@ -99,10 +104,17 @@ public class ImperioBlockEntity extends BlockEntity {
                 Partida n = new Partida();
                 n.limite = p.limite;
                 p = n;
+                vigia.limpiar();
+                votos.limpiar();
             }
             case ImperioBotones.TERMINAR -> {
-                if (yo >= 0) p.terminarPorRondas();
-                else hecho = false;
+                // acabar y contar patrimonios: hace falta que estén de acuerdo todos los humanos que siguen en la mesa
+                if (yo < 0 || p.js.get(yo).fuera) hecho = false;
+                else {
+                    int faltan = votos.votar(level, worldPosition, pl.getUUID(), p.humanos());
+                    if (faltan == 0) p.terminarPorRondas();
+                    else Turnos.avisar(level, worldPosition, Turnos.AVISO_VOTO, pl.getGameProfile().getName(), faltan);
+                }
             }
             default -> {
                 if (!miTurno) {
@@ -145,10 +157,15 @@ public class ImperioBlockEntity extends BlockEntity {
         String cartaAntes = p.carta;
         long tCartaAntes = p.tCarta;
         boolean cambio = p.tick(ahora, be.rnd);
-        if (p.fase != Partida.MOVER && p.actual() != null && p.actual().cpu() && p.fase != Partida.LOBBY && p.fase != Partida.FIN) {
-            if (++be.esperaCpu >= p.esperaCpu()) {
-                be.esperaCpu = 0;
-                cambio |= p.cpu(be.rnd, ahora);
+        if (p.fase != Partida.MOVER && p.actual() != null && p.fase != Partida.LOBBY && p.fase != Partida.FIN) {
+            Partida.Jugador a = p.actual();
+            // si el humano de turno se ha ido (o no juega) la CPU juega por él
+            boolean porEl = !a.cpu() && be.vigia.vigilar(l, pos, a.uuid, a.nombre, p.tDados * 64 + p.turno * 8L + p.fase);
+            if (a.cpu() || porEl) {
+                if (++be.esperaCpu >= p.esperaCpu()) {
+                    be.esperaCpu = 0;
+                    cambio |= p.jugarPor(be.rnd, ahora);
+                }
             }
         }
         if (cambio) {
@@ -175,9 +192,12 @@ public class ImperioBlockEntity extends BlockEntity {
         p = t.contains("partida") ? Partida.cargar(t.getCompound("partida")) : new Partida();
     }
 
+    /** A los clientes no se les manda el orden de los mazos de cartas. */
     @Override
     public CompoundTag getUpdateTag() {
-        return saveWithoutMetadata();
+        CompoundTag t = new CompoundTag();
+        t.put("partida", p.guardarPublico());
+        return t;
     }
 
     @Override

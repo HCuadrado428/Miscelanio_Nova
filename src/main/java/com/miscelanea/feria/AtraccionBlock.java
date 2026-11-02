@@ -84,6 +84,8 @@ public class AtraccionBlock extends BaseEntityBlock {
 
     @Override
     public void onRemove(BlockState s, Level l, BlockPos pos, BlockState n, boolean mov) {
+        if (!s.is(n.getBlock()) && !l.isClientSide && s.getBlock() instanceof AtraccionBlock ab && ab.tipo == TIOVIVO)
+            AtraccionBlockEntity.callarMusica(l, pos);
         if (!s.is(n.getBlock()) && !l.isClientSide)
             for (AsientoFeria a : l.getEntitiesOfClass(AsientoFeria.class, AtraccionBlockEntity.zona(pos)))
                 if (a.atraccion().equals(pos)) a.discard();

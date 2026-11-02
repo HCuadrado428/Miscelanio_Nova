@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.entity.BarrelBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -26,7 +27,7 @@ import net.minecraftforge.fml.common.Mod;
 /**
  * La Llave Espada abre cerraduras: rayo de luz de la punta al bloque y campanita.
  * - Puertas y trampillas de hierro: se abren/cierran con la mano.
- * - Cofres y barriles: la primera vez que los abres con la llave sueltan un pequeño tesoro.
+ * - Cofres y barriles del mundo (con botín sin abrir): la primera vez que los abres con la llave sueltan un pequeño tesoro.
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID)
 public final class Cerraduras {
@@ -55,7 +56,8 @@ public final class Cerraduras {
             BlockEntity be = sl.getBlockEntity(pos);
             if (be instanceof ChestBlockEntity || be instanceof BarrelBlockEntity) {
                 cerradura = true;
-                if (!be.getPersistentData().getBoolean(ABIERTO)) {
+                // solo los cofres/barriles generados por el mundo con su botin aun sin abrir (evita granjas)
+                if (!be.getPersistentData().getBoolean(ABIERTO) && tieneBotinSinAbrir(be)) {
                     be.getPersistentData().putBoolean(ABIERTO, true);
                     be.setChanged();
                     tesoro(sl, pos);
@@ -73,6 +75,11 @@ public final class Cerraduras {
         }
         sl.sendParticles(ParticleTypes.FLASH, b.x, b.y, b.z, 1, 0, 0, 0, 0);
         sl.playSound(null, pos, ModSounds.CERRADURA.get(), SoundSource.PLAYERS, 1F, 1F);
+    }
+
+    /** El tesoro solo sale de contenedores generados con tabla de botín que aún no se ha desempaquetado. */
+    private static boolean tieneBotinSinAbrir(BlockEntity be) {
+        return be instanceof RandomizableContainerBlockEntity && be.saveWithoutMetadata().contains("LootTable", 8);
     }
 
     private static void tesoro(ServerLevel sl, BlockPos pos) {

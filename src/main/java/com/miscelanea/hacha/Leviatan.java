@@ -38,6 +38,13 @@ public final class Leviatan {
     private static final Map<UUID, Long> ESCUDO_DESDE = new HashMap<>();
     private static final Map<UUID, Long> INVULNERABLE = new HashMap<>();
     private static final Map<UUID, Integer> HACHAS = new HashMap<>();
+    /** Momento en que se bajó el escudo por última vez (para no encadenar ventanas de parry). */
+    private static final Map<UUID, Long> ESCUDO_BAJADO = new HashMap<>();
+    /** Última acción aceptada de cada jugador, para validar el orden de los combos en el servidor. */
+    private static final Map<UUID, Paso> ULTIMO_PASO = new HashMap<>();
+    private record Paso(AccionHacha accion, long cuando) {}
+    /** Ticks mínimos con el escudo bajado antes de que vuelva a haber ventana de parry. */
+    private static final int ESCUDO_BAJADO_MIN = 10;
     public static final int CD_LIGERO = 200, CD_PESADO = 400, ESCARCHA_TICKS = 300;
 
     private Leviatan() {}
@@ -63,26 +70,35 @@ public final class Leviatan {
     public static void postura(ServerPlayer p, byte v) {
         if (hacha(p).isEmpty()) v = PosturaPacket.NADA;
         Byte antes = POSTURA.put(p.getUUID(), v);
-        if (v == PosturaPacket.ESCUDO && (antes == null || antes != PosturaPacket.ESCUDO)) {
-            ESCUDO_DESDE.put(p.getUUID(), p.level().getGameTime());
+        long ahora = p.level().getGameTime();
+        boolean estaba = antes != null && antes == PosturaPacket.ESCUDO;
+        if (estaba && v != PosturaPacket.ESCUDO) ESCUDO_BAJADO.put(p.getUUID(), ahora);
+        if (v == PosturaPacket.ESCUDO && !estaba) {
+            // solo hay ventana de parry si el escudo llevaba un rato bajado (no vale subir y bajar sin parar)
+            Long bajado = ESCUDO_BAJADO.get(p.getUUID());
+            boolean ventana = bajado == null || ahora - bajado >= ESCUDO_BAJADO_MIN;
+            ESCUDO_DESDE.put(p.getUUID(), ventana ? ahora : -100L);
             p.level().playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.ESCUDO_ABRIR.get(), SoundSource.PLAYERS, 0.7F, 1.0F);
         }
         ModNetwork.CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> p), new PosturaOtroPacket(p.getId(), (byte) 0, v));
     }
 
-    public static void accion(ServerPlayer p, AccionHacha a, float yaw, float pitch, int objetivo) {
+    public static void accion(ServerPlayer p, AccionHacha pedida, float yaw, float pitch, int objetivo) {
         ItemStack s = hacha(p);
         if (s.isEmpty() || p.isSpectator()) return;
         ServerLevel sl = p.serverLevel();
         long ahora = sl.getGameTime();
         boolean fuera = HachaItem.lanzada(s);
-        if (a == AccionHacha.LLAMAR) {
+        if (pedida == AccionHacha.LLAMAR) {
             llamar(p, s);
             return;
         }
         if (ahora < LIBRE.getOrDefault(p.getUUID(), 0L) - 3) return;
-        if (fuera && !a.sinHacha && a != AccionHacha.ESQUIVA && a != AccionHacha.VOLTERETA) return;
-        if (!fuera && (a == AccionHacha.PUNO1 || a == AccionHacha.PUNO2 || a == AccionHacha.PUNO3)) return;
+        if (fuera && !pedida.sinHacha && pedida != AccionHacha.ESQUIVA && pedida != AccionHacha.VOLTERETA) return;
+        if (!fuera && (pedida == AccionHacha.PUNO1 || pedida == AccionHacha.PUNO2 || pedida == AccionHacha.PUNO3)) return;
+        // el servidor no se fía del orden del combo: sin el paso anterior reciente, se hace el primer golpe
+        final AccionHacha a = validarCombo(p, pedida, ahora);
+        if (a == null) return;
         var tag = s.getOrCreateTag();
         if (a.runicoLigero() || a.runicoPesado()) {
             String cd = a.runicoLigero() ? HachaItem.CD_LIGERO : HachaItem.CD_PESADO;
@@ -91,6 +107,7 @@ public final class Leviatan {
             sl.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.RUNICO.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
         }
         LIBRE.put(p.getUUID(), ahora + a.recuperacion);
+        ULTIMO_PASO.put(p.getUUID(), new Paso(a, ahora));
         anunciar(p, a, false);
         for (AccionHacha.Golpe g : a.golpes) CombateLlave.programar(p, g.tick(), () -> golpear(p, yaw, g));
         switch (a) {
@@ -110,6 +127,34 @@ public final class Leviatan {
         }
     }
 
+    /** Comprueba que el paso del combo sigue al anterior; si no, lo baja al inicio del combo (o null si no vale). */
+    private static AccionHacha validarCombo(ServerPlayer p, AccionHacha a, long ahora) {
+        Paso u = ULTIMO_PASO.get(p.getUUID());
+        AccionHacha previo = switch (a) {
+            case LIGERO2 -> AccionHacha.LIGERO1;
+            case LIGERO3 -> AccionHacha.LIGERO2;
+            case LIGERO4 -> AccionHacha.LIGERO3;
+            case PESADO2 -> AccionHacha.PESADO1;
+            case PUNO2 -> AccionHacha.PUNO1;
+            case PUNO3 -> AccionHacha.PUNO2;
+            default -> null;
+        };
+        if (a == AccionHacha.GOLPE_ESQUIVA) {
+            boolean trasEsquiva = u != null && (u.accion() == AccionHacha.ESQUIVA || u.accion() == AccionHacha.VOLTERETA) && ahora - u.cuando() <= 25;
+            return trasEsquiva ? a : AccionHacha.LIGERO1;
+        }
+        if (a == AccionHacha.ATRAPAR || a == AccionHacha.PARRY) return null; // solo los anuncia el servidor
+        if (previo == null) return a;
+        // margen generoso sobre la ventana del cliente (16-22 ticks) por el lag
+        int ventana = a == AccionHacha.PESADO2 ? 45 : 40;
+        if (u != null && u.accion() == previo && ahora - u.cuando() <= ventana) return a;
+        return switch (a) {
+            case PESADO2 -> AccionHacha.PESADO1;
+            case PUNO2, PUNO3 -> AccionHacha.PUNO1;
+            default -> AccionHacha.LIGERO1;
+        };
+    }
+
     // ------------------------------------------------------------------------------------------- golpes
     private static void golpear(ServerPlayer p, float yaw, AccionHacha.Golpe g) {
         ItemStack s = p.getMainHandItem();
@@ -122,6 +167,7 @@ public final class Leviatan {
         for (LivingEntity v : sl.getEntitiesOfClass(LivingEntity.class, p.getBoundingBox().inflate(g.alcance() + 1, 2.0, g.alcance() + 1),
                 x -> x != p && x.isAlive() && !x.isSpectator())) {
             if (v instanceof TamableAnimal t && t.isOwnedBy(p)) continue;
+            if (!CombateLlave.aLaVista(p, v)) continue; // no golpear a traves de paredes
             Vec3 d = v.position().subtract(p.position());
             double hd = d.horizontalDistance() - v.getBbWidth() * 0.5;
             if (hd > g.alcance() || Math.abs(d.y) > 2.6) continue;

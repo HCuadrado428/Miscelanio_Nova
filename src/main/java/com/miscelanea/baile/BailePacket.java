@@ -52,16 +52,21 @@ public class BailePacket {
         if (p.distanceToSqr(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5) > 36) return;
         if (!(p.level().getBlockEntity(pos) instanceof PistaBaileBlockEntity be) || !p.getUUID().equals(be.bailarin)) return;
         switch (tipo) {
-            case EMPIEZA -> be.empezar(p, a);
+            case EMPIEZA -> be.empezar(p, a, b);
             case PASO -> ModNetwork.CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> p), new BailePacket(PASO, pos, p.getId(), a & 7, b & 7));
             case FIN -> {
+                // los puntos los cuenta el cliente: el servidor solo acepta los de una canción que él empezó, y nunca más de lo
+                // que da de sí el trozo de canción que ha sonado (todo perfecto); un FIN sin canción en marcha no cuenta
+                int max = be.maxPuntos();
                 be.parar();
                 be.cambio();
-                if (a > 0) {
-                    ArcadeRecords.registrar(p, "paso", Math.min(a, 999_999));
+                int puntos = Math.min(a, max);
+                if (max > 0 && puntos > 0) {
+                    int nota = Math.max(0, Math.min(5, b));
+                    ArcadeRecords.registrar(p, "paso", puntos);
                     p.serverLevel().players().stream().filter(o -> o.distanceToSqr(p) < 32 * 32).forEach(o ->
-                            o.displayClientMessage(Component.translatable("baile.miscelanea.resultado", p.getDisplayName(), a,
-                                    "SABCDE".substring(Math.max(0, Math.min(5, b)), Math.max(0, Math.min(5, b)) + 1)).withStyle(ChatFormatting.LIGHT_PURPLE), false));
+                            o.displayClientMessage(Component.translatable("baile.miscelanea.resultado", p.getDisplayName(), puntos,
+                                    "SABCDE".substring(nota, nota + 1)).withStyle(ChatFormatting.LIGHT_PURPLE), false));
                 }
             }
             case SALIR -> be.salir();

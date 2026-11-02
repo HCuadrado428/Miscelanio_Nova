@@ -50,6 +50,11 @@ public final class PipBoyCliente {
         return (FLAGS.getOrDefault(p.getId(), (byte) 0) & 1) != 0;
     }
 
+    /** Para el ítem: ¿este jugador (del lado cliente) lleva ya el Pip-Boy puesto? */
+    public static boolean llevaJugador(net.minecraft.world.entity.player.Player p) {
+        return (FLAGS.getOrDefault(p.getId(), (byte) 0) & 1) != 0;
+    }
+
     public static boolean mirando(AbstractClientPlayer p) {
         if (p == Minecraft.getInstance().player) return mirandoYo;
         return (FLAGS.getOrDefault(p.getId(), (byte) 0) & 2) != 0;

@@ -13,7 +13,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.minecraftforge.fml.DistExecutor;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -37,7 +39,11 @@ public class PipBoyItem extends Item implements GeoItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack s = player.getItemInHand(hand);
-        if (PipBoy.lleva(player)) {
+        // En el cliente los datos persistentes no se sincronizan: se mira el estado que manda el servidor
+        boolean yaLo = level.isClientSide
+                ? Boolean.TRUE.equals(DistExecutor.unsafeCallWhenOn(Dist.CLIENT, () -> () -> com.miscelanea.client.pipboy.PipBoyCliente.llevaJugador(player)))
+                : PipBoy.lleva(player);
+        if (yaLo) {
             if (level.isClientSide) player.displayClientMessage(Component.translatable("msg.miscelanea.pipboy_ya"), true);
             return InteractionResultHolder.fail(s);
         }

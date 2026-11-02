@@ -5,7 +5,18 @@ import com.miscelanea.registry.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.OwnableEntity;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.animal.SnowGolem;
+import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.level.GameRules;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -19,6 +30,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -30,6 +42,13 @@ public final class MazoEventos {
 
     /** Mientras el propio mazo reparte daño en área no cuenta como golpe cuerpo a cuerpo. */
     private static boolean interno;
+
+    /** Con el mazo lanzado lo que queda en la mano está oculto: no puede hacer daño cuerpo a cuerpo. */
+    @SubscribeEvent
+    public static void ataque(AttackEntityEvent e) {
+        ItemStack s = MazoItem.enMano(e.getEntity());
+        if (s != null && MazoItem.lanzado(s)) e.setCanceled(true);
+    }
 
     @SubscribeEvent
     public static void golpe(LivingHurtEvent e) {
@@ -88,7 +107,7 @@ public final class MazoEventos {
         sl.sendParticles(ParticleTypes.EXPLOSION_EMITTER, c.x, c.y, c.z, 1, 0, 0, 0, 0);
         sl.playSound(null, c.x, c.y, c.z, ModSounds.MAZO_SISMO.get(), SoundSource.PLAYERS, 2.5F, 1F);
         TemblorPacket.enviar(sl, c, radio * 3, 2.5F, 20);
-        for (LivingEntity o : sl.getEntitiesOfClass(LivingEntity.class, p.getBoundingBox().inflate(radio, 2, radio), x -> x != p && x.isAlive() && !x.isSpectator())) {
+        for (LivingEntity o : sl.getEntitiesOfClass(LivingEntity.class, p.getBoundingBox().inflate(radio, 2, radio), x -> x != p && x.isAlive() && !x.isSpectator() && afectable(p, x))) {
             double d = o.position().distanceTo(c);
             if (d > radio) continue;
             float f = (float) (1 - 0.6 * d / radio);
@@ -105,14 +124,18 @@ public final class MazoEventos {
             o.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 1));
             MazoItem.sumarTrueno(p, s);
         }
-        // rompe lo blando de alrededor: plantas, flores, nieve, hojas
+        // rompe lo blando de alrededor: plantas, flores, nieve, hojas (respetando mobGriefing, modo aventura y protecciones)
         BlockPos b = p.blockPosition();
         int r = (int) Math.ceil(radio * 0.6);
-        for (BlockPos q : BlockPos.betweenClosed(b.offset(-r, -1, -r), b.offset(r, 1, r))) {
-            if (q.distSqr(b) > r * r) continue;
-            BlockState st = sl.getBlockState(q);
-            if (st.is(BlockTags.REPLACEABLE_BY_TREES) || st.is(BlockTags.FLOWERS) || st.is(Blocks.SNOW) || st.is(BlockTags.LEAVES))
-                sl.destroyBlock(q, true, p);
+        if (sl.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) && p.mayBuild()) {
+            for (BlockPos q : BlockPos.betweenClosed(b.offset(-r, -1, -r), b.offset(r, 1, r))) {
+                if (q.distSqr(b) > r * r) continue;
+                BlockState st = sl.getBlockState(q);
+                if (!(st.is(BlockTags.REPLACEABLE_BY_TREES) || st.is(BlockTags.FLOWERS) || st.is(Blocks.SNOW) || st.is(BlockTags.LEAVES))) continue;
+                BlockPos fija = q.immutable();
+                if (!p.mayInteract(sl, fija) || MinecraftForge.EVENT_BUS.post(new BlockEvent.BreakEvent(sl, fija, st, p))) continue;
+                sl.destroyBlock(fija, true, p);
+            }
         }
         if (MazoItem.trueno(s) >= MazoItem.MAX_TRUENO) {
             s.getOrCreateTag().putInt(MazoItem.TRUENO, 0);
@@ -121,21 +144,35 @@ public final class MazoEventos {
         p.getCooldowns().addCooldown(s.getItem(), 40);
     }
 
-    /** El rayo del mazo: cae en el punto, daña a los de alrededor (no al dueño) y los prende. */
+    /** El rayo del mazo: cae en el punto, daña a los de alrededor (no al dueño ni a sus aliados) y los prende. */
     static void rayo(ServerLevel sl, Vec3 c, Player p) {
         LightningBolt l = EntityType.LIGHTNING_BOLT.create(sl);
         if (l != null) {
             l.moveTo(c.x, c.y, c.z);
-            l.setVisualOnly(true);
+            l.setVisualOnly(true); // solo visual: el daño lo aplicamos a mano a objetivos válidos
+            if (p instanceof ServerPlayer sp) l.setCause(sp);
             sl.addFreshEntity(l);
         }
         sl.playSound(null, c.x, c.y, c.z, net.minecraft.sounds.SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, 4F, 1F);
-        for (LivingEntity o : sl.getEntitiesOfClass(LivingEntity.class, new net.minecraft.world.phys.AABB(c, c).inflate(3), x -> x != p && x.isAlive())) {
+        // daño de rayo atribuido al jugador (las muertes cuentan como suyas)
+        DamageSource fuente = new DamageSource(sl.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DamageTypes.LIGHTNING_BOLT), p);
+        for (LivingEntity o : sl.getEntitiesOfClass(LivingEntity.class, new net.minecraft.world.phys.AABB(c, c).inflate(3), x -> x != p && x.isAlive() && !x.isSpectator() && afectable(p, x))) {
             o.invulnerableTime = 0;
-            o.hurt(sl.damageSources().lightningBolt(), 12F);
+            interno = true;
+            try {
+                o.hurt(fuente, 12F);
+            } finally {
+                interno = false;
+            }
             o.setSecondsOnFire(4);
         }
         TemblorPacket.enviar(sl, c, 20, 2F, 15);
+    }
+
+    /** El daño en área del mazo no toca a las mascotas del dueño, ni aldeanos ni gólems. */
+    static boolean afectable(Player p, LivingEntity o) {
+        if (o instanceof OwnableEntity ow && p.getUUID().equals(ow.getOwnerUUID())) return false;
+        return !(o instanceof AbstractVillager || o instanceof IronGolem || o instanceof SnowGolem);
     }
 
     static void empujar(ServerLevel sl, Vec3 c, double radio, Player p, LivingEntity aparte, double sube) {

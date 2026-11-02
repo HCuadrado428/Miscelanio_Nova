@@ -51,9 +51,12 @@ public class BolaBolosItem extends Item {
             p.displayClientMessage(net.minecraft.network.chat.Component.translatable("miscelanea.bolos.sin_bolera"), true);
             return;
         }
+        b.dueno = p.getUUID();
+        b.creativo = p.getAbilities().instabuild;
         l.addFreshEntity(b);
-        if (be != null && !be.lanzamiento(p, b.getId())) {
+        if (!be.lanzamiento(p, b.getId())) {
             p.displayClientMessage(Component.translatable("miscelanea.bolos.ocupada", be.nombre), true);
+            b.devuelta = true;   // no se ha gastado: no hay que devolverla
             b.discard();
             return;
         }
