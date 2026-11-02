@@ -168,7 +168,7 @@ public final class EjecucionCliente {
 
     /** De 0 a 1: cuánto ha caído de rodillas (los jugadores). */
     public static float rodillas(float t) {
-        float k = Mth.clamp((t - 6F) / 30F, 0F, 1F);
+        float k = Mth.clamp((t - 38F) / 5F, 0F, 1F);   // = AnimEjecucion: cae de rodillas entre los ticks 38 y 43
         return k * k * (3F - 2F * k);
     }
 
