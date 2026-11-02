@@ -16,10 +16,13 @@ package com.miscelanea.tortura.qte;
  *       ritmo el corte avanza, si te sales se atasca y retrocede un poco.</li>
  *   <li>{@link #ESQUIVA}: algo llega por un lado (la semilla dice cuál: bit 1 = por la izquierda); pulsa la dirección
  *       contraria (A / D) antes de que llegue. El tiempo de reacción sale de la dificultad.</li>
+ *   <li>{@link #CORTAR_CABLES}: desactivar una bomba ("Keep Talking and Nobody Explodes"): un panel con 4-6 cables de
+ *       colores, un número de serie y un piloto; el manual dice cuál cortar. Arriba / abajo elige, SALTAR corta. El
+ *       primer corte decide: el bueno es éxito y cualquier otro, fallo. La semilla fija el panel (el mismo en cada intento).</li>
  * </ul>
  */
 public enum QteTipo {
-    CIRCULO, SECUENCIA, MACHACAR, ALTERNAR, GANZUA, BARRA_ZONA, RITMO, SERRAR, ESQUIVA;
+    CIRCULO, SECUENCIA, MACHACAR, ALTERNAR, GANZUA, BARRA_ZONA, RITMO, SERRAR, ESQUIVA, CORTAR_CABLES;
 
     public static QteTipo de(int i) {
         QteTipo[] v = values();

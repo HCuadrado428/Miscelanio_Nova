@@ -1,0 +1,78 @@
+{
+ "parent": "block/block",
+ "ambientocclusion": false,
+ "textures": {
+  "t": "miscelanea:block/tortura/collar_explosivo",
+  "particle": "miscelanea:block/tortura/collar_explosivo"
+ },
+ "elements": [
+  {
+   "from": [
+    7.4,
+    4.5,
+    1.4
+   ],
+   "to": [
+    8.6,
+    5.3,
+    1.6
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      9.7812,
+      6.9844,
+      10.3125,
+      7.1562
+     ],
+     "texture": "#t"
+    },
+    "south": {
+     "uv": [
+      10.375,
+      6.9844,
+      10.9062,
+      7.1562
+     ],
+     "texture": "#t"
+    },
+    "east": {
+     "uv": [
+      10.9688,
+      6.9844,
+      11.0625,
+      7.1562
+     ],
+     "texture": "#t"
+    },
+    "west": {
+     "uv": [
+      11.125,
+      6.9844,
+      11.2188,
+      7.1562
+     ],
+     "texture": "#t"
+    },
+    "up": {
+     "uv": [
+      11.2812,
+      6.9844,
+      11.8125,
+      7.0312
+     ],
+     "texture": "#t"
+    },
+    "down": {
+     "uv": [
+      11.875,
+      6.9844,
+      12.4062,
+      7.0312
+     ],
+     "texture": "#t"
+    }
+   }
+  }
+ ]
+}

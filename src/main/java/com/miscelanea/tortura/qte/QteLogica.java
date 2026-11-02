@@ -205,6 +205,87 @@ public final class QteLogica {
         return esquivaPorIzquierda(semilla) ? 3 : 2;
     }
 
+    // ------------------------------------------------------------------ CORTAR_CABLES
+    public static final int CABLES_PREVIO_MS = 600, CABLES_LEER_MS = 900;
+    /** Colores de los cables (índices de {@link #cablesColores}). */
+    public static final int ROJO = 0, AZUL = 1, AMARILLO = 2, BLANCO = 3, NEGRO = 4;
+
+    /** 4, 5 o 6 cables según la dificultad. */
+    public static int cablesNum(float d) {
+        return Math.max(4, Math.min(6, Math.round(lerp(d, 4F, 6F))));
+    }
+
+    /** Color de cada cable, de arriba abajo. */
+    public static int[] cablesColores(long semilla, float d) {
+        Random r = new Random(semilla ^ 0xCAB1E5L);
+        int[] c = new int[cablesNum(d)];
+        for (int i = 0; i < c.length; i++) c[i] = r.nextInt(5);
+        return c;
+    }
+
+    /** Número de serie del panel (siempre acaba en cifra): "DM-" + 3 letras/cifras + cifra. */
+    public static String cablesSerie(long semilla) {
+        Random r = new Random(semilla ^ 0x5E21EL);
+        String abc = "ABCDEFGHJKLMNPQRSTUVWXZ0123456789";
+        StringBuilder b = new StringBuilder("DM-");
+        for (int i = 0; i < 3; i++) b.append(abc.charAt(r.nextInt(abc.length())));
+        b.append((char) ('0' + r.nextInt(10)));
+        return b.toString();
+    }
+
+    public static boolean cablesSerieImpar(long semilla) {
+        String s = cablesSerie(semilla);
+        return (s.charAt(s.length() - 1) - '0') % 2 == 1;
+    }
+
+    /** Piloto "CARGA" encendido (solo a partir de dificultad media): los cables se cuentan de abajo arriba. */
+    public static boolean cablesPiloto(long semilla, float d) {
+        return d >= 0.45F && new Random(semilla ^ 0x9170L).nextBoolean();
+    }
+
+    public static int cablesTiempoMs(float d) {
+        return Math.round(lerp(d, 60000F, 30000F));
+    }
+
+    private static int cuenta(int[] c, int color) {
+        int n = 0;
+        for (int x : c) if (x == color) n++;
+        return n;
+    }
+
+    private static int ultimo(int[] c, int color) {
+        for (int i = c.length - 1; i >= 0; i--) if (c[i] == color) return i;
+        return c.length - 1;
+    }
+
+    /** Cable que hay que cortar (índice de arriba abajo), según el manual. */
+    public static int cablesCorrecto(long semilla, float d) {
+        int[] orig = cablesColores(semilla, d);
+        boolean piloto = cablesPiloto(semilla, d), impar = cablesSerieImpar(semilla);
+        int n = orig.length;
+        int[] c = new int[n];
+        for (int i = 0; i < n; i++) c[i] = piloto ? orig[n - 1 - i] : orig[i];
+        int k;
+        if (n == 4) {
+            if (cuenta(c, ROJO) > 1 && impar) k = ultimo(c, ROJO);
+            else if (c[n - 1] == AMARILLO && cuenta(c, ROJO) == 0) k = 0;
+            else if (cuenta(c, AZUL) == 1) k = 0;
+            else if (cuenta(c, AMARILLO) > 1) k = n - 1;
+            else k = 1;
+        } else if (n == 5) {
+            if (c[n - 1] == NEGRO && impar) k = 3;
+            else if (cuenta(c, ROJO) == 1 && cuenta(c, AMARILLO) > 1) k = 0;
+            else if (cuenta(c, NEGRO) == 0) k = 1;
+            else k = 0;
+        } else {
+            if (cuenta(c, AMARILLO) == 0 && impar) k = 2;
+            else if (cuenta(c, AMARILLO) == 1 && cuenta(c, BLANCO) > 1) k = 3;
+            else if (cuenta(c, ROJO) == 0) k = n - 1;
+            else k = 3;
+        }
+        return piloto ? n - 1 - k : k;
+    }
+
     // ------------------------------------------------------------------ validación
     /** Lo mínimo que tiene que durar una partida GANADA (el servidor mide siempre más que el cliente). */
     public static long minimoMs(QteTipo t, float d, int rondas, long semilla) {
@@ -233,6 +314,8 @@ public final class QteLogica {
                 return SERRAR_PREVIO_MS + (long) serrarNecesarios(d) * 50L;
             case ESQUIVA:
                 return ESQUIVA_REACCION_MIN_MS;
+            case CORTAR_CABLES:
+                return CABLES_PREVIO_MS + CABLES_LEER_MS;
         }
         return 0;
     }
@@ -259,6 +342,8 @@ public final class QteLogica {
                 return SERRAR_PREVIO_MS + SERRAR_TIEMPO_MS;
             case ESQUIVA:
                 return esquivaVentana(d) + 250L;
+            case CORTAR_CABLES:
+                return CABLES_PREVIO_MS + (long) cablesTiempoMs(d);
         }
         return 60000;
     }
@@ -266,7 +351,8 @@ public final class QteLogica {
     /**
      * ¿Es creíble este éxito? 'datos' depende del tipo:
      * CIRCULO [aciertos, perfectos] · SECUENCIA [pulsadas] · MACHACAR/ALTERNAR [pulsaciones] · GANZUA [ángulo×10]
-     * BARRA_ZONA [] · RITMO [aciertos, perfectos] · SERRAR [vaivenes, ticks buenos] · ESQUIVA [tecla, ms de reacción].
+     * BARRA_ZONA [] · RITMO [aciertos, perfectos] · SERRAR [vaivenes, ticks buenos] · ESQUIVA [tecla, ms de reacción]
+     * · CORTAR_CABLES [cable cortado].
      */
     public static boolean plausible(QteTipo t, float d, int rondas, long semilla, int[] datos, long ms) {
         if (ms + HOLGURA_MS < minimoMs(t, d, rondas, semilla)) return false;
@@ -297,6 +383,8 @@ public final class QteLogica {
             }
             case ESQUIVA:
                 return a == esquivaTecla(semilla) && b >= ESQUIVA_REACCION_MIN_MS - 40 && b <= esquivaVentana(d) + 100;
+            case CORTAR_CABLES:
+                return a == cablesCorrecto(semilla, d);
         }
         return false;
     }

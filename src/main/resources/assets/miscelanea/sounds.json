@@ -1852,5 +1852,85 @@
       "miscelanea:lavar"
     ],
     "subtitle": "subtitles.miscelanea.lavar"
+  },
+  "collar_pitido": {
+    "sounds": [
+      "miscelanea:collar_pitido"
+    ],
+    "subtitle": "subtitles.miscelanea.collar_pitido"
+  },
+  "collar_tono": {
+    "sounds": [
+      "miscelanea:collar_tono"
+    ],
+    "subtitle": "subtitles.miscelanea.collar_tono"
+  },
+  "collar_cerrar": {
+    "sounds": [
+      "miscelanea:collar_cerrar"
+    ],
+    "subtitle": "subtitles.miscelanea.collar_cerrar"
+  },
+  "collar_abrir": {
+    "sounds": [
+      "miscelanea:collar_abrir"
+    ],
+    "subtitle": "subtitles.miscelanea.collar_abrir"
+  },
+  "collar_estatica": {
+    "sounds": [
+      "miscelanea:collar_estatica"
+    ],
+    "subtitle": "subtitles.miscelanea.collar_estatica"
+  },
+  "collar_estallido": {
+    "sounds": [
+      "miscelanea:collar_estallido"
+    ],
+    "subtitle": "subtitles.miscelanea.collar_estallido"
+  },
+  "detonador_carga": {
+    "sounds": [
+      "miscelanea:detonador_carga"
+    ],
+    "subtitle": "subtitles.miscelanea.detonador_carga"
+  },
+  "gas_siseo": {
+    "sounds": [
+      "miscelanea:gas_siseo"
+    ],
+    "subtitle": "subtitles.miscelanea.gas_siseo"
+  },
+  "cerbatana": {
+    "sounds": [
+      "miscelanea:cerbatana"
+    ],
+    "subtitle": "subtitles.miscelanea.cerbatana"
+  },
+  "miedo_susurros": {
+    "sounds": [
+      "miscelanea:miedo_susurros1",
+      "miscelanea:miedo_susurros2",
+      "miscelanea:miedo_susurros3"
+    ],
+    "subtitle": "subtitles.miscelanea.miedo_susurros"
+  },
+  "miedo_latido": {
+    "sounds": [
+      "miscelanea:miedo_latido"
+    ],
+    "subtitle": "subtitles.miscelanea.miedo_latido"
+  },
+  "miedo_susto": {
+    "sounds": [
+      "miscelanea:miedo_susto"
+    ],
+    "subtitle": "subtitles.miscelanea.miedo_susto"
+  },
+  "miedo_zumbido": {
+    "sounds": [
+      "miscelanea:miedo_zumbido"
+    ],
+    "subtitle": "subtitles.miscelanea.miedo_zumbido"
   }
 }
