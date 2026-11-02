@@ -139,7 +139,7 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
         // brazos con bombillas y barra de la cesta
         int n = be.asientos();
         for (int i = 0; i < n; i++) {
-            double[] e = be.brazo(i, be.getLevel().getGameTime() + (double) pt);
+            double[] e = be.brazo(i, be.getLevel().getGameTime() + (double) (t - (float) Math.floor(t)));
             double ex = cx + e[0], ey = e[1], ez = cz + e[2];
             FeriaPiezas.barra(ps, vc, "metal_blanco", cx, hub + 0.2, cz, ex, ey, ez, 0.32F, 0.32F, luz);
             FeriaPiezas.barra(ps, vc, "color0", cx, hub + 0.45, cz, ex, ey + 0.1, ez, 0.12F, 0.12F, luz);

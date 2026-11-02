@@ -66,6 +66,9 @@ public final class ModBlocks {
     public static final RegistryObject<Block> TIOVIVO = BLOCKS.register("tiovivo",
             () -> new com.miscelanea.feria.AtraccionBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(3.0F)
                     .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 10), com.miscelanea.feria.AtraccionBlock.TIOVIVO));
+    public static final RegistryObject<Block> PULPO = BLOCKS.register("pulpo",
+            () -> new com.miscelanea.feria.AtraccionBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(3.0F)
+                    .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 10), com.miscelanea.feria.AtraccionBlock.PULPO));
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.feria.AtraccionBlockEntity>> ATRACCION_BE = BLOCK_ENTITIES.register("atraccion",
             () -> BlockEntityType.Builder.of(com.miscelanea.feria.AtraccionBlockEntity::new, NORIA.get(), TIOVIVO.get(), PULPO.get()).build(null));
@@ -155,9 +158,6 @@ public final class ModBlocks {
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.cartas.MesaCartasBlockEntity>> MESA_CARTAS_BE = BLOCK_ENTITIES.register("mesa_cartas",
             () -> BlockEntityType.Builder.of(com.miscelanea.cartas.MesaCartasBlockEntity::new, MESA_CARTAS.get()).build(null));
-    public static final RegistryObject<Block> PULPO = BLOCKS.register("pulpo",
-            () -> new com.miscelanea.feria.AtraccionBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(3.0F)
-                    .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 10), com.miscelanea.feria.AtraccionBlock.PULPO));
     public static final RegistryObject<Block> PESCA_PATITOS = BLOCKS.register("pesca_patitos",
             () -> new com.miscelanea.feria.PuestoFeriaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WATER).strength(2.0F)
                     .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 4), com.miscelanea.feria.PuestoFeriaBlock.PATITOS));
