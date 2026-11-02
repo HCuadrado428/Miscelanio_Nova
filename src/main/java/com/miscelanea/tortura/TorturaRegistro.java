@@ -38,12 +38,35 @@ public final class TorturaRegistro {
             () -> EntityType.Builder.<LazoEntity>of(LazoEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F).clientTrackingRange(8).updateInterval(1).noSummon().build("lazo_lanzado"));
 
+    // ---- castigos (jaula colgante, cepo, tomates y huevos podridos, bola de preso)
+    public static final RegistryObject<EntityType<com.miscelanea.tortura.castigo.JaulaEntity>> JAULA = ENTITIES.register("jaula",
+            () -> EntityType.Builder.<com.miscelanea.tortura.castigo.JaulaEntity>of(com.miscelanea.tortura.castigo.JaulaEntity::new, MobCategory.MISC)
+                    .sized(1.3F, 2.65F).clientTrackingRange(10).updateInterval(1).noSummon().build("jaula"));
+    public static final RegistryObject<EntityType<com.miscelanea.tortura.castigo.CepoEntity>> CEPO_ASIENTO = ENTITIES.register("cepo_asiento",
+            () -> EntityType.Builder.<com.miscelanea.tortura.castigo.CepoEntity>of(com.miscelanea.tortura.castigo.CepoEntity::new, MobCategory.MISC)
+                    .sized(0.3F, 0.3F).clientTrackingRange(10).updateInterval(5).noSummon().build("cepo_asiento"));
+    public static final RegistryObject<EntityType<com.miscelanea.tortura.castigo.ProyectilPodrido>> TOMATE_LANZADO = ENTITIES.register("tomate_lanzado",
+            () -> EntityType.Builder.<com.miscelanea.tortura.castigo.ProyectilPodrido>of(com.miscelanea.tortura.castigo.ProyectilPodrido::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F).clientTrackingRange(6).updateInterval(2).build("tomate_lanzado"));
+    public static final RegistryObject<EntityType<com.miscelanea.tortura.castigo.ProyectilPodrido>> HUEVO_LANZADO = ENTITIES.register("huevo_lanzado",
+            () -> EntityType.Builder.<com.miscelanea.tortura.castigo.ProyectilPodrido>of(com.miscelanea.tortura.castigo.ProyectilPodrido::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F).clientTrackingRange(6).updateInterval(2).build("huevo_lanzado"));
+    public static final RegistryObject<EntityType<com.miscelanea.tortura.castigo.BolaPresoEntity>> BOLA_PRESO_ENT = ENTITIES.register("bola_preso",
+            () -> EntityType.Builder.<com.miscelanea.tortura.castigo.BolaPresoEntity>of(com.miscelanea.tortura.castigo.BolaPresoEntity::new, MobCategory.MISC)
+                    .sized(0.45F, 0.45F).clientTrackingRange(8).updateInterval(1).noSummon().build("bola_preso"));
+
     // ---- bloques
     public static final RegistryObject<Block> CAJA_JIGSAW = BLOCKS.register("caja_jigsaw",
             () -> new CajaJigsawBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.2F).sound(SoundType.WOOD).noOcclusion()));
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<CajaJigsawBlockEntity>> CAJA_JIGSAW_BE = BLOCK_ENTITIES.register("caja_jigsaw",
             () -> BlockEntityType.Builder.of(CajaJigsawBlockEntity::new, CAJA_JIGSAW.get()).build(null));
+
+    public static final RegistryObject<Block> JAULA_COLGANTE = BLOCKS.register("jaula_colgante",
+            () -> new com.miscelanea.tortura.castigo.JaulaAnclaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(2.0F, 6.0F)
+                    .sound(SoundType.CHAIN).noOcclusion()));
+    public static final RegistryObject<Block> CEPO = BLOCKS.register("cepo",
+            () -> new com.miscelanea.tortura.castigo.CepoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.0F).sound(SoundType.WOOD).noOcclusion()));
 
     // ---- objetos
     public static final RegistryObject<Item> TRAMPA_OSO = ITEMS.register("trampa_oso",
@@ -60,6 +83,21 @@ public final class TorturaRegistro {
             () -> new GanzuaItem(new Item.Properties().stacksTo(64).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> LAZO = ITEMS.register("lazo",
             () -> new LazoItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+
+    public static final RegistryObject<Item> JAULA_COLGANTE_ITEM = ITEMS.register("jaula_colgante",
+            () -> new BlockItem(JAULA_COLGANTE.get(), new Item.Properties().stacksTo(16).rarity(Rarity.EPIC)));
+    public static final RegistryObject<Item> CEPO_ITEM = ITEMS.register("cepo",
+            () -> new BlockItem(CEPO.get(), new Item.Properties().stacksTo(16).rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> LLAVE_CARCELERO = ITEMS.register("llave_carcelero",
+            () -> new com.miscelanea.tortura.castigo.LlaveCarceleroItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> TOMATE_PODRIDO = ITEMS.register("tomate_podrido",
+            () -> new com.miscelanea.tortura.castigo.PodridoItem(new Item.Properties().stacksTo(16), false));
+    public static final RegistryObject<Item> HUEVO_PODRIDO = ITEMS.register("huevo_podrido",
+            () -> new com.miscelanea.tortura.castigo.PodridoItem(new Item.Properties().stacksTo(16), true));
+    public static final RegistryObject<Item> BOLA_PRESO = ITEMS.register("bola_preso",
+            () -> new com.miscelanea.tortura.castigo.BolaPresoItem(new Item.Properties().stacksTo(4).rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> SIERRA = ITEMS.register("sierra",
+            () -> new com.miscelanea.tortura.castigo.SierraItem(new Item.Properties().durability(6).rarity(Rarity.UNCOMMON)));
 
     // ---- sonidos
     public static final RegistryObject<SoundEvent> QTE_TIC = sonido("qte_tic");
@@ -89,6 +127,27 @@ public final class TorturaRegistro {
     public static final RegistryObject<SoundEvent> LAZO_TENSION = sonido("lazo_tension");
     public static final RegistryObject<SoundEvent> LAZO_ATAR = sonido("lazo_atar");
     public static final RegistryObject<SoundEvent> LAZO_ROMPER = sonido("lazo_romper");
+
+    // castigos
+    public static final RegistryObject<SoundEvent> JAULA_CRUJIDO = sonido("jaula_crujido");
+    public static final RegistryObject<SoundEvent> JAULA_BALANCEO = sonido("jaula_balanceo");
+    public static final RegistryObject<SoundEvent> JAULA_CADENA = sonido("jaula_cadena");
+    public static final RegistryObject<SoundEvent> JAULA_ROTA = sonido("jaula_rota");
+    public static final RegistryObject<SoundEvent> JAULA_PUERTA = sonido("jaula_puerta");
+    public static final RegistryObject<SoundEvent> JAULA_CERROJO = sonido("jaula_cerrojo");
+    public static final RegistryObject<SoundEvent> CEPO_CERRAR = sonido("cepo_cerrar");
+    public static final RegistryObject<SoundEvent> CEPO_ABRIR = sonido("cepo_abrir");
+    public static final RegistryObject<SoundEvent> TOMATE_LANZAR = sonido("tomate_lanzar");
+    public static final RegistryObject<SoundEvent> TOMATE_SPLAT = sonido("tomate_splat");
+    public static final RegistryObject<SoundEvent> HUEVO_SPLAT = sonido("huevo_splat");
+    public static final RegistryObject<SoundEvent> LLUVIA_TOMATES = sonido("lluvia_tomates");
+    public static final RegistryObject<SoundEvent> ESQUIVA = sonido("esquiva");
+    public static final RegistryObject<SoundEvent> BOLA_ARRASTRE = sonido("bola_arrastre");
+    public static final RegistryObject<SoundEvent> BOLA_GOLPE = sonido("bola_golpe");
+    public static final RegistryObject<SoundEvent> BOLA_PONER = sonido("bola_poner");
+    public static final RegistryObject<SoundEvent> SIERRA_SERRAR = sonido("sierra_serrar");
+    public static final RegistryObject<SoundEvent> CADENA_ROTA = sonido("cadena_rota");
+    public static final RegistryObject<SoundEvent> LAVAR = sonido("lavar");
 
     private static RegistryObject<SoundEvent> sonido(String n) {
         return SOUNDS.register(n, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Miscelanea.MOD_ID, n)));

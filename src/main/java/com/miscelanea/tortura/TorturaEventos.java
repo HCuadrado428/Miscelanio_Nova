@@ -180,7 +180,8 @@ public final class TorturaEventos {
     }
 
     private static boolean permitido(ItemStack s) {
-        return s.getItem() instanceof GanzuaItem || s.getItem() instanceof LlaveTrampaItem;
+        return s.getItem() instanceof GanzuaItem || s.getItem() instanceof LlaveTrampaItem
+                || s.getItem() instanceof com.miscelanea.tortura.castigo.SierraItem;
     }
 
     private static void aviso(Player p) {
