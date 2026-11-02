@@ -42,7 +42,7 @@ public final class Muebles {
         if (!level.getEntitiesOfClass(Asiento.class, new AABB(pos)).isEmpty()) return InteractionResult.PASS;   // ocupado
         if (!level.isClientSide) {
             Asiento a = new Asiento(ModEntities.ASIENTO.get(), level);
-            a.setPos(pos.getX() + 0.5, pos.getY() + altura - 0.6, pos.getZ() + 0.5);
+            a.setPos(pos.getX() + 0.5, pos.getY() + altura - Asiento.SOBRE_COJIN, pos.getZ() + 0.5);
             a.setYRot(mira.toYRot());
             level.addFreshEntity(a);
             p.startRiding(a);

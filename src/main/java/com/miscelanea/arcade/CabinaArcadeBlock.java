@@ -78,7 +78,7 @@ public class CabinaArcadeBlock extends RecreativaBlock {
         if (sp.isPassenger() || !l.getEntitiesOfClass(Asiento.class, new AABB(abajo).inflate(0, 0.5, 0)).isEmpty()) return;
         Direction f = s.getValue(FACING);
         Asiento a = new Asiento(ModEntities.ASIENTO.get(), l);
-        a.setPos(abajo.getX() + 0.5 + f.getStepX() * 0.22, abajo.getY() + 0.42 - 0.6, abajo.getZ() + 0.5 + f.getStepZ() * 0.22);
+        a.setPos(abajo.getX() + 0.5 + f.getStepX() * 0.22, abajo.getY() + 0.42 - Asiento.SOBRE_COJIN, abajo.getZ() + 0.5 + f.getStepZ() * 0.22);
         a.setYRot(f.getOpposite().toYRot());
         l.addFreshEntity(a);
         sp.startRiding(a);
