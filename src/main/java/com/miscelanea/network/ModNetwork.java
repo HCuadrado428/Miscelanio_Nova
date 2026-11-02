@@ -292,5 +292,6 @@ public final class ModNetwork {
                 .decoder(com.miscelanea.mesas.PrivadoPacket::new)
                 .consumerMainThread(com.miscelanea.mesas.PrivadoPacket::handle)
                 .add();
+        id = com.miscelanea.tortura.TorturaRed.registrar(CHANNEL, id);
     }
 }

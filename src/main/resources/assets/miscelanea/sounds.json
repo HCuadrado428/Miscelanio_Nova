@@ -1516,5 +1516,107 @@
       "miscelanea:mazo_cargado"
     ],
     "subtitle": "subtitles.miscelanea.mazo_cargado"
+  },
+  "qte_tic": {
+    "sounds": [
+      "miscelanea:qte_tic"
+    ],
+    "subtitle": "subtitles.miscelanea.qte_tic"
+  },
+  "qte_exito": {
+    "sounds": [
+      "miscelanea:qte_exito"
+    ],
+    "subtitle": "subtitles.miscelanea.qte_exito"
+  },
+  "qte_perfecto": {
+    "sounds": [
+      "miscelanea:qte_perfecto"
+    ],
+    "subtitle": "subtitles.miscelanea.qte_perfecto"
+  },
+  "qte_fallo": {
+    "sounds": [
+      "miscelanea:qte_fallo"
+    ],
+    "subtitle": "subtitles.miscelanea.qte_fallo"
+  },
+  "qte_pulsar": {
+    "sounds": [
+      "miscelanea:qte_pulsar"
+    ],
+    "subtitle": "subtitles.miscelanea.qte_pulsar"
+  },
+  "ganzua_rota": {
+    "sounds": [
+      "miscelanea:ganzua_rota"
+    ],
+    "subtitle": "subtitles.miscelanea.ganzua_rota"
+  },
+  "ganzua_girar": {
+    "sounds": [
+      "miscelanea:ganzua_girar"
+    ],
+    "subtitle": "subtitles.miscelanea.ganzua_girar"
+  },
+  "cerradura_abrir": {
+    "sounds": [
+      "miscelanea:cerradura_abrir"
+    ],
+    "subtitle": "subtitles.miscelanea.cerradura_abrir"
+  },
+  "trampa_tic": {
+    "sounds": [
+      "miscelanea:trampa_tic"
+    ],
+    "subtitle": "subtitles.miscelanea.trampa_tic"
+  },
+  "trampa_chasquido": {
+    "sounds": [
+      "miscelanea:trampa_chasquido"
+    ],
+    "subtitle": "subtitles.miscelanea.trampa_chasquido"
+  },
+  "trampa_poner": {
+    "sounds": [
+      "miscelanea:trampa_poner"
+    ],
+    "subtitle": "subtitles.miscelanea.trampa_poner"
+  },
+  "trampa_quitar": {
+    "sounds": [
+      "miscelanea:trampa_quitar"
+    ],
+    "subtitle": "subtitles.miscelanea.trampa_quitar"
+  },
+  "grilletes_poner": {
+    "sounds": [
+      "miscelanea:grilletes_poner"
+    ],
+    "subtitle": "subtitles.miscelanea.grilletes_poner"
+  },
+  "grilletes_quitar": {
+    "sounds": [
+      "miscelanea:grilletes_quitar"
+    ],
+    "subtitle": "subtitles.miscelanea.grilletes_quitar"
+  },
+  "cadena_tintineo": {
+    "sounds": [
+      "miscelanea:cadena_tintineo"
+    ],
+    "subtitle": "subtitles.miscelanea.cadena_tintineo"
+  },
+  "caja_buscar": {
+    "sounds": [
+      "miscelanea:caja_buscar"
+    ],
+    "subtitle": "subtitles.miscelanea.caja_buscar"
+  },
+  "llave_encontrada": {
+    "sounds": [
+      "miscelanea:llave_encontrada"
+    ],
+    "subtitle": "subtitles.miscelanea.llave_encontrada"
   }
 }
