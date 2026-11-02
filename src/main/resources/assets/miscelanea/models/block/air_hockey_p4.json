@@ -3,7 +3,9 @@
  "textures": {
   "negro": "miscelanea:block/mesas/airhockey_negro",
   "lado": "miscelanea:block/mesas/airhockey_lado",
-  "metal": "miscelanea:block/mesas/futbolin_metal",
+  "metal": "miscelanea:block/feria/cromo",
+  "led0": "miscelanea:block/mesas/airhockey_led0",
+  "led1": "miscelanea:block/mesas/airhockey_led1",
   "particle": "miscelanea:block/mesas/airhockey_lado",
   "campo": "miscelanea:block/mesas/airhockey_campo_1_1"
  },
@@ -11,7 +13,7 @@
   {
    "from": [
     0,
-    9,
+    8,
     1
    ],
    "to": [
@@ -25,7 +27,7 @@
       0,
       4,
       16,
-      7
+      8
      ],
      "texture": "#lado"
     },
@@ -34,7 +36,7 @@
       0,
       4,
       16,
-      7
+      8
      ],
      "texture": "#lado"
     },
@@ -43,7 +45,7 @@
       0,
       4,
       15,
-      7
+      8
      ],
      "texture": "#lado"
     },
@@ -52,7 +54,7 @@
       1,
       4,
       16,
-      7
+      8
      ],
      "texture": "#lado"
     },
@@ -102,7 +104,7 @@
   {
    "from": [
     -0.012,
-    8.988,
+    7.988,
     0
    ],
    "to": [
@@ -116,7 +118,7 @@
       0,
       1.5,
       16,
-      7
+      8
      ],
      "texture": "#negro"
     },
@@ -125,7 +127,7 @@
       0,
       1.5,
       16,
-      7
+      8
      ],
      "texture": "#negro"
     },
@@ -134,7 +136,7 @@
       14.5,
       1.5,
       16,
-      7
+      8
      ],
      "texture": "#negro"
     },
@@ -143,7 +145,7 @@
       0,
       1.5,
       1.5,
-      7
+      8
      ],
      "texture": "#negro"
     },
@@ -164,6 +166,74 @@
       16
      ],
      "texture": "#negro"
+    }
+   }
+  },
+  {
+   "from": [
+    0,
+    14.5,
+    0
+   ],
+   "to": [
+    16,
+    15,
+    1.5
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      0,
+      1,
+      16,
+      1.5
+     ],
+     "texture": "#metal"
+    },
+    "south": {
+     "uv": [
+      0,
+      1,
+      16,
+      1.5
+     ],
+     "texture": "#metal"
+    },
+    "east": {
+     "uv": [
+      14.5,
+      1,
+      16,
+      1.5
+     ],
+     "texture": "#metal"
+    },
+    "west": {
+     "uv": [
+      0,
+      1,
+      1.5,
+      1.5
+     ],
+     "texture": "#metal"
+    },
+    "up": {
+     "uv": [
+      0,
+      0,
+      16,
+      1.5
+     ],
+     "texture": "#metal"
+    },
+    "down": {
+     "uv": [
+      0,
+      14.5,
+      16,
+      16
+     ],
+     "texture": "#metal"
     }
    }
   }

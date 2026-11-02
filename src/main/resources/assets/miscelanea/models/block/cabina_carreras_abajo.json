@@ -1,7 +1,7 @@
 {
  "parent": "block/block",
  "textures": {
-  "lateral": "miscelanea:block/carreras_lateral",
+  "lateral": "miscelanea:block/carreras_lateral_b",
   "frente": "miscelanea:block/recreativa_frente",
   "moldura": "miscelanea:block/recreativa_moldura",
   "monedas": "miscelanea:block/recreativa_monedas",
