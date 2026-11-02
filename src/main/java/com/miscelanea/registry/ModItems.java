@@ -217,6 +217,16 @@ public final class ModItems {
                     .effect(() -> new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.DIG_SPEED, 20 * 30, 0), 1F).build())));
     public static final RegistryObject<Item> MESA_CARTAS = ITEMS.register("mesa_cartas",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.MESA_CARTAS.get(), new Item.Properties()));
+    public static final RegistryObject<Item> MAQUINA_CANASTA = ITEMS.register("maquina_canasta",
+            () -> new net.minecraft.world.item.DoubleHighBlockItem(ModBlocks.MAQUINA_CANASTA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> MAQUINA_BOXEO = ITEMS.register("maquina_boxeo",
+            () -> new net.minecraft.world.item.DoubleHighBlockItem(ModBlocks.MAQUINA_BOXEO.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> MARTILLO_FUERZA = ITEMS.register("martillo_fuerza",
+            () -> new net.minecraft.world.item.DoubleHighBlockItem(ModBlocks.MARTILLO_FUERZA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> BALON = ITEMS.register("balon",
+            () -> new com.miscelanea.feria.BalonItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> AIRHOCKEY = ITEMS.register("air_hockey",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.AIRHOCKEY.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> PISTA_BAILE = ITEMS.register("pista_baile",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PISTA_BAILE.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> BILLAR = ITEMS.register("billar",

@@ -1,0 +1,82 @@
+{
+ "parent": "block/block",
+ "textures": {
+  "m": "miscelanea:block/feria/madera_a",
+  "w": "miscelanea:block/feria/madera_b",
+  "r": "miscelanea:block/feria/metal_rojo",
+  "c": "miscelanea:block/feria/cromo",
+  "o": "miscelanea:block/feria/dorado",
+  "k": "miscelanea:block/feria/negro",
+  "particle": "miscelanea:block/feria/madera_a"
+ },
+ "elements": [
+  {
+   "from": [
+    6,
+    0,
+    10
+   ],
+   "to": [
+    10,
+    16,
+    14
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      6,
+      0,
+      10,
+      16
+     ],
+     "texture": "#w"
+    },
+    "south": {
+     "uv": [
+      6,
+      0,
+      10,
+      16
+     ],
+     "texture": "#w"
+    },
+    "east": {
+     "uv": [
+      2,
+      0,
+      6,
+      16
+     ],
+     "texture": "#w"
+    },
+    "west": {
+     "uv": [
+      10,
+      0,
+      14,
+      16
+     ],
+     "texture": "#w"
+    },
+    "up": {
+     "uv": [
+      6,
+      10,
+      10,
+      14
+     ],
+     "texture": "#w"
+    },
+    "down": {
+     "uv": [
+      6,
+      2,
+      10,
+      6
+     ],
+     "texture": "#w"
+    }
+   }
+  }
+ ]
+}

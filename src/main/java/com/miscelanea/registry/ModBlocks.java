@@ -105,9 +105,19 @@ public final class ModBlocks {
     public static final RegistryObject<Block> GACHAPON = BLOCKS.register("gachapon",
             () -> new com.miscelanea.feria.MaquinaAltaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(2.0F)
                     .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 6), com.miscelanea.feria.MaquinaAltaBlock.GACHAPON));
+    public static final RegistryObject<Block> MAQUINA_CANASTA = BLOCKS.register("maquina_canasta",
+            () -> new com.miscelanea.feria.MaquinaAltaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(2.0F)
+                    .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 9), com.miscelanea.feria.MaquinaAltaBlock.CANASTA));
+    public static final RegistryObject<Block> MAQUINA_BOXEO = BLOCKS.register("maquina_boxeo",
+            () -> new com.miscelanea.feria.MaquinaAltaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(2.0F)
+                    .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 8), com.miscelanea.feria.MaquinaAltaBlock.BOXEO));
+    public static final RegistryObject<Block> MARTILLO_FUERZA = BLOCKS.register("martillo_fuerza",
+            () -> new com.miscelanea.feria.MaquinaAltaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).strength(2.0F)
+                    .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 6), com.miscelanea.feria.MaquinaAltaBlock.MARTILLO));
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.feria.MaquinaAltaBlockEntity>> MAQUINA_ALTA_BE = BLOCK_ENTITIES.register("maquina_alta",
-            () -> BlockEntityType.Builder.of(com.miscelanea.feria.MaquinaAltaBlockEntity::new, MAQUINA_GANCHO.get(), TRAGAPERRAS.get(), GACHAPON.get()).build(null));
+            () -> BlockEntityType.Builder.of(com.miscelanea.feria.MaquinaAltaBlockEntity::new, MAQUINA_GANCHO.get(), TRAGAPERRAS.get(), GACHAPON.get(),
+                    MAQUINA_CANASTA.get(), MAQUINA_BOXEO.get(), MARTILLO_FUERZA.get()).build(null));
     public static final RegistryObject<Block> BOLERA = BLOCKS.register("bolera",
             () -> new com.miscelanea.bolos.BoleraBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.5F)
                     .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 6)));
@@ -157,6 +167,12 @@ public final class ModBlocks {
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.mesas.FutbolinBlockEntity>> FUTBOLIN_BE = BLOCK_ENTITIES.register("futbolin",
             () -> BlockEntityType.Builder.of(com.miscelanea.mesas.FutbolinBlockEntity::new, FUTBOLIN.get()).build(null));
+    public static final RegistryObject<Block> AIRHOCKEY = BLOCKS.register("air_hockey",
+            () -> new com.miscelanea.mesas.AirHockeyBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).strength(2.0F)
+                    .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 5)));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.mesas.AirHockeyBlockEntity>> AIRHOCKEY_BE = BLOCK_ENTITIES.register("air_hockey",
+            () -> BlockEntityType.Builder.of(com.miscelanea.mesas.AirHockeyBlockEntity::new, AIRHOCKEY.get()).build(null));
     public static final RegistryObject<Block> CARTEL_RECORDS = BLOCKS.register("cartel_records",
             () -> new com.miscelanea.arcade.CartelRecordsBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(1.0F)
                     .sound(SoundType.GLASS).noOcclusion().lightLevel(st -> 9)));

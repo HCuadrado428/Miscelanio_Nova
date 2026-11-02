@@ -107,6 +107,11 @@ public class Miscelanea {
             event.accept(ModItems.TRAGAPERRAS);
             event.accept(ModItems.GACHAPON);
             event.accept(ModItems.CAPSULA_GACHA);
+            event.accept(ModItems.MAQUINA_CANASTA);
+            event.accept(ModItems.MAQUINA_BOXEO);
+            event.accept(ModItems.MARTILLO_FUERZA);
+            event.accept(ModItems.BALON);
+            event.accept(ModItems.AIRHOCKEY);
             event.accept(ModItems.BOLERA);
             event.accept(ModItems.BOLA_BOLOS);
             event.accept(ModItems.DIANA_DARDOS);

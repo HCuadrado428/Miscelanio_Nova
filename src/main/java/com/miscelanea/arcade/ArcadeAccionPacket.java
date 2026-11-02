@@ -75,7 +75,9 @@ public class ArcadeAccionPacket {
                 if (ok && jug == 2)
                     ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> p2), new ArcadeAbrirPacket(pos, be.creditos, libre, 2, true, semilla, juego, "", 2));
             }
-            case RECORD -> ArcadeRecords.registrar(p, juego, puntos);
+            case RECORD -> {
+                if (ArcadeJuegos.esArcade(juego)) ArcadeRecords.registrar(p, juego, puntos);
+            }
         }
     }
 }

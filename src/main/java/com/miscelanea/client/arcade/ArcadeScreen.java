@@ -190,7 +190,7 @@ public class ArcadeScreen extends Screen {
     }
 
     private void empezar(String id, long semilla, int jug) {
-        juegoId = ArcadeJuegos.valido(id) ? id : ArcadeJuegos.IDS[sel];
+        juegoId = ArcadeJuegos.esArcade(id) ? id : ArcadeJuegos.IDS[sel];
         jugadores = jug;
         clasico = null;
         juego = null;

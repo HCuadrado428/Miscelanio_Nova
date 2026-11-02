@@ -9,11 +9,17 @@ public final class ArcadeJuegos {
     private ArcadeJuegos() {}
 
     /** Récords de la feria (pizarra): caseta de tiro, bolos, mejor turno de dardos, torre, tragaperras y brisca. */
-    public static final String[] FERIA = {"tiro", "bolos", "dardos", "torre", "traga", "brisca"};
+    public static final String[] FERIA = {"tiro", "bolos", "dardos", "torre", "traga", "brisca", "canasta", "boxeo", "martillo"};
 
     public static boolean valido(String id) {
         for (String s : IDS) if (s.equals(id)) return true;
         for (String s : FERIA) if (s.equals(id)) return true;
+        return false;
+    }
+
+    /** ¿Es un juego de la recreativa (no un récord de la feria)? */
+    public static boolean esArcade(String id) {
+        for (String s : IDS) if (s.equals(id)) return true;
         return false;
     }
 

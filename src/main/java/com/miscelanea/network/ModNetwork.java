@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String PROTOCOLO = "33";
+    private static final String PROTOCOLO = "34";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "main"),
@@ -196,6 +196,11 @@ public final class ModNetwork {
                 .encoder(com.miscelanea.cartas.CartasPacket::encode)
                 .decoder(com.miscelanea.cartas.CartasPacket::new)
                 .consumerMainThread(com.miscelanea.cartas.CartasPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.mesas.AirHockeyMandoPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.mesas.AirHockeyMandoPacket::encode)
+                .decoder(com.miscelanea.mesas.AirHockeyMandoPacket::new)
+                .consumerMainThread(com.miscelanea.mesas.AirHockeyMandoPacket::handle)
                 .add();
         CHANNEL.messageBuilder(com.miscelanea.baile.BailePacket.class, id++)
                 .encoder(com.miscelanea.baile.BailePacket::encode)

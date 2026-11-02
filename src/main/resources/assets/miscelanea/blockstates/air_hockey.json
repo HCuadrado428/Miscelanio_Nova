@@ -1,0 +1,132 @@
+{
+ "variants": {
+  "facing=north,parte=0": {
+   "model": "miscelanea:block/air_hockey_p0",
+   "y": 0
+  },
+  "facing=north,parte=1": {
+   "model": "miscelanea:block/air_hockey_p1",
+   "y": 0
+  },
+  "facing=north,parte=2": {
+   "model": "miscelanea:block/air_hockey_p2",
+   "y": 0
+  },
+  "facing=north,parte=3": {
+   "model": "miscelanea:block/air_hockey_p3",
+   "y": 0
+  },
+  "facing=north,parte=4": {
+   "model": "miscelanea:block/air_hockey_p4",
+   "y": 0
+  },
+  "facing=north,parte=5": {
+   "model": "miscelanea:block/air_hockey_p5",
+   "y": 0
+  },
+  "facing=north,parte=6": {
+   "model": "miscelanea:block/air_hockey_p0",
+   "y": 0
+  },
+  "facing=north,parte=7": {
+   "model": "miscelanea:block/air_hockey_p0",
+   "y": 0
+  },
+  "facing=east,parte=0": {
+   "model": "miscelanea:block/air_hockey_p0",
+   "y": 90
+  },
+  "facing=east,parte=1": {
+   "model": "miscelanea:block/air_hockey_p1",
+   "y": 90
+  },
+  "facing=east,parte=2": {
+   "model": "miscelanea:block/air_hockey_p2",
+   "y": 90
+  },
+  "facing=east,parte=3": {
+   "model": "miscelanea:block/air_hockey_p3",
+   "y": 90
+  },
+  "facing=east,parte=4": {
+   "model": "miscelanea:block/air_hockey_p4",
+   "y": 90
+  },
+  "facing=east,parte=5": {
+   "model": "miscelanea:block/air_hockey_p5",
+   "y": 90
+  },
+  "facing=east,parte=6": {
+   "model": "miscelanea:block/air_hockey_p0",
+   "y": 90
+  },
+  "facing=east,parte=7": {
+   "model": "miscelanea:block/air_hockey_p0",
+   "y": 90
+  },
+  "facing=south,parte=0": {
+   "model": "miscelanea:block/air_hockey_p0",
+   "y": 180
+  },
+  "facing=south,parte=1": {
+   "model": "miscelanea:block/air_hockey_p1",
+   "y": 180
+  },
+  "facing=south,parte=2": {
+   "model": "miscelanea:block/air_hockey_p2",
+   "y": 180
+  },
+  "facing=south,parte=3": {
+   "model": "miscelanea:block/air_hockey_p3",
+   "y": 180
+  },
+  "facing=south,parte=4": {
+   "model": "miscelanea:block/air_hockey_p4",
+   "y": 180
+  },
+  "facing=south,parte=5": {
+   "model": "miscelanea:block/air_hockey_p5",
+   "y": 180
+  },
+  "facing=south,parte=6": {
+   "model": "miscelanea:block/air_hockey_p0",
+   "y": 180
+  },
+  "facing=south,parte=7": {
+   "model": "miscelanea:block/air_hockey_p0",
+   "y": 180
+  },
+  "facing=west,parte=0": {
+   "model": "miscelanea:block/air_hockey_p0",
+   "y": 270
+  },
+  "facing=west,parte=1": {
+   "model": "miscelanea:block/air_hockey_p1",
+   "y": 270
+  },
+  "facing=west,parte=2": {
+   "model": "miscelanea:block/air_hockey_p2",
+   "y": 270
+  },
+  "facing=west,parte=3": {
+   "model": "miscelanea:block/air_hockey_p3",
+   "y": 270
+  },
+  "facing=west,parte=4": {
+   "model": "miscelanea:block/air_hockey_p4",
+   "y": 270
+  },
+  "facing=west,parte=5": {
+   "model": "miscelanea:block/air_hockey_p5",
+   "y": 270
+  },
+  "facing=west,parte=6": {
+   "model": "miscelanea:block/air_hockey_p0",
+   "y": 270
+  },
+  "facing=west,parte=7": {
+   "model": "miscelanea:block/air_hockey_p0",
+   "y": 270
+  }
+ }
+}

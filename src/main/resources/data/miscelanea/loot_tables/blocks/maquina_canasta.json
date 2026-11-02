@@ -1,0 +1,23 @@
+{
+ "type": "minecraft:block",
+ "pools": [
+  {
+   "rolls": 1,
+   "entries": [
+    {
+     "type": "minecraft:item",
+     "name": "miscelanea:maquina_canasta"
+    }
+   ],
+   "conditions": [
+    {
+     "condition": "minecraft:block_state_property",
+     "block": "miscelanea:maquina_canasta",
+     "properties": {
+      "half": "lower"
+     }
+    }
+   ]
+  }
+ ]
+}

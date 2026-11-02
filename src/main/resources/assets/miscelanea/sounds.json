@@ -1306,5 +1306,53 @@
       "miscelanea:ca_baza"
     ],
     "subtitle": "subtitles.miscelanea.ca_baza"
+  },
+  "fe_canasta": {
+    "sounds": [
+      "miscelanea:fe_canasta"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_canasta"
+  },
+  "fe_bote": {
+    "sounds": [
+      "miscelanea:fe_bote"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_bote"
+  },
+  "fe_punetazo": {
+    "sounds": [
+      "miscelanea:fe_punetazo"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_punetazo"
+  },
+  "fe_mazazo": {
+    "sounds": [
+      "miscelanea:fe_mazazo"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_mazazo"
+  },
+  "fe_campana": {
+    "sounds": [
+      "miscelanea:fe_campana"
+    ],
+    "subtitle": "subtitles.miscelanea.fe_campana"
+  },
+  "ah_golpe": {
+    "sounds": [
+      "miscelanea:ah_golpe"
+    ],
+    "subtitle": "subtitles.miscelanea.ah_golpe"
+  },
+  "ah_banda": {
+    "sounds": [
+      "miscelanea:ah_banda"
+    ],
+    "subtitle": "subtitles.miscelanea.ah_banda"
+  },
+  "ah_gol": {
+    "sounds": [
+      "miscelanea:ah_gol"
+    ],
+    "subtitle": "subtitles.miscelanea.ah_gol"
   }
 }

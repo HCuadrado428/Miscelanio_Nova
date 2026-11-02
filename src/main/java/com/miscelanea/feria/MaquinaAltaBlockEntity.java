@@ -55,6 +55,11 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
     public float[] px = new float[PREMIOS], pz = new float[PREMIOS];
     public int[] rodillo = new int[3];
     public int colorCapsula;
+    // ---- canastas, boxeo y martillo
+    public static final int CANASTA_DURA = 600;
+    public int puntos, valor;
+    public long golpeT = -1000;
+    private final java.util.Map<Integer, Double> alturaAntes = new java.util.HashMap<>();
     private boolean iniciado;
 
     public MaquinaAltaBlockEntity(BlockPos p, BlockState s) {
@@ -107,6 +112,14 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
         long ahora = level.getGameTime();
         RandomSource r = level.random;
         if (!iniciado && tipo() == MaquinaAltaBlock.GANCHO) prepararPremios(r);
+        if (activo && tipo() == MaquinaAltaBlock.MARTILLO && fase == 1 && p.getUUID().equals(jugador)) {
+            golpeMartillo(p);
+            return;
+        }
+        if (activo && tipo() == MaquinaAltaBlock.CANASTA && p.getUUID().equals(jugador)) {
+            darBalon(p);
+            return;
+        }
         if (activo) {
             if (tipo() == MaquinaAltaBlock.GANCHO && fase == 1 && p.getUUID().equals(jugador) && p instanceof ServerPlayer sp)
                 ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new GanchoPacket(GanchoPacket.ABRIR, worldPosition, 0, 0));
@@ -130,6 +143,24 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
             case MaquinaAltaBlock.TRAGAPERRAS -> {
                 for (int i = 0; i < 3; i++) rodillo[i] = sorteo(r);
                 level.playSound(null, worldPosition, ModSounds.FE_RODILLOS.get(), SoundSource.BLOCKS, 0.8F, 1F);
+            }
+            case MaquinaAltaBlock.CANASTA -> {
+                puntos = 0;
+                alturaAntes.clear();
+                darBalon(p);
+                p.displayClientMessage(Component.translatable("miscelanea.canasta.empieza"), true);
+                level.playSound(null, worldPosition, ModSounds.FE_ARRANCA.get(), SoundSource.BLOCKS, 0.7F, 1.3F);
+            }
+            case MaquinaAltaBlock.BOXEO -> {
+                fase = 1;
+                valor = 0;
+                p.displayClientMessage(Component.translatable("miscelanea.boxeo.empieza"), true);
+                level.playSound(null, worldPosition, ModSounds.FE_MANIVELA.get(), SoundSource.BLOCKS, 0.8F, 0.7F);
+            }
+            case MaquinaAltaBlock.MARTILLO -> {
+                fase = 1;
+                valor = 0;
+                p.displayClientMessage(Component.translatable("miscelanea.martillo.empieza"), true);
             }
             default -> {
                 colorCapsula = r.nextInt(6);
@@ -302,6 +333,31 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
                     be.cambio();
                 }
             }
+            case MaquinaAltaBlock.CANASTA -> be.tickCanasta(l, t);
+            case MaquinaAltaBlock.BOXEO -> {
+                if (be.fase == 1 && t > 400) {
+                    be.activo = false;
+                    be.cambio();
+                }
+                if (be.fase == 2 && ahora - be.golpeT == 30) be.premioFuerza(l, "boxeo", be.valor, 900, 700);
+                if (be.fase == 2 && ahora - be.golpeT > 90) {
+                    be.activo = false;
+                    be.fase = 0;
+                    be.cambio();
+                }
+            }
+            case MaquinaAltaBlock.MARTILLO -> {
+                if (be.fase == 1 && t > 400) {
+                    be.activo = false;
+                    be.cambio();
+                }
+                if (be.fase == 2 && ahora - be.golpeT == 16) be.premioFuerza(l, "martillo", be.valor * 10, 970, 800);
+                if (be.fase == 2 && ahora - be.golpeT > 70) {
+                    be.activo = false;
+                    be.fase = 0;
+                    be.cambio();
+                }
+            }
             default -> {
                 if (t == 26) l.playSound(null, pos, ModSounds.FE_CAPSULA.get(), SoundSource.BLOCKS, 0.9F, 1F);
                 if (t == 34) {
@@ -312,6 +368,103 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
                     be.cambio();
                 }
             }
+        }
+    }
+
+    // ------------------------------------------------------------------ canastas
+    private void darBalon(Player p) {
+        if (!p.getInventory().hasAnyMatching(st -> st.is(ModItems.BALON.get()))) p.getInventory().add(new ItemStack(ModItems.BALON.get()));
+    }
+
+    /** Centro del aro (local) en el instante t del juego: en los últimos 10 s se mueve de lado a lado. */
+    public static double[] aro(float t) {
+        double x = t > 400 ? Math.sin((t - 400) * 0.07) * 0.24 : 0;
+        return new double[]{x, 1.78, 0.18};
+    }
+
+    private void tickCanasta(ServerLevel l, int t) {
+        if (t >= CANASTA_DURA) {
+            activo = false;
+            Player p = jugador != null ? l.getPlayerByUUID(jugador) : null;
+            if (p != null) {
+                p.displayClientMessage(Component.translatable("miscelanea.canasta.fin", puntos), false);
+                if (p instanceof ServerPlayer sp) com.miscelanea.arcade.ArcadeRecords.registrar(sp, "canasta", puntos);
+                ItemStack premio = puntos >= 24 ? peluche(l) : puntos >= 12 ? ChapaItem.de(l.random.nextInt(ChapaItem.ORO)) : ItemStack.EMPTY;
+                if (!premio.isEmpty()) {
+                    soltar(premio, 0.3);
+                    l.playSound(null, worldPosition, ModSounds.FE_PREMIO.get(), SoundSource.BLOCKS, 1F, 1F);
+                }
+            }
+            l.playSound(null, worldPosition, ModSounds.FE_PARA.get(), SoundSource.BLOCKS, 0.7F, 1.3F);
+            cambio();
+            return;
+        }
+        double[] a = aro(t);
+        Vec3 c = mundo(a[0], a[1], a[2]);
+        for (BalonEntity b : l.getEntitiesOfClass(BalonEntity.class, new AABB(c, c).inflate(0.6))) {
+            if (b.anotado) continue;
+            double antes = alturaAntes.getOrDefault(b.getId(), b.getY() + 1);
+            alturaAntes.put(b.getId(), b.getY());
+            double y = b.getY() + 0.12;
+            if (antes + 0.12 > c.y && y <= c.y && Math.hypot(b.getX() - c.x, b.getZ() - c.z) < 0.17) {
+                b.anotado = true;
+                int v = b.distancia > 3.5 ? 3 : 2;
+                puntos += v;
+                l.playSound(null, c.x, c.y, c.z, ModSounds.FE_CANASTA.get(), SoundSource.BLOCKS, 1F, v == 3 ? 1.2F : 1F);
+                l.sendParticles(ParticleTypes.HAPPY_VILLAGER, c.x, c.y, c.z, 8, 0.15, 0.1, 0.15, 0);
+                cambio();
+            }
+        }
+        if (t % 20 == 0) cambio();
+    }
+
+    private ItemStack peluche(ServerLevel l) {
+        ItemStack st = new ItemStack(ModItems.PELUCHE.get());
+        CompoundTag est = new CompoundTag();
+        est.putString("color", String.valueOf(l.random.nextInt(4)));
+        st.getOrCreateTag().put("BlockStateTag", est);
+        return st;
+    }
+
+    // ------------------------------------------------------------------ boxeo y martillo
+    /** Puñetazo al saco: fuerza según lo cargado del golpe, si vas corriendo o cayendo (crítico) y lo que lleves en la mano. */
+    public void golpeBoxeo(Player p) {
+        if (!activo || fase != 1 || tipo() != MaquinaAltaBlock.BOXEO || !p.getUUID().equals(jugador)) return;
+        float carga = p.getAttackStrengthScale(0.5F);
+        double dano = p.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
+        double f = carga * carga * (0.55 + Math.min(0.25, dano * 0.025)) * (p.isSprinting() ? 1.15 : 1) * (p.fallDistance > 0 && !p.onGround() ? 1.3 : 1);
+        valor = (int) Math.max(1, Math.min(999, f * 1000 + level.random.nextInt(60) - 30));
+        fase = 2;
+        golpeT = level.getGameTime();
+        level.playSound(null, worldPosition, ModSounds.FE_PUNETAZO.get(), SoundSource.BLOCKS, 1.2F, 1F);
+        p.resetAttackStrengthTicker();
+        cambio();
+    }
+
+    /** Valor del medidor del martillo (0..100) en un instante. */
+    public float medidor(float tiempo) {
+        return (float) ((1 - Math.cos((tiempo - inicio) * 0.19)) / 2 * 100);
+    }
+
+    void golpeMartillo(Player p) {
+        valor = Math.round(medidor(level.getGameTime()));
+        fase = 2;
+        golpeT = level.getGameTime();
+        level.playSound(null, worldPosition, ModSounds.FE_MAZAZO.get(), SoundSource.BLOCKS, 1.2F, 1F);
+        cambio();
+    }
+
+    void premioFuerza(ServerLevel l, String juego, int puntos, int gordo, int premio) {
+        Player p = jugador != null ? l.getPlayerByUUID(jugador) : null;
+        if (puntos >= gordo) {
+            l.playSound(null, worldPosition, ModSounds.FE_CAMPANA.get(), SoundSource.BLOCKS, 1.5F, 1F);
+            Vec3 c = mundo(0, juego.equals("martillo") ? 4.4 : 2.2, 0);
+            l.sendParticles(ParticleTypes.FIREWORK, c.x, c.y, c.z, 25, 0.3, 0.3, 0.3, 0.12);
+            soltar(peluche(l), 0.3);
+        } else if (puntos >= premio) soltar(ChapaItem.de(l.random.nextInt(ChapaItem.ORO)), 0.3);
+        if (p != null) {
+            p.displayClientMessage(Component.translatable("miscelanea." + juego + ".resultado", puntos), true);
+            if (p instanceof ServerPlayer sp) com.miscelanea.arcade.ArcadeRecords.registrar(sp, juego, puntos);
         }
     }
 
@@ -344,6 +497,9 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
         t.putIntArray("pz", zs);
         t.putIntArray("rod", rodillo);
         t.putInt("cap", colorCapsula);
+        t.putInt("pts", puntos);
+        t.putInt("val", valor);
+        t.putLong("golpe", golpeT);
         t.putBoolean("ini0", iniciado);
     }
 
@@ -372,6 +528,9 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
         int[] rd = t.getIntArray("rod");
         if (rd.length == 3) rodillo = rd;
         colorCapsula = t.getInt("cap");
+        puntos = t.getInt("pts");
+        valor = t.getInt("val");
+        golpeT = t.contains("golpe") ? t.getLong("golpe") : -1000;
         iniciado = t.getBoolean("ini0");
     }
 

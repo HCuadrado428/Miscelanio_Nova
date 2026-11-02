@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 public class MaquinaAltaBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
-    public static final int GANCHO = 0, TRAGAPERRAS = 1, GACHAPON = 2;
+    public static final int GANCHO = 0, TRAGAPERRAS = 1, GACHAPON = 2, CANASTA = 3, BOXEO = 4, MARTILLO = 5;
     private static final VoxelShape FORMA = Block.box(1, 0, 1, 15, 16, 15);
     public final int tipo;
 
@@ -59,7 +59,21 @@ public class MaquinaAltaBlock extends BaseEntityBlock {
 
     @Override
     public VoxelShape getShape(BlockState s, BlockGetter l, BlockPos p, CollisionContext c) {
+        boolean arriba = s.getValue(HALF) == DoubleBlockHalf.UPPER;
+        Direction f = s.getValue(FACING);
+        if (tipo == CANASTA && arriba) return girada(f, 0, 0, 13, 16, 16, 16);
+        if (tipo == MARTILLO) return arriba ? girada(f, 6, 0, 10, 10, 16, 14) : net.minecraft.world.phys.shapes.Shapes.or(girada(f, 1, 0, 1, 15, 4, 15), girada(f, 6, 4, 10, 10, 16, 14));
         return FORMA;
+    }
+
+    /** Caja dada para el bloque mirando al norte (frente en z=0), girada según hacia dónde mira. */
+    static VoxelShape girada(Direction f, double x0, double y0, double z0, double x1, double y1, double z1) {
+        return switch (f) {
+            case EAST -> Block.box(16 - z1, y0, x0, 16 - z0, y1, x1);
+            case SOUTH -> Block.box(16 - x1, y0, 16 - z1, 16 - x0, y1, 16 - z0);
+            case WEST -> Block.box(z0, y0, 16 - x1, z1, y1, 16 - x0);
+            default -> Block.box(x0, y0, z0, x1, y1, z1);
+        };
     }
 
     @Nullable

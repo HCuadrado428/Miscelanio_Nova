@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
+import net.minecraft.client.resources.language.I18n;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -22,7 +23,11 @@ import static com.miscelanea.feria.MaquinaAltaBlockEntity.*;
 public class MaquinaAltaRenderer implements BlockEntityRenderer<MaquinaAltaBlockEntity> {
     private final Map<MaquinaAltaBlockEntity, float[]> suave = new WeakHashMap<>();
 
-    public MaquinaAltaRenderer(BlockEntityRendererProvider.Context c) {}
+    private final net.minecraft.client.gui.Font font;
+
+    public MaquinaAltaRenderer(BlockEntityRendererProvider.Context c) {
+        font = c.getFont();
+    }
 
     @Override
     public boolean shouldRenderOffScreen(MaquinaAltaBlockEntity be) {
@@ -50,6 +55,9 @@ public class MaquinaAltaRenderer implements BlockEntityRenderer<MaquinaAltaBlock
         switch (be.tipo()) {
             case MaquinaAltaBlock.GANCHO -> gancho(be, ps, vc, t, brillo);
             case MaquinaAltaBlock.TRAGAPERRAS -> tragaperras(be, ps, vc, t, brillo);
+            case MaquinaAltaBlock.CANASTA -> canasta(be, ps, vc, buf, t, brillo);
+            case MaquinaAltaBlock.BOXEO -> boxeo(be, ps, vc, buf, t, brillo);
+            case MaquinaAltaBlock.MARTILLO -> martillo(be, ps, vc, buf, t, brillo);
             default -> gachapon(be, ps, vc, t, brillo);
         }
         ps.popPose();
@@ -172,6 +180,119 @@ public class MaquinaAltaRenderer implements BlockEntityRenderer<MaquinaAltaBlock
             float k = Math.min(1, (tt - 20) / 12);
             capsula(ps, vc, CapsulaGachaItem.COLORES[be.colorCapsula % 6], 0, 0.42 - 0.12 * k, -0.3 - 0.16 * k, tt * 20, luz);
         }
+    }
+
+    // ------------------------------------------------------------------ canastas
+    private void canasta(MaquinaAltaBlockEntity be, PoseStack ps, VertexConsumer vc, MultiBufferSource buf, float t, int luz) {
+        float tt = be.activo ? t - be.inicio : 0;
+        double[] a = MaquinaAltaBlockEntity.aro(tt);
+        // tablero
+        FeriaPiezas.caja(ps, vc, "lona_blanca", 0, 2.02, 0.44, 0.92, 0.62, 0.05, luz);
+        FeriaPiezas.caja(ps, vc, "metal_rojo", 0, 1.86, 0.41, 0.34, 0.03, 0.02, luz);
+        FeriaPiezas.caja(ps, vc, "metal_rojo", 0, 2.12, 0.41, 0.34, 0.03, 0.02, luz);
+        FeriaPiezas.caja(ps, vc, "metal_rojo", -0.16, 1.99, 0.41, 0.03, 0.29, 0.02, luz);
+        FeriaPiezas.caja(ps, vc, "metal_rojo", 0.16, 1.99, 0.41, 0.03, 0.29, 0.02, luz);
+        // aro y red
+        double r = 0.17;
+        FeriaPiezas.barra(ps, vc, "metal_rojo", a[0], a[1], a[2] + r, a[0], a[1], 0.42, 0.03F, 0.03F, luz);
+        for (int k = 0; k < 14; k++) {
+            double a0 = k * Math.PI * 2 / 14, a1 = (k + 1) * Math.PI * 2 / 14;
+            FeriaPiezas.barra(ps, vc, "metal_rojo", a[0] + Math.cos(a0) * r, a[1], a[2] + Math.sin(a0) * r, a[0] + Math.cos(a1) * r, a[1], a[2] + Math.sin(a1) * r, 0.025F, 0.025F, luz);
+            if (k % 2 == 0) {
+                double vaiven = Math.sin(t * 0.3 + k) * 0.01;
+                FeriaPiezas.barra(ps, vc, "lona_blanca", a[0] + Math.cos(a0) * r, a[1], a[2] + Math.sin(a0) * r,
+                        a[0] + Math.cos(a0) * r * 0.55 + vaiven, a[1] - 0.2, a[2] + Math.sin(a0) * r * 0.55, 0.012F, 0.012F, luz);
+            }
+        }
+        // marcador encima
+        String txt = be.activo ? I18n.get("miscelanea.canasta.marcador", be.puntos, Math.max(0, (int) ((MaquinaAltaBlockEntity.CANASTA_DURA - tt) / 20)))
+                : I18n.get("miscelanea.canasta.cartel");
+        letrero(ps, buf, txt, 2.45, -0.06, be.activo ? 0xFFFF5040 : 0xFFFFD040);
+        for (int k = 0; k < 9; k++) FeriaPiezas.bombilla(ps, vc, -0.4 + k * 0.1, 2.36, -0.04, 0.045F, FeriaPiezas.luz(k, t, be.activo));
+    }
+
+    private void letrero(PoseStack ps, MultiBufferSource buf, String s, double y, double z, int col) {
+        ps.pushPose();
+        ps.translate(0, y, z);
+        ps.mulPose(Axis.YP.rotationDegrees(180));
+        ps.scale(0.012F, -0.012F, 0.012F);
+        float esc = Math.min(1, 74F / Math.max(1, font.width(s)));
+        ps.scale(esc, esc, esc);
+        font.drawInBatch(s, -font.width(s) / 2F, 0, col, false, ps.last().pose(), buf, net.minecraft.client.gui.Font.DisplayMode.NORMAL, 0xC0000000, 0xF000F0);
+        ps.popPose();
+    }
+
+    // ------------------------------------------------------------------ boxeo
+    private void boxeo(MaquinaAltaBlockEntity be, PoseStack ps, VertexConsumer vc, MultiBufferSource buf, float t, int luz) {
+        float dt = t - be.golpeT;
+        boolean fuera = be.activo && be.fase >= 1;
+        float ang = be.fase == 2 && dt < 40 ? (float) (Math.sin(dt * 0.5) * 70 * Math.exp(-dt * 0.08)) : 0;
+        if (be.fase == 2 && dt < 4) ang = 75 * dt / 4;
+        ps.pushPose();
+        ps.translate(0, 1.62, fuera ? -0.36 : -0.22);
+        ps.mulPose(Axis.XP.rotationDegrees(-ang));
+        FeriaPiezas.barra(ps, vc, "metal_blanco", 0, 0, 0.02, 0, -0.18, -0.04, 0.05F, 0.05F, luz);
+        FeriaPiezas.caja(ps, vc, "metal_rojo", 0, -0.3, -0.1, 0.34, 0.3, 0.26, luz);
+        FeriaPiezas.caja(ps, vc, "metal_rojo", 0, -0.3, -0.1, 0.26, 0.38, 0.2, luz);
+        FeriaPiezas.caja(ps, vc, "lona_blanca", 0, -0.3, -0.23, 0.14, 0.14, 0.02, luz);
+        ps.popPose();
+        int mostrado = be.fase == 2 ? (int) Math.min(be.valor, be.valor * Math.max(0, dt) / 30) : 0;
+        String num = String.format("%03d", mostrado);
+        int col = be.fase == 2 && dt > 30 && be.valor >= 900 && ((int) t / 3) % 2 == 0 ? 0xFFFFFF60 : 0xFFFF3020;
+        letrero(ps, buf, num, 1.86, -0.47, col);
+        for (int k = 0; k < 7; k++) {
+            boolean enc = be.fase == 2 && mostrado >= (k + 1) * 140;
+            FeriaPiezas.bombilla(ps, vc, -0.36 + k * 0.12, 1.08, -0.47, 0.06F, enc ? new int[]{0x40FF40, 0x80FF40, 0xC0FF40, 0xFFE040, 0xFFA020, 0xFF6020, 0xFF2020}[k] : 0x302020);
+        }
+    }
+
+    // ------------------------------------------------------------------ martillo de fuerza
+    private void martillo(MaquinaAltaBlockEntity be, PoseStack ps, VertexConsumer vc, MultiBufferSource buf, float t, int luz) {
+        double base = 1.0, alto = 3.3;
+        FeriaPiezas.caja(ps, vc, "lona_blanca", 0, base + alto / 2 + 0.25, 0.26, 0.26, alto + 0.5, 0.1, luz);
+        for (int k = 0; k < 10; k++) {
+            String c = k < 4 ? "color2" : k < 7 ? "color3" : "metal_rojo";
+            FeriaPiezas.caja(ps, vc, c, 0, base + 0.2 + k * alto / 10 + alto / 20, 0.2, 0.2, alto / 10 - 0.03, 0.02, luz);
+        }
+        FeriaPiezas.barra(ps, vc, "metal_blanco", -0.13, base, 0.17, -0.13, base + alto + 0.3, 0.17, 0.025F, 0.025F, luz);
+        FeriaPiezas.barra(ps, vc, "metal_blanco", 0.13, base, 0.17, 0.13, base + alto + 0.3, 0.17, 0.025F, 0.025F, luz);
+        // campana
+        double top = base + alto + 0.45;
+        float dt = t - be.golpeT;
+        double objetivo = base + 0.15 + (alto + 0.05) * be.valor / 100.0, h = base + 0.15;
+        if (be.fase == 2) {
+            if (dt < 12) h = base + 0.15 + (objetivo - base - 0.15) * Math.sin(dt / 12 * Math.PI / 2);
+            else if (dt < 22) h = objetivo;
+            else h = Math.max(base + 0.15, objetivo - (dt - 22) * (dt - 22) * 0.004);
+        }
+        boolean suena = be.fase == 2 && be.valor >= 97 && dt > 10 && dt < 40;
+        ps.pushPose();
+        ps.translate(0, top, 0.17);
+        if (suena) ps.mulPose(Axis.ZP.rotationDegrees((float) Math.sin(dt * 1.5) * 12));
+        FeriaPiezas.caja(ps, vc, "dorado", 0, 0.02, 0, 0.32, 0.08, 0.32, luz);
+        FeriaPiezas.caja(ps, vc, "dorado", 0, 0.1, 0, 0.26, 0.1, 0.26, luz);
+        FeriaPiezas.caja(ps, vc, "dorado", 0, 0.19, 0, 0.18, 0.08, 0.18, luz);
+        FeriaPiezas.caja(ps, vc, "metal_blanco", 0, 0.26, 0, 0.05, 0.08, 0.05, luz);
+        ps.popPose();
+        FeriaPiezas.caja(ps, vc, "dorado", 0, h, 0.16, 0.2, 0.1, 0.12, luz);
+        // medidor en la base
+        float m = be.fase == 1 && be.activo ? be.medidor(t) : be.fase == 2 ? be.valor : 0;
+        double ang = Math.PI * (1 - m / 100.0);
+        FeriaPiezas.caja(ps, vc, "negro", 0, 0.36, -0.49, 0.42, 0.24, 0.02, luz);
+        for (int k = 0; k < 9; k++) {
+            double a = Math.PI * (1 - k / 8.0);
+            FeriaPiezas.bombilla(ps, vc, Math.cos(a) * -0.17, 0.27 + Math.sin(a) * 0.17, -0.51, 0.03F, k < 4 ? 0x40E040 : k < 7 ? 0xF0D040 : 0xF03020);
+        }
+        FeriaPiezas.barra(ps, vc, "metal_rojo", 0, 0.27, -0.515, Math.cos(ang) * -0.15, 0.27 + Math.sin(ang) * 0.15, -0.515, 0.02F, 0.02F, luz);
+        // mazo
+        ps.pushPose();
+        ps.translate(-0.62, 0.0, -0.3);
+        float golpe = be.fase == 2 && dt < 8 ? (float) Math.sin(dt / 8 * Math.PI) * 50 : 0;
+        ps.mulPose(Axis.ZP.rotationDegrees(-25 + golpe));
+        FeriaPiezas.barra(ps, vc, "madera_a", 0, 0, 0, 0, 0.9, 0, 0.05F, 0.05F, luz);
+        FeriaPiezas.caja(ps, vc, "madera_b", 0, 0.95, 0, 0.32, 0.16, 0.16, luz);
+        ps.popPose();
+        letrero(ps, buf, be.fase == 2 && dt > 12 ? String.valueOf(be.valor * 10) : I18n.get("miscelanea.martillo.cartel"), top + 0.45, 0.08, 0xFFFFD040);
     }
 
     private void capsula(PoseStack ps, VertexConsumer vc, int c, double x, double y, double z, float giro, int luz) {
