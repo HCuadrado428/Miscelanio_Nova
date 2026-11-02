@@ -86,6 +86,7 @@ public class Miscelanea {
             event.accept(ModItems.RECREATIVA_DOBLE);
             event.accept(ModItems.MESA_COCTEL);
             event.accept(ModItems.CARTEL_RECORDS);
+            event.accept(ModItems.PIZARRA_FERIA);
             event.accept(ModItems.BILLAR);
             event.accept(ModItems.FUTBOLIN);
             event.accept(ModItems.PISTA_BAILE);
@@ -112,7 +113,6 @@ public class Miscelanea {
             event.accept(ModItems.DARDO);
             event.accept(ModItems.TORRE);
             event.accept(ModItems.MESA_CARTAS);
-            event.accept(ModItems.TORNEO);
             event.accept(ModItems.FOGON);
             event.accept(ModItems.SEMILLAS_TOMATE);
             event.accept(ModItems.TOMATE);

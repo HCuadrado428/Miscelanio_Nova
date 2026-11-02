@@ -205,6 +205,7 @@ public class BoleraBlockEntity extends BlockEntity {
         if (terminada()) {
             int total = Marcador.total(tiradas);
             if (p != null) p.displayClientMessage(Component.translatable("miscelanea.bolos.fin", total).withStyle(ChatFormatting.GREEN), false);
+            if (p instanceof net.minecraft.server.level.ServerPlayer sp) com.miscelanea.arcade.ArcadeRecords.registrar(sp, "bolos", total);
             for (Player o : l.getEntitiesOfClass(Player.class, new AABB(worldPosition).inflate(32)))
                 if (o != p) o.displayClientMessage(Component.translatable("miscelanea.bolos.fin_otro", nombre, total), false);
             rack();

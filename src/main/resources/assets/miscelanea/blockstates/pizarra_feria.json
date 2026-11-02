@@ -1,0 +1,20 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/pizarra_feria",
+   "y": 0
+  },
+  "facing=east": {
+   "model": "miscelanea:block/pizarra_feria",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/pizarra_feria",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/pizarra_feria",
+   "y": 270
+  }
+ }
+}

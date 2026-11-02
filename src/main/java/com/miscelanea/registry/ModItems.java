@@ -217,14 +217,14 @@ public final class ModItems {
                     .effect(() -> new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.DIG_SPEED, 20 * 30, 0), 1F).build())));
     public static final RegistryObject<Item> MESA_CARTAS = ITEMS.register("mesa_cartas",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.MESA_CARTAS.get(), new Item.Properties()));
-    public static final RegistryObject<Item> TORNEO = ITEMS.register("tablon_torneo",
-            () -> new net.minecraft.world.item.BlockItem(ModBlocks.TORNEO.get(), new Item.Properties()));
     public static final RegistryObject<Item> PISTA_BAILE = ITEMS.register("pista_baile",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PISTA_BAILE.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> BILLAR = ITEMS.register("billar",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.BILLAR.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> FUTBOLIN = ITEMS.register("futbolin",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.FUTBOLIN.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> PIZARRA_FERIA = ITEMS.register("pizarra_feria",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.PIZARRA_FERIA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> CARTEL_RECORDS = ITEMS.register("cartel_records",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.CARTEL_RECORDS.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> MESA_COCTEL = ITEMS.register("mesa_coctel",

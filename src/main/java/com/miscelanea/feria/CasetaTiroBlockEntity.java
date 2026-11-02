@@ -150,6 +150,7 @@ public class CasetaTiroBlockEntity extends BlockEntity {
         if (be.puntos > be.record) be.record = be.puntos;
         if (p != null) {
             p.displayClientMessage(Component.translatable("miscelanea.tiro.fin", be.puntos), false);
+            if (p instanceof net.minecraft.server.level.ServerPlayer sp) com.miscelanea.arcade.ArcadeRecords.registrar(sp, "tiro", be.puntos);
             ItemStack premio = ItemStack.EMPTY;
             if (be.puntos >= 20) {
                 premio = new ItemStack(ModItems.PELUCHE.get());

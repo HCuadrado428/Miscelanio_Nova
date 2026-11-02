@@ -357,6 +357,7 @@ public class MesaCartasBlockEntity extends BlockEntity {
         else {
             int g = puntos[0] > puntos[1] ? 0 : 1;
             txt = Component.translatable("miscelanea.cartas.gana", nombre[g], puntos[g], puntos[1 - g]).getString();
+            if (jugador[g] != null && level.getPlayerByUUID(jugador[g]) instanceof ServerPlayer sp) com.miscelanea.arcade.ArcadeRecords.registrar(sp, "brisca", puntos[g]);
         }
         for (Player o : cercanos()) o.displayClientMessage(Component.literal(txt).withStyle(ChatFormatting.GOLD), false);
         level.playSound(null, worldPosition, ModSounds.FE_PREMIO.get(), SoundSource.BLOCKS, 0.8F, 1F);

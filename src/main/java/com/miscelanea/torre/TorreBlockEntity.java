@@ -110,6 +110,7 @@ public class TorreBlockEntity extends BlockEntity {
                 o.displayClientMessage(Component.translatable("miscelanea.torre.caida", ultimo, sacadas).withStyle(ChatFormatting.RED), false);
         } else {
             level.playSound(null, worldPosition, ModSounds.TO_CLAC.get(), SoundSource.BLOCKS, 1F, 0.9F + level.random.nextFloat() * 0.3F);
+            if (p instanceof net.minecraft.server.level.ServerPlayer sp) com.miscelanea.arcade.ArcadeRecords.registrar(sp, "torre", sacadas);
             if (riesgo > 0.3F) p.displayClientMessage(Component.translatable("miscelanea.torre.tiembla").withStyle(ChatFormatting.GOLD), true);
         }
         cambio();

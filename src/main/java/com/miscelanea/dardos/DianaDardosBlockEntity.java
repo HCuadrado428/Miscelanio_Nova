@@ -82,11 +82,20 @@ public class DianaDardosBlockEntity extends BlockEntity {
         ultimo = (String) r[1];
         level.playSound(null, worldPosition, ModSounds.DA_CLAVA.get(), SoundSource.BLOCKS, 1F, 0.9F + level.random.nextFloat() * 0.2F);
         int nuevo = quedan - pts;
+        boolean finTurno = dardos == 3 || nuevo == 0;
         if (nuevo < 0 || nuevo == 1) {
             quedan = turnoInicio;
             dardos = 3;
             if (p != null) p.displayClientMessage(Component.translatable("miscelanea.dardos.pasado").withStyle(ChatFormatting.RED), true);
-        } else if (nuevo == 0) {
+        } else if (nuevo == 0 || finTurno) {
+            int turno = turnoInicio - nuevo;
+            if (p instanceof net.minecraft.server.level.ServerPlayer sp) com.miscelanea.arcade.ArcadeRecords.registrar(sp, "dardos", turno);
+            if (nuevo != 0) {
+                quedan = nuevo;
+                if (p != null) p.displayClientMessage(Component.translatable("miscelanea.dardos.tiro", r[1], pts, quedan), true);
+                cambio();
+                return;
+            }
             quedan = 0;
             level.playSound(null, worldPosition, ModSounds.FE_PREMIO_GORDO.get(), SoundSource.BLOCKS, 1F, 1F);
             for (Player o : level.getEntitiesOfClass(Player.class, new AABB(worldPosition).inflate(24)))

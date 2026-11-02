@@ -293,6 +293,7 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
                             Vec3 c = be.mundo(0, 2.2, 0);
                             l.sendParticles(ParticleTypes.FIREWORK, c.x, c.y, c.z, 30, 0.3, 0.3, 0.3, 0.15);
                         }
+                        if (p instanceof ServerPlayer sp) com.miscelanea.arcade.ArcadeRecords.registrar(sp, "traga", n);
                         if (p != null) p.displayClientMessage(Component.translatable(n >= 12 ? "miscelanea.tragaperras.gordo" : "miscelanea.tragaperras.premio", n), true);
                     } else if (p != null) p.displayClientMessage(Component.translatable("miscelanea.tragaperras.nada"), true);
                 }

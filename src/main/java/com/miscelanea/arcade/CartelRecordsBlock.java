@@ -29,8 +29,17 @@ public class CartelRecordsBlock extends BaseEntityBlock {
             Block.box(14, 0, 0, 16, 16, 16),   // oeste
             Block.box(0, 0, 0, 2, 16, 16)};    // este
 
+    public static final int ARCADE = 0, FERIA = 1;
+    /** ARCADE: marcador retro de recreativa. FERIA: pizarra de tiza con los récords de la feria. */
+    public final int estilo;
+
     public CartelRecordsBlock(Properties p) {
+        this(p, ARCADE);
+    }
+
+    public CartelRecordsBlock(Properties p, int estilo) {
         super(p);
+        this.estilo = estilo;
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
 
@@ -71,27 +80,28 @@ public class CartelRecordsBlock extends BaseEntityBlock {
     /** Busca el rectángulo de carteles al que pertenece pos: {esquina de arriba a la izquierda (vista de frente), ancho, alto} o null si va suelto. */
     @Nullable
     public static Object[] grupo(BlockGetter l, BlockPos pos, Direction f) {
+        Block b = l.getBlockState(pos).getBlock();
         Direction izq = f.getClockWise(), der = f.getCounterClockWise();
         BlockPos a = pos;
         for (int it = 0; it < 32; it++) {
             boolean movido = false;
-            while (es(l, a.above(), f) && a.getY() - pos.getY() < 7) {
+            while (es(l, a.above(), f, b) && a.getY() - pos.getY() < 7) {
                 a = a.above();
                 movido = true;
             }
-            while (es(l, a.relative(izq), f) && distancia(pos, a, izq) < 11) {
+            while (es(l, a.relative(izq), f, b) && distancia(pos, a, izq) < 11) {
                 a = a.relative(izq);
                 movido = true;
             }
             if (!movido) break;
         }
         int w = 1, h = 1;
-        while (w < 12 && es(l, a.relative(der, w), f)) w++;
-        while (h < 8 && es(l, a.below(h), f)) h++;
+        while (w < 12 && es(l, a.relative(der, w), f, b)) w++;
+        while (h < 8 && es(l, a.below(h), f, b)) h++;
         // que el rectángulo esté completo; si no, recortar el alto
         for (int y = 0; y < h; y++)
             for (int x = 0; x < w; x++)
-                if (!es(l, a.relative(der, x).below(y), f)) {
+                if (!es(l, a.relative(der, x).below(y), f, b)) {
                     h = y;
                     break;
                 }
@@ -105,8 +115,8 @@ public class CartelRecordsBlock extends BaseEntityBlock {
         return (b.getX() - a.getX()) * d.getStepX() + (b.getZ() - a.getZ()) * d.getStepZ();
     }
 
-    private static boolean es(BlockGetter l, BlockPos p, Direction f) {
+    private static boolean es(BlockGetter l, BlockPos p, Direction f, Block b) {
         BlockState s = l.getBlockState(p);
-        return s.getBlock() instanceof CartelRecordsBlock && s.getValue(FACING) == f;
+        return s.getBlock() == b && s.getValue(FACING) == f;
     }
 }
