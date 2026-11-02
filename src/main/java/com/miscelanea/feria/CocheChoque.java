@@ -164,12 +164,16 @@ public class CocheChoque extends Entity {
 
     @Override
     public double getPassengersRidingOffset() {
-        return 0.15;
+        return 0.33;   // asiento del coche a 9 px: el trasero del jugador apoya encima
     }
 
     @Override
     protected void positionRider(Entity p, Entity.MoveFunction mover) {
-        super.positionRider(p, mover);
+        if (!hasPassenger(p)) return;
+        // el asiento está en la mitad de atrás del coche (el volante, delante)
+        float r = getYRot() * Mth.DEG_TO_RAD;
+        double atras = -0.22;
+        mover.accept(p, getX() - Mth.sin(r) * atras, getY() + getPassengersRidingOffset() + p.getMyRidingOffset(), getZ() + Mth.cos(r) * atras);
         Montar.seguir(p, Mth.wrapDegrees(getYRot() - yRotO), getYRot());
     }
 

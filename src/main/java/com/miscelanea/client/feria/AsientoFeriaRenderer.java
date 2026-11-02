@@ -23,11 +23,9 @@ public class AsientoFeriaRenderer extends EntityRenderer<AsientoFeria> {
     public void render(AsientoFeria e, float yaw, float pt, PoseStack ps, MultiBufferSource buf, int luz) {
         AtraccionBlockEntity b = e.be();
         if (b == null) return;
-        double[] p = b.puesto(e.indice(), e.level().getGameTime() + (double) pt);
-        double ex = Mth.lerp(pt, e.xo, e.getX()), ey = Mth.lerp(pt, e.yo, e.getY()), ez = Mth.lerp(pt, e.zo, e.getZ());
+        // se dibuja donde está la entidad (interpolada como sus pasajeros), no un tic por delante: así el jugador va dentro
         ps.pushPose();
-        ps.translate(p[0] - ex, p[1] - ey, p[2] - ez);
-        ps.mulPose(Axis.YP.rotationDegrees((float) -p[3]));
+        ps.mulPose(Axis.YP.rotationDegrees(-Mth.rotLerp(pt, e.yRotO, e.getYRot())));
         var vc = buf.getBuffer(Sheets.cutoutBlockSheet());
         int c = e.indice() % 4;
         if (e.esPulpo()) {

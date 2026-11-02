@@ -118,7 +118,9 @@ public class AsientoFeria extends Entity {
 
     @Override
     public double getPassengersRidingOffset() {
-        return esNoria() ? 0.75 : esPulpo() ? 0.55 : 0.85;
+        // medido en los modelos: el trasero del jugador sentado queda 0,58 por encima de sus pies y el jugador va 0,35 por
+        // debajo de este valor → banco de la cabina a 0,40, banco de la cesta a 0,24, silla del caballito a 0,75
+        return esNoria() ? 0.17 : esPulpo() ? 0.01 : 0.52;
     }
 
     @Override
@@ -138,17 +140,23 @@ public class AsientoFeria extends Entity {
             return;
         }
         int i = getPassengers().indexOf(p);
-        double ox = i % 2 == 0 ? -0.45 : 0.45, oz = pulpo ? 0.1 : i < 2 ? -0.6 : 0.6;
+        double ox = i % 2 == 0 ? -0.45 : 0.45, oz = pulpo ? 0.25 : i < 2 ? -0.62 : 0.62;   // sobre el banco de cada uno
         double yaw = Math.toRadians(getYRot()), c = Math.cos(yaw), s = Math.sin(yaw);
         mover.accept(p, getX() + ox * c - oz * s, getY() + getPassengersRidingOffset() + p.getMyRidingOffset(), getZ() + oz * c + ox * s);
         // en la noria el banco de delante mira hacia atrás (los dos bancos, frente a frente)
-        Montar.seguir(p, giro, getYRot() + (!pulpo && i >= 2 ? 180F : 0F));
+        Montar.seguir(p, giro, getYRot() + mira(i, pulpo));
     }
 
     @Override
     public void onPassengerTurned(Entity p) {
         int i = getPassengers().indexOf(p);
-        Montar.encarar(p, getYRot() + (esNoria() && i >= 2 ? 180F : 0F));
+        Montar.encarar(p, getYRot() + mira(i, esPulpo()));
+    }
+
+    /** Hacia dónde mira el pasajero respecto a la cabina: en la noria los bancos van frente a frente; en el pulpo el banco
+     *  está al fondo de la cesta y se mira hacia delante (hacia el lado abierto). */
+    private static float mira(int i, boolean pulpo) {
+        return pulpo || i >= 2 ? 180F : 0F;
     }
 
     @Override
