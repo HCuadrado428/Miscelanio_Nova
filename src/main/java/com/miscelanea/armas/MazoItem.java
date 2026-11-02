@@ -165,7 +165,8 @@ public class MazoItem extends Item implements GeoItem {
             t.putUUID(DUENO, jug.getUUID());
             t.putString(DUENO_NOMBRE, jug.getGameProfile().getName());
         } else if (!t.getUUID(DUENO).equals(jug.getUUID()) && !jug.isCreative() && level.getGameTime() % 40 == 0
-                && jug.getServer() != null && jug.getServer().getPlayerList().getPlayer(t.getUUID(DUENO)) instanceof ServerPlayer dueno) {
+                && jug.getServer() != null && jug.getServer().getPlayerList().getPlayer(t.getUUID(DUENO)) != null) {
+            ServerPlayer dueno = jug.getServer().getPlayerList().getPlayer(t.getUUID(DUENO));
             // vuelve solo a su dueño en un remolino de viento
             ItemStack copia = s.copy();
             jug.getInventory().removeItem(s);
