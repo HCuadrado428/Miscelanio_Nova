@@ -63,7 +63,7 @@ public final class TorturaCliente {
         e.cadena = p.grilletes ? p.cadena : -1;
         e.lazo = p.lazo;
         e.lazoCaptor = p.lazo != 0 ? p.lazoCaptor : -1;
-        e.lazoT = p.lazoT;
+        e.lazoT = p.lazoTicks;
     }
 
     @Nullable
