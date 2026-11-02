@@ -1288,5 +1288,23 @@
       "miscelanea:co_chisporroteo"
     ],
     "subtitle": "subtitles.miscelanea.co_chisporroteo"
+  },
+  "ca_barajar": {
+    "sounds": [
+      "miscelanea:ca_barajar"
+    ],
+    "subtitle": "subtitles.miscelanea.ca_barajar"
+  },
+  "ca_carta": {
+    "sounds": [
+      "miscelanea:ca_carta"
+    ],
+    "subtitle": "subtitles.miscelanea.ca_carta"
+  },
+  "ca_baza": {
+    "sounds": [
+      "miscelanea:ca_baza"
+    ],
+    "subtitle": "subtitles.miscelanea.ca_baza"
   }
 }

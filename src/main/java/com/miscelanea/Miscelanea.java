@@ -111,6 +111,7 @@ public class Miscelanea {
             event.accept(ModItems.DIANA_DARDOS);
             event.accept(ModItems.DARDO);
             event.accept(ModItems.TORRE);
+            event.accept(ModItems.MESA_CARTAS);
             event.accept(ModItems.FOGON);
             event.accept(ModItems.SEMILLAS_TOMATE);
             event.accept(ModItems.TOMATE);

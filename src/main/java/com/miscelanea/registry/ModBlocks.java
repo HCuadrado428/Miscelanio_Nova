@@ -139,6 +139,12 @@ public final class ModBlocks {
     public static final RegistryObject<Block> PAELLA = BLOCKS.register("paella",
             () -> new com.miscelanea.cocina.PaellaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).strength(0.5F)
                     .sound(SoundType.METAL).noOcclusion()));
+    public static final RegistryObject<Block> MESA_CARTAS = BLOCKS.register("mesa_cartas",
+            () -> new com.miscelanea.cartas.MesaCartasBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.5F)
+                    .sound(SoundType.WOOD).noOcclusion()));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.cartas.MesaCartasBlockEntity>> MESA_CARTAS_BE = BLOCK_ENTITIES.register("mesa_cartas",
+            () -> BlockEntityType.Builder.of(com.miscelanea.cartas.MesaCartasBlockEntity::new, MESA_CARTAS.get()).build(null));
     public static final RegistryObject<Block> BILLAR = BLOCKS.register("billar",
             () -> new com.miscelanea.mesas.BillarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(2.5F)
                     .sound(SoundType.WOOD).noOcclusion()));

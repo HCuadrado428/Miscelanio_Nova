@@ -1,0 +1,22 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "PGP",
+  "S S"
+ ],
+ "key": {
+  "P": {
+   "item": "minecraft:paper"
+  },
+  "G": {
+   "item": "minecraft:green_carpet"
+  },
+  "S": {
+   "tag": "minecraft:wooden_slabs"
+  }
+ },
+ "result": {
+  "item": "miscelanea:mesa_cartas"
+ }
+}

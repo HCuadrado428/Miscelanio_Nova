@@ -215,6 +215,8 @@ public final class ModItems {
             () -> new Item(new Item.Properties().food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(8).saturationMod(0.9F)
                     .effect(() -> new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SPEED, 20 * 30, 0), 1F)
                     .effect(() -> new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.DIG_SPEED, 20 * 30, 0), 1F).build())));
+    public static final RegistryObject<Item> MESA_CARTAS = ITEMS.register("mesa_cartas",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.MESA_CARTAS.get(), new Item.Properties()));
     public static final RegistryObject<Item> PISTA_BAILE = ITEMS.register("pista_baile",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PISTA_BAILE.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> BILLAR = ITEMS.register("billar",
