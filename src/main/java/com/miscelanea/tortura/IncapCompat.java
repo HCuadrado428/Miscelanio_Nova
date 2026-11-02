@@ -30,7 +30,8 @@ public final class IncapCompat {
     private static final String CLASE = "com.cartoonishvillain.incapacitated.Incapacitated";
     private static final String CAMPO = "instantKillDamageSourcesMessageID";
     /** msgId de todos los tipos de daño de la sala de juegos que deben matar del tirón (añadir aquí los futuros). */
-    public static final List<String> MSG_IDS = List.of("miscelanea.trampa_oso");
+    public static final List<String> MSG_IDS = List.of("miscelanea.trampa_oso", "miscelanea.doncella", "miscelanea.potro",
+            "miscelanea.silla_electrica");
 
     private static Boolean cargado;
     private static Field campo;

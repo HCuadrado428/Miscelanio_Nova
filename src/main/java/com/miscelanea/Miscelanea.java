@@ -34,6 +34,7 @@ public class Miscelanea {
         com.miscelanea.registry.ModBlocks.BLOCKS.register(modBus);
         com.miscelanea.registry.ModBlocks.BLOCK_ENTITIES.register(modBus);
         com.miscelanea.tortura.TorturaRegistro.registrar(modBus);
+        com.miscelanea.tortura.aparatos.AparatosRegistro.registrar(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::creativeTabs);
@@ -163,6 +164,11 @@ public class Miscelanea {
             event.accept(com.miscelanea.tortura.TorturaRegistro.CADENA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.GANZUA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.LAZO);
+            event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.DONCELLA_ITEM);
+            event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.POTRO_ITEM);
+            event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.SILLA_ITEM);
+            event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.CORREAS);
+            event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.HIERRO_MARCAR);
             event.accept(ModItems.COHETE);
             event.accept(ModItems.LLAVE_ESPADA);
             event.accept(ModItems.HACHA_LEVIATAN);

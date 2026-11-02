@@ -1,0 +1,31 @@
+{
+ "variants": {
+  "anexo=false,facing=north": {
+   "model": "miscelanea:block/tortura/potro"
+  },
+  "anexo=true,facing=north": {
+   "model": "miscelanea:block/tortura/potro_anexo"
+  },
+  "anexo=false,facing=east": {
+   "model": "miscelanea:block/tortura/potro",
+   "y": 90
+  },
+  "anexo=true,facing=east": {
+   "model": "miscelanea:block/tortura/potro_anexo"
+  },
+  "anexo=false,facing=south": {
+   "model": "miscelanea:block/tortura/potro",
+   "y": 180
+  },
+  "anexo=true,facing=south": {
+   "model": "miscelanea:block/tortura/potro_anexo"
+  },
+  "anexo=false,facing=west": {
+   "model": "miscelanea:block/tortura/potro",
+   "y": 270
+  },
+  "anexo=true,facing=west": {
+   "model": "miscelanea:block/tortura/potro_anexo"
+  }
+ }
+}

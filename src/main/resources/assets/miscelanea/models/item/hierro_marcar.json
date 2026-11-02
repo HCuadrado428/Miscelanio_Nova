@@ -1,0 +1,26 @@
+{
+ "parent": "item/handheld",
+ "textures": {
+  "layer0": "miscelanea:item/hierro_marcar"
+ },
+ "overrides": [
+  {
+   "predicate": {
+    "miscelanea:calor": 0.35
+   },
+   "model": "miscelanea:item/hierro_marcar_rojo"
+  },
+  {
+   "predicate": {
+    "miscelanea:calor": 0.6
+   },
+   "model": "miscelanea:item/hierro_marcar_naranja"
+  },
+  {
+   "predicate": {
+    "miscelanea:calor": 0.85
+   },
+   "model": "miscelanea:item/hierro_marcar_blanco"
+  }
+ ]
+}

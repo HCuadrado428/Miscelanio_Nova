@@ -1672,5 +1672,71 @@
       "miscelanea:lazo_romper"
     ],
     "subtitle": "subtitles.miscelanea.lazo_romper"
+  },
+  "doncella_chirrido": {
+    "sounds": [
+      "miscelanea:doncella_chirrido"
+    ],
+    "subtitle": "subtitles.miscelanea.doncella_chirrido"
+  },
+  "doncella_cierre": {
+    "sounds": [
+      "miscelanea:doncella_cierre"
+    ],
+    "subtitle": "subtitles.miscelanea.doncella_cierre"
+  },
+  "doncella_pinchos": {
+    "sounds": [
+      "miscelanea:doncella_pinchos"
+    ],
+    "subtitle": "subtitles.miscelanea.doncella_pinchos"
+  },
+  "potro_carraca": {
+    "sounds": [
+      "miscelanea:potro_carraca"
+    ],
+    "subtitle": "subtitles.miscelanea.potro_carraca"
+  },
+  "potro_crujido": {
+    "sounds": [
+      "miscelanea:potro_crujido"
+    ],
+    "subtitle": "subtitles.miscelanea.potro_crujido"
+  },
+  "potro_conversion": {
+    "sounds": [
+      "miscelanea:potro_conversion"
+    ],
+    "subtitle": "subtitles.miscelanea.potro_conversion"
+  },
+  "silla_descarga": {
+    "sounds": [
+      "miscelanea:silla_descarga"
+    ],
+    "subtitle": "subtitles.miscelanea.silla_descarga"
+  },
+  "silla_palanca": {
+    "sounds": [
+      "miscelanea:silla_palanca"
+    ],
+    "subtitle": "subtitles.miscelanea.silla_palanca"
+  },
+  "silla_dial": {
+    "sounds": [
+      "miscelanea:silla_dial"
+    ],
+    "subtitle": "subtitles.miscelanea.silla_dial"
+  },
+  "hierro_chisporroteo": {
+    "sounds": [
+      "miscelanea:hierro_chisporroteo"
+    ],
+    "subtitle": "subtitles.miscelanea.hierro_chisporroteo"
+  },
+  "hierro_brasa": {
+    "sounds": [
+      "miscelanea:hierro_brasa"
+    ],
+    "subtitle": "subtitles.miscelanea.hierro_brasa"
   }
 }
