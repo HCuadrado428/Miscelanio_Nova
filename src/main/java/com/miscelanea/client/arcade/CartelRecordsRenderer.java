@@ -249,13 +249,9 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
             textoIzq(ps, buf, font, nm, x + 3 * kk, yy, kk, col);
             textoIzq(ps, buf, font, pts, x + pw - 3 * kk - wp * kk, yy, kk, col);
             if (i == 0) {
-                // círculo de tiza alrededor del ganador
-                float cxx = x + pw / 2, cyy = yy + 3.5F * kk;
-                for (int a = 0; a < 24; a++) {
-                    double t = a * Math.PI / 12;
-                    float px = (float) (cxx + Math.cos(t) * (pw / 2 - 1)), py = (float) (cyy + Math.sin(t) * 6 * kk);
-                    quad(vc, m, px, py, px + 1.6F, py + 0.6F, 0.19F, 0x90FFE97A);
-                }
+                // subrayado de tiza bajo el ganador
+                for (float dx = 0; dx < pw - 6 * kk; dx += 2)
+                    quad(vc, m, x + 3 * kk + dx, yy + 8.4F * kk + (float) Math.sin(dx * 0.5F) * 0.4F, x + 3 * kk + dx + 2.2F, yy + 9F * kk + (float) Math.sin(dx * 0.5F) * 0.4F, 0.19F, 0xB0FFE97A);
             }
             yy += linea;
         }
