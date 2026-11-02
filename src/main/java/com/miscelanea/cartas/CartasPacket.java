@@ -14,7 +14,7 @@ import java.util.function.Supplier;
  * Servidor → cliente: ESTADO de la partida vista por ese jugador (con su mano), y si hay que abrir la pantalla.
  */
 public class CartasPacket {
-    public static final int ESTADO = 0, JUGAR = 1, CPU = 2, NUEVA = 3, LEVANTARSE = 4;
+    public static final int ESTADO = 0, JUGAR = 1, CPU = 2, NUEVA = 3, LEVANTARSE = 4, ROBAR = 5, DESCARTAR = 6, CERRAR = 7, JUEGO = 8;
     public final int tipo, arg;
     public final BlockPos pos;
     // estado
@@ -22,6 +22,8 @@ public class CartasPacket {
     public int miAsiento = -1, triunfo = -1, mazo, turno, estado, ultimaGana = -1;
     public int[] mano = new int[0], mesa = {-1, -1}, puntos = new int[2], bazas = new int[2], enMano = new int[2];
     public String[] nombres = {"", ""};
+    public int juego, fase, descarte = -1;
+    public int[] acumulado = new int[2], ultSueltos = {-1, -1}, manoRival = new int[0];
 
     public CartasPacket(int tipo, BlockPos pos, int arg) {
         this.tipo = tipo;
@@ -44,6 +46,13 @@ public class CartasPacket {
         p.bazas = be.bazas.clone();
         p.enMano = new int[]{be.mano[0].size(), be.mano[1].size()};
         p.nombres = be.nombre.clone();
+        p.juego = be.juego;
+        p.fase = be.fase;
+        p.descarte = be.descarte.isEmpty() ? -1 : be.descarte.get(be.descarte.size() - 1);
+        p.acumulado = be.acumulado.clone();
+        p.ultSueltos = be.ultSueltos.clone();
+        if (be.juego == MesaCartasBlockEntity.CHINCHON && be.fase == MesaCartasBlockEntity.FIN_RONDA && asiento >= 0)
+            p.manoRival = be.mano[1 - asiento].stream().mapToInt(Integer::intValue).toArray();
         return p;
     }
 
@@ -63,6 +72,12 @@ public class CartasPacket {
         bazas = b.readVarIntArray();
         enMano = b.readVarIntArray();
         nombres = new String[]{b.readUtf(64), b.readUtf(64)};
+        juego = b.readByte();
+        fase = b.readByte();
+        descarte = b.readByte();
+        acumulado = b.readVarIntArray();
+        ultSueltos = b.readVarIntArray();
+        manoRival = b.readVarIntArray();
     }
 
     public void encode(FriendlyByteBuf b) {
@@ -84,6 +99,12 @@ public class CartasPacket {
         b.writeVarIntArray(enMano);
         b.writeUtf(nombres[0], 64);
         b.writeUtf(nombres[1], 64);
+        b.writeByte(juego);
+        b.writeByte(fase);
+        b.writeByte(descarte);
+        b.writeVarIntArray(acumulado);
+        b.writeVarIntArray(ultSueltos);
+        b.writeVarIntArray(manoRival);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
@@ -99,6 +120,10 @@ public class CartasPacket {
             case CPU -> be.contraCpu(p);
             case NUEVA -> be.nueva(p);
             case LEVANTARSE -> be.levantarse(p);
+            case ROBAR -> be.robar(be.asiento(p), arg == 1);
+            case DESCARTAR -> be.descartar(be.asiento(p), arg, false);
+            case CERRAR -> be.descartar(be.asiento(p), arg, true);
+            case JUEGO -> be.cambiarJuego(p);
             default -> {}
         }
     }

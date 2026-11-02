@@ -1150,5 +1150,22 @@
   "miscelanea.torneo.final": "Final",
   "miscelanea.torneo.ronda": "Ronda %s",
   "miscelanea.torneo.pase": "(pase)",
-  "miscelanea.torneo.marcar_gana": "Clic: este gana el cruce"
+  "miscelanea.torneo.marcar_gana": "Clic: este gana el cruce",
+  "miscelanea.cartas.juego": "Juego: brisca",
+  "miscelanea.chinchon.juego": "Juego: chinchón",
+  "miscelanea.chinchon.cerrar": "Cerrar",
+  "miscelanea.chinchon.cerrando": "¡Cerrando! (elige)",
+  "miscelanea.chinchon.no_cierra": "No puedes cerrar: te quedan %s puntos sueltos (máximo 3)",
+  "miscelanea.chinchon.chinchon": "¡¡CHINCHÓN de %s!! Gana la partida",
+  "miscelanea.chinchon.cierra": "%s cierra (%s) · %s suma %s · Total: %s / %s",
+  "miscelanea.chinchon.gana": "%s gana el chinchón",
+  "miscelanea.chinchon.puntos": "%s puntos",
+  "miscelanea.chinchon.mazo": "Mazo",
+  "miscelanea.chinchon.descarte": "Descarte",
+  "miscelanea.chinchon.sueltos": "sueltas: %s",
+  "miscelanea.chinchon.final": "Fin: %s a %s (gana quien menos tiene)",
+  "miscelanea.chinchon.ronda": "Ronda: tú %s · rival %s",
+  "miscelanea.chinchon.roba": "Roba: clic en el mazo o en el descarte",
+  "miscelanea.chinchon.descarta": "Descarta una carta (o pulsa Cerrar)",
+  "miscelanea.chinchon.elige_cierre": "Elige la carta que tiras al cerrar"
 }

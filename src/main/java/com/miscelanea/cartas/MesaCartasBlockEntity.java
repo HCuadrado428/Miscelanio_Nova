@@ -42,6 +42,12 @@ public class MesaCartasBlockEntity extends BlockEntity {
     public long resolver = -1, cpuDesde;
     /** En el cliente: cuántas cartas tiene cada uno en la mano (la mano no se manda a los demás). */
     public final int[] enMano = new int[2];
+    // ---- chinchón
+    public static final int BRISCA = 0, CHINCHON = 1, ROBAR = 0, DESCARTAR = 1, FIN_RONDA = 2, LIMITE = 100;
+    public int juego = BRISCA, fase, descarteTop = -1;
+    public final List<Integer> descarte = new ArrayList<>();
+    public final int[] acumulado = new int[2], ultSueltos = {-1, -1};
+    public boolean chinchon;
 
     public MesaCartasBlockEntity(BlockPos p, BlockState s) {
         super(com.miscelanea.registry.ModBlocks.MESA_CARTAS_BE.get(), p, s);
@@ -123,6 +129,12 @@ public class MesaCartasBlockEntity extends BlockEntity {
     }
 
     private void empezar() {
+        if (juego == CHINCHON) {
+            acumulado[0] = acumulado[1] = 0;
+            salida = level.random.nextInt(2);
+            empezarRonda();
+            return;
+        }
         mazo.clear();
         for (int c = 0; c < 40; c++) mazo.add(c);
         Collections.shuffle(mazo, new java.util.Random(level.random.nextLong()));
@@ -149,6 +161,7 @@ public class MesaCartasBlockEntity extends BlockEntity {
     }
 
     private void echar(int a, int idx) {
+        if (juego != BRISCA) return;
         if (estado != JUGANDO || turno != a || resolver >= 0 || idx < 0 || idx >= mano[a].size() || mesa[a] >= 0) return;
         mesa[a] = mano[a].remove(idx);
         level.playSound(null, worldPosition, ModSounds.CA_CARTA.get(), SoundSource.BLOCKS, 1F, 0.9F + level.random.nextFloat() * 0.2F);
@@ -161,6 +174,10 @@ public class MesaCartasBlockEntity extends BlockEntity {
     public static void tick(Level l, BlockPos pos, BlockState s, MesaCartasBlockEntity be) {
         if (be.estado != JUGANDO) return;
         long ahora = l.getGameTime();
+        if (be.juego == CHINCHON) {
+            be.tickChinchon(ahora);
+            return;
+        }
         if (be.resolver >= 0) {
             if (ahora - be.resolver >= PAUSA_BAZA) be.resolverBaza();
             return;
@@ -168,6 +185,148 @@ public class MesaCartasBlockEntity extends BlockEntity {
         if (be.cpu[be.turno] && ahora - be.cpuDesde >= PAUSA_CPU) {
             int t = be.turno;
             be.echar(t, Baraja.elegirCpu(be.mano[t], be.mesa[1 - t], Baraja.palo(be.triunfo)));
+        }
+    }
+
+    // ------------------------------------------------------------------ chinchón
+    void cambiarJuego(ServerPlayer p) {
+        if (asiento(p) < 0 || estado == JUGANDO) return;
+        juego = 1 - juego;
+        estado = ocupados() == 2 && estado != FIN ? ESPERA : estado;
+        cambio();
+    }
+
+    private void ordenar(List<Integer> m) {
+        m.sort((x, y) -> Baraja.palo(x) != Baraja.palo(y) ? Baraja.palo(x) - Baraja.palo(y) : Baraja.indice(x) - Baraja.indice(y));
+    }
+
+    private void empezarRonda() {
+        mazo.clear();
+        for (int c = 0; c < 40; c++) mazo.add(c);
+        Collections.shuffle(mazo, new java.util.Random(level.random.nextLong()));
+        descarte.clear();
+        for (int i = 0; i < 2; i++) {
+            mano[i].clear();
+            for (int k = 0; k < 7; k++) mano[i].add(mazo.remove(0));
+            ordenar(mano[i]);
+            mesa[i] = -1;
+        }
+        descarte.add(mazo.remove(0));
+        turno = salida;
+        fase = ROBAR;
+        chinchon = false;
+        estado = JUGANDO;
+        resolver = -1;
+        triunfo = -1;
+        cpuDesde = level.getGameTime();
+        level.playSound(null, worldPosition, ModSounds.CA_BARAJAR.get(), SoundSource.BLOCKS, 1F, 1F);
+    }
+
+    void robar(int a, boolean deDescarte) {
+        if (juego != CHINCHON || estado != JUGANDO || turno != a || fase != ROBAR) return;
+        int c;
+        if (deDescarte && !descarte.isEmpty()) c = descarte.remove(descarte.size() - 1);
+        else {
+            if (mazo.isEmpty()) {
+                int arriba = descarte.remove(descarte.size() - 1);
+                mazo.addAll(descarte);
+                Collections.shuffle(mazo, new java.util.Random(level.random.nextLong()));
+                descarte.clear();
+                descarte.add(arriba);
+            }
+            if (mazo.isEmpty()) return;
+            c = mazo.remove(0);
+        }
+        mano[a].add(c);
+        ordenar(mano[a]);
+        fase = DESCARTAR;
+        cpuDesde = level.getGameTime();
+        level.playSound(null, worldPosition, ModSounds.CA_CARTA.get(), SoundSource.BLOCKS, 0.8F, 1.2F);
+        cambio();
+    }
+
+    void descartar(int a, int idx, boolean cerrar) {
+        if (juego != CHINCHON || estado != JUGANDO || turno != a || fase != DESCARTAR || idx < 0 || idx >= mano[a].size()) return;
+        int c = mano[a].remove(idx);
+        if (cerrar) {
+            int s = Chinchon.sueltos(mano[a]);
+            boolean chin = Chinchon.esChinchon(mano[a]);
+            if (!chin && s > 3) {
+                mano[a].add(c);
+                ordenar(mano[a]);
+                if (jugador[a] != null && level.getPlayerByUUID(jugador[a]) != null)
+                    level.getPlayerByUUID(jugador[a]).displayClientMessage(Component.translatable("miscelanea.chinchon.no_cierra", s), true);
+                cambio();
+                return;
+            }
+            descarte.add(c);
+            finRonda(a, s, chin);
+            return;
+        }
+        descarte.add(c);
+        turno = 1 - a;
+        fase = ROBAR;
+        cpuDesde = level.getGameTime();
+        level.playSound(null, worldPosition, ModSounds.CA_CARTA.get(), SoundSource.BLOCKS, 1F, 0.9F);
+        cambio();
+    }
+
+    private void finRonda(int cierra, int s, boolean chin) {
+        fase = FIN_RONDA;
+        resolver = level.getGameTime();
+        chinchon = chin;
+        int otro = 1 - cierra;
+        if (chin) {
+            for (Player o : cercanos()) o.displayClientMessage(Component.translatable("miscelanea.chinchon.chinchon", nombre[cierra]).withStyle(ChatFormatting.GOLD), false);
+            acumulado[otro] = LIMITE + 1;
+            ultSueltos[cierra] = 0;
+            ultSueltos[otro] = Chinchon.sueltos(mano[otro]);
+            level.playSound(null, worldPosition, ModSounds.FE_PREMIO_GORDO.get(), SoundSource.BLOCKS, 1F, 1F);
+        } else {
+            int pc = s == 0 ? -10 : s, po = Chinchon.sueltos(mano[otro]);
+            acumulado[cierra] += pc;
+            acumulado[otro] += po;
+            ultSueltos[cierra] = pc;
+            ultSueltos[otro] = po;
+            for (Player o : cercanos())
+                o.displayClientMessage(Component.translatable("miscelanea.chinchon.cierra", nombre[cierra], pc, nombre[otro], po, acumulado[0], acumulado[1]), false);
+            level.playSound(null, worldPosition, ModSounds.CA_BAZA.get(), SoundSource.BLOCKS, 1F, 1F);
+        }
+        cambio();
+    }
+
+    private void tickChinchon(long ahora) {
+        if (fase == FIN_RONDA) {
+            if (ahora - resolver < 80) return;
+            if (acumulado[0] > LIMITE || acumulado[1] > LIMITE) {
+                estado = FIN;
+                int g = acumulado[0] <= acumulado[1] ? 0 : 1;
+                for (Player o : cercanos()) o.displayClientMessage(Component.translatable("miscelanea.chinchon.gana", nombre[g]).withStyle(ChatFormatting.GOLD), false);
+                level.playSound(null, worldPosition, ModSounds.FE_PREMIO.get(), SoundSource.BLOCKS, 0.8F, 1F);
+                cambio();
+                return;
+            }
+            salida = 1 - salida;
+            empezarRonda();
+            cambio();
+            return;
+        }
+        int t = turno;
+        if (!cpu[t] || ahora - cpuDesde < PAUSA_CPU) return;
+        if (fase == ROBAR) {
+            boolean coger = false;
+            if (!descarte.isEmpty()) {
+                List<Integer> con = new ArrayList<>(mano[t]);
+                con.add(descarte.get(descarte.size() - 1));
+                coger = Chinchon.mejorDescarte(con)[1] < Chinchon.sueltos(mano[t]) - 1;
+            }
+            robar(t, coger);
+        } else {
+            int[] md = Chinchon.mejorDescarte(mano[t]);
+            List<Integer> resto = new ArrayList<>(mano[t]);
+            resto.remove(md[0]);
+            boolean cierra = Chinchon.esChinchon(resto) || md[1] <= 1 || (md[1] <= 3 && level.random.nextInt(3) == 0);
+            descartar(t, md[0], cierra);
         }
     }
 
@@ -235,6 +394,10 @@ public class MesaCartasBlockEntity extends BlockEntity {
         t.putInt("salida", salida);
         t.putInt("estado", estado);
         t.putInt("ult", ultimaGana);
+        t.putInt("juego", juego);
+        t.putInt("fase", fase);
+        t.putInt("desc", descarte.isEmpty() ? -1 : descarte.get(descarte.size() - 1));
+        t.putIntArray("acum", acumulado);
     }
 
     @Override
@@ -246,6 +409,7 @@ public class MesaCartasBlockEntity extends BlockEntity {
             t.putIntArray("m" + i, mano[i].stream().mapToInt(Integer::intValue).toArray());
         }
         t.putIntArray("baraja", mazo.stream().mapToInt(Integer::intValue).toArray());
+        t.putIntArray("pila", descarte.stream().mapToInt(Integer::intValue).toArray());
     }
 
     @Override
@@ -272,6 +436,15 @@ public class MesaCartasBlockEntity extends BlockEntity {
         salida = t.getInt("salida");
         estado = t.getInt("estado");
         ultimaGana = t.contains("ult") ? t.getInt("ult") : -1;
+        juego = t.getInt("juego");
+        fase = t.getInt("fase");
+        descarteTop = t.contains("desc") ? t.getInt("desc") : -1;
+        int[] ac = t.getIntArray("acum");
+        if (ac.length == 2) System.arraycopy(ac, 0, acumulado, 0, 2);
+        if (t.contains("pila")) {
+            descarte.clear();
+            for (int c : t.getIntArray("pila")) descarte.add(c);
+        }
         if (t.contains("baraja")) {
             mazo.clear();
             for (int c : t.getIntArray("baraja")) mazo.add(c);

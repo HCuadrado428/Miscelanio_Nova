@@ -1150,5 +1150,22 @@
   "miscelanea.torneo.final": "Final",
   "miscelanea.torneo.ronda": "Round %s",
   "miscelanea.torneo.pase": "(bye)",
-  "miscelanea.torneo.marcar_gana": "Click: this player wins the match"
+  "miscelanea.torneo.marcar_gana": "Click: this player wins the match",
+  "miscelanea.cartas.juego": "Game: brisca",
+  "miscelanea.chinchon.juego": "Game: chinchón",
+  "miscelanea.chinchon.cerrar": "Close",
+  "miscelanea.chinchon.cerrando": "Closing! (pick)",
+  "miscelanea.chinchon.no_cierra": "You can't close: %s loose points left (3 max)",
+  "miscelanea.chinchon.chinchon": "CHINCHÓN by %s!! Wins the game",
+  "miscelanea.chinchon.cierra": "%s closes (%s) · %s scores %s · Total: %s / %s",
+  "miscelanea.chinchon.gana": "%s wins the chinchón",
+  "miscelanea.chinchon.puntos": "%s points",
+  "miscelanea.chinchon.mazo": "Deck",
+  "miscelanea.chinchon.descarte": "Discard",
+  "miscelanea.chinchon.sueltos": "loose: %s",
+  "miscelanea.chinchon.final": "Final: %s to %s (lowest wins)",
+  "miscelanea.chinchon.ronda": "Round: you %s · rival %s",
+  "miscelanea.chinchon.roba": "Draw: click the deck or the discard pile",
+  "miscelanea.chinchon.descarta": "Discard a card (or press Close)",
+  "miscelanea.chinchon.elige_cierre": "Pick the card you discard to close"
 }
