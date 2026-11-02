@@ -186,6 +186,14 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> FE_MANIVELA = register("fe_manivela");
     public static final RegistryObject<SoundEvent> FE_CAPSULA = register("fe_capsula");
     public static final RegistryObject<SoundEvent> FE_CAPSULA_ABRE = register("fe_capsula_abre");
+    public static final RegistryObject<SoundEvent> PI_DISPARO = register("pi_disparo");
+    public static final RegistryObject<SoundEvent> PI_RECARGA = register("pi_recarga");
+    public static final RegistryObject<SoundEvent> PI_VACIO = register("pi_vacio");
+    public static final RegistryObject<SoundEvent> PI_IMPACTO = register("pi_impacto");
+    public static final RegistryObject<SoundEvent> PI_ROBOT = register("pi_robot");
+    public static final RegistryObject<SoundEvent> PI_DANO = register("pi_dano");
+    public static final RegistryObject<SoundEvent> PI_EXPLOSION = register("pi_explosion");
+    public static final RegistryObject<SoundEvent> PI_MUSICA = register("pi_musica");
     public static final RegistryObject<SoundEvent> FE_ALGODON = register("fe_algodon");
     public static final RegistryObject<SoundEvent> FE_POP = register("fe_pop");
     public static final RegistryObject<SoundEvent> FE_MASCLET = register("fe_masclet");

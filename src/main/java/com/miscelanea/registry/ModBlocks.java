@@ -54,6 +54,12 @@ public final class ModBlocks {
     public static final RegistryObject<Block> RECREATIVA_DOBLE = BLOCKS.register("recreativa_doble",
             () -> new com.miscelanea.arcade.RecreativaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(2.0F)
                     .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 7), true));
+    public static final RegistryObject<Block> CABINA_CARRERAS = BLOCKS.register("cabina_carreras",
+            () -> new com.miscelanea.arcade.CabinaArcadeBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(2.0F)
+                    .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 7), "turbo", true));
+    public static final RegistryObject<Block> RECREATIVA_PISTOLA = BLOCKS.register("recreativa_pistola",
+            () -> new com.miscelanea.arcade.CabinaArcadeBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(2.0F)
+                    .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 7), "pistola", false));
     public static final RegistryObject<Block> PISTA_BAILE = BLOCKS.register("pista_baile",
             () -> new com.miscelanea.baile.PistaBaileBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(1.5F)
                     .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 8)));
@@ -204,7 +210,7 @@ public final class ModBlocks {
                     .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 6)));
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.arcade.RecreativaBlockEntity>> RECREATIVA_BE = BLOCK_ENTITIES.register("recreativa",
-            () -> BlockEntityType.Builder.of(com.miscelanea.arcade.RecreativaBlockEntity::new, RECREATIVA.get(), RECREATIVA_DOBLE.get(), MESA_COCTEL.get()).build(null));
+            () -> BlockEntityType.Builder.of(com.miscelanea.arcade.RecreativaBlockEntity::new, RECREATIVA.get(), RECREATIVA_DOBLE.get(), MESA_COCTEL.get(), CABINA_CARRERAS.get(), RECREATIVA_PISTOLA.get()).build(null));
 
     // ---- Acuario y terrario
     public static final RegistryObject<Block> ACUARIO = BLOCKS.register("acuario",

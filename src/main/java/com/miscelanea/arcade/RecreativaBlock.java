@@ -164,6 +164,11 @@ public class RecreativaBlock extends BaseEntityBlock {
 
     /** Uso de una máquina (recreativa, doble o mesa cóctel): jugar, unirse como 2P o enlazarse con la de al lado. */
     public static InteractionResult usar(Level l, BlockPos abajo, ServerPlayer sp, boolean doble) {
+        return usar(l, abajo, sp, doble, "");
+    }
+
+    /** Igual, pero en una máquina de un solo juego (fijo no vacío): sin enlace por cable y sin menú de juegos. */
+    public static InteractionResult usar(Level l, BlockPos abajo, ServerPlayer sp, boolean doble, String fijo) {
         if (!(l.getBlockEntity(abajo) instanceof RecreativaBlockEntity be)) return InteractionResult.PASS;
         if (doble && be.ocupadaPorOtro(sp) && (be.jugador2 == null || be.jugador2.equals(sp.getUUID()))) {
             unirse(l, be, sp, null);
@@ -174,7 +179,7 @@ public class RecreativaBlock extends BaseEntityBlock {
             return InteractionResult.CONSUME;
         }
         // recreativa normal junto a otra en la que alguien juega: agachado, se enlazan con un cable y se juega a dos
-        if (!doble) {
+        if (!doble && fijo.isEmpty()) {
             RecreativaBlockEntity vecina = vecinaConPartida(l, abajo, sp);
             if (vecina != null) {
                 if (sp.isShiftKeyDown()) {
@@ -200,7 +205,7 @@ public class RecreativaBlock extends BaseEntityBlock {
         }
         be.jugador = sp.getUUID();
         if (sp.getUUID().equals(be.jugador2)) be.jugador2 = null;
-        ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new ArcadeAbrirPacket(abajo, be.creditos, libre, 0, doble, 0, "", "", 1));
+        ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new ArcadeAbrirPacket(abajo, be.creditos, libre, 0, doble, 0, fijo, "", 1));
         return InteractionResult.CONSUME;
     }
 
@@ -226,7 +231,7 @@ public class RecreativaBlock extends BaseEntityBlock {
             for (int k = 1; k <= 2; k++) {
                 BlockPos q = abajo.relative(d, k);
                 BlockState st = l.getBlockState(q);
-                if (!(st.getBlock() instanceof RecreativaBlock rb) || rb.doble || st.getValue(HALF) != DoubleBlockHalf.LOWER) continue;
+                if (!(st.getBlock() instanceof RecreativaBlock rb) || rb.doble || rb instanceof CabinaArcadeBlock || st.getValue(HALF) != DoubleBlockHalf.LOWER) continue;
                 if (l.getBlockEntity(q) instanceof RecreativaBlockEntity v && v.ocupadaPorOtro(sp) && (v.jugador2 == null || v.jugador2.equals(sp.getUUID())))
                     return v;
             }

@@ -148,6 +148,10 @@ public final class ModItems {
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.RECREATIVA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> RECREATIVA_DOBLE = ITEMS.register("recreativa_doble",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.RECREATIVA_DOBLE.get(), new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> CABINA_CARRERAS = ITEMS.register("cabina_carreras",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.CABINA_CARRERAS.get(), new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> RECREATIVA_PISTOLA = ITEMS.register("recreativa_pistola",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.RECREATIVA_PISTOLA.get(), new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> NORIA = ITEMS.register("noria",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.NORIA.get(), new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> TIOVIVO = ITEMS.register("tiovivo",

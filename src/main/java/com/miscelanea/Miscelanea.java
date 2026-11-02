@@ -84,6 +84,8 @@ public class Miscelanea {
             event.accept(ModItems.TERRARIO);
             event.accept(ModItems.RECREATIVA);
             event.accept(ModItems.RECREATIVA_DOBLE);
+            event.accept(ModItems.CABINA_CARRERAS);
+            event.accept(ModItems.RECREATIVA_PISTOLA);
             event.accept(ModItems.MESA_COCTEL);
             event.accept(ModItems.CARTEL_RECORDS);
             event.accept(ModItems.PIZARRA_FERIA);

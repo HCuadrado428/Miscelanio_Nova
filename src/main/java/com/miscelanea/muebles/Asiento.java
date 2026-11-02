@@ -34,7 +34,8 @@ public class Asiento extends Entity {
         if (!level().isClientSide) {
             BlockPos b = BlockPos.containing(getX(), getY() + 0.65, getZ());
             boolean mueble = level().getBlockState(b).getBlock() instanceof SillaBlock || level().getBlockState(b).getBlock() instanceof SofaBlock
-                    || level().getBlockState(b).getBlock() instanceof TabureteBlock;
+                    || level().getBlockState(b).getBlock() instanceof TabureteBlock
+                    || level().getBlockState(b).getBlock() instanceof com.miscelanea.arcade.CabinaArcadeBlock;
             if (getPassengers().isEmpty() || !mueble) discard();
         }
     }
@@ -53,6 +54,7 @@ public class Asiento extends Entity {
     public Vec3 getDismountLocationForPassenger(LivingEntity e) {
         BlockPos b = BlockPos.containing(getX(), getY() + 0.65, getZ());
         Direction d = Direction.fromYRot(getYRot());
+        if (level().getBlockState(b).getBlock() instanceof com.miscelanea.arcade.CabinaArcadeBlock) d = d.getOpposite();
         BlockPos frente = b.relative(d);
         if (level().getBlockState(frente).getCollisionShape(level(), frente).isEmpty() && level().getBlockState(frente.above()).getCollisionShape(level(), frente.above()).isEmpty())
             return Vec3.atBottomCenterOf(frente);

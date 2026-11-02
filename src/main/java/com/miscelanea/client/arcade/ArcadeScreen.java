@@ -78,6 +78,30 @@ public class ArcadeScreen extends Screen {
     private int pasoSim, enviadoHasta = -1, atasco, mascaraOtro;
     private final Map<Integer, Integer> remotas = new HashMap<>(), locales = new HashMap<>();
     private ArcadeCliente.Remota remota;
+    private float escala = 1, origenX, origenY;
+    /** Máquina de un solo juego (cabina de carreras, recreativa de pistola): no hay menú para elegir. */
+    private String fijo = "";
+
+    public ArcadeScreen fijar(String id) {
+        if (ArcadeJuegos.esArcade(id)) {
+            fijo = id;
+            for (int i = 0; i < ArcadeJuegos.IDS.length; i++) if (ArcadeJuegos.IDS[i].equals(id)) sel = i;
+        }
+        return this;
+    }
+
+    @Override
+    public boolean mouseClicked(double mx, double my, int boton) {
+        if (estado == Estado.JUEGO && juego != null) {
+            int x = (int) Math.floor((mx - origenX) / escala - lx), y = (int) Math.floor((my - origenY) / escala - ly);
+            juego.ratonX = x;
+            juego.ratonY = y;
+            if (boton == 0) juego.disparos++;
+            else if (boton == 1) juego.recargas++;
+            return true;
+        }
+        return super.mouseClicked(mx, my, boton);
+    }
 
     public ArcadeScreen(BlockPos pos, int creditos, boolean libre, boolean doble, boolean invitado, String companero) {
         this(pos, creditos, libre, doble, invitado, companero, pos);
@@ -206,6 +230,7 @@ public class ArcadeScreen extends Screen {
             case "pinball" -> juego = new Pinball(bs, semilla, jug);
             case "bloques" -> juego = new DueloBloques(bs, semilla, jug);
             case "paso" -> juego = new PasoDoble(bs, semilla, jug);
+            case "pistola" -> juego = new PistolaChatarra(bs, semilla, 1);
             case "astro" -> clasico = new AstroPatrulla(bot);
             default -> {
                 Juego j = Juego.TETROMINOS;
@@ -256,15 +281,16 @@ public class ArcadeScreen extends Screen {
             case MENU -> {
                 if (invitado) break;
                 int n = ArcadeJuegos.IDS.length;
-                if (bot.repite(Botones.ABAJO, 14, 5)) {
+                if (!fijo.isEmpty()) n = 0;
+                if (n > 0 && bot.repite(Botones.ABAJO, 14, 5)) {
                     sel = (sel + 1) % n;
                     JuegoGB.sonido(ModSounds.GB_MOVER);
                 }
-                if (bot.repite(Botones.ARRIBA, 14, 5)) {
+                if (n > 0 && bot.repite(Botones.ARRIBA, 14, 5)) {
                     sel = (sel + n - 1) % n;
                     JuegoGB.sonido(ModSounds.GB_MOVER);
                 }
-                ultimoSel = sel;
+                if (fijo.isEmpty()) ultimoSel = sel;
                 if (bot.pulsa(Botones.START) && creditos <= 0 && !libre)
                     ModNetwork.CHANNEL.sendToServer(new ArcadeAccionPacket(pos, ArcadeAccionPacket.FICHA, "", 0));
                 else if (bot.pulsa(Botones.A) || bot.pulsa(Botones.START)) pedirPartida();
@@ -472,6 +498,13 @@ public class ArcadeScreen extends Screen {
         float kr = (float) (Math.floor(k * gs) / gs);
         if (kr >= 0.5F) k = kr;
         float ox = (width - cw * k) / 2F, oy = (height - 16 - ch * k) / 2F;
+        escala = k;
+        origenX = ox;
+        origenY = oy;
+        if (juego != null) {
+            juego.ratonX = (int) Math.floor((mx - ox) / k - lx);
+            juego.ratonY = (int) Math.floor((my - oy) / k - ly);
+        }
         g.pose().pushPose();
         g.pose().translate(ox, oy, 0);
         g.pose().scale(k, k, 1);

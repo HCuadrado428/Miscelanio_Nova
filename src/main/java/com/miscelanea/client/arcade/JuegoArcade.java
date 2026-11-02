@@ -22,6 +22,8 @@ public abstract class JuegoArcade {
     /** El juego pide cambiar la música (la pantalla la pone y lo vuelve a null); pararMusica la quita. */
     public SoundEvent cambiarMusica;
     public boolean pararMusica;
+    /** Recreativa de pistola: posición del ratón en la pantalla (o -1), clics de disparo y de recarga pendientes. */
+    public int ratonX = -1, ratonY = -1, disparos, recargas;
 
     protected JuegoArcade(Botones[] b, long semilla, int jugadores) {
         this.b = b;

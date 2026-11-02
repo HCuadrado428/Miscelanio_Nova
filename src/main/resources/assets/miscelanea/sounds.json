@@ -1378,5 +1378,53 @@
       "miscelanea:pe_choque"
     ],
     "subtitle": "subtitles.miscelanea.pe_choque"
+  },
+  "pi_disparo": {
+    "sounds": [
+      "miscelanea:pi_disparo"
+    ],
+    "subtitle": "subtitles.miscelanea.pi_disparo"
+  },
+  "pi_recarga": {
+    "sounds": [
+      "miscelanea:pi_recarga"
+    ],
+    "subtitle": "subtitles.miscelanea.pi_recarga"
+  },
+  "pi_vacio": {
+    "sounds": [
+      "miscelanea:pi_vacio"
+    ],
+    "subtitle": "subtitles.miscelanea.pi_vacio"
+  },
+  "pi_impacto": {
+    "sounds": [
+      "miscelanea:pi_impacto"
+    ],
+    "subtitle": "subtitles.miscelanea.pi_impacto"
+  },
+  "pi_robot": {
+    "sounds": [
+      "miscelanea:pi_robot"
+    ],
+    "subtitle": "subtitles.miscelanea.pi_robot"
+  },
+  "pi_dano": {
+    "sounds": [
+      "miscelanea:pi_dano"
+    ],
+    "subtitle": "subtitles.miscelanea.pi_dano"
+  },
+  "pi_explosion": {
+    "sounds": [
+      "miscelanea:pi_explosion"
+    ],
+    "subtitle": "subtitles.miscelanea.pi_explosion"
+  },
+  "pi_musica": {
+    "sounds": [
+      "miscelanea:pi_musica"
+    ],
+    "subtitle": "subtitles.miscelanea.pi_musica"
   }
 }

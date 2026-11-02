@@ -1243,5 +1243,16 @@
   "subtitles.miscelanea.fe_bombo": "Gira el bombo",
   "subtitles.miscelanea.fe_cuac": "Cuac",
   "subtitles.miscelanea.pe_cae": "Cae una bola",
-  "subtitles.miscelanea.pe_choque": "Chocan bolas"
+  "subtitles.miscelanea.pe_choque": "Chocan bolas",
+  "block.miscelanea.cabina_carreras": "Cabina de carreras",
+  "block.miscelanea.recreativa_pistola": "Recreativa de pistola",
+  "juego.miscelanea.pistola": "PISTOLERO",
+  "subtitles.miscelanea.pi_disparo": "Disparo de pistola de luz",
+  "subtitles.miscelanea.pi_recarga": "Recarga",
+  "subtitles.miscelanea.pi_vacio": "Clic sin balas",
+  "subtitles.miscelanea.pi_impacto": "Impacto metálico",
+  "subtitles.miscelanea.pi_robot": "Robot de chatarra",
+  "subtitles.miscelanea.pi_dano": "Te alcanzan",
+  "subtitles.miscelanea.pi_explosion": "Explosión",
+  "subtitles.miscelanea.pi_musica": "Música de recreativa"
 }

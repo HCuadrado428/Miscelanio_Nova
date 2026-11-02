@@ -1243,5 +1243,16 @@
   "subtitles.miscelanea.fe_bombo": "Drum spins",
   "subtitles.miscelanea.fe_cuac": "Quack",
   "subtitles.miscelanea.pe_cae": "Ball lands",
-  "subtitles.miscelanea.pe_choque": "Balls clack"
+  "subtitles.miscelanea.pe_choque": "Balls clack",
+  "block.miscelanea.cabina_carreras": "Racing Cabinet",
+  "block.miscelanea.recreativa_pistola": "Light Gun Arcade",
+  "juego.miscelanea.pistola": "GUNSLINGER",
+  "subtitles.miscelanea.pi_disparo": "Light gun fires",
+  "subtitles.miscelanea.pi_recarga": "Reload",
+  "subtitles.miscelanea.pi_vacio": "Empty click",
+  "subtitles.miscelanea.pi_impacto": "Metal hit",
+  "subtitles.miscelanea.pi_robot": "Scrap robot",
+  "subtitles.miscelanea.pi_dano": "You get hit",
+  "subtitles.miscelanea.pi_explosion": "Explosion",
+  "subtitles.miscelanea.pi_musica": "Arcade music"
 }
