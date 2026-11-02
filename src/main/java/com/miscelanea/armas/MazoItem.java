@@ -47,7 +47,8 @@ import java.util.function.Consumer;
  *   llama a un rayo sobre el impacto y gasta las cargas.
  */
 public class MazoItem extends Item implements GeoItem {
-    public static final String LANZADO = "Lanzado", PICADO = "Picado", TRUENO = "Trueno", LISTO = "Listo";
+    public static final String LANZADO = "Lanzado", PICADO = "Picado", TRUENO = "Trueno", LISTO = "Listo", ESTELA = "Estela",
+            DUENO = "Dueno", DUENO_NOMBRE = "DuenoNombre";
     public static final int MAX_TRUENO = 5, CARGA_LANZAR = 10;
     /** Encantamientos del mazo de la 1.21, de serie y al máximo (en esta versión no existen como encantamientos). */
     public static final int DENSIDAD = 5, BRECHA = 4, RAFAGA = 3;
@@ -112,10 +113,19 @@ public class MazoItem extends Item implements GeoItem {
         return s.hasTag() && s.getTag().getBoolean(PICADO) ? UseAnim.NONE : UseAnim.SPEAR;
     }
 
+    /** El mazo es de quien lo cogió primero: en manos de otro no tiene poderes y vuelve solo a su dueño. */
+    public static boolean esDueno(Player p, ItemStack s) {
+        return !s.hasTag() || !s.getTag().hasUUID(DUENO) || s.getTag().getUUID(DUENO).equals(p.getUUID());
+    }
+
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player p, InteractionHand hand) {
         ItemStack s = p.getItemInHand(hand);
         if (hand != InteractionHand.MAIN_HAND || lanzado(s) || p.getCooldowns().isOnCooldown(this)) return InteractionResultHolder.fail(s);
+        if (!esDueno(p, s)) {
+            if (!level.isClientSide) p.displayClientMessage(Component.translatable("item.miscelanea.mazo_wemmbu.ajeno", s.getTag().getString(DUENO_NOMBRE)).withStyle(ChatFormatting.RED), true);
+            return InteractionResultHolder.fail(s);
+        }
         boolean aire = !p.onGround() && !p.isInWater() && !p.getAbilities().flying;
         s.getOrCreateTag().putBoolean(PICADO, aire);
         if (aire && !level.isClientSide) level.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.VIENTO_RAFAGA.get(), SoundSource.PLAYERS, 1F, 0.6F);
@@ -149,8 +159,34 @@ public class MazoItem extends Item implements GeoItem {
 
     @Override
     public void inventoryTick(ItemStack s, Level level, Entity e, int slot, boolean sel) {
-        if (level.isClientSide || !s.hasTag()) return;
-        var t = s.getTag();
+        if (level.isClientSide || !(e instanceof Player jug)) return;
+        var t = s.getOrCreateTag();
+        if (!t.hasUUID(DUENO)) {
+            t.putUUID(DUENO, jug.getUUID());
+            t.putString(DUENO_NOMBRE, jug.getGameProfile().getName());
+        } else if (!t.getUUID(DUENO).equals(jug.getUUID()) && !jug.isCreative() && level.getGameTime() % 40 == 0
+                && jug.getServer() != null && jug.getServer().getPlayerList().getPlayer(t.getUUID(DUENO)) instanceof ServerPlayer dueno) {
+            // vuelve solo a su dueño en un remolino de viento
+            ItemStack copia = s.copy();
+            jug.getInventory().removeItem(s);
+            ((net.minecraft.server.level.ServerLevel) level).sendParticles(net.minecraft.core.particles.ParticleTypes.CLOUD, jug.getX(), jug.getY() + 1, jug.getZ(), 30, 0.4, 0.6, 0.4, 0.1);
+            jug.displayClientMessage(Component.translatable("item.miscelanea.mazo_wemmbu.vuelve", dueno.getGameProfile().getName()).withStyle(ChatFormatting.GRAY), true);
+            if (!dueno.getInventory().add(copia)) dueno.drop(copia, false);
+            dueno.level().playSound(null, dueno.getX(), dueno.getY(), dueno.getZ(), ModSounds.MAZO_VUELVE.get(), SoundSource.PLAYERS, 1F, 1F);
+            return;
+        }
+        if (sel && level instanceof net.minecraft.server.level.ServerLevel sl) {
+            // chispas cuando está cargado de trueno y estela de viento tras la ráfaga
+            if (trueno(s) >= MAX_TRUENO && level.getGameTime() % 3 == 0) {
+                Vec3 m = jug.position().add(jug.getLookAngle().scale(0.4)).add(-Math.sin(Math.toRadians(jug.yBodyRot + 40)) * 0.45, 1.3, Math.cos(Math.toRadians(jug.yBodyRot + 40)) * 0.45);
+                sl.sendParticles(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK, m.x, m.y, m.z, 3, 0.25, 0.3, 0.25, 0.05);
+            }
+            if (t.getInt(ESTELA) > 0) {
+                t.putInt(ESTELA, t.getInt(ESTELA) - 1);
+                sl.sendParticles(net.minecraft.core.particles.ParticleTypes.CLOUD, jug.getX(), jug.getY() + 0.3, jug.getZ(), 2, 0.2, 0.1, 0.2, 0.01);
+                sl.sendParticles(net.minecraft.core.particles.ParticleTypes.WHITE_ASH, jug.getX(), jug.getY() + 0.8, jug.getZ(), 4, 0.3, 0.4, 0.3, 0.02);
+            }
+        }
         // por si el mazo lanzado se perdió (descargado, dimensión...): vuelve solo a los 15 s
         if (t.getLong(LANZADO) != 0 && level.getGameTime() - t.getLong(LANZADO) > 300) t.remove(LANZADO);
         if (t.getBoolean(PICADO) && e instanceof LivingEntity le && !le.isUsingItem() && (le.onGround() || le.isInWater())) t.remove(PICADO);
@@ -164,6 +200,8 @@ public class MazoItem extends Item implements GeoItem {
         l.add(Component.empty());
         for (int i = 1; i <= 4; i++) l.add(Component.translatable("item.miscelanea.mazo_wemmbu.ayuda" + i).withStyle(ChatFormatting.DARK_GRAY));
         l.add(Component.translatable("item.miscelanea.mazo_wemmbu.trueno", "⚡".repeat(trueno(s)) + "·".repeat(MAX_TRUENO - trueno(s))).withStyle(ChatFormatting.AQUA));
+        if (s.hasTag() && s.getTag().contains(DUENO_NOMBRE))
+            l.add(Component.translatable("item.miscelanea.mazo_wemmbu.dueno", s.getTag().getString(DUENO_NOMBRE)).withStyle(ChatFormatting.GOLD));
         l.add(Component.translatable("item.miscelanea.solo_creativo").withStyle(ChatFormatting.DARK_PURPLE));
     }
 

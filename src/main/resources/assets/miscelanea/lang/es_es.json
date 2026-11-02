@@ -1289,5 +1289,9 @@
   "subtitles.miscelanea.mazo_cargado": "Mazo cargado de trueno",
   "item.miscelanea.mazo_wemmbu.densidad": "Densidad V",
   "item.miscelanea.mazo_wemmbu.brecha": "Brecha IV",
-  "item.miscelanea.mazo_wemmbu.rafaga": "Ráfaga de viento III"
+  "item.miscelanea.mazo_wemmbu.rafaga": "Ráfaga de viento III",
+  "item.miscelanea.mazo_wemmbu.ajeno": "Este mazo es de %s: no te obedece",
+  "item.miscelanea.mazo_wemmbu.vuelve": "El Gambito se escapa volando hacia %s",
+  "item.miscelanea.mazo_wemmbu.dueno": "Dueño: %s",
+  "entity.miscelanea.onda": "Onda de choque"
 }

@@ -63,6 +63,9 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<com.miscelanea.armas.VorticeEntity>> VORTICE = ENTITIES.register("vortice",
             () -> EntityType.Builder.<com.miscelanea.armas.VorticeEntity>of(com.miscelanea.armas.VorticeEntity::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F).clientTrackingRange(10).updateInterval(1).build("vortice"));
+    public static final RegistryObject<EntityType<com.miscelanea.armas.OndaEntity>> ONDA = ENTITIES.register("onda",
+            () -> EntityType.Builder.<com.miscelanea.armas.OndaEntity>of(com.miscelanea.armas.OndaEntity::new, MobCategory.MISC)
+                    .sized(0.2F, 0.2F).clientTrackingRange(8).updateInterval(10).build("onda"));
     public static final RegistryObject<EntityType<com.miscelanea.armas.MazoLanzado>> MAZO_LANZADO = ENTITIES.register("mazo_lanzado",
             () -> EntityType.Builder.<com.miscelanea.armas.MazoLanzado>of(com.miscelanea.armas.MazoLanzado::new, MobCategory.MISC)
                     .sized(0.9F, 0.9F).clientTrackingRange(10).updateInterval(1).build("mazo_lanzado"));

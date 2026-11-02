@@ -48,6 +48,7 @@ public final class ClientEvents {
             event.enqueueWork(PoseAspiradora::init); // crea el ArmPose a dos manos
             com.miscelanea.client.combate.LlaveCliente.init();
             com.miscelanea.client.combate.HachaCliente.init();
+            com.miscelanea.client.armas.MazoAnim.init();
             event.enqueueWork(() -> net.minecraft.client.renderer.item.ItemProperties.register(com.miscelanea.registry.ModItems.CHAPA.get(),
                     new net.minecraft.resources.ResourceLocation(com.miscelanea.Miscelanea.MOD_ID, "chapa"), (st, l, e, s) -> com.miscelanea.feria.ChapaItem.dibujo(st) / 10F));
             event.enqueueWork(() -> net.minecraft.client.renderer.item.ItemProperties.register(com.miscelanea.registry.ModItems.CANA.get(),
@@ -137,6 +138,7 @@ public final class ClientEvents {
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.ASIENTO.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.PLASMA.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.VORTICE.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
+            event.registerEntityRenderer(com.miscelanea.registry.ModEntities.ONDA.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.MAZO_LANZADO.get(), com.miscelanea.client.armas.MazoLanzadoRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.RECREATIVA_BE.get(), com.miscelanea.client.arcade.RecreativaRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.CARTEL_RECORDS_BE.get(), com.miscelanea.client.arcade.CartelRecordsRenderer::new);

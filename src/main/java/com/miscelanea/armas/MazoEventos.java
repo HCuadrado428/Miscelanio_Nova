@@ -35,7 +35,7 @@ public final class MazoEventos {
     public static void golpe(LivingHurtEvent e) {
         if (interno || !(e.getSource().getEntity() instanceof Player p) || e.getSource().getDirectEntity() != p) return;
         ItemStack s = MazoItem.enMano(p);
-        if (s == null || MazoItem.lanzado(s) || !(p.level() instanceof ServerLevel sl)) return;
+        if (s == null || MazoItem.lanzado(s) || !MazoItem.esDueno(p, s) || !(p.level() instanceof ServerLevel sl)) return;
         MazoItem.sumarTrueno(p, s);
         if (p.isFallFlying() || p.fallDistance <= 1.5F) return;
         float caida = p.fallDistance;
@@ -61,6 +61,7 @@ public final class MazoEventos {
         p.resetFallDistance();
         Vec3 v = p.getDeltaMovement();
         p.setDeltaMovement(v.x * 0.5, 0.95 + 0.5 * MazoItem.RAFAGA, v.z * 0.5);
+        s.getOrCreateTag().putInt(MazoItem.ESTELA, 24);
         p.hurtMarked = true;
         sl.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.VIENTO_RAFAGA.get(), SoundSource.PLAYERS, 1.0F, 1.2F);
     }
@@ -70,7 +71,7 @@ public final class MazoEventos {
     public static void caida(LivingFallEvent e) {
         if (!(e.getEntity() instanceof Player p)) return;
         ItemStack s = MazoItem.enMano(p);
-        if (s == null || !s.hasTag() || !s.getTag().getBoolean(MazoItem.PICADO)) return;
+        if (s == null || !s.hasTag() || !s.getTag().getBoolean(MazoItem.PICADO) || !MazoItem.esDueno(p, s)) return;
         s.getTag().remove(MazoItem.PICADO);
         e.setDamageMultiplier(0);
         if (p.level() instanceof ServerLevel sl) sismo(sl, p, s, e.getDistance());
@@ -82,16 +83,8 @@ public final class MazoEventos {
         double radio = Math.min(8, 3 + caida / 4);
         float dano = 6 + Math.min(18, caida * 0.8F);
         BlockState suelo = sl.getBlockState(p.blockPosition().below());
-        // anillos de polvo que se abren y grietas en el suelo
-        for (double r = 1; r <= radio; r += 1) {
-            int n = (int) (r * 8);
-            for (int i = 0; i < n; i++) {
-                double a = i * Math.PI * 2 / n;
-                double x = c.x + Math.cos(a) * r, z = c.z + Math.sin(a) * r;
-                if (!suelo.isAir()) sl.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, suelo), x, c.y + 0.1, z, 2, 0.1, 0.05, 0.1, 0.15);
-                if (i % 3 == 0) sl.sendParticles(ParticleTypes.CLOUD, x, c.y + 0.2, z, 1, 0, 0.05, 0, 0.02);
-            }
-        }
+        // onda de choque que se abre por el suelo
+        sl.addFreshEntity(new OndaEntity(sl, c.x, c.y, c.z, (float) radio + 1));
         sl.sendParticles(ParticleTypes.EXPLOSION_EMITTER, c.x, c.y, c.z, 1, 0, 0, 0, 0);
         sl.playSound(null, c.x, c.y, c.z, ModSounds.MAZO_SISMO.get(), SoundSource.PLAYERS, 2.5F, 1F);
         TemblorPacket.enviar(sl, c, radio * 3, 2.5F, 20);
