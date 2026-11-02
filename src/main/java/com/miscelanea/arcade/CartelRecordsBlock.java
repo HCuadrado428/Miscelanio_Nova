@@ -81,6 +81,7 @@ public class CartelRecordsBlock extends BaseEntityBlock {
     @Nullable
     public static Object[] grupo(BlockGetter l, BlockPos pos, Direction f) {
         Block b = l.getBlockState(pos).getBlock();
+        if (!(b instanceof CartelRecordsBlock)) return null;     // recién roto: ya es aire
         Direction izq = f.getClockWise(), der = f.getCounterClockWise();
         BlockPos a = pos;
         for (int it = 0; it < 32; it++) {
@@ -117,6 +118,6 @@ public class CartelRecordsBlock extends BaseEntityBlock {
 
     private static boolean es(BlockGetter l, BlockPos p, Direction f, Block b) {
         BlockState s = l.getBlockState(p);
-        return s.getBlock() == b && s.getValue(FACING) == f;
+        return s.getBlock() == b && s.hasProperty(FACING) && s.getValue(FACING) == f;
     }
 }

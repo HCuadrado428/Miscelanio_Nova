@@ -25,6 +25,8 @@ import org.joml.Matrix4f;
 public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsBlockEntity> {
     private static final int LUZ = 0xF000F0;
     private static final float S = 1 / 64F;
+    /** Separación entre capas (para que no parpadeen al verlas de lejos). */
+    private static final float CAPAS = 4F;
 
     public CartelRecordsRenderer(BlockEntityRendererProvider.Context c) {}
 
@@ -40,7 +42,7 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
 
     @Override
     public void render(CartelRecordsBlockEntity be, float pt, PoseStack ps, MultiBufferSource buf, int luz, int overlay) {
-        if (be.getLevel() == null) return;
+        if (be.getLevel() == null || !be.getBlockState().hasProperty(CartelRecordsBlock.FACING)) return;
         Direction f = be.getBlockState().getValue(CartelRecordsBlock.FACING);
         BlockPos pos = be.getBlockPos();
         int w = 1, h = 1;
@@ -52,7 +54,10 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
         }
         Direction izq = f.getClockWise(), der = f.getCounterClockWise();
         float nx = f.getStepX(), nz = f.getStepZ();
-        float cx = 0.5F + izq.getStepX() * 0.5F - nx * 0.37F, cy = 1F, cz = 0.5F + izq.getStepZ() * 0.5F - nz * 0.37F;
+        // plano del dibujo: justo delante de la cara del modelo (cartel retro: 14,2 px; pizarra: panel de tiza a 13,8 px)
+        boolean feria = be.getBlockState().getBlock() instanceof CartelRecordsBlock cb0 && cb0.estilo == CartelRecordsBlock.FERIA;
+        float fondo = feria ? 0.5F - 13.8F / 16F + 0.004F : 0.37F;
+        float cx = 0.5F + izq.getStepX() * 0.5F - nx * fondo, cy = 1F, cz = 0.5F + izq.getStepZ() * 0.5F - nz * fondo;
         ps.pushPose();
         Matrix4f m = new Matrix4f(der.getStepX() * S, 0, der.getStepZ() * S, 0, 0, -S, 0, 0, nx * S, 0, nz * S, 0, cx, cy, cz, 1);
         ps.last().pose().mul(m);
@@ -63,6 +68,7 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
 
     private static void quad(VertexConsumer vc, Matrix4f m, float x0, float y0, float x1, float y1, float z, int argb) {
         int a = argb >>> 24, r = (argb >> 16) & 255, g = (argb >> 8) & 255, b = argb & 255;
+        z *= CAPAS;
         vc.vertex(m, x0, y0, z).color(r, g, b, a).uv2(LUZ).endVertex();
         vc.vertex(m, x0, y1, z).color(r, g, b, a).uv2(LUZ).endVertex();
         vc.vertex(m, x1, y1, z).color(r, g, b, a).uv2(LUZ).endVertex();
@@ -264,7 +270,7 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
 
     private static void textoIzq(PoseStack ps, MultiBufferSource buf, Font font, String s, float x, float y, float k, int col) {
         ps.pushPose();
-        ps.translate(x, y, 0.4F);
+        ps.translate(x, y, 0.4F * CAPAS);
         ps.scale(k, k, 1);
         font.drawInBatch(s, 0, 0, col, false, ps.last().pose(), buf, Font.DisplayMode.POLYGON_OFFSET, 0, LUZ);
         ps.popPose();
