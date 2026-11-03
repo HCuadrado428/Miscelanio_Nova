@@ -1,7 +1,0 @@
-name: ver
-on: workflow_dispatch
-jobs:
-  v:
-    runs-on: ubuntu-latest
-    steps:
-      - run: curl -s https://maven.maxhenkel.de/repository/public/de/maxhenkel/voicechat/voicechat-api/maven-metadata.xml | grep -o "<version>[^<]*</version>" | tail -8
