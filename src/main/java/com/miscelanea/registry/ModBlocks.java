@@ -60,6 +60,17 @@ public final class ModBlocks {
     public static final RegistryObject<Block> RECREATIVA_PISTOLA = BLOCKS.register("recreativa_pistola",
             () -> new com.miscelanea.arcade.CabinaArcadeBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(2.0F)
                     .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 7), "pistola", false));
+    /**
+     * Recreativas dedicadas, una por juego ("recreativa_<juego>"): arrancan ese juego sin menú; las de dos jugadores son dobles.
+     * "pistola" no está: su recreativa dedicada es RECREATIVA_PISTOLA (la de la pistola de luz).
+     */
+    public static final java.util.Map<String, RegistryObject<Block>> RECREATIVAS_JUEGO = new java.util.LinkedHashMap<>();
+    static {
+        for (String j : com.miscelanea.arcade.ArcadeJuegos.IDS)
+            if (!j.equals("pistola")) RECREATIVAS_JUEGO.put(j, BLOCKS.register("recreativa_" + j,
+                    () -> new com.miscelanea.arcade.RecreativaJuegoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(2.0F)
+                            .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 7), j)));
+    }
     public static final RegistryObject<Block> PISTA_BAILE = BLOCKS.register("pista_baile",
             () -> new com.miscelanea.baile.PistaBaileBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(1.5F)
                     .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 8)));
@@ -210,7 +221,14 @@ public final class ModBlocks {
                     .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 6)));
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.arcade.RecreativaBlockEntity>> RECREATIVA_BE = BLOCK_ENTITIES.register("recreativa",
-            () -> BlockEntityType.Builder.of(com.miscelanea.arcade.RecreativaBlockEntity::new, RECREATIVA.get(), RECREATIVA_DOBLE.get(), MESA_COCTEL.get(), CABINA_CARRERAS.get(), RECREATIVA_PISTOLA.get()).build(null));
+            () -> BlockEntityType.Builder.of(com.miscelanea.arcade.RecreativaBlockEntity::new, bloquesRecreativa()).build(null));
+
+    /** Todos los bloques que llevan la entidad de recreativa: las genéricas, la mesa cóctel, las cabinas y las dedicadas a un juego. */
+    private static Block[] bloquesRecreativa() {
+        List<Block> l = new ArrayList<>(List.of(RECREATIVA.get(), RECREATIVA_DOBLE.get(), MESA_COCTEL.get(), CABINA_CARRERAS.get(), RECREATIVA_PISTOLA.get()));
+        for (RegistryObject<Block> r : RECREATIVAS_JUEGO.values()) l.add(r.get());
+        return l.toArray(new Block[0]);
+    }
 
     // ---- Acuario y terrario
     public static final RegistryObject<Block> ACUARIO = BLOCKS.register("acuario",

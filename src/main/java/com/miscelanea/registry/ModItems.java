@@ -156,6 +156,21 @@ public final class ModItems {
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.CABINA_CARRERAS.get(), new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> RECREATIVA_PISTOLA = ITEMS.register("recreativa_pistola",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.RECREATIVA_PISTOLA.get(), new Item.Properties().rarity(Rarity.RARE)));
+    /** Recreativas dedicadas a un juego, en el orden de {@link com.miscelanea.arcade.ArcadeJuegos#IDS}. */
+    public static final java.util.Map<String, RegistryObject<Item>> RECREATIVAS_JUEGO = new java.util.LinkedHashMap<>();
+    static {
+        for (var e : ModBlocks.RECREATIVAS_JUEGO.entrySet())
+            RECREATIVAS_JUEGO.put(e.getKey(), ITEMS.register("recreativa_" + e.getKey(),
+                    () -> new net.minecraft.world.item.BlockItem(e.getValue().get(), new Item.Properties().rarity(Rarity.RARE))));
+    }
+
+    public static java.util.Collection<RegistryObject<Item>> recreativasJuego() {
+        return RECREATIVAS_JUEGO.values();
+    }
+
+    public static Item recreativaJuego(String juego) {
+        return RECREATIVAS_JUEGO.get(juego).get();
+    }
     public static final RegistryObject<Item> NORIA = ITEMS.register("noria",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.NORIA.get(), new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> TIOVIVO = ITEMS.register("tiovivo",

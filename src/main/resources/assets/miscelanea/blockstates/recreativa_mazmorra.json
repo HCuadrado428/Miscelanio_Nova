@@ -1,0 +1,36 @@
+{
+ "variants": {
+  "facing=north,half=lower": {
+   "model": "miscelanea:block/recreativa_mazmorra_abajo",
+   "y": 0
+  },
+  "facing=north,half=upper": {
+   "model": "miscelanea:block/recreativa_mazmorra_arriba",
+   "y": 0
+  },
+  "facing=east,half=lower": {
+   "model": "miscelanea:block/recreativa_mazmorra_abajo",
+   "y": 90
+  },
+  "facing=east,half=upper": {
+   "model": "miscelanea:block/recreativa_mazmorra_arriba",
+   "y": 90
+  },
+  "facing=south,half=lower": {
+   "model": "miscelanea:block/recreativa_mazmorra_abajo",
+   "y": 180
+  },
+  "facing=south,half=upper": {
+   "model": "miscelanea:block/recreativa_mazmorra_arriba",
+   "y": 180
+  },
+  "facing=west,half=lower": {
+   "model": "miscelanea:block/recreativa_mazmorra_abajo",
+   "y": 270
+  },
+  "facing=west,half=upper": {
+   "model": "miscelanea:block/recreativa_mazmorra_arriba",
+   "y": 270
+  }
+ }
+}

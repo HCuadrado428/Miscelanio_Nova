@@ -134,6 +134,11 @@ public class RecreativaBlock extends BaseEntityBlock {
         return l.isClientSide ? null : createTickerHelper(t, ModBlocks.RECREATIVA_BE.get(), RecreativaBlockEntity::tickServidor);
     }
 
+    /** Juego fijo de la máquina (cabinas y recreativas dedicadas); vacío en la recreativa normal, que tiene menú. */
+    public String juegoFijo() {
+        return "";
+    }
+
     public static boolean esFicha(ItemStack s) {
         return s.getItem() instanceof FichaItem;
     }
@@ -230,18 +235,19 @@ public class RecreativaBlock extends BaseEntityBlock {
 
     /**
      * Máquina enlazable a uno o dos bloques (mismo nivel) en la que juega otro y que aún no tiene compañero: desde una
-     * recreativa normal, otra recreativa normal; desde una cabina, otra cabina del mismo bloque (nunca se mezclan).
+     * recreativa normal, otra recreativa normal; desde una cabina o recreativa de un solo juego, otra del mismo bloque
+     * (nunca se mezclan).
      */
     @Nullable
     static RecreativaBlockEntity vecinaConPartida(Level l, BlockPos abajo, ServerPlayer sp) {
         Block propio = l.getBlockState(abajo).getBlock();
-        boolean cabina = propio instanceof CabinaArcadeBlock;
+        boolean cabina = propio instanceof RecreativaBlock pr && !pr.juegoFijo().isEmpty();
         for (Direction d : Direction.Plane.HORIZONTAL)
             for (int k = 1; k <= 2; k++) {
                 BlockPos q = abajo.relative(d, k);
                 BlockState st = l.getBlockState(q);
                 if (!(st.getBlock() instanceof RecreativaBlock rb) || rb.doble || st.getValue(HALF) != DoubleBlockHalf.LOWER) continue;
-                if (cabina ? rb != propio : rb instanceof CabinaArcadeBlock) continue;
+                if (cabina ? rb != propio : !rb.juegoFijo().isEmpty()) continue;
                 if (l.getBlockEntity(q) instanceof RecreativaBlockEntity v && v.ocupadaPorOtro(sp) && (v.jugador2 == null || v.jugador2.equals(sp.getUUID())))
                     return v;
             }

@@ -53,6 +53,11 @@ public class CabinaArcadeBlock extends RecreativaBlock {
     }
 
     @Override
+    public String juegoFijo() {
+        return fijo;
+    }
+
+    @Override
     public VoxelShape getShape(BlockState s, BlockGetter l, BlockPos p, CollisionContext c) {
         int i = s.getValue(FACING).get2DDataValue();
         return s.getValue(HALF) == DoubleBlockHalf.LOWER ? abajo[i] : arriba[i];
