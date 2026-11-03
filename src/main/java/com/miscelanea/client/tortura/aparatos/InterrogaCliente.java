@@ -214,7 +214,7 @@ public final class InterrogaCliente {
         AparatosVictimas.Entrada en = AparatosVictimas.de(mc.player.getId());
         if (en == null) return;
         if (en.tipo() == AparatosVictimas.INTERROGATORIO) {
-            if (silla(mc, en.pos()) instanceof SillaInterrogatorioBlockEntity s && s.paroCli > 0) return;
+            { SillaInterrogatorioBlockEntity s = silla(mc, en.pos()); if (s != null && s.paroCli > 0) return; }
             AparatosRed.CANAL.sendToServer(new InterrogaAccionPacket(InterrogaAccionPacket.AGUANTAR, en.pos(), 0));
             esperaTecla = 10;
         } else if (en.tipo() == AparatosVictimas.COLGADO) {
