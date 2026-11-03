@@ -20,7 +20,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-/** Eventos del servidor del collar explosivo y de la toxina del miedo. */
+/** Eventos del servidor del collar explosivo, de la toxina del miedo y del fantasma (quién lo es, a quién avisar). */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID)
 public final class EfectosEventos {
     private EfectosEventos() {}
@@ -134,13 +134,48 @@ public final class EfectosEventos {
 
     @SubscribeEvent
     public static void verEntidad(PlayerEvent.StartTracking e) {
-        if (e.getTarget() instanceof LivingEntity t && e.getEntity() instanceof ServerPlayer quien && Collares.tiene(t))
-            Collares.sincronizarCon(t, quien);
+        if (!(e.getTarget() instanceof LivingEntity t) || !(e.getEntity() instanceof ServerPlayer quien)) return;
+        if (Collares.tiene(t)) Collares.sincronizarCon(t, quien);
+        // quien empieza a ver a un fantasma tiene que saberlo (el efecto solo se sincroniza con el propio afectado)
+        if (t.hasEffect(EfectosRegistro.FANTASMA.get())) EfectosRed.a(quien, new FantasmaPacket(t.getId(), true));
     }
 
-    // ------------------------------------------------------------------ miedo: los mobs no atacan
+    // ------------------------------------------------------------------ miedo y fantasma: los mobs no atacan
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void cambiarObjetivo(LivingChangeTargetEvent e) {
-        if (e.getNewTarget() != null && e.getEntity() instanceof Mob && e.getEntity().hasEffect(EfectosRegistro.MIEDO.get())) e.setCanceled(true);
+        LivingEntity nuevo = e.getNewTarget();
+        if (nuevo == null || !(e.getEntity() instanceof Mob)) return;
+        // con miedo no se ataca a nadie; a un fantasma no lo elige nadie como objetivo (como con la invisibilidad)
+        if (e.getEntity().hasEffect(EfectosRegistro.MIEDO.get()) || nuevo.hasEffect(EfectosRegistro.FANTASMA.get())) e.setCanceled(true);
+    }
+
+    // ------------------------------------------------------------------ fantasma: avisar a quien lo ve
+    /**
+     * Al ponerse el efecto (poción, flecha, nube, /effect): se le quitan las partículas (el que lo lleva no debe
+     * delatarse por la nube de burbujas; {@code update} con una copia sin partículas cambia solo esa bandera) y se avisa a
+     * todos los que ven a la entidad, y a ella misma.
+     */
+    @SubscribeEvent
+    public static void fantasmaPuesto(MobEffectEvent.Added e) {
+        LivingEntity v = e.getEntity();
+        MobEffectInstance m = e.getEffectInstance();
+        if (v.level().isClientSide || m == null || m.getEffect() != EfectosRegistro.FANTASMA.get()) return;
+        if (m.isVisible())
+            m.update(new MobEffectInstance(m.getEffect(), m.getDuration(), m.getAmplifier(), m.isAmbient(), false, m.showIcon()));
+        EfectosRed.alrededor(v, new FantasmaPacket(v.getId(), true));
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void fantasmaQuitado(MobEffectEvent.Remove e) {
+        if (e.isCanceled() || e.getEntity().level().isClientSide || e.getEffect() != EfectosRegistro.FANTASMA.get()) return;
+        EfectosRed.alrededor(e.getEntity(), new FantasmaPacket(e.getEntity().getId(), false));
+    }
+
+    @SubscribeEvent
+    public static void fantasmaAcabado(MobEffectEvent.Expired e) {
+        LivingEntity v = e.getEntity();
+        MobEffectInstance m = e.getEffectInstance();
+        if (v.level().isClientSide || m == null || m.getEffect() != EfectosRegistro.FANTASMA.get()) return;
+        EfectosRed.alrededor(v, new FantasmaPacket(v.getId(), false));
     }
 }

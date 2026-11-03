@@ -18,6 +18,13 @@ Un mod de cosas que no tienen nada que ver entre sí, pero que molan.
 
 Entre dos afectados se ve un **lazo**: una cinta rosa que cuelga y late (Cupido) o un rayo rojo en zigzag que chisporrotea más cuanto más cerca están (Enemigo).
 
+### Efecto: Fantasma 👻 (solo creativo)
+- Quien lo lleva (jugador **o mob**) no se ve: ni modelo, ni armadura, ni objetos, ni partículas, ni nombre, ni sombra.
+- Solo asoma por el **rabillo del ojo**: cuando queda en el borde del campo de visión de quien mira (entre el 75 % y el 105 % del borde de su pantalla, con el FOV real). Al mirarlo de frente se **desvanece** en un instante (almas y ceniza donde estaba) y al apartar la vista vuelve a asomar, translúcido y pálido, con un soplo. A la espalda nunca se ve.
+- En el servidor no cambia nada: choca, se le puede pegar a ciegas y hace sus ruidos. Los mobs no lo eligen como objetivo. Los espectadores lo ven como siempre.
+- Uno mismo se ve en tercera persona como un fantasma tenue y lleva el icono latiendo en el HUD.
+- Pociones **Fantasma** (3:00) y **Fantasma larga** (8:00), con arrojadiza, persistente y flecha; **sin receta**, en la pestaña de combate junto al resto de la sala de juegos (y en la de comida, como toda poción). `/effect give @s miscelanea:fantasma 120`.
+
 ### Pociones y recetas de alquimia
 | Poción | Receta | Duración |
 |---|---|---|

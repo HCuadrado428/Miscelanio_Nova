@@ -34,6 +34,8 @@ public final class EfectosRed {
                     .encoder(CollarPacket::encode).decoder(CollarPacket::new).consumerMainThread(CollarPacket::handle).add();
             CANAL.messageBuilder(SustoPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                     .encoder(SustoPacket::encode).decoder(SustoPacket::new).consumerMainThread(SustoPacket::handle).add();
+            CANAL.messageBuilder(FantasmaPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                    .encoder(FantasmaPacket::encode).decoder(FantasmaPacket::new).consumerMainThread(FantasmaPacket::handle).add();
         });
     }
 

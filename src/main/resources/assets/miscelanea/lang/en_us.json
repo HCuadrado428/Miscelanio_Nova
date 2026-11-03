@@ -1835,5 +1835,11 @@
   "miscelanea.miedo.tooltip.5": "do you hear it?",
   "miscelanea.miedo.tooltip.6": "it's coming",
   "miscelanea.miedo.tooltip.7": "you shouldn't have opened this",
-  "miscelanea.miedo.tooltip.8": "turn around"
+  "miscelanea.miedo.tooltip.8": "turn around",
+  "effect.miscelanea.fantasma": "Ghost",
+  "item.minecraft.potion.effect.fantasma": "Potion of the Ghost",
+  "item.minecraft.splash_potion.effect.fantasma": "Splash Potion of the Ghost",
+  "item.minecraft.lingering_potion.effect.fantasma": "Lingering Potion of the Ghost",
+  "item.minecraft.tipped_arrow.effect.fantasma": "Arrow of the Ghost",
+  "subtitles.miscelanea.fantasma_aliento": "A breath beside you"
 }

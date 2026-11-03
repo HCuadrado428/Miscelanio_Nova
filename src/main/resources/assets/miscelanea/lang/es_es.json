@@ -1835,5 +1835,11 @@
   "miscelanea.miedo.tooltip.5": "¿lo oyes?",
   "miscelanea.miedo.tooltip.6": "ya viene",
   "miscelanea.miedo.tooltip.7": "no deberías haber abierto esto",
-  "miscelanea.miedo.tooltip.8": "date la vuelta"
+  "miscelanea.miedo.tooltip.8": "date la vuelta",
+  "effect.miscelanea.fantasma": "Fantasma",
+  "item.minecraft.potion.effect.fantasma": "Poción de fantasma",
+  "item.minecraft.splash_potion.effect.fantasma": "Poción arrojadiza de fantasma",
+  "item.minecraft.lingering_potion.effect.fantasma": "Poción persistente de fantasma",
+  "item.minecraft.tipped_arrow.effect.fantasma": "Flecha de fantasma",
+  "subtitles.miscelanea.fantasma_aliento": "Un soplo a tu lado"
 }

@@ -15,7 +15,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
-/** Registro del cliente (bus del mod) de los efectos: proyectiles, modelo del collar, capa, HUD del collar y del miedo. */
+/** Registro del cliente (bus del mod) de los efectos: proyectiles, modelo del collar, capa, HUD del collar, del miedo y del fantasma. */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public final class EfectosClienteMod {
     private EfectosClienteMod() {}
@@ -39,6 +39,8 @@ public final class EfectosClienteMod {
         // las manos fantasma, el fogonazo del warden y la cara del Espantapájaros tapan también el HUD
         e.registerAboveAll("efectos_miedo_encima", MiedoCliente::hudEncima);
         e.registerAboveAll("efectos_collar", CollarCliente::hud);
+        // el icono del fantasma latiendo (solo para quien lo lleva)
+        e.registerAboveAll("efectos_fantasma", FantasmaCliente::hud);
     }
 
     @SubscribeEvent

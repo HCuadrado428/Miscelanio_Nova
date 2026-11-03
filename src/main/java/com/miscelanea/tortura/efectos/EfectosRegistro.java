@@ -7,20 +7,29 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.alchemy.Potion;
+import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Registro de los "efectos" de la sala de juegos: el collar explosivo de Dead Money (con su detonador y los alicates
  * para desactivarlo) y la toxina del miedo del Espantapájaros (granada de gas, dardo y el efecto "miedo"). Va aparte de
  * los demás registros para no pisar otras ramas: basta con llamar a {@link #registrar(IEventBus)} desde el constructor
- * del mod. Todo es solo de creativo (sin recetas).
+ * del mod. También el efecto "fantasma" y sus pociones (sin receta: solo en el creativo). Todo es solo de creativo
+ * (sin recetas).
  */
 public final class EfectosRegistro {
     private EfectosRegistro() {}
@@ -29,13 +38,31 @@ public final class EfectosRegistro {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, Miscelanea.MOD_ID);
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Miscelanea.MOD_ID);
     public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, Miscelanea.MOD_ID);
+    public static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(ForgeRegistries.POTIONS, Miscelanea.MOD_ID);
 
     // ---- tipo de daño (data/miscelanea/damage_type/collar_explosivo.json)
     public static final ResourceKey<DamageType> DANO_COLLAR =
             ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Miscelanea.MOD_ID, "collar_explosivo"));
 
-    // ---- efecto
+    // ---- efectos
     public static final RegistryObject<MobEffect> MIEDO = EFFECTS.register("miedo", MiedoEffect::new);
+    public static final RegistryObject<MobEffect> FANTASMA = EFFECTS.register("fantasma", FantasmaEffect::new);
+
+    // ---- pociones de fantasma (3:00 / 8:00). Sin receta de alquimia: solo en el creativo. Las variantes arrojadiza,
+    // persistente y la flecha salen solas en las pestañas de vanilla (recorren el registro de pociones).
+    public static final RegistryObject<Potion> POCION_FANTASMA = POTIONS.register("fantasma",
+            () -> new Potion("fantasma", new MobEffectInstance(FANTASMA.get(), 3600)));
+    public static final RegistryObject<Potion> POCION_FANTASMA_LARGA = POTIONS.register("fantasma_largo",
+            () -> new Potion("fantasma", new MobEffectInstance(FANTASMA.get(), 9600)));
+
+    /** Las botellas de fantasma (normal, arrojadiza y persistente, cortas y largas) para la pestaña de combate. */
+    public static List<ItemStack> pocionesFantasma() {
+        List<ItemStack> l = new ArrayList<>();
+        for (Potion p : new Potion[]{POCION_FANTASMA.get(), POCION_FANTASMA_LARGA.get()})
+            for (Item i : new Item[]{Items.POTION, Items.SPLASH_POTION, Items.LINGERING_POTION})
+                l.add(PotionUtils.setPotion(new ItemStack(i), p));
+        return l;
+    }
 
     // ---- entidades
     public static final RegistryObject<EntityType<GranadaMiedoEntity>> GRANADA_LANZADA = ENTITIES.register("granada_miedo",
@@ -80,6 +107,8 @@ public final class EfectosRegistro {
     public static final RegistryObject<SoundEvent> MIEDO_MANOS = sonido("miedo_manos");
     public static final RegistryObject<SoundEvent> MIEDO_ESTRIDENTE = sonido("miedo_estridente");
     public static final RegistryObject<SoundEvent> MIEDO_PITIDO = sonido("miedo_pitido");
+    /** Fantasma: el soplo "hh" cuando asoma por el rabillo del ojo (se dispara en el cliente). */
+    public static final RegistryObject<SoundEvent> FANTASMA_ALIENTO = sonido("fantasma_aliento");
 
     private static RegistryObject<SoundEvent> sonido(String n) {
         return SOUNDS.register(n, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Miscelanea.MOD_ID, n)));
@@ -90,5 +119,6 @@ public final class EfectosRegistro {
         SOUNDS.register(modBus);
         ENTITIES.register(modBus);
         EFFECTS.register(modBus);
+        POTIONS.register(modBus);
     }
 }
