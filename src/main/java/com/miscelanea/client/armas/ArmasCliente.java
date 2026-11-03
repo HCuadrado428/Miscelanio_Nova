@@ -66,6 +66,8 @@ public final class ArmasCliente {
             for (int i = 0; i < LanzacohetesItem.MAX; i++)
                 g.fill(x + i * 5, y, x + i * 5 + 3, y + 8, i < c ? 0xFFE8E8DC : 0x60FFFFFF);
             g.drawString(mc.font, n, x + LanzacohetesItem.MAX * 5 + 3, y, 0xFFE8B420, true);
+        } else if (s.getItem() instanceof com.miscelanea.armas.BallestaItem) {
+            BallestaCliente.hud(g, x, y);
         }
     }
 }

@@ -74,6 +74,8 @@ public final class ModItems {
             () -> new com.miscelanea.armas.MazoItem(new Item.Properties().stacksTo(1).fireResistant().rarity(Rarity.EPIC)));
     public static final RegistryObject<Item> CARTUCHOS = ITEMS.register("cartuchos", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> COHETE = ITEMS.register("cohete", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> BALLESTA_REPETICION = ITEMS.register("ballesta_repeticion",
+            () -> new com.miscelanea.armas.BallestaItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
 
     // ---- Kingdom Hearts
     public static final RegistryObject<Item> LLAVE_ESPADA = ITEMS.register("llave_espada",

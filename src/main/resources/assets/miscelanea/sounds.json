@@ -2270,5 +2270,41 @@
       "miscelanea:saw/saw_salida_cerrar"
     ],
     "subtitle": "subtitles.miscelanea.saw_salida_cerrar"
+  },
+  "ballesta_disparo": {
+    "sounds": [
+      {
+        "name": "miscelanea:ballesta_disparo",
+        "attenuation_distance": 32
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.ballesta_disparo"
+  },
+  "ballesta_palanca": {
+    "sounds": [
+      {
+        "name": "miscelanea:ballesta_palanca",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.ballesta_palanca"
+  },
+  "ballesta_crujido": {
+    "sounds": [
+      {
+        "name": "miscelanea:ballesta_crujido",
+        "attenuation_distance": 12
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.ballesta_crujido"
+  },
+  "ballesta_virote": {
+    "sounds": [
+      {
+        "name": "miscelanea:ballesta_virote",
+        "attenuation_distance": 10
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.ballesta_virote"
   }
 }

@@ -293,5 +293,10 @@ public final class ModNetwork {
                 .consumerMainThread(com.miscelanea.mesas.PrivadoPacket::handle)
                 .add();
         id = com.miscelanea.tortura.TorturaRed.registrar(CHANNEL, id);
+        CHANNEL.messageBuilder(com.miscelanea.armas.BallestaRecargaPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.armas.BallestaRecargaPacket::encode)
+                .decoder(com.miscelanea.armas.BallestaRecargaPacket::new)
+                .consumerMainThread(com.miscelanea.armas.BallestaRecargaPacket::handle)
+                .add();
     }
 }

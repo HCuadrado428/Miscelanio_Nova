@@ -39,6 +39,10 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> LANZACOHETES_DISPARO = register("lanzacohetes_disparo");
     public static final RegistryObject<SoundEvent> LANZACOHETES_RECARGA = register("lanzacohetes_recarga");
     public static final RegistryObject<SoundEvent> COHETE_EXPLOSION = register("cohete_explosion");
+    public static final RegistryObject<SoundEvent> BALLESTA_DISPARO = register("ballesta_disparo");
+    public static final RegistryObject<SoundEvent> BALLESTA_PALANCA = register("ballesta_palanca");
+    public static final RegistryObject<SoundEvent> BALLESTA_CRUJIDO = register("ballesta_crujido");
+    public static final RegistryObject<SoundEvent> BALLESTA_VIROTE = register("ballesta_virote");
     public static final RegistryObject<SoundEvent> BFG_CARGA = register("bfg_carga");
     public static final RegistryObject<SoundEvent> BFG_DISPARO = register("bfg_disparo");
     public static final RegistryObject<SoundEvent> BFG_ZUMBIDO = register("bfg_zumbido");

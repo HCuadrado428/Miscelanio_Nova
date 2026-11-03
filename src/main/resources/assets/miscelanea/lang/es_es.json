@@ -2124,5 +2124,13 @@
   "subtitles.miscelanea.saw_salida_tic": "Tictac de la salida",
   "subtitles.miscelanea.saw_salida_apagon": "Se apagan las luces",
   "subtitles.miscelanea.saw_salida_abrir": "Puerta de acero que se abre",
-  "subtitles.miscelanea.saw_salida_cerrar": "Puerta de acero que se cierra"
+  "subtitles.miscelanea.saw_salida_cerrar": "Puerta de acero que se cierra",
+  "item.miscelanea.ballesta_repeticion": "Ballesta de repetición",
+  "item.miscelanea.ballesta_repeticion.ayuda": "Mantén clic derecho: ráfaga de virotes · R o mayús + clic derecho: recargar (usa flechas)",
+  "item.miscelanea.ballesta_repeticion.virotes": "Virotes: %s/%s",
+  "key.miscelanea.recargar_ballesta": "Recargar (Ballesta de repetición)",
+  "subtitles.miscelanea.ballesta_disparo": "Ballesta de repetición dispara",
+  "subtitles.miscelanea.ballesta_palanca": "Clac de la palanca",
+  "subtitles.miscelanea.ballesta_crujido": "Cruje la madera",
+  "subtitles.miscelanea.ballesta_virote": "Cae un virote en el cargador"
 }
