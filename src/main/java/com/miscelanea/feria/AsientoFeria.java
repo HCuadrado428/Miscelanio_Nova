@@ -116,11 +116,14 @@ public class AsientoFeria extends Entity {
         return false;
     }
 
+    /** En el caballito la silla queda 0,26 por detrás de la barra (hacia atrás del caballo). */
+    private static final double SILLA_Z = -0.26;
+
     @Override
     public double getPassengersRidingOffset() {
         // medido con la pose de montar: la parte de abajo de los muslos queda 0,588 por encima de los pies del jugador, y
         // los pies van 0,35 por debajo de este valor → cojín de la cápsula de la noria a 0,50 (bajo la cadera), banco de la
-        // cesta a 0,24, silla del caballito a 0,75
+        // taza del pulpo a 0,248, silla del caballito a 0,758
         return esNoria() ? 0.262 : esPulpo() ? 0.01 : 0.52;
     }
 
@@ -136,21 +139,22 @@ public class AsientoFeria extends Entity {
         if (!hasPassenger(p)) return;
         boolean pulpo = esPulpo();
         float giro = Mth.wrapDegrees(getYRot() - yRotO);
+        double yaw = Math.toRadians(getYRot()), c = Math.cos(yaw), s = Math.sin(yaw);
         if (!esNoria() && !pulpo) {
-            super.positionRider(p, mover);
+            // caballito: el jinete va en la silla, un poco por detrás de la barra (que pasa por la cruz del caballo)
+            mover.accept(p, getX() - SILLA_Z * s, getY() + getPassengersRidingOffset() + p.getMyRidingOffset(), getZ() + SILLA_Z * c);
             Montar.seguir(p, giro, getYRot());
             return;
         }
         int i = getPassengers().indexOf(p);
         double ox, oz;   // sobre el banco de cada uno
         if (pulpo) {
-            ox = i % 2 == 0 ? -0.45 : 0.45;
-            oz = 0.25;
+            ox = i % 2 == 0 ? -0.42 : 0.42;
+            oz = 0.32;
         } else {
             ox = i < 2 ? -0.58 : 0.58;
             oz = i % 2 == 0 ? -0.42 : 0.42;
         }
-        double yaw = Math.toRadians(getYRot()), c = Math.cos(yaw), s = Math.sin(yaw);
         mover.accept(p, getX() + ox * c - oz * s, getY() + getPassengersRidingOffset() + p.getMyRidingOffset(), getZ() + oz * c + ox * s);
         // en la noria los dos bancos van frente a frente
         Montar.seguir(p, giro, getYRot() + mira(i, pulpo));

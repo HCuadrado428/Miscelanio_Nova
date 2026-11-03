@@ -32,10 +32,12 @@ public class AsientoFeriaRenderer extends EntityRenderer<AsientoFeria> {
         var vc = buf.getBuffer(Sheets.cutoutBlockSheet());
         int c = e.indice() % 4;
         if (e.esPulpo()) {
-            // cesta para dos: más ancha que un bloque
-            ps.scale(1.6F, 1.0F, 1.6F);
-            ps.translate(-0.5, 0, -0.5);
-            FeriaPiezas.modelo(ps, vc, FeriaPiezas.rl("cesta" + c), 1, 1, 1, luz);
+            // taza para dos con banco al fondo, volante y luces en el borde (malla)
+            float t = (float) (e.level().getGameTime() % 100000L) + pt;
+            boolean gira = b.gira;
+            int k0 = e.indice() * 2;
+            MallaRecurso.horneada("cesta", c, false).emitir(vc, ps.last(), luz, null);
+            MallaRecurso.horneada("cesta", c, true).emitir(vc, ps.last(), 0xF000F0, k -> FeriaPiezas.luz(k + k0, t, gira));
         } else if (e.esNoria()) {
             // cápsula en forma de huevo abierto por delante y por detrás (malla horneada, ver MallaRecurso). Cuelga del
             // gancho (3 bloques por encima de la entidad) y se balancea un poco en el plano de la rueda
@@ -51,8 +53,8 @@ public class AsientoFeriaRenderer extends EntityRenderer<AsientoFeria> {
             int k0 = e.indice() * 3;
             MallaRecurso.horneada(n, c, true).emitir(vc, ps.last(), 0xF000F0, k -> FeriaPiezas.luz(k + k0, t, gira));
         } else {
-            ps.translate(-0.5, 0, -0.5);
-            FeriaPiezas.modelo(ps, vc, FeriaPiezas.CABALLO[c], 1, 1, 1, luz);
+            // caballito al galope (malla): la barra del tiovivo pasa por su cruz, delante de la silla
+            MallaRecurso.horneada("caballo", c, false).emitir(vc, ps.last(), luz, null);
         }
         ps.popPose();
         super.render(e, yaw, pt, ps, buf, luz);
