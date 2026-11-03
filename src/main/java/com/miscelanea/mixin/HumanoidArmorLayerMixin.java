@@ -18,5 +18,7 @@ public abstract class HumanoidArmorLayerMixin {
     private void miscelanea$sinCasco(PoseStack ps, MultiBufferSource buf, LivingEntity e, EquipmentSlot slot, int luz, HumanoidModel<?> modelo,
                                     CallbackInfo ci) {
         if (slot == EquipmentSlot.HEAD && com.miscelanea.client.tortura.EjecucionCliente.ocultarCabeza(e)) ci.cancel();
+        // toxina del miedo: tu armadura "no está" (muñeco del inventario y tercera persona)
+        else if (com.miscelanea.client.tortura.efectos.MiedoEngano.ocultarArmadura(e)) ci.cancel();
     }
 }

@@ -16,6 +16,6 @@ public abstract class CustomHeadLayerMixin {
             at = @At("HEAD"), cancellable = true, require = 0)
     private void miscelanea$sinCabeza(PoseStack ps, MultiBufferSource buf, int luz, LivingEntity e, float limb, float limbAmt, float pt, float edad,
                                       float yaw, float pitch, CallbackInfo ci) {
-        if (com.miscelanea.client.tortura.EjecucionCliente.ocultarCabeza(e)) ci.cancel();
+        if (com.miscelanea.client.tortura.EjecucionCliente.ocultarCabeza(e) || com.miscelanea.client.tortura.efectos.MiedoEngano.ocultarArmadura(e)) ci.cancel();
     }
 }

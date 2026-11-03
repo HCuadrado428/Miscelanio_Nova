@@ -11,7 +11,9 @@
     "HumanoidModelMixin",
     "LivingEntityRendererMixin",
     "HumanoidArmorLayerMixin",
-    "CustomHeadLayerMixin"
+    "CustomHeadLayerMixin",
+    "AbstractContainerScreenMixin",
+    "GuiMixin"
   ],
   "injectors": {
     "defaultRequire": 1

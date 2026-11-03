@@ -14,9 +14,9 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.joml.Vector3f;
 
-/** Dardo de cerbatana en vuelo: casi recto, deja un rastro verde; a la entidad viva que le da, 30 s de miedo. */
+/** Dardo de cerbatana en vuelo: casi recto, deja un rastro verde; a la entidad viva que le da, 45 s de miedo (las dosis se acumulan: ver EfectosEventos). */
 public class DardoMiedoEntity extends ThrowableItemProjectile {
-    public static final int DURACION = 600;
+    public static final int DURACION = 900;
     private static final DustParticleOptions RASTRO = new DustParticleOptions(new Vector3f(0.35F, 0.75F, 0.22F), 0.6F);
 
     public DardoMiedoEntity(EntityType<? extends DardoMiedoEntity> t, Level l) {

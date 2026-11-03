@@ -36,6 +36,8 @@ public final class EfectosClienteMod {
     public static void overlays(RegisterGuiOverlaysEvent e) {
         // el miedo por debajo de todo (la barra y el resto del HUD se siguen viendo); el collar, encima
         e.registerBelowAll("efectos_miedo", MiedoCliente::hud);
+        // las manos fantasma, el fogonazo del warden y la cara del Espantapájaros tapan también el HUD
+        e.registerAboveAll("efectos_miedo_encima", MiedoCliente::hudEncima);
         e.registerAboveAll("efectos_collar", CollarCliente::hud);
     }
 

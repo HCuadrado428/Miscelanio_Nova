@@ -1998,5 +1998,43 @@
       "miscelanea:inmersion_goteo"
     ],
     "subtitle": "subtitles.miscelanea.inmersion_goteo"
+  },
+  "miedo_final": {
+    "sounds": [
+      "miscelanea:miedo_final"
+    ],
+    "subtitle": "subtitles.miscelanea.miedo_final"
+  },
+  "miedo_respiracion": {
+    "sounds": [
+      "miscelanea:miedo_respiracion"
+    ],
+    "subtitle": "subtitles.miscelanea.miedo_respiracion"
+  },
+  "miedo_goteo": {
+    "sounds": [
+      "miscelanea:miedo_goteo1",
+      "miscelanea:miedo_goteo2",
+      "miscelanea:miedo_goteo3"
+    ],
+    "subtitle": "subtitles.miscelanea.miedo_goteo"
+  },
+  "miedo_manos": {
+    "sounds": [
+      "miscelanea:miedo_manos"
+    ],
+    "subtitle": "subtitles.miscelanea.miedo_manos"
+  },
+  "miedo_estridente": {
+    "sounds": [
+      "miscelanea:miedo_estridente"
+    ],
+    "subtitle": "subtitles.miscelanea.miedo_estridente"
+  },
+  "miedo_pitido": {
+    "sounds": [
+      "miscelanea:miedo_pitido"
+    ],
+    "subtitle": "subtitles.miscelanea.miedo_pitido"
   }
 }

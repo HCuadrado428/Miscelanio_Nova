@@ -73,6 +73,13 @@ public final class EfectosRegistro {
     public static final RegistryObject<SoundEvent> MIEDO_LATIDO = sonido("miedo_latido");
     public static final RegistryObject<SoundEvent> MIEDO_SUSTO = sonido("miedo_susto");
     public static final RegistryObject<SoundEvent> MIEDO_ZUMBIDO = sonido("miedo_zumbido");
+    /** Miedo, 2ª tanda: el susurro del final, respiración detrás, goteo de sangre, las manos, el chirrido del susto y el pitido de oídos. */
+    public static final RegistryObject<SoundEvent> MIEDO_FINAL = sonido("miedo_final");
+    public static final RegistryObject<SoundEvent> MIEDO_RESPIRACION = sonido("miedo_respiracion");
+    public static final RegistryObject<SoundEvent> MIEDO_GOTEO = sonido("miedo_goteo");
+    public static final RegistryObject<SoundEvent> MIEDO_MANOS = sonido("miedo_manos");
+    public static final RegistryObject<SoundEvent> MIEDO_ESTRIDENTE = sonido("miedo_estridente");
+    public static final RegistryObject<SoundEvent> MIEDO_PITIDO = sonido("miedo_pitido");
 
     private static RegistryObject<SoundEvent> sonido(String n) {
         return SOUNDS.register(n, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Miscelanea.MOD_ID, n)));

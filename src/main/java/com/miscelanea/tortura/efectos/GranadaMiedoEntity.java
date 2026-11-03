@@ -20,8 +20,8 @@ import net.minecraft.world.phys.Vec3;
  * {@link AreaEffectCloud}) de gas verde: quien la respira se lleva {@link #DURACION} ticks de miedo.
  */
 public class GranadaMiedoEntity extends ThrowableItemProjectile {
-    /** Lo que da la nube (la nube aplica la cuarta parte de lo que lleva: 2400 / 4 = 600 = 30 s). */
-    public static final int DURACION = 600;
+    /** Lo que da la nube (la nube aplica la cuarta parte de lo que lleva: 3600 / 4 = 900 = 45 s). */
+    public static final int DURACION = 900;
 
     public GranadaMiedoEntity(EntityType<? extends GranadaMiedoEntity> t, Level l) {
         super(t, l);

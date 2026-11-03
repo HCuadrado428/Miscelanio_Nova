@@ -11,8 +11,9 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * Miedo (toxina del Espantapájaros, Batman: Arkham). A los jugadores, alucinaciones (todo en el cliente:
- * {@code MiedoCliente}); a los mobs, pánico: dejan de atacar y huyen de los jugadores cercanos. La leche lo cura (como
- * cualquier efecto).
+ * {@code MiedoCliente}, que va por etapas y empeora con el tiempo); a los mobs, pánico: dejan de atacar y huyen de los
+ * jugadores cercanos. Las dosis se acumulan (amplificador hasta III, ver {@code EfectosEventos}). La leche lo cura
+ * (como cualquier efecto).
  */
 public class MiedoEffect extends MobEffect {
     public static final int COLOR = 0x4E8A2E;
