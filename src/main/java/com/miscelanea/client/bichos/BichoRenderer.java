@@ -41,7 +41,8 @@ public class BichoRenderer extends EntityRenderer<BichoEntity> {
         float s = sp.tam;
         ps.pushPose();
         ps.translate(0, sp.vuela() ? 0.15 : 0.02, 0);
-        ps.mulPose(Axis.YP.rotationDegrees(180 - Mth.rotLerp(partial, e.yRotO, e.getYRot())));
+        // la cabeza del icono (+z) hacia donde mira el bicho (antes iba girada 180°: andaban marcha atrás)
+        ps.mulPose(Axis.YP.rotationDegrees(-Mth.rotLerp(partial, e.yRotO, e.getYRot())));
         if (sp.vuela()) ps.mulPose(Axis.XP.rotationDegrees(Mth.sin(t * 0.2F) * 8));
         VertexConsumer vc = buf.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(e)));
         if (sp.vuela()) {
