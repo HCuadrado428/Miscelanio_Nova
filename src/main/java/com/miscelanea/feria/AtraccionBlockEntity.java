@@ -179,8 +179,22 @@ public class AtraccionBlockEntity extends BlockEntity {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
+    /**
+     * Caja de dibujo ajustada a cada atracción (el recorte por el frustum la usa cada fotograma): la noria es plana
+     * (9 bloques de radio a lo ancho, poco más de 2 de grueso, 23 de alto), el tiovivo 4 de radio y el pulpo 6.
+     * Los asientos son entidades y tienen su propia caja.
+     */
     @Override
     public AABB getRenderBoundingBox() {
-        return new AABB(worldPosition).inflate(14, 26, 14);
+        if (!(getBlockState().getBlock() instanceof AtraccionBlock)) return new AABB(worldPosition);
+        double x = worldPosition.getX() + 0.5, y = worldPosition.getY(), z = worldPosition.getZ() + 0.5;
+        if (tipo() == AtraccionBlock.NORIA) {
+            Direction u = facing().getClockWise();
+            double au = R_NORIA + 1, af = MEDIA_RUEDA + 1.5;
+            double hx = Math.abs(u.getStepX()) * au + Math.abs(u.getStepZ()) * af, hz = Math.abs(u.getStepZ()) * au + Math.abs(u.getStepX()) * af;
+            return new AABB(x - hx, y - 0.5, z - hz, x + hx, y + CY_NORIA + R_NORIA + 1.5, z + hz);
+        }
+        double r = tipo() == AtraccionBlock.PULPO ? LARGO_BRAZO + 2 : 4.5, h = tipo() == AtraccionBlock.PULPO ? 7.5 : 6.5;
+        return new AABB(x - r, y - 0.5, z - r, x + r, y + h, z + r);
     }
 }

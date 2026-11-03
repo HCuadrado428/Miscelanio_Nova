@@ -19,8 +19,9 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
- * Relleno del pozo de agujas: un montón de jeringuillas usadas sobre un fondo de mugre (4 modelos al azar que se salen un
- * poco del bloque, así un pozo grande se ve como un solo montón). Se anda por dentro (los pies se hunden hasta
+ * Relleno del pozo de agujas: un montón de jeringuillas usadas sobre hormigón (4 modelos al azar, ligeros: capas de
+ * textura cutout, la piel de los lados y unas pocas jeringuillas de tarjetas cruzadas; ver gen_pozo_ligero.py). Es un
+ * modelo de bloque normal (va en la caché del chunk), sin BlockEntityRenderer. Se anda por dentro (los pies se hunden hasta
  * {@link #HONDO} px) y despacio, como en la arena de almas. Clic derecho: registrar ({@link Pozo}) o, con una llave de
  * la trampa en la mano, esconderla aquí. Romperlo suelta la llave escondida.
  */
@@ -49,6 +50,16 @@ public class PozoAgujasBlock extends Block {
     @SuppressWarnings("deprecation")
     public VoxelShape getBlockSupportShape(BlockState s, BlockGetter l, BlockPos p) {
         return COLISION;
+    }
+
+    /**
+     * Entre dos bloques del pozo no se dibujan las caras que se tocan (la "piel" de los lados, el suelo por debajo y las
+     * capas de arriba si hay otro encima: los modelos llevan cullface). Así un pozo grande solo pinta su borde.
+     */
+    @Override
+    @SuppressWarnings("deprecation")
+    public boolean skipRendering(BlockState s, BlockState vecino, net.minecraft.core.Direction lado) {
+        return vecino.is(this) || super.skipRendering(s, vecino, lado);
     }
 
     @Override
