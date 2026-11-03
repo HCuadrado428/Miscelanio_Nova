@@ -80,7 +80,7 @@ dependencies {
     implementation fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:${player_anim_version}")
     // API de Simple Voice Chat: solo para compilar el plugin de voz (com.miscelanea.client.voz.plugin). En el juego la
     // aporta el propio mod voicechat si está instalado; si no está, el plugin nunca se carga.
-    compileOnly "de.maxhenkel.voicechat:voicechat-api:2.7.0"
+    compileOnly "de.maxhenkel.voicechat:voicechat-api:2.5.0"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
