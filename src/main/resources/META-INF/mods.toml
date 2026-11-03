@@ -44,3 +44,11 @@ description='''${mod_description}'''
     versionRange="[0,)"
     ordering="AFTER"
     side="BOTH"
+
+# Opcional: Simple Voice Chat (si está, las pociones de voz cambian la voz; sin él solo faltan las voces)
+[[dependencies.${mod_id}]]
+    modId="voicechat"
+    mandatory=false
+    versionRange="[2.5.0,)"
+    ordering="AFTER"
+    side="BOTH"

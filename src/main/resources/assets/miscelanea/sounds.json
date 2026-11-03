@@ -2036,5 +2036,17 @@
       "miscelanea:miedo_pitido"
     ],
     "subtitle": "subtitles.miscelanea.miedo_pitido"
+  },
+  "hipo": {
+    "sounds": [
+      "miscelanea:hipo"
+    ],
+    "subtitle": "subtitles.miscelanea.hipo"
+  },
+  "vomito": {
+    "sounds": [
+      "miscelanea:vomito"
+    ],
+    "subtitle": "subtitles.miscelanea.vomito"
   }
 }

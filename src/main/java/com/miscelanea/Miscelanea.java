@@ -36,6 +36,7 @@ public class Miscelanea {
         com.miscelanea.tortura.TorturaRegistro.registrar(modBus);
         com.miscelanea.tortura.aparatos.AparatosRegistro.registrar(modBus);
         com.miscelanea.tortura.efectos.EfectosRegistro.registrar(modBus);
+        com.miscelanea.voz.VozRegistro.registrar(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::creativeTabs);
@@ -183,6 +184,11 @@ public class Miscelanea {
             event.accept(com.miscelanea.tortura.efectos.EfectosRegistro.DARDO_MIEDO);
             event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.PENDULO_ITEM);
             event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.INMERSION_ITEM);
+            // pociones de voz (solo creativo)
+            for (var p : com.miscelanea.voz.VozRegistro.FRASCOS_CREATIVO) event.accept(com.miscelanea.voz.VozRegistro.frasco(p));
+            event.accept(com.miscelanea.voz.VozRegistro.arrojadiza(com.miscelanea.voz.VozRegistro.POCION_TARTAMUDEO));
+            event.accept(com.miscelanea.voz.VozRegistro.arrojadiza(com.miscelanea.voz.VozRegistro.POCION_TARTAMUDEO_LARGA));
+            event.accept(com.miscelanea.voz.VozRegistro.arrojadiza(com.miscelanea.voz.VozRegistro.POCION_BORRACHERA));
             event.accept(ModItems.COHETE);
             event.accept(ModItems.LLAVE_ESPADA);
             event.accept(ModItems.HACHA_LEVIATAN);
