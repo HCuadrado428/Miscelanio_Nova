@@ -36,7 +36,7 @@ public class MiscelaneaVozPlugin implements VoicechatPlugin {
         if (!FMLEnvironment.dist.isClient()) return;
         // el voicechat avisa con la clase exacta de cada sonido (de jugador cercano, de posición o de grupo): registrar
         // solo ClientReceiveSoundEvent no recibía nada, por eso las voces no cambiaban
-        r.registerEvent(ClientReceiveSoundEvent.EntitySound.class, e -> recibir(e, e.getEntityId()));
+        r.registerEvent(ClientReceiveSoundEvent.EntitySound.class, e -> recibir(e, e.getId()));
         r.registerEvent(ClientReceiveSoundEvent.LocationalSound.class, e -> recibir(e, e.getId()));
         r.registerEvent(ClientReceiveSoundEvent.StaticSound.class, e -> recibir(e, e.getId()));
         // el micro propio (en el cliente; MicrophonePacketEvent es del servidor y aquí nunca llegaba)
