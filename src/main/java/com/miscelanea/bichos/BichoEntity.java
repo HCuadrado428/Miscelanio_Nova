@@ -18,12 +18,26 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 /**
  * Bicho de la Bichopedia. Los voladores revolotean alrededor de donde salieron (y huyen si llegas corriendo);
  * los de suelo caminan a ratos y el saltamontes da saltos. El escorpión pica si te acercas sin agacharte.
+ * En el cliente se dibuja en 3D con GeckoLib (patas que andan, alas que baten, antenas que tiemblan).
  */
-public class BichoEntity extends Mob {
+public class BichoEntity extends Mob implements GeoEntity {
+    private static final RawAnimation REPOSO = RawAnimation.begin().thenLoop("animation.bicho.reposo");
+    private static final RawAnimation ANDAR = RawAnimation.begin().thenLoop("animation.bicho.andar");
+    private static final RawAnimation VUELO = RawAnimation.begin().thenLoop("animation.bicho.vuelo");
+    private static final RawAnimation SALTO = RawAnimation.begin().thenLoop("animation.bicho.salto");
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    /** Solo en el cliente: ejemplar de la vitrina (quieto, alas abiertas o plegadas, sin volar). */
+    public boolean expuesto;
     private static final EntityDataAccessor<Byte> ESPECIE = SynchedEntityData.defineId(BichoEntity.class, EntityDataSerializers.BYTE);
     private Vec3 casa, objetivo;
     private int pausa, vida, picadura;
@@ -171,5 +185,23 @@ public class BichoEntity extends Mob {
         }
         yBodyRot = getYRot();
         pausa = 30 + random.nextInt(60);
+    }
+
+    // ------------------------------------------------------------------ animación (GeckoLib)
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar c) {
+        c.add(new AnimationController<>(this, "cuerpo", 3, st -> {
+            Especie e = especie();
+            if (expuesto) return st.setAndContinue(REPOSO);
+            if (e.vuela()) return st.setAndContinue(VUELO);
+            if (e.tipo == Especie.Tipo.SALTA && !onGround()) return st.setAndContinue(SALTO);
+            double dx = getX() - xo, dz = getZ() - zo;
+            return st.setAndContinue(dx * dx + dz * dz > 2.0E-5 ? ANDAR : REPOSO);
+        }));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
     }
 }
