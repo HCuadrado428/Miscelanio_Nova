@@ -1,6 +1,7 @@
 package com.miscelanea.client.imperio;
 
 import com.miscelanea.Miscelanea;
+import com.miscelanea.client.juegos.PanelJuego;
 import com.miscelanea.imperio.Casillas;
 import com.miscelanea.imperio.ImperioBlock;
 import com.miscelanea.imperio.ImperioBlockEntity;
@@ -179,74 +180,51 @@ public class ImperioRenderer implements BlockEntityRenderer<ImperioBlockEntity> 
             ps.popPose();
         }
 
-        // ---------------- paneles flotantes
+        // ---------------- panel de HUD (antes eran tres carteles flotantes sobre el tablero)
+        PanelJuego.Panel pj = PanelJuego.ofrecer(be.getBlockPos(), miro, "block.miscelanea.imperio", 0xFF40B060);
+        if (pj == null) return;
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.player.distanceToSqr(Vec3.atCenterOf(be.getBlockPos())) > 225) return;
-        List<String> lineas = new ArrayList<>();
-        List<Integer> colores = new ArrayList<>();
-        lineas.add(estado(p));
-        colores.add(0xFFFFE070);
-        Partida.Jugador yo = p.actual();
-        if (yo != null && mc.player.getUUID().equals(yo.uuid) && p.fase >= Partida.TIRAR && p.fase <= Partida.DEUDA && p.fase != Partida.MOVER) {
-            lineas.add(I18n.get("imperio.miscelanea.pista." + p.fase));
-            colores.add(0xFF80E0FF);
-        }
+        pj.linea(estado(p), PanelJuego.AMARILLO);
+        if (p.fase == Partida.MOVER) pj.marcador(p.d1 + "+" + p.d2, PanelJuego.BLANCO);
         for (int i = 0; i < p.js.size(); i++) {
             Partida.Jugador j = p.js.get(i);
-            String extra = j.fuera ? " ✖" : (j.carcel > 0 ? " ⛓" : "");
-            lineas.add((i == p.turno && p.fase != Partida.LOBBY ? "▶ " : "") + j.nombre + ": " + j.dinero + " ◆" + extra);
-            colores.add(0xFF000000 | (j.fuera ? 0x808080 : COLORES[i % 4]));
+            String extra = j.dinero + " ◆" + (j.fuera ? " ✖" : (j.carcel > 0 ? " ⛓" : ""));
+            pj.jugador(j.nombre, extra, j.fuera ? 0x808080 : COLORES[i % 4], i == p.turno && p.fase != Partida.LOBBY);
         }
-        if (!p.log.isEmpty()) {
-            lineas.add(formatear(p.log.get(p.log.size() - 1)));
-            colores.add(0xFFD0D0D0);
-        }
-        cartel(ps, buf, font, new Vec3(0.5, 1.15 + lineas.size() * 0.12, 0.5), lineas, colores, 0.016F);
+        Partida.Jugador yo = p.actual();
+        if (yo != null && mc.player != null && mc.player.getUUID().equals(yo.uuid) && p.fase >= Partida.TIRAR && p.fase <= Partida.DEUDA && p.fase != Partida.MOVER)
+            pj.detalle(I18n.get("imperio.miscelanea.pista." + p.fase), PanelJuego.CIAN);
         if (p.carta.length() > 0 && t - p.tCarta < 90) {
-            String tipo = I18n.get(p.carta.startsWith("cofre") ? "imperio.miscelanea.cofre" : "imperio.miscelanea.destino");
-            cartel(ps, buf, font, new Vec3(0.5, 0.55, 0.5), List.of(tipo, I18n.get("imperio.miscelanea.carta." + p.carta)),
-                    List.of(p.carta.startsWith("cofre") ? 0xFFF0B040 : 0xFFFF8040, 0xFFFFFFFF), 0.012F);
+            boolean cofre = p.carta.startsWith("cofre");
+            pj.detalle(I18n.get(cofre ? "imperio.miscelanea.cofre" : "imperio.miscelanea.destino"), cofre ? 0xFFF0B040 : 0xFFFF8040);
+            pj.detalle(I18n.get("imperio.miscelanea.carta." + p.carta), PanelJuego.BLANCO);
         }
         if (hover >= 0) {
-            List<String> l = new ArrayList<>();
-            List<Integer> cs = new ArrayList<>();
             int g = Casillas.grupo(hover);
-            l.add(I18n.get(Casillas.clave(hover)));
-            cs.add(g >= 0 ? 0xFF000000 | Casillas.COLOR[g] : 0xFFFFFFFF);
+            pj.detalle(I18n.get(Casillas.clave(hover)), g >= 0 ? 0xFF000000 | Casillas.COLOR[g] : PanelJuego.BLANCO);
             if (Casillas.comprable(hover)) {
-                l.add(I18n.get("imperio.miscelanea.info.precio", Casillas.precio(hover)));
-                cs.add(0xFFFFFFFF);
+                pj.detalle(I18n.get("imperio.miscelanea.info.precio", Casillas.precio(hover)), PanelJuego.BLANCO);
                 if (Casillas.tipo(hover) == Casillas.PROP) {
                     StringBuilder sb = new StringBuilder();
                     for (int k = 0; k <= 5; k++) sb.append(k == 0 ? "" : " / ").append(Casillas.alquilerCalle(hover, k));
-                    l.add(I18n.get("imperio.miscelanea.info.alquiler", sb.toString()));
-                    l.add(I18n.get("imperio.miscelanea.info.casa", Casillas.casa(hover)));
-                    cs.add(0xFFC0E0C0);
-                    cs.add(0xFFC0C0C0);
-                } else {
-                    l.add(I18n.get(Casillas.tipo(hover) == Casillas.ESTACION ? "imperio.miscelanea.info.estacion" : "imperio.miscelanea.info.util"));
-                    cs.add(0xFFC0E0C0);
-                }
+                    pj.detalle(I18n.get("imperio.miscelanea.info.alquiler", sb.toString()), 0xFFC0E0C0);
+                    pj.detalle(I18n.get("imperio.miscelanea.info.casa", Casillas.casa(hover)), 0xFFC0C0C0);
+                } else
+                    pj.detalle(I18n.get(Casillas.tipo(hover) == Casillas.ESTACION ? "imperio.miscelanea.info.estacion" : "imperio.miscelanea.info.util"), 0xFFC0E0C0);
                 int d = p.dueno[hover];
                 if (d >= 0 && d < p.js.size()) {
-                    l.add(I18n.get("imperio.miscelanea.info.dueno", p.js.get(d).nombre) + (p.hipo[hover] ? " · " + I18n.get("imperio.miscelanea.info.hipotecada") : "")
-                            + (p.casas[hover] > 0 ? " · " + (p.casas[hover] == 5 ? I18n.get("imperio.miscelanea.info.hotel") : I18n.get("imperio.miscelanea.info.casas", p.casas[hover])) : ""));
-                    cs.add(0xFF000000 | COLORES[d % 4]);
-                    if (!p.hipo[hover]) {
-                        l.add(I18n.get("imperio.miscelanea.info.cobra", p.alquiler(hover)));
-                        cs.add(0xFFFFE070);
-                    }
-                } else {
-                    l.add(I18n.get("imperio.miscelanea.info.libre"));
-                    cs.add(0xFF90FF90);
-                }
-            } else {
-                l.add(I18n.get("imperio.miscelanea.info." + Casillas.ID[hover]));
-                cs.add(0xFFC0C0C0);
-            }
-            double[] c = ImperioGeo.centro(hover);
-            cartel(ps, buf, font, local(be, c[0], c[1]).add(0, 0.45 + l.size() * 0.07, 0), l, cs, 0.009F);
+                    pj.detalle(I18n.get("imperio.miscelanea.info.dueno", p.js.get(d).nombre) + (p.hipo[hover] ? " · " + I18n.get("imperio.miscelanea.info.hipotecada") : "")
+                            + (p.casas[hover] > 0 ? " · " + (p.casas[hover] == 5 ? I18n.get("imperio.miscelanea.info.hotel") : I18n.get("imperio.miscelanea.info.casas", p.casas[hover])) : ""),
+                            0xFF000000 | COLORES[d % 4]);
+                    if (!p.hipo[hover]) pj.detalle(I18n.get("imperio.miscelanea.info.cobra", p.alquiler(hover)), PanelJuego.AMARILLO);
+                } else pj.detalle(I18n.get("imperio.miscelanea.info.libre"), PanelJuego.VERDE);
+            } else pj.detalle(I18n.get("imperio.miscelanea.info." + Casillas.ID[hover]), 0xFFC0C0C0);
         }
+        if (!p.log.isEmpty()) pj.nota(formatear(p.log.get(p.log.size() - 1)));
+        ImperioBotones.Boton bot = miro ? ImperioBotones.en(p, ImperioCliente.tx, ImperioCliente.ty) : null;
+        if (bot != null) pj.control(PanelJuego.Tecla.USAR, "imperio.miscelanea.boton." + bot.clave(), bot.args());
+        else pj.control(PanelJuego.Tecla.USAR, hover >= 0 ? "panel.miscelanea.ctrl.elegir_calle" : "panel.miscelanea.ctrl.jugar");
+        if (ImperioCliente.botonVelocidad(p) != null) pj.control(PanelJuego.Tecla.AGACHADO_USAR, "panel.miscelanea.ctrl.velocidad");
     }
 
     private static String estado(Partida p) {
@@ -294,20 +272,6 @@ public class ImperioRenderer implements BlockEntityRenderer<ImperioBlockEntity> 
         float y = 0.003F;
         for (Vec3 q : new Vec3[]{p01, p11, p10, p00})
             vc.vertex(m, (float) q.x, (float) q.y + dy, (float) q.z).color(r, g, b, a).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(0xF000F0).normal(n, 0, 1, 0).endVertex();
-    }
-
-    private static void cartel(PoseStack ps, MultiBufferSource buf, Font font, Vec3 donde, List<String> lineas, List<Integer> cols, float esc) {
-        Minecraft mc = Minecraft.getInstance();
-        ps.pushPose();
-        ps.translate(donde.x, donde.y, donde.z);
-        ps.mulPose(mc.getEntityRenderDispatcher().cameraOrientation());
-        ps.scale(-esc, -esc, esc);
-        Matrix4f m = ps.last().pose();
-        for (int i = 0; i < lineas.size(); i++) {
-            String s = lineas.get(i);
-            font.drawInBatch(s, -font.width(s) / 2F, i * 10, cols.get(i), false, m, buf, Font.DisplayMode.NORMAL, 0x80000000, 0xF000F0);
-        }
-        ps.popPose();
     }
 
     private static int mezcla(int a, int b, float k) {

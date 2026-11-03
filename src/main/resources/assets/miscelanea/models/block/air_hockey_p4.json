@@ -4,10 +4,9 @@
   "negro": "miscelanea:block/mesas/airhockey_negro",
   "lado": "miscelanea:block/mesas/airhockey_lado",
   "metal": "miscelanea:block/feria/cromo",
-  "led0": "miscelanea:block/mesas/airhockey_led0",
-  "led1": "miscelanea:block/mesas/airhockey_led1",
   "particle": "miscelanea:block/mesas/airhockey_lado",
-  "campo": "miscelanea:block/mesas/airhockey_campo_1_1"
+  "campo": "miscelanea:block/mesas/airhockey_campo_1_1",
+  "marcador": "miscelanea:block/mesas/airhockey_marcador"
  },
  "elements": [
   {
@@ -232,6 +231,70 @@
       14.5,
       16,
       16
+     ],
+     "texture": "#metal"
+    }
+   }
+  },
+  {
+   "name": "marcador",
+   "from": [
+    2,
+    15,
+    -0.4
+   ],
+   "to": [
+    14,
+    18,
+    1.4
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "texture": "#marcador",
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "south": {
+     "uv": [
+      2,
+      13,
+      14,
+      16
+     ],
+     "texture": "#negro"
+    },
+    "east": {
+     "uv": [
+      0,
+      13,
+      1.8,
+      16
+     ],
+     "texture": "#negro"
+    },
+    "west": {
+     "uv": [
+      0,
+      13,
+      1.8,
+      16
+     ],
+     "texture": "#negro"
+    },
+    "up": {
+     "uv": [
+      2,
+      0,
+      14,
+      1.8
      ],
      "texture": "#metal"
     }

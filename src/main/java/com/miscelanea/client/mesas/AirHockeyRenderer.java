@@ -1,6 +1,7 @@
 package com.miscelanea.client.mesas;
 
 import com.miscelanea.client.feria.FeriaPiezas;
+import com.miscelanea.client.juegos.PanelJuego;
 import com.miscelanea.mesas.AirHockeyBlockEntity;
 import com.miscelanea.mesas.AirHockeyPartida;
 import com.miscelanea.mesas.MesaGeo;
@@ -17,7 +18,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
-/** Disco, mazos y marcador del air hockey. */
+/** Disco, mazos y marcadores LED (a ras de la banda) del air hockey; el resto de la información va en el panel de HUD. */
 public class AirHockeyRenderer implements BlockEntityRenderer<AirHockeyBlockEntity> {
     static final float MESA = 13F / 16;
 
@@ -70,30 +71,81 @@ public class AirHockeyRenderer implements BlockEntityRenderer<AirHockeyBlockEnti
         }
     }
 
+    /**
+     * Marcadores LED bajos en los dos lados largos de la mesa (en el modelo, a ras de la banda): los goles de cada
+     * portería se pintan sobre la pantalla, cada número del lado de su portería, sin nada que tape la mesa.
+     */
     private void marcador(AirHockeyBlockEntity be, PoseStack ps, MultiBufferSource buf, Font font) {
         AirHockeyPartida p = be.p;
-        String n0 = be.jug[0] != null ? be.nombre[0] : p.cpu[0] ? "CPU" : "-", n1 = be.jug[1] != null ? be.nombre[1] : p.cpu[1] ? "CPU" : "-";
-        String[] l;
-        int[] c;
-        if (p.fase == AirHockeyPartida.ESPERA) {
-            l = new String[]{I18n.get("airhockey.miscelanea.titulo"), I18n.get("airhockey.miscelanea.espera")};
-            c = new int[]{0xFF5ADCFF, 0xFFFFFFFF};
-        } else {
-            String abajo = p.fase == AirHockeyPartida.GOL ? I18n.get("airhockey.miscelanea.gol_grande") : p.fase == AirHockeyPartida.FIN
-                    ? I18n.get("airhockey.miscelanea.gana", p.goles[0] > p.goles[1] ? n0 : n1) : I18n.get("airhockey.miscelanea.a_siete");
-            l = new String[]{"§c" + n0 + "§r   " + p.goles[0] + " - " + p.goles[1] + "   §9" + n1, abajo};
-            c = new int[]{0xFFFFFFFF, p.fase == AirHockeyPartida.GOL ? 0xFFFFD23C : 0xFFC0C0C0};
-        }
-        Vec3 centro = MesaGeo.local(be.facing(), 1.5, 1, 1.45 + l.length * 0.11);
+        Direction f = be.facing();
         Minecraft mc = Minecraft.getInstance();
-        ps.pushPose();
-        ps.translate(centro.x, centro.y, centro.z);
-        ps.mulPose(mc.getEntityRenderDispatcher().cameraOrientation());
-        float esc = p.fase == AirHockeyPartida.GOL ? 0.02F : 0.016F;
-        ps.scale(-esc, -esc, esc);
-        Matrix4f m = ps.last().pose();
-        for (int i = 0; i < l.length; i++)
-            font.drawInBatch(l[i], -font.width(l[i]) / 2F, i * 10, c[i], false, m, buf, Font.DisplayMode.NORMAL, 0x80000000, 0xF000F0);
-        ps.popPose();
+        long t = be.getLevel() != null ? be.getLevel().getGameTime() : 0;
+        boolean espera = p.fase == AirHockeyPartida.ESPERA;
+        boolean parpadeo = p.fase == AirHockeyPartida.GOL && (t / 5) % 2 == 0;
+        int gana = p.fase == AirHockeyPartida.FIN ? (p.goles[0] > p.goles[1] ? 0 : 1) : -1;
+        // cara exterior de cada pantalla: v = -0.4/16 (lado de la parte 1) y v = 2 + 0.4/16 (lado de la parte 4)
+        for (int lado = 0; lado < 2; lado++) {
+            double v = lado == 0 ? -0.4 / 16 - 0.002 : 2 + 0.4 / 16 + 0.002;
+            Direction fuera = lado == 0 ? f.getOpposite() : f;
+            double y = 16.6 / 16;
+            for (int e = 0; e < 3; e++) {
+                String txt;
+                int col;
+                double u;
+                if (e == 2) {
+                    txt = ":";
+                    col = 0xFFB0B0B0;
+                    u = 1.5;
+                } else {
+                    txt = espera ? "-" : String.valueOf(p.goles[e]);
+                    int base = e == 0 ? 0xFFFF4A3A : 0xFF4A90FF;
+                    col = espera ? 0xFF606060 : parpadeo || (gana == e && (t / 6) % 2 == 0) ? 0xFFFFFFFF : base;
+                    u = e == 0 ? 1.5 - 0.2 : 1.5 + 0.2;
+                }
+                Vec3 q = MesaGeo.local(f, u, v, y);
+                ps.pushPose();
+                ps.translate(q.x, q.y, q.z);
+                ps.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-fuera.toYRot()));
+                float esc = 0.0165F;
+                ps.scale(esc, -esc, esc);
+                Matrix4f m = ps.last().pose();
+                font.drawInBatch(txt, -font.width(txt) / 2F, -4, col, false, m, buf, Font.DisplayMode.POLYGON_OFFSET, 0, 0xF000F0);
+                ps.popPose();
+            }
+        }
+        panel(be, mc);
+    }
+
+    /** Panel de HUD: marcador, quién juega en cada portería y controles. */
+    private static void panel(AirHockeyBlockEntity be, Minecraft mc) {
+        AirHockeyPartida p = be.p;
+        boolean juego = AirHockeyCliente.jugando == be;
+        Vec3 centro = Vec3.atLowerCornerOf(be.getBlockPos()).add(MesaGeo.local(be.facing(), 1.5, 1, 1));
+        PanelJuego.Panel pj = PanelJuego.ofrecer(centro, juego || mirando(be), "block.miscelanea.air_hockey", 0xFF5ADCFF);
+        if (pj == null) return;
+        String n0 = be.jug[0] != null ? be.nombre[0] : p.cpu[0] ? "CPU" : "-", n1 = be.jug[1] != null ? be.nombre[1] : p.cpu[1] ? "CPU" : "-";
+        if (p.fase == AirHockeyPartida.ESPERA) pj.linea(I18n.get("airhockey.miscelanea.espera"), PanelJuego.BLANCO);
+        else {
+            pj.marcador(p.goles[0] + " - " + p.goles[1], p.fase == AirHockeyPartida.GOL ? 0xFFFFD23C : PanelJuego.BLANCO);
+            pj.linea(p.fase == AirHockeyPartida.GOL ? I18n.get("airhockey.miscelanea.gol_grande") : p.fase == AirHockeyPartida.FIN
+                    ? I18n.get("airhockey.miscelanea.gana", p.goles[0] > p.goles[1] ? n0 : n1) : I18n.get("airhockey.miscelanea.a_siete"),
+                    p.fase == AirHockeyPartida.GOL ? 0xFFFFD23C : PanelJuego.AMARILLO);
+            pj.jugador(n0, I18n.get("airhockey.miscelanea.equipo0"), 0xE02828, false);
+            pj.jugador(n1, I18n.get("airhockey.miscelanea.equipo1"), 0x3060D0, false);
+        }
+        if (juego) {
+            pj.control(PanelJuego.Tecla.MOVER, "panel.miscelanea.ctrl.mazo");
+            if (p.fase == AirHockeyPartida.FIN) pj.control(PanelJuego.Tecla.USAR, "panel.miscelanea.ctrl.otra");
+            pj.control(PanelJuego.Tecla.AGACHARSE, "panel.miscelanea.ctrl.soltar_mesa");
+        } else pj.control(PanelJuego.Tecla.USAR, "panel.miscelanea.ctrl.unirse_extremo");
+    }
+
+    /** Si el jugador apunta a cualquier bloque de esta mesa grande. */
+    static boolean mirando(net.minecraft.world.level.block.entity.BlockEntity be) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || !(mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult bh)
+                || bh.getType() != net.minecraft.world.phys.HitResult.Type.BLOCK) return false;
+        var s = mc.level.getBlockState(bh.getBlockPos());
+        return s.getBlock() instanceof com.miscelanea.mesas.MesaGrandeBlock mg && mg.principal(s, bh.getBlockPos()).equals(be.getBlockPos());
     }
 }

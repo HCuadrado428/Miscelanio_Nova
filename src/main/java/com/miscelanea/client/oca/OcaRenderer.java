@@ -1,6 +1,7 @@
 package com.miscelanea.client.oca;
 
 import com.miscelanea.Miscelanea;
+import com.miscelanea.client.juegos.PanelJuego;
 import com.miscelanea.oca.OcaBlock;
 import com.miscelanea.oca.OcaBlockEntity;
 import com.miscelanea.oca.OcaBotones;
@@ -32,7 +33,7 @@ import org.joml.Quaternionf;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Peones que avanzan casilla a casilla, saltos de oca a oca, dado, botones, ficha de la casilla apuntada y panel. */
+/** Peones que avanzan casilla a casilla, saltos de oca a oca, dado, botones, casilla apuntada resaltada; el estado va en el panel de HUD. */
 public class OcaRenderer implements BlockEntityRenderer<OcaBlockEntity> {
     /** Las marcas planas se apilan con un desplazamiento mínimo para que no parpadeen al pisarse. */
     private int capa;
@@ -170,48 +171,31 @@ public class OcaRenderer implements BlockEntityRenderer<OcaBlockEntity> {
             ps.popPose();
         }
 
-        if (mc.player == null || mc.player.distanceToSqr(Vec3.atCenterOf(be.getBlockPos())) > 225) return;
-
-        // ---------------- casilla apuntada: qué es y qué hace
-        if (miro && OcaBotones.en(p, OcaCliente.tx, OcaCliente.ty) == null) {
-            int cas = casillaEn(OcaCliente.tx, OcaCliente.ty);
-            if (cas >= 0) {
-                double[] c = OcaGeo.centro(cas);
-                rect(marca, ps, be, c[0], c[1], OcaGeo.CELDA - 4, OcaGeo.CELDA - 4, 0xFFFFFF, 0.18F);
-                String tipo = OcaPartida.tipo(cas);
-                List<String> l = new ArrayList<>();
-                List<Integer> cs = new ArrayList<>();
-                l.add(I18n.get("oca.miscelanea.casilla", cas) + (tipo.isEmpty() ? "" : " · " + I18n.get("oca.miscelanea.tipo." + tipo)));
-                cs.add(0xFFFFE070);
-                if (!tipo.isEmpty()) {
-                    l.add(I18n.get("oca.miscelanea.regla." + tipo));
-                    cs.add(0xFFFFFFFF);
-                }
-                cartel(ps, buf, font, local(be, c[0], c[1]).add(0, 0.3, 0), l, cs, 0.009F);
-            }
+        // ---------------- casilla apuntada: se resalta en el tablero y se explica en el panel de HUD
+        PanelJuego.Panel pj = PanelJuego.ofrecer(be.getBlockPos(), miro, "block.miscelanea.oca", 0xFF3FA8D8);
+        OcaBotones.Boton bot = miro ? OcaBotones.en(p, OcaCliente.tx, OcaCliente.ty) : null;
+        int cas = miro && bot == null ? casillaEn(OcaCliente.tx, OcaCliente.ty) : -1;
+        if (cas >= 0) {
+            double[] c = OcaGeo.centro(cas);
+            rect(marca, ps, be, c[0], c[1], OcaGeo.CELDA - 4, OcaGeo.CELDA - 4, 0xFFFFFF, 0.18F);
         }
-
-        // ---------------- panel flotante
-        List<String> lineas = new ArrayList<>();
-        List<Integer> cols = new ArrayList<>();
-        lineas.add(estado(p));
-        cols.add(0xFFFFE070);
-        if (mio && p.fase == OcaPartida.TIRAR) {
-            lineas.add(I18n.get("oca.miscelanea.pista"));
-            cols.add(0xFF80E0FF);
-        }
+        if (pj == null) return;
+        pj.linea(estado(p), PanelJuego.AMARILLO);
+        if (p.fase == OcaPartida.MOVER) pj.marcador(String.valueOf(p.dado), PanelJuego.BLANCO);
         for (int i = 0; i < p.js.size(); i++) {
             OcaPartida.Jugador j = p.js.get(i);
-            String extra = j.castigo > 0 ? "  " + I18n.get("oca.miscelanea.castigo", j.castigo) : "";
-            lineas.add((i == p.turno && p.fase != OcaPartida.LOBBY && p.fase != OcaPartida.FIN ? "▶ " : "") + j.nombre + " · "
-                    + I18n.get("oca.miscelanea.casilla", j.pos) + extra);
-            cols.add(0xFF000000 | COLORES[j.color]);
+            String extra = I18n.get("oca.miscelanea.casilla", j.pos) + (j.castigo > 0 ? "  " + I18n.get("oca.miscelanea.castigo", j.castigo) : "");
+            pj.jugador(j.nombre, extra, COLORES[j.color], i == p.turno && p.fase != OcaPartida.LOBBY && p.fase != OcaPartida.FIN);
         }
-        if (!p.log.isEmpty()) {
-            lineas.add(formatear(p.log.get(p.log.size() - 1)));
-            cols.add(0xFFD0D0D0);
+        if (mio && p.fase == OcaPartida.TIRAR) pj.detalle(I18n.get("oca.miscelanea.pista"), PanelJuego.CIAN);
+        if (cas >= 0) {
+            String tipo = OcaPartida.tipo(cas);
+            pj.detalle(I18n.get("oca.miscelanea.casilla", cas) + (tipo.isEmpty() ? "" : " · " + I18n.get("oca.miscelanea.tipo." + tipo)), PanelJuego.AMARILLO);
+            if (!tipo.isEmpty()) pj.detalle(I18n.get("oca.miscelanea.regla." + tipo), PanelJuego.BLANCO);
         }
-        cartel(ps, buf, font, new Vec3(0.5, 1.1 + lineas.size() * 0.12, 0.5), lineas, cols, 0.016F);
+        if (!p.log.isEmpty()) pj.nota(formatear(p.log.get(p.log.size() - 1)));
+        pj.control(PanelJuego.Tecla.USAR, bot != null ? "oca.miscelanea.boton." + bot.clave() : "panel.miscelanea.ctrl.jugar");
+        if (OcaCliente.botonVelocidad(p) != null) pj.control(PanelJuego.Tecla.AGACHADO_USAR, "panel.miscelanea.ctrl.velocidad");
     }
 
     public static int casillaEn(double tx, double ty) {
@@ -262,20 +246,6 @@ public class OcaRenderer implements BlockEntityRenderer<OcaBlockEntity> {
             vc.vertex(m, (float) q.x, (float) q.y + dy, (float) q.z).color(r, g, b, a).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(0xF000F0)
                     .normal(n, 0, 1, 0).endVertex();
         }
-    }
-
-    private static void cartel(PoseStack ps, MultiBufferSource buf, Font font, Vec3 donde, List<String> lineas, List<Integer> cols, float esc) {
-        Minecraft mc = Minecraft.getInstance();
-        ps.pushPose();
-        ps.translate(donde.x, donde.y, donde.z);
-        ps.mulPose(mc.getEntityRenderDispatcher().cameraOrientation());
-        ps.scale(-esc, -esc, esc);
-        Matrix4f m = ps.last().pose();
-        for (int i = 0; i < lineas.size(); i++) {
-            String s = lineas.get(i);
-            font.drawInBatch(s, -font.width(s) / 2F, i * 10, cols.get(i), false, m, buf, Font.DisplayMode.NORMAL, 0x80000000, 0xF000F0);
-        }
-        ps.popPose();
     }
 
     private static int mezcla(int a, int b, float k) {

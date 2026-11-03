@@ -1,6 +1,7 @@
 package com.miscelanea.client.parchis;
 
 import com.miscelanea.Miscelanea;
+import com.miscelanea.client.juegos.PanelJuego;
 import com.miscelanea.parchis.ParchisBlock;
 import com.miscelanea.parchis.ParchisBlockEntity;
 import com.miscelanea.parchis.ParchisBotones;
@@ -140,6 +141,8 @@ public class ParchisRenderer implements BlockEntityRenderer<ParchisBlockEntity> 
 
         // ---------------- fichas que se pueden mover y destino de la apuntada
         Font font = mc.font;
+        String verQue = null;
+        int verCol = PanelJuego.BLANCO;
         if (!opciones.isEmpty() && t - p.tDado > Math.min(12, p.dadoTicks())) {
             float pulso = 0.45F + 0.25F * Mth.sin(t * 0.35F);
             int apunta = miro && mio ? ParchisGeo.elegir(p, c0, opciones, ParchisCliente.tx, ParchisCliente.ty) : -1;
@@ -168,7 +171,8 @@ public class ParchisRenderer implements BlockEntityRenderer<ParchisBlockEntity> 
                     int g = ParchisPartida.casilla(c0, d);
                     que = I18n.get(ParchisPartida.seguro(g) ? "parchis.miscelanea.ver.seguro" : "parchis.miscelanea.ver.casilla", g == 0 ? 68 : g);
                 }
-                cartel(ps, buf, font, local(be, q[0], q[1]).add(0, 0.16, 0), List.of(que), List.of(come ? 0xFFFF7060 : 0xFFFFFFFF), 0.009F);
+                verQue = que;
+                verCol = come ? PanelJuego.ROJO : PanelJuego.BLANCO;
             }
         }
 
@@ -230,36 +234,25 @@ public class ParchisRenderer implements BlockEntityRenderer<ParchisBlockEntity> 
             ps.popPose();
         }
 
-        // ---------------- bono flotando sobre la ficha que acaba de comer / llegar
-        if (p.fase == ParchisPartida.ELEGIR && p.esBono && c0 >= 0) {
-            double[] dc = ParchisGeo.tex(c0, 86, 86);
-            cartel(ps, buf, font, local(be, dc[0], dc[1]).add(0, 0.18 + 0.02 * Mth.sin(t * 0.3F), 0), List.of("+" + p.valor),
-                    List.of(0xFF000000 | COLORES[c0]), 0.02F);
-        }
-
-        // ---------------- panel flotante
-        if (mc.player == null || mc.player.distanceToSqr(Vec3.atCenterOf(be.getBlockPos())) > 225) return;
-        List<String> lineas = new ArrayList<>();
-        List<Integer> cols = new ArrayList<>();
-        lineas.add(estado(p));
-        cols.add(0xFFFFE070);
-        if (mio && (p.fase == ParchisPartida.TIRAR || p.fase == ParchisPartida.ELEGIR)) {
-            lineas.add(I18n.get("parchis.miscelanea.pista." + (p.fase == ParchisPartida.TIRAR ? "tirar" : "elegir")));
-            cols.add(0xFF80E0FF);
-        }
+        // ---------------- panel de HUD (sustituye al cartel flotante)
+        PanelJuego.Panel pj = PanelJuego.ofrecer(be.getBlockPos(), miro, "block.miscelanea.parchis", 0xFFE0A020);
+        if (pj == null) return;
+        pj.linea(estado(p), PanelJuego.AMARILLO);
+        if (p.fase == ParchisPartida.ELEGIR && p.esBono && c0 >= 0) pj.marcador("+" + p.valor, 0xFF000000 | COLORES[c0]);
         for (int i = 0; i < p.js.size(); i++) {
             ParchisPartida.Jugador j = p.js.get(i);
             int enMeta = 0;
             for (int k = 0; k < 4; k++) if (p.prog[j.color][k] == ParchisPartida.META) enMeta++;
-            lineas.add((i == p.turno && p.fase != ParchisPartida.LOBBY && p.fase != ParchisPartida.FIN ? "▶ " : "") + j.nombre
-                    + " (" + I18n.get("parchis.miscelanea.color." + COLOR_ID[j.color]) + ")  " + "★".repeat(enMeta) + "☆".repeat(4 - enMeta));
-            cols.add(0xFF000000 | COLORES[j.color]);
+            pj.jugador(j.nombre, I18n.get("parchis.miscelanea.color." + COLOR_ID[j.color]) + "  " + "★".repeat(enMeta) + "☆".repeat(4 - enMeta),
+                    COLORES[j.color], i == p.turno && p.fase != ParchisPartida.LOBBY && p.fase != ParchisPartida.FIN);
         }
-        if (!p.log.isEmpty()) {
-            lineas.add(formatear(p.log.get(p.log.size() - 1)));
-            cols.add(0xFFD0D0D0);
-        }
-        cartel(ps, buf, font, new Vec3(0.5, 1.1 + lineas.size() * 0.12, 0.5), lineas, cols, 0.016F);
+        if (mio && (p.fase == ParchisPartida.TIRAR || p.fase == ParchisPartida.ELEGIR))
+            pj.detalle(I18n.get("parchis.miscelanea.pista." + (p.fase == ParchisPartida.TIRAR ? "tirar" : "elegir")), PanelJuego.CIAN);
+        if (verQue != null) pj.detalle(verQue, verCol);
+        if (!p.log.isEmpty()) pj.nota(formatear(p.log.get(p.log.size() - 1)));
+        ParchisBotones.Boton bot = miro ? ParchisBotones.en(p, ParchisCliente.tx, ParchisCliente.ty) : null;
+        pj.control(PanelJuego.Tecla.USAR, bot != null ? "parchis.miscelanea.boton." + bot.clave() : "panel.miscelanea.ctrl.jugar");
+        if (ParchisCliente.botonVelocidad(p) != null) pj.control(PanelJuego.Tecla.AGACHADO_USAR, "panel.miscelanea.ctrl.velocidad");
     }
 
     /** Posición animada (tx, ty, altura) de la ficha que se está moviendo. */
@@ -339,20 +332,6 @@ public class ParchisRenderer implements BlockEntityRenderer<ParchisBlockEntity> 
             vc.vertex(m, (float) q.x, (float) q.y + dy, (float) q.z).color(r, g, b, a).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(0xF000F0)
                     .normal(n, 0, 1, 0).endVertex();
         }
-    }
-
-    private static void cartel(PoseStack ps, MultiBufferSource buf, Font font, Vec3 donde, List<String> lineas, List<Integer> cols, float esc) {
-        Minecraft mc = Minecraft.getInstance();
-        ps.pushPose();
-        ps.translate(donde.x, donde.y, donde.z);
-        ps.mulPose(mc.getEntityRenderDispatcher().cameraOrientation());
-        ps.scale(-esc, -esc, esc);
-        Matrix4f m = ps.last().pose();
-        for (int i = 0; i < lineas.size(); i++) {
-            String s = lineas.get(i);
-            font.drawInBatch(s, -font.width(s) / 2F, i * 10, cols.get(i), false, m, buf, Font.DisplayMode.NORMAL, 0x80000000, 0xF000F0);
-        }
-        ps.popPose();
     }
 
     private static int mezcla(int a, int b, float k) {

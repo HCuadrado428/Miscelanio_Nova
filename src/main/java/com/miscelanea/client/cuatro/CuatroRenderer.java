@@ -4,10 +4,10 @@ import com.miscelanea.Miscelanea;
 import com.miscelanea.cuatro.Cuatro;
 import com.miscelanea.cuatro.CuatroBlock;
 import com.miscelanea.cuatro.CuatroBlockEntity;
+import com.miscelanea.client.juegos.PanelJuego;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
@@ -19,14 +19,9 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.model.data.ModelData;
-import org.joml.Matrix4f;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/** Fichas que caen con gravedad y rebote, ficha fantasma sobre la columna apuntada, línea ganadora que late y marcador. */
+/** Fichas que caen con gravedad y rebote, ficha fantasma sobre la columna apuntada, línea ganadora que late; el estado va en el panel de HUD. */
 public class CuatroRenderer implements BlockEntityRenderer<CuatroBlockEntity> {
     public static final ResourceLocation ROJA = new ResourceLocation(Miscelanea.MOD_ID, "block/cuatro/ficha_roja"),
             AMARILLA = new ResourceLocation(Miscelanea.MOD_ID, "block/cuatro/ficha_amarilla");
@@ -81,43 +76,22 @@ public class CuatroRenderer implements BlockEntityRenderer<CuatroBlockEntity> {
         }
         ps.popPose();
 
-        // ---------------- marcador
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.player.distanceToSqr(Vec3.atCenterOf(be.getBlockPos())) > 100) return;
-        List<String> l = new ArrayList<>();
-        List<Integer> cs = new ArrayList<>();
-        l.add(I18n.get("cuatro.miscelanea.modo." + be.modo));
-        cs.add(0xFFFFE070);
-        if (be.resultado == 3) {
-            l.add(I18n.get("tablero.miscelanea.tablas"));
-            cs.add(0xFFFFFFFF);
-        } else if (be.resultado != 0) {
-            l.add(I18n.get("cuatro.miscelanea.gana", be.resultado == 1 ? be.nombreR : be.nombreA));
-            cs.add(be.resultado == 1 ? 0xFFFF6050 : 0xFFFFD040);
-            l.add(I18n.get("cuatro.miscelanea.otra"));
-            cs.add(0xFF80E0FF);
-        } else if (be.rojo == null) {
-            l.add(I18n.get("cuatro.miscelanea.toca"));
-            cs.add(0xFFFFFFFF);
-        } else {
-            boolean r = be.j.turno == 1;
-            String quien = r ? be.nombreR : (be.nombreA.isEmpty() ? "?" : be.nombreA);
-            l.add(I18n.get(r ? "cuatro.miscelanea.turno_rojo" : "cuatro.miscelanea.turno_amarillo", quien));
-            cs.add(r ? 0xFFFF6050 : 0xFFFFD040);
-            if (CuatroCliente.esMiTurno(be)) {
-                l.add(I18n.get("cuatro.miscelanea.pista"));
-                cs.add(0xFF80E0FF);
-            }
+        // ---------------- panel de HUD (nada flotando sobre el bastidor)
+        PanelJuego.Panel pj = PanelJuego.ofrecer(be.getBlockPos(), CuatroCliente.apuntado == be, "block.miscelanea.cuatro", 0xFFE04838);
+        if (pj == null) return;
+        pj.linea(I18n.get("cuatro.miscelanea.modo." + be.modo), PanelJuego.AMARILLO);
+        if (be.resultado == 3) pj.linea(I18n.get("tablero.miscelanea.tablas"), PanelJuego.BLANCO);
+        else if (be.resultado != 0) pj.linea(I18n.get("cuatro.miscelanea.gana", be.resultado == 1 ? be.nombreR : be.nombreA), be.resultado == 1 ? 0xFFFF6050 : 0xFFFFD040);
+        else if (be.rojo == null) pj.linea(I18n.get("panel.miscelanea.cuatro.empieza"), PanelJuego.BLANCO);
+        if (be.rojo != null) {
+            boolean jugando = be.resultado == 0;
+            pj.jugador(be.nombreR, I18n.get("panel.miscelanea.cuatro.rojas"), 0xE23A30, jugando && be.j.turno == 1);
+            pj.jugador(be.contraCpu() ? "CPU" : be.nombreA.isEmpty() ? "?" : be.nombreA, I18n.get("panel.miscelanea.cuatro.amarillas"), 0xF2C420,
+                    jugando && be.j.turno != 1);
         }
-        Font font = mc.font;
-        ps.pushPose();
-        ps.translate(0.5, 1.75 + l.size() * 0.1, 0.5);
-        ps.mulPose(mc.getEntityRenderDispatcher().cameraOrientation());
-        ps.scale(-0.016F, -0.016F, 0.016F);
-        Matrix4f m = ps.last().pose();
-        for (int i = 0; i < l.size(); i++)
-            font.drawInBatch(l.get(i), -font.width(l.get(i)) / 2F, i * 10, cs.get(i), false, m, buf, Font.DisplayMode.NORMAL, 0x60000000, 0xF000F0);
-        ps.popPose();
+        if (be.resultado != 0) pj.control(PanelJuego.Tecla.USAR, "panel.miscelanea.ctrl.otra");
+        else if (CuatroCliente.esMiTurno(be)) pj.control(PanelJuego.Tecla.USAR, "panel.miscelanea.ctrl.soltar_ficha");
+        pj.control(PanelJuego.Tecla.AGACHADO_USAR, "panel.miscelanea.ctrl.cambiar_modo");
     }
 
     private static void ficha(ModelBlockRenderer mr, com.mojang.blaze3d.vertex.VertexConsumer vc, PoseStack ps, BakedModel m, double x, double y, float esc, int luz) {

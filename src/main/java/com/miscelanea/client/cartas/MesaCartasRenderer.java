@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.resources.language.I18n;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
@@ -34,6 +35,33 @@ public class MesaCartasRenderer implements BlockEntityRenderer<MesaCartasBlockEn
             if (be.mesa[s] >= 0) carta(ps, vc, be.mesa[s], 0.1F, 0.006F + s * 0.002F, s == 0 ? -0.08F : 0.08F, s == 0 ? 8 : 172, luz);
         }
         ps.popPose();
+        panel(be);
+    }
+
+    /** Panel de HUD común a los juegos de mesa: juego, jugadores, turno y cómo sentarse. */
+    private static void panel(MesaCartasBlockEntity be) {
+        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+        if (mc.screen instanceof CartasScreen) return;
+        boolean mira = mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult bh && bh.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK
+                && bh.getBlockPos().equals(be.getBlockPos());
+        com.miscelanea.client.juegos.PanelJuego.Panel pj = com.miscelanea.client.juegos.PanelJuego.ofrecer(be.getBlockPos(), mira, "block.miscelanea.mesa_cartas", 0xFFD04040);
+        if (pj == null) return;
+        boolean chin = be.juego == MesaCartasBlockEntity.CHINCHON;
+        pj.linea(I18n.get(chin ? "miscelanea.chinchon.juego" : "miscelanea.cartas.juego"), com.miscelanea.client.juegos.PanelJuego.AMARILLO);
+        if (be.estado == MesaCartasBlockEntity.ESPERA && be.jugador[0] == null && be.jugador[1] == null) {
+            pj.control(com.miscelanea.client.juegos.PanelJuego.Tecla.USAR, "panel.miscelanea.ctrl.sentarse");
+            return;
+        }
+        if (be.estado == MesaCartasBlockEntity.ESPERA) pj.linea(I18n.get("miscelanea.cartas.esperando"), com.miscelanea.client.juegos.PanelJuego.BLANCO);
+        int[] cols = {0xD04040, 0x4070D0};
+        for (int i = 0; i < 2; i++) {
+            if (be.jugador[i] == null && !be.cpu[i]) continue;
+            String n = be.nombre[i].isEmpty() ? I18n.get("miscelanea.cartas.maquina") : be.nombre[i];
+            String extra = chin ? I18n.get("miscelanea.chinchon.puntos", be.acumulado[i]) : I18n.get("miscelanea.cartas.bazas", be.bazas[i]);
+            pj.jugador(n, extra, cols[i], be.estado == MesaCartasBlockEntity.JUGANDO && be.turno == i);
+        }
+        boolean sentado = mc.player != null && (mc.player.getUUID().equals(be.jugador[0]) || mc.player.getUUID().equals(be.jugador[1]));
+        pj.control(com.miscelanea.client.juegos.PanelJuego.Tecla.USAR, sentado ? "panel.miscelanea.ctrl.ver_cartas" : "panel.miscelanea.ctrl.sentarse");
     }
 
     private void carta(PoseStack ps, VertexConsumer vc, int c, float x, float y, float z, float giro, int luz) {

@@ -62,7 +62,7 @@ public final class AirHockeyCliente {
             ultimo = m;
             cuenta = 0;
         }
-        if (mc.level.getGameTime() % 20 == 0) p.displayClientMessage(Component.translatable("airhockey.miscelanea.ayuda").withStyle(ChatFormatting.AQUA), true);
+        // los controles se ven en el panel de HUD de la mesa (PanelJuego)
     }
 
     @SubscribeEvent

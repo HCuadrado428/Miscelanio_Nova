@@ -1,6 +1,7 @@
 package com.miscelanea.client.domino;
 
 import com.miscelanea.Miscelanea;
+import com.miscelanea.client.juegos.PanelJuego;
 import com.miscelanea.domino.DominoBlock;
 import com.miscelanea.domino.DominoBlockEntity;
 import com.miscelanea.domino.DominoBotones;
@@ -117,13 +118,11 @@ public class DominoRenderer implements BlockEntityRenderer<DominoBlockEntity> {
                 if (!vale) continue;
                 double[] h = cad.hueco[lado < 0 ? 0 : 1];
                 anillo(marca, ps, be, h[0], h[1], 6, 9, p.sel >= 0 ? 0x50FF70 : 0xFFFFFF, (p.sel >= 0 ? 0.7F : 0.35F) + 0.2F * Mth.sin(t * 0.4F));
-                if (p.sel >= 0) {
-                    String n = String.valueOf(p.extremo(lado));
-                    cartel(ps, buf, font, local(be, h[0], h[1]).add(0, 0.08, 0), List.of("▼ " + n), List.of(0xFF80FF90), 0.008F);
-                }
             }
         }
 
+        String verFicha = null;
+        int verCol = PanelJuego.BLANCO;
         // ---------------- manos de pie: la cara mira a su dueño
         for (int i = 0; i < p.js.size(); i++) {
             DominoPartida.Jugador j = p.js.get(i);
@@ -164,8 +163,8 @@ public class DominoRenderer implements BlockEntityRenderer<DominoBlockEntity> {
                 boolean iz = p.encaja(fi, -1), de = p.encaja(fi, 1);
                 String txt = "[" + DominoPartida.A[fi] + "|" + DominoPartida.B[fi] + "] " + I18n.get(!miTurno ? "domino.miscelanea.ver.espera"
                         : iz && de ? "domino.miscelanea.ver.ambos" : iz || de ? "domino.miscelanea.ver.encaja" : "domino.miscelanea.ver.no");
-                double[] q = DominoGeo.mano(j, apunta);
-                cartel(ps, buf, font, local(be, q[0], q[1]).add(0, 0.16, 0), List.of(txt), List.of(iz || de ? 0xFFFFFFFF : 0xFFFF8080), 0.008F);
+                verFicha = txt;
+                verCol = iz || de ? PanelJuego.BLANCO : 0xFFFF8080;
             }
         }
 
@@ -177,8 +176,10 @@ public class DominoRenderer implements BlockEntityRenderer<DominoBlockEntity> {
             tumbada(mr, mm, solido, ps, be, giro, Math.max(0, p.pozo.get(k)), DominoGeo.POZO_X - 9 + col * 18, DominoGeo.POZO_Y - 24 + piso * 8, capa * 0.022,
                     Math.PI / 2, true, luz);
         }
-        if (n > 0 && miro && Math.hypot(DominoCliente.tx - DominoGeo.POZO_X, DominoCliente.ty - DominoGeo.POZO_Y) < 34)
-            cartel(ps, buf, font, local(be, DominoGeo.POZO_X, DominoGeo.POZO_Y).add(0, 0.18, 0), List.of(I18n.get("domino.miscelanea.pozo", n)), List.of(0xFFFFFFFF), 0.009F);
+        if (n > 0 && miro && Math.hypot(DominoCliente.tx - DominoGeo.POZO_X, DominoCliente.ty - DominoGeo.POZO_Y) < 34 && verFicha == null) {
+            verFicha = I18n.get("domino.miscelanea.pozo", n);
+            verCol = PanelJuego.BLANCO;
+        }
 
         // ---------------- botones
         int asiento = p.fase == DominoPartida.JUGAR && p.actual() != null ? p.actual().asiento : 0;
@@ -205,34 +206,28 @@ public class DominoRenderer implements BlockEntityRenderer<DominoBlockEntity> {
             ps.popPose();
         }
 
-        // ---------------- panel
-        if (mc.player == null || mc.player.distanceToSqr(Vec3.atCenterOf(be.getBlockPos())) > 225) return;
-        List<String> lineas = new ArrayList<>();
-        List<Integer> cols = new ArrayList<>();
-        lineas.add(estado(p));
-        cols.add(0xFFFFE070);
-        if (miTurno) {
-            DominoPartida.Jugador j = p.js.get(yo);
-            lineas.add(I18n.get(p.sel >= 0 ? "domino.miscelanea.pista.extremo" : p.puedeJugar(j) ? "domino.miscelanea.pista.ficha"
-                    : !p.pozo.isEmpty() ? "domino.miscelanea.pista.robar" : "domino.miscelanea.pista.pasa"));
-            cols.add(0xFF80E0FF);
-        }
-        int[] colores = {0xFF70B0FF, 0xFFFF9070, 0xFF90E070, 0xFFE0C060};
+        // ---------------- panel de HUD (sustituye al cartel flotante)
+        PanelJuego.Panel pj = PanelJuego.ofrecer(be.getBlockPos(), miro, "block.miscelanea.domino", 0xFFE8E0D0);
+        if (pj == null) return;
+        pj.linea(estado(p), PanelJuego.AMARILLO);
+        if (p.centro >= 0) pj.marcador(p.extremo(-1) + "|" + p.extremo(1), PanelJuego.BLANCO);
+        int[] colores = {0x70B0FF, 0xFF9070, 0x90E070, 0xE0C060};
         for (int i = 0; i < p.js.size(); i++) {
             DominoPartida.Jugador j = p.js.get(i);
-            String extra = p.fase == DominoPartida.FIN ? "  " + I18n.get("domino.miscelanea.puntos", j.puntos()) : "  " + I18n.get("domino.miscelanea.fichas", j.mano.size());
-            lineas.add((i == p.turno && p.fase == DominoPartida.JUGAR ? "▶ " : "") + j.nombre + extra);
-            cols.add(colores[i % 4]);
+            String extra = p.fase == DominoPartida.FIN ? I18n.get("domino.miscelanea.puntos", j.puntos()) : I18n.get("domino.miscelanea.fichas", j.mano.size());
+            pj.jugador(j.nombre, extra, colores[i % 4], i == p.turno && p.fase == DominoPartida.JUGAR);
         }
-        if (p.centro >= 0) {
-            lineas.add(I18n.get("domino.miscelanea.extremos", p.extremo(-1), p.extremo(1)) + "   " + I18n.get("domino.miscelanea.pozo", p.pozo.size()));
-            cols.add(0xFFFFFFFF);
+        if (p.centro >= 0)
+            pj.linea(I18n.get("domino.miscelanea.extremos", p.extremo(-1), p.extremo(1)) + "   " + I18n.get("domino.miscelanea.pozo", p.pozo.size()), PanelJuego.GRIS);
+        if (miTurno) {
+            DominoPartida.Jugador j = p.js.get(yo);
+            pj.detalle(I18n.get(p.sel >= 0 ? "domino.miscelanea.pista.extremo" : p.puedeJugar(j) ? "domino.miscelanea.pista.ficha"
+                    : !p.pozo.isEmpty() ? "domino.miscelanea.pista.robar" : "domino.miscelanea.pista.pasa"), PanelJuego.CIAN);
         }
-        if (!p.log.isEmpty()) {
-            lineas.add(formatear(p.log.get(p.log.size() - 1)));
-            cols.add(0xFFD0D0D0);
-        }
-        cartel(ps, buf, font, new Vec3(0.5, 1.1 + lineas.size() * 0.12, 0.5), lineas, cols, 0.016F);
+        if (verFicha != null) pj.detalle(verFicha, verCol);
+        if (!p.log.isEmpty()) pj.nota(formatear(p.log.get(p.log.size() - 1)));
+        DominoBotones.Boton bot = miro ? DominoBotones.en(p, DominoCliente.tx, DominoCliente.ty) : null;
+        pj.control(PanelJuego.Tecla.USAR, bot != null ? "domino.miscelanea.boton." + bot.clave() : "panel.miscelanea.ctrl.jugar");
     }
 
     private static String estado(DominoPartida p) {
@@ -273,20 +268,6 @@ public class DominoRenderer implements BlockEntityRenderer<DominoBlockEntity> {
             vc.vertex(m, (float) q.x, (float) q.y + dy, (float) q.z).color(r, g, b, a).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(0xF000F0)
                     .normal(n, 0, 1, 0).endVertex();
         }
-    }
-
-    private static void cartel(PoseStack ps, MultiBufferSource buf, Font font, Vec3 donde, List<String> lineas, List<Integer> cols, float esc) {
-        Minecraft mc = Minecraft.getInstance();
-        ps.pushPose();
-        ps.translate(donde.x, donde.y, donde.z);
-        ps.mulPose(mc.getEntityRenderDispatcher().cameraOrientation());
-        ps.scale(-esc, -esc, esc);
-        Matrix4f m = ps.last().pose();
-        for (int i = 0; i < lineas.size(); i++) {
-            String s = lineas.get(i);
-            font.drawInBatch(s, -font.width(s) / 2F, i * 10, cols.get(i), false, m, buf, Font.DisplayMode.NORMAL, 0x80000000, 0xF000F0);
-        }
-        ps.popPose();
     }
 
     private static int mezcla(int a, int b, float k) {

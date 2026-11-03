@@ -9,7 +9,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Sheets;
@@ -28,7 +27,7 @@ import org.joml.Matrix4f;
 
 import java.util.List;
 
-/** Piezas 3D, resaltes (selección, jugadas posibles, última jugada, jaque, casilla apuntada) y el marcador flotante. */
+/** Piezas 3D, resaltes (selección, jugadas posibles, última jugada, jaque, casilla apuntada); el estado de la partida va en el panel de HUD. */
 public class TableroRenderer implements BlockEntityRenderer<TableroBlockEntity> {
     private static int capa;
     public static final String[] PIEZAS = {"peon", "caballo", "alfil", "torre", "dama", "rey", "ficha", "ficha_reina"};
@@ -153,33 +152,24 @@ public class TableroRenderer implements BlockEntityRenderer<TableroBlockEntity> 
             ps.popPose();
         }
 
-        // ---------------- marcador flotante
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.player.distanceToSqr(Vec3.atCenterOf(be.getBlockPos())) > 100) return;
-        String l1 = I18n.get("tablero.miscelanea.modo." + be.modo);
-        String l2;
-        if (rev) l1 += "  ·  ○ " + rv.cuenta(1) + "  ● " + rv.cuenta(3);
-        if (be.resultado == 3) l2 = I18n.get("tablero.miscelanea.tablas");
-        else if (be.resultado != 0) l2 = I18n.get("tablero.miscelanea.gana", be.resultado == 1 ? be.nombreB : be.nombreN);
-        else if (be.blancas == null) l2 = I18n.get("tablero.miscelanea.toca");
-        else {
-            boolean tb = be.turnoBlancas();
-            String quien = tb ? be.nombreB : (be.nombreN.isEmpty() ? "?" : be.nombreN);
-            l2 = I18n.get(tb ? "tablero.miscelanea.turno_blancas" : "tablero.miscelanea.turno_negras", quien) + (jaque ? " · " + I18n.get("tablero.miscelanea.jaque") : "");
+        // ---------------- panel de HUD (antes era un cartel flotante encima del tablero)
+        PanelJuego.Panel pj = PanelJuego.ofrecer(be.getBlockPos(), TableroCliente.apuntado == be, "block.miscelanea.tablero", 0xFFC89A5A);
+        if (pj == null) return;
+        pj.linea(I18n.get("tablero.miscelanea.modo." + be.modo), PanelJuego.AMARILLO);
+        if (rev) pj.marcador("○" + rv.cuenta(1) + " ●" + rv.cuenta(3), PanelJuego.BLANCO);
+        if (be.resultado == 3) pj.linea(I18n.get("tablero.miscelanea.tablas"), PanelJuego.BLANCO);
+        else if (be.resultado != 0) pj.linea(I18n.get("tablero.miscelanea.gana", be.resultado == 1 ? be.nombreB : be.nombreN), PanelJuego.VERDE);
+        else if (be.blancas == null) pj.linea(I18n.get("tablero.miscelanea.toca"), PanelJuego.BLANCO);
+        if (be.blancas != null) {
+            boolean enJuego = be.resultado == 0, tb = be.turnoBlancas();
+            pj.jugador(be.nombreB, I18n.get("panel.miscelanea.tablero.blancas"), 0xF0E8D8, enJuego && tb);
+            pj.jugador(be.nombreN.isEmpty() ? "?" : be.nombreN, I18n.get("panel.miscelanea.tablero.negras"), 0x303030, enJuego && !tb);
         }
-        Font font = mc.font;
-        ps.pushPose();
-        ps.translate(0.5, 0.95, 0.5);
-        ps.mulPose(mc.getEntityRenderDispatcher().cameraOrientation());
-        ps.scale(-0.016F, -0.016F, 0.016F);
-        Matrix4f mx = ps.last().pose();
-        font.drawInBatch(l1, -font.width(l1) / 2F, 0, 0xFFFFE070, false, mx, buf, Font.DisplayMode.NORMAL, 0x60000000, 0xF000F0);
-        font.drawInBatch(l2, -font.width(l2) / 2F, 11, jaque ? 0xFFFF6060 : 0xFFFFFFFF, false, mx, buf, Font.DisplayMode.NORMAL, 0x60000000, 0xF000F0);
-        if (mio) {
-            String l3 = I18n.get(rev ? "tablero.miscelanea.pista_reversi" : "tablero.miscelanea.pista");
-            font.drawInBatch(l3, -font.width(l3) / 2F, 22, 0xFF80E0FF, false, mx, buf, Font.DisplayMode.NORMAL, 0x60000000, 0xF000F0);
-        }
-        ps.popPose();
+        if (jaque) pj.linea(I18n.get("tablero.miscelanea.jaque"), 0xFFFF6060);
+        if (mio) pj.detalle(I18n.get(rev ? "tablero.miscelanea.pista_reversi" : "tablero.miscelanea.pista"), PanelJuego.CIAN);
+        if (be.resultado != 0) pj.control(PanelJuego.Tecla.USAR, "panel.miscelanea.ctrl.otra");
+        else pj.control(PanelJuego.Tecla.USAR, rev ? "panel.miscelanea.ctrl.colocar" : "panel.miscelanea.ctrl.mover_pieza");
+        pj.control(PanelJuego.Tecla.AGACHADO_USAR, "panel.miscelanea.ctrl.cambiar_juego");
     }
 
     static boolean esMiTurno(TableroBlockEntity be) {
