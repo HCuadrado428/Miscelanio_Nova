@@ -32,7 +32,8 @@ public final class IncapCompat {
     /** msgId de todos los tipos de daño de la sala de juegos que deben matar del tirón (añadir aquí los futuros). */
     public static final List<String> MSG_IDS = List.of("miscelanea.trampa_oso", "miscelanea.doncella", "miscelanea.potro",
             "miscelanea.silla_electrica", "miscelanea.collar_explosivo", "miscelanea.pendulo", "miscelanea.inmersion",
-            "miscelanea.interrogatorio", "miscelanea.paro_cardiaco", "miscelanea.colgado");
+            "miscelanea.interrogatorio", "miscelanea.paro_cardiaco", "miscelanea.colgado",
+            "miscelanea.caja_agua", "miscelanea.caja_agua_cuchillas");
 
     private static Boolean cargado;
     private static Field campo;

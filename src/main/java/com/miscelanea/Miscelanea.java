@@ -40,6 +40,7 @@ public class Miscelanea {
         com.miscelanea.tortura.efectos.EfectosRegistro.registrar(modBus);
         com.miscelanea.pociones.PocionesRegistro.registrar(modBus);
         com.miscelanea.voz.VozRegistro.registrar(modBus);
+        com.miscelanea.tortura.saw.SawRegistro.registrar(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::creativeTabs);
@@ -184,6 +185,13 @@ public class Miscelanea {
             event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.MALETIN);
             event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.DIENTE);
             event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.GANCHO_ITEM);
+            // juegos de Jigsaw (Saw)
+            event.accept(com.miscelanea.tortura.saw.SawRegistro.CAJA_AGUA);
+            event.accept(com.miscelanea.tortura.saw.SawRegistro.TANQUE_ITEM);
+            event.accept(com.miscelanea.tortura.saw.SawRegistro.POZO_ITEM);
+            event.accept(com.miscelanea.tortura.saw.SawRegistro.ALAMBRE_ITEM);
+            event.accept(com.miscelanea.tortura.saw.SawRegistro.TENAZAS);
+            event.accept(com.miscelanea.tortura.saw.SawRegistro.SALIDA_ITEM);
         }
         // ---- Pociones y efectos (cada poción con sus variantes: normal, arrojadiza, persistente y flecha)
         if (event.getTabKey() == ModTabs.POCIONES.getKey()) {

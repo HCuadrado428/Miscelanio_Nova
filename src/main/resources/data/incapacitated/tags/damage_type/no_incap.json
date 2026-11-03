@@ -10,6 +10,8 @@
     "miscelanea:inmersion",
     "miscelanea:interrogatorio",
     "miscelanea:paro_cardiaco",
-    "miscelanea:colgado"
+    "miscelanea:colgado",
+    "miscelanea:caja_agua",
+    "miscelanea:caja_agua_cuchillas"
   ]
 }

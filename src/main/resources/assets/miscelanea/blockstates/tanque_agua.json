@@ -1,0 +1,34 @@
+{
+ "variants": {
+  "activo=false,facing=north": {
+   "model": "miscelanea:block/saw/tanque_agua"
+  },
+  "activo=true,facing=north": {
+   "model": "miscelanea:block/saw/tanque_agua_activo"
+  },
+  "activo=false,facing=east": {
+   "model": "miscelanea:block/saw/tanque_agua",
+   "y": 90
+  },
+  "activo=true,facing=east": {
+   "model": "miscelanea:block/saw/tanque_agua_activo",
+   "y": 90
+  },
+  "activo=false,facing=south": {
+   "model": "miscelanea:block/saw/tanque_agua",
+   "y": 180
+  },
+  "activo=true,facing=south": {
+   "model": "miscelanea:block/saw/tanque_agua_activo",
+   "y": 180
+  },
+  "activo=false,facing=west": {
+   "model": "miscelanea:block/saw/tanque_agua",
+   "y": 270
+  },
+  "activo=true,facing=west": {
+   "model": "miscelanea:block/saw/tanque_agua_activo",
+   "y": 270
+  }
+ }
+}
