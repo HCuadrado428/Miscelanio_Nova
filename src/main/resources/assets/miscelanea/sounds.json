@@ -2090,5 +2090,17 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.pociones_pisoton"
+  },
+  "hipo": {
+    "sounds": [
+      "miscelanea:hipo"
+    ],
+    "subtitle": "subtitles.miscelanea.hipo"
+  },
+  "vomito": {
+    "sounds": [
+      "miscelanea:vomito"
+    ],
+    "subtitle": "subtitles.miscelanea.vomito"
   }
 }

@@ -39,6 +39,7 @@ public class Miscelanea {
         com.miscelanea.tortura.aparatos.AparatosRegistro.registrar(modBus);
         com.miscelanea.tortura.efectos.EfectosRegistro.registrar(modBus);
         com.miscelanea.pociones.PocionesRegistro.registrar(modBus);
+        com.miscelanea.voz.VozRegistro.registrar(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::creativeTabs);
@@ -191,6 +192,10 @@ public class Miscelanea {
                     com.miscelanea.tortura.efectos.EfectosRegistro.POCION_FANTASMA_LARGA.get()})
                 event.accept(net.minecraft.world.item.alchemy.PotionUtils.setPotion(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.TIPPED_ARROW), p));
             for (var st : com.miscelanea.pociones.PocionesRegistro.pociones()) event.accept(st);
+            for (var p : com.miscelanea.voz.VozRegistro.FRASCOS_CREATIVO) event.accept(com.miscelanea.voz.VozRegistro.frasco(p));
+            event.accept(com.miscelanea.voz.VozRegistro.arrojadiza(com.miscelanea.voz.VozRegistro.POCION_TARTAMUDEO));
+            event.accept(com.miscelanea.voz.VozRegistro.arrojadiza(com.miscelanea.voz.VozRegistro.POCION_TARTAMUDEO_LARGA));
+            event.accept(com.miscelanea.voz.VozRegistro.arrojadiza(com.miscelanea.voz.VozRegistro.POCION_BORRACHERA));
             // --- pociones (otros paquetes añaden aquí)
         }
         // ---- Varios

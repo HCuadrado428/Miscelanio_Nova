@@ -55,6 +55,14 @@ repositories {
         url = 'https://maven.kosmx.dev/'
     }
     maven {
+        // Simple Voice Chat (API; dependencia opcional, solo para compilar)
+        name = 'Simple Voice Chat'
+        url = 'https://maven.maxhenkel.de/repository/public'
+        content {
+            includeGroup('de.maxhenkel.voicechat')
+        }
+    }
+    maven {
         name = 'GeckoLib'
         url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
         content {
@@ -70,6 +78,9 @@ dependencies {
     implementation fg.deobf("software.bernie.geckolib:geckolib-forge-${minecraft_version}:${geckolib_version}")
     implementation "com.eliotlash.mclib:mclib:${mclib_version}"
     implementation fg.deobf("dev.kosmx.player-anim:player-animation-lib-forge:${player_anim_version}")
+    // API de Simple Voice Chat: solo para compilar el plugin de voz (com.miscelanea.client.voz.plugin). En el juego la
+    // aporta el propio mod voicechat si está instalado; si no está, el plugin nunca se carga.
+    compileOnly "de.maxhenkel.voicechat:voicechat-api:2.5.0"
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
