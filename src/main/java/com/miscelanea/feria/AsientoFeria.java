@@ -153,6 +153,14 @@ public class AsientoFeria extends Entity {
         Montar.encarar(p, getYRot() + mira(i, esPulpo()));
     }
 
+    /** Hacia dónde mira el cuerpo del pasajero p (grados), con el asiento interpolado al fotograma pt. */
+    public float rumboPasajero(Entity p, float pt) {
+        int i = getPassengers().indexOf(p);
+        boolean pulpo = esPulpo();
+        float base = Mth.rotLerp(pt, yRotO, getYRot());
+        return esNoria() || pulpo ? base + mira(Math.max(i, 0), pulpo) : base;
+    }
+
     /** Hacia dónde mira el pasajero respecto a la cabina: en la noria los bancos van frente a frente; en el pulpo el banco
      *  está al fondo de la cesta y se mira hacia delante (hacia el lado abierto). */
     private static float mira(int i, boolean pulpo) {

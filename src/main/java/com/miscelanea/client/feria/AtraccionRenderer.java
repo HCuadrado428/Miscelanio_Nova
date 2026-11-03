@@ -156,8 +156,8 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
         int seg = 16;
         // plataforma de tablas
         for (int k = 0; k < seg; k++) {
-            double a = ang + 2 * Math.PI * (k + 0.5) / seg;
-            FeriaPiezas.barra(ps, vc, k % 2 == 0 ? "madera_a" : "madera_b", cx, 0.12, cz, cx + Math.cos(a) * R, 0.12, cz + Math.sin(a) * R, 0.22F, 1.45F, luz);
+            double a0 = ang + 2 * Math.PI * k / seg, a1 = ang + 2 * Math.PI * (k + 1) / seg;
+            FeriaPiezas.cuna(ps, vc, k % 2 == 0 ? "madera_a" : "madera_b", cx, cz, a0, a1, R, 0.01, 0.23, luz);
         }
         for (int k = 0; k < seg; k++) {
             double a0 = ang + 2 * Math.PI * k / seg, a1 = ang + 2 * Math.PI * (k + 1) / seg;
@@ -168,8 +168,8 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
         for (int k = 0; k < 6; k++)
             FeriaPiezas.barra(ps, vc, k % 2 == 0 ? "metal_rojo" : "dorado", cx, 1.4 + k * 0.6, cz, cx, 1.7 + k * 0.6, cz, 0.78F, 0.78F, luz);
         for (int k = 0; k < seg; k++) {
-            double a = ang + 2 * Math.PI * (k + 0.5) / seg;
-            FeriaPiezas.barra(ps, vc, k % 2 == 0 ? "lona_roja" : "lona_blanca", cx, punta, cz, cx + Math.cos(a) * RT, techo, cz + Math.sin(a) * RT, 0.08F, 1.6F, luz);
+            double a0 = ang + 2 * Math.PI * k / seg, a1 = ang + 2 * Math.PI * (k + 1) / seg;
+            FeriaPiezas.cuna(ps, vc, k % 2 == 0 ? "lona_roja" : "lona_blanca", cx, cz, a0, a1, RT, techo - 0.04, techo + 0.04, punta - techo, luz);
         }
         for (int k = 0; k < seg; k++) {
             double a0 = ang + 2 * Math.PI * k / seg, a1 = ang + 2 * Math.PI * (k + 1) / seg;

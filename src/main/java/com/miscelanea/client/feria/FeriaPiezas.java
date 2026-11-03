@@ -74,6 +74,60 @@ public final class FeriaPiezas {
         ps.popPose();
     }
 
+    /**
+     * Porción de tarta (sector circular con grosor) entre los ángulos a0 y a1, de radio r, entre las alturas y0 e y1.
+     * Para suelos redondos: las porciones encajan sin pisarse (antes las tablas se cruzaban y parpadeaban).
+     */
+    public static void cuna(PoseStack ps, VertexConsumer vc, String tex, double cx, double cz, double a0, double a1, double r,
+                            double y0, double y1, int luz) {
+        cuna(ps, vc, tex, cx, cz, a0, a1, r, y0, y1, 0, luz);
+    }
+
+    /** Igual, pero el centro {@code subida} más alto que el borde: un cono (el toldo del tiovivo). */
+    public static void cuna(PoseStack ps, VertexConsumer vc, String tex, double cx, double cz, double a0, double a1, double r,
+                            double y0, double y1, double subida, int luz) {
+        net.minecraft.client.renderer.texture.TextureAtlasSprite sp = Minecraft.getInstance()
+                .getTextureAtlas(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS)
+                .apply(new ResourceLocation(Miscelanea.MOD_ID, "block/feria/" + tex));
+        double ri = 0.02;
+        double c0 = Math.cos(a0), s0 = Math.sin(a0), c1 = Math.cos(a1), s1 = Math.sin(a1);
+        double[] i0 = {cx + c0 * ri, cz + s0 * ri}, i1 = {cx + c1 * ri, cz + s1 * ri};
+        double[] p0 = {cx + c0 * r, cz + s0 * r}, p1 = {cx + c1 * r, cz + s1 * r};
+        double am = (a0 + a1) / 2;
+        // arriba y abajo: la veta va del centro hacia fuera
+        double yc1 = y1 + subida, yc0 = y0 + subida;
+        quad(ps, vc, sp, luz, 0, 1, 0,
+                new double[]{i0[0], yc1, i0[1], 0, 8}, new double[]{p0[0], y1, p0[1], 16, 0},
+                new double[]{p1[0], y1, p1[1], 16, 16}, new double[]{i1[0], yc1, i1[1], 0, 8});
+        quad(ps, vc, sp, luz, 0, -1, 0,
+                new double[]{i0[0], yc0, i0[1], 0, 8}, new double[]{p0[0], y0, p0[1], 16, 0},
+                new double[]{p1[0], y0, p1[1], 16, 16}, new double[]{i1[0], yc0, i1[1], 0, 8});
+        // canto exterior
+        double h = (y1 - y0) * 16;
+        quad(ps, vc, sp, luz, (float) Math.cos(am), 0, (float) Math.sin(am),
+                new double[]{p0[0], y0, p0[1], 0, 8 + h / 2}, new double[]{p1[0], y0, p1[1], 16, 8 + h / 2},
+                new double[]{p1[0], y1, p1[1], 16, 8 - h / 2}, new double[]{p0[0], y1, p0[1], 0, 8 - h / 2});
+    }
+
+    /** Cuadrilátero {x, y, z, u, v} con normal n; se le da la vuelta si hace falta para que mire hacia n. */
+    private static void quad(PoseStack ps, VertexConsumer vc, net.minecraft.client.renderer.texture.TextureAtlasSprite sp, int luz,
+                             float nx, float ny, float nz, double[]... v) {
+        double ax = v[1][0] - v[0][0], ay = v[1][1] - v[0][1], az = v[1][2] - v[0][2];
+        double bx = v[2][0] - v[0][0], by = v[2][1] - v[0][1], bz = v[2][2] - v[0][2];
+        double cxn = ay * bz - az * by, cyn = az * bx - ax * bz, czn = ax * by - ay * bx;
+        boolean al_reves = cxn * nx + cyn * ny + czn * nz < 0;
+        // sombreado sencillo como el de los bloques: arriba 1, lados 0,8, abajo 0,5
+        float sombra = ny > 0.5F ? 1F : ny < -0.5F ? 0.5F : 0.8F;
+        org.joml.Matrix4f m = ps.last().pose();
+        org.joml.Matrix3f nm = ps.last().normal();
+        for (int k = 0; k < 4; k++) {
+            double[] p = v[al_reves ? 3 - k : k];
+            vc.vertex(m, (float) p[0], (float) p[1], (float) p[2]).color(sombra, sombra, sombra, 1F)
+                    .uv(sp.getU(p[3]), sp.getV(p[4])).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(luz)
+                    .normal(nm, nx, ny, nz).endVertex();
+        }
+    }
+
     /** Caja de tamaño sx, sy, sz centrada en (cx, cy, cz), sin girar. */
     public static void caja(PoseStack ps, VertexConsumer vc, String tex, double cx, double cy, double cz, double sx, double sy, double sz, int luz) {
         ps.pushPose();
