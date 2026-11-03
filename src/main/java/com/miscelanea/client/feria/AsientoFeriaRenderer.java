@@ -14,6 +14,9 @@ import net.minecraft.util.Mth;
 
 /** Cabina de la noria o caballito del tiovivo, en el sitio exacto que da la atracción para este fotograma. */
 public class AsientoFeriaRenderer extends EntityRenderer<AsientoFeria> {
+    /** A partir de esta distancia las cápsulas, tazas y caballitos se dibujan con la malla sencilla. */
+    private static final double LEJOS = 20;
+
     public AsientoFeriaRenderer(EntityRendererProvider.Context c) {
         super(c);
         shadowRadius = 0;
@@ -28,22 +31,30 @@ public class AsientoFeriaRenderer extends EntityRenderer<AsientoFeria> {
         ps.mulPose(Axis.YP.rotationDegrees(-Mth.rotLerp(pt, e.yRotO, e.getYRot())));
         var vc = buf.getBuffer(Sheets.cutoutBlockSheet());
         int c = e.indice() % 4;
+        boolean lejos = entityRenderDispatcher.distanceToSqr(e) > LEJOS * LEJOS;
         if (e.esPulpo()) {
-            // cesta para dos: más ancha que un bloque
-            ps.scale(1.6F, 1.0F, 1.6F);
-            ps.translate(-0.5, 0, -0.5);
-            FeriaPiezas.modelo(ps, vc, FeriaPiezas.rl("cesta" + c), 1, 1, 1, luz);
-        } else if (e.esNoria()) {
-            // un leve balanceo al girar
+            // taza para dos con banco al fondo, volante y luces en el borde (malla)
             float t = (float) (e.level().getGameTime() % 100000L) + pt;
-            ps.translate(0, 3.0, 0);
-            ps.mulPose(Axis.XP.rotationDegrees((b.gira ? 2.5F : 0.6F) * Mth.sin(t * 0.07F + e.indice())));
-            ps.scale(2, 2, 2);
-            ps.translate(-0.5, -1.5, -0.5);
-            FeriaPiezas.modelo(ps, vc, FeriaPiezas.CABINA[c], 1, 1, 1, luz);
+            boolean gira = b.gira;
+            int k0 = e.indice() * 2;
+            MallaRecurso.horneada(lejos ? "cesta_lejos" : "cesta", c, false).emitir(vc, ps.last(), luz, null);
+            MallaRecurso.horneada(lejos ? "cesta_lejos" : "cesta", c, true).emitir(vc, ps.last(), 0xF000F0, k -> FeriaPiezas.luz(k + k0, t, gira));
+        } else if (e.esNoria()) {
+            // cápsula en forma de huevo abierto por delante y por detrás (malla horneada, ver MallaRecurso). Cuelga del
+            // gancho (3 bloques por encima de la entidad) y se balancea un poco en el plano de la rueda
+            float t = (float) (e.level().getGameTime() % 100000L) + pt;
+            float alto = (float) AtraccionBlockEntity.ALTO_CABINA;
+            ps.translate(0, alto, 0);
+            ps.mulPose(Axis.ZP.rotationDegrees((b.gira ? 1.8F : 0.5F) * Mth.sin(t * 0.07F + e.indice())));
+            ps.translate(0, -alto, 0);
+            String n = lejos ? "capsula_lejos" : "capsula";
+            MallaRecurso.horneada(n, c, false).emitir(vc, ps.last(), luz, null);
+            boolean gira = b.gira;
+            int k0 = e.indice() * 3;
+            MallaRecurso.horneada(n, c, true).emitir(vc, ps.last(), 0xF000F0, k -> FeriaPiezas.luz(k + k0, t, gira));
         } else {
-            ps.translate(-0.5, 0, -0.5);
-            FeriaPiezas.modelo(ps, vc, FeriaPiezas.CABALLO[c], 1, 1, 1, luz);
+            // caballito al galope (malla): la barra del tiovivo pasa por su cruz, delante de la silla
+            MallaRecurso.horneada(lejos ? "caballo_lejos" : "caballo", c, false).emitir(vc, ps.last(), luz, null);
         }
         ps.popPose();
         super.render(e, yaw, pt, ps, buf, luz);

@@ -13,17 +13,16 @@ import net.minecraftforge.client.model.data.ModelData;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Piezas sueltas de la feria (barras, bombillas, cabinas, caballitos, coches) y cómo dibujarlas. */
+/** Piezas sueltas de la feria (barras, bombillas, coches...) y cómo dibujarlas. Las cápsulas de la noria, los caballitos,
+ *  las tazas del pulpo y otras piezas redondas son mallas aparte ({@link MallaRecurso}). */
 public final class FeriaPiezas {
     public static final String[] BARRAS = {"metal_blanco", "metal_rojo", "dorado", "madera_a", "madera_b", "lona_roja", "lona_blanca", "agua", "torre0", "torre1", "torre2", "negro", "cromo"};
     public static final ResourceLocation BOMBILLA = rl("bombilla");
-    public static final ResourceLocation[] CABINA = new ResourceLocation[4], CABALLO = new ResourceLocation[4], COCHE = new ResourceLocation[4];
-    public static final String[] SUELTOS = {"bruja", "esqueleto", "calabaza", "fantasma", "ojos", "vagoneta", "pato", "pato_oro", "diana", "nube", "palomita", "capsula", "simbolo0", "simbolo1", "simbolo2", "simbolo3", "simbolo4", "bolo", "bola", "dardo", "trozo", "balon", "cesta0", "cesta1", "cesta2", "cesta3", "bola_petanca", "boliche", "tablero", "escala0", "escala1", "escala2", "escala3", "escala4", "saco", "mazo", "campana"};
+    public static final ResourceLocation[] COCHE = new ResourceLocation[4];
+    public static final String[] SUELTOS = {"bruja", "esqueleto", "calabaza", "fantasma", "ojos", "vagoneta", "pato", "pato_oro", "diana", "nube", "palomita", "capsula", "simbolo0", "simbolo1", "simbolo2", "simbolo3", "simbolo4", "bolo", "bola", "dardo", "trozo", "balon", "bola_petanca", "boliche", "tablero", "escala0", "escala1", "escala2", "escala3", "escala4", "saco", "mazo", "campana"};
 
     static {
         for (int i = 0; i < 4; i++) {
-            CABINA[i] = rl("cabina" + i);
-            CABALLO[i] = rl("caballo" + i);
             COCHE[i] = rl("coche" + i);
         }
     }
@@ -45,8 +44,6 @@ public final class FeriaPiezas {
         for (String n : SUELTOS) l.add(rl(n));
         for (int i = 0; i < 4; i++) l.add(new ResourceLocation(Miscelanea.MOD_ID, "block/peluche" + i));
         for (int i = 0; i < 4; i++) {
-            l.add(CABINA[i]);
-            l.add(CABALLO[i]);
             l.add(COCHE[i]);
         }
         return l;

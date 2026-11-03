@@ -134,7 +134,8 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
         ps.translate(cx, hub, cz);
         ps.mulPose(Axis.YP.rotation(-ang));
         p.cabeza.emitir(vc, ps.last(), luz, null);
-        p.cabezaLuces.emitir(vc, ps.last(), PLENA, null);
+        boolean gira = be.gira;
+        p.cabezaLuces.emitir(vc, ps.last(), PLENA, k -> FeriaPiezas.luz(k, t, gira));
         ps.popPose();
         // brazos: suben y bajan cada uno a su aire, se siguen dibujando al vuelo (son pocos)
         int n = be.asientos();
@@ -163,6 +164,15 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
     }
 
     // ------------------------------------------------------------------ grabación (una vez por tipo / orientación)
+    /** Pasa una malla de {@link MallaRecurso} (hecha mirando al sur) puesta en (x, y, z) y girada hacia {@code f}. */
+    private static void malla(PoseStack ps, VertexConsumer vc, String nombre, Direction f, double x, double y, double z, boolean luces) {
+        ps.pushPose();
+        ps.translate(x, y, z);
+        ps.mulPose(Axis.YP.rotationDegrees(-f.toYRot()));
+        MallaRecurso.dibujar(ps, vc, nombre, 0, luces);
+        ps.popPose();
+    }
+
     /** Las mismas piezas que antes se dibujaban cada fotograma, con la rueda en el ángulo 0 y la luz sin poner. */
     private static Piezas noria(Direction f, int n) {
         Direction u = f.getClockWise();
@@ -185,6 +195,8 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
             }
             FeriaPiezas.barra(ps, vc, "dorado", cx - fx * (w + 0.8), cy, cz - fz * (w + 0.8), cx + fx * (w + 0.8), cy, cz + fz * (w + 0.8), 0.55F, 0.55F, luz);
             FeriaPiezas.barra(ps, vc, "metal_rojo", cx - fx * (w + 0.1), cy, cz - fz * (w + 0.1), cx + fx * (w + 0.1), cy, cz + fz * (w + 0.1), 1.1F, 1.1F, luz);
+            // tarima de embarque con barandillas, taquilla y farolas
+            malla(ps, vc, "noria_base", f, cx, 0, cz, false);
         });
         // escalera en zigzag de las patas
         p.fijaFina = grabar((ps, vc) -> {
@@ -221,6 +233,8 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
                 double px = cx + ux * Math.cos(a) * R, py = cy + Math.sin(a) * R, pz = cz + uz * Math.cos(a) * R;
                 FeriaPiezas.barra(ps, vc, "dorado", px - fx * w, py, pz - fz * w, px + fx * w, py, pz + fz * w, 0.2F, 0.2F, luz);
             }
+            // rosetas de pétalos en las dos caras del buje (la malla está hecha para 10 radios)
+            if (n == 10) malla(ps, vc, "noria_buje", f, cx, cy, cz, false);
         });
         // zigzag entre aros y tirantes finos entre las caras
         p.giraFina = grabar((ps, vc) -> {
@@ -234,9 +248,11 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
                             cx + ox + ux * Math.cos(a + 2 * Math.PI / n) * R * 0.45, cy + Math.sin(a + 2 * Math.PI / n) * R * 0.45, cz + oz + uz * Math.cos(a + 2 * Math.PI / n) * R * 0.45, 0.1F, 0.1F, luz);
                 }
             }
+            // tirantes entre las dos caras: en el aro interior (a 0,93 R chocaban con las cápsulas, que cuelgan 3,4 bloques
+            // del gancho y barren un círculo de ese radio alrededor de él)
             for (int k = 0; k < n; k++) {
                 double b = ang + 2 * Math.PI * k / n + Math.PI / n;
-                double qx = cx + ux * Math.cos(b) * R * 0.93, qy = cy + Math.sin(b) * R * 0.93, qz = cz + uz * Math.cos(b) * R * 0.93;
+                double qx = cx + ux * Math.cos(b) * R * 0.45, qy = cy + Math.sin(b) * R * 0.45, qz = cz + uz * Math.cos(b) * R * 0.45;
                 FeriaPiezas.barra(ps, vc, "metal_blanco", qx - fx * w, qy, qz - fz * w, qx + fx * w, qy, qz + fz * w, 0.12F, 0.12F, luz);
             }
         });
@@ -250,6 +266,7 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
                     FeriaPiezas.bombilla(ps, vc, cx + ox + ux * Math.cos(a) * R, cy + Math.sin(a) * R, cz + oz + uz * Math.cos(a) * R, 0.2F, 0xFFFFFF);
                 }
             }
+            if (n == 10) malla(ps, vc, "noria_buje", f, cx, cy, cz, true);
         });
         p.lucesFinas = grabar((ps, vc) -> {
             for (int cara = -1; cara <= 1; cara += 2) {
@@ -277,6 +294,8 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
                 vc.etiqueta = cara + 2;
                 FeriaPiezas.bombilla(ps, vc, cx + fx * cara * (w + 0.62), cy, cz + fz * cara * (w + 0.62), 0.6F, 0xFFFFFF);
             }
+            // bombillas de la taquilla y farolas
+            malla(ps, vc, "noria_base", f, cx, 0, cz, true);
         });
         return p;
     }
@@ -293,21 +312,11 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
                 FeriaPiezas.barra(ps, vc, "metal_blanco", cx, 0.12, cz, cx + Math.cos(a0 + 0.39) * 1.55, 0.12, cz + Math.sin(a0 + 0.39) * 1.55, 0.2F, 0.9F, luz);
             }
             FeriaPiezas.barra(ps, vc, "metal_rojo", cx, 0.2, cz, cx, hub, cz, 0.9F, 0.9F, luz);
-            for (int k = 0; k < 5; k++) FeriaPiezas.barra(ps, vc, "dorado", cx, 0.6 + k * 0.6, cz, cx, 0.75 + k * 0.6, cz, 1.0F, 1.0F, luz);
+            for (int k = 0; k < 7; k++) FeriaPiezas.barra(ps, vc, "dorado", cx, 0.6 + k * 0.6, cz, cx, 0.75 + k * 0.6, cz, 1.0F, 1.0F, luz);
         });
-        // cabeza (en coordenadas de la cabeza: se emite trasladada al buje y girada)
-        p.cabeza = grabar((ps, vc) -> {
-            FeriaPiezas.caja(ps, vc, "metal_rojo", 0, 0.3, 0, 1.6, 0.6, 1.6, luz);
-            FeriaPiezas.caja(ps, vc, "dorado", 0, 0.75, 0, 1.2, 0.4, 1.2, luz);
-            FeriaPiezas.caja(ps, vc, "metal_rojo", 0, 1.05, 0, 0.7, 0.3, 0.7, luz);
-        });
-        p.cabezaLuces = grabar((ps, vc) -> {
-            for (int k = 0; k < 4; k++) {
-                double a = k * Math.PI / 2;
-                FeriaPiezas.bombilla(ps, vc, Math.cos(a) * 0.82, 0.5, Math.sin(a) * 0.82, 0.22F, 0xFFFFFF);
-                FeriaPiezas.bombilla(ps, vc, Math.cos(a) * 0.9, 0.5, Math.sin(a) * 0.9, 0.1F, 0x101020);
-            }
-        });
+        // cabeza (en coordenadas de la cabeza: se emite trasladada al buje y girada): pulpo con ojos, faldón y gorra
+        p.cabeza = grabar((ps, vc) -> MallaRecurso.dibujar(ps, vc, "pulpo_cabeza", 0, false));
+        p.cabezaLuces = grabar((ps, vc) -> MallaRecurso.dibujar(ps, vc, "pulpo_cabeza", 0, true));
         return p;
     }
 
@@ -317,12 +326,8 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
         double ang = 0;
         int luz = PLENA;
         Piezas p = new Piezas();
-        // mástil central (no gira: así se veía antes)
-        p.fija = grabar((ps, vc) -> {
-            FeriaPiezas.barra(ps, vc, "metal_blanco", cx, 1, cz, cx, punta, cz, 0.7F, 0.7F, luz);
-            for (int k = 0; k < 6; k++)
-                FeriaPiezas.barra(ps, vc, k % 2 == 0 ? "metal_rojo" : "dorado", cx, 1.4 + k * 0.6, cz, cx, 1.7 + k * 0.6, cz, 0.78F, 0.78F, luz);
-        });
+        // columna central (no gira): tambor de espejos, paneles pintados y cornisas doradas con bombillas
+        p.fija = grabar((ps, vc) -> malla(ps, vc, "tiovivo_columna", Direction.SOUTH, cx, 0, cz, false));
         p.gira = grabar((ps, vc) -> {
             // plataforma de tablas: porciones de tarta que no se pisan (sin parpadeo)
             for (int k = 0; k < seg; k++) {
@@ -338,11 +343,8 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
                 double a0 = ang + 2 * Math.PI * k / seg, a1 = ang + 2 * Math.PI * (k + 1) / seg;
                 FeriaPiezas.cuna(ps, vc, k % 2 == 0 ? "lona_roja" : "lona_blanca", cx, cz, a0, a1, RT, techo - 0.04, techo + 0.04, punta - techo, luz);
             }
-            for (int k = 0; k < seg; k++) {
-                double a0 = ang + 2 * Math.PI * k / seg, a1 = ang + 2 * Math.PI * (k + 1) / seg;
-                String c = k % 2 == 0 ? "lona_roja" : "lona_blanca";
-                FeriaPiezas.barra(ps, vc, c, cx + Math.cos(a0) * RT, techo - 0.25, cz + Math.sin(a0) * RT, cx + Math.cos(a1) * RT, techo - 0.25, cz + Math.sin(a1) * RT, 0.5F, 0.06F, luz);
-            }
+            // cenefa festoneada con espejitos y crestería dorada alrededor del toldo
+            malla(ps, vc, "tiovivo_cenefa", Direction.SOUTH, cx, 0, cz, false);
             // barras doradas de los caballitos (los caballitos son las entidades que suben y bajan)
             for (int k = 0; k < n; k++) {
                 double a = ang + 2 * Math.PI * k / n;
@@ -350,11 +352,13 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
                 FeriaPiezas.barra(ps, vc, "dorado", x, 0.25, z, x, techo - 0.1, z, 0.1F, 0.1F, luz);
             }
         });
-        // cenefa dorada fina bajo el toldo
+        // los collarines de latón de las barras de los caballitos (de cerca)
         p.giraFina = grabar((ps, vc) -> {
-            for (int k = 0; k < seg; k++) {
-                double a0 = ang + 2 * Math.PI * k / seg, a1 = ang + 2 * Math.PI * (k + 1) / seg;
-                FeriaPiezas.barra(ps, vc, "dorado", cx + Math.cos(a0) * RT, techo - 0.52, cz + Math.sin(a0) * RT, cx + Math.cos(a1) * RT, techo - 0.52, cz + Math.sin(a1) * RT, 0.06F, 0.08F, luz);
+            for (int k = 0; k < n; k++) {
+                double a = ang + 2 * Math.PI * k / n;
+                double x = cx + Math.cos(a) * 2.6, z = cz + Math.sin(a) * 2.6;
+                FeriaPiezas.caja(ps, vc, "dorado", x, 0.3, z, 0.2, 0.1, 0.2, luz);
+                FeriaPiezas.caja(ps, vc, "dorado", x, techo - 0.2, z, 0.2, 0.12, 0.2, luz);
             }
         });
         p.luces = grabar((ps, vc) -> {
@@ -367,6 +371,7 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
         p.centro = grabar((ps, vc) -> {
             vc.etiqueta = 1;
             FeriaPiezas.bombilla(ps, vc, cx, punta + 0.25, cz, 0.45F, 0xFFFFFF);
+            malla(ps, vc, "tiovivo_columna", Direction.SOUTH, cx, 0, cz, true);
         });
         return p;
     }
