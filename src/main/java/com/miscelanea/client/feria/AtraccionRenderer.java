@@ -234,9 +234,11 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
                             cx + ox + ux * Math.cos(a + 2 * Math.PI / n) * R * 0.45, cy + Math.sin(a + 2 * Math.PI / n) * R * 0.45, cz + oz + uz * Math.cos(a + 2 * Math.PI / n) * R * 0.45, 0.1F, 0.1F, luz);
                 }
             }
+            // tirantes entre las dos caras: en el aro interior (a 0,93 R chocaban con las cápsulas, que cuelgan 3,4 bloques
+            // del gancho y barren un círculo de ese radio alrededor de él)
             for (int k = 0; k < n; k++) {
                 double b = ang + 2 * Math.PI * k / n + Math.PI / n;
-                double qx = cx + ux * Math.cos(b) * R * 0.93, qy = cy + Math.sin(b) * R * 0.93, qz = cz + uz * Math.cos(b) * R * 0.93;
+                double qx = cx + ux * Math.cos(b) * R * 0.45, qy = cy + Math.sin(b) * R * 0.45, qz = cz + uz * Math.cos(b) * R * 0.45;
                 FeriaPiezas.barra(ps, vc, "metal_blanco", qx - fx * w, qy, qz - fz * w, qx + fx * w, qy, qz + fz * w, 0.12F, 0.12F, luz);
             }
         });
