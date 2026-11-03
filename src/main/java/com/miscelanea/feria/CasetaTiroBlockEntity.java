@@ -171,6 +171,10 @@ public class CasetaTiroBlockEntity extends BlockEntity {
             } else p.displayClientMessage(Component.translatable("miscelanea.tiro.otra"), false);
             if (!premio.isEmpty() && !p.getInventory().add(premio)) p.drop(premio, false);
         }
+        if (be.puntos >= 8 && l instanceof ServerLevel sl) {
+            FeriaJuice.confeti(sl, be.mundo(0, 1.3, -0.2), be.puntos >= 20 ? 2 : 1);
+            l.playSound(null, pos, ModSounds.FE_PREMIO.get(), SoundSource.BLOCKS, 0.9F, 1F);
+        }
         l.playSound(null, pos, ModSounds.FE_PARA.get(), SoundSource.BLOCKS, 0.6F, 1.4F);
         be.cambio();
     }

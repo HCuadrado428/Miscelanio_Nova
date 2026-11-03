@@ -5,19 +5,19 @@ import com.miscelanea.feria.CasetaTiroBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 import static com.miscelanea.feria.CasetaTiroBlockEntity.*;
 
-/** La caseta: lonas a rayas, toldo con bombillas, cartel con puntos y tiempo, fila de patos y fila de dianas. */
+/**
+ * La caseta: la estructura (lonas, toldo festoneado, telón, cartel, estantes y pósteres) es un modelo a media escala;
+ * aquí se mueve lo demás: patos y dianas, ristras de bombillas, marcador de dígitos LED y peluches de premio.
+ */
 public class CasetaTiroRenderer implements BlockEntityRenderer<CasetaTiroBlockEntity> {
     public static final ResourceLocation[] PELUCHE = new ResourceLocation[4];
 
@@ -25,15 +25,21 @@ public class CasetaTiroRenderer implements BlockEntityRenderer<CasetaTiroBlockEn
         for (int i = 0; i < 4; i++) PELUCHE[i] = new ResourceLocation(Miscelanea.MOD_ID, "block/peluche" + i);
     }
 
-    private final Font font;
+    /** Medidas de la estructura (las mismas que en el modelo). */
+    private static final double XW = 1.78, ZF = -0.42, ZB = 3.08, TECHO = 3.36;
+    /** Tics que dura la celebración al acabar una partida con premio. */
+    private static final int FIESTA = 80;
 
-    public CasetaTiroRenderer(BlockEntityRendererProvider.Context c) {
-        font = c.getFont();
-    }
+    public CasetaTiroRenderer(BlockEntityRendererProvider.Context c) {}
 
     @Override
     public boolean shouldRenderOffScreen(CasetaTiroBlockEntity be) {
         return true;
+    }
+
+    @Override
+    public int getViewDistance() {
+        return 96;
     }
 
     @Override
@@ -43,53 +49,55 @@ public class CasetaTiroRenderer implements BlockEntityRenderer<CasetaTiroBlockEn
         long ahoraL = be.getLevel().getGameTime();
         float t = ahoraL + pt;
         boolean activa = be.activa(ahoraL);
+        float trasFin = ahoraL - (be.inicio + DURA) + pt;
+        boolean fiesta = !activa && trasFin >= 0 && trasFin < FIESTA && be.puntos >= 8;
+        int modo = fiesta ? PuestosPiezas.PREMIO : activa ? PuestosPiezas.JUEGO : PuestosPiezas.REPOSO;
         int brillo = Math.max(luz & 0xFFFF, 0xB0) | (luz & 0xFFFF0000);
         ps.pushPose();
         ps.translate(0.5, 0, 0.5);
         ps.mulPose(Axis.YP.rotation(giro(be.facing())));
-        // estructura
-        for (int lado = -1; lado <= 1; lado += 2) {
-            FeriaPiezas.caja(ps, vc, "metal_rojo", lado * 1.75, 1.7, 0.45, 0.14, 3.4, 0.14, brillo);
-            FeriaPiezas.caja(ps, vc, "metal_rojo", lado * 1.75, 1.7, 3.05, 0.14, 3.4, 0.14, brillo);
-            FeriaPiezas.caja(ps, vc, "lona_roja", lado * 1.75, 1.5, 1.75, 0.06, 3.0, 2.6, brillo);
-            // estante de premios
-            FeriaPiezas.caja(ps, vc, "madera_a", lado * 1.5, 2.55, 1.0, 0.4, 0.06, 0.9, brillo);
-            for (int k = 0; k < 2; k++) {
-                ps.pushPose();
-                ps.translate(lado * 1.5, 2.58, 0.8 + k * 0.45);
-                ps.mulPose(Axis.YP.rotationDegrees(lado * -70));
-                ps.scale(0.55F, 0.55F, 0.55F);
-                ps.translate(-0.5, 0, -0.5);
-                FeriaPiezas.modelo(ps, vc, PELUCHE[(k + (lado > 0 ? 2 : 0)) % 4], 1, 1, 1, brillo);
-                ps.popPose();
-            }
+        // estructura: modelo a media escala (1 px = 1/8 de bloque) desplazado a (0, 1, 1)
+        ps.pushPose();
+        ps.translate(0, 1, 1);
+        PuestosPiezas.modelo(ps, vc, PuestosPiezas.CASETA, 2, brillo);
+        ps.popPose();
+        // bombillas: faldón del toldo, marco del cartel, mostradores y el mostrador central
+        PuestosPiezas.ristra(ps, vc, -XW, TECHO - 0.03, ZF - 0.17, XW, TECHO - 0.03, ZF - 0.17, 15, 0.09F, t, modo, 0);
+        double sy0 = TECHO + 0.2, sy1 = sy0 + 2.6 * 48 / 128, sz = ZF + 0.0;
+        PuestosPiezas.ristra(ps, vc, 1.24, sy1 - 0.02, sz, -1.24, sy1 - 0.02, sz, 13, 0.07F, t, modo, 3);
+        PuestosPiezas.ristra(ps, vc, -1.24, sy0 + 0.04, sz, 1.24, sy0 + 0.04, sz, 13, 0.07F, t, modo, 16);
+        for (int s = -1; s <= 1; s += 2) {
+            PuestosPiezas.ristra(ps, vc, s * 1.24, sy0 + 0.2, sz, s * 1.24, sy1 - 0.18, sz, 3, 0.07F, t, modo, s > 0 ? 0 : 29);
+            PuestosPiezas.ristra(ps, vc, s * 0.62, 0.66, ZF + 0.07, s * 1.62, 0.66, ZF + 0.07, 5, 0.06F, t, modo, s > 0 ? 20 : 25);
         }
-        for (int i = 0; i < 7; i++) {
-            double x = -1.75 + 0.25 + i * 0.5;
-            String c = i % 2 == 0 ? "lona_roja" : "lona_blanca";
-            FeriaPiezas.caja(ps, vc, c, x, 1.6, 3.05, 0.5, 3.2, 0.06, brillo);
-            FeriaPiezas.caja(ps, vc, c, x, 3.38, 1.4, 0.5, 0.08, 3.4, brillo);
-            FeriaPiezas.caja(ps, vc, c, x, 3.15, -0.3, 0.5, 0.42, 0.06, brillo);
-            FeriaPiezas.bombilla(ps, vc, x, 2.9, -0.34, 0.14F, FeriaPiezas.luz(i, t, activa));
-        }
-        // filas de blancos
-        FeriaPiezas.caja(ps, vc, "madera_b", 0, PATO_Y - 0.05, PATO_Z, ANCHO, 0.1, 0.25, brillo);
-        FeriaPiezas.caja(ps, vc, "agua", 0, PATO_Y + 0.07, PATO_Z - 0.2, ANCHO, 0.24, 0.05, brillo);
-        FeriaPiezas.caja(ps, vc, "metal_blanco", 0, DIANA_Y, DIANA_Z + 0.06, ANCHO, 0.06, 0.06, brillo);
+        PuestosPiezas.ristra(ps, vc, -0.42, 0.55, -0.485, 0.42, 0.55, -0.485, 5, 0.06F, t, modo, 7);
+        // marcador LED del fondo: puntos, tiempo y récord
+        double mz = ZB - 0.106, my = 2.9, mh = 0.2;
+        int seg = activa ? (int) Math.max(0, (DURA - (ahoraL - be.inicio)) / 20) : 0;
+        boolean prisa = activa && seg <= 5 && ((int) (t / 4) & 1) == 0;
+        String puntos = fiesta && ((int) (t / 4) & 1) == 1 ? "   " : tres(be.puntos);
+        PuestosPiezas.led(ps, vc, puntos, 0.79, my, mz, mh, 0xFF5028, true);
+        PuestosPiezas.led(ps, vc, activa ? (prisa ? "  " : dos(seg)) : "--", 0.02, my, mz, mh, 0x50FF70, true);
+        PuestosPiezas.led(ps, vc, tres(be.record), -0.76, my, mz, mh, 0xFFD040, true);
+        // filas de blancos (los patos cabecean, las dianas se balancean)
         for (int k = 0; k < BLANCOS; k++) {
             double x = CasetaTiroBlockEntity.x(k, t);
             if (Math.abs(x) > VISIBLE) continue;
             float caida = t - be.caido[k];
             if (caida >= 8 && caida < VUELVE) continue;
             float giro = caida < 8 ? Math.min(1, caida / 5) * 85 : 0;
+            // al volver a salir, suben desde abajo
+            float sale = caida >= VUELVE && caida < VUELVE + 6 ? (1 - (caida - VUELVE) / 6) * 0.3F : 0;
             ps.pushPose();
             if (k < PATOS) {
-                ps.translate(x, PATO_Y, PATO_Z);
+                ps.translate(x, PATO_Y - sale + Mth.sin(t * 0.3F + k * 2) * 0.012, PATO_Z);
                 ps.mulPose(Axis.XP.rotationDegrees(giro));
+                ps.mulPose(Axis.ZP.rotationDegrees(Mth.sin(t * 0.25F + k) * 4));
                 ps.translate(-0.5, 0, -0.5);
-                FeriaPiezas.modelo(ps, vc, FeriaPiezas.rl(dorado(k, ahoraL) ? "pato_oro" : "pato"), 1, 1, 1, brillo);
+                boolean oro = dorado(k, ahoraL);
+                FeriaPiezas.modelo(ps, vc, FeriaPiezas.rl(oro ? "pato_oro" : "pato"), 1, 1, 1, oro ? 0xF000F0 : brillo);
             } else {
-                ps.translate(x, DIANA_Y, DIANA_Z);
+                ps.translate(x, DIANA_Y - sale, DIANA_Z);
                 ps.mulPose(Axis.XP.rotationDegrees(giro));
                 ps.mulPose(Axis.YP.rotationDegrees(Mth.sin(t * 0.08F + k) * 20));
                 ps.translate(-0.5, 0, -0.5);
@@ -97,27 +105,28 @@ public class CasetaTiroRenderer implements BlockEntityRenderer<CasetaTiroBlockEn
             }
             ps.popPose();
         }
-        // cartel
-        FeriaPiezas.caja(ps, vc, "madera_a", 0, 3.8, -0.32, 2.2, 0.62, 0.08, brillo);
-        FeriaPiezas.caja(ps, vc, "dorado", 0, 4.13, -0.32, 2.3, 0.05, 0.1, brillo);
-        FeriaPiezas.caja(ps, vc, "dorado", 0, 3.47, -0.32, 2.3, 0.05, 0.1, brillo);
-        ps.pushPose();
-        ps.translate(0, 3.8, -0.37);
-        ps.mulPose(Axis.YP.rotationDegrees(180));
-        ps.scale(0.018F, -0.018F, 0.018F);
-        String titulo = I18n.get("miscelanea.tiro.cartel");
-        String linea = activa ? I18n.get("miscelanea.tiro.marcador", be.puntos, Math.max(0, (DURA - (ahoraL - be.inicio)) / 20))
-                : I18n.get("miscelanea.tiro.record", be.record);
-        texto(ps, buf, titulo, -12, 0xFFF2C14E, 1.4F);
-        texto(ps, buf, linea, 4, activa ? 0xFFFFFFFF : 0xFFE8D8B0, 1F);
-        ps.popPose();
+        // premios en los estantes: se mecen un poco y saltan de alegría al acabar con premio
+        for (int s = -1; s <= 1; s += 2)
+            for (int j = 0; j < 2; j++)
+                for (int k = 0; k < 3; k++) {
+                    int n = (s > 0 ? 6 : 0) + j * 3 + k;
+                    float bote = fiesta ? PuestosPiezas.salto((trasFin + n * 3) % 16, 16, 0.18F) : 0;
+                    float ladeo = Mth.sin(t * 0.05F + n) * 3;
+                    PuestosPiezas.peluche(ps, vc, n * 7 % 4, s * 1.5, 1.66 + j * 0.75, 0.5 + k * 0.6, s * 75 + 180, 0.5F, bote, ladeo, brillo);
+                }
+        // peluches colgados de las esquinas del toldo
+        for (int s = -1; s <= 1; s += 2)
+            PuestosPiezas.pelucheColgado(ps, vc, s > 0 ? 2 : 1, s * (XW - 0.2), TECHO - 0.02, ZF + 0.12, 0.35, t, s * 1.3F, 0.42F, brillo);
         ps.popPose();
     }
 
-    private void texto(PoseStack ps, MultiBufferSource buf, String s, float y, int color, float esc) {
-        ps.pushPose();
-        ps.scale(esc, esc, esc);
-        font.drawInBatch(s, -font.width(s) / 2F, y / esc, color, true, ps.last().pose(), buf, Font.DisplayMode.NORMAL, 0, 0xF000F0);
-        ps.popPose();
+    private static String tres(int n) {
+        n = Mth.clamp(n, 0, 999);
+        return String.format("%3d", n);
+    }
+
+    private static String dos(int n) {
+        n = Mth.clamp(n, 0, 99);
+        return n < 10 ? "0" + n : String.valueOf(n);
     }
 }

@@ -307,6 +307,7 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
             pc[agarrado] = -1;
             agarrado = -1;
             l.playSound(null, worldPosition, ModSounds.FE_PREMIO.get(), SoundSource.BLOCKS, 1F, 1F);
+            FeriaJuice.confeti(l, mundo(0, 1.3, -0.55), 2);
             Player p = jugador != null ? l.getPlayerByUUID(jugador) : null;
             if (p != null) p.displayClientMessage(Component.translatable("miscelanea.gancho.premio"), true);
             cambio();
@@ -346,6 +347,7 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
                     if (n > 0) {
                         for (int i = 0; i < n; i += 16) be.soltar(new ItemStack(ModItems.FICHA.get(), Math.min(16, n - i)), 0.3);
                         l.playSound(null, pos, n >= 12 ? ModSounds.FE_PREMIO_GORDO.get() : ModSounds.FE_PREMIO.get(), SoundSource.BLOCKS, 1F, 1F);
+                        FeriaJuice.confeti(l, be.mundo(0, 1.6, -0.55), n >= 12 ? 2 : 1);
                         if (n >= 12) {
                             Vec3 c = be.mundo(0, 2.2, 0);
                             l.sendParticles(ParticleTypes.FIREWORK, c.x, c.y, c.z, 30, 0.3, 0.3, 0.3, 0.15);
@@ -456,6 +458,7 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
                 ItemStack premio = puntos >= 24 ? peluche(l) : puntos >= 12 ? ChapaItem.de(l.random.nextInt(ChapaItem.ORO)) : ItemStack.EMPTY;
                 if (!premio.isEmpty()) {
                     soltar(premio, 0.3);
+                    FeriaJuice.confeti(l, mundo(0, 2.0, -0.3), puntos >= 24 ? 2 : 1);
                     l.playSound(null, worldPosition, ModSounds.FE_PREMIO.get(), SoundSource.BLOCKS, 1F, 1F);
                 }
             }
@@ -537,7 +540,11 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
             Vec3 c = mundo(0, juego.equals("martillo") ? 4.4 : 2.2, 0);
             l.sendParticles(ParticleTypes.FIREWORK, c.x, c.y, c.z, 25, 0.3, 0.3, 0.3, 0.12);
             soltar(peluche(l), 0.3);
-        } else if (puntos >= premio) soltar(ChapaItem.de(l.random.nextInt(ChapaItem.ORO)), 0.3);
+            FeriaJuice.confeti(l, c, 2);
+        } else if (puntos >= premio) {
+            soltar(ChapaItem.de(l.random.nextInt(ChapaItem.ORO)), 0.3);
+            FeriaJuice.confeti(l, mundo(0, 1.4, -0.5), 1);
+        }
         if (p != null) {
             p.displayClientMessage(Component.translatable("miscelanea." + juego + ".resultado", puntos), true);
             if (p instanceof ServerPlayer sp) com.miscelanea.arcade.ArcadeRecords.registrar(sp, juego, puntos);

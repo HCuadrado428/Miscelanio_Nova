@@ -156,6 +156,12 @@ public class PuestoFeriaBlockEntity extends BlockEntity {
         soltar(st);
         level.playSound(null, worldPosition, ModSounds.FE_CUAC.get(), SoundSource.BLOCKS, 1F, 0.9F + level.random.nextFloat() * 0.3F);
         if (premio >= 3) level.playSound(null, worldPosition, ModSounds.FE_PREMIO.get(), SoundSource.BLOCKS, 1F, 1F);
+        if (level instanceof ServerLevel sl) {
+            double[] q = pato(mejor, ahora);
+            Vec3 c = new Vec3(worldPosition.getX() + 0.5 + q[0], worldPosition.getY() + AGUA + 0.3, worldPosition.getZ() + 0.5 + q[2]);
+            sl.sendParticles(ParticleTypes.SPLASH, c.x, c.y - 0.2, c.z, 14, 0.15, 0, 0.15, 0.1);
+            if (premio >= 2) FeriaJuice.confeti(sl, c.add(0, 0.6, 0), premio >= 3 ? 2 : 1);
+        }
         p.displayClientMessage(Component.translatable("miscelanea.patitos.premio." + premio).append(" · ")
                 .append(Component.translatable("miscelanea.patitos.quedan", intentos)), true);
         if (intentos <= 0) activo = false;
@@ -197,6 +203,7 @@ public class PuestoFeriaBlockEntity extends BlockEntity {
                 default -> ItemStack.EMPTY;
             };
             if (!st.isEmpty()) be.soltar(st);
+            if (tier >= 2 && l instanceof ServerLevel sl) FeriaJuice.confeti(sl, Vec3.atCenterOf(pos).add(0, 1.0, 0), tier >= 3 ? 2 : 1);
             l.playSound(null, pos, tier > 0 ? ModSounds.FE_PREMIO.get() : ModSounds.FE_PARA.get(), SoundSource.BLOCKS, 1F, tier > 0 ? 1F : 1.5F);
             for (Player o : l.getEntitiesOfClass(Player.class, new AABB(pos).inflate(16)))
                 o.displayClientMessage(Component.translatable("miscelanea.tombola.canta", n, Component.translatable("miscelanea.tombola.premio." + tier))

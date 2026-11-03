@@ -82,7 +82,29 @@ public class PuestoFeriaBlock extends BaseEntityBlock {
 
     @Override
     public void animateTick(BlockState s, Level l, BlockPos pos, net.minecraft.util.RandomSource r) {
-        if (tipo == CHURRERIA && r.nextInt(3) == 0)
-            l.addParticle(net.minecraft.core.particles.ParticleTypes.SMOKE, pos.getX() + 0.3 + r.nextDouble() * 0.4, pos.getY() + 1.05, pos.getZ() + 0.4 + r.nextDouble() * 0.3, 0, 0.03, 0);
+        double a = CasetaTiroBlockEntity.giro(s.getValue(FACING)), c = Math.cos(a), sn = Math.sin(a);
+        if (tipo == CHURRERIA) {
+            // humo de la bandeja de churros y vapor de la freidora (a la izquierda del mostrador)
+            if (r.nextInt(3) == 0) {
+                double x = (r.nextDouble() - 0.5) * 0.6, z = (r.nextDouble() - 0.5) * 0.4;
+                l.addParticle(net.minecraft.core.particles.ParticleTypes.SMOKE, pos.getX() + 0.5 + x * c + z * sn, pos.getY() + 1.0, pos.getZ() + 0.5 - x * sn + z * c, 0, 0.03, 0);
+            }
+            double x = -0.9 + (r.nextDouble() - 0.5) * 0.55, z = 0.06 + (r.nextDouble() - 0.5) * 0.4;
+            double wx = pos.getX() + 0.5 + x * c + z * sn, wz = pos.getZ() + 0.5 - x * sn + z * c;
+            if (r.nextInt(2) == 0) l.addParticle(net.minecraft.core.particles.ParticleTypes.WHITE_ASH, wx, pos.getY() + 1.27, wz, 0, 0.02, 0);
+            if (r.nextInt(6) == 0) l.addParticle(net.minecraft.core.particles.ParticleTypes.CLOUD, wx, pos.getY() + 1.3, wz, 0, 0.015, 0);
+            if (r.nextInt(14) == 0) l.playLocalSound(wx, pos.getY() + 1.25, wz, net.minecraft.sounds.SoundEvents.FURNACE_FIRE_CRACKLE,
+                    net.minecraft.sounds.SoundSource.BLOCKS, 0.25F, 1.6F + r.nextFloat() * 0.3F, false);
+        } else if (tipo == PATITOS && r.nextInt(5) == 0) {
+            // algún chapoteo junto a un pato
+            double[] q = PuestoFeriaBlockEntity.pato(r.nextInt(PuestoFeriaBlockEntity.PATOS), l.getGameTime());
+            l.addParticle(net.minecraft.core.particles.ParticleTypes.SPLASH, pos.getX() + 0.5 + q[0] + (r.nextDouble() - 0.5) * 0.2,
+                    pos.getY() + PuestoFeriaBlockEntity.AGUA + 0.02, pos.getZ() + 0.5 + q[2] + (r.nextDouble() - 0.5) * 0.2, 0, 0.05, 0);
+        } else if (tipo == TOMBOLA && r.nextInt(12) == 0
+                && l.getBlockEntity(pos) instanceof PuestoFeriaBlockEntity be && be.activo && l.getGameTime() - be.inicio > 60 && be.numero > 70) {
+            // número con premio: chispitas alrededor del panel
+            l.addParticle(net.minecraft.core.particles.ParticleTypes.WAX_ON, pos.getX() + 0.5 + (r.nextDouble() - 0.5) * 0.9, pos.getY() + 1.6 + r.nextDouble() * 0.5,
+                    pos.getZ() + 0.5 + (r.nextDouble() - 0.5) * 0.9, 0, 0, 0);
+        }
     }
 }
