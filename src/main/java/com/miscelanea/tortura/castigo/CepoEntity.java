@@ -58,7 +58,7 @@ public class CepoEntity extends Entity {
     public static final int DURACION = 60 * 20;
     public static final double TABLA = (8 - 6.5) / 16.0, PIES = 0.80, ADELANTE = 0.92, BAJADA = 0.37;
 
-    private int quedan = DURACION;
+    private int quedan = com.miscelanea.ConfigServidor.cepoTicks();
     @Nullable private UUID captor;
     private boolean permitir;
 
@@ -371,7 +371,7 @@ public class CepoEntity extends Entity {
     @Override
     protected void readAdditionalSaveData(CompoundTag t) {
         if (t.contains("Bloque")) entityData.set(BLOQUE, Optional.of(NbtUtils.readBlockPos(t.getCompound("Bloque"))));
-        quedan = t.contains("Quedan") ? t.getInt("Quedan") : DURACION;
+        quedan = t.contains("Quedan") ? t.getInt("Quedan") : com.miscelanea.ConfigServidor.cepoTicks();
         captor = t.hasUUID("Captor") ? t.getUUID("Captor") : null;
     }
 

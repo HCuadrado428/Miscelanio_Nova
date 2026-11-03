@@ -107,6 +107,15 @@ public final class InterrogaCliente {
         return mc.level.getBlockEntity(p) instanceof SillaInterrogatorioBlockEntity s ? s : null;
     }
 
+    /**
+     * Desde MouseHandlerMixin: colgado boca abajo y en primera persona la cámara va girada 180º (roll), así que el ratón
+     * se invierte en los dos ejes para que mover a la derecha/arriba mueva la vista a la derecha/arriba de la pantalla.
+     */
+    public static boolean ratonInvertido() {
+        Minecraft mc = Minecraft.getInstance();
+        return mc.player != null && mc.level != null && mc.options.getCameraType().isFirstPerson() && gancho(mc.player) != null;
+    }
+
     /** Desde CameraMixin: en primera persona, colgado, los ojos van en la cabeza (abajo). null = cámara normal. */
     @Nullable
     public static double[] ojoColgado(Entity e, float pt) {
@@ -122,7 +131,7 @@ public final class InterrogaCliente {
 
     /** Lo roja que tiene la cabeza el colgado (0..1, 1 = ya le hace daño). */
     private static float sangre(GanchoBlockEntity g) {
-        return Mth.clamp(g.colgadoCli / (float) GanchoBlockEntity.DANO_DESDE, 0F, 1F);
+        return Mth.clamp(g.colgadoCli / (float) com.miscelanea.ConfigServidor.ganchoDanoDesdeTicks(), 0F, 1F);
     }
 
     /** Estrés de la víctima de la silla (0..1 según las pulsaciones). */
@@ -409,7 +418,7 @@ public final class InterrogaCliente {
                 g.fill(0, 0, w, h, (a << 24) | 0x400000);
             }
         }
-        if (gb.colgadoCli >= GanchoBlockEntity.DANO_DESDE && mc.player != null && mc.player.hurtTime > 0)
+        if (gb.colgadoCli >= com.miscelanea.ConfigServidor.ganchoDanoDesdeTicks() && mc.player != null && mc.player.hurtTime > 0)
             g.fill(0, 0, w, h, ((int) (mc.player.hurtTime * 8) << 24) | 0x900000);
         float gg = Mth.lerp(pt, golpeO, golpe);
         if (gg > 0F) g.fill(0, 0, w, h, ((int) (gg * 90) << 24) | 0x8A0000);

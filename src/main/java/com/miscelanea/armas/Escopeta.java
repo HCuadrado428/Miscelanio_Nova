@@ -27,7 +27,6 @@ import java.util.Map;
 public final class Escopeta {
     private static final int PERDIGONES = 16;
     private static final double ALCANCE = 28, DISPERSION = 0.075;
-    private static final float DANO = 1.75F;
 
     private Escopeta() {}
 
@@ -54,7 +53,7 @@ public final class Escopeta {
                 impacto = eh.getLocation();
                 double d = ojo.distanceTo(impacto);
                 float caida = d < 6 ? 1.0F : (float) Mth.clampedLerp(1.0, 0.25, (d - 6) / (ALCANCE - 6));
-                dano.merge(v, DANO * caida, Float::sum);
+                dano.merge(v, com.miscelanea.ConfigServidor.escopetaPerdigon() * caida, Float::sum);
                 sl.sendParticles(ParticleTypes.CRIT, impacto.x, impacto.y, impacto.z, 2, 0.05, 0.05, 0.05, 0.2);
             } else {
                 impacto = fin;

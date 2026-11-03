@@ -31,6 +31,12 @@ public final class SawClienteMod {
     }
 
     @SubscribeEvent
+    public static void preparar(net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent e) {
+        // el cliente sabe quién lleva la caja por los paquetes de estado: con eso vanilla no le recarga el aire
+        com.miscelanea.tortura.saw.CajaAgua.cajaCliente = v -> SawCliente.caja(v.getId()) != null;
+    }
+
+    @SubscribeEvent
     public static void teclas(RegisterKeyMappingsEvent e) {
         e.register(SawCliente.MANOS);
     }

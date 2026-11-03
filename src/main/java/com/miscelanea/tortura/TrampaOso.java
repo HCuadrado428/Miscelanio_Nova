@@ -84,9 +84,9 @@ public final class TrampaOso {
         List<BlockPos> cajas = cajasCerca(sl, v.blockPosition());
         if (cajas.isEmpty()) {
             d.putBoolean("SinCajas", true);
-            d.putInt("Trampa", DURACION_SIN_CAJAS);
+            d.putInt("Trampa", com.miscelanea.ConfigServidor.trampaOsoSinCajasTicks());
         } else {
-            d.putInt("Trampa", DURACION);
+            d.putInt("Trampa", com.miscelanea.ConfigServidor.trampaOsoTicks());
             d.putLong("TrampaCaja", cajas.get(v.getRandom().nextInt(cajas.size())).asLong());
         }
         Cautivos.escribir(v, d);

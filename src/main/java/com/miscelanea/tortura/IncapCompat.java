@@ -20,7 +20,8 @@ import java.util.List;
  *       compilar), al arrancar el servidor y otra vez justo antes de que la trampa mate (por si un
  *       {@code /incap config reload} ha rehecho la lista).</li>
  * </ul>
- * Cualquier error de reflexión se ignora (se avisa una vez en el log de depuración).
+ * Cualquier error de reflexión se ignora (se avisa una vez en el log de depuración). Con
+ * {@code tortura.muerte_instantanea_incapacitated = false} en la config del servidor se quitan de la lista (y no se añaden).
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID)
 public final class IncapCompat {
@@ -33,7 +34,7 @@ public final class IncapCompat {
     public static final List<String> MSG_IDS = List.of("miscelanea.trampa_oso", "miscelanea.doncella", "miscelanea.potro",
             "miscelanea.silla_electrica", "miscelanea.collar_explosivo", "miscelanea.pendulo", "miscelanea.inmersion",
             "miscelanea.interrogatorio", "miscelanea.paro_cardiaco", "miscelanea.colgado",
-            "miscelanea.caja_agua", "miscelanea.caja_agua_cuchillas");
+            "miscelanea.caja_agua", "miscelanea.caja_agua_cuchillas", "miscelanea.pozo_agujas", "miscelanea.alambre_espino");
 
     private static Boolean cargado;
     private static Field campo;
@@ -61,8 +62,11 @@ public final class IncapCompat {
                 return;
             }
             List<Object> l = (List<Object>) lista;
+            boolean instantanea = com.miscelanea.ConfigServidor.muerteInstantanea();
             synchronized (l) {
-                for (String id : MSG_IDS) if (!l.contains(id)) l.add(id);
+                if (instantanea) {
+                    for (String id : MSG_IDS) if (!l.contains(id)) l.add(id);
+                } else l.removeAll(MSG_IDS);
             }
         } catch (ClassNotFoundException | NoSuchFieldException ex) {
             // otra versión del mod (usa la etiqueta no_incap): no hace falta insistir

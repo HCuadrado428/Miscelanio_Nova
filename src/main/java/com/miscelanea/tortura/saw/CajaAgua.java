@@ -51,6 +51,18 @@ public final class CajaAgua {
     public static final long SIN_TANQUE = Long.MIN_VALUE;
 
     // ------------------------------------------------------------------ consultas
+    /** En el cliente: si esa entidad lleva la caja (lo pone SawCliente con el estado que manda el servidor). */
+    public static java.util.function.Predicate<LivingEntity> cajaCliente = v -> false;
+
+    /**
+     * ¿Lleva el aire la caja (y no vanilla)? Lo usa LivingEntityAireMixin para que vanilla no recargue el aire por su
+     * cuenta: así el aire sincronizado (las burbujas del HUD) es exactamente el de la caja.
+     */
+    public static boolean controlaAire(LivingEntity v) {
+        if (v.level() == null) return false;
+        return v.level().isClientSide ? cajaCliente.test(v) : tiene(v);
+    }
+
     public static boolean tiene(LivingEntity v) {
         return Saw.tieneAlgo(v) && Saw.leer(v).contains("Caja");
     }
@@ -167,6 +179,10 @@ public final class CajaAgua {
         int abierta = c.getInt("Abierta");
         if (abierta > 0) {
             c.putInt("Abierta", abierta + 1);
+            // abriéndose: se respira otra vez (vanilla no recarga el aire mientras está la caja)
+            int aireA = Math.min(v.getMaxAirSupply(), (c.contains("Aire") ? c.getInt("Aire") : v.getMaxAirSupply()) + 4);
+            c.putInt("Aire", aireA);
+            v.setAirSupply(aireA);
             guardar(v, c);
             if (abierta + 1 >= ABRIR_TICKS) quitar(v, true);
             return;
@@ -176,7 +192,7 @@ public final class CajaAgua {
         float nivel = c.getFloat("Nivel");
         float antes = nivel;
         if (activa && nivel < 1F) {
-            nivel = Math.min(1F, nivel + 1F / LLENADO);
+            nivel = Math.min(1F, nivel + 1F / com.miscelanea.ConfigServidor.cajaAguaLlenadoTicks());
             if (v.tickCount % 44 == 0)
                 sl.playSound(null, v.getX(), v.getEyeY(), v.getZ(), SawRegistro.CAJA_LLENAR.get(), SoundSource.PLAYERS, 0.7F, 0.9F + nivel * 0.25F);
         }

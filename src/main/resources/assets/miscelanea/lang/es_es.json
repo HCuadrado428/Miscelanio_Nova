@@ -2132,5 +2132,6 @@
   "subtitles.miscelanea.ballesta_disparo": "Ballesta de repetición dispara",
   "subtitles.miscelanea.ballesta_palanca": "Clac de la palanca",
   "subtitles.miscelanea.ballesta_crujido": "Cruje la madera",
-  "subtitles.miscelanea.ballesta_virote": "Cae un virote en el cargador"
+  "subtitles.miscelanea.ballesta_virote": "Cae un virote en el cargador",
+  "msg.miscelanea.tortura.desactivada": "Los aparatos de tortura están desactivados en supervivencia en este servidor"
 }

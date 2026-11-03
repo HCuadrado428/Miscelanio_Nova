@@ -4,7 +4,9 @@
   "package": "com.miscelanea.mixin",
   "compatibilityLevel": "JAVA_17",
   "refmap": "miscelanea.refmap.json",
-  "mixins": [],
+  "mixins": [
+    "LivingEntityAireMixin"
+  ],
   "client": [
     "CameraMixin",
     "MouseHandlerMixin",

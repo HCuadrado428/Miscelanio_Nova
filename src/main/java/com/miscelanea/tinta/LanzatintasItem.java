@@ -65,7 +65,7 @@ public class LanzatintasItem extends Item implements GeoItem {
             return;
         }
         s.getOrCreateTag().putBoolean(DISPARANDO, true);
-        TintaProyectil tp = new TintaProyectil(level, p, ArmaTinta.color(s), 3.5F, 1.15F, 1.0F);
+        TintaProyectil tp = new TintaProyectil(level, p, ArmaTinta.color(s), com.miscelanea.ConfigServidor.lanzatintas(), 1.15F, 1.0F);
         tp.setPos(p.getX() + p.getLookAngle().x * 0.6, p.getEyeY() - 0.25, p.getZ() + p.getLookAngle().z * 0.6);
         tp.shootFromRotation(p, p.getXRot(), p.getYRot(), 0.0F, 1.55F, 4.0F);
         level.addFreshEntity(tp);

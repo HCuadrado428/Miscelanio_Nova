@@ -56,7 +56,11 @@ public final class MazoEventos {
         ItemStack s = MazoItem.enMano(p);
         if (s == null || MazoItem.lanzado(s) || !MazoItem.esDueno(p, s) || !(p.level() instanceof ServerLevel sl)) return;
         MazoItem.sumarTrueno(p, s);
-        if (p.isFallFlying() || p.fallDistance <= 1.5F) return;
+        float mult = com.miscelanea.ConfigServidor.mazoMult();
+        if (p.isFallFlying() || p.fallDistance <= 1.5F) {
+            if (mult != 1F) e.setAmount(e.getAmount() * mult);
+            return;
+        }
         float caida = p.fallDistance;
         LivingEntity objetivo = e.getEntity();
         // golpe en caída del mazo + Densidad V (0,5 por nivel y bloque caído)
@@ -68,7 +72,7 @@ public final class MazoEventos {
             float conBrecha = net.minecraft.world.damagesource.CombatRules.getDamageAfterAbsorb(dano, armadura * Math.max(0, 1 - 0.15F * MazoItem.BRECHA), dureza);
             if (normal > 0.01F) dano *= conBrecha / normal;
         }
-        e.setAmount(dano);
+        e.setAmount(dano * mult);
         Vec3 c = objetivo.position();
         BlockState suelo = sl.getBlockState(objetivo.blockPosition().below());
         if (!suelo.isAir()) sl.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, suelo), c.x, c.y + 0.1, c.z, 60, 1.4, 0.1, 1.4, 0.2);
@@ -100,7 +104,7 @@ public final class MazoEventos {
     static void sismo(ServerLevel sl, Player p, ItemStack s, float caida) {
         Vec3 c = p.position();
         double radio = Math.min(8, 3 + caida / 4);
-        float dano = 6 + Math.min(18, caida * 0.8F);
+        float dano = (6 + Math.min(18, caida * 0.8F)) * com.miscelanea.ConfigServidor.mazoMult();
         BlockState suelo = sl.getBlockState(p.blockPosition().below());
         // onda de choque que se abre por el suelo
         sl.addFreshEntity(new OndaEntity(sl, c.x, c.y, c.z, (float) radio + 1));
@@ -160,7 +164,7 @@ public final class MazoEventos {
             o.invulnerableTime = 0;
             interno = true;
             try {
-                o.hurt(fuente, 12F);
+                o.hurt(fuente, 12F * com.miscelanea.ConfigServidor.mazoMult());
             } finally {
                 interno = false;
             }

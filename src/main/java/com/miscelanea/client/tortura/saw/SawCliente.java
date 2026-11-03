@@ -127,7 +127,7 @@ public final class SawCliente {
                 continue;
             }
             c.nivelAntes = c.nivel;
-            if (c.activa && c.objetivo < 1F) c.objetivo = Math.min(1F, c.objetivo + 1F / CajaAgua.LLENADO);
+            if (c.activa && c.objetivo < 1F) c.objetivo = Math.min(1F, c.objetivo + 1F / com.miscelanea.ConfigServidor.cajaAguaLlenadoTicks());
             c.nivel += (c.objetivo - c.nivel) * 0.25F;
             if (c.abierta > 0) c.abierta++;
         }

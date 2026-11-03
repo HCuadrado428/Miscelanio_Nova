@@ -192,7 +192,7 @@ public class HachaLanzada extends Projectile implements GeoEntity {
                     for (Entity x : level().getEntities(this, getBoundingBox().expandTowards(v).inflate(0.7))) {
                         if (!(x instanceof LivingEntity le) || x == duenyo || !le.isAlive() || !golpeados.add(x.getId())) continue;
                         le.invulnerableTime = 0;
-                        if (p != null && le.hurt(damageSources().playerAttack(p), 7.0F)) {
+                        if (p != null && le.hurt(damageSources().playerAttack(p), 7.0F * com.miscelanea.ConfigServidor.hachaMult())) {
                             le.knockback(0.5, -v.x, -v.z);
                             Leviatan.helar(le, 40, 1);
                             ((ServerLevel) level()).sendParticles(ParticleTypes.SNOWFLAKE, le.getX(), le.getY() + 1, le.getZ(), 12, 0.3, 0.3, 0.3, 0.05);
@@ -212,7 +212,7 @@ public class HachaLanzada extends Projectile implements GeoEntity {
     protected void onHitEntity(EntityHitResult r) {
         if (!(r.getEntity() instanceof LivingEntity v) || !(getOwner() instanceof ServerPlayer p)) return;
         v.invulnerableTime = 0;
-        float dano = (pesado() ? 10F : 8F) + (helada ? 3F : 0F);
+        float dano = ((pesado() ? 10F : 8F) + (helada ? 3F : 0F)) * com.miscelanea.ConfigServidor.hachaMult();
         v.hurt(damageSources().playerAttack(p), dano);
         ServerLevel sl = (ServerLevel) level();
         sl.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.ICE.defaultBlockState()), v.getX(), v.getY() + v.getBbHeight() * 0.6, v.getZ(), 14, 0.3, 0.3, 0.3, 0.15);

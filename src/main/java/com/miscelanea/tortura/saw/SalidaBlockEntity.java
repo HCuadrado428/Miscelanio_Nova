@@ -46,7 +46,7 @@ public class SalidaBlockEntity extends BlockEntity {
     public static final int RADIO = 32, ALTO = 8, MIN_S = 30, MAX_S = 900, PASO_S = 30, ABIERTA_TICKS = 80, OSCURIDAD = 1200;
 
     private FaseSalida fase = FaseSalida.ESPERA;
-    private int segundos = 120;
+    private int segundos = com.miscelanea.ConfigServidor.salidaSegundos();
     private int restante;
     private int abierta;
     private final Set<UUID> salvados = new HashSet<>();
@@ -249,7 +249,7 @@ public class SalidaBlockEntity extends BlockEntity {
     public void load(CompoundTag t) {
         super.load(t);
         fase = FaseSalida.de(t.getInt("Fase"));
-        segundos = t.contains("Segundos") ? t.getInt("Segundos") : 120;
+        segundos = t.contains("Segundos") ? t.getInt("Segundos") : com.miscelanea.ConfigServidor.salidaSegundos();
         restante = t.getInt("Restante");
         abierta = t.getInt("Abierta");
         salvados.clear();

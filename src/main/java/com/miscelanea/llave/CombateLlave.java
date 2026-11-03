@@ -116,7 +116,7 @@ public final class CombateLlave {
                 if (ang > g.angulo() / 2) continue;
             }
             v.invulnerableTime = 0;
-            if (!v.hurt(sl.damageSources().playerAttack(p), g.dano())) continue;
+            if (!v.hurt(sl.damageSources().playerAttack(p), g.dano() * com.miscelanea.ConfigServidor.llaveMult())) continue;
             acerto = true;
             efecto(p, v, g.efecto());
             double y = v.getY() + v.getBbHeight() * 0.5;

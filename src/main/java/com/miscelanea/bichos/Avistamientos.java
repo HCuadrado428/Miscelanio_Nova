@@ -16,18 +16,19 @@ import java.util.List;
 /** Hace aparecer bichos alrededor de los jugadores según bioma, hora y tiempo (como en Animal Crossing). */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID)
 public final class Avistamientos {
-    private static final int MAX_CERCA = 7;
+    // máximo cerca e intervalo: ConfigServidor (sección "bichos")
 
     private Avistamientos() {}
 
     @SubscribeEvent
     public static void tick(TickEvent.ServerTickEvent e) {
-        if (e.phase != TickEvent.Phase.END || e.getServer().getTickCount() % 30 != 0) return;
+        if (e.phase != TickEvent.Phase.END || !com.miscelanea.ConfigServidor.bichosAparicion()
+                || e.getServer().getTickCount() % com.miscelanea.ConfigServidor.bichosIntervalo() != 0) return;
         for (ServerPlayer p : e.getServer().getPlayerList().getPlayers()) {
             if (p.isSpectator() || p.level().dimension() != Level.OVERWORLD) continue;
             ServerLevel l = p.serverLevel();
             int hay = l.getEntitiesOfClass(BichoEntity.class, p.getBoundingBox().inflate(36)).size();
-            if (hay >= MAX_CERCA) continue;
+            if (hay >= com.miscelanea.ConfigServidor.bichosMax()) continue;
             for (int intento = 0; intento < 3; intento++) {
                 double a = p.getRandom().nextDouble() * Math.PI * 2, r = 8 + p.getRandom().nextDouble() * 18;
                 int x = (int) Math.floor(p.getX() + Math.cos(a) * r), z = (int) Math.floor(p.getZ() + Math.sin(a) * r);
