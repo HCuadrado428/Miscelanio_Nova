@@ -2102,5 +2102,77 @@
       "miscelanea:vomito"
     ],
     "subtitle": "subtitles.miscelanea.vomito"
+  },
+  "interrogatorio_pinzas": {
+    "sounds": [
+      "miscelanea:interrogatorio_pinzas"
+    ],
+    "subtitle": "subtitles.miscelanea.interrogatorio_pinzas"
+  },
+  "interrogatorio_llave": {
+    "sounds": [
+      "miscelanea:interrogatorio_llave"
+    ],
+    "subtitle": "subtitles.miscelanea.interrogatorio_llave"
+  },
+  "interrogatorio_diente": {
+    "sounds": [
+      "miscelanea:interrogatorio_diente"
+    ],
+    "subtitle": "subtitles.miscelanea.interrogatorio_diente"
+  },
+  "interrogatorio_grito": {
+    "sounds": [
+      "miscelanea:interrogatorio_grito"
+    ],
+    "subtitle": "subtitles.miscelanea.interrogatorio_grito"
+  },
+  "interrogatorio_jeringa": {
+    "sounds": [
+      "miscelanea:interrogatorio_jeringa"
+    ],
+    "subtitle": "subtitles.miscelanea.interrogatorio_jeringa"
+  },
+  "interrogatorio_jadeo": {
+    "sounds": [
+      "miscelanea:interrogatorio_jadeo"
+    ],
+    "subtitle": "subtitles.miscelanea.interrogatorio_jadeo"
+  },
+  "monitor_pitido": {
+    "sounds": [
+      "miscelanea:monitor_pitido"
+    ],
+    "subtitle": "subtitles.miscelanea.monitor_pitido"
+  },
+  "monitor_plano": {
+    "sounds": [
+      "miscelanea:monitor_plano"
+    ],
+    "subtitle": "subtitles.miscelanea.monitor_plano"
+  },
+  "maletin_abrir": {
+    "sounds": [
+      "miscelanea:maletin_abrir"
+    ],
+    "subtitle": "subtitles.miscelanea.maletin_abrir"
+  },
+  "colgado_cuerda": {
+    "sounds": [
+      "miscelanea:colgado_cuerda"
+    ],
+    "subtitle": "subtitles.miscelanea.colgado_cuerda"
+  },
+  "colgado_manivela": {
+    "sounds": [
+      "miscelanea:colgado_manivela"
+    ],
+    "subtitle": "subtitles.miscelanea.colgado_manivela"
+  },
+  "colgado_desatar": {
+    "sounds": [
+      "miscelanea:colgado_desatar"
+    ],
+    "subtitle": "subtitles.miscelanea.colgado_desatar"
   }
 }

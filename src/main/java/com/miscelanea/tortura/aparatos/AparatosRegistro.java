@@ -22,7 +22,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 /**
  * Registro de los aparatos de la sala de juegos (doncella de hierro, potro, silla eléctrica, hierro de marcar, correas,
- * péndulo y silla de inmersión).
+ * péndulo, silla de inmersión, silla de interrogatorio con el maletín de herramientas y gancho para colgar boca abajo).
  * Va aparte de {@link com.miscelanea.tortura.TorturaRegistro} para no pisar a otras ramas: basta con llamar a
  * {@link #registrar(IEventBus)} desde el constructor del mod. Todo es solo de creativo (sin recetas).
  */
@@ -42,6 +42,9 @@ public final class AparatosRegistro {
     public static final ResourceKey<DamageType> DANO_SILLA = dano("silla_electrica");
     public static final ResourceKey<DamageType> DANO_PENDULO = dano("pendulo");
     public static final ResourceKey<DamageType> DANO_INMERSION = dano("inmersion");
+    public static final ResourceKey<DamageType> DANO_INTERROGATORIO = dano("interrogatorio");
+    public static final ResourceKey<DamageType> DANO_PARO = dano("paro_cardiaco");
+    public static final ResourceKey<DamageType> DANO_COLGADO = dano("colgado");
 
     private static ResourceKey<DamageType> dano(String n) {
         return ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Miscelanea.MOD_ID, n));
@@ -69,6 +72,8 @@ public final class AparatosRegistro {
     public static final RegistryObject<Block> SILLA = BLOCKS.register("silla_electrica", () -> new SillaElectricaBlock(madera()));
     public static final RegistryObject<Block> PENDULO = BLOCKS.register("pendulo", () -> new PenduloBlock(madera()));
     public static final RegistryObject<Block> INMERSION = BLOCKS.register("silla_inmersion", () -> new InmersionBlock(madera()));
+    public static final RegistryObject<Block> INTERROGATORIO = BLOCKS.register("silla_interrogatorio", () -> new SillaInterrogatorioBlock(hierro()));
+    public static final RegistryObject<Block> GANCHO = BLOCKS.register("gancho_colgar", () -> new GanchoBlock(hierro()));
 
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<DoncellaBlockEntity>> DONCELLA_BE = BLOCK_ENTITIES.register("doncella_hierro",
@@ -85,6 +90,12 @@ public final class AparatosRegistro {
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<InmersionBlockEntity>> INMERSION_BE = BLOCK_ENTITIES.register("silla_inmersion",
             () -> BlockEntityType.Builder.of(InmersionBlockEntity::new, INMERSION.get()).build(null));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<SillaInterrogatorioBlockEntity>> INTERROGATORIO_BE = BLOCK_ENTITIES.register("silla_interrogatorio",
+            () -> BlockEntityType.Builder.of(SillaInterrogatorioBlockEntity::new, INTERROGATORIO.get()).build(null));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<GanchoBlockEntity>> GANCHO_BE = BLOCK_ENTITIES.register("gancho_colgar",
+            () -> BlockEntityType.Builder.of(GanchoBlockEntity::new, GANCHO.get()).build(null));
 
     // ---- objetos
     public static final RegistryObject<Item> DONCELLA_ITEM = ITEMS.register("doncella_hierro",
@@ -101,6 +112,14 @@ public final class AparatosRegistro {
             () -> new AparatoItem(PENDULO.get(), new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), 3));
     public static final RegistryObject<Item> INMERSION_ITEM = ITEMS.register("silla_inmersion",
             () -> new AparatoItem(INMERSION.get(), new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), 3));
+    public static final RegistryObject<Item> INTERROGATORIO_ITEM = ITEMS.register("silla_interrogatorio",
+            () -> new AparatoItem(INTERROGATORIO.get(), new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), 3));
+    public static final RegistryObject<Item> MALETIN = ITEMS.register("maletin_herramientas",
+            () -> new MaletinItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
+    public static final RegistryObject<Item> DIENTE = ITEMS.register("diente",
+            () -> new com.miscelanea.tortura.ObjetoTortura(new Item.Properties().stacksTo(64), 1));
+    public static final RegistryObject<Item> GANCHO_ITEM = ITEMS.register("gancho_colgar",
+            () -> new AparatoItem(GANCHO.get(), new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), 3));
 
     // ---- sonidos
     public static final RegistryObject<SoundEvent> DONCELLA_CHIRRIDO = sonido("doncella_chirrido");
@@ -125,6 +144,18 @@ public final class AparatosRegistro {
     public static final RegistryObject<SoundEvent> INMERSION_TOS = sonido("inmersion_tos");
     public static final RegistryObject<SoundEvent> INMERSION_CRUJIDO = sonido("inmersion_crujido");
     public static final RegistryObject<SoundEvent> INMERSION_GOTEO = sonido("inmersion_goteo");
+    public static final RegistryObject<SoundEvent> INTERROGATORIO_PINZAS = sonido("interrogatorio_pinzas");
+    public static final RegistryObject<SoundEvent> INTERROGATORIO_LLAVE = sonido("interrogatorio_llave");
+    public static final RegistryObject<SoundEvent> INTERROGATORIO_DIENTE = sonido("interrogatorio_diente");
+    public static final RegistryObject<SoundEvent> INTERROGATORIO_GRITO = sonido("interrogatorio_grito");
+    public static final RegistryObject<SoundEvent> INTERROGATORIO_JERINGA = sonido("interrogatorio_jeringa");
+    public static final RegistryObject<SoundEvent> INTERROGATORIO_JADEO = sonido("interrogatorio_jadeo");
+    public static final RegistryObject<SoundEvent> MONITOR_PITIDO = sonido("monitor_pitido");
+    public static final RegistryObject<SoundEvent> MONITOR_PLANO = sonido("monitor_plano");
+    public static final RegistryObject<SoundEvent> MALETIN_ABRIR = sonido("maletin_abrir");
+    public static final RegistryObject<SoundEvent> COLGADO_CUERDA = sonido("colgado_cuerda");
+    public static final RegistryObject<SoundEvent> COLGADO_MANIVELA = sonido("colgado_manivela");
+    public static final RegistryObject<SoundEvent> COLGADO_DESATAR = sonido("colgado_desatar");
 
     private static RegistryObject<SoundEvent> sonido(String n) {
         return SOUNDS.register(n, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Miscelanea.MOD_ID, n)));
