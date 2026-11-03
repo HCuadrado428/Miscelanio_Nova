@@ -63,6 +63,21 @@ repositories {
         }
     }
     maven {
+        // JEI (API; dependencia opcional, solo para compilar el plugin com.miscelanea.compat.jei)
+        name = 'Jared maven'
+        url = 'https://maven.blamejared.com/'
+        content {
+            includeGroup('mezz.jei')
+        }
+    }
+    maven {
+        name = 'ModMaven'
+        url = 'https://modmaven.dev'
+        content {
+            includeGroup('mezz.jei')
+        }
+    }
+    maven {
         name = 'GeckoLib'
         url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
         content {
@@ -81,6 +96,9 @@ dependencies {
     // API de Simple Voice Chat: solo para compilar el plugin de voz (com.miscelanea.client.voz.plugin). En el juego la
     // aporta el propio mod voicechat si está instalado; si no está, el plugin nunca se carga.
     compileOnly "de.maxhenkel.voicechat:voicechat-api:2.5.0"
+    // API de JEI: solo para compilar el plugin de recetas. Si JEI no está instalado, el plugin no se carga nunca.
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
 
