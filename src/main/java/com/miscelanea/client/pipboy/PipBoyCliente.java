@@ -28,7 +28,7 @@ import java.util.Map;
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
 public final class PipBoyCliente {
     public static final KeyMapping ABRIR = new KeyMapping("key.miscelanea.pipboy", KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_B, "key.categories." + Miscelanea.MOD_ID);
+            GLFW.GLFW_KEY_B, com.miscelanea.client.combate.LlaveCliente.CATEGORIA);
 
     private static final Map<Integer, Byte> FLAGS = new HashMap<>();
     public static final List<String> NOTAS = new ArrayList<>();

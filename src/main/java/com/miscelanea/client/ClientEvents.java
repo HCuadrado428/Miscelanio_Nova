@@ -28,16 +28,16 @@ public final class ClientEvents {
             "key." + Miscelanea.MOD_ID + ".soltar_captura",
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_R,
-            "key.categories." + Miscelanea.MOD_ID);
+            GLFW.GLFW_KEY_G,
+            com.miscelanea.client.combate.LlaveCliente.CATEGORIA);
 
     /** Abre la ventana de la mochila del Aspirafantasmas. */
     public static final KeyMapping MOCHILA = new KeyMapping(
             "key." + Miscelanea.MOD_ID + ".mochila",
             KeyConflictContext.IN_GAME,
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_B,
-            "key.categories." + Miscelanea.MOD_ID);
+            GLFW.GLFW_KEY_U,
+            com.miscelanea.client.combate.LlaveCliente.CATEGORIA);
 
     private ClientEvents() {}
 
