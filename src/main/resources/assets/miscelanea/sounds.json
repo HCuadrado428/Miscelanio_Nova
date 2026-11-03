@@ -2036,5 +2036,50 @@
       "miscelanea:miedo_pitido"
     ],
     "subtitle": "subtitles.miscelanea.miedo_pitido"
+  },
+  "pociones_palmada": {
+    "sounds": [
+      {
+        "name": "miscelanea:pociones_palmada",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.pociones_palmada"
+  },
+  "pociones_berserk": {
+    "sounds": [
+      {
+        "name": "miscelanea:pociones_berserk",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.pociones_berserk"
+  },
+  "pociones_reventar": {
+    "sounds": [
+      {
+        "name": "miscelanea:pociones_reventar",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.pociones_reventar"
+  },
+  "pociones_sirena": {
+    "sounds": [
+      {
+        "name": "miscelanea:pociones_sirena",
+        "volume": 0.7
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.pociones_sirena"
+  },
+  "pociones_pisoton": {
+    "sounds": [
+      {
+        "name": "miscelanea:pociones_pisoton",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.pociones_pisoton"
   }
 }

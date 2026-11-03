@@ -1,0 +1,27 @@
+package com.miscelanea.client.pociones;
+
+import com.miscelanea.Miscelanea;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+
+/** Registro del cliente (bus del mod) de las pociones del cuerpo: los HUD y el enganche del tamaño de los demás. */
+@Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+public final class PocionesClienteMod {
+    private PocionesClienteMod() {}
+
+    @SubscribeEvent
+    public static void setup(FMLClientSetupEvent e) {
+        e.enqueueWork(Estados::iniciar);
+    }
+
+    @SubscribeEvent
+    public static void overlays(RegisterGuiOverlaysEvent e) {
+        // por debajo del HUD: la barra y el resto se siguen viendo
+        e.registerBelowAll("pociones_sangre", SangreCliente::hud);
+        e.registerBelowAll("pociones_niebla", NieblaCliente::hud);
+        e.registerBelowAll("pociones_eco", EcoCliente::hud);
+    }
+}
