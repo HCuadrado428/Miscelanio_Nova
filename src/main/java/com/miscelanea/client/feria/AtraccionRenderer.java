@@ -312,7 +312,7 @@ public class AtraccionRenderer implements BlockEntityRenderer<AtraccionBlockEnti
                 FeriaPiezas.barra(ps, vc, "metal_blanco", cx, 0.12, cz, cx + Math.cos(a0 + 0.39) * 1.55, 0.12, cz + Math.sin(a0 + 0.39) * 1.55, 0.2F, 0.9F, luz);
             }
             FeriaPiezas.barra(ps, vc, "metal_rojo", cx, 0.2, cz, cx, hub, cz, 0.9F, 0.9F, luz);
-            for (int k = 0; k < 5; k++) FeriaPiezas.barra(ps, vc, "dorado", cx, 0.6 + k * 0.6, cz, cx, 0.75 + k * 0.6, cz, 1.0F, 1.0F, luz);
+            for (int k = 0; k < 7; k++) FeriaPiezas.barra(ps, vc, "dorado", cx, 0.6 + k * 0.6, cz, cx, 0.75 + k * 0.6, cz, 1.0F, 1.0F, luz);
         });
         // cabeza (en coordenadas de la cabeza: se emite trasladada al buje y girada): pulpo con ojos, faldón y gorra
         p.cabeza = grabar((ps, vc) -> MallaRecurso.dibujar(ps, vc, "pulpo_cabeza", 0, false));

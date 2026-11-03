@@ -141,7 +141,9 @@ public class AtraccionBlockEntity extends BlockEntity {
     }
 
     // ------------------------------------------------------------------ pulpo
-    public static final double HUB_PULPO = 3.6, LARGO_BRAZO = 4.6, CUELGA_CESTA = 1.1;
+    /** El buje está más alto y la taza cuelga más que antes: así el brazo pasa por encima de la cabeza de los pasajeros
+     *  (antes les atravesaba el pecho) y la taza no toca el suelo con el brazo abajo del todo. */
+    public static final double HUB_PULPO = 4.6, LARGO_BRAZO = 4.6, CUELGA_CESTA = 2.1;
 
     /** Punta del brazo i del pulpo (relativa a la base): los brazos giran y suben y bajan como olas. */
     public double[] brazo(int i, double tiempo) {
@@ -194,7 +196,7 @@ public class AtraccionBlockEntity extends BlockEntity {
             double hx = Math.abs(u.getStepX()) * au + Math.abs(u.getStepZ()) * af, hz = Math.abs(u.getStepZ()) * au + Math.abs(u.getStepX()) * af;
             return new AABB(x - hx, y - 0.5, z - hz, x + hx, y + CY_NORIA + R_NORIA + 1.5, z + hz);
         }
-        double r = tipo() == AtraccionBlock.PULPO ? LARGO_BRAZO + 2 : 4.5, h = tipo() == AtraccionBlock.PULPO ? 7.5 : 6.5;
+        double r = tipo() == AtraccionBlock.PULPO ? LARGO_BRAZO + 2 : 4.5, h = tipo() == AtraccionBlock.PULPO ? 8.5 : 6.5;
         return new AABB(x - r, y - 0.5, z - r, x + r, y + h, z + r);
     }
 }
