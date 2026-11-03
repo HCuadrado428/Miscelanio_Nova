@@ -12,10 +12,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 /**
  * Justo antes de dibujar el modelo (después de TODAS las animaciones, también las propias de cada mob): pose de brazos
@@ -39,6 +38,14 @@ public abstract class LivingEntityRendererMixin {
         com.miscelanea.client.tortura.castigo.PoseCastigo.posar(((LivingEntityRenderer<?, ?>) (Object) this).getModel(), e, pt);
     }
 
+    /** Al empezar a dibujar cada entidad: se guarda cuál es, para los @ModifyArg del color del fantasma. */
+    @Inject(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+            at = @At("HEAD"), require = 0)
+    private void miscelanea$empieza(LivingEntity e, float yaw, float pt, PoseStack ps, MultiBufferSource buf, int luz, CallbackInfo ci) {
+        miscelanea$actual = e;
+        miscelanea$pt = pt;
+    }
+
     /** Fantasma: tipo de dibujo translúcido (si el normal era nulo, sigue sin dibujarse: invisibilidad de vanilla). */
     @Redirect(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;getRenderType(Lnet/minecraft/world/entity/LivingEntity;ZZZ)Lnet/minecraft/client/renderer/RenderType;"),
@@ -50,17 +57,34 @@ public abstract class LivingEntityRendererMixin {
         return RenderType.entityTranslucent(r.getTextureLocation(e));
     }
 
-    /** Fantasma: color pálido azulado y la opacidad del fundido (índices 4..7 = r, g, b, a). */
-    @ModifyArgs(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"),
-            require = 0)
-    private void miscelanea$fantasmaColor(Args args, LivingEntity e, float yaw, float pt, PoseStack ps, MultiBufferSource buf, int luz) {
-        if (!FantasmaCliente.dibujoFantasma(e)) return;
-        float a = FantasmaCliente.alfa(e, pt);
-        args.set(4, 0.82F);
-        args.set(5, 0.92F);
-        args.set(6, 1.0F);
-        args.set(7, Math.min(a, (Float) args.get(7)));
+    /** Entidad que se está dibujando (la guarda la inyección de justo antes de renderToBuffer; hilo de render). */
+    private static LivingEntity miscelanea$actual;
+    private static float miscelanea$pt;
+
+    /* Fantasma: color pálido azulado y la opacidad del fundido (argumentos 4..7 = r, g, b, a de renderToBuffer).
+     * Con @ModifyArg y no @ModifyArgs: en Forge @ModifyArgs genera una clase sintética que el cargador no encuentra. */
+    @ModifyArg(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"), index = 4, require = 0)
+    private float miscelanea$fantasmaRojo(float v) {
+        return miscelanea$actual != null && FantasmaCliente.dibujoFantasma(miscelanea$actual) ? 0.82F : v;
+    }
+
+    @ModifyArg(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"), index = 5, require = 0)
+    private float miscelanea$fantasmaVerde(float v) {
+        return miscelanea$actual != null && FantasmaCliente.dibujoFantasma(miscelanea$actual) ? 0.92F : v;
+    }
+
+    @ModifyArg(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"), index = 6, require = 0)
+    private float miscelanea$fantasmaAzul(float v) {
+        return miscelanea$actual != null && FantasmaCliente.dibujoFantasma(miscelanea$actual) ? 1.0F : v;
+    }
+
+    @ModifyArg(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/EntityModel;renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V"), index = 7, require = 0)
+    private float miscelanea$fantasmaAlfa(float v) {
+        return miscelanea$actual != null && FantasmaCliente.dibujoFantasma(miscelanea$actual) ? Math.min(FantasmaCliente.alfa(miscelanea$actual, miscelanea$pt), v) : v;
     }
 
     /** Fantasma: sin capas (armadura, objetos en la mano, flechas, capa, élitros, collar...). */
