@@ -1,6 +1,7 @@
 package com.miscelanea.client.flota;
 
 import com.miscelanea.Miscelanea;
+import com.miscelanea.client.juegos.PanelJuego;
 import com.miscelanea.flota.FlotaBlock;
 import com.miscelanea.flota.FlotaBlockEntity;
 import com.miscelanea.flota.FlotaBotones;
@@ -153,6 +154,8 @@ public class FlotaRenderer implements BlockEntityRenderer<FlotaBlockEntity> {
 
         // ---------------- mira sobre el mar rival / casilla propia al colocar
         int[] ap = miro ? FlotaGeo.en(FlotaCliente.tx, FlotaCliente.ty) : null;
+        String mira = null;
+        int miraCol = PanelJuego.BLANCO;
         if (ap != null && yo >= 0) {
             double[] q = FlotaGeo.centro(ap[0], ap[1]);
             if (p.fase == FlotaPartida.JUGAR && p.turno == yo && ap[0] != yo) {
@@ -162,7 +165,8 @@ public class FlotaRenderer implements BlockEntityRenderer<FlotaBlockEntity> {
                 rect(marca, ps, be, q[0], q[1], 22, 1.5, col, 0.8F);
                 rect(marca, ps, be, q[0], q[1], 1.5, 22, col, 0.8F);
                 String coord = (char) ('A' + ap[1] % 10) + "" + (ap[1] / 10 + 1);
-                cartel(ps, buf, font, local(be, q[0], q[1]).add(0, 0.12, 0), List.of(libre ? coord : coord + " ✔"), List.of(libre ? 0xFFFF6060 : 0xFFA0A0A0), 0.008F);
+                mira = I18n.get("panel.miscelanea.flota.mira", libre ? coord : coord + " ✔");
+                miraCol = libre ? 0xFFFF6060 : 0xFFA0A0A0;
             } else if (p.fase == FlotaPartida.COLOCAR && ap[0] == yo) rect(marca, ps, be, q[0], q[1], 18, 18, 0xFFFFFF, 0.25F);
         }
 
@@ -187,32 +191,26 @@ public class FlotaRenderer implements BlockEntityRenderer<FlotaBlockEntity> {
             ps.popPose();
         }
 
-        // ---------------- panel
-        if (mc.player == null || mc.player.distanceToSqr(Vec3.atCenterOf(be.getBlockPos())) > 225) return;
-        List<String> lineas = new ArrayList<>();
-        List<Integer> cols = new ArrayList<>();
-        lineas.add(estado(p));
-        cols.add(0xFFFFE070);
-        String pista = null;
-        if (yo >= 0 && p.fase == FlotaPartida.COLOCAR && !p.js.get(yo).listo) pista = "flota.miscelanea.pista.colocar";
-        else if (yo >= 0 && p.fase == FlotaPartida.JUGAR && p.turno == yo) pista = "flota.miscelanea.pista.disparar";
-        if (pista != null) {
-            lineas.add(I18n.get(pista));
-            cols.add(0xFF80E0FF);
-        }
+        // ---------------- panel de HUD (sustituye al cartel flotante)
+        PanelJuego.Panel pj = PanelJuego.ofrecer(be.getBlockPos(), miro, "block.miscelanea.flota", 0xFF3A7FD0);
+        if (pj == null) return;
+        pj.linea(estado(p), PanelJuego.AMARILLO);
         for (int i = 0; i < p.js.size(); i++) {
             FlotaPartida.Jugador j = p.js.get(i);
             int vivos = 0;
             for (int k = 0; k < FlotaPartida.TAM.length; k++) if (!p.hundido(j, k)) vivos++;
-            String extra = p.fase == FlotaPartida.COLOCAR ? (j.listo ? " ✔" : " …") : "  " + I18n.get("flota.miscelanea.barcos", vivos);
-            lineas.add((i == p.turno && p.fase == FlotaPartida.JUGAR ? "▶ " : "") + j.nombre + extra);
-            cols.add(i == 0 ? 0xFF70B0FF : 0xFFFF9070);
+            String extra = p.fase == FlotaPartida.COLOCAR ? (j.listo ? "✔" : "…") : I18n.get("flota.miscelanea.barcos", vivos);
+            pj.jugador(j.nombre, extra, i == 0 ? 0x70B0FF : 0xFF9070, i == p.turno && p.fase == FlotaPartida.JUGAR);
         }
-        if (!p.log.isEmpty() && !cayendo) {
-            lineas.add(formatear(p.log.get(p.log.size() - 1)));
-            cols.add(0xFFD0D0D0);
-        }
-        cartel(ps, buf, font, new Vec3(0.5, 1.1 + lineas.size() * 0.12, 0.5), lineas, cols, 0.016F);
+        String pista = null;
+        if (yo >= 0 && p.fase == FlotaPartida.COLOCAR && !p.js.get(yo).listo) pista = "flota.miscelanea.pista.colocar";
+        else if (yo >= 0 && p.fase == FlotaPartida.JUGAR && p.turno == yo) pista = "flota.miscelanea.pista.disparar";
+        if (pista != null) pj.detalle(I18n.get(pista), PanelJuego.CIAN);
+        if (mira != null) pj.detalle(mira, miraCol);
+        if (!p.log.isEmpty() && !cayendo) pj.nota(formatear(p.log.get(p.log.size() - 1)));
+        FlotaBotones.Boton bot = miro ? FlotaBotones.en(p, FlotaCliente.tx, FlotaCliente.ty) : null;
+        pj.control(PanelJuego.Tecla.USAR, bot != null ? "flota.miscelanea.boton." + bot.clave()
+                : p.fase == FlotaPartida.JUGAR ? "panel.miscelanea.ctrl.disparar" : "panel.miscelanea.ctrl.jugar");
     }
 
     private static String estado(FlotaPartida p) {
@@ -250,20 +248,6 @@ public class FlotaRenderer implements BlockEntityRenderer<FlotaBlockEntity> {
             vc.vertex(m, (float) q.x, (float) q.y + dy, (float) q.z).color(r, g, b, a).uv(0, 0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(0xF000F0)
                     .normal(n, 0, 1, 0).endVertex();
         }
-    }
-
-    private static void cartel(PoseStack ps, MultiBufferSource buf, Font font, Vec3 donde, List<String> lineas, List<Integer> cols, float esc) {
-        Minecraft mc = Minecraft.getInstance();
-        ps.pushPose();
-        ps.translate(donde.x, donde.y, donde.z);
-        ps.mulPose(mc.getEntityRenderDispatcher().cameraOrientation());
-        ps.scale(-esc, -esc, esc);
-        Matrix4f m = ps.last().pose();
-        for (int i = 0; i < lineas.size(); i++) {
-            String s = lineas.get(i);
-            font.drawInBatch(s, -font.width(s) / 2F, i * 10, cols.get(i), false, m, buf, Font.DisplayMode.NORMAL, 0x80000000, 0xF000F0);
-        }
-        ps.popPose();
     }
 
     private static int mezcla(int a, int b, float k) {

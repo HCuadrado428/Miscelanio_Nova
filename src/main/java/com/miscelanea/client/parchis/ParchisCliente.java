@@ -54,6 +54,13 @@ public final class ParchisCliente {
         }
     }
 
+    /** Botón de velocidad de la partida, si lo hay ahora. */
+    public static com.miscelanea.parchis.ParchisBotones.Boton botonVelocidad(ParchisPartida p) {
+        for (com.miscelanea.parchis.ParchisBotones.Boton b : com.miscelanea.parchis.ParchisBotones.de(p))
+            if (b.id() == com.miscelanea.parchis.ParchisBotones.VELOCIDAD) return b;
+        return null;
+    }
+
     private static void sonidos(Minecraft mc) {
         long ahora = mc.level.getGameTime();
         for (ParchisBlockEntity be : ParchisBlockEntity.Visibles.SET) {
@@ -82,7 +89,10 @@ public final class ParchisCliente {
     public static void usar(InputEvent.InteractionKeyMappingTriggered e) {
         LocalPlayer p = Minecraft.getInstance().player;
         if (!e.isUseItem() || apuntado == null || p == null) return;
-        ModNetwork.CHANNEL.sendToServer(new ParchisClicPacket(apuntado.getBlockPos(), tx, ty));
+        // agachado + clic derecho: opción de la mesa (cambiar la velocidad), como en el resto de juegos de mesa
+        com.miscelanea.parchis.ParchisBotones.Boton vel = p.isShiftKeyDown() ? botonVelocidad(apuntado.p) : null;
+        if (vel != null) ModNetwork.CHANNEL.sendToServer(new ParchisClicPacket(apuntado.getBlockPos(), vel.x(), vel.y()));
+        else ModNetwork.CHANNEL.sendToServer(new ParchisClicPacket(apuntado.getBlockPos(), tx, ty));
         e.setCanceled(true);
         e.setSwingHand(true);
     }

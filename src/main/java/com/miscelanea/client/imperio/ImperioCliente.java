@@ -52,11 +52,21 @@ public final class ImperioCliente {
         }
     }
 
+    /** Botón de velocidad de la partida, si lo hay ahora. */
+    public static com.miscelanea.imperio.ImperioBotones.Boton botonVelocidad(com.miscelanea.imperio.Partida p) {
+        for (com.miscelanea.imperio.ImperioBotones.Boton b : com.miscelanea.imperio.ImperioBotones.de(p))
+            if (b.id() == com.miscelanea.imperio.ImperioBotones.VELOCIDAD) return b;
+        return null;
+    }
+
     @SubscribeEvent
     public static void usar(InputEvent.InteractionKeyMappingTriggered e) {
         LocalPlayer p = Minecraft.getInstance().player;
         if (!e.isUseItem() || apuntado == null || p == null) return;
-        ModNetwork.CHANNEL.sendToServer(new ImperioClicPacket(apuntado.getBlockPos(), tx, ty));
+        // agachado + clic derecho: opción de la mesa (cambiar la velocidad), como en el resto de juegos de mesa
+        com.miscelanea.imperio.ImperioBotones.Boton vel = p.isShiftKeyDown() ? botonVelocidad(apuntado.p) : null;
+        if (vel != null) ModNetwork.CHANNEL.sendToServer(new ImperioClicPacket(apuntado.getBlockPos(), vel.x(), vel.y()));
+        else ModNetwork.CHANNEL.sendToServer(new ImperioClicPacket(apuntado.getBlockPos(), tx, ty));
         e.setCanceled(true);
         e.setSwingHand(true);
     }

@@ -243,6 +243,7 @@ public final class ClientEvents {
             event.registerAboveAll("ocarina", com.miscelanea.client.ocarina.OcarinaCliente::hud);
             event.registerAboveAll("detector", com.miscelanea.client.tesoros.DetectorCliente::hud);
             event.registerAboveAll("trampolin", com.miscelanea.client.trampolin.TrampolinCliente::hud);
+            event.registerAboveAll("panel_juego", com.miscelanea.client.juegos.PanelJuego::render);
         }
     }
 

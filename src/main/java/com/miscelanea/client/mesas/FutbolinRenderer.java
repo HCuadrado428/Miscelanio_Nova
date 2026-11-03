@@ -1,6 +1,7 @@
 package com.miscelanea.client.mesas;
 
 import com.miscelanea.Miscelanea;
+import com.miscelanea.client.juegos.PanelJuego;
 import com.miscelanea.mesas.FutbolinBlockEntity;
 import com.miscelanea.mesas.FutbolinPartida;
 import com.miscelanea.mesas.MesaGeo;
@@ -103,32 +104,27 @@ public class FutbolinRenderer implements BlockEntityRenderer<FutbolinBlockEntity
         marcador(be, ps, buf, mc.font);
     }
 
+    /** Marcador y controles en el panel de HUD (antes era un cartel flotante encima del campo). */
     private void marcador(FutbolinBlockEntity be, PoseStack ps, MultiBufferSource buf, Font font) {
         FutbolinPartida p = be.p;
+        boolean juego = FutbolinCliente.jugando == be;
+        Vec3 c = Vec3.atLowerCornerOf(be.getBlockPos()).add(MesaGeo.local(be.facing(), 1.5, 1, 1));
+        PanelJuego.Panel pj = PanelJuego.ofrecer(c, juego || AirHockeyRenderer.mirando(be), "block.miscelanea.futbolin", 0xFF4CC060);
+        if (pj == null) return;
         String n0 = be.jug[0] != null ? be.nombre[0] : p.cpu[0] ? "CPU" : "-", n1 = be.jug[1] != null ? be.nombre[1] : p.cpu[1] ? "CPU" : "-";
-        String[] l;
-        int[] c;
-        if (p.fase == FutbolinPartida.ESPERA) {
-            l = new String[]{I18n.get("futbolin.miscelanea.titulo"), I18n.get("futbolin.miscelanea.espera")};
-            c = new int[]{0xFFFFE070, 0xFFFFFFFF};
-        } else {
-            String centro = p.goles[0] + " - " + p.goles[1];
-            String abajo = p.fase == FutbolinPartida.GOL ? I18n.get("futbolin.miscelanea.gol_grande") : p.fase == FutbolinPartida.FIN
+        if (p.fase == FutbolinPartida.ESPERA) pj.linea(I18n.get("futbolin.miscelanea.espera"), PanelJuego.BLANCO);
+        else {
+            pj.marcador(p.goles[0] + " - " + p.goles[1], p.fase == FutbolinPartida.GOL ? 0xFFFFD23C : PanelJuego.BLANCO);
+            pj.linea(p.fase == FutbolinPartida.GOL ? I18n.get("futbolin.miscelanea.gol_grande") : p.fase == FutbolinPartida.FIN
                     ? I18n.get("futbolin.miscelanea.gana", p.goles[0] > p.goles[1] ? I18n.get("futbolin.miscelanea.equipo0") : I18n.get("futbolin.miscelanea.equipo1"))
-                    : I18n.get("futbolin.miscelanea.a_cinco");
-            l = new String[]{"§c" + n0 + "§r   " + centro + "   §9" + n1, abajo};
-            c = new int[]{0xFFFFFFFF, p.fase == FutbolinPartida.GOL ? 0xFFFFD23C : 0xFFC0C0C0};
+                    : I18n.get("futbolin.miscelanea.a_cinco"), p.fase == FutbolinPartida.GOL ? 0xFFFFD23C : PanelJuego.AMARILLO);
+            pj.jugador(n0, I18n.get("futbolin.miscelanea.equipo0"), 0xD03030, false);
+            pj.jugador(n1, I18n.get("futbolin.miscelanea.equipo1"), 0x3060D0, false);
         }
-        Vec3 centro = MesaGeo.local(be.facing(), 1.5, 1, 1.5 + l.length * 0.11);
-        Minecraft mc = Minecraft.getInstance();
-        ps.pushPose();
-        ps.translate(centro.x, centro.y, centro.z);
-        ps.mulPose(mc.getEntityRenderDispatcher().cameraOrientation());
-        float esc = p.fase == FutbolinPartida.GOL ? 0.02F : 0.016F;
-        ps.scale(-esc, -esc, esc);
-        Matrix4f m = ps.last().pose();
-        for (int i = 0; i < l.length; i++)
-            font.drawInBatch(l[i], -font.width(l[i]) / 2F, i * 10, c[i], false, m, buf, Font.DisplayMode.NORMAL, 0x80000000, 0xF000F0);
-        ps.popPose();
+        if (juego) {
+            pj.control(PanelJuego.Tecla.ADELANTE_ATRAS, "panel.miscelanea.ctrl.barras");
+            pj.control(PanelJuego.Tecla.ATACAR, "panel.miscelanea.ctrl.chutar");
+            pj.control(PanelJuego.Tecla.AGACHARSE, "panel.miscelanea.ctrl.soltar_mesa");
+        } else pj.control(PanelJuego.Tecla.USAR, "panel.miscelanea.ctrl.unirse_lado");
     }
 }

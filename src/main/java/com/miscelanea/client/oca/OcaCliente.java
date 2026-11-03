@@ -54,6 +54,13 @@ public final class OcaCliente {
         }
     }
 
+    /** Botón de velocidad de la partida, si lo hay ahora. */
+    public static com.miscelanea.oca.OcaBotones.Boton botonVelocidad(com.miscelanea.oca.OcaPartida p) {
+        for (com.miscelanea.oca.OcaBotones.Boton b : com.miscelanea.oca.OcaBotones.de(p))
+            if (b.id() == com.miscelanea.oca.OcaBotones.VELOCIDAD) return b;
+        return null;
+    }
+
     private static void sonidos(Minecraft mc) {
         long ahora = mc.level.getGameTime();
         for (OcaBlockEntity be : OcaBlockEntity.Visibles.SET) {
@@ -95,7 +102,10 @@ public final class OcaCliente {
     public static void usar(InputEvent.InteractionKeyMappingTriggered e) {
         LocalPlayer p = Minecraft.getInstance().player;
         if (!e.isUseItem() || apuntado == null || p == null) return;
-        ModNetwork.CHANNEL.sendToServer(new OcaClicPacket(apuntado.getBlockPos(), tx, ty));
+        // agachado + clic derecho: opción de la mesa (cambiar la velocidad), como en el resto de juegos de mesa
+        com.miscelanea.oca.OcaBotones.Boton vel = p.isShiftKeyDown() ? botonVelocidad(apuntado.p) : null;
+        if (vel != null) ModNetwork.CHANNEL.sendToServer(new OcaClicPacket(apuntado.getBlockPos(), vel.x(), vel.y()));
+        else ModNetwork.CHANNEL.sendToServer(new OcaClicPacket(apuntado.getBlockPos(), tx, ty));
         e.setCanceled(true);
         e.setSwingHand(true);
     }

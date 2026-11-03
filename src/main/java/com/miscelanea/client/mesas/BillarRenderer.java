@@ -1,6 +1,7 @@
 package com.miscelanea.client.mesas;
 
 import com.miscelanea.Miscelanea;
+import com.miscelanea.client.juegos.PanelJuego;
 import com.miscelanea.mesas.BillarBlockEntity;
 import com.miscelanea.mesas.BillarPartida;
 import com.miscelanea.mesas.MesaGeo;
@@ -131,46 +132,35 @@ public class BillarRenderer implements BlockEntityRenderer<BillarBlockEntity> {
         return new float[]{p.x[0] + du * best, p.y[0] + dv * best, best};
     }
 
+    /** Estado de la partida en el panel de HUD (antes era un cartel flotante encima de la mesa). */
     private void cartel(BillarBlockEntity be, PoseStack ps, MultiBufferSource buf, Font font) {
         BillarPartida p = be.p;
-        List<String> l = new ArrayList<>();
-        List<Integer> c = new ArrayList<>();
-        if (be.jug[0] == null) {
-            l.add(I18n.get("billar.miscelanea.titulo"));
-            c.add(0xFFFFE070);
-            l.add(I18n.get("billar.miscelanea.msg.espera"));
-            c.add(0xFFFFFFFF);
-        } else {
-            String n0 = be.nombre[0], n1 = be.nombre[1].isEmpty() ? "?" : be.nombre[1];
-            l.add(n0 + grupo(p.grupo[0]) + "  vs  " + n1 + grupo(p.grupo[1]));
-            c.add(0xFFFFFFFF);
-            if (p.fase == BillarPartida.FIN) {
-                l.add(I18n.get("billar.miscelanea.gana", p.ganador == 0 ? n0 : n1));
-                c.add(0xFFFFD23C);
-                l.add(I18n.get(p.mensaje));
-                c.add(0xFFC0C0C0);
-                l.add(I18n.get("billar.miscelanea.otra"));
-                c.add(0xFF8AE0FF);
-            } else if (p.fase == BillarPartida.ESPERA) {
-                l.add(I18n.get(p.mensaje));
-                c.add(0xFFC0C0C0);
-            } else {
-                l.add(I18n.get("billar.miscelanea.turno", p.turno == 0 ? n0 : n1));
-                c.add(p.turno == 0 ? 0xFFFF8080 : 0xFF80B0FF);
-                l.add(I18n.get(p.mensaje));
-                c.add(0xFFC0C0C0);
-            }
-        }
-        Vec3 centro = MesaGeo.local(be.facing(), 2, 1, 1.45 + l.size() * 0.11);
         Minecraft mc = Minecraft.getInstance();
-        ps.pushPose();
-        ps.translate(centro.x, centro.y, centro.z);
-        ps.mulPose(mc.getEntityRenderDispatcher().cameraOrientation());
-        ps.scale(-0.016F, -0.016F, 0.016F);
-        Matrix4f m = ps.last().pose();
-        for (int i = 0; i < l.size(); i++)
-            font.drawInBatch(l.get(i), -font.width(l.get(i)) / 2F, i * 10, c.get(i), false, m, buf, Font.DisplayMode.NORMAL, 0x80000000, 0xF000F0);
-        ps.popPose();
+        int yo = mc.player == null ? -1 : be.jug[0] != null && mc.player.getUUID().equals(be.jug[0]) ? 0 : be.jug[1] != null && mc.player.getUUID().equals(be.jug[1]) ? 1 : -1;
+        Vec3 c = Vec3.atLowerCornerOf(be.getBlockPos()).add(MesaGeo.local(be.facing(), 2, 1, 1));
+        PanelJuego.Panel pj = PanelJuego.ofrecer(c, yo >= 0 || BillarCliente.apuntando == be || AirHockeyRenderer.mirando(be), "block.miscelanea.billar", 0xFF2E9A50);
+        if (pj == null) return;
+        if (be.jug[0] == null) {
+            pj.linea(I18n.get("billar.miscelanea.titulo"), PanelJuego.AMARILLO);
+            pj.linea(I18n.get("billar.miscelanea.msg.espera"), PanelJuego.BLANCO);
+            pj.control(PanelJuego.Tecla.USAR, "panel.miscelanea.ctrl.sentarse");
+            return;
+        }
+        String n0 = be.nombre[0], n1 = be.nombre[1].isEmpty() ? "?" : be.nombre[1];
+        boolean enJuego = p.fase == BillarPartida.APUNTA || p.fase == BillarPartida.MUEVE;
+        if (p.fase == BillarPartida.FIN) pj.linea(I18n.get("billar.miscelanea.gana", p.ganador == 0 ? n0 : n1), 0xFFFFD23C);
+        else if (enJuego) pj.linea(I18n.get("billar.miscelanea.turno", p.turno == 0 ? n0 : n1), p.turno == 0 ? 0xFFFF8080 : 0xFF80B0FF);
+        pj.jugador(n0, grupo(p.grupo[0]).trim(), 0xE05050, enJuego && p.turno == 0);
+        pj.jugador(n1, grupo(p.grupo[1]).trim(), 0x5080E0, enJuego && p.turno == 1);
+        if (p.mensaje != null && !p.mensaje.isEmpty()) pj.detalle(I18n.get(p.mensaje), 0xFFC0C0C0);
+        if (p.fase == BillarPartida.FIN) pj.control(PanelJuego.Tecla.USAR, "panel.miscelanea.ctrl.otra");
+        else if (p.fase == BillarPartida.ESPERA) {
+            if (yo < 0) pj.control(PanelJuego.Tecla.USAR, "panel.miscelanea.ctrl.sentarse");
+            else pj.control(PanelJuego.Tecla.AGACHADO_USAR, "panel.miscelanea.ctrl.cpu");
+        } else if (yo >= 0) {
+            pj.control(PanelJuego.Tecla.USAR, BillarCliente.apuntando == be ? "panel.miscelanea.ctrl.tirar" : "panel.miscelanea.ctrl.apuntar");
+            pj.control(PanelJuego.Tecla.AGACHADO_USAR, "panel.miscelanea.ctrl.abandonar");
+        }
     }
 
     private static String grupo(int g) {
