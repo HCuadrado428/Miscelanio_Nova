@@ -7,6 +7,9 @@
     "miscelanea:silla_electrica",
     "miscelanea:collar_explosivo",
     "miscelanea:pendulo",
-    "miscelanea:inmersion"
+    "miscelanea:inmersion",
+    "miscelanea:interrogatorio",
+    "miscelanea:paro_cardiaco",
+    "miscelanea:colgado"
   ]
 }

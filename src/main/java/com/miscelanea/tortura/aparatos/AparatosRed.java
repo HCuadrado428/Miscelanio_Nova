@@ -38,6 +38,10 @@ public final class AparatosRed {
                     .encoder(AparatoAccionPacket::encode).decoder(AparatoAccionPacket::new).consumerMainThread(AparatoAccionPacket::handle).add();
             CANAL.messageBuilder(MarcaDibujoPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
                     .encoder(MarcaDibujoPacket::encode).decoder(MarcaDibujoPacket::new).consumerMainThread(MarcaDibujoPacket::handle).add();
+            CANAL.messageBuilder(InterrogaAccionPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                    .encoder(InterrogaAccionPacket::encode).decoder(InterrogaAccionPacket::new).consumerMainThread(InterrogaAccionPacket::handle).add();
+            CANAL.messageBuilder(InterrogaEfectoPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                    .encoder(InterrogaEfectoPacket::encode).decoder(InterrogaEfectoPacket::new).consumerMainThread(InterrogaEfectoPacket::handle).add();
         });
     }
 

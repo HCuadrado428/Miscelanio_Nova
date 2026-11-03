@@ -180,6 +180,10 @@ public class Miscelanea {
             event.accept(com.miscelanea.tortura.efectos.EfectosRegistro.ALICATES);
             event.accept(com.miscelanea.tortura.efectos.EfectosRegistro.GRANADA_MIEDO);
             event.accept(com.miscelanea.tortura.efectos.EfectosRegistro.DARDO_MIEDO);
+            event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.INTERROGATORIO_ITEM);
+            event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.MALETIN);
+            event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.DIENTE);
+            event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.GANCHO_ITEM);
         }
         // ---- Pociones y efectos (cada poción con sus variantes: normal, arrojadiza, persistente y flecha)
         if (event.getTabKey() == ModTabs.POCIONES.getKey()) {

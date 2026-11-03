@@ -37,4 +37,12 @@ public abstract class CameraMixin {
         setRotation((float) r[3], (float) r[4]);
         setPosition(r[0], r[1], r[2]);
     }
+
+    /** Colgado boca abajo del gancho: en primera persona, los ojos van abajo, en la cabeza (ver InterrogaCliente). */
+    @Inject(method = "setup", at = @At("TAIL"))
+    private void miscelanea$camaraColgado(BlockGetter level, Entity entity, boolean detached, boolean reverse, float partial, CallbackInfo ci) {
+        if (detached) return;
+        double[] r = com.miscelanea.client.tortura.aparatos.InterrogaCliente.ojoColgado(entity, partial);
+        if (r != null) setPosition(r[0], r[1], r[2]);
+    }
 }
