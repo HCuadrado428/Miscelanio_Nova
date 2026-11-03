@@ -29,6 +29,20 @@ public class MaquinaFeriaRenderer implements BlockEntityRenderer<MaquinaFeriaBlo
         VertexConsumer vc = buf.getBuffer(Sheets.cutoutBlockSheet());
         float t = be.getLevel().getGameTime() + pt;
         float p = be.progreso(t);
+        int modo = be.activo ? PuestosPiezas.JUEGO : PuestosPiezas.REPOSO;
+        if (be.tipo() != MaquinaFeriaBlock.FUEGOS) {
+            // bombillas: alrededor del toldo del algodón / en la cornisa de las palomitas
+            ps.pushPose();
+            ps.translate(0.5, 0, 0.5);
+            ps.mulPose(Axis.YP.rotation(com.miscelanea.feria.CasetaTiroBlockEntity.giro(be.facing())));
+            if (be.tipo() == MaquinaFeriaBlock.ALGODON)
+                for (int k = 0; k < 8; k++) {
+                    double a = k * Math.PI / 4, r = k % 2 == 0 ? 0.49 : 0.49 * Math.sqrt(2);
+                    FeriaPiezas.bombilla(ps, vc, Math.cos(a) * r, 1.47, Math.sin(a) * r, 0.06F, PuestosPiezas.bombilla(k, 8, t, modo));
+                }
+            else PuestosPiezas.ristra(ps, vc, 0.31, 1.005, -0.39, -0.31, 1.005, -0.39, 6, 0.055F, t, modo, 0);
+            ps.popPose();
+        }
         switch (be.tipo()) {
             case MaquinaFeriaBlock.ALGODON -> {
                 if (!be.activo) return;

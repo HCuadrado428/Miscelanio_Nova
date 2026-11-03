@@ -632,6 +632,6 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
 
     @Override
     public AABB getRenderBoundingBox() {
-        return new AABB(worldPosition).expandTowards(0, 2, 0).inflate(0.5);
+        return new AABB(worldPosition).expandTowards(0, tipo() == MaquinaAltaBlock.MARTILLO ? 5 : 2, 0).inflate(0.5);
     }
 }

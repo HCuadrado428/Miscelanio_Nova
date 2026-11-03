@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.util.Mth;
-import net.minecraft.client.resources.language.I18n;
 
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -23,11 +22,7 @@ import static com.miscelanea.feria.MaquinaAltaBlockEntity.*;
 public class MaquinaAltaRenderer implements BlockEntityRenderer<MaquinaAltaBlockEntity> {
     private final Map<MaquinaAltaBlockEntity, float[]> suave = new WeakHashMap<>();
 
-    private final net.minecraft.client.gui.Font font;
-
-    public MaquinaAltaRenderer(BlockEntityRendererProvider.Context c) {
-        font = c.getFont();
-    }
+    public MaquinaAltaRenderer(BlockEntityRendererProvider.Context c) {}
 
     @Override
     public boolean shouldRenderOffScreen(MaquinaAltaBlockEntity be) {
@@ -112,12 +107,11 @@ public class MaquinaAltaRenderer implements BlockEntityRenderer<MaquinaAltaBlock
             FeriaPiezas.barra(ps, vc, "metal_blanco", g[0] + Math.cos(a) * r0, g[1], g[2] + Math.sin(a) * r0, x1, g[1] - 0.09, z1, 0.018F, 0.018F, luz);
             FeriaPiezas.barra(ps, vc, "metal_blanco", x1, g[1] - 0.09, z1, x2, g[1] - 0.17, z2, 0.018F, 0.018F, luz);
         }
-        // luces del marco
-        for (int k = 0; k < 10; k++) {
-            double x = -0.42 + 0.84 * k / 9;
-            FeriaPiezas.bombilla(ps, vc, x, 1.94, -0.46, 0.05F, FeriaPiezas.luz(k, t, be.activo));
-            FeriaPiezas.bombilla(ps, vc, x, 0.92, -0.46, 0.04F, FeriaPiezas.luz(k + 3, t, be.activo));
-        }
+        // luces del marco: corren mientras juegas y destellan cuando la garra trae un peluche
+        boolean trae = be.fase == 2 && be.agarrado >= 0 && t - be.inicioBajada > BAJA + CIERRA + 4;
+        int modo = trae ? PuestosPiezas.PREMIO : be.activo ? PuestosPiezas.JUEGO : PuestosPiezas.REPOSO;
+        PuestosPiezas.ristra(ps, vc, 0.42, 1.94, -0.46, -0.42, 1.94, -0.46, 10, 0.05F, t, modo, 0);
+        PuestosPiezas.ristra(ps, vc, 0.42, 0.92, -0.46, -0.42, 0.92, -0.46, 10, 0.04F, t, modo, 3);
     }
 
     private void tragaperras(MaquinaAltaBlockEntity be, PoseStack ps, VertexConsumer vc, float t, int luz) {
@@ -148,11 +142,13 @@ public class MaquinaAltaRenderer implements BlockEntityRenderer<MaquinaAltaBlock
         FeriaPiezas.bombilla(ps, vc, 0, 0.45, -0.02, 0.09F, 0xE02828);
         ps.popPose();
         boolean gana = be.activo && tt > PARA[2] + 6 && premio(be.rodillo) > 0;
-        for (int k = 0; k < 9; k++) {
-            double x = -0.36 + 0.72 * k / 8;
-            int c = gana ? ((int) (t / 2 + k) % 2 == 0 ? 0xFFF060 : 0xFF4040) : FeriaPiezas.luz(k, t, be.activo);
-            FeriaPiezas.bombilla(ps, vc, x, 1.88, -0.43, 0.05F, c);
-        }
+        PuestosPiezas.ristra(ps, vc, 0.36, 1.88, -0.43, -0.36, 1.88, -0.43, 9, 0.05F, t,
+                gana ? PuestosPiezas.PREMIO : be.activo ? PuestosPiezas.JUEGO : PuestosPiezas.REPOSO, 0);
+        // farolillo de encima: rojo apagado en reposo, ámbar mientras giran los rodillos y destellos al ganar
+        FeriaPiezas.caja(ps, vc, "cromo", 0, 2.06, 0.1, 0.14, 0.06, 0.14, luz);
+        int far = gana ? (((int) (t / 2)) % 2 == 0 ? 0xFFFFFF : 0xFF2020)
+                : be.activo ? (((int) (t / 4)) % 2 == 0 ? 0xFFB020 : 0x905010) : (int) (0x60 + 0x30 * (1 + Mth.sin(t * 0.06F))) << 16 | 0x1010;
+        FeriaPiezas.bombilla(ps, vc, 0, 2.16, 0.1, gana ? 0.15F : 0.13F, far);
     }
 
     private void gachapon(MaquinaAltaBlockEntity be, PoseStack ps, VertexConsumer vc, float t, int luz) {
@@ -216,22 +212,13 @@ public class MaquinaAltaRenderer implements BlockEntityRenderer<MaquinaAltaBlock
             FeriaPiezas.modelo(ps, vc, FeriaPiezas.rl("balon"), 1, 1, 1, luz);
             ps.popPose();
         }
-        // marcador encima
-        String txt = be.activo ? I18n.get("miscelanea.canasta.marcador", be.puntos, Math.max(0, (int) ((MaquinaAltaBlockEntity.CANASTA_DURA - tt) / 20)))
-                : I18n.get("miscelanea.canasta.cartel");
-        letrero(ps, buf, txt, 2.45, -0.06, be.activo ? 0xFFFF5040 : 0xFFFFD040);
-        for (int k = 0; k < 9; k++) FeriaPiezas.bombilla(ps, vc, -0.4 + k * 0.1, 2.36, -0.04, 0.045F, FeriaPiezas.luz(k, t, be.activo));
-    }
-
-    private void letrero(PoseStack ps, MultiBufferSource buf, String s, double y, double z, int col) {
-        ps.pushPose();
-        ps.translate(0, y, z);
-        ps.mulPose(Axis.YP.rotationDegrees(180));
-        ps.scale(0.012F, -0.012F, 0.012F);
-        float esc = Math.min(1, 74F / Math.max(1, font.width(s)));
-        ps.scale(esc, esc, esc);
-        font.drawInBatch(s, -font.width(s) / 2F, 0, col, false, ps.last().pose(), buf, net.minecraft.client.gui.Font.DisplayMode.NORMAL, 0xC0000000, 0xF000F0);
-        ps.popPose();
+        // marcador de dígitos en la pantalla de arriba: puntos y segundos que quedan
+        int seg = Math.max(0, (int) ((MaquinaAltaBlockEntity.CANASTA_DURA - tt) / 20));
+        String pts = String.format("%2d", Math.min(99, be.puntos));
+        String tiempo = be.activo ? (seg <= 5 && ((int) (t / 4) & 1) == 0 ? "  " : String.format("%2d", seg)) : "--";
+        PuestosPiezas.led(ps, vc, pts, 0.2, 2.47, -0.042, 0.2, 0xFF5028, true);
+        PuestosPiezas.led(ps, vc, tiempo, -0.2, 2.47, -0.042, 0.2, 0x50FF70, true);
+        PuestosPiezas.ristra(ps, vc, 0.42, 2.29, -0.09, -0.42, 2.29, -0.09, 9, 0.045F, t, be.activo ? PuestosPiezas.JUEGO : PuestosPiezas.REPOSO, 0);
     }
 
     // ------------------------------------------------------------------ boxeo
@@ -252,7 +239,7 @@ public class MaquinaAltaRenderer implements BlockEntityRenderer<MaquinaAltaBlock
         int mostrado = be.fase == 2 ? (int) Math.min(be.valor, be.valor * Math.max(0, dt) / 30) : 0;
         String num = String.format("%03d", mostrado);
         int col = be.fase == 2 && dt > 30 && be.valor >= 900 && ((int) t / 3) % 2 == 0 ? 0xFFFFFF60 : 0xFFFF3020;
-        letrero(ps, buf, num, 1.86, -0.47, col);
+        PuestosPiezas.led(ps, vc, num, 0, 1.82, -0.362, 0.2, col & 0xFFFFFF, true);
         // mientras espera el golpe, las bombillas hacen de medidor (hay que pegar cuando se encienden todas)
         float med = be.activo && be.fase == 1 ? MaquinaAltaBlockEntity.medidorBoxeo(t - be.inicio) : -1;
         for (int k = 0; k < 7; k++) {
@@ -311,7 +298,29 @@ public class MaquinaAltaRenderer implements BlockEntityRenderer<MaquinaAltaBlock
         ps.translate(-0.5, 0, -0.5);
         FeriaPiezas.modelo(ps, vc, FeriaPiezas.rl("mazo"), 1, 1, 1, luz);
         ps.popPose();
-        letrero(ps, buf, be.fase == 2 && dt > 12 ? String.valueOf(be.valor * 10) : I18n.get("miscelanea.martillo.cartel"), top + 0.45, 0.08, 0xFFFFD040);
+        // marcador en lo alto, sujeto a la torre con un mástil: los puntos del último mazazo
+        double my = top + 0.72;
+        FeriaPiezas.barra(ps, vc, "cromo", 0, top + 0.4, 0.2, 0, my - 0.15, 0.2, 0.03F, 0.03F, luz);
+        FeriaPiezas.caja(ps, vc, "negro", 0, my, 0.2, 0.62, 0.3, 0.05, luz);
+        FeriaPiezas.caja(ps, vc, "dorado", 0, my + 0.16, 0.2, 0.66, 0.03, 0.07, luz);
+        FeriaPiezas.caja(ps, vc, "dorado", 0, my - 0.16, 0.2, 0.66, 0.03, 0.07, luz);
+        boolean gordo = be.fase == 2 && dt > 12 && be.valor >= 97;
+        String pts = be.fase == 2 && dt > 12 ? String.format("%4d", be.valor * 10) : "----";
+        if (gordo && ((int) (t / 3) & 1) == 0) pts = "    ";
+        PuestosPiezas.led(ps, vc, pts, 0, my, 0.172, 0.2, gordo ? 0xFFD040 : 0xFF4020, true);
+        // bombillas por los dos lados de la torre: se encienden al paso del taco y celebran el campanazo
+        int n = 12;
+        for (int k = 0; k < n; k++) {
+            double y = base + 0.2 + (k + 0.5) * alto / n;
+            int c;
+            if (gordo) c = PuestosPiezas.bombilla(k, n, t, PuestosPiezas.PREMIO);
+            else if (be.fase == 2) c = h >= y - 0.05 ? new int[]{0x40FF40, 0x80FF40, 0xC0FF40, 0xFFE040, 0xFFA020, 0xFF3020}[k * 6 / n] : 0x302018;
+            else c = PuestosPiezas.bombilla(k, n, t, be.activo ? PuestosPiezas.JUEGO : PuestosPiezas.REPOSO);
+            FeriaPiezas.bombilla(ps, vc, -0.17, y, 0.14, 0.045F, c);
+            FeriaPiezas.bombilla(ps, vc, 0.17, y, 0.14, 0.045F, c);
+        }
+        PuestosPiezas.ristra(ps, vc, 0.44, 0.18, -0.535, -0.44, 0.18, -0.535, 6, 0.06F, t,
+                gordo ? PuestosPiezas.PREMIO : be.activo ? PuestosPiezas.JUEGO : PuestosPiezas.REPOSO, 0);
     }
 
     private void capsula(PoseStack ps, VertexConsumer vc, int c, double x, double y, double z, float giro, int luz) {
