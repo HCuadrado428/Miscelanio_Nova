@@ -156,6 +156,8 @@ public final class Ballesta {
         ArrowItem tipo = municion.getItem() instanceof ArrowItem a ? a : (ArrowItem) Items.ARROW;
         if (municion.isEmpty()) municion = new ItemStack(Items.ARROW);
         AbstractArrow f = tipo.createArrow(level, municion, p);
+        double mult = com.miscelanea.ConfigServidor.ballestaMult();
+        if (mult != 1.0) f.setBaseDamage(f.getBaseDamage() * mult);
         f.setShotFromCrossbow(true);
         f.setSoundEvent(SoundEvents.CROSSBOW_HIT);
         f.pickup = p.getAbilities().instabuild ? AbstractArrow.Pickup.CREATIVE_ONLY : AbstractArrow.Pickup.ALLOWED;

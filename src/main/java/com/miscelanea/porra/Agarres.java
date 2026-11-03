@@ -51,7 +51,7 @@ public final class Agarres {
     private static final int DURACION_MAX = 7 * 20;
     private static final int INTERVALO_DESCARGA = 30;
     private static final float COSTE_DESCARGA = 8.0F;
-    private static final float DANO_DESCARGA = 3.0F;
+    // daño de la descarga: ConfigServidor.porraDescarga() (3 por defecto)
     /** Ticks que quedan bloqueados los ítems de uso de la víctima tras una descarga del agarre. */
     private static final int BLOQUEO_AGARRE = 200;
     /** Y tras un golpe normal con la porra. */
@@ -206,7 +206,7 @@ public final class Agarres {
         PorraItem.marcarDescarga(a.agresor.getMainHandItem());
         LivingEntity v = a.victima;
         v.invulnerableTime = 0;
-        v.hurt(ModDamageTypes.descarga(level, a.agresor), DANO_DESCARGA);
+        v.hurt(ModDamageTypes.descarga(level, a.agresor), com.miscelanea.ConfigServidor.porraDescarga());
         bloquearItems(v, BLOQUEO_AGARRE);
         a.resistencia = Math.min(RESISTENCIA_MAX, a.resistencia + 12.0F);
 

@@ -32,7 +32,6 @@ import software.bernie.geckolib.util.GeckoLibUtil;
  */
 public class CoheteEntity extends Projectile implements GeoEntity {
     private static final double RADIO = 3.5;
-    private static final float DANO = 14.0F;
     private static final RawAnimation VUELO = RawAnimation.begin().thenLoop("animation.cohete.vuelo");
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private int vida;
@@ -136,7 +135,8 @@ public class CoheteEntity extends Projectile implements GeoEntity {
             if (!propio && d > 1.0 && sl.clip(new ClipContext(c, centro, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getType() != HitResult.Type.MISS)
                 continue;
             float f = (float) (1.0 - 0.5 * d / RADIO);
-            float dmg = (e == directo ? DANO : DANO * f) * (propio ? 0.35F : 1.0F);
+            float base = com.miscelanea.ConfigServidor.cohete();
+            float dmg = (e == directo ? base : base * f) * (propio ? 0.35F : 1.0F);
             e.hurt(damageSources().explosion(this, duenyo), dmg);
             Vec3 emp = centro.subtract(c);
             emp = emp.lengthSqr() < 1e-4 ? new Vec3(0, 1, 0) : emp.normalize();

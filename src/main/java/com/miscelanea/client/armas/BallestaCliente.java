@@ -22,7 +22,7 @@ import org.lwjgl.glfw.GLFW;
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
 public final class BallestaCliente {
     public static final KeyMapping RECARGAR = new KeyMapping("key.miscelanea.recargar_ballesta", KeyConflictContext.IN_GAME,
-            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R, "key.categories." + Miscelanea.MOD_ID);
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R, com.miscelanea.client.combate.LlaveCliente.CATEGORIA);
     private static int tirosVistos = -1;
 
     private BallestaCliente() {}

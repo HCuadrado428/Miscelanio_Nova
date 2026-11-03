@@ -376,12 +376,13 @@ public class GanchoBlockEntity extends AparatoBlockEntity {
             est.wx += Math.cos(a) * k;
             est.wz += Math.sin(a) * k;
         }
-        if (colgadoT >= DANO_DESDE) {
-            if ((colgadoT - DANO_DESDE) % DANO_CADA == 0) Aparatos.danar(v, AparatosRegistro.DANO_COLGADO, 1.0F, captor);
+        int desde = com.miscelanea.ConfigServidor.ganchoDanoDesdeTicks();
+        if (colgadoT >= desde) {
+            if ((colgadoT - desde) % DANO_CADA == 0) Aparatos.danar(v, AparatosRegistro.DANO_COLGADO, 1.0F, captor);
             if (v instanceof ServerPlayer sp && colgadoT % 100 == 0)
                 sp.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 160, 0, false, false));
         }
-        if (v instanceof ServerPlayer sp && colgadoT == DANO_DESDE)
+        if (v instanceof ServerPlayer sp && colgadoT == desde)
             sp.displayClientMessage(Component.translatable("msg.miscelanea.gancho.sangre").withStyle(ChatFormatting.DARK_RED), true);
         if (++avisoT >= 200) {
             avisoT = 0;

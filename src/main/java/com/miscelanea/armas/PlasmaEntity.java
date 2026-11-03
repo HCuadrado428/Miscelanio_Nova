@@ -27,7 +27,7 @@ import org.joml.Vector3f;
  */
 public class PlasmaEntity extends Projectile {
     static final double ALCANCE_RAYOS = 9, RADIO = 6;
-    static final float DANO_RAYO = 7, DANO = 60;
+    // daño de la esfera y del rayo: ConfigServidor (bfg_esfera = 60, bfg_rayo = 7)
     static final DustParticleOptions VERDE = new DustParticleOptions(new Vector3f(0.35F, 1F, 0.3F), 2.4F);
     static final DustParticleOptions VERDE_P = new DustParticleOptions(new Vector3f(0.6F, 1F, 0.5F), 0.9F);
     private static final net.minecraft.network.syncher.EntityDataAccessor<Boolean> SOBRE =
@@ -110,7 +110,7 @@ public class PlasmaEntity extends Projectile {
             if (obj.distanceTo(c) > alcance) continue;
             if (!sobre() && sl.clip(new ClipContext(c, obj, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getType() != HitResult.Type.MISS) continue;
             e.invulnerableTime = 0; // los rayos van cada 5 ticks: sin esto la invulnerabilidad se los comeria
-            e.hurt(damageSources().indirectMagic(this, duenyo), DANO_RAYO);
+            e.hurt(damageSources().indirectMagic(this, duenyo), com.miscelanea.ConfigServidor.bfgRayo());
             Vec3 d = obj.subtract(c);
             int pasos = (int) (d.length() * 4);
             for (int i = 0; i <= pasos; i++) {
@@ -146,7 +146,7 @@ public class PlasmaEntity extends Projectile {
             if (d > radio) continue;
             float f = (float) (1 - 0.6 * d / radio);
             e.invulnerableTime = 0; // que el ultimo rayo no reduzca el estallido
-            e.hurt(damageSources().indirectMagic(this, duenyo), DANO * (sobre() ? 1.7F : 1F) * f * (e == duenyo ? 0.25F : 1F));
+            e.hurt(damageSources().indirectMagic(this, duenyo), com.miscelanea.ConfigServidor.bfgEsfera() * (sobre() ? 1.7F : 1F) * f * (e == duenyo ? 0.25F : 1F));
             Vec3 emp = centro.subtract(c);
             emp = emp.lengthSqr() < 1e-4 ? new Vec3(0, 1, 0) : emp.normalize();
             e.setDeltaMovement(e.getDeltaMovement().add(emp.scale(1.2 * f)).add(0, 0.3 * f, 0));

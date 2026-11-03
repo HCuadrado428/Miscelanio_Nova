@@ -103,7 +103,7 @@ public class LlaveLanzada extends Projectile implements GeoEntity {
             if (level().clip(new ClipContext(position(), centro, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getType() != HitResult.Type.MISS) continue;
             golpeados.add(e.getId());
             le.invulnerableTime = 0;
-            if (le.hurt(damageSources().playerAttack(p), 6.0F)) {
+            if (le.hurt(damageSources().playerAttack(p), 6.0F * com.miscelanea.ConfigServidor.llaveMult())) {
                 le.knockback(0.4, -v.x, -v.z);
                 ((ServerLevel) level()).sendParticles(ParticleTypes.CRIT, le.getX(), le.getY() + le.getBbHeight() * 0.5, le.getZ(), 8, 0.2, 0.2, 0.2, 0.3);
                 level().playSound(null, le.getX(), le.getY(), le.getZ(), ModSounds.LLAVE_IMPACTO.get(), SoundSource.PLAYERS, 0.9F, 1.0F);

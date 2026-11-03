@@ -63,7 +63,7 @@ public final class SawCliente {
     private SawCliente() {}
 
     public static final KeyMapping MANOS = new KeyMapping("key.miscelanea.saw_manos", KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_J, "key.categories.miscelanea");
+            GLFW.GLFW_KEY_J, com.miscelanea.client.combate.LlaveCliente.CATEGORIA);
     static final ResourceLocation MANGUERA = new ResourceLocation(Miscelanea.MOD_ID, "textures/entity/saw/manguera.png");
     static final ResourceLocation CRISTAL = new ResourceLocation(Miscelanea.MOD_ID, "textures/entity/saw/caja_agua_cristal.png");
     private static final ResourceLocation BAJO_AGUA = new ResourceLocation("textures/misc/underwater.png");
@@ -127,7 +127,7 @@ public final class SawCliente {
                 continue;
             }
             c.nivelAntes = c.nivel;
-            if (c.activa && c.objetivo < 1F) c.objetivo = Math.min(1F, c.objetivo + 1F / CajaAgua.LLENADO);
+            if (c.activa && c.objetivo < 1F) c.objetivo = Math.min(1F, c.objetivo + 1F / com.miscelanea.ConfigServidor.cajaAguaLlenadoTicks());
             c.nivel += (c.objetivo - c.nivel) * 0.25F;
             if (c.abierta > 0) c.abierta++;
         }

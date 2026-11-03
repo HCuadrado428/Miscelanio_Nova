@@ -35,8 +35,14 @@ import java.util.Comparator;
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
 public final class LlaveCliente {
+    /**
+     * Categoría común de todas las teclas del mod ("Miscelánea"). Teclas por defecto (sin choques
+     * entre sí ni con las de vanilla): R recargar ballesta · H comando (Llave Espada / Hacha) ·
+     * Z cambiar comando / esquivar · V fijar objetivo · ratón 4 apuntar hacha · Alt izq. escudo ·
+     * G soltar captura · U mochila del Aspirafantasmas · B Pip-Boy · J meter las manos (caja de agua).
+     */
     public static final String CATEGORIA = "key.categories." + Miscelanea.MOD_ID;
-    public static final KeyMapping COMANDO = new KeyMapping("key.miscelanea.comando", KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_R, CATEGORIA);
+    public static final KeyMapping COMANDO = new KeyMapping("key.miscelanea.comando", KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_H, CATEGORIA);
     public static final KeyMapping CAMBIAR = new KeyMapping("key.miscelanea.cambiar_comando", KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Z, CATEGORIA);
     public static final KeyMapping FIJAR = new KeyMapping("key.miscelanea.fijar", KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_V, CATEGORIA);
 

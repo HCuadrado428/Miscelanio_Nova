@@ -23,6 +23,9 @@ public class Miscelanea {
 
     public Miscelanea() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
+        // configuración del servidor (serverconfig/miscelanea-server.toml; Forge la sincroniza con los clientes)
+        net.minecraftforge.fml.ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.SERVER,
+                ConfigServidor.SPEC, MOD_ID + "-server.toml");
 
         ModEffects.EFFECTS.register(modBus);
         ModPotions.POTIONS.register(modBus);

@@ -173,11 +173,13 @@ public final class Aparatos {
     public static void danar(LivingEntity v, ResourceKey<DamageType> k, float dano, @Nullable UUID captor) {
         if (!(v.level() instanceof ServerLevel sl) || dano <= 0 || !v.isAlive()) return;
         Entity c = null;
-        if (dano >= v.getHealth() + v.getAbsorptionAmount() && captor != null) {
-            c = sl.getEntity(captor);
-            if (c == null) c = sl.getServer().getPlayerList().getPlayer(captor);
-            if (c == v) c = null;
-            IncapCompat.asegurar();
+        if (dano >= v.getHealth() + v.getAbsorptionAmount()) {
+            IncapCompat.asegurar();   // también sin captor (pozo, alambre...)
+            if (captor != null) {
+                c = sl.getEntity(captor);
+                if (c == null) c = sl.getServer().getPlayerList().getPlayer(captor);
+                if (c == v) c = null;
+            }
         }
         v.invulnerableTime = 0;
         v.hurt(fuente(sl, k, c), dano);

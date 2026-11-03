@@ -143,7 +143,7 @@ public class MazoLanzado extends Projectile implements GeoEntity {
         for (Entity x : level().getEntities(this, getBoundingBox().expandTowards(v).inflate(0.6))) {
             if (!(x instanceof LivingEntity le) || x == p || !le.isAlive() || !golpeados.add(x.getId())) continue;
             le.invulnerableTime = 0;
-            if (le.hurt(damageSources().thrown(this, p), dano)) {
+            if (le.hurt(damageSources().thrown(this, p), dano * com.miscelanea.ConfigServidor.mazoMult())) {
                 Vec3 h = v.lengthSqr() < 1e-6 ? Vec3.ZERO : v.normalize();
                 le.setDeltaMovement(le.getDeltaMovement().add(h.scale(empuje)).add(0, 0.35, 0));
                 le.hurtMarked = true;

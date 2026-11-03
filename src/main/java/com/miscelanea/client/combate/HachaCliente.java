@@ -38,7 +38,7 @@ import java.util.Map;
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
 public final class HachaCliente {
     public static final KeyMapping APUNTAR = new KeyMapping("key.miscelanea.apuntar", KeyConflictContext.IN_GAME, InputConstants.Type.MOUSE,
-            GLFW.GLFW_MOUSE_BUTTON_MIDDLE, LlaveCliente.CATEGORIA);
+            GLFW.GLFW_MOUSE_BUTTON_4, LlaveCliente.CATEGORIA);
     public static final KeyMapping ESCUDO = new KeyMapping("key.miscelanea.escudo", KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_LEFT_ALT, LlaveCliente.CATEGORIA);
 
