@@ -7,6 +7,8 @@
     "miscelanea:silla_electrica",
     "miscelanea:collar_explosivo",
     "miscelanea:pendulo",
-    "miscelanea:inmersion"
+    "miscelanea:inmersion",
+    "miscelanea:caja_agua",
+    "miscelanea:caja_agua_cuchillas"
   ]
 }

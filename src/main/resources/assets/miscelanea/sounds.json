@@ -2102,5 +2102,101 @@
       "miscelanea:vomito"
     ],
     "subtitle": "subtitles.miscelanea.vomito"
+  },
+  "saw_juego": {
+    "sounds": [
+      "miscelanea:saw/saw_juego"
+    ],
+    "subtitle": "subtitles.miscelanea.saw_juego"
+  },
+  "saw_caja_llenar": {
+    "sounds": [
+      "miscelanea:saw/saw_caja_llenar"
+    ],
+    "subtitle": "subtitles.miscelanea.saw_caja_llenar"
+  },
+  "saw_caja_burbujas": {
+    "sounds": [
+      "miscelanea:saw/saw_caja_burbujas"
+    ],
+    "subtitle": "subtitles.miscelanea.saw_caja_burbujas"
+  },
+  "saw_caja_cuchillas": {
+    "sounds": [
+      "miscelanea:saw/saw_caja_cuchillas"
+    ],
+    "subtitle": "subtitles.miscelanea.saw_caja_cuchillas"
+  },
+  "saw_caja_vaciar": {
+    "sounds": [
+      "miscelanea:saw/saw_caja_vaciar"
+    ],
+    "subtitle": "subtitles.miscelanea.saw_caja_vaciar"
+  },
+  "saw_caja_abrir": {
+    "sounds": [
+      "miscelanea:saw/saw_caja_abrir"
+    ],
+    "subtitle": "subtitles.miscelanea.saw_caja_abrir"
+  },
+  "saw_tanque_palanca": {
+    "sounds": [
+      "miscelanea:saw/saw_tanque_palanca"
+    ],
+    "subtitle": "subtitles.miscelanea.saw_tanque_palanca"
+  },
+  "saw_pozo_buscar": {
+    "sounds": [
+      "miscelanea:saw/saw_pozo_buscar"
+    ],
+    "subtitle": "subtitles.miscelanea.saw_pozo_buscar"
+  },
+  "saw_pozo_pinchazo": {
+    "sounds": [
+      "miscelanea:saw/saw_pozo_pinchazo"
+    ],
+    "subtitle": "subtitles.miscelanea.saw_pozo_pinchazo"
+  },
+  "saw_pozo_llave": {
+    "sounds": [
+      "miscelanea:saw/saw_pozo_llave"
+    ],
+    "subtitle": "subtitles.miscelanea.saw_pozo_llave"
+  },
+  "saw_alambre_rasgar": {
+    "sounds": [
+      "miscelanea:saw/saw_alambre_rasgar"
+    ],
+    "subtitle": "subtitles.miscelanea.saw_alambre_rasgar"
+  },
+  "saw_alambre_cortar": {
+    "sounds": [
+      "miscelanea:saw/saw_alambre_cortar"
+    ],
+    "subtitle": "subtitles.miscelanea.saw_alambre_cortar"
+  },
+  "saw_salida_tic": {
+    "sounds": [
+      "miscelanea:saw/saw_salida_tic"
+    ],
+    "subtitle": "subtitles.miscelanea.saw_salida_tic"
+  },
+  "saw_salida_apagon": {
+    "sounds": [
+      "miscelanea:saw/saw_salida_apagon"
+    ],
+    "subtitle": "subtitles.miscelanea.saw_salida_apagon"
+  },
+  "saw_salida_abrir": {
+    "sounds": [
+      "miscelanea:saw/saw_salida_abrir"
+    ],
+    "subtitle": "subtitles.miscelanea.saw_salida_abrir"
+  },
+  "saw_salida_cerrar": {
+    "sounds": [
+      "miscelanea:saw/saw_salida_cerrar"
+    ],
+    "subtitle": "subtitles.miscelanea.saw_salida_cerrar"
   }
 }
