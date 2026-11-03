@@ -154,7 +154,7 @@ public class FlotaRenderer implements BlockEntityRenderer<FlotaBlockEntity> {
 
         // ---------------- mira sobre el mar rival / casilla propia al colocar
         int[] ap = miro ? FlotaGeo.en(FlotaCliente.tx, FlotaCliente.ty) : null;
-        String mira = null;
+        String apuntaTxt = null;
         int miraCol = PanelJuego.BLANCO;
         if (ap != null && yo >= 0) {
             double[] q = FlotaGeo.centro(ap[0], ap[1]);
@@ -165,7 +165,7 @@ public class FlotaRenderer implements BlockEntityRenderer<FlotaBlockEntity> {
                 rect(marca, ps, be, q[0], q[1], 22, 1.5, col, 0.8F);
                 rect(marca, ps, be, q[0], q[1], 1.5, 22, col, 0.8F);
                 String coord = (char) ('A' + ap[1] % 10) + "" + (ap[1] / 10 + 1);
-                mira = I18n.get("panel.miscelanea.flota.mira", libre ? coord : coord + " ✔");
+                apuntaTxt = I18n.get("panel.miscelanea.flota.mira", libre ? coord : coord + " ✔");
                 miraCol = libre ? 0xFFFF6060 : 0xFFA0A0A0;
             } else if (p.fase == FlotaPartida.COLOCAR && ap[0] == yo) rect(marca, ps, be, q[0], q[1], 18, 18, 0xFFFFFF, 0.25F);
         }
@@ -206,7 +206,7 @@ public class FlotaRenderer implements BlockEntityRenderer<FlotaBlockEntity> {
         if (yo >= 0 && p.fase == FlotaPartida.COLOCAR && !p.js.get(yo).listo) pista = "flota.miscelanea.pista.colocar";
         else if (yo >= 0 && p.fase == FlotaPartida.JUGAR && p.turno == yo) pista = "flota.miscelanea.pista.disparar";
         if (pista != null) pj.detalle(I18n.get(pista), PanelJuego.CIAN);
-        if (mira != null) pj.detalle(mira, miraCol);
+        if (apuntaTxt != null) pj.detalle(apuntaTxt, miraCol);
         if (!p.log.isEmpty() && !cayendo) pj.nota(formatear(p.log.get(p.log.size() - 1)));
         FlotaBotones.Boton bot = miro ? FlotaBotones.en(p, FlotaCliente.tx, FlotaCliente.ty) : null;
         pj.control(PanelJuego.Tecla.USAR, bot != null ? "flota.miscelanea.boton." + bot.clave()
