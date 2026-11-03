@@ -1,6 +1,1 @@
-{
- "parent": "minecraft:item/generated",
- "textures": {
-  "layer0": "miscelanea:item/mochila_medica"
- }
-}
+{"parent":"minecraft:item/generated","textures":{"layer0":"miscelanea:item/mochila_medica"}}

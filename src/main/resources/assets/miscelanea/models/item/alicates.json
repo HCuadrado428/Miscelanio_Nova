@@ -1,6 +1,1 @@
-{
- "parent": "item/handheld",
- "textures": {
-  "layer0": "miscelanea:item/alicates"
- }
-}
+{"parent":"item/handheld","textures":{"layer0":"miscelanea:item/alicates"}}

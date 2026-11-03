@@ -1,6 +1,1 @@
-{
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "miscelanea:item/pez_atun"
-  }
-}
+{"parent":"item/generated","textures":{"layer0":"miscelanea:item/pez_atun"}}

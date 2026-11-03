@@ -1,6 +1,1 @@
-{
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "miscelanea:item/bicho_saltamontes"
-  }
-}
+{"parent":"item/generated","textures":{"layer0":"miscelanea:item/bicho_saltamontes"}}

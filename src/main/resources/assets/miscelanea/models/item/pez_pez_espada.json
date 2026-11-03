@@ -1,6 +1,1 @@
-{
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "miscelanea:item/pez_pez_espada"
-  }
-}
+{"parent":"item/generated","textures":{"layer0":"miscelanea:item/pez_pez_espada"}}

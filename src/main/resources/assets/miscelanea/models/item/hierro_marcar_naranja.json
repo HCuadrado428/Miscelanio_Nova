@@ -1,6 +1,1 @@
-{
- "parent": "item/handheld",
- "textures": {
-  "layer0": "miscelanea:item/hierro_marcar_naranja"
- }
-}
+{"parent":"item/handheld","textures":{"layer0":"miscelanea:item/hierro_marcar_naranja"}}

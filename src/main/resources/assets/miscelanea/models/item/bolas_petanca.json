@@ -1,6 +1,1 @@
-{
- "parent": "item/generated",
- "textures": {
-  "layer0": "miscelanea:item/bolas_petanca"
- }
-}
+{"parent":"item/generated","textures":{"layer0":"miscelanea:item/bolas_petanca"}}

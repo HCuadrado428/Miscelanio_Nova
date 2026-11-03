@@ -1,6 +1,1 @@
-{
- "parent": "minecraft:item/generated",
- "textures": {
-  "layer0": "miscelanea:item/cable_tirolina"
- }
-}
+{"parent":"minecraft:item/generated","textures":{"layer0":"miscelanea:item/cable_tirolina"}}

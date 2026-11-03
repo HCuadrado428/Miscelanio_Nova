@@ -1,6 +1,1 @@
-{
- "parent": "item/generated",
- "textures": {
-  "layer0": "miscelanea:item/bola_bolos"
- }
-}
+{"parent":"item/generated","textures":{"layer0":"miscelanea:item/bola_bolos"}}

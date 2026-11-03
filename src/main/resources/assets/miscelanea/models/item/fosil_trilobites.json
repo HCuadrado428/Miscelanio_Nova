@@ -1,6 +1,1 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "miscelanea:item/fosil_trilobites"
-  }
-}
+{"parent":"minecraft:item/generated","textures":{"layer0":"miscelanea:item/fosil_trilobites"}}

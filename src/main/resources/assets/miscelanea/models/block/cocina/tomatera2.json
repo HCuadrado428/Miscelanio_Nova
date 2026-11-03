@@ -1,7 +1,1 @@
-{
- "parent": "block/crop",
- "render_type": "minecraft:cutout",
- "textures": {
-  "crop": "miscelanea:block/cocina/tomatera2"
- }
-}
+{"parent":"block/crop","render_type":"minecraft:cutout","textures":{"crop":"miscelanea:block/cocina/tomatera2"}}

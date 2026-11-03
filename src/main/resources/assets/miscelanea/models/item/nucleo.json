@@ -1,6 +1,1 @@
-{
- "parent": "minecraft:item/generated",
- "textures": {
-  "layer0": "miscelanea:item/nucleo"
- }
-}
+{"parent":"minecraft:item/generated","textures":{"layer0":"miscelanea:item/nucleo"}}

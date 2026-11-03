@@ -1,15 +1,1 @@
-{
- "loader": "forge:separate_transforms",
- "gui_light": "front",
- "textures": {
-  "particle": "miscelanea:block/tortura/trampa_oso"
- },
- "base": {
-  "parent": "miscelanea:item/trampa_oso_3d"
- },
- "perspectives": {
-  "gui": {
-   "parent": "miscelanea:item/trampa_oso_icono"
-  }
- }
-}
+{"loader":"forge:separate_transforms","gui_light":"front","textures":{"particle":"miscelanea:block/tortura/trampa_oso"},"base":{"parent":"miscelanea:item/trampa_oso_3d"},"perspectives":{"gui":{"parent":"miscelanea:item/trampa_oso_icono"}}}

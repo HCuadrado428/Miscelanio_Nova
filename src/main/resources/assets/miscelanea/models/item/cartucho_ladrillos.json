@@ -1,6 +1,1 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "miscelanea:item/cartucho_ladrillos"
-  }
-}
+{"parent":"minecraft:item/generated","textures":{"layer0":"miscelanea:item/cartucho_ladrillos"}}

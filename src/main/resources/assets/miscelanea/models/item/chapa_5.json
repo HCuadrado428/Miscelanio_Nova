@@ -1,6 +1,1 @@
-{
- "parent": "item/generated",
- "textures": {
-  "layer0": "miscelanea:item/chapa_5"
- }
-}
+{"parent":"item/generated","textures":{"layer0":"miscelanea:item/chapa_5"}}

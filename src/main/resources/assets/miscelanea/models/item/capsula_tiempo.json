@@ -1,6 +1,1 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "miscelanea:item/capsula_tiempo"
-  }
-}
+{"parent":"minecraft:item/generated","textures":{"layer0":"miscelanea:item/capsula_tiempo"}}
