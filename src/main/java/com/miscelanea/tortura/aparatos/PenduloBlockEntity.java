@@ -281,6 +281,13 @@ public class PenduloBlockEntity extends AparatoBlockEntity {
         if (enMarcha && bajada >= 1F && ampK > 0.5F && ocupado()) cortar(sl);
     }
 
+    /** Cinemática de muerte (Muertes): la cuchilla se para (el cliente la dibuja a cámara lenta). */
+    public void pararPorMuerte() {
+        enMarcha = false;
+        ampK = 0F;
+        marcar();
+    }
+
     private void cortar(ServerLevel sl) {
         LivingEntity v = victimaEntidad();
         if (v == null || !v.isAlive()) return;

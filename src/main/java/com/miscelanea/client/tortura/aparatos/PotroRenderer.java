@@ -21,6 +21,12 @@ public class PotroRenderer implements BlockEntityRenderer<PotroBlockEntity> {
     public void render(PotroBlockEntity be, float pt, PoseStack ps, MultiBufferSource buf, int luz, int ov) {
         float tension = Mth.lerp(pt, be.tensionVisO, be.tensionVis);
         float giro = Mth.lerp(pt, be.giroVisO, be.giroVis);
+        // cinemática de muerte: la vuelta final de la manivela (y la tensión, a tope)
+        float c = com.miscelanea.client.tortura.muertes.MuertesCliente.canal(be.victimaId(), "manivela", pt);
+        if (!Float.isNaN(c)) {
+            giro += c;
+            tension = Math.max(tension, 1F);
+        }
         float y = ModelosAparatos.RODILLO_Y;
         ps.pushPose();
         ModelosAparatos.orientar(ps, be.frente());

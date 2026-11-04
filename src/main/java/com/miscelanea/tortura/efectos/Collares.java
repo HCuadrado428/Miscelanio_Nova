@@ -237,9 +237,23 @@ public final class Collares {
         d.remove("Alarma");
         if (causa != null && causa != v) d.putUUID("Causa", causa.getUUID());
         escribir(v, d);
-        sincronizar(v);
         if (v instanceof ServerPlayer sp && Qte.activo(sp)) Qte.cancelar(sp);
+        // cinemática de muerte (pitidos cada vez más seguidos, se agarra el collar y revienta; ver Muertes): la cuenta la
+        // lleva ella y la explosión llega al final (explotarFinal). "Detona" se queda de reserva por si se anula.
+        UUID quien = d.hasUUID("Causa") ? d.getUUID("Causa") : d.hasUUID("Captor") ? d.getUUID("Captor") : null;
+        if (com.miscelanea.tortura.muertes.Muertes.intentar(v, EfectosRegistro.DANO_COLLAR, quien)) {
+            d.putInt("Detona", com.miscelanea.tortura.muertes.TipoMuerte.COLLAR.muerte + 60);
+            escribir(v, d);
+            sincronizar(v);
+            return;
+        }
+        sincronizar(v);
         sl.playSound(null, v.getX(), v.getEyeY(), v.getZ(), EfectosRegistro.COLLAR_TONO.get(), SoundSource.PLAYERS, 1.6F, 1F);
+    }
+
+    /** Final de la cinemática de muerte del collar: revienta ya. */
+    public static void explotarFinal(LivingEntity v) {
+        if (tiene(v) && v.level() instanceof ServerLevel sl) explotar(v, sl, leer(v));
     }
 
     /** Desconectarse con la cuenta final en marcha: revienta ya (antes de que se guarde). */

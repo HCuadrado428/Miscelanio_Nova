@@ -31,6 +31,10 @@ public final class TorturaClienteMod {
         // la ejecución de la trampa de oso manda sobre todo lo demás
         dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                 new ResourceLocation(Miscelanea.MOD_ID, "ejecucion"), 1400, AnimEjecucion::new);
+        // las cinemáticas de muerte de los aparatos suman sobre la postura del aparato (por encima de todo)
+        dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
+                new ResourceLocation(Miscelanea.MOD_ID, "muerte"), 1410, com.miscelanea.client.tortura.muertes.AnimMuerte::new);
+        com.miscelanea.client.tortura.muertes.MuertesCliente.iniciar();
     }
 
     @SubscribeEvent
@@ -44,6 +48,7 @@ public final class TorturaClienteMod {
         e.registerAboveAll("tortura_trampa", TrampaHud::render);
         e.registerAboveAll("tortura_lazo", LazoCliente::hud);
         e.registerAboveAll("tortura_qte", QteCliente::hud);
+        e.registerAboveAll("tortura_muerte", com.miscelanea.client.tortura.muertes.MuertesCliente::hud);
     }
 
     @SubscribeEvent

@@ -33,6 +33,8 @@ public abstract class CameraMixin {
     private void miscelanea$camaraEjecucion(BlockGetter level, Entity entity, boolean detached, boolean reverse, float partial, CallbackInfo ci) {
         if (!detached || !reverse) return;
         double[] r = com.miscelanea.client.tortura.EjecucionCliente.colocarCamara(level, entity, partial);
+        // cinemáticas de muerte de los aparatos (ver MuertesCliente)
+        if (r == null) r = com.miscelanea.client.tortura.muertes.MuertesCliente.colocarCamara(level, entity, partial);
         if (r == null) return;
         setRotation((float) r[3], (float) r[4]);
         setPosition(r[0], r[1], r[2]);

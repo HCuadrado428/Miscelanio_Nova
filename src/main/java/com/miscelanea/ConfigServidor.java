@@ -18,7 +18,7 @@ public final class ConfigServidor {
     private static final ForgeConfigSpec.DoubleValue ESCOPETA_PERDIGON, COHETE, BFG_ESFERA, BFG_RAYO, BALLESTA_MULT,
             PORRA_DESCARGA, LANZATINTAS, RODILLO_GOLPE, MAZO_MULT, HACHA_MULT, LLAVE_MULT;
     // ---- tortura
-    private static final ForgeConfigSpec.BooleanValue MUERTE_INSTANTANEA, APARATOS_SUPERVIVENCIA;
+    private static final ForgeConfigSpec.BooleanValue MUERTE_INSTANTANEA, APARATOS_SUPERVIVENCIA, MUERTES_ANIMADAS;
     // ---- bichos
     private static final ForgeConfigSpec.BooleanValue BICHOS_APARICION;
     private static final ForgeConfigSpec.IntValue BICHOS_INTERVALO, BICHOS_MAX;
@@ -72,6 +72,10 @@ public final class ConfigServidor {
                         "(ni ponerle a nadie grilletes, trampas, collares...). En creativo se sigue pudiendo, para montar escenas;",
                         "quien ya está atrapado puede seguir intentando escapar (ganzúas, llaves, pozo, tenazas...).")
                 .define("aparatos_en_supervivencia", true);
+        MUERTES_ANIMADAS = b.comment("Si es true, las muertes de los aparatos (doncella, potro, silla eléctrica, péndulo, silla de inmersión,",
+                        "collar explosivo, caja de agua, paro cardíaco, colgado) tienen su cinemática: la víctima ve su propia muerte",
+                        "desde una cámara de cine y los demás ven la animación. Si es false, se muere en el acto como antes.")
+                .define("muertes_animadas", true);
         b.pop();
 
         b.comment("Bichos (insectos que aparecen alrededor de los jugadores, como en Animal Crossing).").push("bichos");
@@ -184,6 +188,7 @@ public final class ConfigServidor {
     // ------------------------------------------------------------------ tortura
     public static boolean muerteInstantanea() { return b(MUERTE_INSTANTANEA); }
     public static boolean aparatosEnSupervivencia() { return b(APARATOS_SUPERVIVENCIA); }
+    public static boolean muertesAnimadas() { return b(MUERTES_ANIMADAS); }
 
     // ------------------------------------------------------------------ bichos
     public static boolean bichosAparicion() { return b(BICHOS_APARICION); }

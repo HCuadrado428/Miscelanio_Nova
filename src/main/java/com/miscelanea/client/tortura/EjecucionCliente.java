@@ -311,7 +311,7 @@ public final class EjecucionCliente {
 
     /** Desde MouseHandlerMixin: true = el ratón no gira al jugador. */
     public static boolean raton() {
-        return local() != null;
+        return local() != null || com.miscelanea.client.tortura.muertes.MuertesCliente.localActiva();
     }
 
     // ------------------------------------------------------------------ cámara (CameraMixin, tercera persona de frente)
@@ -370,8 +370,13 @@ public final class EjecucionCliente {
     }
 
     private static void estallido(Minecraft mc, Entity en, float t) {
+        reventon(en, en.getEyePosition().subtract(0, bajada(en, t), 0));
+    }
+
+    /** La cabeza revienta en c: nube de sangre, trozos y salpicaduras alrededor (también lo usan las cinemáticas de muerte). */
+    public static void reventon(Entity en, Vec3 c) {
+        Minecraft mc = Minecraft.getInstance();
         RandomSource r = en.level().getRandom();
-        Vec3 c = en.getEyePosition().subtract(0, bajada(en, t), 0);
         // nube de sangre que sale disparada de la cabeza
         for (int i = 0; i < 80; i++) {
             // (el polvo no cae y frena poco: velocidades pequeñas o se va a varios bloques)
@@ -399,16 +404,25 @@ public final class EjecucionCliente {
 
     /** El cuello sigue echando sangre un rato, cada vez menos. */
     private static void chorro(Minecraft mc, Entity en, float t) {
-        float k = 1F - (t - ESTALLIDO) / 45F;
+        chorroEn(en, cuello(en, t), 1F - (t - ESTALLIDO) / 45F);
+    }
+
+    /** Chorro de sangre hacia arriba desde c, con fuerza k (0..1). */
+    public static void chorroEn(Entity en, Vec3 c, float k) {
         if (k <= 0) return;
+        Minecraft mc = Minecraft.getInstance();
         RandomSource r = en.level().getRandom();
-        Vec3 c = cuello(en, t);
         int n = Math.round(1 + 3 * k);
         for (int i = 0; i < n; i++)
             particula(mc, r.nextBoolean() ? TROZO_ROJO : TROZO_OSCURO, c, r.nextGaussian() * 0.06 * k, 0.12 + r.nextDouble() * 0.22 * k,
                     r.nextGaussian() * 0.06 * k);
         if (r.nextFloat() < k)
             particula(mc, SANGRE, c.add(0, 0.1, 0), r.nextGaussian() * 0.05, 0.08 + r.nextDouble() * 0.1, r.nextGaussian() * 0.05);
+    }
+
+    /** Mancha de sangre en el primer bloque desde 'desde' hacia 'dir' (se borra sola al rato). */
+    public static void manchar(Entity en, Vec3 desde, Vec3 dir, float tam, long nace, RandomSource r) {
+        salpicar(en, desde, dir, tam, nace, r);
     }
 
     private static void salpicar(Entity en, Vec3 desde, Vec3 dir, float tam, long nace, RandomSource r) {
@@ -465,11 +479,12 @@ public final class EjecucionCliente {
     // ------------------------------------------------------------------ sin cabeza y temblores (todas las entidades)
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void antes(RenderLivingEvent.Pre<?, ?> e) {
-        if (EJ.isEmpty()) return;
         LivingEntity le = e.getEntity();
+        boolean muerte = com.miscelanea.client.tortura.muertes.MuertesCliente.sinCabeza(le.getId(), e.getPartialTick());
+        if (EJ.isEmpty() && !muerte) return;
         Ejec ej = EJ.get(le.getId());
-        if (ej == null) return;
-        float t = tiempo(ej, e.getPartialTick());
+        if (ej == null && !muerte) return;
+        float t = ej == null ? ESTALLIDO : tiempo(ej, e.getPartialTick());
         EntityModel<?> m = e.getRenderer().getModel();
         if (t >= ESTALLIDO) {
             if (m instanceof HumanoidModel<?> hm) {
@@ -510,7 +525,8 @@ public final class EjecucionCliente {
 
     /** Desde los mixins del casco y de las cabezas de mob: ¿no se dibuja nada en la cabeza de esta entidad? */
     public static boolean ocultarCabeza(LivingEntity e) {
-        return !EJ.isEmpty() && sinCabeza(e.getId(), Minecraft.getInstance().getFrameTime());
+        float pt = Minecraft.getInstance().getFrameTime();
+        return (!EJ.isEmpty() && sinCabeza(e.getId(), pt)) || com.miscelanea.client.tortura.muertes.MuertesCliente.sinCabeza(e.getId(), pt);
     }
 
     /**
