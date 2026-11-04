@@ -54,13 +54,16 @@ import java.util.UUID;
  * El mordisco venenoso de Dream (lado servidor).
  * <p>
  * Con el efecto «Mordisco venenoso», clic derecho con la mano vacía sobre un jugador o un mob lo agarra: la víctima queda
- * sujeta delante, cara a cara, y cada 1,5 s recibe un mordisco (Wither + un poco de daño, partículas verde oscuro y
- * negras en el cuello). Para soltarse, la víctima (si es jugador) tiene un minijuego de forcejeo (ALTERNAR, A / D): si
+ * sujeta delante, cara a cara, y cada 1,5 s recibe un mordisco. El veneno es como la baba de un dragón de Komodo: no
+ * envenena, paraliza, marea y desangra (Lentitud que sube con cada par de mordiscos, Náuseas, Desangrado y algo de
+ * Debilidad, más un poco de daño de los colmillos y heridas en el cuello; partículas verde oscuro y negras). Para soltarse, la víctima (si es jugador) tiene un minijuego de forcejeo (ALTERNAR, A / D): si
  * lo supera se suelta de un empujón; si falla, el mordisco sigue y al poco sale otro (un poco más fácil cada vez). Los
  * mobs se sueltan solos al cabo de unos segundos.
  * <p>
  * Quien muerde suelta agachándose, o si le dan un golpe fuerte (ConfigServidor.mordiscoUmbral). También se acaba si se
  * le pasa el efecto, si se separan, si uno muere, se desconecta o cambia de dimensión.
+ * <p>
+ * Tras extraer el veneno en una botella ({@link VenenoDream}) no se puede morder durante un rato.
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID)
 public final class Mordiscos {
@@ -89,6 +92,8 @@ public final class Mordiscos {
         int escapeMob;
         float dificultad = 0.55F;
         boolean enQte;
+        /** Mordiscos dados en este agarre (la lentitud sube con ellos). */
+        int mordiscos;
 
         Mordisco(LivingEntity mordedor, LivingEntity victima) {
             this.mordedor = mordedor;
@@ -144,6 +149,11 @@ public final class Mordiscos {
         if (e.getHand() != InteractionHand.MAIN_HAND || !candidato(p, e.getTarget())) return;
         LivingEntity v = (LivingEntity) e.getTarget();
         if (p instanceof ServerPlayer sp) {
+            int sinVeneno = ConfigServidor.mordiscoActivado() && !mordiendo(sp) ? VenenoDream.restante(sp) : 0;
+            if (sinVeneno > 0) {
+                sp.displayClientMessage(VenenoDream.agotado(sinVeneno), true);
+                return;
+            }
             String m = motivo(sp, v);
             if (m != null) {
                 if (!m.isEmpty()) sp.displayClientMessage(Component.translatable(m), true);
@@ -299,7 +309,17 @@ public final class Mordiscos {
 
     private static void morder(ServerLevel l, Mordisco m) {
         LivingEntity v = m.victima, p = m.mordedor;
-        v.addEffect(new MobEffectInstance(MobEffects.WITHER, ConfigServidor.mordiscoWitherTicks(), ConfigServidor.mordiscoWitherNivel()), p);
+        // veneno de Komodo: paraliza (lentitud que sube cada dos mordiscos), marea, desangra y debilita
+        m.mordiscos++;
+        int lentitud = Math.min(ConfigServidor.mordiscoLentitudMax(), (m.mordiscos - 1) / 2);
+        v.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, ConfigServidor.mordiscoLentitudTicks(), lentitud), p);
+        if (ConfigServidor.mordiscoNauseaTicks() > 0)
+            v.addEffect(new MobEffectInstance(MobEffects.CONFUSION, ConfigServidor.mordiscoNauseaTicks(), 0), p);
+        if (ConfigServidor.mordiscoDebilidadTicks() > 0)
+            v.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, ConfigServidor.mordiscoDebilidadTicks(), 0), p);
+        if (ConfigServidor.mordiscoDesangradoTicks() > 0)
+            v.addEffect(new MobEffectInstance(DreamRegistro.DESANGRADO.get(), ConfigServidor.mordiscoDesangradoTicks(),
+                    ConfigServidor.mordiscoDesangradoNivel(), false, false, true), p);
         float dano = ConfigServidor.mordiscoDano();
         if (dano > 0) {
             v.invulnerableTime = 0;
@@ -314,6 +334,7 @@ public final class Mordiscos {
         l.sendParticles(new DustParticleOptions(new Vector3f(0.13F, 0.32F, 0.07F), 1.1F), c.x, c.y, c.z, 14, 0.12, 0.12, 0.12, 0.02);
         l.sendParticles(new DustParticleOptions(new Vector3f(0.04F, 0.06F, 0.03F), 0.9F), c.x, c.y, c.z, 10, 0.1, 0.1, 0.1, 0.02);
         l.sendParticles(ParticleTypes.SQUID_INK, c.x, c.y, c.z, 3, 0.05, 0.05, 0.05, 0.01);
+        l.sendParticles(new DustParticleOptions(new Vector3f(0.5F, 0.02F, 0.03F), 1.0F), c.x, c.y - 0.1, c.z, 8, 0.08, 0.15, 0.08, 0.0);
         l.playSound(null, c.x, c.y, c.z, DreamRegistro.MORDISCO_SND.get(), SoundSource.PLAYERS, 1.0F, 0.85F + l.random.nextFloat() * 0.3F);
         enviar(m, MordiscoPacket.Tipo.MORDISCO);
     }

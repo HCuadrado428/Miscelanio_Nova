@@ -81,6 +81,7 @@ public class MiscelaneaJei implements IModPlugin {
         info(r, com.miscelanea.dream.DreamRegistro.FRASCO_MEZCLA, "frasco_mezcla");
         info(r, com.miscelanea.dream.DreamRegistro.FRASCO_MEZCLA_ARROJADIZO, "frasco_mezcla");
         info(r, com.miscelanea.dream.DreamRegistro.ESENCIA, "esencia_dream");
+        info(r, com.miscelanea.dream.DreamRegistro.VENENO, "veneno_dream");
         info(r, com.miscelanea.dream.DreamRegistro.ANILLO, "anillo_medianoche");
     }
 
