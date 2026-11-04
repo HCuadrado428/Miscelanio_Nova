@@ -317,14 +317,24 @@ public final class EstaticaCliente {
 
     /** En primera persona, el brazo también lleva su estática (y los ojos no se ven, claro). */
     @SubscribeEvent
+    private static boolean dibujandoBrazo;
+
     public static void brazo(net.minecraftforge.client.event.RenderArmEvent e) {
+        // renderRightHand/LeftHand vuelve a lanzar este mismo evento: sin esta guarda se llamaba a sí mismo sin fin
+        // (StackOverflow → el juego se cerraba al ver el brazo en primera persona con la estática)
+        if (dibujandoBrazo) return;
         AbstractClientPlayer p = e.getPlayer();
         if (!conEstatica(p.getId()) || !(Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(p)
                 instanceof net.minecraft.client.renderer.entity.player.PlayerRenderer pr)) return;
         e.setCanceled(true);
         boolean der = e.getArm() == net.minecraft.world.entity.HumanoidArm.RIGHT;
-        if (der) pr.renderRightHand(e.getPoseStack(), e.getMultiBufferSource(), e.getPackedLight(), p);
-        else pr.renderLeftHand(e.getPoseStack(), e.getMultiBufferSource(), e.getPackedLight(), p);
+        dibujandoBrazo = true;
+        try {
+            if (der) pr.renderRightHand(e.getPoseStack(), e.getMultiBufferSource(), e.getPackedLight(), p);
+            else pr.renderLeftHand(e.getPoseStack(), e.getMultiBufferSource(), e.getPackedLight(), p);
+        } finally {
+            dibujandoBrazo = false;
+        }
         float cob = EstaticaCine.cobertura(p.getId(), 0F);
         Mascara mk = mascara(p.getId());
         mk.adaptar(p);
