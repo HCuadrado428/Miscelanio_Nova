@@ -492,6 +492,15 @@ public final class Mascara {
             }
     }
 
+    /** Grises de la nieve y su reparto acumulado (sacados de la skin de referencia «Hombre de estática»). */
+    private static final float[] GRIS = {62, 84, 106, 128, 150, 170, 190, 208, 224};
+    private static final float[] ACUM = {0.029F, 0.12F, 0.27F, 0.473F, 0.667F, 0.814F, 0.9F, 0.944F, 1F};
+
+    private static int nivel(float q) {
+        for (int n = 0; n < ACUM.length; n++) if (q < ACUM[n]) return n;
+        return ACUM.length - 1;
+    }
+
     private static int argb(float r, float g, float b, float a) {
         int ri = Mth.clamp((int) r, 0, 255), gi = Mth.clamp((int) g, 0, 255), bi = Mth.clamp((int) b, 0, 255), ai = Mth.clamp((int) a, 0, 255);
         return (ai << 24) | (bi << 16) | (gi << 8) | ri;             // NativeImage: ABGR
@@ -546,22 +555,19 @@ public final class Mascara {
                 int su = Mth.clamp(u - dx[v], 0, S - 1);
                 float white = hash(su, v, c, seed + 1);
                 if (onb[i]) {
-                    float coarse = hash(su >> 1, v >> 1, c, seed + 2);
-                    float reg = ruido(px[i] * 0.22F, py[i] * 0.22F, pz[i] * 0.22F + tt * 0.6F, seed + 3);
-                    float n = reg > 0.56F ? coarse : white;
+                    // nieve clara y fina, como la skin de referencia del hombre de estática: 9 grises algo azulados
+                    // (62..224, media ~145), grano de un texel, poco contraste, sin negros ni blancos puros
                     float nube = ruido(px[i] * 0.45F, py[i] * 0.45F - tt * 2F, pz[i] * 0.45F, seed + 4);
-                    float g = 0.66F * n + 0.34F * nube;
-                    g = (g - 0.5F) * 1.9F + 0.52F;
+                    float q = white * 0.86F + (nube - 0.5F) * 0.28F;
                     float db = py[i] - yb;
-                    if (Math.abs(db) < 1.5F) g += 0.5F * (1 - Math.abs(db) / 1.5F);
-                    else if (db > -3.5F && db <= -1.5F) g *= 0.45F;
-                    if (destello && Math.abs(py[i] - yf) < 1) g += 0.35F;
-                    if (((v / k) & 1) == 0) g *= 0.84F;
-                    if (din[i] >= 3) g = g * 0.8F + 0.22F;
-                    else if (din[i] == 2) g *= 0.85F;
-                    if (hash(su, v, c >> 1, seed + 9) < 0.022F) g = 1.15F;
-                    g = Mth.clamp(g, 0F, 1F) * 255;
-                    float r = g, gg = g, b = Math.min(255, g + 10), a = 238;
+                    if (Math.abs(db) < 1.5F) q += 0.16F * (1 - Math.abs(db) / 1.5F);
+                    else if (db > -3.5F && db <= -1.5F) q -= 0.08F;
+                    if (destello && Math.abs(py[i] - yf) < 1) q += 0.12F;
+                    if (((v / k) & 1) == 0) q -= 0.035F;
+                    if (din[i] == 2) q -= 0.05F;
+                    if (hash(su, v, c >> 1, seed + 9) < 0.012F) q = 0.99F;
+                    float g = GRIS[nivel(Mth.clamp(q, 0F, 0.999F))];
+                    float r = g, gg = g, b = Math.min(255, g + 6), a = 240;
                     if (din[i] == 1) {
                         boolean hueco = hash(u, v, c, seed + 12) < 0.2F;
                         boolean rojo = hash(u >> 1, v, c >> 2, seed + 14) < 0.5F;
