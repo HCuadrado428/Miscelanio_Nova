@@ -118,6 +118,15 @@ public class RuedaBlockEntity extends AparatoBlockEntity {
         return c.subtract(0, baja, 0);
     }
 
+    /** Al soltarla: delante de la rueda si cabe; si no, encima (por encima del anexo). */
+    @Override
+    public Vec3 salida(LivingEntity v) {
+        if (level == null) return v.position();
+        Vec3 delante = Vec3.atBottomCenterOf(worldPosition.relative(frente()));
+        if (level.noCollision(v, v.getDimensions(v.getPose()).makeBoundingBox(delante))) return delante;
+        return Vec3.atBottomCenterOf(worldPosition.above(2));
+    }
+
     @Override
     public boolean sentado() {
         return false;
