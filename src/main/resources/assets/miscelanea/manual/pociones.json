@@ -1,0 +1,195 @@
+{
+  "id": "pociones",
+  "orden": 60,
+  "pestana": "miscelanea:pociones",
+  "icono": "pocion:miscelanea:cupido",
+  "titulo": {"es": "Pociones y efectos", "en": "Potions and effects"},
+  "intro": {
+    "es": "Pociones nuevas con sus versiones arrojadiza, persistente y en flecha. Solo Cupido y Enemistad se preparan en el soporte para pociones; el resto son de creativo (también funcionan con /effect). Las de voz cambian cómo te oyen por Simple Voice Chat si está instalado.",
+    "en": "New potions with splash, lingering and tipped-arrow versions. Only Cupid and Enmity are brewed in a brewing stand; the rest are creative-only (they also work with /effect). The voice ones change how you sound over Simple Voice Chat if it's installed."
+  },
+  "entradas": [
+    {
+      "id": "cupido",
+      "objetos": ["pocion:miscelanea:cupido", "arrojadiza:miscelanea:cupido", "persistente:miscelanea:cupido", "flecha:miscelanea:cupido"],
+      "titulo": {"es": "Poción de Cupido", "en": "Potion of Cupid"},
+      "texto": {
+        "es": ["Si dos seres con este efecto (jugadores o mobs) están a 32 bloques o menos, se atraen solos el uno hacia el otro y no pueden alejarse: los dos acaban en el punto medio.", "# Alquimia", "- Poción rara + pétalos rosas: Cupido (3:00).", "- + polvo de redstone: más larga (8:00). + polvo de piedra luminosa: nivel II.", "Con pólvora o aliento de dragón se hace arrojadiza o persistente, como siempre."],
+        "en": ["If two creatures with this effect (players or mobs) are within 32 blocks, they're pulled towards each other and can't get away: both end up in the middle.", "# Brewing", "- Awkward potion + pink petals: Cupid (3:00).", "- + redstone dust: longer (8:00). + glowstone dust: level II.", "Gunpowder or dragon's breath make it splash or lingering, as usual."]
+      }
+    },
+    {
+      "id": "enemigo",
+      "objetos": ["pocion:miscelanea:enemigo", "arrojadiza:miscelanea:enemigo", "persistente:miscelanea:enemigo", "flecha:miscelanea:enemigo"],
+      "titulo": {"es": "Poción de Enemistad", "en": "Potion of Enmity"},
+      "texto": {
+        "es": ["Lo contrario de Cupido: si dos seres con este efecto se acercan, los dos se hacen daño. Cuanto más cerca, más duele.", "# Alquimia", "- Cupido + ojo de araña fermentado: Enemistad (1:00).", "- + redstone: 2:00. + piedra luminosa: nivel II."],
+        "en": ["The opposite of Cupid: if two creatures with this effect get close, both take damage. The closer, the more it hurts.", "# Brewing", "- Cupid + fermented spider eye: Enmity (1:00).", "- + redstone: 2:00. + glowstone: level II."]
+      }
+    },
+    {
+      "id": "fantasma",
+      "objetos": ["pocion:miscelanea:fantasma", "arrojadiza:miscelanea:fantasma", "persistente:miscelanea:fantasma", "flecha:miscelanea:fantasma"],
+      "titulo": {"es": "Poción de fantasma", "en": "Potion of the Ghost"},
+      "creativo": true,
+      "texto": {
+        "es": ["Quien la lleva no se ve: ni modelo, ni armadura, ni objetos, ni nombre, ni sombra. Solo asoma, pálido y medio transparente, por el rabillo del ojo de los demás; en cuanto lo miran de frente se desvanece en ceniza.", "Sigue chocando y se le puede pegar a ciegas, pero los mobs no lo eligen como objetivo. Voz fantasmal en el chat de voz."],
+        "en": ["Whoever has it can't be seen: no model, armour, items, name tag or shadow. They only show, pale and half-transparent, in the corner of other people's eyes; look straight at them and they fade into ash.", "They still collide and can be hit blindly, but mobs won't target them. Ghostly voice on voice chat."]
+      }
+    },
+    {
+      "id": "espejismo",
+      "objetos": ["pocion:miscelanea:espejismo", "arrojadiza:miscelanea:espejismo", "persistente:miscelanea:espejismo", "flecha:miscelanea:espejismo"],
+      "titulo": {"es": "Poción de espejismo", "en": "Potion of Mirage"},
+      "creativo": true,
+      "texto": {
+        "es": ["Los demás te ven como otro jugador: su skin y su nombre. Al ponerse el efecto se elige a quién imitar; con el comando /miscelanea espejismo un operador puede elegirlo."],
+        "en": ["Others see you as another player: their skin and name. Who you copy is picked when the effect starts; an operator can choose it with /miscelanea espejismo."]
+      }
+    },
+    {
+      "id": "sombra",
+      "objetos": ["pocion:miscelanea:sombra", "arrojadiza:miscelanea:sombra", "persistente:miscelanea:sombra", "flecha:miscelanea:sombra"],
+      "titulo": {"es": "Poción de sombra", "en": "Potion of Shadow"},
+      "creativo": true,
+      "texto": {
+        "es": ["Te conviertes en una sombra al estilo Hollow Knight: una silueta negra y plana pegada al suelo que echa humo. Vas reptando (cabes por huecos de medio bloque), sin daño de caída, pero no puedes usar, pegar, romper ni poner nada. Los sonidos te llegan amortiguados."],
+        "en": ["You become a Hollow Knight style shade: a flat black silhouette stuck to the floor, trailing smoke. You crawl (you fit through half-block gaps) with no fall damage, but can't use, hit, break or place anything. Sounds reach you muffled."]
+      }
+    },
+    {
+      "id": "gigante",
+      "objetos": ["pocion:miscelanea:gigante", "arrojadiza:miscelanea:gigante", "persistente:miscelanea:gigante", "flecha:miscelanea:gigante"],
+      "titulo": {"es": "Poción de gigante", "en": "Potion of the Giant"},
+      "creativo": true,
+      "texto": {
+        "es": ["Creces: x2, x3 o x4 según el nivel. Más alcance, daño, paso y salto, empujas el triple y al aterrizar das un pisotón. Voz grave."],
+        "en": ["You grow: x2, x3 or x4 depending on the level. More reach, damage, step height and jump, triple knockback and a stomp when you land. Deep voice."]
+      }
+    },
+    {
+      "id": "enano",
+      "objetos": ["pocion:miscelanea:enano", "arrojadiza:miscelanea:enano", "persistente:miscelanea:enano", "flecha:miscelanea:enano"],
+      "titulo": {"es": "Poción de enano", "en": "Potion of the Dwarf"},
+      "creativo": true,
+      "texto": {
+        "es": ["Encoges: a la mitad, un tercio o un cuarto según el nivel. Cabes por cualquier sitio, pero recibes x1,5 de daño. Voz aguda."],
+        "en": ["You shrink: to a half, a third or a quarter depending on the level. You fit anywhere, but take x1.5 damage. Squeaky voice."]
+      }
+    },
+    {
+      "id": "ecolocalizacion",
+      "objetos": ["pocion:miscelanea:ecolocalizacion", "arrojadiza:miscelanea:ecolocalizacion", "persistente:miscelanea:ecolocalizacion", "flecha:miscelanea:ecolocalizacion"],
+      "titulo": {"es": "Poción de ecolocalización", "en": "Potion of Echolocation"},
+      "creativo": true,
+      "texto": {
+        "es": ["Como Daredevil o el warden: todo se ve negro y cada sonido cercano (tus pasos, los mobs, los bloques) lanza una onda que deja dibujadas un momento las aristas de bloques y seres en azul.", "- Agáchate para dar una palmada y «ver» lo que tienes alrededor (cada 2 s como mucho)."],
+        "en": ["Like Daredevil or the warden: everything goes black and every nearby sound (your steps, mobs, blocks) sends out a wave that briefly outlines blocks and creatures in blue.", "- Sneak to clap and “see” your surroundings (at most every 2 s)."]
+      }
+    },
+    {
+      "id": "sed_de_sangre",
+      "objetos": ["pocion:miscelanea:sed_de_sangre", "arrojadiza:miscelanea:sed_de_sangre", "persistente:miscelanea:sed_de_sangre", "flecha:miscelanea:sed_de_sangre"],
+      "titulo": {"es": "Poción de sed de sangre", "en": "Potion of Bloodlust"},
+      "creativo": true,
+      "texto": {
+        "es": ["El berserk de Doom (dura poco: 0:30 o 1:30). A puño limpio das 50 de daño con un empujón enorme y, si matas, la víctima revienta. Con algo en la mano no pegas. Minas x1,5 más rápido."],
+        "en": ["Doom's berserk (short: 0:30 or 1:30). Bare-handed punches deal 50 damage with huge knockback and, if they kill, the victim bursts. You can't hit with anything in hand. You mine x1.5 faster."]
+      }
+    },
+    {
+      "id": "niebla_viviente",
+      "objetos": ["pocion:miscelanea:niebla_viviente", "arrojadiza:miscelanea:niebla_viviente", "persistente:miscelanea:niebla_viviente", "flecha:miscelanea:niebla_viviente"],
+      "titulo": {"es": "Poción de niebla viviente", "en": "Potion of Living Fog"},
+      "creativo": true,
+      "texto": {
+        "es": ["Te envuelve una niebla espesa al estilo Silent Hill. Los mobs no te ponen en el punto de mira a más de 3 bloques."],
+        "en": ["A thick Silent Hill style fog surrounds you. Mobs can't target you from more than 3 blocks away."]
+      }
+    },
+    {
+      "id": "helio",
+      "objetos": ["pocion:miscelanea:helio", "arrojadiza:miscelanea:helio", "persistente:miscelanea:helio"],
+      "titulo": {"es": "Poción de helio", "en": "Potion of Helium"},
+      "creativo": true,
+      "texto": {
+        "es": ["Voz de pito, como si hubieras respirado helio (en Simple Voice Chat)."],
+        "en": ["Squeaky voice, as if you'd breathed helium (on Simple Voice Chat)."]
+      }
+    },
+    {
+      "id": "tartamudeo",
+      "objetos": ["pocion:miscelanea:tartamudeo", "arrojadiza:miscelanea:tartamudeo", "persistente:miscelanea:tartamudeo"],
+      "titulo": {"es": "Poción de tartamudeo", "en": "Potion of Stuttering"},
+      "creativo": true,
+      "texto": {
+        "es": ["Tartamudeas en el chat («ho-ho-hola, ¿q-q-qué tal?») y en el chat de voz."],
+        "en": ["You stutter in chat (“h-h-hello, h-how are you?”) and on voice chat."]
+      }
+    },
+    {
+      "id": "ventilador",
+      "objetos": ["pocion:miscelanea:ventilador", "arrojadiza:miscelanea:ventilador", "persistente:miscelanea:ventilador"],
+      "titulo": {"es": "Poción de ventilador", "en": "Potion of the Fan"},
+      "creativo": true,
+      "texto": {
+        "es": ["Tu voz suena entrecortada, como hablando delante de un ventilador."],
+        "en": ["Your voice comes out choppy, like talking into a fan."]
+      }
+    },
+    {
+      "id": "borrachera",
+      "objetos": ["pocion:miscelanea:borrachera", "arrojadiza:miscelanea:borrachera", "persistente:miscelanea:borrachera"],
+      "titulo": {"es": "Poción de borrachera", "en": "Potion of Drunkenness"},
+      "creativo": true,
+      "texto": {
+        "es": ["La cámara se mece, los controles se van solos, ves doble, tienes hipo y hablas con lengua de trapo (voz y chat). Los mobs andan en zigzag.", "- Agáchate 3 s seguidos para vomitar: se te pasa."],
+        "en": ["The camera sways, the controls drift, you see double, hiccup and slur (voice and chat). Mobs walk in zigzags.", "- Sneak for 3 s in a row to throw up: it wears off."]
+      }
+    },
+    {
+      "id": "caldero_mezclas",
+      "objetos": ["miscelanea:caldero_mezclas", "miscelanea:frasco_mezcla", "miscelanea:frasco_mezcla_arrojadizo"],
+      "texto": {
+        "es": ["Caldero para mezclar hasta 4 pociones en una.", "- Clic derecho con una poción: la echas (te devuelve la botella). El líquido se tiñe con cada una.", "- Clic con una botella vacía: sacas un frasco de mezcla con TODOS los efectos juntos (tantos frascos como pociones echaste).", "- Pólvora: los frascos salen arrojadizos. Agachado con la mano vacía: vaciar.", "Cuantos más efectos, menos dura cada uno (x1, x0,8, x0,65, x0,5); si un efecto se repite se queda el más fuerte."],
+        "en": ["Cauldron to mix up to 4 potions into one.", "- Right-click with a potion: pour it in (you get the bottle back). The liquid takes on each colour.", "- Click with a glass bottle: fill a mixture flask with ALL the effects together (as many flasks as potions poured).", "- Gunpowder: the flasks come out as splash. Sneak with an empty hand: empty it.", "More effects means shorter durations (x1, x0.8, x0.65, x0.5); a repeated effect keeps the strongest."]
+      }
+    },
+    {
+      "id": "frasco_mezcla",
+      "objetos": ["miscelanea:frasco_mezcla", "miscelanea:frasco_mezcla_arrojadizo"],
+      "texto": {
+        "es": ["Frasco de mezcla: se llena en el caldero de mezclas y lleva varios efectos a la vez. El arrojadizo salpica todos sus efectos al romperse."],
+        "en": ["Mixture flask: filled at the mixing cauldron, it carries several effects at once. The splash one spreads all of them when it shatters."]
+      }
+    },
+    {
+      "id": "esencia_dream",
+      "objetos": ["miscelanea:esencia_dream"],
+      "creativo": true,
+      "texto": {
+        "es": ["Da «Mordisco venenoso» 5 minutos.", "- Con la mano vacía, clic derecho a un jugador o mob: lo agarras y le muerdes cada 1,5 s. El veneno, como la baba de un dragón de Komodo, paraliza (Lentitud, hasta III), marea, desangra y debilita.", "- La víctima se suelta con un minijuego de forcejeo; tú sueltas agachándote o si te pegan fuerte.", "- Agachado + clic derecho con una botella vacía: extraes Veneno de Dream (y te quedas sin veneno 5 minutos)."],
+        "en": ["Grants “Venomous Bite” for 5 minutes.", "- With an empty hand, right-click a player or mob: grab them and bite every 1.5 s. The venom, like Komodo dragon drool, paralyses (Slowness, up to III), nauseates, makes them bleed and weakens.", "- The victim breaks free with a struggle minigame; you let go by sneaking or if you're hit hard.", "- Sneak + right-click with a glass bottle: extract Dream's Venom (and you're out of venom for 5 minutes)."]
+      }
+    },
+    {
+      "id": "veneno_dream",
+      "objetos": ["miscelanea:veneno_dream"],
+      "creativo": true,
+      "receta": "no",
+      "texto": {
+        "es": ["Solo se consigue extrayéndolo con el Mordisco venenoso activo (agachado + clic derecho con una botella vacía).", "§lMORTAL SI SE BEBE§r: tos, manos al cuello, rodillas, convulsiones... (un tótem de la inmortalidad en la mano salva; en creativo no mata).", "En el caldero de mezclas: los frascos también matan al beberlos, pero los arrojadizos solo salpican Lentitud II, Náuseas, Desangrado y Debilidad unos segundos."],
+        "en": ["Only obtained by extracting it with Venomous Bite active (sneak + right-click with a glass bottle).", "§lDEADLY IF DRUNK§r: coughing, hands to the throat, knees, convulsions... (a totem of undying in hand saves you; it doesn't kill in creative).", "In the mixing cauldron: the flasks kill when drunk too, but the splash ones only spread Slowness II, Nausea, Bleeding and Weakness for a few seconds."]
+      }
+    },
+    {
+      "id": "pocion_estatica",
+      "objetos": ["miscelanea:pocion_estatica"],
+      "creativo": true,
+      "texto": {
+        "es": ["El hombre de estática: al beberla te transformas (con cinemática) en un ser hecho de nieve de televisión, de ojos blancos, durante 20 minutos. La leche no lo quita.", "# Siempre", "- Más lento, menos gravedad (saltos largos, caídas suaves). Tus manos atraviesan las armas.", "- Toque estático: golpear con la mano vacía da una descarga y la víctima ve nieve y sus objetos corruptos.", "- Apagas las luces al pasar y dejas charcos de estática. Quieto a oscuras te fundes (solo se ven tus ojos). Si te pegan cuerpo a cuerpo te fragmentas y apareces detrás.", "# Rueda de poderes", "- Mantén {key:key.miscelanea.rueda_estatica}, elige con el ratón y suelta. Luego, clic derecho con la mano vacía para usarlo.", "- Parpadeo, meterse en pantallas (entra por una recreativa y sal por otra), imitar voces (con Simple Voice Chat), arrastrar a la estática y los tentáculos: atraer, lanzar y estampar."],
+        "en": ["The static man: drinking it transforms you (with a cutscene) into a being of TV snow with white eyes for 20 minutes. Milk doesn't remove it.", "# Always", "- Slower, lower gravity (long jumps, soft landings). Your hands pass through weapons.", "- Static touch: punching bare-handed shocks the victim, who sees snow and corrupted items.", "- Lights go out as you pass and you leave static puddles. Standing still in the dark you fade (only your eyes show). Melee hits make you fragment and reappear behind the attacker.", "# Power wheel", "- Hold {key:key.miscelanea.rueda_estatica}, pick with the mouse and release. Then right-click with an empty hand to use it.", "- Blink, screen travel (enter one arcade screen, exit another), voice mimicry (with Simple Voice Chat), drag into the static and the tentacles: pull, throw and slam."]
+      }
+    }
+  ]
+}

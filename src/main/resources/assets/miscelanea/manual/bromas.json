@@ -1,0 +1,58 @@
+{
+  "id": "bromas",
+  "orden": 70,
+  "pestana": "miscelanea:bromas",
+  "icono": "miscelanea:varita_uwu",
+  "titulo": {"es": "Bromas", "en": "Pranks"},
+  "intro": {
+    "es": "Bromas pesadas pero inofensivas para gastar a otros jugadores. Son de creativo y el servidor puede apagar cada una o cambiar cuánto duran.",
+    "en": "Rough but harmless pranks to play on other players. They're creative-only and the server can switch each one off or change how long it lasts."
+  },
+  "entradas": [
+    {
+      "id": "varita_uwu",
+      "objetos": ["miscelanea:varita_uwu"],
+      "creativo": true,
+      "texto": {
+        "es": ["Clic derecho a otro jugador: durante unos minutos, todo lo que escriba en el chat saldrá en «uwu» (◕ᴗ◕✿)."],
+        "en": ["Right-click another player: for a few minutes, everything they type in chat comes out in “uwu” (◕ᴗ◕✿)."]
+      }
+    },
+    {
+      "id": "pocion_controles",
+      "objetos": ["miscelanea:pocion_controles"],
+      "creativo": true,
+      "texto": {
+        "es": ["Poción arrojadiza: a quien salpique se le cambian W↔S y A↔D un rato. Como con una arrojadiza normal, cuanto más cerca del golpe, más dura."],
+        "en": ["Splash potion: whoever it splashes gets W↔S and A↔D swapped for a while. Like a normal splash potion, the closer to the impact, the longer it lasts."]
+      }
+    },
+    {
+      "id": "cartel_pateame",
+      "objetos": ["miscelanea:cartel_pateame"],
+      "creativo": true,
+      "texto": {
+        "es": ["Clic derecho a otro jugador: le pegas el cartel de «PATÉAME» en la espalda (él no lo ve). Cada golpe que reciba: ¡confeti y boing!", "Se lo quita agachado + clic derecho con la mano vacía."],
+        "en": ["Right-click another player: stick the “KICK ME” sign on their back (they can't see it). Every hit they take: confetti and a boing!", "They remove it by sneaking + right-clicking with an empty hand."]
+      }
+    },
+    {
+      "id": "duende_tarro",
+      "objetos": ["miscelanea:duende_tarro"],
+      "creativo": true,
+      "texto": {
+        "es": ["Clic derecho a otro jugador: sueltas el duende en su mochila. Cada poco le revuelve el inventario. Nunca roba ni rompe nada."],
+        "en": ["Right-click another player: release the goblin into their backpack. Every so often it shuffles their inventory. It never steals or breaks anything."]
+      }
+    },
+    {
+      "id": "espejo_reves",
+      "objetos": ["miscelanea:espejo_reves"],
+      "creativo": true,
+      "texto": {
+        "es": ["Clic derecho a otro jugador: su pantalla se pone boca abajo un rato. Un solo uso."],
+        "en": ["Right-click another player: their screen turns upside down for a while. Single use."]
+      }
+    }
+  ]
+}

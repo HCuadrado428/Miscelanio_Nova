@@ -50,6 +50,8 @@ public final class ConfigServidor {
             EST_CHARCOS, EST_OSCURIDAD, EST_ARRASTRAR, EST_FRAGMENTARSE, EST_ATRAER, EST_LANZAR, EST_ESTAMPAR;
     private static final ForgeConfigSpec.DoubleValue EST_VELOCIDAD, EST_GRAVEDAD, EST_CAIDA, EST_TOQUE_DANO, EST_PARPADEO_DIST, EST_OSCURIDAD_QUIETO_S,
             EST_ARRASTRAR_ALCANCE, EST_ARRASTRAR_DIST, EST_TENTACULOS_ALCANCE, EST_LANZAR_FUERZA, EST_ESTAMPAR_DANO, EST_ESTAMPAR_ALTURA;
+    // ---- manual del mod
+    private static final ForgeConfigSpec.BooleanValue MANUAL_REGALO;
 
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
@@ -250,6 +252,11 @@ public final class ConfigServidor {
         EST_ESTAMPAR_ENF_S = b.comment("Segundos de espera de Estampar.").defineInRange("estampar_enfriamiento_segundos", 12, 0, 600);
         b.pop();
 
+        b.comment("Manual del mod (libro con la guía de todo lo que trae Miscelánea).").push("manual");
+        MANUAL_REGALO = b.comment("Regalar el manual a cada jugador la primera vez que entra al mundo (solo una vez por jugador).")
+                .define("regalo_al_entrar", true);
+        b.pop();
+
         SPEC = b.build();
     }
 
@@ -406,4 +413,7 @@ public final class ConfigServidor {
     public static float estaticaEstamparDano() { return (float) d(EST_ESTAMPAR_DANO); }
     public static double estaticaEstamparAltura() { return d(EST_ESTAMPAR_ALTURA); }
     public static int estaticaEstamparEnfriamiento() { return i(EST_ESTAMPAR_ENF_S) * 20; }
+
+    // ------------------------------------------------------------------ manual
+    public static boolean manualRegalo() { return b(MANUAL_REGALO); }
 }
