@@ -6,8 +6,12 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-/** Servidor → clientes: las tablas de récords de las recreativas. */
+/**
+ * Servidor → clientes: los 10 primeros de cada categoría del ranking (las tablas de las recreativas son las suyas). Con
+ * {@link #TODO} trae todas y sustituye lo que había; sin él, solo las categorías que han cambiado.
+ */
 public class ArcadeRecordsPacket {
+    public static final String TODO = "$todo";
     public static CompoundTag cliente = new CompoundTag();
     private final CompoundTag t;
 
@@ -24,6 +28,15 @@ public class ArcadeRecordsPacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        cliente = t == null ? new CompoundTag() : t;
+        if (t == null) return;
+        if (t.getBoolean(TODO)) {
+            CompoundTag n = t.copy();
+            n.remove(TODO);
+            cliente = n;
+        } else {
+            CompoundTag n = cliente.copy();
+            for (String k : t.getAllKeys()) n.put(k, t.get(k));
+            cliente = n;
+        }
     }
 }

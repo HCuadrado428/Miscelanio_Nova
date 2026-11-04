@@ -3,6 +3,7 @@ package com.miscelanea.client.baile;
 import com.miscelanea.Miscelanea;
 import com.miscelanea.baile.BailePacket;
 import com.miscelanea.baile.CancionesBaile;
+import com.miscelanea.baile.JuicioBaile;
 import com.miscelanea.baile.PistaBaileBlock;
 import com.miscelanea.client.arcade.PasoDoble;
 import com.miscelanea.network.ModNetwork;
@@ -40,9 +41,8 @@ import java.util.List;
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
 public final class BaileCliente {
     static final int NADA = 0, MENU = 1, BAILE = 2, RESULTADO = 3;
-    static final int LATENCIA = 4, VENTANA = 10;
-    /** Estado de cada flecha: sin tocar, manteniéndola, hecha, fallada (o soltada antes de tiempo). */
-    static final int PENDIENTE = 0, MANTENIENDO = 1, HECHA = 2, FALLADA = 3;
+    public static final int LATENCIA = 4;
+    static final int MANTENIENDO = JuicioBaile.MANTENIENDO, HECHA = JuicioBaile.HECHA, FALLADA = JuicioBaile.FALLADA, PENDIENTE = JuicioBaile.PENDIENTE;
     static final int[] COLOR = {0xFFB070F0, 0xFF5ADCFF, 0xFF69DC67, 0xFFFF5050}, LUZ = {0xFFE0C0FF, 0xFFC0F4FF, 0xFFC0FFC0, 0xFFFFC0C0};
     static final String[] JUICIOS = {"paso.miscelanea.perfecto", "paso.miscelanea.genial", "paso.miscelanea.bien", "paso.miscelanea.fallo",
             "paso.miscelanea.mantenido", "paso.miscelanea.soltado"};
@@ -56,9 +56,9 @@ public final class BaileCliente {
     static float frente;
     static CancionesBaile.Cancion cancion;
     static long inicio;
-    static CancionesBaile.Nota[] notas;
-    static int[] estado, tRoto;
-    static int puntos, combo, maxCombo, vida, perf, geni, bien, fall, mant, mantTotal, juicio = -1;
+    /** Juicio de las flechas de la canción en marcha (las mismas reglas que la recreativa Paso Doble). */
+    static JuicioBaile jb;
+    static int juicio = -1;
     static long juicioT, finT;
     static final long[] pulsado = new long[4];
     static final boolean[] pisando = new boolean[4];
@@ -115,6 +115,19 @@ public final class BaileCliente {
                 } else BailePoses.empezar(m.entidad, c, System.currentTimeMillis());
             }
             case BailePacket.PASO -> BailePoses.paso(m.entidad, m.a, m.b);
+            case BailePacket.ARCADE_EMPIEZA -> {
+                // alguien baila Paso Doble en una recreativa: su música (si a == 1) y su coreografía
+                CancionesBaile.Cancion c = CancionesBaile.de(m.cancion);
+                if (c == null || m.entidad == yo.getId()) return;
+                if (m.a == 1) ponerMusica(m.pos, c, true);
+                BailePoses.empezar(m.entidad, c, System.currentTimeMillis());
+                BailePoses.hasta(m.entidad, System.currentTimeMillis() + (long) (c.duracion * 1000) + 3000);
+            }
+            case BailePacket.ARCADE_PARA -> {
+                if (m.entidad == yo.getId()) return;
+                BailePoses.parar(m.entidad);
+                if (m.a == 1) quitarMusica(m.pos);
+            }
             case BailePacket.PARA -> {
                 BailePoses.parar(m.entidad);
                 quitarMusica(m.pos);
@@ -128,16 +141,21 @@ public final class BaileCliente {
     static final java.util.Map<BlockPos, MusicaPista> MUSICA = new java.util.HashMap<>();
 
     static void ponerMusica(BlockPos pos, CancionesBaile.Cancion c) {
+        ponerMusica(pos, c, false);
+    }
+
+    /** Pone la canción con posición en una pista (o en una recreativa de Paso Doble, si arcade). */
+    public static void ponerMusica(BlockPos pos, CancionesBaile.Cancion c, boolean arcade) {
         quitarMusica(pos);
         ResourceLocation rl = ResourceLocation.tryParse(c.sonido.contains(":") ? c.sonido : Miscelanea.MOD_ID + ":" + c.sonido);
         if (rl == null) return;
         // no hace falta que el sonido esté registrado: basta con que esté en el sounds.json de su espacio
-        MusicaPista mp = new MusicaPista(SoundEvent.createVariableRangeEvent(rl), pos, c.id);
+        MusicaPista mp = new MusicaPista(SoundEvent.createVariableRangeEvent(rl), pos, c.id, arcade);
         MUSICA.put(mp.pista, mp);
         Minecraft.getInstance().getSoundManager().play(mp);
     }
 
-    static void quitarMusica(BlockPos pos) {
+    public static void quitarMusica(BlockPos pos) {
         MusicaPista antes = MUSICA.remove(pos);
         if (antes != null) Minecraft.getInstance().getSoundManager().stop(antes);
     }
@@ -156,13 +174,10 @@ public final class BaileCliente {
 
     static void empezarCancion(CancionesBaile.Cancion c) {
         cancion = c;
-        notas = c.notas[dif];
-        estado = new int[notas.length];
-        tRoto = new int[notas.length];
-        mantTotal = 0;
-        for (CancionesBaile.Nota n : notas) if (n.mantener()) mantTotal++;
-        puntos = combo = maxCombo = perf = geni = bien = fall = mant = 0;
-        vida = 70;
+        jb = new JuicioBaile(c.notas[dif], (carril, mostrar, paso) -> {
+            mostrar(mostrar);
+            if (paso >= 0) enviarPaso(carril, paso);
+        });
         juicio = -1;
         inicio = System.currentTimeMillis();
         modo = BAILE;
@@ -224,46 +239,11 @@ public final class BaileCliente {
         if (modo != BAILE || c < 0) return;
         pisando[c] = true;
         pulsado[c] = System.currentTimeMillis();
-        int t = tiempo(), mejor = -1, md = 99;
-        for (int i = 0; i < notas.length; i++) {
-            if (notas[i].t - t > VENTANA) break;
-            if (estado[i] != PENDIENTE || notas[i].carril != c) continue;
-            int d = Math.abs(notas[i].t - t);
-            if (d < md) {
-                md = d;
-                mejor = i;
-            }
-        }
-        if (mejor >= 0 && md <= VENTANA) {
-            int j = md <= 3 ? 0 : md <= 6 ? 1 : 2;
-            estado[mejor] = notas[mejor].mantener() ? MANTENIENDO : HECHA;
-            juzgar(j);
-            mostrar(j);
-            enviarPaso(c, j);
-        }
+        jb.pulsar(c, tiempo());
     }
 
-    /** Se suelta la tecla de un carril: si se estaba manteniendo una flecha, se juzga cuándo se ha soltado. */
     static void soltar(int c, int t) {
-        for (int i = 0; i < notas.length; i++) {
-            if (estado[i] != MANTENIENDO || notas[i].carril != c) continue;
-            int falta = notas[i].fin - t;
-            if (falta <= VENTANA) {
-                // soltada a tiempo: cuanto más cerca del final de la cola, mejor
-                int j = falta <= 3 ? 0 : falta <= 6 ? 1 : 2;
-                estado[i] = HECHA;
-                mant++;
-                juzgar(j);
-                mostrar(j == 0 ? 4 : j);
-            } else {
-                // soltada antes de tiempo: la cola se rompe
-                estado[i] = FALLADA;
-                tRoto[i] = t;
-                juzgar(3);
-                mostrar(5);
-                enviarPaso(c, 3);
-            }
-        }
+        if (jb != null) jb.soltar(c, t);
     }
 
     static void enviarPaso(int c, int j) {
@@ -278,36 +258,8 @@ public final class BaileCliente {
         juicioT = System.currentTimeMillis();
     }
 
-    static void juzgar(int j) {
-        switch (j) {
-            case 0 -> {
-                perf++;
-                puntos += 300 + combo * 2;
-                vida = Math.min(100, vida + 2);
-            }
-            case 1 -> {
-                geni++;
-                puntos += 200 + combo;
-                vida = Math.min(100, vida + 1);
-            }
-            case 2 -> {
-                bien++;
-                puntos += 100;
-            }
-            default -> {
-                fall++;
-                vida -= 6;
-            }
-        }
-        combo = j < 3 ? combo + 1 : 0;
-        maxCombo = Math.max(maxCombo, combo);
-    }
-
     static int nota() {
-        int total = notas == null ? 0 : (notas.length + mantTotal) * 300;
-        float p = total == 0 ? 0 : (perf * 300 + geni * 200 + bien * 100) / (float) total;
-        if (vida <= 0) return 5;
-        return p >= 0.93F ? 0 : p >= 0.8F ? 1 : p >= 0.65F ? 2 : p >= 0.5F ? 3 : 4;
+        return jb == null ? 4 : jb.nota();
     }
 
     @SubscribeEvent
@@ -341,28 +293,12 @@ public final class BaileCliente {
                 pisando[c] = false;
                 soltar(c, t);
             }
-            for (int i = 0; i < notas.length; i++) {
-                CancionesBaile.Nota n = notas[i];
-                if (n.t > t) break;
-                if (estado[i] == PENDIENTE && t - n.t > VENTANA) {
-                    estado[i] = FALLADA;
-                    tRoto[i] = n.t;
-                    juzgar(3);
-                    mostrar(3);
-                    enviarPaso(n.carril, 3);
-                } else if (estado[i] == MANTENIENDO && t >= n.fin) {
-                    // mantenida hasta el final de la cola
-                    estado[i] = HECHA;
-                    mant++;
-                    juzgar(0);
-                    mostrar(4);
-                }
-            }
-            if (vida <= 0 || t > cancion.duracionPasos() + 30) {
-                vida = Math.max(0, vida);
+            jb.avanzar(t);
+            if (jb.sinVida() || t > cancion.duracionPasos() + 30) {
+                jb.vida = Math.max(0, jb.vida);
                 modo = RESULTADO;
                 finT = System.currentTimeMillis();
-                ModNetwork.CHANNEL.sendToServer(new BailePacket(BailePacket.FIN, pista, 0, puntos, nota()));
+                ModNetwork.CHANNEL.sendToServer(new BailePacket(BailePacket.FIN, pista, 0, jb.puntos, nota()));
             }
         } else if (modo == RESULTADO && System.currentTimeMillis() - finT > 5000) {
             modo = MENU;
@@ -474,7 +410,9 @@ public final class BaileCliente {
             boolean p = ahora - pulsado[c] < 120 || pisando[c];
             flecha(g, x0 + c * paso, objY, c, p ? 0xFFFFFFFF : 0xFF8080A0, 0, true, esc);
         }
-        if (notas != null && modo == BAILE) {
+        if (jb != null && modo == BAILE) {
+            CancionesBaile.Nota[] notas = jb.notas;
+            int[] estado = jb.estado, tRoto = jb.tRoto;
             float vel = new float[]{1.7F, 2.2F, 2.7F}[dif] * esc * 0.75F;
             // primero las colas de las flechas que se mantienen (por debajo de las cabezas)
             for (int i = 0; i < notas.length; i++) {
@@ -522,6 +460,7 @@ public final class BaileCliente {
             }
         }
         // vida y puntos
+        int vida = jb == null ? 70 : jb.vida, puntos = jb == null ? 0 : jb.puntos, combo = jb == null ? 0 : jb.combo;
         int bx = x0, by = H - 24;
         g.fill(bx, by, bx + 4 * paso - 6, by + 6, 0xFF000000);
         g.fill(bx + 1, by + 1, bx + 1 + (int) ((4 * paso - 8) * Math.max(0, vida) / 100F), by + 5, vida < 25 ? 0xFFE04040 : 0xFF50D060);
@@ -538,6 +477,7 @@ public final class BaileCliente {
             g.pose().scale(3, 3, 1);
             g.drawCenteredString(font, n[nota()], 0, 0, nota() == 0 ? 0xFFFFE05A : 0xFFFFFFFF);
             g.pose().popPose();
+            int perf = jb.perf, geni = jb.geni, bien = jb.bien, fall = jb.fall, mant = jb.mant, mantTotal = jb.mantTotal, maxCombo = jb.maxCombo;
             g.drawCenteredString(font, I18n.get("paso.miscelanea.perfecto") + " " + perf + "  " + I18n.get("paso.miscelanea.genial") + " " + geni, cx, H / 2 + 2, 0xFFE0E0E0);
             g.drawCenteredString(font, I18n.get("paso.miscelanea.bien") + " " + bien + "  " + I18n.get("paso.miscelanea.fallo") + " " + fall, cx, H / 2 + 14, 0xFFE0E0E0);
             if (mantTotal > 0) g.drawCenteredString(font, I18n.get("baile.miscelanea.mantenidas", mant, mantTotal), cx, H / 2 + 26, 0xFFE0E0E0);

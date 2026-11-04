@@ -81,6 +81,8 @@ public class ArcadeScreen extends Screen {
     private float escala = 1, origenX, origenY;
     /** Máquina de un solo juego (cabina de carreras, recreativa de pistola): no hay menú para elegir. */
     private String fijo = "";
+    /** Paso Doble: dónde suena la canción que este jugador ha puesto (su máquina), o null. */
+    private BlockPos musicaPaso;
 
     public ArcadeScreen fijar(String id) {
         if (ArcadeJuegos.esArcade(id)) {
@@ -172,6 +174,7 @@ public class ArcadeScreen extends Screen {
     public void removed() {
         ModNetwork.CHANNEL.sendToServer(new ArcadeAccionPacket(pos, ArcadeAccionPacket.CERRAR, "", 0));
         pararMusica();
+        pararPaso();
         if (tex != null) tex.cerrar();
         super.removed();
     }
@@ -189,6 +192,12 @@ public class ArcadeScreen extends Screen {
                 estado = Estado.MENU;
                 mostrarAviso(I18n.get(doble && companero.length() > 0 && ArcadeJuegos.dosJugadores(ArcadeJuegos.IDS[sel])
                         ? "consola.miscelanea.dos_fichas" : "consola.miscelanea.inserta_ficha"));
+                JuegoGB.sonido(ModSounds.GB_FIN, 1.6F);
+            }
+            case 6 -> {
+                // Paso Doble: suena otra pista de baile o recreativa cerca (no se mezclan las músicas)
+                estado = Estado.MENU;
+                mostrarAviso(I18n.get("paso.miscelanea.otra_sonando", m.jugadores));
                 JuegoGB.sonido(ModSounds.GB_FIN, 1.6F);
             }
             case 5 -> {
@@ -336,9 +345,48 @@ public class ArcadeScreen extends Screen {
             juego.cambiarMusica = null;
             juego.pararMusica = false;
         }
+        if (estado == Estado.JUEGO && juego instanceof PasoDoble pd) pasoDoble(pd);
         // retransmitir la pantalla a los que miran (10 imágenes por segundo); el invitado no retransmite
         if (++pasos % 6 == 0 && (!invitado || !propia.equals(pos)))
             ModNetwork.CHANNEL.sendToServer(new ArcadeFramePacket(invitado ? propia : pos, Trama.codificar(pant)));
+    }
+
+    /**
+     * Paso Doble con las canciones de la pista de baile: al empezar la canción se pone la música en la máquina (con posición),
+     * el jugador baila la coreografía y se avisa al servidor (los de alrededor la oyen y le ven bailar); al acabar, los
+     * puntos de este jugador van al ranking de esa canción y dificultad.
+     */
+    private void pasoDoble(PasoDoble pd) {
+        Minecraft mc = Minecraft.getInstance();
+        int yo = invitado ? 1 : 0;
+        if (pd.empiezaId != null) {
+            String id = pd.empiezaId;
+            pd.empiezaId = null;
+            pararPaso();
+            com.miscelanea.baile.CancionesBaile.Cancion c = com.miscelanea.baile.CancionesBaile.de(id);
+            if (c != null) {
+                musicaPaso = invitado ? propia : pos;
+                com.miscelanea.client.baile.BaileCliente.ponerMusica(musicaPaso, c, true);
+                if (mc.player != null) {
+                    long ahora = System.currentTimeMillis();
+                    com.miscelanea.client.baile.BailePoses.empezar(mc.player.getId(), c, ahora + PasoDoble.LATENCIA * 1000L / 60);
+                    com.miscelanea.client.baile.BailePoses.hasta(mc.player.getId(), ahora + (long) (c.duracion * 1000) + 3000);
+                }
+            }
+            ModNetwork.CHANNEL.sendToServer(new com.miscelanea.baile.BailePacket(com.miscelanea.baile.BailePacket.ARCADE_EMPIEZA, pos, 0, 0, pd.dif(yo), id));
+        }
+        if (pd.acaba) {
+            pd.acaba = false;
+            pararPaso();
+            ModNetwork.CHANNEL.sendToServer(new com.miscelanea.baile.BailePacket(com.miscelanea.baile.BailePacket.ARCADE_FIN, pos, 0, pd.puntosDe(yo), pd.notaDe(yo)));
+        }
+    }
+
+    private void pararPaso() {
+        if (musicaPaso != null) com.miscelanea.client.baile.BaileCliente.quitarMusica(musicaPaso);
+        musicaPaso = null;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null && !com.miscelanea.client.baile.BaileCliente.raton()) com.miscelanea.client.baile.BailePoses.parar(mc.player.getId());
     }
 
     /** Un paso de la partida a dos: manda los mandos de un paso futuro y avanza solo si ya tiene los del compañero. */

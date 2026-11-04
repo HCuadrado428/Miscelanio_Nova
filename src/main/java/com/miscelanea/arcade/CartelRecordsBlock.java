@@ -29,8 +29,8 @@ public class CartelRecordsBlock extends BaseEntityBlock {
             Block.box(14, 0, 0, 16, 16, 16),   // oeste
             Block.box(0, 0, 0, 2, 16, 16)};    // este
 
-    public static final int ARCADE = 0, FERIA = 1;
-    /** ARCADE: marcador retro de recreativa. FERIA: pizarra de tiza con los récords de la feria. */
+    public static final int ARCADE = 0, FERIA = 1, TABLON = 2;
+    /** ARCADE: marcador retro de recreativa. FERIA: pizarra de tiza con los récords de la feria. TABLON: tablón del ranking. */
     public final int estilo;
 
     public CartelRecordsBlock(Properties p) {

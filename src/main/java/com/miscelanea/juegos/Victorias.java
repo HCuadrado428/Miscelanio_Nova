@@ -70,6 +70,8 @@ public class Victorias extends SavedData {
         if (contraHumano) c[1]++;
         if (nombre != null && !nombre.isEmpty()) v.nombres.put(u, nombre);
         v.setDirty();
+        // el ranking del servidor lleva su propia cuenta (con la hora, para desempatar) y avisa a los tablones
+        com.miscelanea.ranking.Ranking.victoria(s, u, nombre, juego);
         return c[0];
     }
 

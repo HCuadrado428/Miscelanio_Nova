@@ -10,7 +10,8 @@ import java.util.function.Supplier;
 
 /**
  * Servidor → cliente de la recreativa. Modos: 0 abrir como jugador 1, 1 créditos (respuesta a ficha), 2 empezar partida
- * (con semilla, juego y número de jugadores), 3 no hay créditos, 4 abrir como jugador 2, 5 cambia el compañero (nombre o vacío).
+ * (con semilla, juego y número de jugadores), 3 no hay créditos, 4 abrir como jugador 2, 5 cambia el compañero (nombre o vacío),
+ * 6 no se puede empezar Paso Doble porque suena otra pista o recreativa de baile cerca (jugadores = a cuántos bloques).
  */
 public class ArcadeAbrirPacket {
     public final BlockPos pos;
