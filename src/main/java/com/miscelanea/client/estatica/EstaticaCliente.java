@@ -316,9 +316,9 @@ public final class EstaticaCliente {
     }
 
     /** En primera persona, el brazo también lleva su estática (y los ojos no se ven, claro). */
-    @SubscribeEvent
     private static boolean dibujandoBrazo;
 
+    @SubscribeEvent
     public static void brazo(net.minecraftforge.client.event.RenderArmEvent e) {
         // renderRightHand/LeftHand vuelve a lanzar este mismo evento: sin esta guarda se llamaba a sí mismo sin fin
         // (StackOverflow → el juego se cerraba al ver el brazo en primera persona con la estática)
