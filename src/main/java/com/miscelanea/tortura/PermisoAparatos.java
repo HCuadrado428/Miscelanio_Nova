@@ -29,8 +29,7 @@ import java.util.Set;
  * Interruptor general de la config ("tortura.aparatos_en_supervivencia"). Si está apagado, quien no está en creativo
  * no puede poner ni usar los aparatos de tortura ni ponerle a nadie grilletes, trampas, collares... Quien ya está
  * atrapado (en un aparato, con grilletes, trampa o un juego de Jigsaw) no se ve afectado: puede seguir escapando.
- * El pozo de agujas, el alambre de espino y la puerta de salida (la parte "de escapar" de los juegos) se pueden
- * seguir usando. Se comprueba en los dos lados (la config del servidor llega al cliente), así no hay clics fantasma.
+ * Se comprueba en los dos lados (la config del servidor llega al cliente), así no hay clics fantasma.
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID)
 public final class PermisoAparatos {
@@ -47,7 +46,7 @@ public final class PermisoAparatos {
                 AparatosRegistro.HIERRO_MARCAR, AparatosRegistro.PENDULO_ITEM, AparatosRegistro.INMERSION_ITEM,
                 AparatosRegistro.INTERROGATORIO_ITEM, AparatosRegistro.MALETIN, AparatosRegistro.GANCHO_ITEM,
                 EfectosRegistro.COLLAR, EfectosRegistro.DETONADOR,
-                SawRegistro.CAJA_AGUA, SawRegistro.TANQUE_ITEM, SawRegistro.POZO_ITEM, SawRegistro.ALAMBRE_ITEM, SawRegistro.SALIDA_ITEM);
+                SawRegistro.CAJA_AGUA, SawRegistro.TANQUE_ITEM);
     }
 
     private static void preparar() {
@@ -60,10 +59,6 @@ public final class PermisoAparatos {
             o.add(it);
             if (it instanceof BlockItem bi) b.add(bi.getBlock());
         }
-        // los bloques "de escapar" se siguen pudiendo usar (no se pueden poner, eso sí)
-        b.remove(SawRegistro.POZO.get());
-        b.remove(SawRegistro.ALAMBRE.get());
-        b.remove(SawRegistro.SALIDA.get());
         objetos = o;
         bloques = b;
     }

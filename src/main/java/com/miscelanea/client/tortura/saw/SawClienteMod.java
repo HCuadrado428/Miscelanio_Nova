@@ -1,7 +1,6 @@
 package com.miscelanea.client.tortura.saw;
 
 import com.miscelanea.Miscelanea;
-import com.miscelanea.tortura.saw.SawRegistro;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
@@ -15,15 +14,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
-/** Registro del cliente (bus del mod) de los juegos de Jigsaw: capa de la caja de agua, reloj de la salida, tecla y HUD. */
+/** Registro del cliente (bus del mod) de los juegos de Jigsaw: capa de la caja de agua, tecla y HUD. */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public final class SawClienteMod {
     private SawClienteMod() {}
-
-    @SubscribeEvent
-    public static void renderers(EntityRenderersEvent.RegisterRenderers e) {
-        e.registerBlockEntityRenderer(SawRegistro.SALIDA_BE.get(), SalidaRenderer::new);
-    }
 
     @SubscribeEvent
     public static void modelos(ModelEvent.RegisterAdditional e) {
