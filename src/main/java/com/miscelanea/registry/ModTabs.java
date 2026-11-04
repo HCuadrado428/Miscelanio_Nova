@@ -29,6 +29,8 @@ public final class ModTabs {
     public static final RegistryObject<CreativeModeTab> TORTURA = tab("tortura", () -> new ItemStack(com.miscelanea.tortura.TorturaRegistro.TRAMPA_OSO.get()));
     /** Pociones y efectos del mod. */
     public static final RegistryObject<CreativeModeTab> POCIONES = tab("pociones", () -> com.miscelanea.tortura.efectos.EfectosRegistro.pocionesFantasma().get(0));
+    /** Bromas pesadas (pero inofensivas): varita uwu, cartel de "PATÉAME", duende travieso... */
+    public static final RegistryObject<CreativeModeTab> BROMAS = tab("bromas", () -> new ItemStack(com.miscelanea.bromas.BromasRegistro.VARITA_UWU.get()));
     /** Varios: muebles, cocina, aspirafantasmas, bichos, tesoros... */
     public static final RegistryObject<CreativeModeTab> VARIOS = tab("varios", () -> new ItemStack(ModItems.ASPIRAFANTASMAS.get()));
 

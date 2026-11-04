@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "miscelanea:rueda_catalina",
     "miscelanea:enemigo",
     "miscelanea:descarga",
     "miscelanea:doncella",

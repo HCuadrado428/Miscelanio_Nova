@@ -1,4 +1,16 @@
 {
+  "bromas_boing": {
+    "sounds": [
+      "miscelanea:bromas_boing"
+    ],
+    "subtitle": "subtitles.miscelanea.bromas_boing"
+  },
+  "bromas_uwu": {
+    "sounds": [
+      "miscelanea:bromas_uwu"
+    ],
+    "subtitle": "subtitles.miscelanea.bromas_uwu"
+  },
   "aspirar": {
     "sounds": [
       {

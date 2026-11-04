@@ -46,6 +46,7 @@ public class Miscelanea {
         com.miscelanea.tortura.saw.SawRegistro.registrar(modBus);
         com.miscelanea.dream.DreamRegistro.registrar(modBus);
         com.miscelanea.glitch.GlitchRegistro.registrar(modBus);
+        com.miscelanea.bromas.BromasRegistro.registrar(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::creativeTabs);
