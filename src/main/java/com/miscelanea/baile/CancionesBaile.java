@@ -37,6 +37,8 @@ import java.util.Map;
  *   "sonido": "miscelanea_canciones:boogie_wonderland",
  *   "bpm": 132.0,                           // pulsos por minuto (constante)
  *   "offset": 0.42,                         // segundos hasta el pulso 0 (el primer tiempo fuerte)
+ *   "mapa": [[0, 0.42], [4, 2.25], ...],    // opcional: [pulso, segundo] (uno por compás) si el tempo no es fijo
+ *                                           // (grupos en directo); entre medias se interpola y manda sobre bpm/offset
  *   "duracion": 288.3,                      // segundos que dura la canción
  *   "secciones": [                          // en pulsos; nombre: intro, verso, estribillo, puente, final, outro
  *     {"nombre": "intro", "desde": 0, "hasta": 16,
@@ -110,6 +112,8 @@ public final class CancionesBaile {
         public final Nota[][] notas = new Nota[3][];
         public final List<Seccion> secciones = new ArrayList<>();
         public final List<Tramo> tramos = new ArrayList<>();
+        /** Mapa de tempo (pulso → segundo), o null si el tempo es fijo. */
+        private float[] mapaP, mapaS;
 
         Cancion(String id, JsonObject o) {
             this.id = id;
@@ -119,6 +123,15 @@ public final class CancionesBaile {
             bpm = Math.max(30F, o.get("bpm").getAsFloat());
             offset = o.has("offset") ? o.get("offset").getAsFloat() : 0F;
             duracion = o.get("duracion").getAsFloat();
+            if (o.has("mapa") && o.getAsJsonArray("mapa").size() >= 2) {
+                JsonArray m = o.getAsJsonArray("mapa");
+                mapaP = new float[m.size()];
+                mapaS = new float[m.size()];
+                for (int i = 0; i < m.size(); i++) {
+                    mapaP[i] = m.get(i).getAsJsonArray().get(0).getAsFloat();
+                    mapaS[i] = m.get(i).getAsJsonArray().get(1).getAsFloat();
+                }
+            }
             JsonObject ns = o.getAsJsonObject("notas");
             for (int d = 0; d < 3; d++) {
                 List<Nota> l = new ArrayList<>();
@@ -164,14 +177,39 @@ public final class CancionesBaile {
             }
         }
 
+        /** Segundo de la canción en el que cae un pulso. */
+        public float segundo(float pulso) {
+            if (mapaP == null) return offset + pulso * 60F / bpm;
+            return interpolar(mapaP, mapaS, pulso);
+        }
+
         /** Paso de juego (1/60 s) de un pulso de la canción. */
         public int paso(float pulso) {
-            return Math.round((offset + pulso * 60F / bpm) * PPS);
+            return Math.round(segundo(pulso) * PPS);
         }
 
         /** Pulso de la canción en el segundo s. */
         public float pulso(float s) {
-            return (s - offset) * bpm / 60F;
+            if (mapaP == null) return (s - offset) * bpm / 60F;
+            return interpolar(mapaS, mapaP, s);
+        }
+
+        /** Interpolación por tramos (y se alarga con la pendiente del primer/último tramo). */
+        private static float interpolar(float[] xs, float[] ys, float x) {
+            int n = xs.length, i;
+            if (x <= xs[0]) i = 1;
+            else if (x >= xs[n - 1]) i = n - 1;
+            else {
+                int lo = 0, hi = n - 1;
+                while (hi - lo > 1) {
+                    int m = (lo + hi) >>> 1;
+                    if (xs[m] <= x) lo = m;
+                    else hi = m;
+                }
+                i = hi;
+            }
+            float dx = xs[i] - xs[i - 1];
+            return ys[i - 1] + (ys[i] - ys[i - 1]) * (dx == 0 ? 0 : (x - xs[i - 1]) / dx);
         }
 
         public int duracionPasos() {
