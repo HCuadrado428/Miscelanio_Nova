@@ -44,6 +44,7 @@ public class Miscelanea {
         com.miscelanea.pociones.PocionesRegistro.registrar(modBus);
         com.miscelanea.voz.VozRegistro.registrar(modBus);
         com.miscelanea.tortura.saw.SawRegistro.registrar(modBus);
+        com.miscelanea.dream.DreamRegistro.registrar(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::creativeTabs);
@@ -212,6 +213,10 @@ public class Miscelanea {
             event.accept(com.miscelanea.voz.VozRegistro.arrojadiza(com.miscelanea.voz.VozRegistro.POCION_TARTAMUDEO));
             event.accept(com.miscelanea.voz.VozRegistro.arrojadiza(com.miscelanea.voz.VozRegistro.POCION_TARTAMUDEO_LARGA));
             event.accept(com.miscelanea.voz.VozRegistro.arrojadiza(com.miscelanea.voz.VozRegistro.POCION_BORRACHERA));
+            // caldero de mezclas, un par de frascos de ejemplo y la esencia de Dream (solo creativo)
+            event.accept(com.miscelanea.dream.DreamRegistro.CALDERO_ITEM);
+            for (var st : com.miscelanea.dream.Mezclas.ejemplos()) event.accept(st);
+            event.accept(com.miscelanea.dream.DreamRegistro.ESENCIA);
             // --- pociones (otros paquetes añaden aquí)
         }
         // ---- Varios
@@ -243,6 +248,7 @@ public class Miscelanea {
             event.accept(ModItems.PAELLA);
             event.accept(ModItems.TORTILLA);
             event.accept(ModItems.GAZPACHO);
+            event.accept(com.miscelanea.dream.DreamRegistro.ANILLO);
         }
         comprobarPestanas(event);
     }

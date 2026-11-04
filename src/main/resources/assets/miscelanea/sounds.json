@@ -2306,5 +2306,59 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.ballesta_virote"
+  },
+  "dream_mordisco": {
+    "sounds": [
+      {
+        "name": "miscelanea:dream_mordisco",
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.dream_mordisco"
+  },
+  "dream_agarre": {
+    "sounds": [
+      {
+        "name": "miscelanea:dream_agarre",
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.dream_agarre"
+  },
+  "caldero_verter": {
+    "sounds": [
+      {
+        "name": "miscelanea:caldero_verter",
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.caldero_verter"
+  },
+  "caldero_burbujas": {
+    "sounds": [
+      {
+        "name": "miscelanea:caldero_burbujas",
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.caldero_burbujas"
+  },
+  "anillo_carga": {
+    "sounds": [
+      {
+        "name": "miscelanea:anillo_carga",
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.anillo_carga"
+  },
+  "anillo_salto": {
+    "sounds": [
+      {
+        "name": "miscelanea:anillo_salto",
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.anillo_salto"
   }
 }

@@ -25,6 +25,11 @@ public final class ConfigServidor {
     // ---- trampas
     private static final ForgeConfigSpec.IntValue TRAMPA_OSO_S, TRAMPA_OSO_SIN_CAJAS_S, CAJA_AGUA_LLENADO_S,
             SALIDA_S, GANCHO_DANO_DESDE_S, CEPO_S;
+    // ---- Dream (mordisco venenoso y anillo de medianoche)
+    private static final ForgeConfigSpec.BooleanValue MORDISCO_ACTIVADO, MORDISCO_JUGADORES;
+    private static final ForgeConfigSpec.IntValue MORDISCO_WITHER_NIVEL, MORDISCO_WITHER_S, ANILLO_ENFRIAMIENTO_S;
+    private static final ForgeConfigSpec.DoubleValue MORDISCO_DANO, MORDISCO_UMBRAL;
+    private static final ForgeConfigSpec.ConfigValue<String> ANILLO_DIMENSION;
 
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
@@ -89,6 +94,25 @@ public final class ConfigServidor {
                 .defineInRange("cepo_segundos", 60, 5, 3600);
         b.pop();
 
+        b.comment("Dream: el mordisco venenoso (efecto de la esencia de Dream) y el anillo de medianoche.").push("dream");
+        MORDISCO_ACTIVADO = b.comment("Si quien tiene el efecto «Mordisco venenoso» puede agarrar y morder con la mano vacía.")
+                .define("mordisco_activado", true);
+        MORDISCO_JUGADORES = b.comment("Si se puede morder a otros jugadores (además de respetar el PvP del servidor y los equipos).")
+                .define("mordisco_a_jugadores", true);
+        MORDISCO_WITHER_NIVEL = b.comment("Nivel del Wither de cada mordisco (0 = Wither I, 1 = Wither II...).")
+                .defineInRange("mordisco_wither_nivel", 1, 0, 4);
+        MORDISCO_WITHER_S = b.comment("Segundos de Wither que deja cada mordisco (muerde cada 1,5 s).")
+                .defineInRange("mordisco_wither_segundos", 4, 1, 60);
+        MORDISCO_DANO = b.comment("Daño directo de cada mordisco, aparte del Wither (sirve también contra no muertos, que no sufren Wither).")
+                .defineInRange("mordisco_dano", 1.0, 0.0, 100.0);
+        MORDISCO_UMBRAL = b.comment("Daño de un solo golpe que, recibido por quien muerde, le obliga a soltar a su presa.")
+                .defineInRange("mordisco_umbral_soltar", 3.0, 0.0, 1000.0);
+        ANILLO_DIMENSION = b.comment("Dimensión a la que lleva el anillo de medianoche (la de «The Midnight» de Cryptic Mushroom).")
+                .define("anillo_dimension", "midnight:midnight");
+        ANILLO_ENFRIAMIENTO_S = b.comment("Segundos de espera del anillo de medianoche después de viajar.")
+                .defineInRange("anillo_enfriamiento_segundos", 10, 0, 3600);
+        b.pop();
+
         SPEC = b.build();
     }
 
@@ -110,6 +134,14 @@ public final class ConfigServidor {
     }
 
     private static boolean b(ForgeConfigSpec.BooleanValue v) {
+        try {
+            return SPEC.isLoaded() ? v.get() : v.getDefault();
+        } catch (Exception e) {
+            return v.getDefault();
+        }
+    }
+
+    private static String s(ForgeConfigSpec.ConfigValue<String> v) {
         try {
             return SPEC.isLoaded() ? v.get() : v.getDefault();
         } catch (Exception e) {
@@ -146,4 +178,14 @@ public final class ConfigServidor {
     public static int salidaSegundos() { return i(SALIDA_S); }
     public static int ganchoDanoDesdeTicks() { return Math.max(20, i(GANCHO_DANO_DESDE_S) * 20); }
     public static int cepoTicks() { return i(CEPO_S) * 20; }
+
+    // ------------------------------------------------------------------ Dream
+    public static boolean mordiscoActivado() { return b(MORDISCO_ACTIVADO); }
+    public static boolean mordiscoJugadores() { return b(MORDISCO_JUGADORES); }
+    public static int mordiscoWitherNivel() { return i(MORDISCO_WITHER_NIVEL); }
+    public static int mordiscoWitherTicks() { return Math.max(20, i(MORDISCO_WITHER_S) * 20); }
+    public static float mordiscoDano() { return (float) d(MORDISCO_DANO); }
+    public static float mordiscoUmbral() { return (float) d(MORDISCO_UMBRAL); }
+    public static String anilloDimension() { return s(ANILLO_DIMENSION); }
+    public static int anilloEnfriamientoTicks() { return i(ANILLO_ENFRIAMIENTO_S) * 20; }
 }
