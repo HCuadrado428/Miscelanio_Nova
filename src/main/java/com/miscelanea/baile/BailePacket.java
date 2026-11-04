@@ -16,23 +16,30 @@ import java.util.function.Supplier;
 
 /**
  * Mensajes de la pista de baile en los dos sentidos. Cliente → servidor: EMPIEZA (canción), PASO (carril y juicio),
- * FIN (puntos), SALIR. Servidor → cliente: ABRIR (menú), EMPIEZA (suena y empieza), PASO (pose de otro), PARA.
+ * FIN (puntos), SALIR. Servidor → cliente: ABRIR (menú), EMPIEZA (suena y empieza), PASO (luces y traspiés de otro), PARA.
  */
 public class BailePacket {
     public static final int ABRIR = 0, EMPIEZA = 1, PASO = 2, FIN = 3, SALIR = 4, PARA = 5;
     public final int tipo, entidad, a, b;
     public final BlockPos pos;
+    /** Canción (EMPIEZA): por su id, para que no se líe si el servidor y el cliente no tienen las mismas canciones. */
+    public final String cancion;
 
     public BailePacket(int tipo, BlockPos pos, int entidad, int a, int b) {
+        this(tipo, pos, entidad, a, b, "");
+    }
+
+    public BailePacket(int tipo, BlockPos pos, int entidad, int a, int b, String cancion) {
         this.tipo = tipo;
         this.pos = pos;
         this.entidad = entidad;
         this.a = a;
         this.b = b;
+        this.cancion = cancion == null ? "" : cancion;
     }
 
     public BailePacket(FriendlyByteBuf buf) {
-        this(buf.readByte(), buf.readBlockPos(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt());
+        this(buf.readByte(), buf.readBlockPos(), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(), buf.readUtf(128));
     }
 
     public void encode(FriendlyByteBuf buf) {
@@ -41,6 +48,7 @@ public class BailePacket {
         buf.writeVarInt(entidad);
         buf.writeVarInt(a);
         buf.writeVarInt(b);
+        buf.writeUtf(cancion, 128);
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
@@ -52,7 +60,7 @@ public class BailePacket {
         if (p.distanceToSqr(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5) > 36) return;
         if (!(p.level().getBlockEntity(pos) instanceof PistaBaileBlockEntity be) || !p.getUUID().equals(be.bailarin)) return;
         switch (tipo) {
-            case EMPIEZA -> be.empezar(p, a, b);
+            case EMPIEZA -> be.empezar(p, cancion, b);
             case PASO -> ModNetwork.CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> p), new BailePacket(PASO, pos, p.getId(), a & 7, b & 7));
             case FIN -> {
                 // los puntos los cuenta el cliente: el servidor solo acepta los de una canción que él empezó, y nunca más de lo

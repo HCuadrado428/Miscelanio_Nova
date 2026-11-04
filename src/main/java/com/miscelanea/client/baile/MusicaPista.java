@@ -15,12 +15,12 @@ import net.minecraft.util.RandomSource;
  */
 public class MusicaPista extends AbstractTickableSoundInstance {
     final BlockPos pista;
-    private final int cancion;
+    private final String cancion;
     /** ¿Ya se ha visto en la pista (cliente) la canción puesta? Hasta entonces no se compara (el aviso llega antes que los datos). */
     private boolean vista;
     private int edad;
 
-    public MusicaPista(SoundEvent ev, BlockPos pista, int cancion) {
+    public MusicaPista(SoundEvent ev, BlockPos pista, String cancion) {
         super(ev, SoundSource.RECORDS, RandomSource.create());
         this.pista = pista.immutable();
         this.cancion = cancion;
@@ -47,7 +47,7 @@ public class MusicaPista extends AbstractTickableSoundInstance {
             stop();
             return;
         }
-        if (be.cancion == cancion && be.bailarin != null) vista = true;
+        if (cancion.equals(be.cancion) && be.bailarin != null) vista = true;
         else if (vista || edad > 100) {
             // la pista ya no tiene esta canción (terminó, cambió o se bajó el bailarín)
             stop();

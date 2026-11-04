@@ -14,6 +14,8 @@ public class MouseHandlerMixin {
     private void miscelanea$girar(LocalPlayer jugador, double dy, double dx) {
         // en la ejecución de la trampa de oso el ratón no hace nada
         if (com.miscelanea.client.tortura.EjecucionCliente.raton()) return;
+        // bailando en la pista de baile tampoco (la cámara de cine va sola)
+        if (com.miscelanea.client.baile.BaileCliente.raton()) return;
         // colgado boca abajo del gancho (cámara girada 180º): el ratón al revés en los dos ejes
         if (com.miscelanea.client.tortura.aparatos.InterrogaCliente.ratonInvertido()) {
             dy = -dy;

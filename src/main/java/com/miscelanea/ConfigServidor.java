@@ -40,6 +40,8 @@ public final class ConfigServidor {
     private static final ForgeConfigSpec.IntValue BROMA_UWU_S, BROMA_CONTROLES_S, BROMA_CARTEL_S, BROMA_DUENDE_S, BROMA_DUENDE_CADA_S,
             BROMA_REVES_S, BROMA_ENFRIAMIENTO_S, RUEDA_ACIERTOS, RUEDA_MUERTE_S;
     private static final ForgeConfigSpec.DoubleValue RUEDA_DANO;
+    // ---- pista de baile
+    private static final ForgeConfigSpec.IntValue BAILE_RADIO;
 
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
@@ -180,6 +182,11 @@ public final class ConfigServidor {
                 .defineInRange("muerte_tras_segundos", 600, 0, 86400);
         b.pop();
 
+        b.comment("Pista de baile.").push("pista_baile");
+        BAILE_RADIO = b.comment("Mientras una pista suena, ninguna otra a menos de estos bloques puede empezar una canción (para que no se mezclen las músicas). 0 = sin límite.")
+                .defineInRange("radio_otras_pistas", 32, 0, 512);
+        b.pop();
+
         SPEC = b.build();
     }
 
@@ -288,4 +295,7 @@ public final class ConfigServidor {
     public static float ruedaDanoFallo() { return (float) d(RUEDA_DANO); }
     public static boolean ruedaPuedeMatar() { return b(RUEDA_MUERTE); }
     public static int ruedaMuerteTicks() { return i(RUEDA_MUERTE_S) * 20; }
+
+    // ------------------------------------------------------------------ pista de baile
+    public static int baileRadioPistas() { return i(BAILE_RADIO); }
 }

@@ -14,3 +14,6 @@ logs/
 bin/
 .DS_Store
 jar/
+
+# Canciones que añade el dueño del servidor con importar_cancion.py (música con derechos: no se sube al repositorio)
+src/main/resources/assets/miscelanea_canciones/

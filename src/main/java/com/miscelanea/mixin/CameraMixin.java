@@ -55,4 +55,14 @@ public abstract class CameraMixin {
         net.minecraft.world.phys.Vec3 v = com.miscelanea.client.tortura.efectos.MiedoCamara.dolly(level, (net.minecraft.client.Camera) (Object) this);
         if (v != null) setPosition(v.x, v.y, v.z);
     }
+
+    /** Pista de baile: cámara de cine que mira al que baila y cambia de plano con la música (ver CamaraBaile). */
+    @Inject(method = "setup", at = @At("TAIL"))
+    private void miscelanea$camaraBaile(BlockGetter level, Entity entity, boolean detached, boolean reverse, float partial, CallbackInfo ci) {
+        if (!detached) return;
+        double[] r = com.miscelanea.client.baile.CamaraBaile.colocar(level, entity, partial);
+        if (r == null) return;
+        setRotation((float) r[3], (float) r[4]);
+        setPosition(r[0], r[1], r[2]);
+    }
 }

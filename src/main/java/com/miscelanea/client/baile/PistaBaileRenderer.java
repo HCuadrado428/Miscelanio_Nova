@@ -1,6 +1,7 @@
 package com.miscelanea.client.baile;
 
 import com.miscelanea.baile.PistaBaileBlock;
+import com.miscelanea.baile.CancionesBaile;
 import com.miscelanea.baile.PistaBaileBlockEntity;
 import com.miscelanea.client.arcade.PasoDoble;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -28,6 +29,12 @@ public class PistaBaileRenderer implements BlockEntityRenderer<PistaBaileBlockEn
         if (be.bailarin == null || be.getLevel() == null) return;
         Player p = be.getLevel().getPlayerByUUID(be.bailarin);
         if (p == null) return;
+        // los que miran: el baile va con la canción de la pista, aunque se llegue a mitad (el propio lo lleva BaileCliente)
+        if (p != Minecraft.getInstance().player) {
+            CancionesBaile.Cancion c = CancionesBaile.de(be.cancion);
+            long ahora = System.currentTimeMillis();
+            BailePoses.sincronizar(p.getId(), c, c == null ? ahora : ahora - Math.max(0, be.getLevel().getGameTime() - be.inicio) * 50);
+        }
         long[] u = BailePoses.ultimo(p.getId());
         Direction f = be.getBlockState().getValue(PistaBaileBlock.FACING);
         ps.pushPose();
@@ -38,7 +45,7 @@ public class PistaBaileRenderer implements BlockEntityRenderer<PistaBaileBlockEn
         VertexConsumer vc = buf.getBuffer(RenderType.textBackground());
         for (int c = 0; c < 4; c++) {
             float k = u != null && u[0] == c ? Math.max(0, 1 - u[1] / 300F) : 0;
-            float base = be.cancion >= 0 ? 0.18F + 0.1F * (float) Math.sin(System.currentTimeMillis() / 150.0 + c) : 0.1F;
+            float base = be.cancion != null ? 0.18F + 0.1F * (float) Math.sin(System.currentTimeMillis() / 150.0 + c) : 0.1F;
             float a = Math.max(base, k);
             if (a <= 0.02F) continue;
             int alfa = (int) (a * 230);

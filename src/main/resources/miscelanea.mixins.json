@@ -10,7 +10,6 @@
   "client": [
     "CameraMixin",
     "MouseHandlerMixin",
-    "HumanoidModelMixin",
     "LivingEntityRendererMixin",
     "HumanoidArmorLayerMixin",
     "CustomHeadLayerMixin",
