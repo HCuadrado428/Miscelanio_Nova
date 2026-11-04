@@ -248,6 +248,7 @@ public class Miscelanea {
             event.accept(ModItems.TOMATE);
             event.accept(ModItems.ARROZ);
             event.accept(ModItems.PAELLA);
+            event.accept(com.miscelanea.cocina.PaellaItem.bacalao());
             event.accept(ModItems.TORTILLA);
             event.accept(ModItems.GAZPACHO);
             event.accept(com.miscelanea.dream.DreamRegistro.ANILLO);

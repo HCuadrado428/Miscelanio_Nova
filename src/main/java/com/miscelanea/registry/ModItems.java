@@ -228,7 +228,7 @@ public final class ModItems {
     public static final RegistryObject<Item> FOGON = ITEMS.register("fogon",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.FOGON.get(), new Item.Properties()));
     public static final RegistryObject<Item> PAELLA = ITEMS.register("paella",
-            () -> new net.minecraft.world.item.BlockItem(ModBlocks.PAELLA.get(), new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
+            () -> new com.miscelanea.cocina.PaellaItem(ModBlocks.PAELLA.get(), new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> TORTILLA = ITEMS.register("tortilla",
             () -> new Item(new Item.Properties().food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(8).saturationMod(0.8F).build())));
     public static final RegistryObject<Item> GAZPACHO = ITEMS.register("gazpacho",

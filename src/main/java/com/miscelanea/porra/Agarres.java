@@ -51,7 +51,7 @@ public final class Agarres {
     private static final int DURACION_MAX = 7 * 20;
     private static final int INTERVALO_DESCARGA = 30;
     private static final float COSTE_DESCARGA = 8.0F;
-    // daño de la descarga: ConfigServidor.porraDescarga() (3 por defecto)
+    // daño de la descarga: ConfigServidor.porraDescarga() (2,5 por defecto)
     /** Ticks que quedan bloqueados los ítems de uso de la víctima tras una descarga del agarre. */
     private static final int BLOQUEO_AGARRE = 200;
     /** Y tras un golpe normal con la porra. */

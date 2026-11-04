@@ -1,0 +1,26 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "GGG",
+  "PSP",
+  "L L"
+ ],
+ "key": {
+  "G": {
+   "item": "minecraft:green_wool"
+  },
+  "P": {
+   "item": "minecraft:dark_oak_planks"
+  },
+  "S": {
+   "item": "minecraft:slime_ball"
+  },
+  "L": {
+   "item": "minecraft:dark_oak_log"
+  }
+ },
+ "result": {
+  "item": "miscelanea:billar"
+ }
+}

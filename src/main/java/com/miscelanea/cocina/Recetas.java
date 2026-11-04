@@ -16,8 +16,8 @@ public final class Recetas {
     public static final List<Receta> TODAS = new ArrayList<>();
 
     static {
-        TODAS.add(new Receta("paella", List.of(ModItems.ARROZ::get, () -> Items.CHICKEN, ModItems.TOMATE::get, () -> Items.COD),
-                () -> new ItemStack(ModItems.PAELLA.get()), 0xF2B437));
+        TODAS.add(new Receta("paella_bacalao", List.of(ModItems.ARROZ::get, () -> Items.CHICKEN, ModItems.TOMATE::get, () -> Items.COD),
+                PaellaItem::bacalao, 0xF2B437));
         TODAS.add(new Receta("paella", List.of(ModItems.ARROZ::get, () -> Items.CHICKEN, ModItems.TOMATE::get),
                 () -> new ItemStack(ModItems.PAELLA.get()), 0xF2B437));
         TODAS.add(new Receta("tortilla", List.of(() -> Items.POTATO, () -> Items.EGG, () -> Items.EGG),
