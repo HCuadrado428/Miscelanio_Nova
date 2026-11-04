@@ -30,6 +30,10 @@ public final class ConfigServidor {
     private static final ForgeConfigSpec.IntValue MORDISCO_WITHER_NIVEL, MORDISCO_WITHER_S, ANILLO_ENFRIAMIENTO_S;
     private static final ForgeConfigSpec.DoubleValue MORDISCO_DANO, MORDISCO_UMBRAL;
     private static final ForgeConfigSpec.ConfigValue<String> ANILLO_DIMENSION;
+    // ---- glitch (muestra de glitch)
+    private static final ForgeConfigSpec.IntValue GLITCH_RADIO, GLITCH_BLOQUES_TICK;
+    private static final ForgeConfigSpec.BooleanValue GLITCH_DESTRUIR, GLITCH_CONTENEDORES;
+    private static final ForgeConfigSpec.DoubleValue GLITCH_DANO;
 
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
@@ -113,6 +117,21 @@ public final class ConfigServidor {
                 .defineInRange("anillo_enfriamiento_segundos", 10, 0, 3600);
         b.pop();
 
+        b.comment("El glitch: la muestra de glitch (solo de creativo) que, al soltarse o romperse, corrompe una esfera de bloques.").push("glitch");
+        GLITCH_RADIO = b.comment("Radio en bloques de la esfera de corrupción.")
+                .defineInRange("radio", 4, 1, 12);
+        GLITCH_DESTRUIR = b.comment("Si es false el efecto es solo visual: los bloques se glitchean un momento y luego vuelven a ser lo que eran",
+                        "(y los objetos tirados parpadean pero no se borran). Si es true, los bloques glitcheados desaparecen.")
+                .define("destruir_bloques", true);
+        GLITCH_CONTENEDORES = b.comment("Si la onda puede borrar bloques con datos (cofres, hornos, tolvas, carteles...). Solo con destruir_bloques = true;",
+                        "lo que lleven dentro cae al suelo (y si la onda lo pilla, se borra).")
+                .define("afectar_contenedores", false);
+        GLITCH_DANO = b.comment("Daño que hace la onda a cada ser vivo que pilla (además de náuseas, oscuridad y el efecto Glitch). No borra a nadie.")
+                .defineInRange("dano", 2.0, 0.0, 100.0);
+        GLITCH_BLOQUES_TICK = b.comment("Máximo de bloques que se glitchean por tick en cada mundo (entre todas las ondas), para no dar lag.")
+                .defineInRange("bloques_por_tick", 160, 8, 4096);
+        b.pop();
+
         SPEC = b.build();
     }
 
@@ -188,4 +207,11 @@ public final class ConfigServidor {
     public static float mordiscoUmbral() { return (float) d(MORDISCO_UMBRAL); }
     public static String anilloDimension() { return s(ANILLO_DIMENSION); }
     public static int anilloEnfriamientoTicks() { return i(ANILLO_ENFRIAMIENTO_S) * 20; }
+
+    // ------------------------------------------------------------------ glitch
+    public static int glitchRadio() { return i(GLITCH_RADIO); }
+    public static boolean glitchDestruirBloques() { return b(GLITCH_DESTRUIR); }
+    public static boolean glitchAfectarContenedores() { return b(GLITCH_CONTENEDORES); }
+    public static float glitchDano() { return (float) d(GLITCH_DANO); }
+    public static int glitchBloquesPorTick() { return Math.max(1, i(GLITCH_BLOQUES_TICK)); }
 }
