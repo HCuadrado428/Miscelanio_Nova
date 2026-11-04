@@ -15,10 +15,10 @@ import net.minecraft.world.entity.Entity;
  * <pre>
  * miscelanea_saw: {
  *   Caja: {Tanque (pos), Activa, Nivel, Sangre, Empujes, Espera (tick), Aire, AX/AY/AZ (ancla), Captor (UUID), Abierta (ticks)},
- *   Pinchazos (int), UltimaBusqueda (tick), Buscados: [pos...]
  * }
  * </pre>
- * Se guarda con la entidad (sobrevive a desconectarse); al morir no se copia al cuerpo nuevo.
+ * Se guarda con la entidad (sobrevive a desconectarse); al morir no se copia al cuerpo nuevo. Las claves de juegos
+ * que ya no existen (las del pozo de agujas de partidas viejas) se borran con {@link #limpiarViejo(Entity)}.
  */
 public final class Saw {
     private Saw() {}
@@ -36,6 +36,16 @@ public final class Saw {
 
     public static boolean tieneAlgo(Entity e) {
         return e.getPersistentData().contains(RAIZ);
+    }
+
+    /** Quita del estado lo que no sea de la caja de agua (restos de juegos quitados en mundos viejos). */
+    public static void limpiarViejo(Entity e) {
+        if (!tieneAlgo(e)) return;
+        CompoundTag d = leer(e);
+        if (d.size() == 1 && d.contains("Caja")) return;
+        CompoundTag n = new CompoundTag();
+        if (d.contains("Caja")) n.put("Caja", d.get("Caja"));
+        escribir(e, n);
     }
 
     /**

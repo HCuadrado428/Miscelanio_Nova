@@ -34,7 +34,7 @@ public final class IncapCompat {
     public static final List<String> MSG_IDS = List.of("miscelanea.trampa_oso", "miscelanea.doncella", "miscelanea.potro",
             "miscelanea.silla_electrica", "miscelanea.collar_explosivo", "miscelanea.pendulo", "miscelanea.inmersion",
             "miscelanea.interrogatorio", "miscelanea.paro_cardiaco", "miscelanea.colgado",
-            "miscelanea.caja_agua", "miscelanea.caja_agua_cuchillas", "miscelanea.pozo_agujas", "miscelanea.alambre_espino");
+            "miscelanea.caja_agua", "miscelanea.caja_agua_cuchillas");
 
     private static Boolean cargado;
     private static Field campo;

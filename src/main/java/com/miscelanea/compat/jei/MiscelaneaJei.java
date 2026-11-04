@@ -73,10 +73,6 @@ public class MiscelaneaJei implements IModPlugin {
         info(r, AparatosRegistro.GANCHO_ITEM, "gancho");
         info(r, SawRegistro.CAJA_AGUA, "caja_agua");
         info(r, SawRegistro.TANQUE_ITEM, "caja_agua");
-        info(r, SawRegistro.POZO_ITEM, "pozo");
-        info(r, SawRegistro.ALAMBRE_ITEM, "alambre");
-        info(r, SawRegistro.TENAZAS, "alambre");
-        info(r, SawRegistro.SALIDA_ITEM, "salida");
         info(r, com.miscelanea.dream.DreamRegistro.CALDERO_ITEM, "caldero_mezclas");
         info(r, com.miscelanea.dream.DreamRegistro.FRASCO_MEZCLA, "frasco_mezcla");
         info(r, com.miscelanea.dream.DreamRegistro.FRASCO_MEZCLA_ARROJADIZO, "frasco_mezcla");

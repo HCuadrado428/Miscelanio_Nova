@@ -174,7 +174,7 @@ public final class Aparatos {
         if (!(v.level() instanceof ServerLevel sl) || dano <= 0 || !v.isAlive()) return;
         Entity c = null;
         if (dano >= v.getHealth() + v.getAbsorptionAmount()) {
-            IncapCompat.asegurar();   // también sin captor (pozo, alambre...)
+            IncapCompat.asegurar();   // también sin captor (caja de agua...)
             if (captor != null) {
                 c = sl.getEntity(captor);
                 if (c == null) c = sl.getServer().getPlayerList().getPlayer(captor);

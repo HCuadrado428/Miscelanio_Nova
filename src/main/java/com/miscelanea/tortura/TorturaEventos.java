@@ -172,7 +172,7 @@ public final class TorturaEventos {
         return e != null && (Cautivos.atado(e) || Lazo.sinManos(e) || TrampaOso.ejecutando(e));
     }
 
-    /** Con grilletes se puede usar la ganzúa, la llave, la sierra y las tenazas (y rebuscar en el pozo); con el lazo, nada. */
+    /** Con grilletes se puede usar la ganzúa, la llave, la sierra; con el lazo, nada. */
     private static boolean bloqueado(Entity e, ItemStack s) {
         if (e == null) return false;
         if (Lazo.sinManos(e) || TrampaOso.ejecutando(e)) return true;
@@ -181,8 +181,7 @@ public final class TorturaEventos {
 
     private static boolean permitido(ItemStack s) {
         return s.getItem() instanceof GanzuaItem || s.getItem() instanceof LlaveTrampaItem
-                || s.getItem() instanceof com.miscelanea.tortura.castigo.SierraItem
-                || s.getItem() instanceof com.miscelanea.tortura.saw.TenazasItem;
+                || s.getItem() instanceof com.miscelanea.tortura.castigo.SierraItem;
     }
 
     private static void aviso(Player p) {
@@ -211,9 +210,6 @@ public final class TorturaEventos {
 
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void clicBloque(PlayerInteractEvent.RightClickBlock e) {
-        // con grilletes se puede rebuscar en el pozo de agujas (con la mano que sea) y cortar el alambre con las tenazas
-        if (Cautivos.atado(e.getEntity()) && !Lazo.sinManos(e.getEntity()) && !TrampaOso.ejecutando(e.getEntity())
-                && e.getLevel().getBlockState(e.getPos()).getBlock() instanceof com.miscelanea.tortura.saw.PozoAgujasBlock) return;
         if (bloqueado(e.getEntity(), e.getItemStack())) {
             e.setCanceled(true);
             e.setCancellationResult(InteractionResult.FAIL);

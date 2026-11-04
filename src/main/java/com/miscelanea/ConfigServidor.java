@@ -24,7 +24,7 @@ public final class ConfigServidor {
     private static final ForgeConfigSpec.IntValue BICHOS_INTERVALO, BICHOS_MAX;
     // ---- trampas
     private static final ForgeConfigSpec.IntValue TRAMPA_OSO_S, TRAMPA_OSO_SIN_CAJAS_S, CAJA_AGUA_LLENADO_S,
-            SALIDA_S, GANCHO_DANO_DESDE_S, CEPO_S;
+            GANCHO_DANO_DESDE_S, CEPO_S;
     // ---- Dream (mordisco venenoso y anillo de medianoche)
     private static final ForgeConfigSpec.BooleanValue MORDISCO_ACTIVADO, MORDISCO_JUGADORES;
     private static final ForgeConfigSpec.IntValue MORDISCO_WITHER_NIVEL, MORDISCO_WITHER_S, ANILLO_ENFRIAMIENTO_S;
@@ -65,12 +65,12 @@ public final class ConfigServidor {
 
         b.comment("Sala de juegos (aparatos de tortura).").push("tortura");
         MUERTE_INSTANTANEA = b.comment("Con el mod Incapacitated: las muertes de los aparatos y trampas (trampa de oso, doncella, potro,",
-                        "silla eléctrica, péndulo, caja de agua, pozo de agujas, alambre de espino...) matan del tirón en vez de dejarte derribado.",
+                        "silla eléctrica, péndulo, caja de agua...) matan del tirón en vez de dejarte derribado.",
                         "(En las versiones de Incapacitated que usan la etiqueta incapacitated:no_incap, la etiqueta del mod sigue aplicándose.)")
                 .define("muerte_instantanea_incapacitated", true);
         APARATOS_SUPERVIVENCIA = b.comment("Si es false, los jugadores en supervivencia/aventura no pueden poner ni usar los aparatos de tortura",
                         "(ni ponerle a nadie grilletes, trampas, collares...). En creativo se sigue pudiendo, para montar escenas;",
-                        "quien ya está atrapado puede seguir intentando escapar (ganzúas, llaves, pozo, tenazas...).")
+                        "quien ya está atrapado puede seguir intentando escapar (ganzúas, llaves, sierra...).")
                 .define("aparatos_en_supervivencia", true);
         b.pop();
 
@@ -90,8 +90,6 @@ public final class ConfigServidor {
                 .defineInRange("trampa_oso_sin_cajas_segundos", 90, 5, 3600);
         CAJA_AGUA_LLENADO_S = b.comment("Caja de agua: segundos que tarda en llenarse del todo.")
                 .defineInRange("caja_agua_llenado_segundos", 40, 2, 3600);
-        SALIDA_S = b.comment("Puerta de salida: tiempo por defecto de la cuenta atrás de una puerta recién puesta (se cambia luego con clic derecho).")
-                .defineInRange("salida_segundos", 120, 30, 900);
         GANCHO_DANO_DESDE_S = b.comment("Gancho: segundos colgado boca abajo antes de que la sangre en la cabeza empiece a hacer daño.")
                 .defineInRange("gancho_dano_desde_segundos", 60, 1, 3600);
         CEPO_S = b.comment("Cepo (picota): segundos que dura el castigo.")
@@ -194,7 +192,6 @@ public final class ConfigServidor {
     public static int trampaOsoTicks() { return i(TRAMPA_OSO_S) * 20; }
     public static int trampaOsoSinCajasTicks() { return i(TRAMPA_OSO_SIN_CAJAS_S) * 20; }
     public static int cajaAguaLlenadoTicks() { return Math.max(1, i(CAJA_AGUA_LLENADO_S) * 20); }
-    public static int salidaSegundos() { return i(SALIDA_S); }
     public static int ganchoDanoDesdeTicks() { return Math.max(20, i(GANCHO_DANO_DESDE_S) * 20); }
     public static int cepoTicks() { return i(CEPO_S) * 20; }
 

@@ -8,12 +8,10 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -28,18 +26,11 @@ public final class SawEventos {
     public static void tickVivo(LivingEvent.LivingTickEvent e) {
         LivingEntity v = e.getEntity();
         if (v.level().isClientSide || !Saw.tieneAlgo(v)) return;
+        if (v.tickCount % 100 == 0) {
+            Saw.limpiarViejo(v);
+            if (!Saw.tieneAlgo(v)) return;
+        }
         if (CajaAgua.tiene(v) && v.isAlive()) CajaAgua.tick(v);
-    }
-
-    @SubscribeEvent
-    public static void tickServidor(TickEvent.ServerTickEvent e) {
-        if (e.phase == TickEvent.Phase.END && e.getServer().getTickCount() % 200 == 0)
-            Alambre.limpiar(e.getServer().overworld().getGameTime(), false);
-    }
-
-    @SubscribeEvent
-    public static void pararServidor(ServerStoppedEvent e) {
-        Alambre.limpiar(0, true);
     }
 
     @SubscribeEvent
@@ -65,6 +56,7 @@ public final class SawEventos {
 
     @SubscribeEvent
     public static void entrar(PlayerEvent.PlayerLoggedInEvent e) {
+        Saw.limpiarViejo(e.getEntity());
         if (CajaAgua.tiene(e.getEntity())) CajaAgua.sincronizar(e.getEntity());
     }
 
