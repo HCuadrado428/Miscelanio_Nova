@@ -130,7 +130,7 @@ public final class MesasRed {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.miscelanea.client.juegos.RelojCliente.recibir(this));
         }
 
-        static void enviar(Level l, BlockPos pos, RelojPacket p) {
+        public static void enviar(Level l, BlockPos pos, RelojPacket p) {
             if (l == null || l.isClientSide) return;
             CANAL.send(PacketDistributor.TRACKING_CHUNK.with(() -> l.getChunkAt(pos)), p);
         }
