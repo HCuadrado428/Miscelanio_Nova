@@ -122,6 +122,7 @@ public class Miscelanea {
             for (var r : ModItems.recreativasJuego()) event.accept(r);
             event.accept(ModItems.MESA_COCTEL);
             event.accept(ModItems.CARTEL_RECORDS);
+            event.accept(ModItems.TABLON_RECORDS);
             event.accept(ModItems.FICHA);
             event.accept(ModItems.CONSOLA);
             for (var c : ModItems.cartuchosJuego()) event.accept(c);

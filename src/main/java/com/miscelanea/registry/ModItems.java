@@ -278,6 +278,8 @@ public final class ModItems {
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.FUTBOLIN.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> PIZARRA_FERIA = ITEMS.register("pizarra_feria",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PIZARRA_FERIA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> TABLON_RECORDS = ITEMS.register("tablon_records",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.TABLON_RECORDS.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> CARTEL_RECORDS = ITEMS.register("cartel_records",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.CARTEL_RECORDS.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> MESA_COCTEL = ITEMS.register("mesa_coctel",

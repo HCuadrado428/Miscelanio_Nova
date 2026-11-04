@@ -80,6 +80,13 @@ public final class ArcadeCliente {
         return ArcadeRecordsPacket.cliente.getList(juego, Tag.TAG_COMPOUND);
     }
 
+    /** Al salir de un servidor se olvidan sus tablas y su lista de canciones (el siguiente manda las suyas). */
+    @SubscribeEvent
+    public static void salir(net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggingOut e) {
+        ArcadeRecordsPacket.cliente = new CompoundTag();
+        com.miscelanea.baile.CancionesPacket.servidor = null;
+    }
+
     // ------------------------------------------------------------------ modo demostración (lo que se ve cuando nadie juega)
     @SubscribeEvent
     public static void tick(TickEvent.ClientTickEvent e) {

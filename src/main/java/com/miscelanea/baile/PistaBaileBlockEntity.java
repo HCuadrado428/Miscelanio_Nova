@@ -17,10 +17,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.PacketDistributor;
 
-import java.util.Collections;
-import java.util.Set;
 import java.util.UUID;
-import java.util.WeakHashMap;
 
 /**
  * Quién baila en la pista y qué canción suena (el servidor avisa a los de alrededor y cada cliente pone la música en la
@@ -28,9 +25,6 @@ import java.util.WeakHashMap;
  * empezar una canción (para que no se mezclen las músicas); eso lo decide solo el servidor.
  */
 public class PistaBaileBlockEntity extends BlockEntity {
-    /** Servidor: pistas con una canción en marcha (para no dejar empezar otra cerca). */
-    private static final Set<PistaBaileBlockEntity> SONANDO = Collections.newSetFromMap(new WeakHashMap<>());
-
     public UUID bailarin;
     /** Id de la canción que suena (ver {@link CancionesBaile}) o null. */
     public String cancion;
@@ -67,32 +61,18 @@ public class PistaBaileBlockEntity extends BlockEntity {
         parar();
         cambio();
         ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> sp), new BailePacket(BailePacket.ABRIR, worldPosition, sp.getId(), 0, 0));
-        PistaBaileBlockEntity otra = otraSonando();
+        BlockPos otra = otraSonando();
         if (otra != null) avisarOtra(sp, otra);
     }
 
-    /** Otra pista con canción a menos del radio de la configuración (o null). */
-    PistaBaileBlockEntity otraSonando() {
-        int r = ConfigServidor.baileRadioPistas();
-        if (r <= 0 || level == null) return null;
-        PistaBaileBlockEntity mejor = null;
-        double md = (double) r * r;
-        synchronized (SONANDO) {
-            SONANDO.removeIf(o -> o.isRemoved() || o.cancion == null || o.level == null);
-            for (PistaBaileBlockEntity o : SONANDO) {
-                if (o == this || o.level != level) continue;
-                double d = o.worldPosition.distSqr(worldPosition);
-                if (d <= md) {
-                    md = d;
-                    mejor = o;
-                }
-            }
-        }
-        return mejor;
+    /** Otra pista (o recreativa de Paso Doble) con canción a menos del radio de la configuración (o null). */
+    BlockPos otraSonando() {
+        if (level == null) return null;
+        return FuentesMusica.otra(level, worldPosition, ConfigServidor.baileRadioPistas());
     }
 
-    private void avisarOtra(ServerPlayer sp, PistaBaileBlockEntity otra) {
-        int d = (int) Math.round(Math.sqrt(otra.worldPosition.distSqr(worldPosition)));
+    private void avisarOtra(ServerPlayer sp, BlockPos otra) {
+        int d = (int) Math.round(Math.sqrt(otra.distSqr(worldPosition)));
         sp.displayClientMessage(Component.translatable("baile.miscelanea.otra_sonando", d).withStyle(ChatFormatting.GOLD), true);
     }
 
@@ -100,7 +80,7 @@ public class PistaBaileBlockEntity extends BlockEntity {
         CancionesBaile.Cancion c = CancionesBaile.de(id);
         if (!sp.getUUID().equals(bailarin) || c == null) return;
         // si ya suena otra pista cerca, no se puede empezar (se mezclarían las dos músicas)
-        PistaBaileBlockEntity otra = otraSonando();
+        BlockPos otra = otraSonando();
         if (otra != null) {
             avisarOtra(sp, otra);
             return;
@@ -109,9 +89,7 @@ public class PistaBaileBlockEntity extends BlockEntity {
         cancion = c.id;
         dificultad = Math.max(0, Math.min(2, d));
         inicio = level.getGameTime();
-        synchronized (SONANDO) {
-            SONANDO.add(this);
-        }
+        FuentesMusica.poner(level, worldPosition, Long.MAX_VALUE);
         // la música la pone cada cliente en la pista (sonido con posición que se corta solo si la pista desaparece)
         cambio();
         ModNetwork.CHANNEL.send(PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(worldPosition)),
@@ -133,9 +111,7 @@ public class PistaBaileBlockEntity extends BlockEntity {
     void parar() {
         // el cliente ve en los datos de la pista que ya no hay canción y para la música de esta pista (solo de esta)
         cancion = null;
-        synchronized (SONANDO) {
-            SONANDO.remove(this);
-        }
+        if (level != null && !level.isClientSide) FuentesMusica.quitar(level, worldPosition);
     }
 
     void salir() {
@@ -150,9 +126,7 @@ public class PistaBaileBlockEntity extends BlockEntity {
     @Override
     public void setRemoved() {
         super.setRemoved();
-        synchronized (SONANDO) {
-            SONANDO.remove(this);
-        }
+        if (level != null && !level.isClientSide) FuentesMusica.quitar(level, worldPosition);
     }
 
     public static void tickServidor(Level l, BlockPos pos, BlockState s, PistaBaileBlockEntity be) {

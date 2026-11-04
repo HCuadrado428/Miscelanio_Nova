@@ -18,6 +18,8 @@ public final class BailePoses {
         long tPaso, tropiezo = -100000;
         /** Cuándo se puso la canción y cuándo se vio por última vez la pista (para los bailarines de otros). */
         long fijado, visto;
+        /** Bailarín de una recreativa (no hay pista que lo refresque): no se olvida hasta este milisegundo. */
+        long hasta;
     }
 
     static final Map<Integer, Estado> ESTADOS = new HashMap<>();
@@ -56,7 +58,13 @@ public final class BailePoses {
     static void olvidarViejos(int yo) {
         if (ESTADOS.isEmpty()) return;
         long ahora = System.currentTimeMillis();
-        ESTADOS.entrySet().removeIf(en -> en.getKey() != yo && ahora - en.getValue().visto > 3000);
+        ESTADOS.entrySet().removeIf(en -> en.getKey() != yo && ahora - en.getValue().visto > 3000 && ahora > en.getValue().hasta);
+    }
+
+    /** El bailarín de una recreativa sigue bailando hasta ese milisegundo aunque no lo refresque ninguna pista. */
+    public static void hasta(int id, long ms) {
+        Estado e = ESTADOS.get(id);
+        if (e != null) e.hasta = ms;
     }
 
     public static void parar(int id) {

@@ -213,9 +213,12 @@ public final class ModBlocks {
     public static final RegistryObject<Block> PIZARRA_FERIA = BLOCKS.register("pizarra_feria",
             () -> new com.miscelanea.arcade.CartelRecordsBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.0F)
                     .sound(SoundType.WOOD).noOcclusion(), com.miscelanea.arcade.CartelRecordsBlock.FERIA));
+    public static final RegistryObject<Block> TABLON_RECORDS = BLOCKS.register("tablon_records",
+            () -> new com.miscelanea.arcade.TablonRecordsBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.0F)
+                    .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 6)));
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.arcade.CartelRecordsBlockEntity>> CARTEL_RECORDS_BE = BLOCK_ENTITIES.register("cartel_records",
-            () -> BlockEntityType.Builder.of(com.miscelanea.arcade.CartelRecordsBlockEntity::new, CARTEL_RECORDS.get(), PIZARRA_FERIA.get()).build(null));
+            () -> BlockEntityType.Builder.of(com.miscelanea.arcade.CartelRecordsBlockEntity::new, CARTEL_RECORDS.get(), PIZARRA_FERIA.get(), TABLON_RECORDS.get()).build(null));
     public static final RegistryObject<Block> MESA_COCTEL = BLOCKS.register("mesa_coctel",
             () -> new com.miscelanea.arcade.MesaCoctelBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(2.0F)
                     .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 6)));

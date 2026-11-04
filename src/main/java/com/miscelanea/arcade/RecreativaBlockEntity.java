@@ -28,6 +28,12 @@ public class RecreativaBlockEntity extends BlockEntity {
     public UUID partidaDe;
     public String partidaJuego = "";
     public long partidaInicio, partidaSemilla;
+    /** Servidor, Paso Doble: canción en marcha, tic en que empezó, dificultad de cada jugador y si ya mandaron sus puntos. */
+    @Nullable
+    public String pasoCancion;
+    public long pasoInicio;
+    public int pasoDif1 = 1, pasoDif2 = 1;
+    public boolean pasoFin1, pasoFin2;
     /** Cliente: datos de pantalla (los gestiona el renderizador). */
     public Object pantallaCliente;
 
@@ -97,6 +103,7 @@ public class RecreativaBlockEntity extends BlockEntity {
         if (l.getGameTime() % 20 != 0) return;
         boolean cambio = false;
         if (be.jugador != null && !cerca(l, pos, be.jugador)) {
+            PasoDobleServidor.soltar(be, be.jugador);
             be.jugador = null;
             be.acabarPartida();
             cambio = true;
@@ -124,6 +131,7 @@ public class RecreativaBlockEntity extends BlockEntity {
     @Override
     public void setRemoved() {
         super.setRemoved();
+        if (level != null && !level.isClientSide) com.miscelanea.baile.FuentesMusica.quitar(level, worldPosition);
         if (level != null && level.isClientSide && pantallaCliente instanceof AutoCloseable c) {
             try {
                 c.close();

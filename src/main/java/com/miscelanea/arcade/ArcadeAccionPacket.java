@@ -61,6 +61,7 @@ public class ArcadeAccionPacket {
         if (soy2 && accion == EMPEZAR) return;
         switch (accion) {
             case CERRAR -> {
+                PasoDobleServidor.cerrar(be, p, soy2);
                 be.soltarEnlace(be.jugador2);
                 if (soy2) be.jugador2 = null;
                 else {
@@ -81,6 +82,15 @@ public class ArcadeAccionPacket {
             case EMPEZAR -> {
                 ServerPlayer p2 = be.jugador2 == null ? null : p.server.getPlayerList().getPlayer(be.jugador2);
                 int jug = p2 != null && ArcadeJuegos.dosJugadores(juego) ? 2 : 1;
+                // Paso Doble: si ya suena otra pista o recreativa de baile cerca, no se empieza (se mezclarían las músicas)
+                if ("paso".equals(juego)) {
+                    BlockPos otra = PasoDobleServidor.otraSonando(be);
+                    if (otra != null) {
+                        int d = (int) Math.round(Math.sqrt(otra.distSqr(pos)));
+                        ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> p), new ArcadeAbrirPacket(pos, be.creditos, libre, 6, be.doble(), 0, juego, "", Math.min(127, d)));
+                        return;
+                    }
+                }
                 boolean ok = libre || be.creditos >= jug;
                 if (ok && !libre) {
                     be.creditos -= jug;
@@ -89,6 +99,7 @@ public class ArcadeAccionPacket {
                 long semilla = p.getRandom().nextLong();
                 // el servidor apunta la partida: solo se aceptará un récord de este jugador, en este juego y en esta máquina
                 if (ok && ArcadeJuegos.esArcade(juego)) be.empezarPartida(p.getUUID(), juego, p.level().getGameTime(), semilla);
+                if (ok && "paso".equals(juego)) PasoDobleServidor.reservar(be);
                 ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> p), new ArcadeAbrirPacket(pos, be.creditos, libre, ok ? 2 : 3, be.doble(), semilla, juego, "", jug));
                 if (ok && jug == 2)
                     ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> p2), new ArcadeAbrirPacket(pos, be.creditos, libre, 2, true, semilla, juego, "", 2));

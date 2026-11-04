@@ -298,5 +298,10 @@ public final class ModNetwork {
                 .decoder(com.miscelanea.armas.BallestaRecargaPacket::new)
                 .consumerMainThread(com.miscelanea.armas.BallestaRecargaPacket::handle)
                 .add();
+        CHANNEL.messageBuilder(com.miscelanea.baile.CancionesPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.miscelanea.baile.CancionesPacket::encode)
+                .decoder(com.miscelanea.baile.CancionesPacket::new)
+                .consumerMainThread(com.miscelanea.baile.CancionesPacket::handle)
+                .add();
     }
 }
