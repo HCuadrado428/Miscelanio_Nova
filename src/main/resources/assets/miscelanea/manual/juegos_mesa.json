@@ -1,0 +1,104 @@
+{
+  "id": "juegos_mesa",
+  "orden": 30,
+  "pestana": "miscelanea:juegos_mesa",
+  "icono": "miscelanea:parchis",
+  "titulo": {"es": "Juegos de mesa", "en": "Board games"},
+  "intro": {
+    "es": "Tableros y mesas para jugar con amigos o contra la máquina. Todo se juega en el mundo: apunta al tablero y haz clic derecho. Mientras miras una mesa, arriba a la izquierda sale un panel con el estado de la partida, los jugadores y una pista de los controles. Si alguien se va (o tarda demasiado), la máquina juega por él.",
+    "en": "Boards and tables to play with friends or against the computer. Everything is played in the world: aim at the board and right-click. While you look at a table, a panel in the top-left shows the game state, players and a controls hint. If someone leaves (or takes too long), the computer plays for them."
+  },
+  "entradas": [
+    {
+      "id": "tablero",
+      "objetos": ["miscelanea:tablero"],
+      "texto": {
+        "es": ["Tablero de ajedrez, damas y reversi.", "- Agachado + clic derecho: cambiar de juego y de modo (contra la CPU o a 2 jugadores).", "- Clic derecho apuntando a una pieza y luego a su destino (o directamente al destino). El primero que toca una pieza juega con blancas.", "Ajedrez con todas las reglas (enroques, al paso, promoción, jaque, mate y ahogado); damas con capturas obligatorias en cadena; reversi volteando fichas."],
+        "en": ["Board for chess, checkers and reversi.", "- Sneak + right-click: change game and mode (vs CPU or 2 players).", "- Right-click a piece and then its destination (or the destination directly). Whoever touches a piece first plays white.", "Chess with every rule (castling, en passant, promotion, check, mate, stalemate); checkers with mandatory chained captures; reversi flipping discs."]
+      }
+    },
+    {
+      "id": "imperio",
+      "objetos": ["miscelanea:imperio"],
+      "texto": {
+        "es": ["Juego de propiedades de 2x2 bloques para 2 a 4 jugadores (o con CPU).", "- Toca los botones del tablero con clic derecho: Unirse, + CPU, Rondas y ¡Empezar!", "- Tira los dados, compra calles, construye casas y hoteles, hipoteca si vas justo... y arruina a los demás. Cofre, destino, estaciones, cárcel: todo lo de siempre."],
+        "en": ["2x2-block property trading game for 2 to 4 players (or with CPU).", "- Press the buttons on the board with right-click: Join, + CPU, Rounds and Start!", "- Roll the dice, buy streets, build houses and hotels, mortgage when you're short... and bankrupt everyone else. Chest, chance, stations, jail: all the classics."]
+      }
+    },
+    {
+      "id": "parchis",
+      "objetos": ["miscelanea:parchis"],
+      "texto": {
+        "es": ["Parchís de 2x2 bloques con las reglas de toda la vida: sale con 5, el 6 repite, tres seises a casa, comer cuenta 20 y llegar 10, barreras y seguros.", "- Botones del tablero: Unirse, + CPU, ¡Empezar! y la velocidad.", "- Clic en el tablero para tirar; luego clic en una ficha que brille (o en su destino)."],
+        "en": ["2x2-block Parcheesi with the classic rules: leave home on a 5, a 6 rolls again, three 6s send you home, capturing counts 20 and reaching home 10, blockades and safe squares.", "- Board buttons: Join, + CPU, Start! and speed.", "- Click the board to roll; then click a glowing piece (or its destination)."]
+      }
+    },
+    {
+      "id": "oca",
+      "objetos": ["miscelanea:oca"],
+      "texto": {
+        "es": ["Juego de la Oca de 2x2 bloques: de oca a oca y tiro porque me toca, puentes, dados, posada, pozo, laberinto, cárcel y la muerte. Hay que entrar en el jardín (63) con la cuenta exacta.", "- Únete o añade CPU con los botones y haz clic en el tablero para tirar."],
+        "en": ["2x2-block Game of the Goose: from goose to goose, bridges, dice, inn, well, maze, jail and death. You must land on the garden (63) with an exact roll.", "- Join or add CPU players with the buttons and click the board to roll."]
+      }
+    },
+    {
+      "id": "cuatro",
+      "objetos": ["miscelanea:cuatro"],
+      "texto": {
+        "es": ["Bastidor vertical de cuatro en raya.", "- Clic derecho apuntando a una columna: sueltas la ficha.", "- Agachado + clic: cambiar de modo (CPU fácil, CPU difícil o 2 jugadores). Quien suelta primero juega con rojas."],
+        "en": ["Upright Four in a Row frame.", "- Right-click a column: drop your disc.", "- Sneak + click: change mode (easy CPU, hard CPU or 2 players). Whoever drops first plays red."]
+      }
+    },
+    {
+      "id": "flota",
+      "objetos": ["miscelanea:flota"],
+      "texto": {
+        "es": ["Hundir la flota (2x2 bloques): mares de 10x10 y cinco barcos (5, 4, 3, 3 y 2). Contra otro jugador o la CPU.", "- Colocar: toca un barco para elegirlo, otra vez para girarlo y el agua para moverlo («Recolocar» los pone al azar).", "- Disparar: apunta a una casilla del mar rival y clic. Si tocas, repites."],
+        "en": ["Battleships (2x2 blocks): 10x10 seas and five ships (5, 4, 3, 3 and 2). Against another player or the CPU.", "- Placing: tap a ship to select it, again to rotate it and the water to move it (“Shuffle” places them at random).", "- Firing: aim at a square of the enemy sea and click. A hit gives you another shot."]
+      }
+    },
+    {
+      "id": "domino",
+      "objetos": ["miscelanea:domino"],
+      "texto": {
+        "es": ["Mesa de dominó doble seis (2x2 bloques): 7 fichas por jugador y sale el doble más alto.", "- Toca una ficha que brille y luego el extremo verde donde quieres ponerla.", "- Sin jugada robas del pozo o pasas. Gana quien se quede sin fichas; si se cierra, quien sume menos."],
+        "en": ["Double-six domino table (2x2 blocks): 7 tiles each and the highest double starts.", "- Tap a glowing tile and then the green end where you want it.", "- With no move you draw from the boneyard or pass. First to empty their hand wins; if it locks, lowest total wins."]
+      }
+    },
+    {
+      "id": "mesa_cartas",
+      "objetos": ["miscelanea:mesa_cartas"],
+      "texto": {
+        "es": ["Mesa de cartas con tapete y baraja española.", "- Clic derecho para sentarte. Juega contra otro jugador o contra la máquina.", "- Botón «Juego»: brisca o chinchón.", "Brisca: gana quien pase de 60 puntos. Chinchón: roba del mazo o del descarte, junta tríos y escaleras y cierra con 3 puntos sueltos o menos; con siete en escalera, ¡chinchón!"],
+        "en": ["Card table with a felt top and a Spanish deck.", "- Right-click to sit down. Play against another player or the computer.", "- “Game” button: brisca or chinchón.", "Brisca: score more than 60 points. Chinchón: draw from the deck or discard pile, make sets and runs, and close with 3 loose points or fewer; seven in a run is chinchón!"]
+      }
+    },
+    {
+      "id": "billar",
+      "objetos": ["miscelanea:billar"],
+      "creativo": true,
+      "texto": {
+        "es": ["Mesa de billar americano (bola 8) de 4x2 bloques.", "- Clic derecho para sentarte; agachado + clic para jugar contra la máquina.", "- En tu turno, clic en la mesa para apuntar (miras hacia donde mandas la blanca): la fuerza sube y baja sola; otro clic tira. Agáchate para cancelar.", "Lisas o rayadas, faltas y la negra al final."],
+        "en": ["4x2-block pool table (8-ball).", "- Right-click to take a seat; sneak + click to play against the computer.", "- On your turn, click the table to aim (look where you want to send the cue ball): power rises and falls by itself; click again to shoot. Sneak to cancel.", "Solids or stripes, fouls and the 8 ball last."]
+      }
+    },
+    {
+      "id": "futbolin",
+      "objetos": ["miscelanea:futbolin"],
+      "creativo": true,
+      "texto": {
+        "es": ["Futbolín de 3x2 bloques con 8 barras.", "- Clic derecho desde un extremo para jugar.", "- Adelante/atrás empuja y tira de las barras; clic izquierdo o saltar chuta; agáchate para soltar la mesa."],
+        "en": ["3x2-block foosball table with 8 rods.", "- Right-click from one end to play.", "- Forward/back push and pull the rods; left-click or jump kicks; sneak to let go of the table."]
+      }
+    },
+    {
+      "id": "air_hockey",
+      "objetos": ["miscelanea:air_hockey"],
+      "creativo": true,
+      "texto": {
+        "es": ["Mesa de air hockey de 3x2 bloques: partido a 7.", "- Clic derecho desde un extremo para jugar.", "- WASD mueve tu mazo por tu mitad de la mesa; agáchate para soltarla."],
+        "en": ["3x2-block air hockey table: first to 7.", "- Right-click from one end to play.", "- WASD moves your mallet around your half; sneak to let go."]
+      }
+    }
+  ]
+}

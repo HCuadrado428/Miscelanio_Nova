@@ -1,0 +1,93 @@
+{
+  "id": "recreativas",
+  "orden": 20,
+  "pestana": "miscelanea:recreativas",
+  "icono": "miscelanea:recreativa_comecocos",
+  "titulo": {"es": "Sala recreativa", "en": "Arcade"},
+  "intro": {
+    "es": "Máquinas recreativas con juegos a todo color (algunos para dos jugadores), carteles de récords y una consola de bolsillo con cartuchos. Las máquinas funcionan con fichas: cada ficha es un crédito.",
+    "en": "Arcade cabinets with full-colour games (some for two players), high-score signs and a handheld console with cartridges. Cabinets run on tokens: each token is one credit."
+  },
+  "entradas": [
+    {
+      "id": "ficha",
+      "objetos": ["miscelanea:ficha"],
+      "texto": {
+        "es": ["La moneda de la feria y de las recreativas: una ficha, una partida. Se paga con clic derecho en las máquinas y puestos.", "La tragaperras y algunos premios de la feria también dan fichas."],
+        "en": ["The currency of the fair and the arcade: one token, one game. Pay by right-clicking machines and stalls with it.", "The slot machine and some fair prizes also give tokens."]
+      }
+    },
+    {
+      "id": "recreativa",
+      "objetos": ["miscelanea:recreativa"],
+      "creativo": true,
+      "texto": {
+        "es": ["Máquina recreativa de dos bloques de alto con menú de juegos: los exclusivos de la recreativa y los de la consola (aquí no hacen falta cartuchos).", "- Clic derecho con fichas: metes créditos (se quedan en la máquina) y se abre la pantalla.", "- Mandos: WASD o flechas, Z/Espacio (botón A), X/Mayús (botón B), Intro (Start), Tab (Select), C (botón C). Esc para salir.", "Los que estén cerca ven la partida en la pantalla de la máquina. Los récords (top 10 de cada juego) son de todo el servidor."],
+        "en": ["Two-block-tall arcade cabinet with a game menu: the arcade exclusives plus the console games (no cartridges needed here).", "- Right-click with tokens: insert credits (they stay in the machine) and the screen opens.", "- Controls: WASD or arrows, Z/Space (A button), X/Shift (B button), Enter (Start), Tab (Select), C (C button). Esc to leave.", "People nearby watch the game on the cabinet screen. High scores (top 10 per game) are server-wide."]
+      }
+    },
+    {
+      "id": "recreativa_doble",
+      "objetos": ["miscelanea:recreativa_doble", "miscelanea:mesa_coctel"],
+      "creativo": true,
+      "texto": {
+        "es": ["Recreativa doble y mesa cóctel: dos juegos de mandos para jugar a dúo a Comando Chatarra, Puños de Barrio, Duelo Final, Comecocos, Duelo de Bloques, Paso Doble o Turbo Costa.", "El primero abre la partida; el segundo hace clic derecho en el otro lado (en la mesa cóctel, en el extremo de enfrente) y se une como jugador 2. Los dos simulan la misma partida a la vez."],
+        "en": ["Double cabinet and cocktail table: two sets of controls to play co-op or versus at Scrap Commando, Street Fists, Final Duel, Gobbler, Block Duel, Double Step or Turbo Coast.", "The first player opens the game; the second right-clicks the other side (on the cocktail table, the opposite end) and joins as player 2. Both run the same game in lockstep."]
+      }
+    },
+    {
+      "id": "cabina_carreras",
+      "objetos": ["miscelanea:cabina_carreras"],
+      "creativo": true,
+      "texto": {
+        "es": ["Cabina de carreras con su propio asiento delante: clic derecho te sienta al volante y arranca Turbo Costa. Acelera y gira con los mandos de la recreativa."],
+        "en": ["Racing cabinet with its own seat in front: right-click sits you at the wheel and starts Turbo Coast. Accelerate and steer with the arcade controls."]
+      }
+    },
+    {
+      "id": "recreativa_pistola",
+      "objetos": ["miscelanea:recreativa_pistola"],
+      "creativo": true,
+      "texto": {
+        "es": ["Recreativa de pistola: arranca directamente el Pistolero de Comando Chatarra, que se juega apuntando y disparando con el ratón."],
+        "en": ["Light-gun cabinet: it starts the Scrap Commando gunslinger game directly, played by aiming and shooting with the mouse."]
+      }
+    },
+    {
+      "id": "recreativas_juego",
+      "objetos": ["miscelanea:recreativa_comecocos", "miscelanea:recreativa_chatarra", "miscelanea:recreativa_barrio", "miscelanea:recreativa_duelo", "miscelanea:recreativa_bloques", "miscelanea:recreativa_paso", "miscelanea:recreativa_pinball", "miscelanea:recreativa_mazmorra", "miscelanea:recreativa_turbo", "miscelanea:recreativa_astro", "miscelanea:recreativa_tetrominos", "miscelanea:recreativa_serpiente", "miscelanea:recreativa_ladrillos", "miscelanea:recreativa_pong", "miscelanea:recreativa_pajaro", "miscelanea:recreativa_invasores"],
+      "titulo": {"es": "Recreativas de un solo juego", "en": "Single-game cabinets"},
+      "creativo": true,
+      "texto": {
+        "es": ["Muebles decorados para un solo juego: arrancan ese juego directamente, sin menú. Los récords son los mismos que en la recreativa normal.", "# Juegos", "- Comando Chatarra, Puños de Barrio, Duelo Final, Comecocos, Duelo de Bloques, Paso Doble y Turbo Costa: para 2 jugadores (mueble doble; el segundo se une con clic derecho).", "- Pinball Galaxia, Mazmorra 3D y Astro Patrulla.", "- Los de la consola: Tetrominós, Serpiente, Ladrillos, Pong, Pájaro Saltarín e Invasores."],
+        "en": ["Themed cabinets for a single game: they start it directly, no menu. High scores are shared with the normal cabinet.", "# Games", "- Scrap Commando, Street Fists, Final Duel, Gobbler, Block Duel, Double Step and Turbo Coast: 2 players (double cabinet; the second player joins with right-click).", "- Galaxy Pinball, Dungeon 3D and Astro Patrol.", "- The console ones: Tetrominoes, Snake, Bricks, Pong, Hoppy Bird and Invaders."]
+      }
+    },
+    {
+      "id": "cartel_records",
+      "objetos": ["miscelanea:cartel_records"],
+      "creativo": true,
+      "texto": {
+        "es": ["Marcador retro luminoso con las tablas de récords de las recreativas. Varios carteles juntos en la misma pared (mirando al mismo lado) forman uno grande que enseña varios juegos a la vez."],
+        "en": ["Glowing retro scoreboard with the arcade high-score tables. Several signs on the same wall (facing the same way) merge into a big one that shows several games at once."]
+      }
+    },
+    {
+      "id": "consola",
+      "objetos": ["miscelanea:consola"],
+      "texto": {
+        "es": ["Consola de bolsillo con pantalla LCD verde. Clic derecho para encenderla.", "Los cartuchos que lleves en el inventario aparecen desbloqueados en el menú. Mandos: flechas o WASD, Z/Espacio (A), X/Mayús (B), Intro (Start), Tab (Select). Cada cartucho guarda tu récord."],
+        "en": ["Handheld console with a green LCD screen. Right-click to switch it on.", "Cartridges in your inventory show up unlocked in the menu. Controls: arrows or WASD, Z/Space (A), X/Shift (B), Enter (Start), Tab (Select). Each cartridge remembers your high score."]
+      }
+    },
+    {
+      "id": "cartuchos",
+      "objetos": ["miscelanea:cartucho_tetrominos", "miscelanea:cartucho_serpiente", "miscelanea:cartucho_ladrillos", "miscelanea:cartucho_pong", "miscelanea:cartucho_pajaro", "miscelanea:cartucho_invasores"],
+      "titulo": {"es": "Cartuchos", "en": "Cartridges"},
+      "texto": {
+        "es": ["Tetrominós, Serpiente, Ladrillos, Pong, Pájaro Saltarín e Invasores. Basta con llevarlos encima para jugarlos en la consola."],
+        "en": ["Tetrominoes, Snake, Bricks, Pong, Hoppy Bird and Invaders. Just carry them to play them on the console."]
+      }
+    }
+  ]
+}
