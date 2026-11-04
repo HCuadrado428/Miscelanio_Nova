@@ -46,7 +46,21 @@ public final class EfectosMundo {
 
     private record Charco(Vec3 pos, long desde, long hasta, int semilla) {}
 
-    private record Tent(int atk, int obj, Poder pd, int dur, long desde) {}
+    private static final class Tent {
+        final int atk, obj, dur;
+        final Poder pd;
+        final long desde;
+        /** Dónde estaba el objetivo al soltarlo (la punta se queda ahí mientras se recoge). */
+        @Nullable Vec3 suelta;
+
+        Tent(int atk, int obj, Poder pd, int dur, long desde) {
+            this.atk = atk;
+            this.obj = obj;
+            this.pd = pd;
+            this.dur = dur;
+            this.desde = desde;
+        }
+    }
 
     private static final List<Charco> CHARCOS = new ArrayList<>();
     private static final List<Tent> TENTS = new ArrayList<>();
@@ -296,7 +310,12 @@ public final class EfectosMundo {
             Vec3 raiz = pa.add(der.scale(raices[i][0])).add(0, raices[i][1], 0).add(fr.scale(raices[i][2]));
             // cada tentáculo se agarra a un punto distinto del objetivo
             double ang = i * 2.1 + x.obj;
-            Vec3 punta = pv.add(Math.cos(ang) * v.getBbWidth() * 0.45, (i - 1) * 0.25, Math.sin(ang) * v.getBbWidth() * 0.45);
+            Vec3 centroV = pv;
+            if (k >= suelta) {
+                if (x.suelta == null) x.suelta = pv;
+                centroV = x.suelta;
+            }
+            Vec3 punta = centroV.add(Math.cos(ang) * v.getBbWidth() * 0.45, (i - 1) * 0.25, Math.sin(ang) * v.getBbWidth() * 0.45);
             // al soltar, la punta sigue un poco hacia delante (latigazo) antes de recogerse
             if (latigo > 0) punta = punta.add(punta.subtract(raiz).normalize().scale(Mth.sin(latigo * Mth.PI) * 0.8));
             Vec3 d = punta.subtract(raiz);
@@ -308,7 +327,7 @@ public final class EfectosMundo {
             lat = lat.normalize();
             Vec3 arr = lat.cross(dn).normalize();
             // curva: sube y se abre hacia fuera de la espalda antes de ir al objetivo
-            Vec3 ctrl = raiz.add(d.scale(0.4)).add(arr.scale(len * 0.28 + 0.3)).add(lat.scale((i - 1) * 0.55)).add(fr.scale(-0.35));
+            Vec3 ctrl = raiz.add(d.scale(0.4)).add(arr.scale(len * 0.28 + 0.3)).add(lat.scale((i - 1) * 0.9)).add(arr.scale((i - 1) * 0.25)).add(fr.scale(-0.35));
             int N = 22;
             Vec3 prev = null, prevW = null;
             float vPrev = 0;
@@ -323,7 +342,7 @@ public final class EfectosMundo {
                 Vec3 tang = prev == null ? d : q.subtract(prev);
                 Vec3 w = tang.cross(vista);
                 if (w.lengthSqr() < 1.0E-8) w = lat;
-                float ancho = 0.15F * (1 - s * 0.75F) * (0.85F + 0.15F * Mth.sin(k * 0.7F + j));
+                float ancho = 0.11F * (1 - s * 0.8F) * (0.85F + 0.15F * Mth.sin(k * 0.7F + j));
                 w = w.normalize().scale(ancho);
                 float vv = s * 3F + k * 0.08F;
                 if (prev != null) {

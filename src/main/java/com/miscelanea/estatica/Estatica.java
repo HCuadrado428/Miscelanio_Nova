@@ -203,6 +203,8 @@ public final class Estatica {
     // ------------------------------------------------------------------ transformación y sincronización
     /** Al beber: la cinemática para todos los que lo ven (y para él). */
     public static void transformar(ServerPlayer p) {
+        // cada vez que se bebe, disposición nueva (lado de la cara y trozo del cuerpo), aunque ya fuera de estática
+        p.getPersistentData().putInt(SEMILLA, p.getRandom().nextInt());
         if (!ConfigServidor.estaticaCinematica()) {
             sincronizar(p);
             return;
@@ -407,7 +409,7 @@ public final class Estatica {
         e.setCanceled(true);
         p.getPersistentData().putLong(ENF + "fragmentarse", p.level().getGameTime() + ConfigServidor.estaticaFragmentarseEnfriamiento());
         Vec3 desde = p.position();
-        float yaw = (float) (Mth.atan2(mira.z, mira.x) * Mth.RAD_TO_DEG) - 90F + 180F;
+        float yaw = (float) (Mth.atan2(mira.z, mira.x) * Mth.RAD_TO_DEG) - 90F;   // mirando hacia la espalda del atacante
         mover(p, dest, yaw, 5F);
         EstaticaRed.cerca(l, desde.x, desde.y, desde.z, 48, new EstaticaRed.Fx(EstaticaRed.Fx.FRAGMENTO, p.getId(), desde.x, desde.y, desde.z, dest.x, dest.y, dest.z, 0));
         sonido(l, desde, EstaticaRegistro.ESTALLIDO.get(), 0.7F, 1.4F);

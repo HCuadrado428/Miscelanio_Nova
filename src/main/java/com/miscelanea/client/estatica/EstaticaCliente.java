@@ -312,6 +312,26 @@ public final class EstaticaCliente {
         gorro.copyFrom(cab);
     }
 
+    /** En primera persona, el brazo también lleva su estática (y los ojos no se ven, claro). */
+    @SubscribeEvent
+    public static void brazo(net.minecraftforge.client.event.RenderArmEvent e) {
+        AbstractClientPlayer p = e.getPlayer();
+        if (!conEstatica(p.getId()) || !(Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(p)
+                instanceof net.minecraft.client.renderer.entity.player.PlayerRenderer pr)) return;
+        e.setCanceled(true);
+        boolean der = e.getArm() == net.minecraft.world.entity.HumanoidArm.RIGHT;
+        if (der) pr.renderRightHand(e.getPoseStack(), e.getMultiBufferSource(), e.getPackedLight(), p);
+        else pr.renderLeftHand(e.getPoseStack(), e.getMultiBufferSource(), e.getPackedLight(), p);
+        float cob = EstaticaCine.cobertura(p.getId(), 0F);
+        Mascara mk = mascara(p.getId());
+        mk.actualizar(Float.isNaN(cob) ? 1F : cob, net.minecraft.Util.getMillis() + p.getId() * 37L);
+        PlayerModel<AbstractClientPlayer> m = pr.getModel();
+        var vc = e.getMultiBufferSource().getBuffer(RenderType.entityTranslucent(mk.rl));
+        ModelPart brazo = der ? m.rightArm : m.leftArm, manga = der ? m.rightSleeve : m.leftSleeve;
+        brazo.render(e.getPoseStack(), vc, 0xF000F0, OverlayTexture.NO_OVERLAY);
+        if (manga.visible) manga.render(e.getPoseStack(), vc, 0xF000F0, OverlayTexture.NO_OVERLAY);
+    }
+
     /** El nombre parpadea: a ratos no sale y a ratos sale con letras cambiadas. */
     @SubscribeEvent
     public static void nombre(RenderNameTagEvent e) {
