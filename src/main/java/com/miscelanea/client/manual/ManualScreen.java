@@ -177,7 +177,7 @@ public class ManualScreen extends Screen {
             m.poner(new Linea(estilo("§l" + idx), 0, TITULO, true));
             m.poner(new Separador());
             for (ManualLibro.Capitulo c : libro.capitulos)
-                m.poner(new Enlace(c.iconoStack, c.titulo(), null, "c:" + c.id, 15, 1F));
+                m.poner(new Enlace(c.iconoStack, c.titulo(), null, "c:" + c.id, 13, 1F));
         } else {
             List<Object[]> res = resultados();
             m.poner(new Linea(estilo("§l" + Component.translatable("manual.miscelanea.resultados", res.size()).getString()), 0, TITULO, true));
