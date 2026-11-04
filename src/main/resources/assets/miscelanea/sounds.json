@@ -2368,5 +2368,37 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.frasco_llenar"
+  },
+  "miedo_golpe": {
+    "sounds": [
+      "miscelanea:miedo_golpe1",
+      "miscelanea:miedo_golpe2",
+      "miscelanea:miedo_golpe3"
+    ],
+    "subtitle": "subtitles.miscelanea.miedo_golpe"
+  },
+  "miedo_tension": {
+    "sounds": [
+      "miscelanea:miedo_tension"
+    ],
+    "subtitle": "subtitles.miscelanea.miedo_tension"
+  },
+  "miedo_rodea": {
+    "sounds": [
+      "miscelanea:miedo_rodea"
+    ],
+    "subtitle": "subtitles.miscelanea.miedo_rodea"
+  },
+  "miedo_disolver": {
+    "sounds": [
+      "miscelanea:miedo_disolver"
+    ],
+    "subtitle": "subtitles.miscelanea.miedo_disolver"
+  },
+  "miedo_inversion": {
+    "sounds": [
+      "miscelanea:miedo_inversion"
+    ],
+    "subtitle": "subtitles.miscelanea.miedo_inversion"
   }
 }

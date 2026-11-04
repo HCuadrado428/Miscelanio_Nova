@@ -40,18 +40,11 @@ public final class FeriaHud {
 
     @SubscribeEvent
     public static void camara(ViewportEvent.ComputeCameraAngles e) {
+        // ruido suave (no senos rápidos): el suelo retumba y el susto da un respingo
         float tm = terremoto((float) e.getPartialTick());
-        if (tm > 0) {
-            float t = (float) (Minecraft.getInstance().level.getGameTime() + e.getPartialTick());
-            e.setRoll(e.getRoll() + Mth.sin(t * 4.3F) * 1.2F * tm);
-            e.setPitch(e.getPitch() + Mth.sin(t * 5.7F + 1) * 1.0F * tm);
-            e.setYaw(e.getYaw() + Mth.cos(t * 3.9F) * 0.6F * tm);
-        }
+        if (tm > 0) com.miscelanea.client.camara.Sacudida.temblor(e, 4401, 9F, tm, 0.7F, 1.1F, 1.3F);
         float f = fuerza((float) e.getPartialTick());
-        if (f <= 0) return;
-        float t = (float) (Minecraft.getInstance().level.getGameTime() + e.getPartialTick());
-        e.setRoll(e.getRoll() + Mth.sin(t * 2.7F) * 4 * f);
-        e.setPitch(e.getPitch() + Mth.cos(t * 3.1F) * 2.5F * f);
+        if (f > 0) com.miscelanea.client.camara.Sacudida.temblor(e, 4417, 7F, f * f, 1.5F, 2.8F, 4.2F);
     }
 
     @SubscribeEvent

@@ -45,4 +45,12 @@ public abstract class CameraMixin {
         double[] r = com.miscelanea.client.tortura.aparatos.InterrogaCliente.ojoColgado(entity, partial);
         if (r != null) setPosition(r[0], r[1], r[2]);
     }
+
+    /** Toxina del miedo: el dolly del vértigo (la cámara avanza mientras se abre el campo de visión; ver MiedoCamara). */
+    @Inject(method = "setup", at = @At("TAIL"))
+    private void miscelanea$camaraVertigo(BlockGetter level, Entity entity, boolean detached, boolean reverse, float partial, CallbackInfo ci) {
+        if (detached) return;
+        net.minecraft.world.phys.Vec3 v = com.miscelanea.client.tortura.efectos.MiedoCamara.dolly(level, (net.minecraft.client.Camera) (Object) this);
+        if (v != null) setPosition(v.x, v.y, v.z);
+    }
 }

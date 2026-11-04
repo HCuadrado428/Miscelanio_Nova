@@ -1,6 +1,7 @@
 package com.miscelanea.client.tortura.efectos;
 
 import com.miscelanea.Miscelanea;
+import com.miscelanea.mixin.PostChainAccessor;
 import com.miscelanea.tortura.efectos.EfectosRegistro;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -11,6 +12,8 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.PostChain;
+import net.minecraft.client.renderer.PostPass;
+import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -37,7 +40,6 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.event.TickEvent;
@@ -57,32 +59,30 @@ import java.util.Set;
  *   <li>ESCALADA: el miedo va por etapas (1 sutil → 2 → 3 horror total) según el tiempo que lleva y la dosis
  *       (amplificador: cada dosis acumulada sube una etapa). La intensidad, la frecuencia de los sustos y lo que puede
  *       pasar dependen de la etapa.</li>
- *   <li>La vista se mece y, si la tarjeta lo permite, un shader propio (shaders/post/miedo_N.json) ondula la imagen;
- *       todo lo que mueve la cámara o deforma la imagen se escala con la opción de accesibilidad "Efectos de
+ *   <li>La cámara ({@link MiedoCamara}): deriva suave, respiración, latido, tensión, vértigo, el mundo que se tuerce y
+ *       la paleta de pesadilla. Si la tarjeta lo permite, un shader propio (shaders/post/miedo_vivo.json, con
+ *       uniformes que se cambian en cada fotograma) ondula la imagen, separa colores con los golpes y desenfoca los
+ *       bordes; todo lo que mueve la cámara o deforma la imagen se escala con la opción de accesibilidad "Efectos de
  *       distorsión" (y el campo de visión con "Efectos de campo de visión").</li>
  *   <li>Viñeta verde que late con el corazón, susurros, zumbido, sonidos falsos (pasos que se acercan por detrás y se
  *       paran en cuanto te giras, respiración en la nuca, un creeper que sisea...).</li>
- *   <li>Mobs falsos (siluetas) desde la etapa 2; la cara del Espantapájaros en la 2 y la 3.</li>
+ *   <li>Mobs falsos (siluetas) desde la etapa 2; los SUSTOS montados ({@link MiedoSusto}: anticipación, silencio y
+ *       una figura en 3D que se te echa encima) en la 2 y la 3; susurros que te rodean (se mueven en 3D).</li>
  *   <li>Los wardens que vienen a por ti ({@link MiedoWarden}), el engaño del inventario y del HUD ({@link MiedoEngano})
  *       y el mundo que se deforma ({@link MiedoMundo}).</li>
  *   <li>Al acabarse: silencio de golpe (se corta todo, solo queda un pitido de oídos) y un último susurro al oído.</li>
  * </ul>
- * SEGURIDAD: ningún efecto de pantalla completa pasa de 3 Hz (todos son fundidos únicos o ondas lentas) y los sustos
- * de pantalla (cara, warden, final) van como mucho uno cada {@link #SUSTO_MIN} ticks (15 s). Con "Ocultar destellos de
- * rayos" activado, los fogonazos se quedan en un tercio.
+ * SEGURIDAD: ningún efecto de pantalla completa pasa de 3 Hz (todos son fundidos únicos o ondas lentas), los
+ * fogonazos duran menos de 0,2 s y los sustos (figura, warden) van como mucho uno cada {@link #SUSTO_MIN} ticks (15 s).
+ * Con "Ocultar destellos de rayos" activado, los fogonazos se quedan en un tercio.
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
 public final class MiedoCliente {
     private MiedoCliente() {}
 
     static final ResourceLocation VINETA = new ResourceLocation(Miscelanea.MOD_ID, "textures/gui/tortura/vineta_miedo.png");
-    static final ResourceLocation CARA = new ResourceLocation(Miscelanea.MOD_ID, "textures/gui/tortura/espantapajaros.png");
-    private static final ResourceLocation[] POST = {
-            new ResourceLocation(Miscelanea.MOD_ID, "shaders/post/miedo_1.json"),
-            new ResourceLocation(Miscelanea.MOD_ID, "shaders/post/miedo_2.json"),
-            new ResourceLocation(Miscelanea.MOD_ID, "shaders/post/miedo_3.json")};
-    private static final int CARA_TICKS = 30;
-    /** Mínimo entre dos sustos de pantalla (cara, warden encima, susurro final): 15 s. */
+    private static final ResourceLocation POST = new ResourceLocation(Miscelanea.MOD_ID, "shaders/post/miedo_vivo.json");
+    /** Mínimo entre dos sustos de pantalla (figura, warden encima): 15 s. */
     static final int SUSTO_MIN = 300;
     /** Final: ticks de silencio antes del susurro y duración total. */
     private static final int FINAL_SUSURRO = 46, FINAL_FIN = 100;
@@ -90,16 +90,16 @@ public final class MiedoCliente {
     private static float k, kAntes;
     private static int activo, tick, reloj, etapa, amp, durRestante = 100000;
     private static int ultimoSusto = -100000;
-    private static int proxSusurro, proxZumbido, proxFalso, proxFantasma, proxCara, ultimoLatido;
-    private static int caraT = -1, idFalso, serieN;
+    private static int proxSusurro, proxZumbido, proxFalso, proxFantasma, proxInclina, proxPesadilla, ultimoLatido;
+    private static int idFalso, serieN;
     private static int finalT = -1;
     private static SoundInstance sonidoFinal, sonidoPitido;
     private static ClientLevel nivelVisto;
     private static final List<Fantasma> FANTASMAS = new ArrayList<>();
     private static final List<Pendiente> PENDIENTES = new ArrayList<>();
     // shader
-    private static final PostChain[] CADENAS = new PostChain[3];
-    private static final int[][] TAM = new int[3][2];
+    private static PostChain cadena;
+    private static int tamW, tamH;
     private static boolean shaderFallo, shaderEsteFotograma;
 
     /** Sonido programado; los de una "serie" (pasos que se acercan) se cortan todos si miras hacia ellos. */
@@ -150,10 +150,6 @@ public final class MiedoCliente {
         ultimoSusto = reloj;
     }
 
-    static boolean caraVisible() {
-        return caraT >= 0;
-    }
-
     /** Lo deprisa que pasan las cosas: sube con la etapa y con la dosis. */
     static float ritmo() {
         return 1F + 0.3F * Math.max(0, etapa - 1) + 0.25F * amp;
@@ -192,7 +188,6 @@ public final class MiedoCliente {
         if (mc.isPaused()) return;
         reloj++;
         kAntes = k;
-        if (caraT >= 0 && ++caraT > CARA_TICKS) caraT = -1;
         RandomSource r = p.getRandom();
         MobEffectInstance ef = p.getEffect(EfectosRegistro.MIEDO.get());
         if (ef == null || !p.isAlive()) {
@@ -205,6 +200,7 @@ public final class MiedoCliente {
             if (k <= 0F) cerrarShaders();
             tickFinal(mc);
             MiedoMundo.tick(mc, p, r, 0, 0, 1F);
+            MiedoSusto.tick(mc, p, r, 0, 0, 0);
             return;
         }
         finalT = -1;
@@ -229,19 +225,32 @@ public final class MiedoCliente {
             proxZumbido = 10;
             proxFalso = 100 + r.nextInt(80);
             proxFantasma = 60 + r.nextInt(40);
-            proxCara = 160 + r.nextInt(120);
+            proxInclina = 300 + r.nextInt(300);
+            proxPesadilla = 500 + r.nextInt(400);
         }
         sonidos(mc, p, r);
         fantasmas(mc, p, r);
         MiedoWarden.tick(mc, p, r, activo, etapa, dur);
         MiedoEngano.tick(mc, p, r, etapa);
         MiedoMundo.tick(mc, p, r, activo, etapa, ritmo());
-        // la cara del Espantapájaros (etapas 2 y 3; nunca con un warden en marcha ni antes de 15 s del último susto)
-        if (activo >= proxCara && etapa >= 2 && dur > 50 && puedeSusto() && !MiedoWarden.activo()) {
-            caraT = 0;
-            marcarSusto();
-            proxCara = activo + Math.max(SUSTO_MIN, (int) ((340 + r.nextInt(240)) / ritmo()));
-            mc.getSoundManager().play(SimpleSoundInstance.forUI(EfectosRegistro.MIEDO_SUSTO.get(), 0.95F + r.nextFloat() * 0.1F, 0.9F));
+        // los sustos montados (etapas 2 y 3; nunca con un warden en marcha ni antes de 15 s del último susto)
+        MiedoSusto.tick(mc, p, r, activo, etapa, dur);
+        boolean libre = !MiedoSusto.enCurso() && !MiedoWarden.cargando();
+        // el mundo se tuerce y se estira un momento (etapa 2+)
+        if (activo >= proxInclina && etapa >= 2) {
+            proxInclina = activo + (int) ((420 + r.nextInt(420)) / ritmo());
+            if (libre) {
+                MiedoCamara.inclinar((r.nextBoolean() ? 1F : -1F) * (9F + 5F * (etapa - 2)), 2.2F + r.nextFloat());
+                mc.getSoundManager().play(SimpleSoundInstance.forUI(EfectosRegistro.MIEDO_ZUMBIDO.get(), 0.7F, 0.6F));
+            }
+        }
+        // la paleta de pesadilla: un segundo (etapa 3)
+        if (activo >= proxPesadilla && etapa >= 3) {
+            proxPesadilla = activo + (int) ((700 + r.nextInt(600)) / ritmo());
+            if (libre) {
+                MiedoCamara.pesadilla();
+                mc.getSoundManager().play(SimpleSoundInstance.forUI(EfectosRegistro.MIEDO_INVERSION.get(), 1F, 0.9F));
+            }
         }
     }
 
@@ -255,25 +264,24 @@ public final class MiedoCliente {
         activo = 0;
         etapa = 0;
         amp = 0;
-        caraT = -1;
         durRestante = 100000;
         FANTASMAS.clear();
         PENDIENTES.clear();
         MiedoWarden.limpiar();
         MiedoEngano.limpiar();
         MiedoMundo.limpiar();
+        MiedoSusto.limpiar();
+        MiedoCamara.relajar();
     }
 
     private static void cerrarShaders() {
-        for (int i = 0; i < CADENAS.length; i++) {
-            if (CADENAS[i] != null) {
-                try {
-                    CADENAS[i].close();
-                } catch (Exception ignored) {
-                    // ya estaba cerrado
-                }
-                CADENAS[i] = null;
+        if (cadena != null) {
+            try {
+                cadena.close();
+            } catch (Exception ignored) {
+                // ya estaba cerrado
             }
+            cadena = null;
         }
     }
 
@@ -285,6 +293,7 @@ public final class MiedoCliente {
         finalT = -1;
         cerrarShaders();
         shaderFallo = false;
+        MiedoCamara.limpiar();
     }
 
     // ------------------------------------------------------------------ el final: silencio y un último susurro
@@ -302,8 +311,8 @@ public final class MiedoCliente {
         if (finalT == FINAL_SUSURRO) {
             sonidoFinal = SimpleSoundInstance.forUI(EfectosRegistro.MIEDO_FINAL.get(), 1F, 1F);
             mc.getSoundManager().play(sonidoFinal);
-            // la cara asoma una última vez solo si hace bastante del último susto
-            if (puedeSusto()) caraT = 0;
+            // de reojo, una última vez (si hace bastante del último susto); si la miras, ya no está
+            if (puedeSusto()) MiedoSusto.vistazo(mc);
             marcarSusto();
         }
         if (finalT > FINAL_FIN) {
@@ -341,12 +350,19 @@ public final class MiedoCliente {
     private static void sonidos(Minecraft mc, LocalPlayer p, RandomSource r) {
         float ritmo = ritmo();
         // latido: más rápido cuanto más fuerte (0,8 → 1,3 por segundo); desbocado con un warden a la carga o con la vida falsa
-        boolean panico = MiedoWarden.cargando() || MiedoEngano.vidaFalsaVisible();
-        int periodo = panico ? 9 : Math.round(Mth.lerp(k, 26F, 15F));
+        boolean panico = MiedoWarden.cargando() || MiedoEngano.vidaFalsaVisible() || MiedoSusto.panico();
+        float tension = MiedoCamara.tension();
+        int periodo = panico ? 9 : Math.round(Mth.lerp(Math.max(k, tension), 26F, 13F));
         if (tick - ultimoLatido >= periodo) {
             ultimoLatido = tick;
+            MiedoCamara.latido();
             mc.getSoundManager().play(SimpleSoundInstance.forUI(EfectosRegistro.MIEDO_LATIDO.get(), panico ? 1.08F : 1F,
-                    Math.min(1F, 0.25F + 0.55F * k + (panico ? 0.3F : 0F))));
+                    Math.min(1F, 0.25F + 0.55F * k + (panico ? 0.3F : 0F) + 0.35F * tension)));
+        }
+        // durante un susto, nada de sonidos sueltos: que no se pisen con la tensión
+        if (MiedoSusto.enCurso()) {
+            proxSusurro = Math.max(proxSusurro, activo + 60);
+            proxFalso = Math.max(proxFalso, activo + 80);
         }
         if (activo >= proxZumbido) {
             proxZumbido = activo + 170 + r.nextInt(70);
@@ -358,8 +374,9 @@ public final class MiedoCliente {
         }
         if (activo >= proxFalso && k > 0.3F) {
             proxFalso = activo + (int) ((120 + r.nextInt(150)) / ritmo);
-            int opciones = etapa >= 3 ? 9 : etapa == 2 ? 8 : 4;
+            int opciones = etapa >= 3 ? 10 : etapa == 2 ? 9 : 4;
             switch (r.nextInt(opciones)) {
+                case 8 -> mc.getSoundManager().play(new Rodea(p, r));
                 case 0, 1 -> pasosDetras(p, r);
                 case 2 -> sonar(mc, EfectosRegistro.MIEDO_RESPIRACION.get(), alrededor(p, r, 0.8, 1.4, 160F, 200F), 0.8F, 0.9F + r.nextFloat() * 0.15F);
                 case 3 -> sonar(mc, SoundEvents.WOODEN_DOOR_OPEN, alrededor(p, r, 3, 5, 120F, 240F), 0.7F, 0.6F);
@@ -664,52 +681,38 @@ public final class MiedoCliente {
         }
     }
 
-    // ------------------------------------------------------------------ cámara (todo escalado por "Efectos de distorsión")
-    @SubscribeEvent
-    public static void camara(ViewportEvent.ComputeCameraAngles e) {
-        float kk = intensidad((float) e.getPartialTick()) * distorsion();
-        if (kk <= 0.001F) return;
-        float t = tick + (float) e.getPartialTick();
-        e.setRoll(e.getRoll() + (Mth.sin(t * 0.071F) * 4.2F + Mth.sin(t * 0.23F + 1.3F) * 1.1F) * kk);
-        e.setYaw(e.getYaw() + Mth.sin(t * 0.047F + 2F) * 1.6F * kk);
-        e.setPitch(e.getPitch() + Mth.sin(t * 0.061F + 0.5F) * 1.3F * kk);
-    }
-
-    @SubscribeEvent
-    public static void fov(ViewportEvent.ComputeFov e) {
-        Minecraft mc = Minecraft.getInstance();
-        float escala = mc.options == null ? 1F : mc.options.fovEffectScale().get().floatValue();
-        float kk = intensidad((float) e.getPartialTick()) * escala;
-        if (kk <= 0.001F) return;
-        float t = tick + (float) e.getPartialTick();
-        float latido = (float) Math.exp(-(tick - ultimoLatido + e.getPartialTick()) * 0.3);
-        e.setFOV(e.getFOV() * (1.0 + (0.07 * Mth.sin(t * 0.09F) + 0.035 * latido) * kk));
-    }
-
     // ------------------------------------------------------------------ shader (antes del HUD, como los de vanilla)
     @SubscribeEvent
     public static void antesHud(RenderGuiEvent.Pre e) {
         shaderEsteFotograma = false;
         float kk = intensidad(e.getPartialTick());
         float dist = distorsion();
-        if (kk < 0.05F || shaderFallo || dist <= 0.01F) return;
+        if ((kk < 0.05F && !MiedoCamara.necesitaShader()) || shaderFallo || dist <= 0.01F) return;
         Minecraft mc = Minecraft.getInstance();
-        int nivel = kk < 0.55F ? 0 : kk < 0.85F ? 1 : 2;
-        // con la distorsión bajada, el shader más suave (ondula menos)
-        nivel = Math.min(nivel, dist < 0.4F ? 0 : dist < 0.75F ? 1 : 2);
         try {
             int w = mc.getWindow().getWidth(), h = mc.getWindow().getHeight();
-            PostChain c = CADENAS[nivel];
+            PostChain c = cadena;
             if (c == null) {
-                c = new PostChain(mc.getTextureManager(), mc.getResourceManager(), mc.getMainRenderTarget(), POST[nivel]);
+                c = new PostChain(mc.getTextureManager(), mc.getResourceManager(), mc.getMainRenderTarget(), POST);
                 c.resize(w, h);
-                CADENAS[nivel] = c;
-                TAM[nivel][0] = w;
-                TAM[nivel][1] = h;
-            } else if (TAM[nivel][0] != w || TAM[nivel][1] != h) {
+                cadena = c;
+                tamW = w;
+                tamH = h;
+            } else if (tamW != w || tamH != h) {
                 c.resize(w, h);
-                TAM[nivel][0] = w;
-                TAM[nivel][1] = h;
+                tamW = w;
+                tamH = h;
+            }
+            // uniformes de este fotograma (todo lo que deforma, escalado por "Efectos de distorsión")
+            float fl = MiedoCliente.escalaDestello();
+            for (PostPass pp : ((PostChainAccessor) c).miscelanea$pasadas()) {
+                var ef = pp.getEffect();
+                ef.safeGetUniform("Intensidad").set(kk * dist);
+                ef.safeGetUniform("Golpe").set(MiedoCamara.golpeShader() * dist * (0.5F + 0.5F * fl));
+                ef.safeGetUniform("Pesadilla").set(MiedoCamara.pesadillaShader() * (0.4F + 0.6F * fl));
+                ef.safeGetUniform("Estira").set(MiedoCamara.estiraShader() * dist);
+                ef.safeGetUniform("Desenfoque").set(MiedoCamara.desenfoqueShader() * dist);
+                ef.safeGetUniform("Reloj").set((float) (com.miscelanea.client.camara.Reloj.t() % 3600.0));
             }
             boolean blend = GL11.glIsEnabled(GL11.GL_BLEND), prof = GL11.glIsEnabled(GL11.GL_DEPTH_TEST);
             RenderSystem.disableBlend();
@@ -743,7 +746,8 @@ public final class MiedoCliente {
         if (apagon > 0.004F) g.fill(0, 0, w, h, ((int) (apagon * 255) << 24));
         // viñeta verde que late con el corazón (suave: sube y baja, no destella)
         float latido = (float) Math.exp(-(tick - ultimoLatido + pt) * 0.22F);
-        float a = Mth.clamp(0.42F * kk + 0.28F * kk * latido, 0F, 0.92F);
+        float tension = MiedoCamara.tension();
+        float a = Mth.clamp(0.42F * kk + 0.28F * kk * latido + 0.4F * tension, 0F, 0.95F);
         float esc = 1F + 0.05F * latido * kk + 0.025F * Mth.sin(t * 0.05F);
         int ew = Math.round(w * esc), eh = Math.round(h * esc);
         g.setColor(1F, 1F, 1F, a);
@@ -767,26 +771,53 @@ public final class MiedoCliente {
 
     // ------------------------------------------------------------------ HUD (por encima de todo): manos, sustos
     public static void hudEncima(ForgeGui gui, GuiGraphics g, float pt, int w, int h) {
-        if (etapa <= 0 && caraT < 0 && !MiedoWarden.hayDestello() && !MiedoMundo.hayManos()) return;
+        float negro = MiedoSusto.negro(pt);
+        if (etapa <= 0 && !MiedoCamara.hayHud() && negro <= 0F && !MiedoMundo.hayManos()) return;
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.depthMask(false);
         MiedoMundo.dibujarManos(g, w, h, pt);
-        MiedoWarden.hud(g, w, h, pt);
-        // la cara del Espantapájaros: fundido de entrada (0,2 s), se queda y se va (0,8 s); se acerca un poco
-        if (caraT >= 0) {
-            float ct = caraT + pt;
-            float env = ct < 4F ? ct / 4F : ct < 14F ? 1F : Math.max(0F, 1F - (ct - 14F) / (CARA_TICKS - 14F));
-            env = env * env * (3F - 2F * env);
-            g.fill(0, 0, w, h, ((int) (env * 0.5F * 255) << 24));
-            float s = h * (1.0F + 0.14F * ct / CARA_TICKS);
-            float sacude = distorsion();
-            float jx = Mth.sin(ct * 1.7F) * 2.5F * env * sacude, jy = Mth.sin(ct * 2.3F + 1F) * 2F * env * sacude;
-            int cs = Math.round(s);
-            g.setColor(1F, 1F, 1F, env * 0.92F);
-            g.blit(CARA, Math.round(w / 2F - s / 2F + jx), Math.round(h / 2F - s / 2F + jy), 0, 0, cs, cs, cs, cs);
-            g.setColor(1F, 1F, 1F, 1F);
-        }
+        MiedoCamara.hud(g, w, h, pt, shaderEsteFotograma);
+        // el apagón de los sustos: negro (oscuridad, no un destello)
+        if (negro > 0.003F) g.fill(0, 0, w, h, ((int) (Math.min(1F, negro) * 250) << 24));
         RenderSystem.depthMask(true);
+    }
+
+    // ------------------------------------------------------------------ susurros que te rodean
+    /** Susurros que dan vueltas alrededor de tu cabeza (sonido en 3D que se mueve) y se van acercando. */
+    private static final class Rodea extends AbstractTickableSoundInstance {
+        private final LocalPlayer p;
+        private final float ang0, vel;
+        private int t;
+        private static final int DUR = 88;
+
+        Rodea(LocalPlayer p, RandomSource r) {
+            super(EfectosRegistro.MIEDO_RODEA.get(), SoundSource.HOSTILE, RandomSource.create());
+            this.p = p;
+            this.ang0 = p.getYRot() + 90F + r.nextFloat() * 180F;
+            this.vel = (r.nextBoolean() ? 1F : -1F) * (4.5F + r.nextFloat() * 2.5F);
+            this.volume = 0.85F;
+            this.pitch = 0.92F + r.nextFloat() * 0.16F;
+            this.relative = false;
+            this.attenuation = SoundInstance.Attenuation.LINEAR;
+            mover();
+        }
+
+        private void mover() {
+            float a = (ang0 + vel * t) * Mth.DEG_TO_RAD;
+            double radio = 1.6 - 0.9 * t / (double) DUR;
+            this.x = p.getX() - Mth.sin(a) * radio;
+            this.y = p.getEyeY() + 0.1;
+            this.z = p.getZ() + Mth.cos(a) * radio;
+        }
+
+        @Override
+        public void tick() {
+            if (++t > DUR || p.isRemoved() || etapa == 0) {
+                stop();
+                return;
+            }
+            mover();
+        }
     }
 }

@@ -125,11 +125,16 @@ public final class BorracheraCliente {
     public static void camara(ViewportEvent.ComputeCameraAngles e) {
         float kk = intensidad((float) e.getPartialTick()) * distorsion();
         if (kk <= 0.001F) return;
-        float t = tick + (float) e.getPartialTick();
-        float f = 1F + 0.25F * amp;
-        e.setRoll(e.getRoll() + (Mth.sin(t * 0.052F * f) * 5.5F + Mth.sin(t * 0.137F * f + 0.8F) * 1.6F) * kk);
-        e.setPitch(e.getPitch() + (Mth.sin(t * 0.041F * f + 2.1F) * 2.2F + Mth.sin(t * 0.19F * f) * 0.5F) * kk);
-        e.setYaw(e.getYaw() + Mth.sin(t * 0.033F * f + 1.1F) * 1.8F * kk);
+        // deriva de borracho: ruido suave por tiempo real (no se repite como una suma de senos) y una oscilación lenta
+        // de balanceo encima, como el cuerpo que se va de lado y se corrige
+        double t = com.miscelanea.client.camara.Reloj.t();
+        float f = 1F + 0.3F * amp;
+        float roll = com.miscelanea.client.camara.Ruido.fbm(3301, t * 0.32 * f, 3) * 7.5F + Mth.sin((float) (t * 0.9 * f)) * 1.2F;
+        float pitch = com.miscelanea.client.camara.Ruido.fbm(3302, t * 0.27 * f, 3) * 3.2F;
+        float yaw = com.miscelanea.client.camara.Ruido.fbm(3303, t * 0.22 * f, 2) * 2.6F;
+        e.setRoll(e.getRoll() + roll * kk);
+        e.setPitch(e.getPitch() + pitch * kk);
+        e.setYaw(e.getYaw() + yaw * kk);
     }
 
     @SubscribeEvent
@@ -138,8 +143,8 @@ public final class BorracheraCliente {
         float escala = mc.options == null ? 1F : mc.options.fovEffectScale().get().floatValue();
         float kk = intensidad((float) e.getPartialTick()) * escala;
         if (kk <= 0.001F) return;
-        float t = tick + (float) e.getPartialTick();
-        e.setFOV(e.getFOV() * (1.0 + 0.06 * Mth.sin(t * 0.07F) * kk));
+        double t = com.miscelanea.client.camara.Reloj.t();
+        e.setFOV(e.getFOV() * (1.0 + 0.06 * com.miscelanea.client.camara.Ruido.fbm(3304, t * 0.25, 2) * kk));
     }
 
     // ------------------------------------------------------------------ visión doble (shader antes del HUD, como los de vanilla)

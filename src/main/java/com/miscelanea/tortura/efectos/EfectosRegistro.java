@@ -107,6 +107,11 @@ public final class EfectosRegistro {
     public static final RegistryObject<SoundEvent> MIEDO_MANOS = sonido("miedo_manos");
     public static final RegistryObject<SoundEvent> MIEDO_ESTRIDENTE = sonido("miedo_estridente");
     public static final RegistryObject<SoundEvent> MIEDO_PITIDO = sonido("miedo_pitido");
+    public static final RegistryObject<SoundEvent> MIEDO_GOLPE = sonido("miedo_golpe");
+    public static final RegistryObject<SoundEvent> MIEDO_TENSION = sonido("miedo_tension");
+    public static final RegistryObject<SoundEvent> MIEDO_RODEA = sonido("miedo_rodea");
+    public static final RegistryObject<SoundEvent> MIEDO_DISOLVER = sonido("miedo_disolver");
+    public static final RegistryObject<SoundEvent> MIEDO_INVERSION = sonido("miedo_inversion");
     /** Fantasma: el soplo "hh" cuando asoma por el rabillo del ojo (se dispara en el cliente). */
     public static final RegistryObject<SoundEvent> FANTASMA_ALIENTO = sonido("fantasma_aliento");
 

@@ -38,6 +38,14 @@ public final class EfectosCliente {
             l.addParticle(ParticleTypes.FLASH, p.x, p.y, p.z, 0, 0, 0);
             if (mc.player != null) {
                 double d = mc.player.getEyePosition().distanceTo(new net.minecraft.world.phys.Vec3(p.x, p.y, p.z));
+                if (d < 24) {
+                    // la onda expansiva: sacudida que decae (trauma) y un empujón de la cabeza en contra del estallido
+                    float cerca = (float) (1 - d / 24);
+                    com.miscelanea.client.camara.Sacudida.GLOBAL.golpe(0.35F + 0.65F * cerca);
+                    double dx = mc.player.getX() - p.x, dz = mc.player.getZ() - p.z;
+                    float lado = (float) Math.signum(dx * -Mth.cos(mc.player.getYRot() * Mth.DEG_TO_RAD) + dz * -Mth.sin(mc.player.getYRot() * Mth.DEG_TO_RAD));
+                    com.miscelanea.client.camara.Sacudida.GLOBAL.patada(lado * 2.5F * cerca, -5F * cerca, lado * 4F * cerca);
+                }
                 if (d < 14) {
                     // un solo fogonazo blanco que se apaga (nada de parpadeos)
                     destelloFuerza = (float) (1 - d / 14) * 0.8F;

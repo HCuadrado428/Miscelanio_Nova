@@ -367,7 +367,6 @@ public final class NucleoCliente {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || ESTADOS.isEmpty()) return;
         float pt = (float) e.getPartialTick();
-        float t = mc.player.tickCount + pt;
         float fuerza = 0;
         float f = fase(mc.player.getId(), pt);
         float pot = potencia(mc.player.getId(), pt);
@@ -380,9 +379,8 @@ public final class NucleoCliente {
             if (otro != null) fuerza = Math.max(fuerza, (float) Mth.clamp((1.2 - otro.distanceTo(mc.player) / 25.0) * (0.6 + potencia(en.getKey(), pt)), 0, 2.0));
         }
         if (fuerza <= 0) return;
-        e.setPitch(e.getPitch() + (Mth.sin(t * 2.9F) + Mth.sin(t * 7.1F) * 0.4F) * fuerza * 0.5F);
-        e.setYaw(e.getYaw() + Mth.sin(t * 3.7F) * fuerza * 0.4F);
-        e.setRoll(e.getRoll() + Mth.sin(t * 5.3F) * fuerza * 0.6F);
+        // ruido suave por tiempo real (antes, senos rápidos que se notaban mecánicos)
+        com.miscelanea.client.camara.Sacudida.temblor(e, 5101, 6F + 3F * Math.min(fuerza, 2F), fuerza, 0.75F, 1.0F, 1.0F);
     }
 
     @SubscribeEvent

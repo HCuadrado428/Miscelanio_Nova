@@ -3,9 +3,7 @@ package com.miscelanea.client.tortura.efectos;
 import com.miscelanea.Miscelanea;
 import com.miscelanea.tortura.efectos.EfectosRegistro;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -27,10 +25,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
-import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import org.joml.Vector3f;
 
 /**
  * Los wardens que vienen a por ti (toxina del miedo, desde la etapa 2; uno cada 20-40 s). Es el warden de vanilla de
@@ -41,10 +37,12 @@ import org.joml.Vector3f;
  *   <li>EMERGE: sale del suelo con su animación de vanilla, el sonido y la tierra saltando.</li>
  *   <li>OLFATEA: se gira hacia ti olfateando; el corazón del pecho late (y se oye).</li>
  *   <li>RUGE: ruge con los zarcillos vibrando.</li>
- *   <li>CARGA: corre derecho a por ti (atraviesa lo que haga falta: es una alucinación), cada vez más deprisa,
- *       retumbando; la cámara tiembla con cada pisada.</li>
- *   <li>SUSTO (0,45 s): su cara se te echa encima llenando la pantalla, rugido a todo volumen, un fogonazo rojo único y
- *       sacudida de cámara. Después, se deshace en humo.</li>
+ *   <li>CARGA: corre derecho a por ti (atraviesa lo que haga falta: es una alucinación), cada vez más deprisa (las
+ *       piernas al ritmo de la velocidad), retumbando: cada pisada es un golpe de cámara (trauma y la cabeza que se
+ *       hunde un poco). La cámara hace un VÉRTIGO (dolly zoom): él no cambia de tamaño y el mundo se estira.</li>
+ *   <li>SUSTO (0,35 s): se abalanza encima de ti, la cabeza agachada hacia tu cara (en su sitio del mundo, iluminado,
+ *       no una cara pegada a la pantalla), golpe de sonido y rugido, sacudida con trauma, la cabeza hacia atrás, el
+ *       vértigo que se suelta de golpe y un fogonazo rojo cortito. Al tocarte se deshace en tinta, humo y almas.</li>
  * </ol>
  * Mientras hay un warden, pide la oscuridad de vanilla (efecto "Oscuridad" solo en el cliente: la niebla y la luz
  * laten como con un warden de verdad y respeta la opción "Pulso de oscuridad"). Respeta los 15 s entre sustos: si no
@@ -55,7 +53,7 @@ public final class MiedoWarden {
     private MiedoWarden() {}
 
     private static final int AVISO = 0, EMERGE = 1, OLFATEA = 2, RUGE = 3, CARGA = 4, SUSTO = 5;
-    private static final int T_AVISO = 40, T_EMERGE = 118, T_OLFATEA = 46, T_RUGE = 52, T_CARGA_MAX = 160, T_SUSTO = 9;
+    private static final int T_AVISO = 40, T_EMERGE = 118, T_OLFATEA = 46, T_RUGE = 52, T_CARGA_MAX = 160, T_SUSTO = 7;
     /** Altura de los ojos del warden sobre los pies (para colocar la cara delante de la cámara). */
     private static final double OJOS = 2.5;
 
@@ -83,9 +81,8 @@ public final class MiedoWarden {
     private static int fase = -1, t, proxWarden = -1, idN, activoVisto;
     private static double x, y, z, xo, yo, zo, vel;
     private static float yaw, yawO;
-    /** Fogonazo rojo (ticks desde el susto) y sacudida de cámara (0..1, decae sola). */
-    private static int destello = -1;
-    private static float sacudida, sacudidaO;
+    /** Dirección (horizontal) de la embestida final y de dónde sale. */
+    private static double susX, susZ, susD0;
 
     static boolean activo() {
         return ent != null;
@@ -95,33 +92,25 @@ public final class MiedoWarden {
         return ent != null && (fase == CARGA || fase == SUSTO);
     }
 
-    static boolean hayDestello() {
-        return destello >= 0;
-    }
-
     static void limpiar() {
         if (ent != null) ent.discard();
         ent = null;
         fase = -1;
         proxWarden = -1;
-        // el fogonazo y la sacudida solo avanzan con el miedo puesto: si se acaba a la mitad, fuera
-        destello = -1;
-        sacudida = sacudidaO = 0F;
+        MiedoCamara.vertigo(0F, 6);
     }
 
     // ------------------------------------------------------------------ tick (lo llama MiedoCliente con el miedo puesto)
     static void tick(Minecraft mc, LocalPlayer p, RandomSource r, int activo, int etapa, int dur) {
         activoVisto = activo;
-        if (destello >= 0 && ++destello > 26) destello = -1;
-        sacudidaO = sacudida;
-        sacudida *= 0.82F;
         ClientLevel l = mc.level;
         if (l == null) return;
         if (ent == null) {
+            MiedoCamara.vertigo(0F, 6);
             if (etapa < 2) return;
             if (proxWarden < 0) proxWarden = activo + 100 + r.nextInt(140);
             // hace falta tiempo para que llegue antes de que se acabe el efecto, y no pisar la cara del Espantapájaros
-            if (activo >= proxWarden && dur > 300 && MiedoCliente.reloj() - MiedoCliente.ultimoSusto() > 100 && !MiedoCliente.caraVisible())
+            if (activo >= proxWarden && dur > 300 && MiedoCliente.reloj() - MiedoCliente.ultimoSusto() > 100 && !MiedoSusto.enCurso())
                 proxWarden = aparecer(l, p, r) ? Integer.MAX_VALUE : activo + 40;
             return;
         }
@@ -176,7 +165,10 @@ public final class MiedoWarden {
             case CARGA -> {
                 yaw = hacia;
                 vel = Math.min(0.95, vel + 0.045);
-                andar = 1F;
+                // las piernas al ritmo de lo que corre (como el walkAnimation de vanilla: distancia por tick × 4)
+                andar = (float) Math.min(1.0, vel * 2.2);
+                // vértigo: él se queda del mismo tamaño y el fondo se estira (más cuanto más cerca)
+                MiedoCamara.vertigo((float) Mth.clamp((22.0 - dist) / 12.0, 0.25, 1.0), Math.max(dist, 2.0));
                 if (dist > 0.01) {
                     double paso = Math.min(vel, dist);
                     double nx = x + dx / dist * paso, nz = z + dz / dist * paso;
@@ -186,17 +178,24 @@ public final class MiedoWarden {
                     // sigue el suelo si lo hay cerca; si no (paredes, huecos), va hacia tu altura
                     y = !Double.isNaN(ny) && Math.abs(ny - y) < 1.6 ? ny : Mth.lerp(0.3, y, p.getY());
                 }
-                if (t % 5 == 0) {
+                // pisadas cada vez más seguidas con la velocidad
+                int cada = vel > 0.7 ? 4 : 5;
+                if (t % cada == 0) {
                     MiedoCliente.sonar(mc, SoundEvents.WARDEN_STEP, pos(0.2), 2.5F, 0.75F);
                     float cerca = (float) Mth.clamp(1.0 - dist / 20.0, 0.15, 1.0);
-                    sacudida = Math.max(sacudida, 0.35F * cerca);
+                    MiedoCamara.SACUDIDA.golpe(0.2F * cerca + 0.05F);
+                    MiedoCamara.SACUDIDA.patada(0F, 1.4F * cerca, 0F);
                 }
                 if (t % 8 == 0) latir(mc, 1F);
                 if (t % 4 == 0) w.zarcillo = 1F;
                 if (t == 1) MiedoCliente.sonar(mc, SoundEvents.WARDEN_ANGRY, pos(OJOS), 3F, 0.9F);
-                if (dist < 1.9) {
-                    if (MiedoCliente.puedeSusto()) cambiar(SUSTO);
-                    else {
+                if (dist < 2.6) {
+                    if (MiedoCliente.puedeSusto()) {
+                        susD0 = Math.max(dist, 1.2);
+                        susX = -dx / Math.max(dist, 1e-3);
+                        susZ = -dz / Math.max(dist, 1e-3);
+                        cambiar(SUSTO);
+                    } else {
                         MiedoCliente.sonar(mc, SoundEvents.WARDEN_ROAR, pos(OJOS), 1.5F, 1.1F);
                         humo(mc, l, r, x, y, z);
                         return;
@@ -209,10 +208,16 @@ public final class MiedoWarden {
             case SUSTO -> {
                 w.zarcillo = 1F;
                 w.corazon = 1F;
+                // se abalanza: de donde estaba hasta tenerte debajo (su pecho a medio bloque de tus ojos)
+                float s = Mth.clamp(t / (float) T_SUSTO, 0F, 1F);
+                double d = Mth.lerp(s * s, susD0, 0.75);
+                x = p.getX() + susX * d;
+                z = p.getZ() + susZ * d;
+                y = Mth.lerp(0.5, y, p.getY());
+                yaw = (float) (Mth.atan2(-susZ, -susX) * Mth.RAD_TO_DEG) - 90F;
                 if (t >= T_SUSTO) {
-                    // se deshace en humo pegado a tu cara
-                    Vec3 delante = p.getEyePosition().add(p.getViewVector(1F).scale(0.9));
-                    humo(mc, l, r, delante.x, delante.y - 1.2, delante.z);
+                    // al tocarte, se deshace
+                    humo(mc, l, r, x, y, z);
                     return;
                 }
             }
@@ -225,7 +230,7 @@ public final class MiedoWarden {
         // la cabeza te busca (arriba/abajo)
         double dy = p.getEyeY() - (y + OJOS);
         w.setXRot(Mth.clamp((float) -(Mth.atan2(dy, Math.max(dist, 0.5)) * Mth.RAD_TO_DEG), -40F, 40F));
-        w.walkAnimation.update(andar, 0.5F);
+        w.walkAnimation.update(andar, 0.4F);
         w.setPos(x, y, z);
         w.xo = xo;
         w.yo = yo;
@@ -282,27 +287,39 @@ public final class MiedoWarden {
             }
             case SUSTO -> {
                 MiedoCliente.marcarSusto();
-                destello = 0;
-                sacudida = 1F;
-                // vuelve a rugir, ahora pegado a tu cara (la pose reinicia la animación del rugido)
+                // vuelve a rugir, encima de ti (la pose reinicia la animación del rugido)
                 w.setPose(Pose.ROARING);
+                mc.getSoundManager().play(SimpleSoundInstance.forUI(EfectosRegistro.MIEDO_GOLPE.get(), 0.9F, 1F));
                 mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.WARDEN_ROAR, 1.15F, 1F));
-                mc.getSoundManager().play(SimpleSoundInstance.forUI(EfectosRegistro.MIEDO_ESTRIDENTE.get(), 1F, 1F));
-                mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.WARDEN_SONIC_BOOM, 1.3F, 0.55F));
+                mc.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.WARDEN_SONIC_BOOM, 1.3F, 0.4F));
+                MiedoCamara.golpe(1F);
+                MiedoCamara.SACUDIDA.golpe(0.9F);
+                float lado = Minecraft.getInstance().level != null && Minecraft.getInstance().level.random.nextBoolean() ? 1F : -1F;
+                MiedoCamara.SACUDIDA.patada(3F * lado, -8F, 5F * lado);
+                // el vértigo se suelta de golpe
+                MiedoCamara.vertigo(0F, 2);
+                MiedoCamara.latido();
             }
             default -> {
             }
         }
     }
 
-    /** Se deshace en humo (y almas de sculk) donde esté; el siguiente, dentro de 20-40 s (algo antes con más dosis). */
+    /**
+     * Se deshace donde esté: tinta y humo por todo el cuerpo (de los pies a la cabeza, no una bola), almas de sculk que
+     * suben y su sonido; el siguiente, dentro de 20-40 s (algo antes con más dosis).
+     */
     private static void humo(Minecraft mc, ClientLevel l, RandomSource r, double hx, double hy, double hz) {
-        for (int i = 0; i < 34; i++)
-            l.addParticle(ParticleTypes.LARGE_SMOKE, hx + r.nextGaussian() * 0.45, hy + r.nextDouble() * 2.6, hz + r.nextGaussian() * 0.45,
-                    r.nextGaussian() * 0.02, 0.03 + r.nextDouble() * 0.04, r.nextGaussian() * 0.02);
-        for (int i = 0; i < 14; i++)
-            l.addParticle(ParticleTypes.SCULK_SOUL, hx + r.nextGaussian() * 0.4, hy + r.nextDouble() * 2.4, hz + r.nextGaussian() * 0.4, 0, 0.04, 0);
-        MiedoCliente.sonar(mc, SoundEvents.FIRE_EXTINGUISH, new Vec3(hx, hy + 1.2, hz), 0.7F, 0.6F);
+        for (int i = 0; i < 40; i++) {
+            double h = r.nextDouble() * 2.9;
+            double ancho = 0.25 + 0.25 * Math.sin(Math.PI * h / 2.9);
+            l.addParticle(i % 2 == 0 ? ParticleTypes.SQUID_INK : ParticleTypes.LARGE_SMOKE, hx + r.nextGaussian() * ancho, hy + h,
+                    hz + r.nextGaussian() * ancho, r.nextGaussian() * 0.03, 0.02 + r.nextDouble() * 0.04, r.nextGaussian() * 0.03);
+        }
+        for (int i = 0; i < 16; i++)
+            l.addParticle(ParticleTypes.SCULK_SOUL, hx + r.nextGaussian() * 0.4, hy + r.nextDouble() * 2.6, hz + r.nextGaussian() * 0.4, 0, 0.05, 0);
+        MiedoCliente.sonar(mc, EfectosRegistro.MIEDO_DISOLVER.get(), new Vec3(hx, hy + 1.6, hz), 1.2F, 0.8F);
+        MiedoCamara.vertigo(0F, 2);
         if (ent != null) ent.discard();
         ent = null;
         fase = -1;
@@ -352,50 +369,12 @@ public final class MiedoWarden {
         if (mc.level == null) return;
         WardenFalso w = ent;
         float pt = e.getPartialTick();
-        Camera c = e.getCamera();
-        Vec3 cam = c.getPosition();
-        double rx, ry, rz;
-        int luz;
-        float rot;
-        if (fase == SUSTO) {
-            // la cara pegada a la cámara: se te echa encima (de 1,7 a 0,55 bloques) mirándote
-            Vector3f mira = c.getLookVector();
-            double hx = mira.x(), hz = mira.z(), hl = Math.sqrt(hx * hx + hz * hz);
-            if (hl < 1e-3) {
-                float yr = c.getYRot() * Mth.DEG_TO_RAD;
-                hx = -Mth.sin(yr);
-                hz = Mth.cos(yr);
-                hl = 1;
-            }
-            hx /= hl;
-            hz /= hl;
-            float s = Mth.clamp((t + pt) / T_SUSTO, 0F, 1F);
-            s = 1F - (1F - s) * (1F - s);
-            double d = Mth.lerp(s, 1.7F, 0.55F);
-            float temblor = 0.04F * MiedoCliente.distorsion();
-            rx = cam.x + hx * d + Mth.sin((t + pt) * 3.1F) * temblor;
-            rz = cam.z + hz * d + Mth.sin((t + pt) * 2.7F + 1F) * temblor;
-            ry = cam.y - OJOS;
-            rot = (float) (Mth.atan2(-hz, -hx) * Mth.RAD_TO_DEG) - 90F;
-            w.yBodyRot = w.yBodyRotO = w.yHeadRot = w.yHeadRotO = rot;
-            w.setYRot(rot);
-            w.yRotO = rot;
-            w.setXRot(0F);
-            w.xRotO = 0F;
-            luz = LightTexture.FULL_BRIGHT;
-            w.setPos(rx, ry, rz);
-            w.xo = rx;
-            w.yo = ry;
-            w.zo = rz;
-        } else {
-            rx = Mth.lerp(pt, xo, x);
-            ry = Mth.lerp(pt, yo, y);
-            rz = Mth.lerp(pt, zo, z);
-            rot = Mth.rotLerp(pt, yawO, yaw);
-            int l = LevelRenderer.getLightColor(mc.level, BlockPos.containing(rx, ry + 1.5, rz));
-            // un mínimo de luz: en la oscuridad total se ve la silueta (y lo que brilla de él, siempre)
-            luz = LightTexture.pack(Math.max(LightTexture.block(l), 3), LightTexture.sky(l));
-        }
+        Vec3 cam = e.getCamera().getPosition();
+        double rx = Mth.lerp(pt, xo, x), ry = Mth.lerp(pt, yo, y), rz = Mth.lerp(pt, zo, z);
+        float rot = Mth.rotLerp(pt, yawO, yaw);
+        int l = LevelRenderer.getLightColor(mc.level, BlockPos.containing(rx, ry + 1.5, rz));
+        // un mínimo de luz: en la oscuridad total se ve sólido (y lo que brilla de él, siempre); encima de ti, con luz
+        int luz = fase == SUSTO ? LightTexture.pack(13, 0) : LightTexture.pack(Math.max(LightTexture.block(l), 5), LightTexture.sky(l));
         PoseStack ps = e.getPoseStack();
         MultiBufferSource.BufferSource bs = mc.renderBuffers().bufferSource();
         EntityRenderDispatcher d = mc.getEntityRenderDispatcher();
@@ -412,31 +391,5 @@ public final class MiedoWarden {
             d.setRenderShadow(true);
             bs.endBatch();
         }
-    }
-
-    /** El fogonazo rojo del susto: uno solo, que sube en 0,1 s y se apaga en 1,2 s (nada de parpadeos). */
-    static void hud(GuiGraphics g, int w, int h, float pt) {
-        if (destello < 0) return;
-        float ft = destello + pt;
-        float a = ft < 2F ? ft / 2F : Math.max(0F, 1F - (ft - 2F) / 24F);
-        a = a * a * 0.62F * MiedoCliente.escalaDestello();
-        if (a <= 0.003F) return;
-        g.fill(0, 0, w, h, ((int) (a * 255) << 24) | 0x8A0000);
-        // y la viñeta oscura por los bordes, que dura un poco más
-        g.setColor(0.35F, 0.0F, 0.0F, Math.min(1F, a * 1.4F));
-        g.blit(MiedoCliente.VINETA, 0, 0, 0, 0, w, h, w, h);
-        g.setColor(1F, 1F, 1F, 1F);
-    }
-
-    /** Sacudida de cámara (pisadas y susto), escalada por "Efectos de distorsión". */
-    @SubscribeEvent
-    public static void camara(ViewportEvent.ComputeCameraAngles e) {
-        float pt = (float) e.getPartialTick();
-        float s = Mth.lerp(pt, sacudidaO, sacudida) * MiedoCliente.distorsion();
-        if (s <= 0.002F) return;
-        float tt = MiedoCliente.reloj() + pt;
-        e.setRoll(e.getRoll() + Mth.sin(tt * 2.9F) * 6F * s);
-        e.setYaw(e.getYaw() + Mth.sin(tt * 3.7F + 1F) * 2.5F * s);
-        e.setPitch(e.getPitch() + Mth.sin(tt * 4.3F + 2F) * 2.5F * s);
     }
 }
