@@ -99,6 +99,7 @@ public class FlotaBlockEntity extends BlockEntity implements PrivadoPacket.Recep
             if (p.fase == FlotaPartida.COLOCAR && mc[0] == yo) {
                 if (p.tocarPropio(yo, mc[1])) {
                     sonar(SoundEvents.WOOD_HIT, 0.6F, 1.4F);
+                    com.miscelanea.juegos.Gestos.hacer(pl, com.miscelanea.juegos.Gestos.ALCANZAR, mundo(tx, ty));
                     cambiado();
                 }
             } else if (p.fase == FlotaPartida.JUGAR) {
@@ -108,6 +109,7 @@ public class FlotaBlockEntity extends BlockEntity implements PrivadoPacket.Recep
                     pl.displayClientMessage(Component.translatable("msg.miscelanea.flota.tu_mar").withStyle(ChatFormatting.GRAY), true);
                 } else if (p.disparar(mc[1], ahora)) {
                     sonar(SoundEvents.FIREWORK_ROCKET_LAUNCH, 0.7F, 0.7F);
+                    com.miscelanea.juegos.Gestos.hacer(pl, com.miscelanea.juegos.Gestos.ALCANZAR, mundo(tx, ty));
                     cambiado();
                 }
             }
@@ -128,6 +130,15 @@ public class FlotaBlockEntity extends BlockEntity implements PrivadoPacket.Recep
                 if (yo >= 0 && !p.js.get(yo).listo) p.listo(yo, rnd, ahora);
                 else hecho = false;
             }
+            case FlotaBotones.REVANCHA -> {
+                if (yo < 0) hecho = false;
+                else {
+                    p = p.revancha(rnd);
+                    vigia.limpiar();
+                    votos.limpiar();
+                    Turnos.avisar(level, worldPosition, "msg.miscelanea.mesa.revancha", pl.getGameProfile().getName());
+                }
+            }
             case FlotaBotones.NUEVA -> {
                 p = new FlotaPartida();
                 vigia.limpiar();
@@ -144,7 +155,10 @@ public class FlotaBlockEntity extends BlockEntity implements PrivadoPacket.Recep
             }
             default -> hecho = false;
         }
-        if (hecho) sonar(SoundEvents.WOODEN_BUTTON_CLICK_ON, 0.8F, 1.2F);
+        if (hecho) {
+            sonar(SoundEvents.WOODEN_BUTTON_CLICK_ON, 0.8F, 1.2F);
+            com.miscelanea.juegos.Gestos.hacer(pl, com.miscelanea.juegos.Gestos.ALCANZAR, mundo(tx, ty));
+        }
         cambiado();
     }
 
@@ -188,6 +202,8 @@ public class FlotaBlockEntity extends BlockEntity implements PrivadoPacket.Recep
             be.sonar(SoundEvents.PLAYER_LEVELUP, 1F, 1F);
             for (ServerPlayer o : ((ServerLevel) l).getEntitiesOfClass(ServerPlayer.class, new AABB(pos).inflate(12)))
                 o.displayClientMessage(Component.translatable("msg.miscelanea.flota.gana", p.js.get(p.ganador).nombre).withStyle(ChatFormatting.GOLD), false);
+            com.miscelanea.juegos.Partidas.terminada(l, pos, com.miscelanea.juegos.Victorias.FLOTA, p.js.get(p.ganador).uuid,
+                    p.humanos().toArray(new java.util.UUID[0]));
         }
     }
 

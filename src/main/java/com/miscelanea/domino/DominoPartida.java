@@ -115,6 +115,20 @@ public class DominoPartida {
         return true;
     }
 
+    /** Otra partida con los mismos jugadores en los mismos asientos (revancha). */
+    public DominoPartida revancha(Random r, long ahora) {
+        DominoPartida n = new DominoPartida();
+        for (Jugador j : js) {
+            Jugador c = new Jugador();
+            c.uuid = j.uuid;
+            c.nombre = j.nombre;
+            c.asiento = j.asiento;
+            n.js.add(c);
+        }
+        n.empezar(r, ahora);
+        return n;
+    }
+
     public boolean anadirCpu() {
         if (fase != LOBBY || js.size() >= 4) return false;
         Jugador j = new Jugador();

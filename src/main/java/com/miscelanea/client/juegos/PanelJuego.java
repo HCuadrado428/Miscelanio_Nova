@@ -94,19 +94,19 @@ public final class PanelJuego {
 
         /** Línea de estado (de quién es el turno, qué pasa ahora...). */
         public Panel linea(String s, int col) {
-            if (s != null && !s.isEmpty()) filas.add(new Fila(s, col, -1, false));
+            if (s != null && !s.isEmpty()) filas.add(new Fila(s, col, -1, false, null));
             return this;
         }
 
         /** Fila de un jugador: muestra de color, nombre y datos; resaltada si le toca. */
         public Panel jugador(String nombre, String extra, int col, boolean turno) {
-            filas.add(new Fila(nombre + (extra == null || extra.isEmpty() ? "" : "  §7" + extra), turno ? BLANCO : 0xFFD8D8D8, 0xFF000000 | col, turno));
+            filas.add(new Fila(nombre + (extra == null || extra.isEmpty() ? "" : "  §7" + extra), turno ? BLANCO : 0xFFD8D8D8, 0xFF000000 | col, turno, nombre));
             return this;
         }
 
         /** Información de lo que se está apuntando (casilla, ficha...), en un bloque aparte. */
         public Panel detalle(String s, int col) {
-            if (s != null && !s.isEmpty()) detalle.add(new Fila(s, col, -1, false));
+            if (s != null && !s.isEmpty()) detalle.add(new Fila(s, col, -1, false, null));
             return this;
         }
 
@@ -123,7 +123,30 @@ public final class PanelJuego {
         }
     }
 
-    record Fila(String txt, int col, int muestra, boolean turno) {}
+    /** {@code nombre}: el del jugador de la fila (para su cara y para saber si quien mira está sentado). */
+    record Fila(String txt, int col, int muestra, boolean turno, String nombre) {}
+
+    /** Piel del jugador conectado con ese nombre (null si es la CPU o no está). */
+    static net.minecraft.resources.ResourceLocation piel(String nombre) {
+        Minecraft mc = Minecraft.getInstance();
+        if (nombre == null || nombre.isEmpty() || mc.getConnection() == null) return null;
+        var info = mc.getConnection().getPlayerInfo(nombre);
+        return info == null ? null : info.getSkinLocation();
+    }
+
+    /** Quien mira no ocupa ningún sitio de la mesa (y hay alguien jugando). */
+    static boolean espectador(Panel p) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null) return false;
+        String yo = mc.player.getGameProfile().getName();
+        boolean hay = false;
+        for (Fila f : p.filas) {
+            if (f.nombre == null) continue;
+            if (f.nombre.equals(yo)) return false;
+            if (piel(f.nombre) != null) hay = true;
+        }
+        return hay;
+    }
 
     static String tecla(Tecla t) {
         var o = Minecraft.getInstance().options;
@@ -176,17 +199,23 @@ public final class PanelJuego {
         // ---- medir
         int ancho = font.width(Component.literal(p.titulo).withStyle(s -> s.withBold(true))) + (p.marcador != null ? font.width(p.marcador) * 2 + 12 : 0);
         List<List<FormattedCharSequence>> filas = new ArrayList<>(), det = new ArrayList<>();
-        for (Fila f : p.filas) filas.add(partir(font, f.txt, max - (f.muestra != -1 ? 10 : 0)));
+        for (Fila f : p.filas) filas.add(partir(font, f.txt, max - sangria(f)));
         for (Fila f : p.detalle) det.add(partir(font, f.txt, max));
         List<FormattedCharSequence> nota = p.nota == null ? List.of() : partir(font, p.nota, max);
         for (int i = 0; i < filas.size(); i++)
-            for (FormattedCharSequence s : filas.get(i)) ancho = Math.max(ancho, font.width(s) + (p.filas.get(i).muestra != -1 ? 10 : 0));
+            for (FormattedCharSequence s : filas.get(i)) ancho = Math.max(ancho, font.width(s) + sangria(p.filas.get(i)));
         for (List<FormattedCharSequence> l : det) for (FormattedCharSequence s : l) ancho = Math.max(ancho, font.width(s));
         for (FormattedCharSequence s : nota) ancho = Math.max(ancho, font.width(s));
         for (String[] c : p.controles) ancho = Math.max(ancho, Math.min(max, font.width(c[0]) + 8 + font.width(c[1])));
         ancho = Mth.clamp(ancho, ANCHO_MIN, max);
 
+        RelojCliente.Reloj reloj = RelojCliente.de(p.pos);
+        boolean mira = espectador(p);
+        String txtReloj = reloj == null ? null : textoReloj(reloj);
+        if (txtReloj != null) ancho = Math.max(ancho, Math.min(max, font.width(txtReloj) + 34));
         int alto = PAD + 12;                       // título
+        if (reloj != null) alto += 15;
+        if (mira) alto += 10;
         for (List<FormattedCharSequence> l : filas) alto += l.size() * 10;
         if (!det.isEmpty()) {
             alto += 5;
@@ -218,6 +247,25 @@ public final class PanelJuego {
         y += 12;
         g.fill(x, y - 3, x1 - PAD, y - 2, col(0x40FFFFFF, a));
 
+        // ---- reloj de turno
+        if (reloj != null) {
+            RelojCliente.pitar(reloj);
+            float fr = reloj.fraccion(0);
+            float sg = reloj.segundos(0);
+            boolean mio = reloj.mio();
+            int cTxt = reloj.dormido ? GRIS : mio ? (sg >= 0 && sg <= 10 && ((int) (sg * 4) & 1) == 0 ? ROJO : 0xFFFFC040) : 0xFFE0E0E0;
+            g.drawString(font, font.plainSubstrByWidth(txtReloj, x1 - PAD - x - 30), x, y, col(cTxt, a), true);
+            if (sg >= 0) {
+                String n = (int) Math.ceil(sg) / 60 + ":" + String.format("%02d", (int) Math.ceil(sg) % 60);
+                g.drawString(font, n, x1 - PAD - font.width(n), y, col(sg <= 10 ? ROJO : BLANCO, a), true);
+            }
+            int bx0 = x, bx1 = x1 - PAD, by = y + 10;
+            g.fill(bx0, by, bx1, by + 3, col(0xFF2A2D33, a));
+            int bc = reloj.dormido ? 0xFF707070 : fr > 0.5F ? 0xFF60D060 : fr > 0.2F ? 0xFFE8C040 : 0xFFE05040;
+            g.fill(bx0, by, bx0 + Math.round((bx1 - bx0) * (reloj.conLimite ? fr : 1F)), by + 3, col(bc, a));
+            y += 15;
+        }
+
         // ---- filas
         for (int i = 0; i < filas.size(); i++) {
             Fila f = p.filas.get(i);
@@ -227,11 +275,21 @@ public final class PanelJuego {
                 g.fill(x, y + 1, x + 6, y + 7, col(0xFF000000, a));
                 g.fill(x + 1, y + 2, x + 5, y + 6, col(f.muestra, a));
                 dx = 10;
+                var skin = piel(f.nombre);
+                if (skin != null) {
+                    // la cara del jugador sentado (como en la lista de jugadores)
+                    if (a > 0.6F) net.minecraft.client.gui.components.PlayerFaceRenderer.draw(g, skin, x + 9, y, 8);
+                    dx = 20;
+                }
             }
             for (FormattedCharSequence s : filas.get(i)) {
                 g.drawString(font, s, x + dx, y, col(f.col, a), true);
                 y += 10;
             }
+        }
+        if (mira) {
+            g.drawString(font, I18n.get("panel.miscelanea.espectador"), x, y, col(0xFF8FA8C0, a), true);
+            y += 10;
         }
         // ---- detalle de lo apuntado
         if (!det.isEmpty()) {
@@ -267,6 +325,15 @@ public final class PanelJuego {
                 y += 12;
             }
         }
+    }
+
+    private static int sangria(Fila f) {
+        return f.muestra == -1 ? 0 : piel(f.nombre) != null ? 20 : 10;
+    }
+
+    private static String textoReloj(RelojCliente.Reloj r) {
+        if (r.dormido) return I18n.get("panel.miscelanea.reloj.cpu", r.nombre);
+        return r.mio() ? I18n.get("panel.miscelanea.reloj.tuyo") : I18n.get("panel.miscelanea.reloj.de", r.nombre);
     }
 
     private static List<FormattedCharSequence> partir(Font font, String s, int max) {

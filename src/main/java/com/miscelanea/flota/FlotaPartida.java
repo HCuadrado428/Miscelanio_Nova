@@ -125,6 +125,21 @@ public class FlotaPartida {
         return true;
     }
 
+    /** Otra partida con los mismos jugadores (revancha): barcos nuevos y a colocar. */
+    public FlotaPartida revancha(Random r) {
+        FlotaPartida n = new FlotaPartida();
+        for (Jugador j : js) {
+            Jugador c = new Jugador();
+            c.uuid = j.uuid;
+            c.nombre = j.nombre;
+            aleatorio(c, r);
+            c.listo = c.cpu();
+            n.js.add(c);
+        }
+        n.empezar();
+        return n;
+    }
+
     public boolean anadirCpu(Random r) {
         if (fase != LOBBY || js.size() >= 2) return false;
         Jugador j = new Jugador();

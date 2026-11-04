@@ -69,11 +69,13 @@ public class OcaBlockEntity extends BlockEntity {
         boolean miTurno = yo >= 0 && yo == p.turno && p.fase == OcaPartida.TIRAR;
         if (yo >= 0) vigia.despertar(pl.getUUID());
         OcaBotones.Boton b = OcaBotones.en(p, tx, ty);
+        Vec3 punto = mundo(tx, ty);
         if (b == null) {
             if (miTurno) {
                 // clic fácil: cualquier sitio del tablero tira el dado
                 p.tirar(rnd, ahora);
                 sonar(SoundEvents.BONE_BLOCK_HIT, 0.9F, 1.5F);
+                com.miscelanea.juegos.Gestos.hacer(pl, com.miscelanea.juegos.Gestos.DADOS, punto);
                 cambiado();
             } else if (yo >= 0 && p.fase == OcaPartida.TIRAR)
                 pl.displayClientMessage(Component.translatable("msg.miscelanea.imperio.no_turno").withStyle(ChatFormatting.GRAY), true);
@@ -82,6 +84,16 @@ public class OcaBlockEntity extends BlockEntity {
         boolean hecho = true;
         switch (b.id()) {
             case OcaBotones.UNIRSE -> hecho = p.unir(pl.getUUID(), pl.getGameProfile().getName());
+            case OcaBotones.SALIR -> hecho = p.salir(pl.getUUID());
+            case OcaBotones.REVANCHA -> {
+                if (yo < 0) hecho = false;
+                else {
+                    p = p.revancha(rnd);
+                    vigia.limpiar();
+                    votos.limpiar();
+                    com.miscelanea.mesas.Turnos.avisar(level, worldPosition, "msg.miscelanea.mesa.revancha", pl.getGameProfile().getName());
+                }
+            }
             case OcaBotones.CPU -> hecho = yo >= 0 && p.anadirCpu();
             case OcaBotones.EMPEZAR -> hecho = yo >= 0 && p.empezar(rnd);
             case OcaBotones.NUEVA -> {
@@ -107,7 +119,10 @@ public class OcaBlockEntity extends BlockEntity {
             }
             default -> hecho = false;
         }
-        if (hecho) sonar(SoundEvents.WOODEN_BUTTON_CLICK_ON, 0.8F, 1.2F);
+        if (hecho) {
+            sonar(SoundEvents.WOODEN_BUTTON_CLICK_ON, 0.8F, 1.2F);
+            com.miscelanea.juegos.Gestos.hacer(pl, com.miscelanea.juegos.Gestos.ALCANZAR, punto);
+        }
         cambiado();
     }
 
@@ -134,6 +149,8 @@ public class OcaBlockEntity extends BlockEntity {
                 be.sonar(SoundEvents.PLAYER_LEVELUP, 1F, 1F);
                 for (ServerPlayer o : ((ServerLevel) l).getEntitiesOfClass(ServerPlayer.class, new AABB(pos).inflate(12)))
                     o.displayClientMessage(Component.translatable("msg.miscelanea.oca.gana", p.js.get(p.ganador).nombre).withStyle(ChatFormatting.GOLD), false);
+                com.miscelanea.juegos.Partidas.terminada(l, pos, com.miscelanea.juegos.Victorias.OCA, p.js.get(p.ganador).uuid,
+                        p.humanos().toArray(new java.util.UUID[0]));
             }
             be.cambiado();
         }

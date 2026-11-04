@@ -5,7 +5,7 @@ import java.util.List;
 
 /** Botones físicos de hundir la flota (franja central entre los dos mares). */
 public final class FlotaBotones {
-    public static final int UNIRSE = 1, CPU = 2, EMPEZAR = 3, RECOLOCAR = 4, LISTO = 5, NUEVA = 6, TERMINAR = 7;
+    public static final int UNIRSE = 1, CPU = 2, EMPEZAR = 3, RECOLOCAR = 4, LISTO = 5, NUEVA = 6, TERMINAR = 7, REVANCHA = 8;
     public static final double MARGEN = 4;
 
     public record Boton(int id, double x, double y, double w, double h, String clave, int color) {
@@ -29,7 +29,10 @@ public final class FlotaBotones {
                 o.add(new Boton(LISTO, 316, 256, 110, 26, "listo", 0x30A050));
             }
             case FlotaPartida.JUGAR -> o.add(new Boton(TERMINAR, 470, 256, 60, 16, "terminar", 0x606060));
-            default -> o.add(new Boton(NUEVA, 256, 256, 130, 26, "nueva", 0x30A050));
+            default -> {
+                o.add(new Boton(REVANCHA, 186, 256, 120, 26, "revancha", 0xE0A020));
+                o.add(new Boton(NUEVA, 326, 256, 120, 26, "nueva", 0x30A050));
+            }
         }
         return o;
     }

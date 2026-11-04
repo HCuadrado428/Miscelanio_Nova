@@ -53,6 +53,10 @@ public class TableroBlockEntity extends BlockEntity {
     /** Tras un minuto sin que los jugadores toquen nada, cualquiera puede cambiar o reiniciar la partida. */
     public static final int ABANDONO_TICS = 20 * 60;
     private final Random rnd = new Random();
+    /** Reloj de turno: si el humano de turno no juega (o se va), la CPU mueve por él. */
+    private final com.miscelanea.mesas.Turnos.Vigia vigia = new com.miscelanea.mesas.Turnos.Vigia();
+    /** Lado (blancas) para el que está pensando la CPU. */
+    private boolean pensandoBlancas;
 
     public TableroBlockEntity(BlockPos p, BlockState s) {
         super(ModBlocks.TABLERO_BE.get(), p, s);
@@ -196,7 +200,43 @@ public class TableroBlockEntity extends BlockEntity {
         cpuEn = 0;
         repeticiones.clear();
         if (ajedrez()) repeticiones.add(partidaAjedrez().clave());
+        vigia.limpiar();
         cambiado();
+    }
+
+    /** Revancha con los mismos jugadores; en dos jugadores se cambian los colores. */
+    private void revancha(ServerPlayer quien) {
+        UUID b = blancas, n = negras;
+        String nb = nombreB, nn = nombreN;
+        reiniciar(modo);
+        if (contraCpu() || n == null) {
+            blancas = b;
+            nombreB = nb;
+            if (contraCpu()) nombreN = "CPU";
+        } else {
+            blancas = n;
+            nombreB = nn;
+            negras = b;
+            nombreN = nb;
+        }
+        com.miscelanea.mesas.Turnos.avisar(level, worldPosition, "msg.miscelanea.mesa.revancha", quien.getGameProfile().getName());
+        cambiado();
+    }
+
+    /** Humano al que le toca mover (null si es la CPU o el sitio está libre). */
+    private UUID deTurno() {
+        if (resultado != 0 || blancas == null || estado.length == 0) return null;
+        if (turnoBlancas()) return blancas;
+        return contraCpu() ? null : negras;
+    }
+
+    /** Identificador del juego actual para el marcador de victorias. */
+    public String idJuego() {
+        return switch (juego()) {
+            case 0 -> Victorias.AJEDREZ;
+            case 1 -> Victorias.DAMAS;
+            default -> Victorias.REVERSI;
+        };
     }
 
     /**
@@ -219,11 +259,16 @@ public class TableroBlockEntity extends BlockEntity {
     public void clic(ServerPlayer p, int sq) {
         if (estado.length == 0) reiniciar(modo);
         if (resultado != 0) {
+            if (p.getUUID().equals(blancas) || p.getUUID().equals(negras)) {
+                revancha(p);
+                return;
+            }
             reiniciar(modo);
             p.displayClientMessage(Component.translatable("msg.miscelanea.tablero.nueva"), true);
             return;
         }
         UUID u = p.getUUID();
+        vigia.despertar(u);
         if (blancas == null) {
             blancas = u;
             nombreB = p.getGameProfile().getName();
@@ -241,6 +286,7 @@ public class TableroBlockEntity extends BlockEntity {
             cambiado();
             return;
         }
+        com.miscelanea.juegos.Gestos.hacer(p, com.miscelanea.juegos.Gestos.ALCANZAR, centroCasilla(sq));
         int pieza = piezas()[sq];
         boolean propia = !reversi() && pieza != 0 && (ajedrez() ? !Ajedrez.esNegra(pieza) == tb : Damas.esBlanca(pieza) == tb);
         if (juego() == 1 && verDamas().obligada >= 0) sel = verDamas().obligada;
@@ -362,6 +408,10 @@ public class TableroBlockEntity extends BlockEntity {
                 o.displayClientMessage(m, false);
             ((ServerLevel) level).sendParticles(ParticleTypes.TOTEM_OF_UNDYING, worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5,
                     40, 0.4, 0.3, 0.4, 0.3);
+            if (resultado != 3) {
+                UUID ne = contraCpu() ? null : negras;
+                com.miscelanea.juegos.Partidas.terminada(level, worldPosition, idJuego(), resultado == 1 ? blancas : ne, resultado == 1 ? ne : blancas);
+            }
         }
     }
 
@@ -393,16 +443,23 @@ public class TableroBlockEntity extends BlockEntity {
             } catch (Exception ex) {
                 m = -1;
             }
-            boolean vigente = be.pensandoSobre == be.estado && be.resultado == 0 && !be.turnoBlancas();
+            boolean vigente = be.pensandoSobre == be.estado && be.resultado == 0 && be.turnoBlancas() == be.pensandoBlancas;
             be.pensando = null;
             if (!vigente) return;
             if (m < 0 && !be.legales().isEmpty()) m = be.legales().get(0);
             if (m >= 0) be.mover(m & 63, (m >> 6) & 63);
             return;
         }
+        // reloj de turno: si el humano de turno no mueve a tiempo (o se ha ido), la CPU mueve por él
+        UUID humano = be.deTurno();
+        boolean porEl = humano != null && be.vigia.vigilar(l, pos, humano, be.turnoBlancas() ? be.nombreB : be.nombreN, System.identityHashCode(be.estado));
+        if (humano == null) be.vigia.vigilar(l, pos, null, "", 0);
+        if (porEl && be.cpuEn == 0) be.cpuEn = l.getGameTime() + 10;
         if (be.cpuEn > 0 && l.getGameTime() >= be.cpuEn && be.resultado == 0) {
             be.cpuEn = 0;
-            if (be.turnoBlancas()) return;
+            boolean cpuToca = (!be.turnoBlancas() && be.contraCpu()) || porEl;
+            if (!cpuToca) return;
+            be.pensandoBlancas = be.turnoBlancas();
             final int[] copia = be.estado.clone();
             final int juego = be.juego();
             final long semilla = be.rnd.nextLong();

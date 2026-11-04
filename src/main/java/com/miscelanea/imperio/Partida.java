@@ -546,6 +546,30 @@ public class Partida {
         if (mejor >= 0) anotar("gana_patrimonio|" + js.get(mejor).nombre + "|" + patrimonio(mejor));
     }
 
+    /** Ganador de una partida terminada (el único que queda o el de mayor patrimonio), o -1. */
+    public int ganador() {
+        if (fase != FIN) return -1;
+        int mejor = -1;
+        for (int i = 0; i < js.size(); i++) if (!js.get(i).fuera && (mejor < 0 || patrimonio(i) > patrimonio(mejor))) mejor = i;
+        return mejor;
+    }
+
+    /** Otra partida con los mismos jugadores y fichas (revancha). */
+    public Partida revancha(Random r) {
+        Partida n = new Partida();
+        n.limite = limite;
+        n.velocidad = velocidad;
+        for (Jugador j : js) {
+            Jugador c = new Jugador();
+            c.uuid = j.uuid;
+            c.nombre = j.nombre;
+            c.ficha = j.ficha;
+            n.js.add(c);
+        }
+        n.empezar(r);
+        return n;
+    }
+
     /** Patrimonio (para decidir el ganador si se termina antes). */
     public int patrimonio(int q) {
         int v = js.get(q).dinero;

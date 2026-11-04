@@ -5,7 +5,7 @@ import java.util.List;
 
 /** Botones físicos del parchís (en el centro del tablero). Los calculan igual el servidor y el cliente. */
 public final class ParchisBotones {
-    public static final int UNIRSE = 1, CPU = 2, EMPEZAR = 3, TIRAR = 4, NUEVA = 5, TERMINAR = 6, VELOCIDAD = 7, SALIR = 8;
+    public static final int UNIRSE = 1, CPU = 2, EMPEZAR = 3, TIRAR = 4, NUEVA = 5, TERMINAR = 6, VELOCIDAD = 7, SALIR = 8, REVANCHA = 9;
     public static final double MARGEN = 4;
 
     public record Boton(int id, double x, double y, double w, double h, String clave, int color) {
@@ -29,7 +29,10 @@ public final class ParchisBotones {
             case ParchisPartida.TIRAR -> {
                 if (p.actual() != null && !p.actual().cpu()) o.add(new Boton(TIRAR, 256, 256, 62, 28, "tirar", 0xE0A020));
             }
-            case ParchisPartida.FIN -> o.add(new Boton(NUEVA, 256, 256, 104, 26, "nueva", 0x30A050));
+            case ParchisPartida.FIN -> {
+                o.add(new Boton(REVANCHA, 256, 240, 104, 24, "revancha", 0xE0A020));
+                o.add(new Boton(NUEVA, 256, 272, 104, 20, "nueva", 0x30A050));
+            }
             default -> {}
         }
         if (p.fase != ParchisPartida.LOBBY && p.fase != ParchisPartida.FIN) {
