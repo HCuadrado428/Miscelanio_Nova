@@ -35,8 +35,7 @@ public final class DreamClienteMod {
         // capa 0 del frasco: el líquido, del color de la mezcla
         e.register((st, capa) -> capa == 0 ? PotionUtils.getColor(st) : -1,
                 DreamRegistro.FRASCO_MEZCLA.get(), DreamRegistro.FRASCO_MEZCLA_ARROJADIZO.get());
-        // la esencia es una botella de poción normal con el líquido verde veneno
-        e.register((st, capa) -> capa == 0 ? 0x3FA34A : -1, DreamRegistro.ESENCIA.get());
+        // la esencia no se tiñe: su líquido (verde y negro) ya viene pintado en esencia_dream_liquido
     }
 
     @SubscribeEvent

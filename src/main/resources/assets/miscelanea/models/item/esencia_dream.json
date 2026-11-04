@@ -1,1 +1,1 @@
-{"parent":"minecraft:item/generated","textures":{"layer0":"minecraft:item/potion_overlay","layer1":"minecraft:item/potion"}}
+{"parent":"minecraft:item/generated","textures":{"layer0":"miscelanea:item/esencia_dream_liquido","layer1":"minecraft:item/potion"}}
