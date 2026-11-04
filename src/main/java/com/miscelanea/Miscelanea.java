@@ -45,6 +45,7 @@ public class Miscelanea {
         com.miscelanea.voz.VozRegistro.registrar(modBus);
         com.miscelanea.tortura.saw.SawRegistro.registrar(modBus);
         com.miscelanea.dream.DreamRegistro.registrar(modBus);
+        com.miscelanea.glitch.GlitchRegistro.registrar(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::creativeTabs);
@@ -61,7 +62,7 @@ public class Miscelanea {
     private static final java.util.Set<Item> EN_PESTANAS = new java.util.HashSet<>();
     private static int pestanasHechas;
     /** Objetos internos que no van en el creativo a propósito (iconos de proyectiles, piezas que solo se dibujan). */
-    private static final java.util.Set<String> SIN_PESTANA = java.util.Set.of("desatascador", "escudo_guardian");
+    private static final java.util.Set<String> SIN_PESTANA = java.util.Set.of("desatascador", "escudo_guardian", "muestra_glitch_lanzada");
 
     private void creativeTabs(final BuildCreativeModeTabContentsEvent event) {
         // ---- Feria y atracciones
@@ -249,6 +250,9 @@ public class Miscelanea {
             event.accept(ModItems.TORTILLA);
             event.accept(ModItems.GAZPACHO);
             event.accept(com.miscelanea.dream.DreamRegistro.ANILLO);
+            // el glitch (solo de creativo): frasco para recoger muestras y la muestra
+            event.accept(com.miscelanea.glitch.GlitchRegistro.FRASCO);
+            event.accept(com.miscelanea.glitch.GlitchRegistro.MUESTRA);
         }
         comprobarPestanas(event);
     }

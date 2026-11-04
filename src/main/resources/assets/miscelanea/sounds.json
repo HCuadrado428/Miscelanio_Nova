@@ -2360,5 +2360,67 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.anillo_salto"
+  },
+  "glitch_estatica": {
+    "sounds": [
+      {
+        "name": "miscelanea:glitch_estatica1",
+        "volume": 0.8
+      },
+      {
+        "name": "miscelanea:glitch_estatica2",
+        "volume": 0.8
+      },
+      {
+        "name": "miscelanea:glitch_estatica3",
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.glitch_estatica"
+  },
+  "glitch_siseo": {
+    "sounds": [
+      {
+        "name": "miscelanea:glitch_siseo",
+        "volume": 1.0
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.glitch_siseo"
+  },
+  "glitch_crujido": {
+    "sounds": [
+      {
+        "name": "miscelanea:glitch_crujido1",
+        "volume": 0.9
+      },
+      {
+        "name": "miscelanea:glitch_crujido2",
+        "volume": 0.9
+      },
+      {
+        "name": "miscelanea:glitch_crujido3",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.glitch_crujido"
+  },
+  "glitch_estallido": {
+    "sounds": [
+      {
+        "name": "miscelanea:glitch_estallido",
+        "volume": 1.0,
+        "attenuation_distance": 32
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.glitch_estallido"
+  },
+  "frasco_llenar": {
+    "sounds": [
+      {
+        "name": "miscelanea:frasco_llenar",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.frasco_llenar"
   }
 }
