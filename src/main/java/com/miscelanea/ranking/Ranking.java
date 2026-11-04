@@ -79,6 +79,12 @@ public class Ranking extends SavedData {
     /** Las tablas antiguas de las recreativas (10 mejores sin UUID) pasan al ranking, en su orden. */
     private void migrar(MinecraftServer s) {
         migrado = true;
+        // victorias de mesa que ya tenía apuntadas Victorias antes del ranking
+        for (Map.Entry<UUID, Map<String, Integer>> en : com.miscelanea.juegos.Victorias.todas().entrySet()) {
+            String n = com.miscelanea.juegos.Victorias.nombre(en.getKey());
+            for (Map.Entry<String, Integer> j : en.getValue().entrySet())
+                if (j.getValue() > 0) apuntar(MESA + j.getKey(), en.getKey(), n.isEmpty() ? "?" : n, j.getValue(), true);
+        }
         CompoundTag viejas = com.miscelanea.arcade.ArcadeRecords.viejas(s);
         long t = 1;
         for (String juego : viejas.getAllKeys()) {
@@ -140,7 +146,7 @@ public class Ranking extends SavedData {
         }
         if (cat.startsWith(MESA)) {
             String j = cat.substring(MESA.length());
-            return Component.translatable("ranking.miscelanea.cat.mesa", Component.translatableWithFallback("juego.miscelanea." + j, j));
+            return Component.translatable("ranking.miscelanea.cat.mesa", Component.translatableWithFallback("ranking.miscelanea.mesa." + j, j));
         }
         if (esGlobal(cat)) return Component.translatable("ranking.miscelanea." + cat.replace('/', '.'));
         return Component.translatableWithFallback("juego.miscelanea." + cat, cat);
@@ -161,6 +167,7 @@ public class Ranking extends SavedData {
         }
         for (String s : ArcadeJuegos.IDS) l.add(s);
         for (String s : ArcadeJuegos.FERIA) l.add(s);
+        for (String s : com.miscelanea.juegos.Victorias.JUEGOS) l.add(MESA + s);
         List<String> resto = new ArrayList<>();
         for (String k : cats.getAllKeys()) if (!l.contains(k) && !cats.getCompound(k).isEmpty()) resto.add(k);
         // también las canciones que hay aunque nadie las haya bailado aún
@@ -239,7 +246,7 @@ public class Ranking extends SavedData {
      * marca ha mejorado (1..), o 0 si no ha cambiado nada.
      */
     public int apuntar(String cat, UUID id, String nombre, int puntos, boolean suma) {
-        if (cat.isEmpty() || cat.length() > 200 || esGlobal(cat) || puntos <= 0) return 0;
+        if (cat.isEmpty() || cat.length() > 200 || esGlobal(cat) || puntos <= 0 || id == null) return 0;
         CompoundTag c = cats.getCompound(cat);
         String k = id.toString();
         CompoundTag e = c.getCompound(k);
@@ -297,7 +304,14 @@ public class Ranking extends SavedData {
     }
 
     public static void victoria(MinecraftServer s, UUID id, String nombre, String juego) {
-        if (juego == null || juego.isEmpty()) return;
+        if (s == null || juego == null || juego.isEmpty()) return;
+        // si el ranking aún no se ha estrenado, al pasar las victorias de Victorias ya entra esta (no se cuenta dos veces)
+        Ranking r = s.overworld().getDataStorage().computeIfAbsent(Ranking::cargar, Ranking::new, NOMBRE);
+        if (!r.migrado) {
+            r.migrar(s);
+            r.enviar(s, MESA + juego);
+            return;
+        }
         sumar(s, id, nombre, MESA + juego, 1);
     }
 

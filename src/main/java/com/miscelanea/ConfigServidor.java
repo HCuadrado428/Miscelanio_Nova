@@ -48,6 +48,9 @@ public final class ConfigServidor {
             EST_OSCURIDAD_LUZ, EST_ARRASTRAR_ENF_S, EST_FRAGMENTARSE_ENF_S, EST_ATRAER_ENF_S, EST_LANZAR_ENF_S, EST_ESTAMPAR_ENF_S;
     private static final ForgeConfigSpec.BooleanValue EST_LECHE, EST_CINEMATICA, EST_TOQUE, EST_PARPADEO, EST_PANTALLAS, EST_LUCES, EST_IMITAR,
             EST_CHARCOS, EST_OSCURIDAD, EST_ARRASTRAR, EST_FRAGMENTARSE, EST_ATRAER, EST_LANZAR, EST_ESTAMPAR;
+    // ---- juegos de mesa
+    private static final ForgeConfigSpec.IntValue MESAS_TURNO_S, MESAS_AUSENCIA_S;
+    private static final ForgeConfigSpec.BooleanValue MESAS_VICTORIAS_CPU;
     private static final ForgeConfigSpec.DoubleValue EST_VELOCIDAD, EST_GRAVEDAD, EST_CAIDA, EST_TOQUE_DANO, EST_PARPADEO_DIST, EST_OSCURIDAD_QUIETO_S,
             EST_ARRASTRAR_ALCANCE, EST_ARRASTRAR_DIST, EST_TENTACULOS_ALCANCE, EST_LANZAR_FUERZA, EST_ESTAMPAR_DANO, EST_ESTAMPAR_ALTURA;
 
@@ -55,8 +58,8 @@ public final class ConfigServidor {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
 
         b.comment("Daño de las armas del mod (en puntos de vida: 2 = un corazón).").push("armas");
-        ESCOPETA_PERDIGON = b.comment("Superescopeta: daño de cada perdigón a quemarropa (dispara muchos y caen con la distancia).")
-                .defineInRange("escopeta_perdigon", 1.75, 0.0, 1000.0);
+        ESCOPETA_PERDIGON = b.comment("Superescopeta: daño de cada perdigón a quemarropa (16 perdigones, caen con la distancia; 1 = hasta 16 a bocajarro cada 1,3 s, como dos espadazos de netherita, y gasta cartuchos).")
+                .defineInRange("escopeta_perdigon", 1.0, 0.0, 1000.0);
         COHETE = b.comment("Lanzacohetes: daño del impacto directo del cohete (la explosión hace menos según la distancia).")
                 .defineInRange("lanzacohetes_cohete", 14.0, 0.0, 1000.0);
         BFG_ESFERA = b.comment("BFG: daño de la esfera de plasma al estallar (la sobrecargada hace x1,7).")
@@ -65,16 +68,16 @@ public final class ConfigServidor {
                 .defineInRange("bfg_rayo", 7.0, 0.0, 1000.0);
         BALLESTA_MULT = b.comment("Ballesta de repetición: multiplicador del daño de los virotes (1 = como una flecha normal de ballesta).")
                 .defineInRange("ballesta_multiplicador", 1.0, 0.0, 100.0);
-        PORRA_DESCARGA = b.comment("Porra eléctrica: daño de cada descarga durante el agarre.")
-                .defineInRange("porra_descarga", 3.0, 0.0, 1000.0);
-        LANZATINTAS = b.comment("Lanzatintas: daño de cada disparo de tinta.")
-                .defineInRange("lanzatintas", 3.5, 0.0, 1000.0);
+        PORRA_DESCARGA = b.comment("Porra eléctrica: daño de cada descarga durante el agarre (atraviesa la armadura; una cada 1,5 s, unas 4 por agarre: 2,5 = media vida).")
+                .defineInRange("porra_descarga", 2.5, 0.0, 1000.0);
+        LANZATINTAS = b.comment("Lanzatintas: daño de cada chorro de tinta (salen 6,7 por segundo: 1,5 = unos 10 por segundo si aciertan todos, algo menos que una espada de netherita).")
+                .defineInRange("lanzatintas", 1.5, 0.0, 1000.0);
         RODILLO_GOLPE = b.comment("Rodillo de tinta: daño del golpe al pasarlo por encima de alguien.")
                 .defineInRange("rodillo_golpe", 8.0, 0.0, 1000.0);
         MAZO_MULT = b.comment("Mazo de Wemmbu: multiplicador de todo su daño (golpe, caída, sismo y lanzamiento).")
                 .defineInRange("mazo_multiplicador", 1.0, 0.0, 100.0);
-        HACHA_MULT = b.comment("Hacha Leviatán: multiplicador de todo su daño (combos, lanzamientos y rúnicos).")
-                .defineInRange("hacha_multiplicador", 1.0, 0.0, 100.0);
+        HACHA_MULT = b.comment("Hacha Leviatán: multiplicador de todo su daño (combos, lanzamientos y rúnicos). 0,75: el combo ligero hace 4,5-6,75 por golpe (como una espada de diamante-netherita), el lanzamiento 6 (como un arco) y los rúnicos 6-9.")
+                .defineInRange("hacha_multiplicador", 0.75, 0.0, 100.0);
         LLAVE_MULT = b.comment("Llave Espada: multiplicador del daño de sus combos.")
                 .defineInRange("llave_espada_multiplicador", 1.0, 0.0, 100.0);
         b.pop();
@@ -250,6 +253,14 @@ public final class ConfigServidor {
         EST_ESTAMPAR_ENF_S = b.comment("Segundos de espera de Estampar.").defineInRange("estampar_enfriamiento_segundos", 12, 0, 600);
         b.pop();
 
+        b.comment("Juegos de mesa (parchís, oca, imperio, cuatro en raya, hundir la flota, dominó, cartas, tablero, billar...).").push("juegos_de_mesa");
+        MESAS_TURNO_S = b.comment("Segundos que tiene cada jugador para hacer su jugada; al acabarse juega la CPU por él hasta que vuelva a tocar la mesa (0 = sin límite).")
+                .defineInRange("turno_segundos", 60, 0, 900);
+        MESAS_AUSENCIA_S = b.comment("Segundos que puede estar desconectado o lejos de la mesa el jugador de turno antes de que la CPU ocupe su sitio (hasta que vuelva).")
+                .defineInRange("ausencia_segundos", 20, 3, 600);
+        MESAS_VICTORIAS_CPU = b.comment("Contar en el marcador de victorias las partidas ganadas solo contra la CPU.").define("victorias_contra_cpu", true);
+        b.pop();
+
         SPEC = b.build();
     }
 
@@ -406,4 +417,9 @@ public final class ConfigServidor {
     public static float estaticaEstamparDano() { return (float) d(EST_ESTAMPAR_DANO); }
     public static double estaticaEstamparAltura() { return d(EST_ESTAMPAR_ALTURA); }
     public static int estaticaEstamparEnfriamiento() { return i(EST_ESTAMPAR_ENF_S) * 20; }
+
+    // ------------------------------------------------------------------ juegos de mesa (tiempos en ticks)
+    public static int mesasTurnoTicks() { return i(MESAS_TURNO_S) * 20; }
+    public static int mesasAusenciaTicks() { return Math.max(60, i(MESAS_AUSENCIA_S) * 20); }
+    public static boolean mesasVictoriasContraCpu() { return b(MESAS_VICTORIAS_CPU); }
 }

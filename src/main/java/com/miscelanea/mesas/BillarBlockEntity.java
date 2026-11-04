@@ -29,10 +29,12 @@ public class BillarBlockEntity extends BlockEntity implements MesaGrandeBlock.Me
     public final UUID[] jug = new UUID[2];
     public final String[] nombre = {"", ""};
     public boolean cpu;
-    int esperaCpu;
+    int esperaCpu, tiros;
     /** Ticks que lleva cada jugador lejos de la mesa o desconectado (a los 200 se le levanta). */
     private final int[] ausente = new int[2];
     final Random rnd = new Random();
+    /** Reloj de turno: si el humano de turno no tira a tiempo, la CPU tira por él (flojito). */
+    private final Turnos.Vigia vigia = new Turnos.Vigia();
     // cliente: posiciones del tic anterior para suavizar
     public final float[] antesX = new float[16], antesY = new float[16];
     public long ultimoFisica;
@@ -158,11 +160,19 @@ public class BillarBlockEntity extends BlockEntity implements MesaGrandeBlock.Me
     public void tiro(ServerPlayer sp, float angulo, float fuerza) {
         if (p.fase != BillarPartida.APUNTA || lado(sp.getUUID()) != p.turno || esCpu(p.turno)) return;
         if (!Float.isFinite(angulo) || !Float.isFinite(fuerza)) return;
+        vigia.despertar(sp.getUUID());
+        com.miscelanea.juegos.Gestos.hacer(sp, com.miscelanea.juegos.Gestos.TACO, blanca());
         tirar(angulo, fuerza);
+    }
+
+    /** La bola blanca en el mundo. */
+    public Vec3 blanca() {
+        return Vec3.atLowerCornerOf(worldPosition).add(MesaGeo.local(facing(), p.x[0], p.y[0], 12 / 16F + 0.05));
     }
 
     void tirar(float angulo, float fuerza) {
         if (!p.tirar(angulo, fuerza)) return;
+        tiros++;
         if (level != null) level.playSound(null, worldPosition, ModSounds.BI_TACO.get(), SoundSource.BLOCKS, 0.4F + fuerza * 0.6F, 0.9F + fuerza * 0.2F);
         cambio();
     }
@@ -180,7 +190,18 @@ public class BillarBlockEntity extends BlockEntity implements MesaGrandeBlock.Me
             if (be.ausente[i] > 200) be.soltar(i);
         }
         BillarPartida p = be.p;
-        if (p.fase == BillarPartida.MUEVE) {
+        int faseAntes = p.fase;
+        // reloj de turno del humano que tiene que tirar
+        UUID humano = p.fase == BillarPartida.APUNTA && !be.esCpu(p.turno) ? be.jug[p.turno] : null;
+        boolean porEl = humano != null && be.vigia.vigilar(l, pos, humano, be.nombre[p.turno], p.turno * 1000003L + be.tiros);
+        if (humano == null) be.vigia.vigilar(l, pos, null, "", 0);
+        if (porEl) {
+            if (++be.esperaCpu > 30) {
+                be.esperaCpu = 0;
+                float[] t = p.tiroCpu(be.rnd, 0.5F);
+                be.tirar(t[0], t[1]);
+            }
+        } else if (p.fase == BillarPartida.MUEVE) {
             boolean parado = p.tic();
             // sonidos de los choques de este tic
             if (p.choques > 0) l.playSound(null, pos, ModSounds.BI_CHOQUE.get(), SoundSource.BLOCKS, Math.min(1F, 0.2F + p.choqueFuerte * 0.25F), 0.9F + be.rnd.nextFloat() * 0.3F);
@@ -196,6 +217,11 @@ public class BillarBlockEntity extends BlockEntity implements MesaGrandeBlock.Me
                 float[] t = p.tiroCpu(be.rnd, 0.8F);
                 be.tirar(t[0], t[1]);
             }
+        }
+        if (faseAntes != BillarPartida.FIN && be.p.fase == BillarPartida.FIN && be.p.ganador >= 0) {
+            int g = be.p.ganador;
+            UUID rival = be.esCpu(1 - g) ? null : be.jug[1 - g];
+            com.miscelanea.juegos.Partidas.terminada(l, pos, com.miscelanea.juegos.Victorias.BILLAR, be.esCpu(g) ? null : be.jug[g], rival);
         }
     }
 

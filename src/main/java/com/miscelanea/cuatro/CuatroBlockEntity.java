@@ -44,8 +44,10 @@ public class CuatroBlockEntity extends BlockEntity {
     public int resultado;
     private long cpuEn;
     private CompletableFuture<Integer> pensando;
-    private int jugadasAlPensar;
+    private int jugadasAlPensar, ladoAlPensar;
     private final Random rnd = new Random();
+    /** Reloj de turno: si el humano de turno no juega (o se va), la CPU juega por él. */
+    private final com.miscelanea.mesas.Turnos.Vigia vigia = new com.miscelanea.mesas.Turnos.Vigia();
 
     public CuatroBlockEntity(BlockPos p, BlockState s) {
         super(ModBlocks.CUATRO_BE.get(), p, s);
@@ -65,7 +67,40 @@ public class CuatroBlockEntity extends BlockEntity {
         resultado = 0;
         cpuEn = 0;
         pensando = null;
+        vigia.limpiar();
         cambiado();
+    }
+
+    /** Revancha con los mismos jugadores; en dos jugadores se cambian los colores (empieza el otro). */
+    private void revancha(ServerPlayer quien) {
+        UUID r = rojo, a = amarillo;
+        String nr = nombreR, na = nombreA;
+        reiniciar(modo);
+        if (contraCpu()) {
+            rojo = r;
+            nombreR = nr;
+            nombreA = "CPU";
+        } else {
+            rojo = a;
+            nombreR = na;
+            amarillo = r;
+            nombreA = nr;
+            if (rojo == null) {
+                rojo = amarillo;
+                nombreR = nombreA;
+                amarillo = null;
+                nombreA = "";
+            }
+        }
+        com.miscelanea.mesas.Turnos.avisar(level, worldPosition, "msg.miscelanea.mesa.revancha", quien.getGameProfile().getName());
+        cambiado();
+    }
+
+    /** Jugador humano al que le toca (null si es la CPU o el sitio está libre). */
+    private UUID deTurno() {
+        if (resultado != 0 || rojo == null) return null;
+        if (j.turno == 1) return rojo;
+        return contraCpu() ? null : amarillo;
     }
 
     public void cambiado() {
@@ -86,6 +121,10 @@ public class CuatroBlockEntity extends BlockEntity {
 
     public void clic(ServerPlayer p, int col) {
         if (resultado != 0) {
+            if (p.getUUID().equals(rojo) || p.getUUID().equals(amarillo)) {
+                revancha(p);
+                return;
+            }
             if (!puedeReiniciar(p)) {
                 p.displayClientMessage(Component.translatable("msg.miscelanea.tablero.ocupado").withStyle(ChatFormatting.GRAY), true);
                 return;
@@ -96,6 +135,7 @@ public class CuatroBlockEntity extends BlockEntity {
             return;
         }
         UUID u = p.getUUID();
+        vigia.despertar(u);
         if (rojo == null) {
             rojo = u;
             nombreR = p.getGameProfile().getName();
@@ -115,6 +155,7 @@ public class CuatroBlockEntity extends BlockEntity {
             p.displayClientMessage(Component.translatable("msg.miscelanea.cuatro.llena").withStyle(ChatFormatting.GRAY), true);
             return;
         }
+        com.miscelanea.juegos.Gestos.hacer(p, com.miscelanea.juegos.Gestos.ALCANZAR, mundo(X0 + CELDA * (col + 0.5), Y0 + CELDA * 6.3));
         soltar(col);
     }
 
@@ -136,6 +177,11 @@ public class CuatroBlockEntity extends BlockEntity {
                 o.displayClientMessage(m.copy().withStyle(ChatFormatting.GOLD), false);
             Vec3 c = Vec3.atCenterOf(worldPosition);
             ((ServerLevel) level).sendParticles(ParticleTypes.TOTEM_OF_UNDYING, c.x, c.y + 0.4, c.z, 40, 0.4, 0.4, 0.4, 0.3);
+            if (resultado != 3) {
+                UUID am = contraCpu() ? null : amarillo;
+                com.miscelanea.juegos.Partidas.terminada(level, worldPosition, com.miscelanea.juegos.Victorias.CUATRO,
+                        resultado == 1 ? rojo : am, resultado == 1 ? am : rojo);
+            }
         } else if (contraCpu() && j.turno == 2) cpuEn = level.getGameTime() + 14;
         cambiado();
     }
@@ -150,7 +196,7 @@ public class CuatroBlockEntity extends BlockEntity {
                 c = -1;
             }
             be.pensando = null;
-            if (be.resultado != 0 || be.j.turno != 2 || be.j.jugadas != be.jugadasAlPensar) return;
+            if (be.resultado != 0 || be.j.turno != be.ladoAlPensar || be.j.jugadas != be.jugadasAlPensar) return;
             if (!be.j.puede(c)) for (int k = 0; k < Cuatro.COLS; k++) if (be.j.puede(k)) {
                 c = k;
                 break;
@@ -161,8 +207,15 @@ public class CuatroBlockEntity extends BlockEntity {
         // cpuEn y pensando no se guardan: si tras recargar le toca a la CPU, se reprograma
         if (be.cpuEn == 0 && be.contraCpu() && be.j.turno == 2 && be.resultado == 0 && be.rojo != null)
             be.cpuEn = l.getGameTime() + 14;
-        if (be.cpuEn > 0 && l.getGameTime() >= be.cpuEn && be.resultado == 0 && be.j.turno == 2 && be.contraCpu()) {
+        // reloj de turno: si el humano de turno no juega a tiempo (o se ha ido), la CPU suelta por él
+        UUID humano = be.deTurno();
+        boolean porEl = humano != null && be.vigia.vigilar(l, pos, humano, be.j.turno == 1 ? be.nombreR : be.nombreA, be.j.jugadas);
+        if (humano == null) be.vigia.vigilar(l, pos, null, "", 0);
+        if (porEl && be.cpuEn == 0) be.cpuEn = l.getGameTime() + 14;
+        else if (!porEl && !(be.j.turno == 2 && be.contraCpu())) be.cpuEn = 0;
+        if (be.cpuEn > 0 && l.getGameTime() >= be.cpuEn && be.resultado == 0 && ((be.j.turno == 2 && be.contraCpu()) || porEl)) {
             be.cpuEn = 0;
+            be.ladoAlPensar = be.j.turno;
             Cuatro copia = new Cuatro();
             copia.cargar(be.j.guardar());
             long semilla = be.rnd.nextLong();

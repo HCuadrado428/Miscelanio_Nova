@@ -89,7 +89,10 @@ public class CuatroRenderer implements BlockEntityRenderer<CuatroBlockEntity> {
             pj.jugador(be.contraCpu() ? "CPU" : be.nombreA.isEmpty() ? "?" : be.nombreA, I18n.get("panel.miscelanea.cuatro.amarillas"), 0xF2C420,
                     jugando && be.j.turno != 1);
         }
-        if (be.resultado != 0) pj.control(PanelJuego.Tecla.USAR, "panel.miscelanea.ctrl.otra");
+        if (be.resultado != 0) {
+            java.util.UUID yo = net.minecraft.client.Minecraft.getInstance().player.getUUID();
+            pj.control(PanelJuego.Tecla.USAR, yo.equals(be.rojo) || yo.equals(be.amarillo) ? "panel.miscelanea.ctrl.revancha" : "panel.miscelanea.ctrl.otra");
+        }
         else if (CuatroCliente.esMiTurno(be)) pj.control(PanelJuego.Tecla.USAR, "panel.miscelanea.ctrl.soltar_ficha");
         pj.control(PanelJuego.Tecla.AGACHADO_USAR, "panel.miscelanea.ctrl.cambiar_modo");
     }

@@ -112,11 +112,12 @@ public class DominoBlockEntity extends BlockEntity implements PrivadoPacket.Rece
                     cambiado();
                     return;
                 }
-                jugar(f, iz ? -1 : 1, ahora);
+                if (jugar(f, iz ? -1 : 1, ahora)) com.miscelanea.juegos.Gestos.hacer(pl, com.miscelanea.juegos.Gestos.CARTA, mundo(tx, ty));
                 return;
             }
             if (Math.hypot(tx - DominoGeo.POZO_X, ty - DominoGeo.POZO_Y) < 34 && p.robar()) {
                 sonar(SoundEvents.BOOK_PAGE_TURN, 0.8F, 1.4F);
+                com.miscelanea.juegos.Gestos.hacer(pl, com.miscelanea.juegos.Gestos.ALCANZAR, mundo(tx, ty));
                 cambiado();
                 return;
             }
@@ -124,7 +125,7 @@ public class DominoBlockEntity extends BlockEntity implements PrivadoPacket.Rece
                 // clic fácil: la ficha elegida va al extremo más cercano al clic
                 DominoGeo.Cadena c = DominoGeo.cadena(p);
                 double di = Math.hypot(tx - c.hueco[0][0], ty - c.hueco[0][1]), dd = Math.hypot(tx - c.hueco[1][0], ty - c.hueco[1][1]);
-                jugar(p.sel, di <= dd ? -1 : 1, ahora);
+                if (jugar(p.sel, di <= dd ? -1 : 1, ahora)) com.miscelanea.juegos.Gestos.hacer(pl, com.miscelanea.juegos.Gestos.CARTA, mundo(tx, ty));
             }
             return;
         }
@@ -133,6 +134,15 @@ public class DominoBlockEntity extends BlockEntity implements PrivadoPacket.Rece
             case DominoBotones.UNIRSE -> hecho = p.unir(pl.getUUID(), pl.getGameProfile().getName());
             case DominoBotones.CPU -> hecho = yo >= 0 && p.anadirCpu();
             case DominoBotones.EMPEZAR -> hecho = yo >= 0 && p.empezar(rnd, ahora);
+            case DominoBotones.REVANCHA -> {
+                if (yo < 0) hecho = false;
+                else {
+                    p = p.revancha(rnd, ahora);
+                    vigia.limpiar();
+                    votos.limpiar();
+                    Turnos.avisar(level, worldPosition, "msg.miscelanea.mesa.revancha", pl.getGameProfile().getName());
+                }
+            }
             case DominoBotones.NUEVA -> {
                 p = new DominoPartida();
                 vigia.limpiar();
@@ -149,17 +159,22 @@ public class DominoBlockEntity extends BlockEntity implements PrivadoPacket.Rece
             }
             default -> hecho = false;
         }
-        if (hecho) sonar(SoundEvents.WOODEN_BUTTON_CLICK_ON, 0.8F, 1.2F);
+        if (hecho) {
+            sonar(SoundEvents.WOODEN_BUTTON_CLICK_ON, 0.8F, 1.2F);
+            com.miscelanea.juegos.Gestos.hacer(pl, com.miscelanea.juegos.Gestos.ALCANZAR, mundo(tx, ty));
+        }
         cambiado();
     }
 
-    private void jugar(int f, int lado, long ahora) {
+    private boolean jugar(int f, int lado, long ahora) {
         int fase = p.fase;
         if (p.jugar(f, lado, ahora)) {
             sonar(SoundEvents.STONE_PLACE, 0.8F, 1.7F);
             if (p.fase == DominoPartida.FIN && fase != DominoPartida.FIN) fin();
             cambiado();
+            return true;
         }
+        return false;
     }
 
     private void fin() {
@@ -173,6 +188,8 @@ public class DominoBlockEntity extends BlockEntity implements PrivadoPacket.Rece
         }
         for (ServerPlayer o : ((ServerLevel) level).getEntitiesOfClass(ServerPlayer.class, new AABB(worldPosition).inflate(12)))
             o.displayClientMessage(Component.translatable("msg.miscelanea.domino.gana", p.js.get(p.ganador).nombre).withStyle(ChatFormatting.GOLD), false);
+        com.miscelanea.juegos.Partidas.terminada(level, worldPosition, com.miscelanea.juegos.Victorias.DOMINO, p.js.get(p.ganador).uuid,
+                p.humanos().toArray(new java.util.UUID[0]));
     }
 
     public static void tickServidor(Level l, BlockPos pos, BlockState s, DominoBlockEntity be) {

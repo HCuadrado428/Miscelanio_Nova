@@ -116,6 +116,11 @@ public class CartasPacket {
         if (p.distanceToSqr(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5) > 64) return;
         if (!(p.level().getBlockEntity(pos) instanceof MesaCartasBlockEntity be)) return;
         be.despertar(p);
+        // echar o robar carta en su turno: gesto de echar la carta sobre el tapete
+        if ((tipo == JUGAR || tipo == ROBAR || tipo == DESCARTAR || tipo == CERRAR) && be.estado == MesaCartasBlockEntity.JUGANDO
+                && be.asiento(p) >= 0 && be.asiento(p) == be.turno)
+            com.miscelanea.juegos.Gestos.hacer(p, tipo == ROBAR ? com.miscelanea.juegos.Gestos.ALCANZAR : com.miscelanea.juegos.Gestos.CARTA,
+                    net.minecraft.world.phys.Vec3.atBottomCenterOf(pos).add(0, 0.9, 0));
         // JUGAR, DESCARTAR y CERRAR llevan la carta (0..39), no su posición en la mano
         switch (tipo) {
             case JUGAR -> be.jugar(p, be.indiceCarta(be.asiento(p), arg));

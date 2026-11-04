@@ -1,0 +1,26 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "QQQ",
+  "RTR",
+  "I I"
+ ],
+ "key": {
+  "Q": {
+   "item": "minecraft:quartz_slab"
+  },
+  "R": {
+   "item": "minecraft:redstone"
+  },
+  "T": {
+   "item": "minecraft:piston"
+  },
+  "I": {
+   "item": "minecraft:iron_ingot"
+  }
+ },
+ "result": {
+  "item": "miscelanea:air_hockey"
+ }
+}

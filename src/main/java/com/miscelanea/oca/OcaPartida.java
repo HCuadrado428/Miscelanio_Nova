@@ -110,6 +110,34 @@ public class OcaPartida {
         return true;
     }
 
+    /** Deja la partida mientras se prepara (si no queda ningún humano, se van también las CPU). */
+    public boolean salir(UUID u) {
+        if (fase != LOBBY) return false;
+        Jugador fuera = null;
+        for (Jugador j : js) if (u.equals(j.uuid)) fuera = j;
+        if (fuera == null) return false;
+        js.remove(fuera);
+        anotar("sale|" + fuera.nombre);
+        if (js.stream().allMatch(Jugador::cpu)) js.clear();
+        turno = 0;
+        return true;
+    }
+
+    /** Otra partida con los mismos jugadores (revancha). */
+    public OcaPartida revancha(Random r) {
+        OcaPartida n = new OcaPartida();
+        n.velocidad = velocidad;
+        for (Jugador j : js) {
+            Jugador c = new Jugador();
+            c.uuid = j.uuid;
+            c.nombre = j.nombre;
+            c.color = j.color;
+            n.js.add(c);
+        }
+        n.empezar(r);
+        return n;
+    }
+
     public boolean anadirCpu() {
         if (fase != LOBBY || js.size() >= 4) return false;
         Jugador j = new Jugador();

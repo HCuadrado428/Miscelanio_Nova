@@ -1,0 +1,29 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "III",
+  "WGR",
+  "P P"
+ ],
+ "key": {
+  "I": {
+   "item": "minecraft:iron_ingot"
+  },
+  "W": {
+   "item": "minecraft:white_dye"
+  },
+  "G": {
+   "item": "minecraft:green_wool"
+  },
+  "R": {
+   "item": "minecraft:red_dye"
+  },
+  "P": {
+   "tag": "minecraft:planks"
+  }
+ },
+ "result": {
+  "item": "miscelanea:futbolin"
+ }
+}

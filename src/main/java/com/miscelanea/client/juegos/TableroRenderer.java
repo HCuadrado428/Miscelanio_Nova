@@ -167,7 +167,10 @@ public class TableroRenderer implements BlockEntityRenderer<TableroBlockEntity> 
         }
         if (jaque) pj.linea(I18n.get("tablero.miscelanea.jaque"), 0xFFFF6060);
         if (mio) pj.detalle(I18n.get(rev ? "tablero.miscelanea.pista_reversi" : "tablero.miscelanea.pista"), PanelJuego.CIAN);
-        if (be.resultado != 0) pj.control(PanelJuego.Tecla.USAR, "panel.miscelanea.ctrl.otra");
+        if (be.resultado != 0) {
+            java.util.UUID yo = net.minecraft.client.Minecraft.getInstance().player.getUUID();
+            pj.control(PanelJuego.Tecla.USAR, yo.equals(be.blancas) || yo.equals(be.negras) ? "panel.miscelanea.ctrl.revancha" : "panel.miscelanea.ctrl.otra");
+        }
         else pj.control(PanelJuego.Tecla.USAR, rev ? "panel.miscelanea.ctrl.colocar" : "panel.miscelanea.ctrl.mover_pieza");
         pj.control(PanelJuego.Tecla.AGACHADO_USAR, "panel.miscelanea.ctrl.cambiar_juego");
     }

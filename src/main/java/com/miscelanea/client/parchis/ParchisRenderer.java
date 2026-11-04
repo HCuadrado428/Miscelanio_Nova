@@ -248,6 +248,7 @@ public class ParchisRenderer implements BlockEntityRenderer<ParchisBlockEntity> 
         }
         if (mio && (p.fase == ParchisPartida.TIRAR || p.fase == ParchisPartida.ELEGIR))
             pj.detalle(I18n.get("parchis.miscelanea.pista." + (p.fase == ParchisPartida.TIRAR ? "tirar" : "elegir")), PanelJuego.CIAN);
+        if (p.fase == ParchisPartida.LOBBY) pj.detalle(I18n.get("parchis.miscelanea.pista.color"), PanelJuego.CIAN);
         if (verQue != null) pj.detalle(verQue, verCol);
         if (!p.log.isEmpty()) pj.nota(formatear(p.log.get(p.log.size() - 1)));
         ParchisBotones.Boton bot = miro ? ParchisBotones.en(p, ParchisCliente.tx, ParchisCliente.ty) : null;

@@ -54,6 +54,16 @@ public class ParchisBlockEntity extends BlockEntity {
         if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
     }
 
+    /** Color cuya casa (esquina con sus cuatro fichas) está en ese punto del tablero, o -1. */
+    private static int colorEn(double tx, double ty) {
+        for (int c = 0; c < 4; c++) {
+            double[] a = ParchisGeo.casa(c, 0), b = ParchisGeo.casa(c, 3);
+            double cx = (a[0] + b[0]) / 2, cy = (a[1] + b[1]) / 2;
+            if (Math.abs(tx - cx) < 72 && Math.abs(ty - cy) < 72) return c;
+        }
+        return -1;
+    }
+
     private int indice(ServerPlayer pl) {
         for (int i = 0; i < p.js.size(); i++) if (pl.getUUID().equals(p.js.get(i).uuid)) return i;
         return -1;
@@ -69,17 +79,31 @@ public class ParchisBlockEntity extends BlockEntity {
         boolean miTurno = yo >= 0 && yo == p.turno && p.fase != ParchisPartida.LOBBY && p.fase != ParchisPartida.FIN;
         if (yo >= 0) vigia.despertar(pl.getUUID());
         ParchisBotones.Boton b = ParchisBotones.en(p, tx, ty);
+        Vec3 punto = mundo(tx, ty);
         if (b == null) {
+            if (p.fase == ParchisPartida.LOBBY) {
+                // clic en la casa de un color: sentarse en ese color
+                int col = colorEn(tx, ty);
+                if (col >= 0 && p.unirColor(pl.getUUID(), pl.getGameProfile().getName(), col)) {
+                    sonar(SoundEvents.WOODEN_BUTTON_CLICK_ON, 0.8F, 1.2F);
+                    com.miscelanea.juegos.Gestos.hacer(pl, com.miscelanea.juegos.Gestos.ALCANZAR, punto);
+                    cambiado();
+                } else if (col >= 0 && p.deColor(col) != null && !pl.getUUID().equals(p.deColor(col).uuid))
+                    pl.displayClientMessage(Component.translatable("msg.miscelanea.mesa.color_ocupado", p.deColor(col).nombre).withStyle(ChatFormatting.GRAY), true);
+                return;
+            }
             if (miTurno && p.fase == ParchisPartida.TIRAR) {
                 // clic fácil: cualquier sitio del tablero tira el dado
                 p.tirar(rnd, ahora);
                 sonar(SoundEvents.BONE_BLOCK_HIT, 0.9F, 1.5F);
+                com.miscelanea.juegos.Gestos.hacer(pl, com.miscelanea.juegos.Gestos.DADOS, punto);
                 cambiado();
             } else if (miTurno && p.fase == ParchisPartida.ELEGIR && ahora - p.tDado >= Math.min(12, p.dadoTicks())) {
                 int c = p.colorActual();
                 int f = ParchisGeo.elegir(p, c, p.opciones(c, p.valor, p.esBono), tx, ty);
                 if (f >= 0 && p.mover(f, ahora)) {
                     sonar(SoundEvents.WOOD_HIT, 0.7F, 1.6F);
+                    com.miscelanea.juegos.Gestos.hacer(pl, com.miscelanea.juegos.Gestos.ALCANZAR, punto);
                     cambiado();
                 } else if (ParchisGeo.fichaEn(p, c, tx, ty) >= 0)
                     pl.displayClientMessage(Component.translatable("msg.miscelanea.parchis.no_mueve").withStyle(ChatFormatting.GRAY), true);
@@ -92,6 +116,15 @@ public class ParchisBlockEntity extends BlockEntity {
             case ParchisBotones.SALIR -> hecho = p.salir(pl.getUUID());
             case ParchisBotones.CPU -> hecho = yo >= 0 && p.anadirCpu();
             case ParchisBotones.EMPEZAR -> hecho = yo >= 0 && p.empezar(rnd);
+            case ParchisBotones.REVANCHA -> {
+                if (yo < 0) hecho = false;
+                else {
+                    p = p.revancha(rnd);
+                    vigia.limpiar();
+                    votos.limpiar();
+                    com.miscelanea.mesas.Turnos.avisar(level, worldPosition, "msg.miscelanea.mesa.revancha", pl.getGameProfile().getName());
+                }
+            }
             case ParchisBotones.NUEVA -> {
                 int v = p.velocidad;
                 p = new ParchisPartida();
@@ -120,10 +153,15 @@ public class ParchisBlockEntity extends BlockEntity {
                 }
                 p.tirar(rnd, ahora);
                 sonar(SoundEvents.BONE_BLOCK_HIT, 0.9F, 1.5F);
+                com.miscelanea.juegos.Gestos.hacer(pl, com.miscelanea.juegos.Gestos.DADOS, punto);
+                hecho = false;
             }
             default -> hecho = false;
         }
-        if (hecho) sonar(SoundEvents.WOODEN_BUTTON_CLICK_ON, 0.8F, 1.2F);
+        if (hecho) {
+            sonar(SoundEvents.WOODEN_BUTTON_CLICK_ON, 0.8F, 1.2F);
+            com.miscelanea.juegos.Gestos.hacer(pl, com.miscelanea.juegos.Gestos.ALCANZAR, punto);
+        }
         cambiado();
     }
 
@@ -161,6 +199,9 @@ public class ParchisBlockEntity extends BlockEntity {
                 String n = p.deColor(p.ganador) != null ? p.deColor(p.ganador).nombre : "?";
                 for (ServerPlayer o : ((ServerLevel) l).getEntitiesOfClass(ServerPlayer.class, new AABB(pos).inflate(12)))
                     o.displayClientMessage(Component.translatable("msg.miscelanea.parchis.gana", n).withStyle(ChatFormatting.GOLD), false);
+                ParchisPartida.Jugador g = p.deColor(p.ganador);
+                com.miscelanea.juegos.Partidas.terminada(l, pos, com.miscelanea.juegos.Victorias.PARCHIS, g == null ? null : g.uuid,
+                        p.humanos().toArray(new java.util.UUID[0]));
             }
             be.cambiado();
         }

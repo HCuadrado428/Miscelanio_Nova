@@ -29,7 +29,7 @@ public class ImperioBlockEntity extends BlockEntity {
     private final Random rnd = new Random();
     private int esperaCpu;
     /** Juega por quien se va de la mesa o no juega; votos para terminar antes de tiempo (no se guardan). */
-    private final Turnos.Vigia vigia = new Turnos.Vigia();
+    private final Turnos.Vigia vigia = new Turnos.Vigia(2F);
     private final Turnos.Votacion votos = new Turnos.Votacion();
 
     public ImperioBlockEntity(BlockPos pos, BlockState s) {
@@ -73,6 +73,7 @@ public class ImperioBlockEntity extends BlockEntity {
         ImperioBotones.Boton b = ImperioBotones.en(p, tx, ty);
         int c = ImperioGeo.casillaEn(tx, ty);
         boolean miTurno = yo >= 0 && yo == p.turno && p.fase != Partida.LOBBY;
+        Vec3 punto = mundo(tx, ty);
         if (b == null) {
             if (c >= 0 && miTurno && Casillas.comprable(c) && p.fase != Partida.TIRAR) {
                 p.sel = p.sel == c ? -1 : c;
@@ -82,6 +83,7 @@ public class ImperioBlockEntity extends BlockEntity {
                 // clic fácil: cualquier sitio del tablero tira los dados
                 p.tirar(rnd, ahora);
                 sonar(SoundEvents.BONE_BLOCK_HIT, 1.4F);
+                com.miscelanea.juegos.Gestos.hacer(pl, com.miscelanea.juegos.Gestos.DADOS, punto);
                 cambiado();
             } else if (c >= 0 && miTurno && Casillas.comprable(c)) {
                 p.sel = p.sel == c ? -1 : c;
@@ -100,6 +102,15 @@ public class ImperioBlockEntity extends BlockEntity {
                 else hecho = false;
             }
             case ImperioBotones.EMPEZAR -> hecho = yo >= 0 && p.empezar(rnd);
+            case ImperioBotones.REVANCHA -> {
+                if (yo < 0) hecho = false;
+                else {
+                    p = p.revancha(rnd);
+                    vigia.limpiar();
+                    votos.limpiar();
+                    Turnos.avisar(level, worldPosition, "msg.miscelanea.mesa.revancha", pl.getGameProfile().getName());
+                }
+            }
             case ImperioBotones.NUEVA -> {
                 Partida n = new Partida();
                 n.limite = p.limite;
@@ -125,6 +136,8 @@ public class ImperioBlockEntity extends BlockEntity {
                     case ImperioBotones.TIRAR -> {
                         p.tirar(rnd, ahora);
                         sonar(SoundEvents.BONE_BLOCK_HIT, 1.4F);
+                        com.miscelanea.juegos.Gestos.hacer(pl, com.miscelanea.juegos.Gestos.DADOS, punto);
+                        hecho = false;
                     }
                     case ImperioBotones.PAGAR_CARCEL -> p.pagarCarcel();
                     case ImperioBotones.CARTA_CARCEL -> p.usarCarta();
@@ -146,7 +159,10 @@ public class ImperioBlockEntity extends BlockEntity {
                 }
             }
         }
-        if (hecho) sonar(SoundEvents.WOODEN_BUTTON_CLICK_ON, 1.2F);
+        if (hecho) {
+            sonar(SoundEvents.WOODEN_BUTTON_CLICK_ON, 1.2F);
+            com.miscelanea.juegos.Gestos.hacer(pl, com.miscelanea.juegos.Gestos.ALCANZAR, punto);
+        }
         cambiado();
     }
 
@@ -175,6 +191,9 @@ public class ImperioBlockEntity extends BlockEntity {
                 be.sonar(SoundEvents.PLAYER_LEVELUP, 1.0F);
                 for (ServerPlayer o : ((ServerLevel) l).getEntitiesOfClass(ServerPlayer.class, new AABB(pos).inflate(12)))
                     o.displayClientMessage(Component.translatable("msg.miscelanea.imperio.fin").withStyle(ChatFormatting.GOLD), false);
+                int g = p.ganador();
+                com.miscelanea.juegos.Partidas.terminada(l, pos, com.miscelanea.juegos.Victorias.IMPERIO, g >= 0 ? p.js.get(g).uuid : null,
+                        p.humanos().toArray(new java.util.UUID[0]));
             }
             be.cambiado();
         }

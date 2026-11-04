@@ -46,9 +46,9 @@ public class FogonRenderer implements BlockEntityRenderer<FogonBlockEntity> {
             ps.translate(-0.5, -0.5, -0.5);
             FeriaPiezas.modelo(ps, vc, FeriaPiezas.rl("trozo"), (col >> 16 & 255) / 255F, (col >> 8 & 255) / 255F, (col & 255) / 255F, luz);
             ps.popPose();
-            if ("paella".equals(be.receta) || "gazpacho".equals(be.receta))
+            if (be.receta.startsWith("paella") || "gazpacho".equals(be.receta))
                 for (int i = 0; i < 14; i++) {
-                    int cc = "paella".equals(be.receta) ? (i % 3 == 0 ? 0xE0302A : i % 3 == 1 ? 0xF2B0A0 : 0x5AA048) : 0xF4F0E0;
+                    int cc = be.receta.startsWith("paella") ? (i % 3 == 0 ? 0xE0302A : i % 3 == 1 ? 0xF2B0A0 : 0x5AA048) : 0xF4F0E0;
                     trozo(ps, vc, 0.5 + (azar(i, 1) - 0.5) * 0.5, y0 + 0.035, 0.5 + (azar(i, 2) - 0.5) * 0.5, 0.05F, cc, azar(i, 3) * 90, luz);
                 }
             if ("churros".equals(be.receta) || "chocolate".equals(be.receta))
