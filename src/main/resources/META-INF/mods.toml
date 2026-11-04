@@ -47,11 +47,12 @@ description='''${mod_description}'''
 
 # Opcional (recomendado en el cliente): bendy-lib de KosmX. Con él, playerAnimator dobla codos y rodillas y las
 # animaciones del mod los usan (arrodillarse sin hundirse, sentado con la espinilla colgando...). Sin él, todo igual
-# que antes, con brazos y piernas rectos. En el servidor no hace falta.
+# que antes, con brazos y piernas rectos. En el servidor no hace falta. Para 1.20.1: bendy-lib-forge 4.0.0
+# (maven.kosmx.dev: io.github.kosmx.bendy-lib:bendy-lib-forge:4.0.0; la 4.1 es de 1.20.4).
 [[dependencies.${mod_id}]]
     modId="bendylib"
     mandatory=false
-    versionRange="[4.0.0,)"
+    versionRange="[4.0.0,4.1)"
     ordering="NONE"
     side="CLIENT"
 

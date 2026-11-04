@@ -22,7 +22,6 @@ jobs:
         run: |
           chmod +x gradlew
           curl -s https://maven.maxhenkel.de/repository/public/de/maxhenkel/voicechat/voicechat-api/maven-metadata.xml | grep -o '<version>[^<]*</version>' | tail -6 || true
-          curl -s https://maven.kosmx.dev/io/github/kosmx/bendy-lib/bendy-lib-forge/maven-metadata.xml | grep -o '<version>[^<]*</version>' | tail -6 || true
           set -o pipefail
           ./gradlew build --no-daemon --stacktrace 2>&1 | tee build.log
       - name: Guardar registro de errores
