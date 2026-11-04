@@ -29,7 +29,7 @@ public final class VozPorEfecto {
 
     // ids de voz que entiende el cliente (Voces)
     public static final String HELIO = "helio", TARTAMUDEO = "tartamudeo", VENTILADOR = "ventilador", LENGUA_TRAPO = "lengua_trapo",
-            GRAVE = "grave", AGUDO = "agudo", SUSURRO = "susurro", FANTASMA = "fantasma", GUTURAL = "gutural", AMORTIGUADO = "amortiguado";
+            GRAVE = "grave", AGUDO = "agudo", SUSURRO = "susurro", FANTASMA = "fantasma", GUTURAL = "gutural", AMORTIGUADO = "amortiguado", ESTATICA = "estatica";
 
     /** Entradas por defecto (se cargan al registrar; se pueden sobrescribir después). */
     static void porDefecto() {
@@ -44,6 +44,8 @@ public final class VozPorEfecto {
         delMod("fantasma", FANTASMA);
         delMod("sed_sangre", GUTURAL);
         delMod("niebla", AMORTIGUADO);
+        // el hombre de estática: radio rota
+        delMod("estatica", ESTATICA);
     }
 
     private static void delMod(String efectoDelMod, String voz) {

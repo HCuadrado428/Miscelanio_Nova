@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "miscelanea:item/pocion_estatica_liquido",
+    "layer1": "minecraft:item/potion"
+  }
+}

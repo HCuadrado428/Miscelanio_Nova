@@ -35,6 +35,17 @@ public abstract class CameraMixin {
         double[] r = com.miscelanea.client.tortura.EjecucionCliente.colocarCamara(level, entity, partial);
         // cinemáticas de muerte de los aparatos (ver MuertesCliente)
         if (r == null) r = com.miscelanea.client.tortura.muertes.MuertesCliente.colocarCamara(level, entity, partial);
+        // transformación en estática (ver EstaticaCine)
+        if (r == null) r = com.miscelanea.client.estatica.EstaticaCine.colocarCamara(level, entity, partial);
+        if (r == null) return;
+        setRotation((float) r[3], (float) r[4]);
+        setPosition(r[0], r[1], r[2]);
+    }
+
+    /** Dentro de las pantallas (estática): la cámara mira desde la pantalla de salida elegida (ver PantallaCliente). */
+    @Inject(method = "setup", at = @At("TAIL"))
+    private void miscelanea$camaraPantalla(BlockGetter level, Entity entity, boolean detached, boolean reverse, float partial, CallbackInfo ci) {
+        double[] r = com.miscelanea.client.estatica.PantallaCliente.colocarCamara(entity, partial);
         if (r == null) return;
         setRotation((float) r[3], (float) r[4]);
         setPosition(r[0], r[1], r[2]);

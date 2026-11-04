@@ -42,6 +42,14 @@ public final class ConfigServidor {
     private static final ForgeConfigSpec.DoubleValue RUEDA_DANO;
     // ---- pista de baile
     private static final ForgeConfigSpec.IntValue BAILE_RADIO;
+    // ---- estática (poción del hombre de estática)
+    private static final ForgeConfigSpec.IntValue EST_DURACION_S, EST_TOQUE_LENTITUD_S, EST_TOQUE_CORROMPER_S, EST_PARPADEO_ENF_S, EST_PANTALLAS_RADIO,
+            EST_PANTALLAS_ENF_S, EST_PANTALLAS_MAX_S, EST_LUCES_RADIO, EST_LUCES_VUELTA_S, EST_IMITAR_ENF_S, EST_CHARCOS_MAX, EST_CHARCOS_VIDA_S,
+            EST_OSCURIDAD_LUZ, EST_ARRASTRAR_ENF_S, EST_FRAGMENTARSE_ENF_S, EST_ATRAER_ENF_S, EST_LANZAR_ENF_S, EST_ESTAMPAR_ENF_S;
+    private static final ForgeConfigSpec.BooleanValue EST_LECHE, EST_CINEMATICA, EST_TOQUE, EST_PARPADEO, EST_PANTALLAS, EST_LUCES, EST_IMITAR,
+            EST_CHARCOS, EST_OSCURIDAD, EST_ARRASTRAR, EST_FRAGMENTARSE, EST_ATRAER, EST_LANZAR, EST_ESTAMPAR;
+    private static final ForgeConfigSpec.DoubleValue EST_VELOCIDAD, EST_GRAVEDAD, EST_CAIDA, EST_TOQUE_DANO, EST_PARPADEO_DIST, EST_OSCURIDAD_QUIETO_S,
+            EST_ARRASTRAR_ALCANCE, EST_ARRASTRAR_DIST, EST_TENTACULOS_ALCANCE, EST_LANZAR_FUERZA, EST_ESTAMPAR_DANO, EST_ESTAMPAR_ALTURA;
 
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
@@ -187,6 +195,61 @@ public final class ConfigServidor {
                 .defineInRange("radio_otras_pistas", 32, 0, 512);
         b.pop();
 
+        b.comment("Estática: la poción del hombre de estática (solo de creativo). Cada poder se puede apagar por separado.").push("estatica");
+        EST_DURACION_S = b.comment("Segundos que dura el efecto Estática al beber la poción (20 min por defecto; se acaba solo).")
+                .defineInRange("duracion_segundos", 1200, 10, 86400);
+        EST_LECHE = b.comment("Si la leche quita la Estática (por defecto no: solo se acaba con el tiempo o con /effect clear).").define("leche_cura", false);
+        EST_CINEMATICA = b.comment("Cinemática de la transformación al beberla (cámara de frente; el jugador no se puede mover mientras).")
+                .define("cinematica", true);
+        EST_VELOCIDAD = b.comment("Cambio de velocidad al andar (multiplicador: -0.12 = un 12 % más lento).").defineInRange("velocidad", -0.12, -0.9, 1.0);
+        EST_GRAVEDAD = b.comment("Cambio de gravedad (multiplicador: -0.35 = saltos más largos y caídas más lentas).").defineInRange("gravedad", -0.35, -0.9, 1.0);
+        EST_CAIDA = b.comment("Multiplicador del daño de caída.").defineInRange("dano_caida", 0.4, 0.0, 1.0);
+        EST_TOQUE = b.comment("Toque estático: golpear con la mano vacía da una descarga (más daño, lentitud, nieve en la pantalla de la víctima y su barra",
+                "de objetos se ve corrupta un rato).").define("toque_activado", true);
+        EST_TOQUE_DANO = b.comment("Daño extra de cada toque estático.").defineInRange("toque_dano", 2.0, 0.0, 100.0);
+        EST_TOQUE_LENTITUD_S = b.comment("Segundos de lentitud del toque.").defineInRange("toque_lentitud_segundos", 2, 0, 60);
+        EST_TOQUE_CORROMPER_S = b.comment("Segundos que la víctima ve sus objetos corruptos (solo se ve así; los objetos no cambian). 0 = nunca.")
+                .defineInRange("toque_corromper_segundos", 10, 0, 120);
+        EST_PARPADEO = b.comment("Poder Parpadeo: salta unos bloques hacia delante por el aire (nunca a través de paredes).").define("parpadeo_activado", true);
+        EST_PARPADEO_DIST = b.comment("Distancia máxima del parpadeo (bloques).").defineInRange("parpadeo_distancia", 5.0, 1.0, 16.0);
+        EST_PARPADEO_ENF_S = b.comment("Segundos de espera entre parpadeos.").defineInRange("parpadeo_enfriamiento_segundos", 4, 0, 600);
+        EST_PANTALLAS = b.comment("Poder Meterse en pantallas: entra por una recreativa / pantalla y sale por otra cercana.").define("pantallas_activado", true);
+        EST_PANTALLAS_RADIO = b.comment("Radio (bloques) en el que se buscan pantallas de salida.").defineInRange("pantallas_radio", 32, 4, 96);
+        EST_PANTALLAS_ENF_S = b.comment("Segundos de espera al salir de una pantalla.").defineInRange("pantallas_enfriamiento_segundos", 10, 0, 600);
+        EST_PANTALLAS_MAX_S = b.comment("Segundos máximos dentro de las pantallas (luego sale solo por donde entró).").defineInRange("pantallas_max_segundos", 20, 2, 600);
+        EST_LUCES = b.comment("Apagar luces al pasar: lámparas, velas y hogueras cercanas se apagan y vuelven a encenderse cuando se va (las antorchas",
+                "y faroles solo parpadean). Nunca rompe bloques.").define("luces_activado", true);
+        EST_LUCES_RADIO = b.comment("Radio (bloques) de las luces que se apagan.").defineInRange("luces_radio", 4, 1, 12);
+        EST_LUCES_VUELTA_S = b.comment("Segundos que tardan en volver a encenderse cuando ya no hay nadie de estática cerca.").defineInRange("luces_vuelta_segundos", 3, 1, 600);
+        EST_IMITAR = b.comment("Poder Imitar voces (necesita Simple Voice Chat): graba trozos de lo que dicen los de alrededor y los reproduce,",
+                "con estática, desde un bloque.").define("imitar_activado", true);
+        EST_IMITAR_ENF_S = b.comment("Segundos de espera entre imitaciones.").defineInRange("imitar_enfriamiento_segundos", 8, 0, 600);
+        EST_CHARCOS = b.comment("Charcos de estática al andar (no son bloques): quien los pisa va lento y ve nieve.").define("charcos_activado", true);
+        EST_CHARCOS_MAX = b.comment("Charcos a la vez por jugador.").defineInRange("charcos_max", 6, 1, 32);
+        EST_CHARCOS_VIDA_S = b.comment("Segundos que dura cada charco.").defineInRange("charcos_vida_segundos", 30, 2, 600);
+        EST_OSCURIDAD = b.comment("Fundirse en la oscuridad: quieto a oscuras se vuelve invisible (solo se le ven los ojos).").define("oscuridad_activado", true);
+        EST_OSCURIDAD_LUZ = b.comment("Luz máxima (0-15) para fundirse.").defineInRange("oscuridad_luz_maxima", 4, 0, 15);
+        EST_OSCURIDAD_QUIETO_S = b.comment("Segundos quieto a oscuras antes de fundirse.").defineInRange("oscuridad_segundos", 2.0, 0.0, 60.0);
+        EST_ARRASTRAR = b.comment("Poder Arrastrar a la estática: se lleva consigo a quien mira y aparecen juntos unos bloques más allá.")
+                .define("arrastrar_activado", true);
+        EST_ARRASTRAR_ALCANCE = b.comment("Distancia máxima al objetivo (bloques).").defineInRange("arrastrar_alcance", 4.0, 1.0, 16.0);
+        EST_ARRASTRAR_DIST = b.comment("Distancia máxima del viaje (bloques).").defineInRange("arrastrar_distancia", 8.0, 2.0, 32.0);
+        EST_ARRASTRAR_ENF_S = b.comment("Segundos de espera.").defineInRange("arrastrar_enfriamiento_segundos", 12, 0, 600);
+        EST_FRAGMENTARSE = b.comment("Fragmentarse (pasivo): al recibir un golpe cuerpo a cuerpo se deshace en estática (sin daño) y aparece detrás",
+                "del atacante.").define("fragmentarse_activado", true);
+        EST_FRAGMENTARSE_ENF_S = b.comment("Segundos de espera entre fragmentaciones.").defineInRange("fragmentarse_enfriamiento_segundos", 15, 0, 600);
+        EST_TENTACULOS_ALCANCE = b.comment("Alcance de los tentáculos de estática (bloques).").defineInRange("tentaculos_alcance", 10.0, 2.0, 32.0);
+        EST_ATRAER = b.comment("Tentáculos: Atraer (agarra al objetivo y lo trae).").define("atraer_activado", true);
+        EST_ATRAER_ENF_S = b.comment("Segundos de espera de Atraer.").defineInRange("atraer_enfriamiento_segundos", 6, 0, 600);
+        EST_LANZAR = b.comment("Tentáculos: Lanzar (agarra al objetivo y lo lanza hacia donde mira).").define("lanzar_activado", true);
+        EST_LANZAR_FUERZA = b.comment("Fuerza del lanzamiento.").defineInRange("lanzar_fuerza", 2.2, 0.2, 8.0);
+        EST_LANZAR_ENF_S = b.comment("Segundos de espera de Lanzar.").defineInRange("lanzar_enfriamiento_segundos", 8, 0, 600);
+        EST_ESTAMPAR = b.comment("Tentáculos: Estampar (lo sube por el aire y lo estampa contra el suelo).").define("estampar_activado", true);
+        EST_ESTAMPAR_DANO = b.comment("Daño del golpe contra el suelo.").defineInRange("estampar_dano", 8.0, 0.0, 200.0);
+        EST_ESTAMPAR_ALTURA = b.comment("Altura (bloques) a la que lo sube.").defineInRange("estampar_altura", 4.5, 1.0, 16.0);
+        EST_ESTAMPAR_ENF_S = b.comment("Segundos de espera de Estampar.").defineInRange("estampar_enfriamiento_segundos", 12, 0, 600);
+        b.pop();
+
         SPEC = b.build();
     }
 
@@ -298,4 +361,49 @@ public final class ConfigServidor {
 
     // ------------------------------------------------------------------ pista de baile
     public static int baileRadioPistas() { return i(BAILE_RADIO); }
+    // ------------------------------------------------------------------ estática (tiempos en ticks)
+    public static int estaticaDuracionTicks() { return i(EST_DURACION_S) * 20; }
+    public static boolean estaticaLecheCura() { return b(EST_LECHE); }
+    public static boolean estaticaCinematica() { return b(EST_CINEMATICA); }
+    public static double estaticaVelocidad() { return d(EST_VELOCIDAD); }
+    public static double estaticaGravedad() { return d(EST_GRAVEDAD); }
+    public static float estaticaCaida() { return (float) d(EST_CAIDA); }
+    public static boolean estaticaToque() { return b(EST_TOQUE); }
+    public static float estaticaToqueDano() { return (float) d(EST_TOQUE_DANO); }
+    public static int estaticaToqueLentitudTicks() { return i(EST_TOQUE_LENTITUD_S) * 20; }
+    public static int estaticaToqueCorromperTicks() { return i(EST_TOQUE_CORROMPER_S) * 20; }
+    public static boolean estaticaParpadeo() { return b(EST_PARPADEO); }
+    public static double estaticaParpadeoDistancia() { return d(EST_PARPADEO_DIST); }
+    public static int estaticaParpadeoEnfriamiento() { return i(EST_PARPADEO_ENF_S) * 20; }
+    public static boolean estaticaPantallas() { return b(EST_PANTALLAS); }
+    public static int estaticaPantallasRadio() { return i(EST_PANTALLAS_RADIO); }
+    public static int estaticaPantallasEnfriamiento() { return i(EST_PANTALLAS_ENF_S) * 20; }
+    public static int estaticaPantallasMaxTicks() { return i(EST_PANTALLAS_MAX_S) * 20; }
+    public static boolean estaticaLuces() { return b(EST_LUCES); }
+    public static int estaticaLucesRadio() { return i(EST_LUCES_RADIO); }
+    public static int estaticaLucesVueltaTicks() { return i(EST_LUCES_VUELTA_S) * 20; }
+    public static boolean estaticaImitar() { return b(EST_IMITAR); }
+    public static int estaticaImitarEnfriamiento() { return i(EST_IMITAR_ENF_S) * 20; }
+    public static boolean estaticaCharcos() { return b(EST_CHARCOS); }
+    public static int estaticaCharcosMax() { return i(EST_CHARCOS_MAX); }
+    public static int estaticaCharcosVidaTicks() { return i(EST_CHARCOS_VIDA_S) * 20; }
+    public static boolean estaticaOscuridad() { return b(EST_OSCURIDAD); }
+    public static int estaticaOscuridadLuz() { return i(EST_OSCURIDAD_LUZ); }
+    public static int estaticaOscuridadTicks() { return (int) Math.round(d(EST_OSCURIDAD_QUIETO_S) * 20); }
+    public static boolean estaticaArrastrar() { return b(EST_ARRASTRAR); }
+    public static double estaticaArrastrarAlcance() { return d(EST_ARRASTRAR_ALCANCE); }
+    public static double estaticaArrastrarDistancia() { return d(EST_ARRASTRAR_DIST); }
+    public static int estaticaArrastrarEnfriamiento() { return i(EST_ARRASTRAR_ENF_S) * 20; }
+    public static boolean estaticaFragmentarse() { return b(EST_FRAGMENTARSE); }
+    public static int estaticaFragmentarseEnfriamiento() { return i(EST_FRAGMENTARSE_ENF_S) * 20; }
+    public static double estaticaTentaculosAlcance() { return d(EST_TENTACULOS_ALCANCE); }
+    public static boolean estaticaAtraer() { return b(EST_ATRAER); }
+    public static int estaticaAtraerEnfriamiento() { return i(EST_ATRAER_ENF_S) * 20; }
+    public static boolean estaticaLanzar() { return b(EST_LANZAR); }
+    public static double estaticaLanzarFuerza() { return d(EST_LANZAR_FUERZA); }
+    public static int estaticaLanzarEnfriamiento() { return i(EST_LANZAR_ENF_S) * 20; }
+    public static boolean estaticaEstampar() { return b(EST_ESTAMPAR); }
+    public static float estaticaEstamparDano() { return (float) d(EST_ESTAMPAR_DANO); }
+    public static double estaticaEstamparAltura() { return d(EST_ESTAMPAR_ALTURA); }
+    public static int estaticaEstamparEnfriamiento() { return i(EST_ESTAMPAR_ENF_S) * 20; }
 }

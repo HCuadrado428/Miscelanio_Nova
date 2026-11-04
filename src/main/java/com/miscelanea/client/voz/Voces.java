@@ -48,6 +48,7 @@ public final class Voces {
         registrar("fantasma", ProcFantasma::new);
         registrar("gutural", ProcGutural::new);
         registrar("amortiguado", ProcAmortiguado::new);
+        registrar("estatica", com.miscelanea.client.voz.procesadores.ProcEstatica::new);
     }
 
     public static synchronized void registrar(String id, Supplier<ProcesadorVoz> fabrica) {
