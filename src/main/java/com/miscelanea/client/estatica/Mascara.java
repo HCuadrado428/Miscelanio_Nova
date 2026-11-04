@@ -550,8 +550,8 @@ public final class Mascara {
                     float reg = ruido(px[i] * 0.22F, py[i] * 0.22F, pz[i] * 0.22F + tt * 0.6F, seed + 3);
                     float n = reg > 0.56F ? coarse : white;
                     float nube = ruido(px[i] * 0.45F, py[i] * 0.45F - tt * 2F, pz[i] * 0.45F, seed + 4);
-                    float g = 0.6F * n + 0.4F * nube;
-                    g = (g - 0.5F) * 1.5F + 0.55F;
+                    float g = 0.66F * n + 0.34F * nube;
+                    g = (g - 0.5F) * 1.9F + 0.52F;
                     float db = py[i] - yb;
                     if (Math.abs(db) < 1.5F) g += 0.5F * (1 - Math.abs(db) / 1.5F);
                     else if (db > -3.5F && db <= -1.5F) g *= 0.45F;

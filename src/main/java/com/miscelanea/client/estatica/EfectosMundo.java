@@ -346,15 +346,15 @@ public final class EfectosMundo {
                 Vec3 tang = prev == null ? d : q.subtract(prev);
                 Vec3 w = tang.cross(vista);
                 if (w.lengthSqr() < 1.0E-8) w = lat;
-                float ancho = 0.11F * (1 - s * 0.8F) * (0.85F + 0.15F * Mth.sin(k * 0.7F + j));
+                float ancho = 0.15F * (1 - s * 0.55F) * (0.85F + 0.15F * Mth.sin(k * 0.7F + j));
                 w = w.normalize().scale(ancho);
                 // a lo largo: unos 2 texels por píxel (64 texels = 2 bloques) y deslizándose; la punta, de 0 a 1 en su tramo
                 float vv = (float) (s * len * 0.5) + k * 0.05F;
                 float sr = j / (float) N, vt = Math.max(0F, (sr - PUNTA) / (1 - PUNTA));
                 if (prev != null) {
                     int al = (int) (235 * Mth.clamp(ext * 1.4F, 0, 1));
-                    boolean punta = sr > PUNTA;
-                    float ua = punta ? um : u0, ub = punta ? u1 : um, va = punta ? vtPrev : vPrev, vb = punta ? vt : vv;
+                    boolean enPunta = sr > PUNTA;
+                    float ua = enPunta ? um : u0, ub = enPunta ? u1 : um, va = enPunta ? vtPrev : vPrev, vb = enPunta ? vt : vv;
                     vertice(vc, m, nm, (float) (prev.x - prevW.x), (float) (prev.y - prevW.y), (float) (prev.z - prevW.z), ua, va, al);
                     vertice(vc, m, nm, (float) (prev.x + prevW.x), (float) (prev.y + prevW.y), (float) (prev.z + prevW.z), ub, va, al);
                     vertice(vc, m, nm, (float) (q.x + w.x), (float) (q.y + w.y), (float) (q.z + w.z), ub, vb, al);
