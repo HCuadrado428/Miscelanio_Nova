@@ -129,6 +129,10 @@ public class FutbolinBlockEntity extends BlockEntity implements MesaGrandeBlock.
         }
         p.golpes = p.paredes = p.gol = 0;
         if (p.fase != faseAntes) be.cambio();
+        if (p.fase == FutbolinPartida.FIN && faseAntes != FutbolinPartida.FIN) {
+            int g = p.goles[0] >= p.goles[1] ? 0 : 1;
+            com.miscelanea.juegos.Partidas.terminada(l, pos, com.miscelanea.juegos.Victorias.FUTBOLIN, be.jug[g], be.jug[1 - g]);
+        }
         ModNetwork.CHANNEL.send(PacketDistributor.TRACKING_CHUNK.with(() -> l.getChunkAt(pos)), new MesaFisicaPacket(pos, p.estado()));
     }
 

@@ -48,6 +48,9 @@ public final class ConfigServidor {
             EST_OSCURIDAD_LUZ, EST_ARRASTRAR_ENF_S, EST_FRAGMENTARSE_ENF_S, EST_ATRAER_ENF_S, EST_LANZAR_ENF_S, EST_ESTAMPAR_ENF_S;
     private static final ForgeConfigSpec.BooleanValue EST_LECHE, EST_CINEMATICA, EST_TOQUE, EST_PARPADEO, EST_PANTALLAS, EST_LUCES, EST_IMITAR,
             EST_CHARCOS, EST_OSCURIDAD, EST_ARRASTRAR, EST_FRAGMENTARSE, EST_ATRAER, EST_LANZAR, EST_ESTAMPAR;
+    // ---- juegos de mesa
+    private static final ForgeConfigSpec.IntValue MESAS_TURNO_S, MESAS_AUSENCIA_S;
+    private static final ForgeConfigSpec.BooleanValue MESAS_VICTORIAS_CPU;
     private static final ForgeConfigSpec.DoubleValue EST_VELOCIDAD, EST_GRAVEDAD, EST_CAIDA, EST_TOQUE_DANO, EST_PARPADEO_DIST, EST_OSCURIDAD_QUIETO_S,
             EST_ARRASTRAR_ALCANCE, EST_ARRASTRAR_DIST, EST_TENTACULOS_ALCANCE, EST_LANZAR_FUERZA, EST_ESTAMPAR_DANO, EST_ESTAMPAR_ALTURA;
 
@@ -250,6 +253,14 @@ public final class ConfigServidor {
         EST_ESTAMPAR_ENF_S = b.comment("Segundos de espera de Estampar.").defineInRange("estampar_enfriamiento_segundos", 12, 0, 600);
         b.pop();
 
+        b.comment("Juegos de mesa (parchís, oca, imperio, cuatro en raya, hundir la flota, dominó, cartas, tablero, billar...).").push("juegos_de_mesa");
+        MESAS_TURNO_S = b.comment("Segundos que tiene cada jugador para hacer su jugada; al acabarse juega la CPU por él hasta que vuelva a tocar la mesa (0 = sin límite).")
+                .defineInRange("turno_segundos", 60, 0, 900);
+        MESAS_AUSENCIA_S = b.comment("Segundos que puede estar desconectado o lejos de la mesa el jugador de turno antes de que la CPU ocupe su sitio (hasta que vuelva).")
+                .defineInRange("ausencia_segundos", 20, 3, 600);
+        MESAS_VICTORIAS_CPU = b.comment("Contar en el marcador de victorias las partidas ganadas solo contra la CPU.").define("victorias_contra_cpu", true);
+        b.pop();
+
         SPEC = b.build();
     }
 
@@ -406,4 +417,9 @@ public final class ConfigServidor {
     public static float estaticaEstamparDano() { return (float) d(EST_ESTAMPAR_DANO); }
     public static double estaticaEstamparAltura() { return d(EST_ESTAMPAR_ALTURA); }
     public static int estaticaEstamparEnfriamiento() { return i(EST_ESTAMPAR_ENF_S) * 20; }
+
+    // ------------------------------------------------------------------ juegos de mesa (tiempos en ticks)
+    public static int mesasTurnoTicks() { return i(MESAS_TURNO_S) * 20; }
+    public static int mesasAusenciaTicks() { return Math.max(60, i(MESAS_AUSENCIA_S) * 20); }
+    public static boolean mesasVictoriasContraCpu() { return b(MESAS_VICTORIAS_CPU); }
 }

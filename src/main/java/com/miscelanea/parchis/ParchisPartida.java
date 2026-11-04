@@ -205,6 +205,44 @@ public class ParchisPartida {
         return true;
     }
 
+    /**
+     * Sentarse en un color concreto (clic en su casa durante la preparación). Si ya estaba sentado, cambia de color;
+     * si el color lo tenía una CPU, la CPU se va.
+     */
+    public boolean unirColor(UUID u, String nombre, int color) {
+        if (fase != LOBBY || color < 0 || color > 3) return false;
+        Jugador ocupa = deColor(color);
+        if (ocupa != null && !ocupa.cpu()) return false;
+        if (ocupa != null) js.remove(ocupa);
+        for (Jugador j : js) if (u.equals(j.uuid)) {
+            j.color = color;
+            return true;
+        }
+        if (js.size() >= 4) return false;
+        Jugador j = new Jugador();
+        j.uuid = u;
+        j.nombre = nombre;
+        j.color = color;
+        js.add(j);
+        anotar("unido|" + nombre);
+        return true;
+    }
+
+    /** Otra partida con los mismos jugadores y colores (revancha). */
+    public ParchisPartida revancha(Random r) {
+        ParchisPartida n = new ParchisPartida();
+        n.velocidad = velocidad;
+        for (Jugador j : js) {
+            Jugador c = new Jugador();
+            c.uuid = j.uuid;
+            c.nombre = j.nombre;
+            c.color = j.color;
+            n.js.add(c);
+        }
+        n.empezar(r);
+        return n;
+    }
+
     /** Deja la partida mientras se prepara. Si ya no queda ningún humano, se quitan también las CPU. */
     public boolean salir(UUID u) {
         if (fase != LOBBY) return false;

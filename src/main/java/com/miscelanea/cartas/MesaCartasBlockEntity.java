@@ -333,6 +333,7 @@ public class MesaCartasBlockEntity extends BlockEntity {
                 estado = FIN;
                 int g = acumulado[0] <= acumulado[1] ? 0 : 1;
                 for (Player o : cercanos()) o.displayClientMessage(Component.translatable("miscelanea.chinchon.gana", nombre[g]).withStyle(ChatFormatting.GOLD), false);
+                com.miscelanea.juegos.Partidas.terminada(level, worldPosition, com.miscelanea.juegos.Victorias.CHINCHON, jugador[g], jugador[1 - g]);
                 level.playSound(null, worldPosition, ModSounds.FE_PREMIO.get(), SoundSource.BLOCKS, 0.8F, 1F);
                 cambio();
                 return;
@@ -389,6 +390,7 @@ public class MesaCartasBlockEntity extends BlockEntity {
             int g = puntos[0] > puntos[1] ? 0 : 1;
             txt = Component.translatable("miscelanea.cartas.gana", nombre[g], puntos[g], puntos[1 - g]).getString();
             if (jugador[g] != null && level.getPlayerByUUID(jugador[g]) instanceof ServerPlayer sp) com.miscelanea.arcade.ArcadeRecords.registrar(sp, "brisca", puntos[g]);
+            com.miscelanea.juegos.Partidas.terminada(level, worldPosition, com.miscelanea.juegos.Victorias.BRISCA, jugador[g], jugador[1 - g]);
         }
         for (Player o : cercanos()) o.displayClientMessage(Component.literal(txt).withStyle(ChatFormatting.GOLD), false);
         level.playSound(null, worldPosition, ModSounds.FE_PREMIO.get(), SoundSource.BLOCKS, 0.8F, 1F);

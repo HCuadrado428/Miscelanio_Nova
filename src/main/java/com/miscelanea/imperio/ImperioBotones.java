@@ -6,7 +6,7 @@ import java.util.List;
 /** Botones físicos del centro del tablero según el estado de la partida (los calcula igual el servidor y el cliente). */
 public final class ImperioBotones {
     public static final int UNIRSE = 1, CPU = 2, RONDAS = 3, EMPEZAR = 4, TIRAR = 5, PAGAR_CARCEL = 6, CARTA_CARCEL = 7, COMPRAR = 8, NO_COMPRAR = 9,
-            FIN_TURNO = 10, BANCARROTA = 11, NUEVA = 12, CONSTRUIR = 13, VENDER = 14, HIPOTECAR = 15, DESHIPOTECAR = 16, TERMINAR = 17, VELOCIDAD = 18;
+            FIN_TURNO = 10, BANCARROTA = 11, NUEVA = 12, CONSTRUIR = 13, VENDER = 14, HIPOTECAR = 15, DESHIPOTECAR = 16, TERMINAR = 17, VELOCIDAD = 18, REVANCHA = 19;
     /** Margen extra alrededor de cada botón para que sea fácil acertar. */
     public static final double MARGEN = 4;
 
@@ -51,7 +51,7 @@ public final class ImperioBotones {
                     new Object[]{NO_COMPRAR, "no_comprar", 0xA04040});
             case Partida.GESTION -> fila(o, 330, 150, 32, new Object[]{FIN_TURNO, p.tiroOtraVez && j.carcel == 0 ? "otra_vez" : "fin_turno", 0xE0A020});
             case Partida.DEUDA -> fila(o, 330, 150, 32, new Object[]{BANCARROTA, "bancarrota", 0xA03030});
-            case Partida.FIN -> fila(o, 330, 160, 32, new Object[]{NUEVA, "nueva", 0x30A050});
+            case Partida.FIN -> fila(o, 330, 120, 32, new Object[]{REVANCHA, "revancha", 0xE0A020}, new Object[]{NUEVA, "nueva", 0x30A050});
             default -> {}
         }
         // acciones sobre la propiedad seleccionada

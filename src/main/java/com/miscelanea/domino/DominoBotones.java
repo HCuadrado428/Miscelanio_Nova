@@ -5,7 +5,7 @@ import java.util.List;
 
 /** Botones físicos del dominó. */
 public final class DominoBotones {
-    public static final int UNIRSE = 1, CPU = 2, EMPEZAR = 3, NUEVA = 4, TERMINAR = 5;
+    public static final int UNIRSE = 1, CPU = 2, EMPEZAR = 3, NUEVA = 4, TERMINAR = 5, REVANCHA = 6;
     public static final double MARGEN = 4;
 
     public record Boton(int id, double x, double y, double w, double h, String clave, int color) {
@@ -25,7 +25,10 @@ public final class DominoBotones {
                 o.add(new Boton(EMPEZAR, 256, 292, 130, 30, "empezar", p.js.size() >= 2 ? 0xE0A020 : 0x707070));
             }
             case DominoPartida.JUGAR -> o.add(new Boton(TERMINAR, 46, 494, 64, 16, "terminar", 0x606060));
-            default -> o.add(new Boton(NUEVA, 256, 380, 130, 28, "nueva", 0x30A050));
+            default -> {
+                o.add(new Boton(REVANCHA, 186, 380, 120, 28, "revancha", 0xE0A020));
+                o.add(new Boton(NUEVA, 326, 380, 120, 28, "nueva", 0x30A050));
+            }
         }
         return o;
     }
