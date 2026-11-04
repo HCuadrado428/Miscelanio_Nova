@@ -37,7 +37,7 @@ public class FrascoArrojadizoItem extends ThrowablePotionItem {
 
     @Override
     public void appendHoverText(ItemStack st, @Nullable Level l, List<Component> tip, TooltipFlag f) {
-        FrascoMezclaItem.lineaMezcla(st, tip);
+        FrascoMezclaItem.lineaMezcla(st, tip, true);
         super.appendHoverText(st, l, tip, f);
     }
 }

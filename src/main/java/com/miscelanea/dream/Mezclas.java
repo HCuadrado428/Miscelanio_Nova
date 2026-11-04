@@ -98,11 +98,17 @@ public final class Mezclas {
 
     /** Un frasco de mezcla (normal o arrojadizo) con estos efectos. */
     public static ItemStack frasco(List<MobEffectInstance> efectos, int color, boolean arrojadizo, int pociones) {
+        return frasco(efectos, color, arrojadizo, pociones, false);
+    }
+
+    /** Con 'letal': la mezcla lleva veneno de Dream (beberla mata, ver VenenoLetal; lanzada solo salpica). */
+    public static ItemStack frasco(List<MobEffectInstance> efectos, int color, boolean arrojadizo, int pociones, boolean letal) {
         ItemStack st = new ItemStack(arrojadizo ? DreamRegistro.FRASCO_MEZCLA_ARROJADIZO.get() : DreamRegistro.FRASCO_MEZCLA.get());
         PotionUtils.setCustomEffects(st, efectos);
         CompoundTag t = st.getOrCreateTag();
         t.putInt("CustomPotionColor", color & 0xFFFFFF);
         t.putInt(TAG_POCIONES, pociones);
+        if (letal) VenenoLetal.marcar(st);
         return st;
     }
 

@@ -39,6 +39,11 @@ public final class Cinematica {
     public final float margen;
     /** Desde qué tick la víctima se dibuja sin cabeza (-1 = nunca). */
     public final int sinCabeza;
+    /**
+     * Muere tumbada en el suelo (el veneno): al morir no se apaga la animación (se queda boca abajo, sin la vuelta de
+     * lado de vanilla) y, mientras dura, el cliente de la víctima le fija el giro al del principio.
+     */
+    public boolean yace;
     final Map<String, Pista> pistas = new HashMap<>();
     final List<Suceso> sucesos = new ArrayList<>();
     final List<Emisor> emisores = new ArrayList<>();
@@ -58,6 +63,11 @@ public final class Cinematica {
         this.margen = margen;
         this.sinCabeza = sinCabeza;
         for (int i = 0; i < nombres.length; i++) pistas.put(nombres[i], new Pista(k[i]));
+    }
+
+    public Cinematica yace() {
+        this.yace = true;
+        return this;
     }
 
     public Cinematica en(int tick, Accion a) {
@@ -208,6 +218,9 @@ public final class Cinematica {
         }
     }
 
+    public static final DustParticleOptions ESPUMA = new DustParticleOptions(new Vector3f(0.13F, 0.3F, 0.06F), 0.9F);
+    public static final DustParticleOptions ESPUMA_OSCURA = new DustParticleOptions(new Vector3f(0.05F, 0.14F, 0.03F), 1.2F);
+    public static final BlockParticleOption TROZO_VERDE = new BlockParticleOption(ParticleTypes.BLOCK, Blocks.GREEN_TERRACOTTA.defaultBlockState());
     public static final DustParticleOptions SANGRE = new DustParticleOptions(new Vector3f(0.62F, 0.02F, 0.03F), 1.6F);
     public static final BlockParticleOption TROZO_ROJO = new BlockParticleOption(ParticleTypes.BLOCK, Blocks.REDSTONE_BLOCK.defaultBlockState());
     public static final BlockParticleOption TROZO_OSCURO = new BlockParticleOption(ParticleTypes.BLOCK, Blocks.NETHER_WART_BLOCK.defaultBlockState());

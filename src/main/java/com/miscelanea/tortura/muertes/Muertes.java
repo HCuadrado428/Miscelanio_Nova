@@ -137,6 +137,12 @@ public final class Muertes {
         } else if (k == EfectosRegistro.DANO_COLLAR) {
             tipo = TipoMuerte.COLLAR;
             foco = v.position();
+        } else if (k == com.miscelanea.dream.VenenoLetal.DANO) {
+            // el veneno de Dream: en cualquier sitio, desde los pies y hacia donde mira (el cliente le fija el giro)
+            if (v.isPassenger()) v.stopRiding();
+            tipo = TipoMuerte.VENENO;
+            foco = v.position();
+            yaw = v.getYRot();
         }
         if (tipo == null) return false;
         empezar(v, sl, tipo, k, captor, foco, yaw, aux == null ? foco : aux);

@@ -46,6 +46,8 @@ public class CalderoBlockEntity extends BlockEntity {
     public int pociones, quedan;
     /** Con pólvora: los frascos salen arrojadizos. */
     public boolean arrojadizo;
+    /** Se ha echado veneno de Dream (o una mezcla con él): los frascos que salgan matan al beberlos. */
+    public boolean letal;
 
     // ---- solo cliente: para fundir el color y el nivel al cambiar
     public int colorAntes = -1, colorAhora = -1;
@@ -81,6 +83,7 @@ public class CalderoBlockEntity extends BlockEntity {
             return;
         }
         for (MobEffectInstance e : ef) Mezclas.fusionar(efectos, e);
+        if (VenenoLetal.es(st)) letal = true;
         colores.add(Mezclas.colorDe(st));
         pociones++;
         quedan = pociones;
@@ -97,7 +100,7 @@ public class CalderoBlockEntity extends BlockEntity {
             p.displayClientMessage(Component.translatable("miscelanea.caldero.vacio"), true);
             return;
         }
-        ItemStack frasco = Mezclas.frasco(Mezclas.escalados(efectos), color(), arrojadizo, pociones);
+        ItemStack frasco = Mezclas.frasco(Mezclas.escalados(efectos), color(), arrojadizo, pociones, letal);
         p.setItemInHand(mano, ItemUtils.createFilledResult(st, p, frasco));
         level.playSound(null, worldPosition, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0F, 0.9F);
         level.gameEvent(null, GameEvent.FLUID_PICKUP, worldPosition);
@@ -165,6 +168,7 @@ public class CalderoBlockEntity extends BlockEntity {
         colores.clear();
         pociones = quedan = 0;
         arrojadizo = false;
+        letal = false;
     }
 
     private void salpicar(int n) {
@@ -227,6 +231,7 @@ public class CalderoBlockEntity extends BlockEntity {
         t.putInt("pociones", pociones);
         t.putInt("quedan", quedan);
         t.putBoolean("arrojadizo", arrojadizo);
+        t.putBoolean("letal", letal);
     }
 
     @Override
@@ -242,6 +247,7 @@ public class CalderoBlockEntity extends BlockEntity {
         pociones = t.getInt("pociones");
         quedan = t.getInt("quedan");
         arrojadizo = t.getBoolean("arrojadizo");
+        letal = t.getBoolean("letal");
         if (level != null && level.isClientSide) {
             // en el cliente: apunta el cambio para que el renderer funda color y nivel
             float n = nivel();

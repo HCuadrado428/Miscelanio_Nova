@@ -1,6 +1,7 @@
 package com.miscelanea.client.tortura.muertes;
 
 import com.miscelanea.tortura.aparatos.AparatosRegistro;
+import com.miscelanea.voz.VozRegistro;
 import com.miscelanea.tortura.efectos.EfectosRegistro;
 import com.miscelanea.tortura.muertes.TipoMuerte;
 import com.miscelanea.tortura.saw.SawRegistro;
@@ -41,6 +42,7 @@ public final class Cinematicas {
         TODAS.put(TipoMuerte.CAJA, caja());
         TODAS.put(TipoMuerte.PARO, paro());
         TODAS.put(TipoMuerte.COLGADO, colgado());
+        TODAS.put(TipoMuerte.VENENO, veneno());
     }
 
     private static boolean jugador(Cinematica.Ctx c) {
@@ -276,6 +278,85 @@ public final class Cinematicas {
         m.cada(20, 115, 5, c -> {
             if (c.ent != null && c.r.nextFloat() < 0.7F) c.gota(c.ent.getBoundingBox().getCenter().subtract(0, c.ent.getBbHeight() * 0.5 - 0.05, 0));
         });
+        return m;
+    }
+
+    // ------------------------------------------------------------------ 10. veneno de Dream (bebido, en cualquier sitio)
+    /** La boca de la víctima (pista "boca", sacada del esqueleto de la vista previa), o sus ojos si no la hay. */
+    private static Vec3 boca(Cinematica.Ctx c) {
+        Pista p = c.a.def.pista("boca");
+        if (p == null) return c.cabeza();
+        float t = c.tick;
+        return c.punto(p.en(t, 0), p.en(t, 1), p.en(t, 2));
+    }
+
+    /** Espuma verde oscura que le sale por la boca y cae (n partículas, 'fuerza' para las arcadas). */
+    private static void espuma(Cinematica.Ctx c, int n, double fuerza) {
+        Vec3 b = boca(c);
+        Vec3 f = c.dir(0, 0, 1);
+        for (int i = 0; i < n; i++) {
+            double r = c.r.nextDouble();
+            Vec3 p = b.add(c.r.nextGaussian() * 0.025, c.r.nextGaussian() * 0.02, c.r.nextGaussian() * 0.025);
+            if (r < 0.45) c.particula(Cinematica.ESPUMA, p, f.x * 0.01 * fuerza, -0.01, f.z * 0.01 * fuerza);
+            else if (r < 0.7) c.particula(Cinematica.ESPUMA_OSCURA, p, f.x * 0.008 * fuerza, -0.012, f.z * 0.008 * fuerza);
+            else if (r < 0.88) c.particula(Cinematica.TROZO_VERDE, p, f.x * 0.05 * fuerza + c.r.nextGaussian() * 0.01, 0.02 * fuerza, f.z * 0.05 * fuerza + c.r.nextGaussian() * 0.01);
+            else c.particula(ParticleTypes.ITEM_SLIME, p, f.x * 0.04 * fuerza, 0.01, f.z * 0.04 * fuerza);
+        }
+    }
+
+    private static Cinematica veneno() {
+        Cinematica m = new Cinematica(TipoMuerte.VENENO, VENENO_MUERTE, VENENO_FIN, VENENO_MARGEN, VENENO_SIN_CABEZA, VENENO_N, VENENO_K);
+        if (VENENO_YACE) m.yace();
+        // baja la botella: el último trago le quema
+        m.en(VENENO_BAJA, c -> {
+            c.sonido(SoundEvents.GENERIC_DRINK, boca(c), 0.6F, 0.6F);
+            c.destello(0x502E5A1C, 8);
+        });
+        // tos (con la mano en la boca) y la espuma que empieza
+        for (int i = 0; i < VENENO_TOSES.length; i++) {
+            float f = 1F + i * 0.15F;
+            m.en(VENENO_TOSES[i], c -> {
+                if (jugador(c)) c.sonido(AparatosRegistro.INMERSION_TOS.get(), boca(c), 0.9F * f, 0.95F - c.tick * 0.006F);
+                else c.sonido(SoundEvents.PLAYER_HURT_DROWN, boca(c), 0.8F, 0.7F);
+                c.temblor(0.25F * f, 5);
+                espuma(c, 3, 1.5);
+            });
+        }
+        // se agarra el cuello: arcada y espuma
+        m.en(VENENO_AGARRA, c -> {
+            if (jugador(c)) c.sonido(AparatosRegistro.INTERROGATORIO_JADEO.get(), boca(c), 0.8F, 0.75F);
+            c.destello(0x60143C0A, 10);
+        });
+        m.cada(VENENO_ESPUMA, VENENO_SUELO + 20, 2, c -> {
+            float ritmo = c.tick < VENENO_RODILLAS ? 0.6F : c.tick < VENENO_SUELO ? 1F : 0.55F - c.k * 0.4F;
+            if (c.r.nextFloat() < ritmo) espuma(c, 1 + (c.tick > VENENO_RODILLAS && c.tick < VENENO_SUELO ? 2 : 1), 0.6);
+        });
+        m.en(VENENO_RODILLAS - 4, c -> c.sonido(VozRegistro.VOMITO.get(), boca(c), 0.55F, 0.7F));
+        m.en(VENENO_RODILLAS, c -> {
+            c.sonido(SoundEvents.PLAYER_SMALL_FALL, c.foco(), 1.0F, 0.8F);
+            c.sonido(SoundEvents.ARMOR_EQUIP_GENERIC, c.foco(), 0.6F, 0.6F);
+            c.temblor(0.6F, 6);
+        });
+        // convulsiones de rodillas: arcadas con más espuma
+        for (int t : new int[]{63, 70}) m.en(t, c -> {
+            if (jugador(c)) c.sonido(AparatosRegistro.INTERROGATORIO_JADEO.get(), boca(c), 0.6F, 0.6F);
+            espuma(c, 8, 2.0);
+        });
+        m.en(VENENO_SUELO, c -> {
+            c.sonido(SoundEvents.PLAYER_BIG_FALL, c.foco(), 1.0F, 0.75F);
+            c.sonido(SoundEvents.GENERIC_HURT, c.foco(), 0.4F, 0.5F);
+            c.temblor(1.0F, 8);
+            c.particulas(new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK,
+                    c.level.getBlockState(net.minecraft.core.BlockPos.containing(c.foco()).below())), c.punto(0, 0.05, 0.6), 14, 0.35, new Vec3(0, 0.05, 0), 0.05);
+            espuma(c, 10, 0.8);
+        });
+        // latidos cada vez más lentos y graves (solo la víctima) y el pitido en los oídos
+        for (int i = 0; i < VENENO_LATIDOS.length; i++) {
+            float k = i / (float) (VENENO_LATIDOS.length - 1);
+            m.en(VENENO_LATIDOS[i], c -> c.latido(0.95F - k * 0.25F, 1.15F - k * 0.6F));
+        }
+        m.en(VENENO_PITIDO, c -> c.sonidoVictima(com.miscelanea.tortura.efectos.EfectosRegistro.MIEDO_PITIDO.get(), 0.35F, 1.0F));
+        m.en(VENENO_CAE, c -> c.sonidoVictima(com.miscelanea.tortura.efectos.EfectosRegistro.MIEDO_PITIDO.get(), 0.6F, 0.9F));
         return m;
     }
 }

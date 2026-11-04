@@ -16,7 +16,8 @@ public enum TipoMuerte {
     COLLAR(6, 84),
     CAJA(7, 100),
     PARO(8, 96),
-    COLGADO(9, 90);
+    COLGADO(9, 90),
+    VENENO(10, 90);
 
     public final int id, muerte;
 

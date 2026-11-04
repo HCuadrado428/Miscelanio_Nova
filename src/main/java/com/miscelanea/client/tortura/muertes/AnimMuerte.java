@@ -25,8 +25,10 @@ public class AnimMuerte implements IAnimation {
     @Override
     public void tick() {
         pesoO = peso;
-        boolean act = MuertesCliente.activa(p.getId());
-        if (act && p.isDeadOrDying()) muerto++;
+        MuertesCliente.Activa a = MuertesCliente.de(p.getId());
+        boolean act = a != null;
+        // las que mueren tumbadas (el veneno) no se apagan: el cuerpo se queda en el suelo
+        if (act && p.isDeadOrDying() && !a.def.yace) muerto++;
         else muerto = 0;
         float objetivo = !act ? 0F : Math.max(0F, 1F - muerto / 10F);
         peso = peso < objetivo ? Math.min(objetivo, peso + 0.34F) : Math.max(objetivo, peso - 0.2F);
@@ -60,6 +62,9 @@ public class AnimMuerte implements IAnimation {
         MuertesCliente.Activa a = MuertesCliente.de(p.getId());
         if (a == null) return v;
         float t = MuertesCliente.tiempo(a, td);
+        // tumbada y muerta: se deshace la vuelta de lado de vanilla (setupRotations gira Z alrededor de los pies antes
+        // que esto), para que se quede boca abajo
+        float d = a.def.yace && parte.equals("body") ? giroMuerte(td) : 0F;
         if (tipo == TransformType.POSITION) {
             float[] o;
             if (parte.equals("body")) o = MuertesCliente.parte(a, 0, t);
@@ -67,12 +72,27 @@ public class AnimMuerte implements IAnimation {
                 o = MuertesCliente.posicion(a, parte + "Pos", t);
                 if (o == null) return v;
             }
-            return new Vec3f(v.getX() + o[0] * k, v.getY() + o[1] * k, v.getZ() + o[2] * k);
+            float x = v.getX() + o[0] * k, y = v.getY() + o[1] * k, z = v.getZ() + o[2] * k;
+            if (d != 0F) {
+                // Rz(d)·T(p') = T(p)·Rz(d) con p' = Rz(-d)(p + 0,7) - 0,7 (el giro del cuerpo de playerAnimator es en 0,7)
+                float c = Mth.cos(-d), s = Mth.sin(-d), yy = y + 0.7F;
+                return new Vec3f(x * c - yy * s, x * s + yy * c - 0.7F, z);
+            }
+            return new Vec3f(x, y, z);
         }
         if (tipo != TransformType.ROTATION) return v;
         int i = indice(parte);
         if (i < 0) return v;
         float[] o = MuertesCliente.parte(a, i, t);
-        return new Vec3f(v.getX() + o[0] * k, v.getY() + o[1] * k, v.getZ() + o[2] * k);
+        return new Vec3f(v.getX() + o[0] * k, v.getY() + o[1] * k, v.getZ() + o[2] * k - d);
+    }
+
+    /** El giro (rad) de la caída de lado de vanilla al morir (LivingEntityRenderer.setupRotations). */
+    private float giroMuerte(float td) {
+        if (p.deathTime <= 0) return 0F;
+        float f = (p.deathTime + td - 1F) / 20F * 1.6F;
+        f = Mth.sqrt(Math.max(0F, f));
+        if (f > 1F) f = 1F;
+        return f * 90F * Mth.DEG_TO_RAD;
     }
 }

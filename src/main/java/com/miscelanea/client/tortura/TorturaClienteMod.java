@@ -65,7 +65,11 @@ public final class TorturaClienteMod {
     public static void capas(EntityRenderersEvent.AddLayers e) {
         for (String skin : e.getSkins()) {
             LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> r = e.getSkin(skin);
-            if (r != null) r.addLayer(new TorturaLayer<>(r));
+            if (r != null) {
+                r.addLayer(new TorturaLayer<>(r));
+                // las venas del veneno de Dream (cinemática de muerte)
+                r.addLayer(new com.miscelanea.client.tortura.muertes.VenasLayer(r, "slim".equals(skin)));
+            }
         }
         for (EntityType<?> t : ForgeRegistries.ENTITY_TYPES.getValues()) {
             Object r;

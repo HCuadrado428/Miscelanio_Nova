@@ -57,6 +57,8 @@ public final class MuertesCliente {
     private MuertesCliente() {}
 
     private static final ResourceLocation VINETA = new ResourceLocation(Miscelanea.MOD_ID, "textures/heridas/vineta.png");
+    /** Viñeta verde y negra del veneno (canal "veneno", latiendo con el canal "pulso"). */
+    private static final ResourceLocation VINETA_VENENO = new ResourceLocation(Miscelanea.MOD_ID, "textures/heridas/vineta_veneno.png");
     /** Pistas del cuerpo, en el orden de las semillas del ruido (= scratchpad/muertes.py). */
     static final String[] PARTES = {"pos", "body", "torso", "head", "rightArm", "leftArm", "rightLeg", "leftLeg"};
     private static final float[] RUIDO = {0F, 0F, 0.5F, 0.6F, 1F, 1F, 0.45F, 0.45F};
@@ -221,6 +223,7 @@ public final class MuertesCliente {
             if (camaraPrevia == null) camaraPrevia = mc.options.getCameraType();
             mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
         }
+        if (yo != null && mc.player != null) fijarGiro(mc.player, yo);
         if (e.phase != TickEvent.Phase.END || mc.isPaused() || ACT.isEmpty()) return;
         long ahora = mc.level.getGameTime();
         List<Integer> fuera = null;
@@ -247,6 +250,28 @@ public final class MuertesCliente {
         }
         if (fuera != null) for (int id : fuera) quitar(id);
         DESTELLOS.removeIf(d -> ahora - d.inicio > d.dur);
+    }
+
+    /** Las que mueren tumbadas (el veneno, sin aparato que la sujete): el cuerpo no gira con el ratón. */
+    private static void fijarGiro(Player p, Activa a) {
+        if (!a.def.yace || p.isPassenger()) return;
+        p.setYRot(a.yaw);
+        p.yRotO = a.yaw;
+        p.setXRot(0F);
+        p.xRotO = 0F;
+        p.setYHeadRot(a.yaw);
+        p.yHeadRotO = a.yaw;
+        p.yBodyRot = a.yaw;
+        p.yBodyRotO = a.yaw;
+    }
+
+    @SubscribeEvent
+    public static void fotograma(TickEvent.RenderTickEvent e) {
+        // después de que el ratón gire al jugador y antes de dibujar
+        if (e.phase != TickEvent.Phase.START || ACT.isEmpty()) return;
+        Minecraft mc = Minecraft.getInstance();
+        Activa yo = local();
+        if (yo != null && mc.player != null) fijarGiro(mc.player, yo);
     }
 
     private static void sucesos(Minecraft mc, Activa a, Entity ent, int desde, int hasta) {
@@ -479,6 +504,16 @@ public final class MuertesCliente {
                 g.blit(VINETA, 0, 0, 0, 0, w, h, w, h);
                 g.setColor(1F, 1F, 1F, 1F);
             }
+            float ven = Mth.clamp(yo.def.x("veneno", t, 0F), 0F, 1F);
+            if (ven > 0) {
+                // el veneno: viñeta verde y negra que late con el corazón y un velo verde por encima de todo
+                float pu = Mth.clamp(yo.def.x("pulso", t, 0F), 0F, 1F);
+                g.setColor(1F, 1F, 1F, Mth.clamp(ven * (0.72F + 0.28F * pu), 0F, 1F));
+                g.blit(VINETA_VENENO, 0, 0, 0, 0, w, h, w, h);
+                g.setColor(1F, 1F, 1F, 1F);
+                int al = (int) Mth.clamp(ven * 0.16F * (1F + 0.5F * pu) * 255F, 0F, 255F);
+                if (al > 0) g.fill(0, 0, w, h, (al << 24) | 0x2E5A1C);
+            }
             float rojo = Mth.clamp(yo.def.x("rojo", t, 0F), 0F, 1F);
             if (rojo > 0) g.fill(0, 0, w, h, ((int) (rojo * 200) << 24) | 0x800000);
             float negro = Mth.clamp(yo.def.x("negro", t, 0F), 0F, 1F);
@@ -500,6 +535,13 @@ public final class MuertesCliente {
         }
         RenderSystem.depthMask(true);
         RenderSystem.disableBlend();
+    }
+
+    /** Desenfoque de la pantalla de la víctima (canal "borroso", 0..1; 0 si no toca). Lo dibuja {@link Borroso}. */
+    public static float borroso(float pt) {
+        Activa yo = local();
+        if (yo == null || !yo.def.tiene("borroso")) return 0F;
+        return Mth.clamp(yo.def.x("borroso", tiempo(yo, pt), 0F), 0F, 1F);
     }
 
     /** Sin cinemáticas que dibujar (para quien quiera saberlo deprisa). */

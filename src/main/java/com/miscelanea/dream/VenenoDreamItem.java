@@ -18,8 +18,9 @@ import java.util.List;
 
 /**
  * Veneno de Dream: el veneno de sus colmillos en una botella (agachado + clic derecho con una botella vacía mientras se
- * tiene «Mordisco venenoso»). Es una poción más: se bebe y da lo mismo que el mordisco, pero más corto (lentitud,
- * náuseas, desangrado y debilidad), y se puede echar al caldero de mezclas. Los efectos van en CustomPotionEffects,
+ * tiene «Mordisco venenoso»). Beberlo MATA (ver {@link VenenoLetal}: cinemática de muerte TipoMuerte.VENENO); sus efectos
+ * (los del mordisco, más cortos: lentitud, náuseas, desangrado y debilidad) son los que se llevan las mezclas del
+ * caldero, que heredan la marca de veneno letal (los frascos arrojadizos solo salpican los efectos). Los efectos van en CustomPotionEffects,
  * como en los frascos de mezcla; el líquido es su propia textura (verde oscuro con vetas negras), sin teñir.
  */
 public class VenenoDreamItem extends PotionItem {
@@ -47,6 +48,8 @@ public class VenenoDreamItem extends PotionItem {
             PotionUtils.setCustomEffects(st, efectos());
             st.getOrCreateTag().putInt("CustomPotionColor", DreamRegistro.COLOR_MORDISCO);
         }
+        // mata al beberlo (VenenoLetal); la marca la heredan las mezclas del caldero
+        if (!st.getOrCreateTag().getBoolean(VenenoLetal.TAG)) VenenoLetal.marcar(st);
         return st;
     }
 
@@ -73,6 +76,7 @@ public class VenenoDreamItem extends PotionItem {
     @Override
     public void appendHoverText(ItemStack st, @Nullable Level l, List<Component> tip, TooltipFlag f) {
         super.appendHoverText(st.hasTag() ? st : asegurar(st.copy()), l, tip, f);
+        tip.add(Component.translatable("item.miscelanea.veneno_dream.mortal").withStyle(ChatFormatting.DARK_RED, ChatFormatting.BOLD));
         tip.add(Component.empty());
         tip.add(Component.translatable("item.miscelanea.veneno_dream.lore").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
     }
