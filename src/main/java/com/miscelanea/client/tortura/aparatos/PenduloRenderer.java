@@ -23,8 +23,8 @@ public class PenduloRenderer implements BlockEntityRenderer<PenduloBlockEntity> 
         float baj = Mth.lerp(pt, be.bajadaVisO, be.bajadaVis);
         float ang = Mth.lerp(pt, be.angVisO, be.angVis);
         // cinemática de muerte: la última pasada, a cámara lenta
-        float c = com.miscelanea.client.tortura.muertes.MuertesCliente.canal(be.victimaId(), "pendulo", pt);
-        if (!Float.isNaN(c)) ang = c;
+        float lenta = com.miscelanea.client.tortura.muertes.MuertesCliente.canal(be.victimaId(), "pendulo", pt);
+        if (!Float.isNaN(lenta)) ang = lenta;
         float L = PenduloBlockEntity.longitud(baj);
         ps.pushPose();
         ModelosAparatos.orientar(ps, be.frente());
