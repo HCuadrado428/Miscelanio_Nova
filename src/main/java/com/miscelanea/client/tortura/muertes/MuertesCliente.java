@@ -30,6 +30,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.MovementInputUpdateEvent;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.event.TickEvent;
@@ -101,7 +102,6 @@ public final class MuertesCliente {
     private static final List<Destello> DESTELLOS = new ArrayList<>();
     private static final Set<Integer> EMPUJADOS = new HashSet<>();
     @Nullable private static CameraType camaraPrevia;
-    private static boolean hudPrevio, hudGuardado;
     @Nullable private static ClientLevel nivel;
 
     /** Desde el arranque del cliente (TorturaClienteMod): el código común pregunta por aquí. */
@@ -191,11 +191,6 @@ public final class MuertesCliente {
     private static void empezarLocal(Minecraft mc) {
         if (camaraPrevia == null) camaraPrevia = mc.options.getCameraType();
         mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
-        if (!hudGuardado) {
-            hudGuardado = true;
-            hudPrevio = mc.options.hideGui;
-        }
-        mc.options.hideGui = true;
         if (mc.player != null && mc.screen instanceof AbstractContainerScreen<?>) mc.player.closeContainer();
     }
 
@@ -205,10 +200,6 @@ public final class MuertesCliente {
             mc.options.setCameraType(camaraPrevia);
             camaraPrevia = null;
         }
-        if (hudGuardado) {
-            mc.options.hideGui = hudPrevio;
-            hudGuardado = false;
-        }
         DESTELLOS.clear();
     }
 
@@ -217,7 +208,7 @@ public final class MuertesCliente {
     public static void tick(TickEvent.ClientTickEvent e) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) {
-            if (!ACT.isEmpty() || camaraPrevia != null || hudGuardado) limpiarTodo();
+            if (!ACT.isEmpty() || camaraPrevia != null) limpiarTodo();
             nivel = null;
             return;
         }
@@ -230,7 +221,6 @@ public final class MuertesCliente {
             if (camaraPrevia == null) camaraPrevia = mc.options.getCameraType();
             mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
         }
-        if (yo != null) mc.options.hideGui = true;
         if (e.phase != TickEvent.Phase.END || mc.isPaused() || ACT.isEmpty()) return;
         long ahora = mc.level.getGameTime();
         List<Integer> fuera = null;
@@ -453,6 +443,14 @@ public final class MuertesCliente {
     }
 
     // ------------------------------------------------------------------ pantalla
+    private static final ResourceLocation NUESTRO = new ResourceLocation(Miscelanea.MOD_ID, "tortura_muerte");
+
+    /** La víctima ve su muerte "en cine": sin HUD (ni barra, ni mira, ni corazones...), solo los efectos de la cinemática. */
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public static void sinHud(RenderGuiOverlayEvent.Pre e) {
+        if (local() != null && !NUESTRO.equals(e.getOverlay().id())) e.setCanceled(true);
+    }
+
     public static void hud(ForgeGui gui, GuiGraphics g, float pt, int w, int h) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null || mc.player == null || ACT.isEmpty()) return;
