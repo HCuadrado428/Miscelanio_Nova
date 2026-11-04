@@ -18,7 +18,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class AparatosRed {
-    private static final String PROTOCOLO = "1";
+    private static final String PROTOCOLO = "2";
 
     public static final SimpleChannel CANAL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "aparatos"),
