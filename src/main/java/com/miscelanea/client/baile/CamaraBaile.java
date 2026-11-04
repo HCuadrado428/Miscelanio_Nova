@@ -63,7 +63,7 @@ public final class CamaraBaile {
 
         int sig(int n) {
             s = (s * 1103515245L + 12345L) & 0x7fffffffL;
-            return (int) ((s >> 8) % n);
+            return (int) ((s >> 16) % n);
         }
     }
 
@@ -106,7 +106,7 @@ public final class CamaraBaile {
     static List<Plano> planificar(CancionesBaile.Cancion c) {
         List<Plano> l = new ArrayList<>();
         Azar az = new Azar(c.id);
-        int ultimo = -1;
+        int ultimo = -1, penultimo = -1;
         for (CancionesBaile.Seccion sec : c.secciones) {
             String tipo = tipoSeccion(sec.nombre);
             float largo = largoPlano(tipo);
@@ -119,11 +119,13 @@ public final class CamaraBaile {
                 int tp;
                 if (pref >= 0 && pref != ultimo && az.sig(10) < 6) tp = pref;
                 else {
+                    // sin repetir ninguno de los dos últimos planos (si hay de dónde elegir)
                     tp = rep[az.sig(rep.length)];
-                    for (int i = 0; i < 4 && tp == ultimo && rep.length > 1; i++) tp = rep[az.sig(rep.length)];
+                    for (int i = 0; i < 6 && rep.length > 1 && (tp == ultimo || tp == penultimo && rep.length > 2); i++) tp = rep[az.sig(rep.length)];
                 }
                 int lado = az.sig(2) == 0 ? 1 : -1;
                 l.add(new Plano(tp, t, fin, lado, tipo.equals("estribillo") || tipo.equals("final")));
+                penultimo = ultimo;
                 ultimo = tp;
                 t = fin;
             }
@@ -139,7 +141,7 @@ public final class CamaraBaile {
             case CONTRAPICADO -> new float[]{L * (38 - 22 * u), -14, 2.7F, 1.35F, 0};
             case ORBITA -> new float[]{L * (-70 + 140 * u), 16, 3.6F, 1.0F, 0};
             case CENITAL -> new float[]{L * (10 + 50 * u), 74, 4.6F, 0.9F, 0};
-            case HOMBRO -> new float[]{180 + L * (32 - 10 * u), 18, 2.3F, 1.3F, 1.2F};
+            case HOMBRO -> new float[]{180 + L * (34 - 10 * u), 22, 3.3F, 1.25F, 0.8F};
             case PIES -> new float[]{L * (42 - 24 * u), 10, 2.1F, 0.45F, 0};
             case GRUA -> new float[]{L * (20 + 25 * u), 8 + 42 * u, 2.8F + 5 * u, 1.0F, 0};
             default -> new float[]{L * (28 - 18 * u), 14, 6.2F - 1.4F * u, 1.0F, 0};

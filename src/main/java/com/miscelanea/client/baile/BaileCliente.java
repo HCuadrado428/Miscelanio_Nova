@@ -377,7 +377,9 @@ public final class BaileCliente {
         int[] flecha = {GLFW.GLFW_KEY_LEFT, GLFW.GLFW_KEY_DOWN, GLFW.GLFW_KEY_UP, GLFW.GLFW_KEY_RIGHT};
         var km = new net.minecraft.client.KeyMapping[]{mc.options.keyLeft, mc.options.keyDown, mc.options.keyUp, mc.options.keyRight}[c];
         int k = km.getKey().getValue();
-        return GLFW.glfwGetKey(w, flecha[c]) == GLFW.GLFW_PRESS || (k > 0 && k < 400 && GLFW.glfwGetKey(w, k) == GLFW.GLFW_PRESS);
+        // solo teclas del teclado (si el paso está en un botón del ratón, se mira si el botón sigue pulsado)
+        boolean teclado = km.getKey().getType() == com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM && k >= 32;
+        return GLFW.glfwGetKey(w, flecha[c]) == GLFW.GLFW_PRESS || (teclado ? GLFW.glfwGetKey(w, k) == GLFW.GLFW_PRESS : km.isDown());
     }
 
     @SubscribeEvent
