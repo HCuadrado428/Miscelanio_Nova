@@ -82,6 +82,9 @@ public class CalderoBlock extends BaseEntityBlock {
         ItemStack st = p.getItemInHand(hand);
         if (st.isEmpty()) {
             if (hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
+            // con la mano principal vacía y algo útil en la otra, que lo use la otra mano
+            ItemStack otra = p.getOffhandItem();
+            if (otra.is(Items.GLASS_BOTTLE) || otra.is(Items.GUNPOWDER) || Mezclas.esPocion(otra)) return InteractionResult.PASS;
             if (!l.isClientSide) {
                 if (p.isSecondaryUseActive()) be.vaciar(p);
                 else be.mostrar(p);
