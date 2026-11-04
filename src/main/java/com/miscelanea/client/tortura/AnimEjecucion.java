@@ -3,6 +3,7 @@ package com.miscelanea.client.tortura;
 import dev.kosmx.playerAnim.api.TransformType;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.core.util.Vec3f;
+import com.miscelanea.client.Articulaciones;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
  *   <li>52: revienta: latigazo hacia atrás, los brazos salen despedidos y caen por su peso, el cuerpo se dobla;</li>
  *   <li>al morir se apaga en medio segundo (manda la animación de muerte normal).</li>
  * </ul>
+ * Con bendy-lib los codos y las rodillas se doblan (agarra la trampa con los codos abiertos, cae de rodillas de verdad).
  */
 public class AnimEjecucion implements IAnimation {
     private final AbstractClientPlayer p;
@@ -61,6 +63,18 @@ public class AnimEjecucion implements IAnimation {
     private static final float[][] K_RL = {{0F, 0F, 0F, 0F, 1}, {14F, 0F, 0F, 0F, 1}, {16F, 0.45F, 0F, 0F, 2}, {19F, 0F, 0F, 0F, 1}, {24F, -0.1F, 0F, 0F, 1}, {26F, 0.4F, 0F, 0.05F, 2}, {29F, -0.3F, 0F, 0F, 1}, {32F, 0.3F, 0F, 0F, 1}, {35F, -0.2F, 0F, 0F, 1}, {38F, 0F, 0F, 0.05F, 1}, {42F, 1.15F, 0F, 0.12F, 3}, {45F, 1.08F, 0F, 0.1F, 2}};
     private static final float[][] K_LL = {{0F, 0F, 0F, 0F, 1}, {14F, 0F, 0F, 0F, 1}, {16F, -0.3F, 0F, 0F, 2}, {19F, 0F, 0F, 0F, 1}, {24F, 0.1F, 0F, 0F, 1}, {26F, -0.35F, 0F, 0F, 2}, {29F, 0.35F, 0F, -0.05F, 1}, {32F, -0.25F, 0F, 0F, 1}, {35F, 0.25F, 0F, 0F, 1}, {38F, 0F, 0F, -0.05F, 1}, {42F, 1.15F, 0F, -0.12F, 3}, {45F, 1.08F, 0F, -0.1F, 2}};
 
+    // codos y rodillas (solo con bendy-lib, ver Articulaciones): *_AJ retocan la pose (las manos agarran la trampa con los
+    // codos doblados; de rodillas con el muslo vertical, sin hundir las piernas) y D_* son las flexiones (rad, en x)
+    private static final float[][] K_POS_AJ = {{0F, 0F, 0F, 0F, 1}, {38F, 0F, 0F, 0F, 1}, {42F, 0F, 0.27F, 0F, 3}, {45F, 0F, 0.24F, 0F, 2}, {48F, 0F, 0.25F, 0F, 1}, {52F, 0F, 0.25F, 0F, 1}, {54F, 0F, 0.24F, 0F, 2}, {60F, 0F, 0.2F, 0F, 3}};
+    private static final float[][] K_RA_AJ = {{0F, 0F, 0F, 0F, 1}, {4F, 0F, 0F, 0F, 2}, {9F, 1.087F, 1.143F, 0.502F, 1}, {12F, 1.087F, 1.143F, 0.502F, 1}, {16F, 0.637F, 1.022F, 0.437F, 2}, {20F, 1.037F, 1.143F, 0.462F, 1}, {26F, 0.687F, 0.972F, 0.477F, 2}, {29F, 0.987F, 1.143F, 0.442F, 1}, {34F, 0.587F, 1.022F, 0.437F, 2}, {38F, 1.087F, 1.143F, 0.502F, 1}, {42F, 0.887F, 1.143F, 0.432F, 3}, {45F, 0.6F, -0.2F, 0.758F, 2}, {47F, 0.75F, -0.15F, 0.808F, 1}, {49F, 0.55F, -0.23F, 0.738F, 1}, {52F, 0.65F, -0.18F, 0.778F, 1}, {55F, 0F, 0F, 0F, 2}, {61F, 0F, 0F, 0F, 3}, {64F, 0F, 0F, 0F, 2}, {68F, 0F, 0F, 0F, 1}};
+    private static final float[][] K_LA_AJ = {{0F, 0F, 0F, 0F, 1}, {5F, 0F, 0F, 0F, 2}, {10F, 1.087F, -1.143F, -0.502F, 1}, {12F, 1.087F, -1.143F, -0.502F, 1}, {16F, 0.637F, -1.022F, -0.437F, 2}, {20F, 1.037F, -1.143F, -0.462F, 1}, {26F, 0.687F, -0.972F, -0.477F, 2}, {29F, 0.987F, -1.143F, -0.442F, 1}, {34F, 0.587F, -1.022F, -0.437F, 2}, {38F, 1.087F, -1.143F, -0.502F, 1}, {42F, 0.937F, -1.143F, -0.462F, 3}, {45F, 0.437F, -1.022F, -0.437F, 2}, {48F, 1.037F, -1.143F, -0.522F, 1}, {50F, 0.487F, -1.022F, -0.457F, 1}, {52F, 1.187F, -1.143F, -0.582F, 1}, {55F, 0F, 0F, 0F, 2}, {61F, 0F, 0F, 0F, 3}, {64F, 0F, 0F, 0F, 2}, {68F, 0F, 0F, 0F, 1}};
+    private static final float[][] K_RL_AJ = {{0F, 0F, 0F, 0F, 1}, {14F, 0F, 0F, 0F, 1}, {16F, 0F, 0F, 0F, 2}, {19F, 0F, 0F, 0F, 1}, {24F, 0F, 0F, 0F, 1}, {26F, 0F, 0F, 0F, 2}, {29F, 0F, 0F, 0F, 1}, {32F, 0F, 0F, 0F, 1}, {35F, 0F, 0F, 0F, 1}, {38F, 0F, 0F, 0F, 1}, {42F, -1.45F, 0F, 0F, 3}, {45F, -1.38F, 0F, 0F, 2}};
+    private static final float[][] K_LL_AJ = {{0F, 0F, 0F, 0F, 1}, {14F, 0F, 0F, 0F, 1}, {16F, 0F, 0F, 0F, 2}, {19F, 0F, 0F, 0F, 1}, {24F, 0F, 0F, 0F, 1}, {26F, 0F, 0F, 0F, 2}, {29F, 0F, 0F, 0F, 1}, {32F, 0F, 0F, 0F, 1}, {35F, 0F, 0F, 0F, 1}, {38F, 0F, 0F, 0F, 1}, {42F, -1.45F, 0F, 0F, 3}, {45F, -1.38F, 0F, 0F, 2}};
+    private static final float[][] D_RA = {{0F, 0F, 0F, 0F, 1}, {4F, 0.9F, 0F, 0F, 2}, {9F, 1.545F, 0F, 0F, 1}, {12F, 1.545F, 0F, 0F, 1}, {16F, 0.646F, 0F, 0F, 2}, {20F, 1.545F, 0F, 0F, 1}, {26F, 0.646F, 0F, 0F, 2}, {29F, 1.545F, 0F, 0F, 1}, {34F, 0.646F, 0F, 0F, 2}, {38F, 1.545F, 0F, 0F, 1}, {42F, 1.545F, 0F, 0F, 3}, {45F, 1.11F, 0F, 0F, 2}, {47F, 1.21F, 0F, 0F, 1}, {49F, 1.01F, 0F, 0F, 1}, {52F, 1.11F, 0F, 0F, 1}, {55F, 0.1F, 0F, 0F, 2}, {61F, 0.35F, 0F, 0F, 3}, {64F, 0.5F, 0F, 0F, 2}, {68F, 0.4F, 0F, 0F, 1}};
+    private static final float[][] D_LA = {{0F, 0F, 0F, 0F, 1}, {5F, 0.9F, 0F, 0F, 2}, {10F, 1.545F, 0F, 0F, 1}, {12F, 1.545F, 0F, 0F, 1}, {16F, 0.646F, 0F, 0F, 2}, {20F, 1.545F, 0F, 0F, 1}, {26F, 0.646F, 0F, 0F, 2}, {29F, 1.545F, 0F, 0F, 1}, {34F, 0.646F, 0F, 0F, 2}, {38F, 1.545F, 0F, 0F, 1}, {42F, 1.545F, 0F, 0F, 3}, {45F, 0.646F, 0F, 0F, 2}, {48F, 1.545F, 0F, 0F, 1}, {50F, 0.646F, 0F, 0F, 1}, {52F, 1.545F, 0F, 0F, 1}, {55F, 0.1F, 0F, 0F, 2}, {61F, 0.35F, 0F, 0F, 3}, {64F, 0.5F, 0F, 0F, 2}, {68F, 0.4F, 0F, 0F, 1}};
+    private static final float[][] D_RL = {{0F, 0F, 0F, 0F, 1}, {14F, 0F, 0F, 0F, 1}, {16F, 0.55F, 0F, 0F, 2}, {19F, 0F, 0F, 0F, 1}, {24F, 0F, 0F, 0F, 1}, {26F, 0.5F, 0F, 0F, 2}, {29F, 0F, 0F, 0F, 1}, {32F, 0.3F, 0F, 0F, 1}, {35F, 0F, 0F, 0F, 1}, {38F, 0F, 0F, 0F, 1}, {42F, 2F, 0F, 0F, 3}, {45F, 1.9F, 0F, 0F, 2}};
+    private static final float[][] D_LL = {{0F, 0F, 0F, 0F, 1}, {14F, 0F, 0F, 0F, 1}, {16F, 0.15F, 0F, 0F, 2}, {19F, 0F, 0F, 0F, 1}, {24F, 0F, 0F, 0F, 1}, {26F, 0F, 0F, 0F, 2}, {29F, 0.55F, 0F, 0F, 1}, {32F, 0F, 0F, 0F, 1}, {35F, 0.35F, 0F, 0F, 1}, {38F, 0F, 0F, 0F, 1}, {42F, 2F, 0F, 0F, 3}, {45F, 1.9F, 0F, 0F, 2}};
+
     private static float curva(int e, float x) {
         x = Mth.clamp(x, 0F, 1F);
         switch (e) {
@@ -83,6 +97,13 @@ public class AnimEjecucion implements IAnimation {
         }
         float[] u = ks[ks.length - 1];
         return new float[]{u[1], u[2], u[3]};
+    }
+
+    /** Suma el retoque de la pose que solo vale con las piezas dobladas (bendy-lib). */
+    private static float[] con(float[] v, float[][] aj, float t) {
+        if (!Articulaciones.ACTIVO) return v;
+        float[] a = valor(aj, t);
+        return new float[]{v[0] + a[0], v[1] + a[1], v[2] + a[2]};
     }
 
     private static float ruido(float t, int sem) {
@@ -118,8 +139,18 @@ public class AnimEjecucion implements IAnimation {
         boolean revento = t >= EjecucionCliente.ESTALLIDO;
         if (tipo == TransformType.POSITION) {
             if (!parte.equals("body")) return v;
-            float[] o = valor(K_POS, t);
+            float[] o = con(valor(K_POS, t), K_POS_AJ, t);
             return new Vec3f(v.getX() + o[0] * k, v.getY() + o[1] * k, v.getZ() + o[2] * k);
+        }
+        if (tipo == TransformType.BEND) {
+            float[][] d = switch (parte) {
+                case "rightArm" -> D_RA;
+                case "leftArm" -> D_LA;
+                case "rightLeg" -> D_RL;
+                case "leftLeg" -> D_LL;
+                default -> null;
+            };
+            return d == null ? v : Articulaciones.fijar(parte, v, valor(d, t)[0], k);
         }
         if (tipo != TransformType.ROTATION) return v;
         switch (parte) {
@@ -130,10 +161,10 @@ public class AnimEjecucion implements IAnimation {
             case "torso": return mezclar(k, v, conTemblor(valor(K_TORSO, t), t, 3, 0.6F));
             // sin cabeza: el muñón sigue al torso (los dos giran sobre el mismo punto del cuello)
             case "head": return mezclar(k, v, revento ? conTemblor(valor(K_TORSO, t), t, 3, 0.6F) : conTemblor(valor(K_HD, t), t, 2, 0.6F));
-            case "rightArm": return mezclar(k, v, conTemblor(valor(K_RA, t), t, 0, 1F));
-            case "leftArm": return mezclar(k, v, conTemblor(valor(K_LA, t), t, 1, 1F));
-            case "rightLeg": return mezclar(k, v, valor(K_RL, t));
-            case "leftLeg": return mezclar(k, v, valor(K_LL, t));
+            case "rightArm": return mezclar(k, v, conTemblor(con(valor(K_RA, t), K_RA_AJ, t), t, 0, 1F));
+            case "leftArm": return mezclar(k, v, conTemblor(con(valor(K_LA, t), K_LA_AJ, t), t, 1, 1F));
+            case "rightLeg": return mezclar(k, v, con(valor(K_RL, t), K_RL_AJ, t));
+            case "leftLeg": return mezclar(k, v, con(valor(K_LL, t), K_LL_AJ, t));
             default: return v;
         }
     }

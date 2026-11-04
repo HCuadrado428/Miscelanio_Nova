@@ -15,7 +15,7 @@ public final class MuertesDatos {
     public static final int DONCELLA_PINCHOS = 21;
     public static final float DONCELLA_MARGEN = 0.9F;
     public static final int DONCELLA_SIN_CABEZA = -1;
-    public static final String[] DONCELLA_N = {"puertas", "cam", "mira", "pos", "torso", "head", "rightArm", "leftArm", "rightLeg", "leftLeg", "temblor", "vineta", "negro"};
+    public static final String[] DONCELLA_N = {"puertas", "cam", "mira", "pos", "torso", "head", "rightArm", "leftArm", "rightLeg", "leftLeg", "temblor", "vineta", "negro", "rightArmAj", "leftArmAj", "rightArmDobla", "leftArmDobla", "rightLegDobla", "leftLegDobla", "rightLegAj", "leftLegAj"};
     public static final float[][][] DONCELLA_K = {
             {{0F, 0.7F, 1F}, {12F, 0.78F, 1F}, {18F, 1F, 3F}, {20F, 0.965F, 2F}, {23F, 1F, 1F}},
             {{0F, 12F, 4F, 1.55F, 1F}, {10F, 8F, 2F, 1.38F, 1F}, {17F, 5F, 2F, 1.3F, 1F}, {21F, 0F, 7F, 2.35F, 2F}, {42F, -18F, 10F, 2.6F, 1F}, {84F, -32F, 14F, 2.9F, 1F}, {112F, -36F, 16F, 3F, 1F}},
@@ -30,6 +30,14 @@ public final class MuertesDatos {
             {{0F, 0.02F, 1F}, {15F, 0.06F, 3F}, {18F, 0.07F, 1F}, {19F, 0.12F, 2F}, {30F, 0.05F, 1F}, {60F, 0.02F, 1F}, {84F, 0F, 1F}},
             {{0F, 0.3F, 1F}, {18F, 0.5F, 1F}, {19F, 1F, 2F}, {112F, 1F, 1F}},
             {{0F, 0F, 1F}, {18F, 0F, 1F}, {20F, 0.55F, 2F}, {40F, 0.7F, 1F}, {84F, 0.92F, 1F}, {112F, 0.95F, 1F}},
+            {{0F, 0F, 0F, 0F, 1F}, {3F, 0F, 0F, 0F, 2F}, {9F, -0.062F, 0.233F, 0.412F, 2F}, {15F, 0.038F, 0.283F, 0.462F, 1F}, {18F, 0.038F, 0.283F, 0.462F, 1F}, {19F, 0F, 0F, 0F, 2F}, {24F, 0F, 0F, 0F, 2F}, {40F, 0F, 0F, 0F, 1F}, {84F, 0F, 0F, 0F, 1F}},
+            {{0F, 0F, 0F, 0F, 1F}, {3F, 0F, 0F, 0F, 2F}, {9F, -0.062F, -0.233F, -0.412F, 2F}, {15F, 0.038F, -0.283F, -0.462F, 1F}, {18F, 0.038F, -0.283F, -0.462F, 1F}, {19F, 0F, 0F, 0F, 2F}, {24F, 0F, 0F, 0F, 2F}, {40F, 0F, 0F, 0F, 1F}, {84F, 0F, 0F, 0F, 1F}},
+            {{0F, 0F, 1F}, {3F, 0.6F, 2F}, {9F, 0.957F, 2F}, {15F, 1.057F, 1F}, {18F, 1.057F, 1F}, {19F, 0.5F, 2F}, {24F, 0.4F, 2F}, {40F, 0.3F, 1F}, {84F, 0.25F, 1F}},
+            {{0F, 0F, 1F}, {3F, 0.6F, 2F}, {9F, 0.957F, 2F}, {15F, 1.057F, 1F}, {18F, 1.057F, 1F}, {19F, 0.5F, 2F}, {24F, 0.4F, 2F}, {40F, 0.3F, 1F}, {84F, 0.25F, 1F}},
+            {{0F, 0F, 1F}, {18F, 0F, 1F}, {19F, 0.3F, 2F}, {84F, 0.75F, 1F}},
+            {{0F, 0F, 1F}, {18F, 0F, 1F}, {19F, 0.25F, 2F}, {84F, 0.7F, 1F}},
+            {{0F, 0F, 0F, 0F, 1F}, {18F, 0F, 0F, 0F, 1F}, {19F, -0.25F, 0F, 0F, 2F}, {84F, -0.72F, 0F, 0F, 1F}},
+            {{0F, 0F, 0F, 0F, 1F}, {18F, 0F, 0F, 0F, 1F}, {19F, -0.2F, 0F, 0F, 2F}, {84F, -0.67F, 0F, 0F, 1F}},
     };
 
     // ---------------------------------------------------------------- POTRO
@@ -76,7 +84,7 @@ public final class MuertesDatos {
     public static final int SILLA_ESPASMO = 86;
     public static final float SILLA_MARGEN = 0.3F;
     public static final int SILLA_SIN_CABEZA = -1;
-    public static final String[] SILLA_N = {"convulsion", "cam", "mira", "torso", "head", "rightArm", "leftArm", "rightLeg", "leftLeg", "pos", "temblor", "parpadeo", "negro", "vineta"};
+    public static final String[] SILLA_N = {"convulsion", "cam", "mira", "torso", "head", "rightArm", "leftArm", "rightLeg", "leftLeg", "pos", "temblor", "parpadeo", "negro", "vineta", "rightArmDobla", "leftArmDobla", "rightLegDobla", "leftLegDobla"};
     public static final float[][][] SILLA_K = {
             {{0F, 0F, 1F}, {5F, 0F, 1F}, {8F, 0.9F, 3F}, {14F, 0.6F, 1F}, {18F, 1F, 1F}, {30F, 0.75F, 1F}, {38F, 1F, 1F}, {52F, 0.8F, 1F}, {60F, 0.9F, 1F}, {68F, 0.35F, 2F}, {74F, 0.1F, 1F}, {80F, 0F, 1F}, {86F, 0.25F, 2F}, {89F, 0F, 1F}},
             {{0F, -75F, 8F, 2.5F, 1F}, {8F, -62F, 10F, 2.3F, 1F}, {68F, 40F, 16F, 2F, 1F}, {96F, 68F, 24F, 2.3F, 1F}, {120F, 80F, 28F, 2.6F, 1F}},
@@ -92,6 +100,10 @@ public final class MuertesDatos {
             {{0F, 0F, 1F}, {6F, 0.6F, 1F}, {8F, 1F, 1F}, {60F, 1F, 1F}, {68F, 0.4F, 1F}, {72F, 0F, 1F}},
             {{0F, 0F, 1F}, {70F, 0.1F, 1F}, {96F, 0.85F, 3F}, {120F, 0.95F, 1F}},
             {{0F, 0.2F, 1F}, {8F, 0.5F, 1F}, {96F, 0.8F, 1F}},
+            {{0F, 0F, 1F}, {5F, 0F, 1F}, {8F, 0.45F, 2F}, {66F, 0.4F, 1F}, {74F, -0.35F, 3F}, {80F, -0.3F, 2F}},
+            {{0F, 0F, 1F}, {5F, 0F, 1F}, {8F, 0.5F, 2F}, {66F, 0.42F, 1F}, {74F, -0.35F, 3F}, {80F, -0.3F, 2F}},
+            {{0F, 0F, 1F}, {8F, -0.35F, 2F}, {66F, -0.3F, 1F}, {74F, 0.05F, 3F}},
+            {{0F, 0F, 1F}, {8F, -0.35F, 2F}, {66F, -0.3F, 1F}, {74F, 0.05F, 3F}},
     };
 
     // ---------------------------------------------------------------- PENDULO
@@ -126,7 +138,7 @@ public final class MuertesDatos {
     public static final int INMERSION_ULTIMO = 70;
     public static final float INMERSION_MARGEN = 0.2F;
     public static final int INMERSION_SIN_CABEZA = -1;
-    public static final String[] INMERSION_N = {"cam", "mira", "torso", "head", "rightArm", "leftArm", "rightLeg", "leftLeg", "pos", "temblor", "vineta", "negro"};
+    public static final String[] INMERSION_N = {"cam", "mira", "torso", "head", "rightArm", "leftArm", "rightLeg", "leftLeg", "pos", "temblor", "vineta", "negro", "rightArmDobla", "leftArmDobla", "rightLegDobla", "leftLegDobla"};
     public static final float[][][] INMERSION_K = {
             {{0F, 25F, -12F, 1.35F, 1F}, {36F, 12F, -10F, 1.25F, 1F}, {70F, -5F, -8F, 1.3F, 1F}, {74F, -6F, -8F, 1.35F, 1F}, {100F, -18F, -4F, 1.9F, 1F}, {120F, -22F, -2F, 2.1F, 1F}},
             {{0F, 0F, -0.05F, 0F, 1F}, {100F, 0F, -0.2F, 0F, 1F}},
@@ -140,6 +152,10 @@ public final class MuertesDatos {
             {{0F, 0.06F, 1F}, {34F, 0.08F, 1F}, {46F, 0.04F, 1F}, {66F, 0.02F, 1F}, {70F, 0.1F, 2F}, {76F, 0.03F, 1F}, {90F, 0F, 1F}},
             {{0F, 0.2F, 1F}, {100F, 0.6F, 1F}},
             {{0F, 0.15F, 1F}, {40F, 0.3F, 1F}, {70F, 0.5F, 1F}, {100F, 0.92F, 3F}, {120F, 0.96F, 1F}},
+            {{0F, 0F, 1F}, {4F, 0.7F, 2F}, {9F, -0.1F, 1F}, {14F, 0.75F, 2F}, {20F, 0F, 1F}, {26F, 0.6F, 2F}, {34F, 0F, 1F}, {46F, 0.3F, 1F}, {60F, 0F, 1F}, {70F, 0.85F, 2F}, {80F, 0.5F, 1F}, {100F, 0.6F, 1F}},
+            {{0F, 0F, 1F}, {6F, 0.7F, 2F}, {11F, -0.1F, 1F}, {16F, 0.75F, 2F}, {22F, 0F, 1F}, {28F, 0.6F, 2F}, {36F, 0F, 1F}, {48F, 0.3F, 1F}, {62F, 0F, 1F}, {72F, 0.85F, 2F}, {82F, 0.5F, 1F}, {102F, 0.6F, 1F}},
+            {{0F, 0F, 1F}, {4F, -0.6F, 2F}, {9F, 0.3F, 1F}, {14F, -0.5F, 2F}, {20F, 0.15F, 1F}, {26F, -0.45F, 2F}, {34F, 0F, 1F}, {70F, -0.6F, 2F}, {80F, -0.2F, 1F}, {100F, -0.25F, 1F}},
+            {{0F, 0F, 1F}, {7F, -0.6F, 2F}, {12F, 0.3F, 1F}, {17F, -0.5F, 2F}, {23F, 0.15F, 1F}, {29F, -0.45F, 2F}, {37F, 0F, 1F}, {73F, -0.6F, 2F}, {83F, -0.2F, 1F}, {103F, -0.25F, 1F}},
     };
 
     // ---------------------------------------------------------------- COLLAR
@@ -149,7 +165,7 @@ public final class MuertesDatos {
     public static final int[] COLLAR_PITIDOS = {0, 12, 23, 33, 42, 50, 57, 62, 66, 69, 72};
     public static final float COLLAR_MARGEN = 0.2F;
     public static final int COLLAR_SIN_CABEZA = 84;
-    public static final String[] COLLAR_N = {"cam", "mira", "pos", "body", "torso", "head", "rightArm", "leftArm", "rightLeg", "leftLeg", "temblor", "vineta", "negro"};
+    public static final String[] COLLAR_N = {"cam", "mira", "pos", "body", "torso", "head", "rightArm", "leftArm", "rightLeg", "leftLeg", "temblor", "vineta", "negro", "rightArmAj", "leftArmAj", "rightArmDobla", "leftArmDobla", "rightLegDobla", "leftLegDobla", "rightLegAj", "leftLegAj", "posAj"};
     public static final float[][][] COLLAR_K = {
             {{0F, 20F, 2F, 2.3F, 1F}, {10F, 15F, 0F, 2F, 1F}, {60F, 8F, -4F, 1.6F, 1F}, {64F, 8F, -6F, 1.5F, 1F}, {82F, 5F, -8F, 1.35F, 1F}, {84F, 5F, -8F, 1.35F, 1F}, {90F, 12F, 22F, 3.9F, 2F}, {115F, 15F, 25F, 4.3F, 1F}},
             {{0F, 0F, 1.5F, 0F, 1F}, {60F, 0F, 1.45F, 0F, 1F}, {64F, 0F, 1.1F, 0F, 1F}, {84F, 0F, 1.1F, 0F, 1F}, {92F, 0F, 0.6F, 0F, 1F}},
@@ -164,6 +180,15 @@ public final class MuertesDatos {
             {{0F, 0.015F, 1F}, {60F, 0.04F, 3F}, {84F, 0.1F, 3F}, {87F, 0F, 1F}, {88F, 0.06F, 1F}, {104F, 0F, 1F}},
             {{0F, 0.3F, 1F}, {60F, 0.55F, 1F}, {84F, 0.8F, 1F}, {85F, 1F, 1F}},
             {{0F, 0F, 1F}, {84F, 0F, 1F}, {87F, 0.6F, 2F}, {115F, 0.7F, 1F}},
+            {{0F, 0F, 0F, 0F, 1F}, {3F, 0F, 0F, 0F, 2F}, {11F, 1.076F, 0.054F, 0.76F, 2F}, {16F, 1.263F, 0.016F, 0.507F, 2F}, {20F, 1.041F, 0.271F, 0.903F, 1F}, {25F, 1.263F, 0.016F, 0.507F, 2F}, {29F, 1.041F, 0.271F, 0.903F, 1F}, {34F, 1.263F, 0.016F, 0.507F, 2F}, {38F, 1.041F, 0.271F, 0.903F, 1F}, {42F, 1.263F, 0.016F, 0.507F, 2F}, {46F, 1.041F, 0.271F, 0.903F, 1F}, {50F, 1.263F, 0.016F, 0.507F, 2F}, {54F, 1.041F, 0.271F, 0.903F, 1F}, {60F, 1.076F, 0.054F, 0.76F, 1F}, {66F, 1.256F, -0.006F, 0.64F, 2F}, {84F, 1.306F, 0.014F, 0.66F, 1F}, {87F, 0F, 0F, 0F, 2F}, {93F, 0F, 0F, 0F, 3F}, {96F, 0F, 0F, 0F, 2F}, {100F, 0F, 0F, 0F, 1F}},
+            {{0F, 0F, 0F, 0F, 1F}, {4F, 0F, 0F, 0F, 2F}, {12F, 1.076F, 1.186F, -0.76F, 2F}, {18F, 1.263F, 0.884F, -0.867F, 2F}, {22F, 1.041F, 1.129F, -0.823F, 1F}, {27F, 1.263F, 0.884F, -0.867F, 2F}, {31F, 1.041F, 1.129F, -0.823F, 1F}, {36F, 1.263F, 0.884F, -0.867F, 2F}, {40F, 1.041F, 1.129F, -0.823F, 1F}, {44F, 1.263F, 0.884F, -0.867F, 2F}, {48F, 1.041F, 1.129F, -0.823F, 1F}, {52F, 1.263F, 0.884F, -0.867F, 2F}, {56F, 1.041F, 1.129F, -0.823F, 1F}, {60F, 1.076F, 1.186F, -0.76F, 1F}, {66F, 1.256F, 1.126F, -0.88F, 2F}, {84F, 1.306F, 1.146F, -0.86F, 1F}, {87F, 0F, 0F, 0F, 2F}, {93F, 0F, 0F, 0F, 3F}, {96F, 0F, 0F, 0F, 2F}, {100F, 0F, 0F, 0F, 1F}},
+            {{0F, 0F, 1F}, {3F, 0.5F, 2F}, {11F, 2.055F, 2F}, {16F, 1.966F, 2F}, {20F, 1.976F, 1F}, {25F, 1.966F, 2F}, {29F, 1.976F, 1F}, {34F, 1.966F, 2F}, {38F, 1.976F, 1F}, {42F, 1.966F, 2F}, {46F, 1.976F, 1F}, {50F, 1.966F, 2F}, {54F, 1.976F, 1F}, {60F, 2.055F, 1F}, {66F, 2.105F, 2F}, {84F, 2.135F, 1F}, {87F, 0.12F, 2F}, {93F, 0.35F, 3F}, {96F, 0.5F, 2F}, {100F, 0.4F, 1F}},
+            {{0F, 0F, 1F}, {4F, 0.5F, 2F}, {12F, 2.055F, 2F}, {18F, 1.966F, 2F}, {22F, 1.976F, 1F}, {27F, 1.966F, 2F}, {31F, 1.976F, 1F}, {36F, 1.966F, 2F}, {40F, 1.976F, 1F}, {44F, 1.966F, 2F}, {48F, 1.976F, 1F}, {52F, 1.966F, 2F}, {56F, 1.976F, 1F}, {60F, 2.055F, 1F}, {66F, 2.105F, 2F}, {84F, 2.135F, 1F}, {87F, 0.12F, 2F}, {93F, 0.35F, 3F}, {96F, 0.5F, 2F}, {100F, 0.4F, 1F}},
+            {{0F, 0F, 1F}, {14F, 0F, 1F}, {16F, 0.55F, 2F}, {19F, 0F, 1F}, {28F, 0.1F, 1F}, {30F, 0.5F, 2F}, {34F, 0F, 1F}, {44F, 0.45F, 2F}, {50F, 0.05F, 1F}, {60F, 0F, 1F}, {64F, 2F, 3F}, {67F, 1.9F, 2F}},
+            {{0F, 0F, 1F}, {14F, 0F, 1F}, {16F, 0.495F, 2F}, {19F, 0F, 1F}, {28F, 0.09F, 1F}, {30F, 0.45F, 2F}, {34F, 0F, 1F}, {44F, 0.405F, 2F}, {50F, 0.045F, 1F}, {60F, 0F, 1F}, {64F, 2F, 3F}, {67F, 1.9F, 2F}},
+            {{0F, 0F, 0F, 0F, 1F}, {60F, 0F, 0F, 0F, 1F}, {64F, -1.45F, 0F, 0F, 3F}, {67F, -1.38F, 0F, 0F, 2F}},
+            {{0F, 0F, 0F, 0F, 1F}, {60F, 0F, 0F, 0F, 1F}, {64F, -1.45F, 0F, 0F, 3F}, {67F, -1.38F, 0F, 0F, 2F}},
+            {{0F, 0F, 0F, 0F, 1F}, {60F, 0F, 0F, 0F, 1F}, {64F, 0F, 0.27F, 0F, 3F}, {67F, 0F, 0.24F, 0F, 2F}, {70F, 0F, 0.23F, 0F, 1F}, {84F, 0F, 0.23F, 0F, 1F}, {86F, 0F, 0.22F, 0F, 2F}, {92F, 0F, 0.18F, 0F, 3F}},
     };
 
     // ---------------------------------------------------------------- CAJA
@@ -172,7 +197,7 @@ public final class MuertesDatos {
     public static final int[] CAJA_GOLPES = {6, 13, 19, 27, 33, 41, 52, 64};
     public static final float CAJA_MARGEN = 0.2F;
     public static final int CAJA_SIN_CABEZA = -1;
-    public static final String[] CAJA_N = {"cam", "mira", "rightArm", "leftArm", "head", "torso", "pos", "body", "rightLeg", "leftLeg", "temblor", "vineta", "negro"};
+    public static final String[] CAJA_N = {"cam", "mira", "rightArm", "leftArm", "head", "torso", "pos", "body", "rightLeg", "leftLeg", "temblor", "vineta", "negro", "rightArmAj", "leftArmAj", "rightArmDobla", "leftArmDobla", "rightLegDobla", "leftLegDobla", "rightLegAj", "leftLegAj", "posAj"};
     public static final float[][][] CAJA_K = {
             {{0F, 10F, 0F, 1.25F, 1F}, {40F, -12F, 2F, 1.15F, 1F}, {70F, 8F, 0F, 1.2F, 1F}, {80F, 0F, 0F, 1.25F, 1F}, {100F, 0F, 8F, 2.2F, 1F}, {120F, 0F, 10F, 2.5F, 1F}},
             {{0F, 0F, 1.55F, 0F, 1F}, {70F, 0F, 1.5F, 0F, 1F}, {80F, 0F, 1.35F, 0F, 1F}, {100F, 0F, 1.1F, 0F, 1F}},
@@ -187,6 +212,15 @@ public final class MuertesDatos {
             {{0F, 0.04F, 1F}, {50F, 0.06F, 1F}, {70F, 0.03F, 1F}, {78F, 0.09F, 2F}, {86F, 0.02F, 1F}, {100F, 0F, 1F}},
             {{0F, 0.3F, 1F}, {100F, 0.8F, 1F}},
             {{0F, 0.1F, 1F}, {60F, 0.3F, 1F}, {80F, 0.55F, 1F}, {100F, 0.9F, 3F}, {120F, 0.95F, 1F}},
+            {{0F, 0F, 0F, 0F, 1F}, {4F, 1.673F, 0.01F, 0.528F, 2F}, {4F, 1.623F, 0.01F, 0.358F, 3F}, {6F, 1.099F, 0.119F, 0.789F, 2F}, {9F, 1.773F, 0.01F, 0.628F, 2F}, {11F, 1.4515F, 0.01F, 0.3615F, 3F}, {13F, 0.9086F, 0.119F, 0.789F, 2F}, {16F, 1.591F, 0.01F, 0.628F, 2F}, {17F, 1.28F, 0.01F, 0.365F, 3F}, {19F, 0.7182F, 0.119F, 0.789F, 2F}, {22F, 1.409F, 0.01F, 0.628F, 2F}, {25F, 1.1085F, 0.01F, 0.3685F, 3F}, {27F, 0.5278F, 0.119F, 0.789F, 2F}, {30F, 1.227F, 0.01F, 0.628F, 2F}, {31F, 0.937F, 0.01F, 0.372F, 3F}, {33F, 0.3374F, 0.119F, 0.789F, 2F}, {36F, 1.045F, 0.01F, 0.628F, 2F}, {39F, 0.7655F, 0.01F, 0.3755F, 3F}, {41F, 0.147F, 0.119F, 0.789F, 2F}, {44F, 0.863F, 0.01F, 0.628F, 2F}, {50F, 0.594F, 0.01F, 0.379F, 3F}, {52F, -0.0434F, 0.119F, 0.789F, 2F}, {55F, 0.681F, 0.01F, 0.628F, 2F}, {62F, 0.4225F, 0.01F, 0.3825F, 3F}, {64F, -0.2338F, 0.119F, 0.789F, 2F}, {67F, 0.499F, 0.01F, 0.628F, 2F}, {80F, 0F, 0F, 0F, 1F}, {98F, 0F, 0F, 0F, 3F}, {100F, 0F, 0F, 0F, 2F}},
+            {{0F, 0F, 0F, 0F, 1F}, {4F, 1.673F, -0.01F, -1.128F, 2F}, {4F, 1.623F, -0.01F, -1.298F, 3F}, {6F, 1.099F, -0.119F, -0.829F, 2F}, {9F, 1.773F, -0.01F, -1.028F, 2F}, {11F, 1.4515F, -0.01F, -1.2945F, 3F}, {13F, 0.9086F, -0.119F, -0.829F, 2F}, {16F, 1.591F, -0.01F, -1.028F, 2F}, {17F, 1.28F, -0.01F, -1.291F, 3F}, {19F, 0.7182F, -0.119F, -0.829F, 2F}, {22F, 1.409F, -0.01F, -1.028F, 2F}, {25F, 1.1085F, -0.01F, -1.2875F, 3F}, {27F, 0.5278F, -0.119F, -0.829F, 2F}, {30F, 1.227F, -0.01F, -1.028F, 2F}, {31F, 0.937F, -0.01F, -1.284F, 3F}, {33F, 0.3374F, -0.119F, -0.829F, 2F}, {36F, 1.045F, -0.01F, -1.028F, 2F}, {39F, 0.7655F, -0.01F, -1.2805F, 3F}, {41F, 0.147F, -0.119F, -0.829F, 2F}, {44F, 0.863F, -0.01F, -1.028F, 2F}, {50F, 0.594F, -0.01F, -1.277F, 3F}, {52F, -0.0434F, -0.119F, -0.829F, 2F}, {55F, 0.681F, -0.01F, -1.028F, 2F}, {62F, 0.4225F, -0.01F, -1.2735F, 3F}, {64F, -0.2338F, -0.119F, -0.829F, 2F}, {67F, 0.499F, -0.01F, -1.028F, 2F}, {80F, 0F, 0F, 0F, 1F}, {98F, 0F, 0F, 0F, 3F}, {100F, 0F, 0F, 0F, 2F}},
+            {{0F, 0F, 1F}, {4F, 1.318F, 2F}, {4F, 1.318F, 3F}, {6F, 0.835F, 2F}, {9F, 1.1203F, 2F}, {11F, 1.318F, 3F}, {13F, 0.835F, 2F}, {16F, 1.1203F, 2F}, {17F, 1.318F, 3F}, {19F, 0.835F, 2F}, {22F, 1.1203F, 2F}, {25F, 1.318F, 3F}, {27F, 0.835F, 2F}, {30F, 1.1203F, 2F}, {31F, 1.318F, 3F}, {33F, 0.835F, 2F}, {36F, 1.1203F, 2F}, {39F, 1.318F, 3F}, {41F, 0.835F, 2F}, {44F, 1.1203F, 2F}, {50F, 1.318F, 3F}, {52F, 0.835F, 2F}, {55F, 1.1203F, 2F}, {62F, 1.318F, 3F}, {64F, 0.835F, 2F}, {67F, 1.1203F, 2F}, {80F, 0.6F, 1F}, {98F, 0.3F, 3F}, {100F, 0.3F, 2F}},
+            {{0F, 0F, 1F}, {4F, 1.318F, 2F}, {4F, 1.318F, 3F}, {6F, 0.835F, 2F}, {9F, 1.1203F, 2F}, {11F, 1.318F, 3F}, {13F, 0.835F, 2F}, {16F, 1.1203F, 2F}, {17F, 1.318F, 3F}, {19F, 0.835F, 2F}, {22F, 1.1203F, 2F}, {25F, 1.318F, 3F}, {27F, 0.835F, 2F}, {30F, 1.1203F, 2F}, {31F, 1.318F, 3F}, {33F, 0.835F, 2F}, {36F, 1.1203F, 2F}, {39F, 1.318F, 3F}, {41F, 0.835F, 2F}, {44F, 1.1203F, 2F}, {50F, 1.318F, 3F}, {52F, 0.835F, 2F}, {55F, 1.1203F, 2F}, {62F, 1.318F, 3F}, {64F, 0.835F, 2F}, {67F, 1.1203F, 2F}, {80F, 0.6F, 1F}, {98F, 0.3F, 3F}, {100F, 0.3F, 2F}},
+            {{0F, 0F, 1F}, {11F, 0.5F, 2F}, {15F, 0F, 1F}, {31F, 0.45F, 2F}, {36F, 0F, 1F}, {70F, 0F, 1F}, {74F, 0.7F, 3F}},
+            {{0F, 0F, 1F}, {17F, 0.4F, 2F}, {22F, 0F, 1F}, {70F, 0F, 1F}, {74F, 0.7F, 3F}},
+            {{0F, 0F, 0F, 0F, 1F}, {70F, 0F, 0F, 0F, 1F}, {74F, -0.6F, 0F, 0F, 3F}},
+            {{0F, 0F, 0F, 0F, 1F}, {70F, 0F, 0F, 0F, 1F}, {74F, -0.6F, 0F, 0F, 3F}},
+            {{0F, 0F, 0F, 0F, 1F}, {70F, 0F, 0F, 0F, 1F}, {74F, 0F, 0.03F, 0F, 3F}},
     };
 
     // ---------------------------------------------------------------- PARO
@@ -197,7 +231,7 @@ public final class MuertesDatos {
     public static final int PARO_PLANO = 34;
     public static final float PARO_MARGEN = 0.2F;
     public static final int PARO_SIN_CABEZA = -1;
-    public static final String[] PARO_N = {"aux", "cam", "mira", "torso", "head", "rightArm", "leftArm", "pos", "temblor", "vineta", "negro"};
+    public static final String[] PARO_N = {"aux", "cam", "mira", "torso", "head", "rightArm", "leftArm", "pos", "temblor", "vineta", "negro", "rightArmAj", "rightArmDobla", "leftArmDobla"};
     public static final float[][][] PARO_K = {
             {{0F, 1F, 1F}, {30F, 1F, 1F}, {56F, 0F, 1F}},
             {{0F, 0F, 4F, 0.75F, 1F}, {30F, 6F, 4F, 0.85F, 1F}, {56F, 25F, 8F, 2.1F, 1F}, {96F, 35F, 14F, 2.3F, 1F}, {120F, 38F, 16F, 2.4F, 1F}},
@@ -210,6 +244,9 @@ public final class MuertesDatos {
             {{0F, 0.015F, 1F}, {30F, 0.02F, 1F}, {34F, 0.06F, 2F}, {40F, 0F, 1F}},
             {{0F, 0.4F, 1F}, {96F, 0.7F, 1F}},
             {{0F, 0.25F, 1F}, {34F, 0.35F, 1F}, {40F, 0.45F, 1F}, {96F, 0.9F, 3F}, {120F, 0.96F, 1F}},
+            {{0F, 0F, 0F, 0F, 1F}, {3F, 0F, 0F, 0F, 2F}, {8F, 0F, 0F, 0F, 1F}, {14F, 0F, 0F, 0F, 2F}, {20F, 0F, 0F, 0F, 1F}, {34F, 0.095F, -1.022F, 0.409F, 2F}, {40F, 0F, 0F, 0F, 3F}, {60F, 0F, 0F, 0F, 1F}},
+            {{0F, 0F, 1F}, {3F, 0.3F, 2F}, {8F, 0F, 1F}, {14F, 0.25F, 2F}, {20F, 0F, 1F}, {34F, 1.851F, 2F}, {40F, 0.3F, 3F}, {60F, 0.25F, 1F}},
+            {{0F, 0F, 1F}, {4F, 0.3F, 2F}, {9F, 0F, 1F}, {15F, 0.25F, 2F}, {21F, 0F, 1F}, {35F, 0.4F, 2F}, {41F, 0.2F, 3F}, {61F, 0.2F, 1F}},
     };
 
     // ---------------------------------------------------------------- COLGADO
@@ -224,7 +261,7 @@ public final class MuertesDatos {
     public static final int COLGADO_JADEO3 = 48;
     public static final float COLGADO_MARGEN = 0.2F;
     public static final int COLGADO_SIN_CABEZA = -1;
-    public static final String[] COLGADO_N = {"cam", "mira", "body", "torso", "head", "rightArm", "leftArm", "rightLeg", "leftLeg", "temblor", "vineta", "negro"};
+    public static final String[] COLGADO_N = {"cam", "mira", "body", "torso", "head", "rightArm", "leftArm", "rightLeg", "leftLeg", "temblor", "vineta", "negro", "rightLegDobla", "leftLegDobla", "rightArmDobla", "leftArmDobla"};
     public static final float[][][] COLGADO_K = {
             {{0F, 30F, -18F, 2.1F, 1F}, {50F, 5F, -15F, 1.9F, 1F}, {90F, -25F, -10F, 2.1F, 1F}, {115F, -32F, -8F, 2.3F, 1F}},
             {{0F, 0F, 0F, 0F, 1F}, {90F, 0F, -0.1F, 0F, 1F}},
@@ -238,6 +275,10 @@ public final class MuertesDatos {
             {{0F, 0.03F, 1F}, {30F, 0.02F, 1F}, {50F, 0.08F, 2F}, {56F, 0.01F, 1F}, {70F, 0F, 1F}},
             {{0F, 0.5F, 1F}, {60F, 0.9F, 1F}, {115F, 1F, 1F}},
             {{0F, 0.1F, 1F}, {50F, 0.3F, 1F}, {90F, 0.9F, 3F}, {115F, 0.95F, 1F}},
+            {{0F, 0.1F, 1F}, {6F, 0.9F, 2F}, {11F, 0.1F, 1F}, {18F, 0.8F, 2F}, {24F, 0.1F, 1F}, {50F, 0.7F, 2F}, {56F, 0.1F, 1F}},
+            {{0F, 0.1F, 1F}, {8F, 0.9F, 2F}, {13F, 0.1F, 1F}, {20F, 0.8F, 2F}, {26F, 0.1F, 1F}, {52F, 0.7F, 2F}, {58F, 0.1F, 1F}},
+            {{0F, 0.15F, 1F}, {6F, 0.45F, 1F}, {12F, 0.15F, 1F}, {18F, 0.4F, 1F}, {25F, 0.15F, 1F}, {34F, 0.3F, 1F}, {44F, 0.15F, 1F}, {50F, 0.35F, 2F}, {56F, 0.15F, 1F}, {90F, 0.12F, 1F}},
+            {{0F, 0.15F, 1F}, {9F, 0.45F, 1F}, {15F, 0.15F, 1F}, {21F, 0.4F, 1F}, {28F, 0.15F, 1F}, {37F, 0.3F, 1F}, {47F, 0.15F, 1F}, {53F, 0.35F, 2F}, {59F, 0.15F, 1F}, {93F, 0.12F, 1F}},
     };
 
     // ---------------------------------------------------------------- VENENO
@@ -254,7 +295,7 @@ public final class MuertesDatos {
     public static final float VENENO_MARGEN = 0.2F;
     public static final int VENENO_SIN_CABEZA = -1;
     public static final boolean VENENO_YACE = true;
-    public static final String[] VENENO_N = {"cam", "mira", "pos", "body", "torso", "head", "rightArm", "leftArm", "rightLeg", "leftLeg", "temblor", "convulsion", "veneno", "pulso", "borroso", "venas", "negro", "boca"};
+    public static final String[] VENENO_N = {"cam", "mira", "pos", "body", "torso", "head", "rightArm", "leftArm", "rightLeg", "leftLeg", "temblor", "convulsion", "veneno", "pulso", "borroso", "venas", "negro", "rightArmAj", "leftArmAj", "rightArmDobla", "leftArmDobla", "rightLegDobla", "leftLegDobla", "rightLegAj", "leftLegAj", "posAj", "boca"};
     public static final float[][][] VENENO_K = {
             {{0F, 18F, 4F, 2.3F, 1F}, {12F, 10F, 2F, 1.75F, 1F}, {24F, 6F, 1F, 1.6F, 1F}, {34F, -10F, 0F, 1.65F, 1F}, {56F, -26F, 4F, 2.1F, 1F}, {64F, -32F, -3F, 2F, 1F}, {76F, -30F, -2F, 2.15F, 1F}, {85F, 38F, 5F, 2.5F, 1F}, {90F, 44F, 6F, 2.6F, 1F}, {115F, 50F, 8F, 2.8F, 1F}},
             {{0F, 0F, 1.5F, 0F, 1F}, {34F, 0F, 1.45F, 0F, 1F}, {56F, 0F, 1.3F, 0F, 1F}, {64F, 0F, 1F, 0F, 1F}, {76F, 0F, 0.95F, 0.05F, 1F}, {85F, 0F, 0.3F, 0.3F, 1F}, {115F, 0F, 0.25F, 0.3F, 1F}},
@@ -273,7 +314,16 @@ public final class MuertesDatos {
             {{0F, 0F, 1F}, {16F, 0.2F, 1F}, {40F, 0.5F, 1F}, {64F, 0.8F, 1F}, {90F, 1F, 1F}},
             {{0F, 0F, 1F}, {8F, 0.15F, 1F}, {30F, 0.5F, 1F}, {60F, 0.85F, 1F}, {90F, 1F, 1F}},
             {{0F, 0F, 1F}, {40F, 0.08F, 1F}, {76F, 0.35F, 1F}, {90F, 0.88F, 3F}, {115F, 0.95F, 1F}},
-            {{0F, 0F, 1.625F, 0.181F, 0F}, {2F, 0F, 1.615F, 0.192F, 0F}, {4F, 0F, 1.599F, 0.208F, 0F}, {6F, -0.001F, 1.586F, 0.219F, 0F}, {8F, -0.001F, 1.534F, 0.253F, 0F}, {10F, -0.001F, 1.497F, 0.269F, 0F}, {12F, 0.007F, 1.421F, 0.283F, 0F}, {14F, 0.027F, 1.482F, 0.272F, 0F}, {16F, 0F, 1.384F, 0.282F, 0F}, {18F, -0.02F, 1.447F, 0.28F, 0F}, {20F, -0.002F, 1.384F, 0.282F, 0F}, {22F, 0.001F, 1.389F, 0.283F, 0F}, {24F, -0.001F, 1.472F, 0.276F, 0F}, {26F, -0.002F, 1.525F, 0.257F, 0F}, {28F, -0.004F, 1.599F, 0.209F, 0F}, {30F, -0.003F, 1.607F, 0.201F, 0F}, {32F, 0.005F, 1.601F, 0.207F, 0F}, {34F, 0.022F, 1.59F, 0.215F, 0F}, {36F, 0.173F, 1.585F, 0.227F, 0F}, {38F, 0.203F, 1.579F, 0.23F, 0F}, {40F, 0.06F, 1.585F, 0.212F, 0F}, {42F, -0.167F, 1.589F, 0.175F, 0F}, {44F, -0.081F, 1.608F, 0.179F, 0F}, {46F, 0.099F, 1.603F, 0.214F, 0F}, {48F, 0.183F, 1.581F, 0.24F, 0F}, {50F, 0.185F, 1.573F, 0.236F, 0F}, {52F, 0.046F, 1.566F, 0.211F, 0F}, {54F, -0.049F, 1.536F, 0.208F, 0F}, {56F, -0.021F, 1.476F, 0.263F, 0F}, {58F, -0.001F, 0.946F, 0.348F, 0F}, {60F, -0.004F, 1.2F, 0.187F, 0F}, {62F, -0.005F, 1.223F, 0.143F, 0F}, {64F, -0.013F, 1.173F, 0.191F, 0F}, {66F, 0.018F, 1.038F, 0.278F, 0F}, {68F, 0.041F, 0.958F, 0.295F, 0F}, {70F, 0.056F, 0.947F, 0.302F, 0F}, {72F, 0.043F, 0.942F, 0.314F, 0F}, {74F, 0.016F, 0.946F, 0.324F, 0F}, {76F, 0.005F, 0.951F, 0.328F, 0F}, {78F, 0.012F, 0.957F, 0.349F, 0F}, {80F, 0.057F, 0.857F, 0.482F, 0F}, {82F, 0.163F, 0.484F, 0.712F, 0F}, {84F, 0.21F, 0.188F, 0.76F, 0F}, {86F, 0.217F, 0.223F, 0.752F, 0F}, {88F, 0.22F, 0.225F, 0.749F, 0F}, {90F, 0.221F, 0.224F, 0.747F, 0F}, {92F, 0.219F, 0.225F, 0.751F, 0F}, {94F, 0.219F, 0.224F, 0.751F, 0F}, {96F, 0.219F, 0.223F, 0.751F, 0F}, {98F, 0.219F, 0.222F, 0.751F, 0F}, {100F, 0.219F, 0.22F, 0.751F, 0F}, {102F, 0.219F, 0.219F, 0.751F, 0F}, {104F, 0.219F, 0.217F, 0.751F, 0F}, {106F, 0.219F, 0.216F, 0.751F, 0F}, {108F, 0.219F, 0.215F, 0.751F, 0F}, {110F, 0.219F, 0.214F, 0.751F, 0F}, {112F, 0.219F, 0.213F, 0.751F, 0F}, {114F, 0.219F, 0.213F, 0.751F, 0F}},
+            {{0F, 0.07F, -0.015F, 0.343F, 1F}, {4F, -0.03F, -0.065F, 0.343F, 1F}, {10F, -0.04F, -0.681F, 0.181F, 1F}, {14F, 0.11F, -0.681F, 0.161F, 1F}, {19F, -0.04F, -0.681F, 0.141F, 1F}, {26F, 0F, 0F, 0F, 1F}, {30F, 1.076F, 0.054F, 0.76F, 2F}, {36F, 1.313F, 0.066F, 0.487F, 2F}, {39F, 1.011F, 0.271F, 0.883F, 1F}, {43F, 1.313F, 0.066F, 0.487F, 2F}, {46F, 1.011F, 0.271F, 0.883F, 1F}, {50F, 1.313F, 0.066F, 0.487F, 2F}, {53F, 1.011F, 0.271F, 0.883F, 1F}, {58F, 1.076F, 0.054F, 0.76F, 1F}, {62F, 0F, 0F, 0F, 2F}, {68F, 0F, 0F, 0F, 1F}, {75F, 0F, 0F, 0F, 1F}, {83F, 0F, 0F, 0F, 3F}, {86F, 0F, 0F, 0F, 2F}, {115F, 0F, 0F, 0F, 1F}},
+            {{0F, 0F, 0F, 0F, 1F}, {8F, 0F, 0F, 0F, 1F}, {11F, 0.364F, 0.156F, -0.414F, 2F}, {16F, 0.214F, 0.196F, -0.384F, 1F}, {21F, 0.334F, 0.156F, -0.414F, 1F}, {27F, 0F, 0F, 0F, 1F}, {31F, 1.076F, -0.054F, -0.76F, 2F}, {37F, 1.313F, -0.066F, -0.487F, 2F}, {40F, 1.011F, -0.271F, -0.883F, 1F}, {44F, 1.313F, -0.066F, -0.487F, 2F}, {47F, 1.011F, -0.271F, -0.883F, 1F}, {51F, 1.313F, -0.066F, -0.487F, 2F}, {54F, 1.011F, -0.271F, -0.883F, 1F}, {58F, 1.076F, -0.054F, -0.76F, 1F}, {63F, 0F, 0F, 0F, 2F}, {68F, 0F, 0F, 0F, 1F}, {75F, 0F, 0F, 0F, 1F}, {83F, 0F, 0F, 0F, 3F}, {86F, 0F, 0F, 0F, 2F}, {115F, 0F, 0F, 0F, 1F}},
+            {{0F, 1.235F, 1F}, {4F, 1.235F, 1F}, {10F, 1.243F, 1F}, {14F, 1.343F, 1F}, {19F, 1.243F, 1F}, {26F, 0.9F, 1F}, {30F, 2.055F, 2F}, {36F, 1.966F, 2F}, {39F, 1.976F, 1F}, {43F, 1.966F, 2F}, {46F, 1.976F, 1F}, {50F, 1.966F, 2F}, {53F, 1.976F, 1F}, {58F, 2.055F, 1F}, {62F, 0.8F, 2F}, {68F, 1.2F, 1F}, {75F, 0.7F, 1F}, {83F, 0.15F, 3F}, {86F, 0.2F, 2F}, {115F, 0.2F, 1F}},
+            {{0F, 0F, 1F}, {8F, 0.3F, 1F}, {11F, 1.295F, 2F}, {16F, 1.245F, 1F}, {21F, 1.295F, 1F}, {27F, 0.9F, 1F}, {31F, 2.055F, 2F}, {37F, 1.966F, 2F}, {40F, 1.976F, 1F}, {44F, 1.966F, 2F}, {47F, 1.976F, 1F}, {51F, 1.966F, 2F}, {54F, 1.976F, 1F}, {58F, 2.055F, 1F}, {63F, 0.8F, 2F}, {68F, 1.2F, 1F}, {75F, 0.7F, 1F}, {83F, 0.35F, 3F}, {86F, 0.3F, 2F}, {115F, 0.3F, 1F}},
+            {{0F, 0F, 1F}, {34F, 0F, 1F}, {38F, 0.6F, 2F}, {42F, 0F, 1F}, {49F, 0.15F, 2F}, {53F, 0F, 1F}, {56F, 0.25F, 1F}, {58F, 2F, 3F}, {61F, 1.9F, 2F}, {76F, 1.9F, 1F}, {83F, 0.1F, 3F}, {86F, 0.08F, 2F}},
+            {{0F, 0F, 1F}, {34F, 0F, 1F}, {43F, 0.15F, 2F}, {47F, 0F, 1F}, {52F, 0.6F, 2F}, {55F, 0F, 1F}, {56F, 0.25F, 1F}, {58F, 2F, 3F}, {61F, 1.9F, 2F}, {76F, 1.9F, 1F}, {83F, 0.1F, 3F}, {86F, 0.08F, 2F}},
+            {{0F, 0F, 0F, 0F, 1F}, {34F, 0F, 0F, 0F, 1F}, {38F, 0F, 0F, 0F, 2F}, {42F, 0F, 0F, 0F, 1F}, {49F, 0F, 0F, 0F, 2F}, {53F, 0F, 0F, 0F, 1F}, {56F, 0F, 0F, 0F, 1F}, {58F, -1.5F, 0F, 0F, 3F}, {61F, -1.42F, 0F, 0F, 2F}, {76F, -1.42F, 0F, 0F, 1F}, {83F, 0F, 0F, 0F, 3F}, {86F, 0F, 0F, 0F, 2F}},
+            {{0F, 0F, 0F, 0F, 1F}, {34F, 0F, 0F, 0F, 1F}, {43F, 0F, 0F, 0F, 2F}, {47F, 0F, 0F, 0F, 1F}, {52F, 0F, 0F, 0F, 2F}, {55F, 0F, 0F, 0F, 1F}, {56F, 0F, 0F, 0F, 1F}, {58F, -1.5F, 0F, 0F, 3F}, {61F, -1.42F, 0F, 0F, 2F}, {76F, -1.42F, 0F, 0F, 1F}, {83F, 0F, 0F, 0F, 3F}, {86F, 0F, 0F, 0F, 2F}},
+            {{0F, 0F, 0F, 0F, 1F}, {56F, 0F, 0F, 0F, 1F}, {58F, 0F, 0.27F, 0F, 3F}, {61F, 0F, 0.24F, 0F, 2F}, {76F, 0F, 0.25F, 0F, 1F}, {83F, 0F, 0F, 0F, 3F}},
+            {{0F, 0F, 1.625F, 0.181F, 0F}, {2F, 0F, 1.615F, 0.192F, 0F}, {4F, 0F, 1.599F, 0.208F, 0F}, {6F, -0.001F, 1.586F, 0.219F, 0F}, {8F, -0.001F, 1.534F, 0.253F, 0F}, {10F, -0.001F, 1.497F, 0.269F, 0F}, {12F, 0.007F, 1.421F, 0.283F, 0F}, {14F, 0.027F, 1.482F, 0.272F, 0F}, {16F, 0F, 1.384F, 0.282F, 0F}, {18F, -0.02F, 1.447F, 0.28F, 0F}, {20F, -0.002F, 1.384F, 0.282F, 0F}, {22F, 0.001F, 1.389F, 0.283F, 0F}, {24F, -0.001F, 1.472F, 0.276F, 0F}, {26F, -0.002F, 1.525F, 0.257F, 0F}, {28F, -0.004F, 1.599F, 0.209F, 0F}, {30F, -0.003F, 1.607F, 0.201F, 0F}, {32F, 0.005F, 1.601F, 0.207F, 0F}, {34F, 0.022F, 1.59F, 0.215F, 0F}, {36F, 0.173F, 1.585F, 0.227F, 0F}, {38F, 0.203F, 1.579F, 0.23F, 0F}, {40F, 0.06F, 1.585F, 0.212F, 0F}, {42F, -0.167F, 1.589F, 0.175F, 0F}, {44F, -0.081F, 1.608F, 0.179F, 0F}, {46F, 0.099F, 1.603F, 0.214F, 0F}, {48F, 0.183F, 1.581F, 0.24F, 0F}, {50F, 0.185F, 1.573F, 0.236F, 0F}, {52F, 0.046F, 1.566F, 0.211F, 0F}, {54F, -0.049F, 1.536F, 0.208F, 0F}, {56F, -0.021F, 1.476F, 0.263F, 0F}, {58F, -0.001F, 1.216F, 0.348F, 0F}, {60F, -0.004F, 1.441F, 0.187F, 0F}, {62F, -0.005F, 1.463F, 0.143F, 0F}, {64F, -0.013F, 1.414F, 0.191F, 0F}, {66F, 0.018F, 1.281F, 0.278F, 0F}, {68F, 0.041F, 1.202F, 0.295F, 0F}, {70F, 0.056F, 1.193F, 0.302F, 0F}, {72F, 0.043F, 1.19F, 0.314F, 0F}, {74F, 0.016F, 1.195F, 0.324F, 0F}, {76F, 0.005F, 1.201F, 0.328F, 0F}, {78F, 0.012F, 1.201F, 0.349F, 0F}, {80F, 0.057F, 1.06F, 0.482F, 0F}, {82F, 0.163F, 0.577F, 0.712F, 0F}, {84F, 0.21F, 0.188F, 0.76F, 0F}, {86F, 0.217F, 0.223F, 0.752F, 0F}, {88F, 0.22F, 0.225F, 0.749F, 0F}, {90F, 0.221F, 0.224F, 0.747F, 0F}, {92F, 0.219F, 0.225F, 0.751F, 0F}, {94F, 0.219F, 0.224F, 0.751F, 0F}, {96F, 0.219F, 0.223F, 0.751F, 0F}, {98F, 0.219F, 0.222F, 0.751F, 0F}, {100F, 0.219F, 0.22F, 0.751F, 0F}, {102F, 0.219F, 0.219F, 0.751F, 0F}, {104F, 0.219F, 0.217F, 0.751F, 0F}, {106F, 0.219F, 0.216F, 0.751F, 0F}, {108F, 0.219F, 0.215F, 0.751F, 0F}, {110F, 0.219F, 0.214F, 0.751F, 0F}, {112F, 0.219F, 0.213F, 0.751F, 0F}, {114F, 0.219F, 0.213F, 0.751F, 0F}},
     };
 
 }

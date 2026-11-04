@@ -24,8 +24,10 @@ import java.util.Map;
  * entra (acelera), pasa (se pasa un poco y vuelve: el remate) o seco (salta de golpe, para el robot).
  */
 public final class Coreografia {
-    public static final int N = 21;
-    static final String[] PIEZAS = {"ra", "la", "rl", "ll", "hd", "b", "pos"};
+    public static final int N = 33;
+    /** ... y, con bendy-lib (ver Articulaciones): dob = flexión de codos {der, izq, 0}, rod = de rodillas, mus = giro x de
+     *  los muslos y pab = desplazamiento del cuerpo, estos dos solo si las rodillas se doblan de verdad. */
+    static final String[] PIEZAS = {"ra", "la", "rl", "ll", "hd", "b", "pos", "dob", "rod", "mus", "pab"};
     /** Pulsos que dura la mezcla de un paso con el siguiente. */
     static final float MEZCLA = 0.5F;
 
@@ -123,6 +125,17 @@ public final class Coreografia {
     static float[] espejo(float[] v) {
         float[] o = new float[N];
         int[] cambio = {1, 0, 3, 2, 4, 5, 6};
+        for (int j = 7; j < 11; j++) {
+            if (j == 10) {
+                o[30] = -v[30];
+                o[31] = v[31];
+                o[32] = v[32];
+            } else {
+                // derecha <-> izquierda
+                o[j * 3] = v[j * 3 + 1];
+                o[j * 3 + 1] = v[j * 3];
+            }
+        }
         for (int j = 0; j < 7; j++) {
             int s = cambio[j] * 3;
             if (j == 6) {

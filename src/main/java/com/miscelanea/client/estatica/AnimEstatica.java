@@ -1,5 +1,6 @@
 package com.miscelanea.client.estatica;
 
+import com.miscelanea.client.Articulaciones;
 import com.miscelanea.client.tortura.muertes.Pista;
 import dev.kosmx.playerAnim.api.TransformType;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
@@ -45,15 +46,18 @@ public class AnimEstatica implements IAnimation {
             EstaticaCine.Activa a = EstaticaCine.de(p.getId());
             if (a != null) {
                 float t = EstaticaCine.tiempo(a, td);
+                float c = Articulaciones.K;
                 if (tipo == TransformType.POSITION && parte.equals("body")) {
-                    float[] o = EstaticaCine.parte(a, "pos", t);
-                    v = new Vec3f(v.getX() + o[0] * k, v.getY() + o[1] * k, v.getZ() + o[2] * k);
+                    float[] o = EstaticaCine.parte(a, "pos", t), aj = EstaticaCine.ajuste(a, "pos", t);
+                    v = new Vec3f(v.getX() + (o[0] + aj[0] * c) * k, v.getY() + (o[1] + aj[1] * c) * k, v.getZ() + (o[2] + aj[2] * c) * k);
                 } else if (tipo == TransformType.ROTATION) {
                     String n = parte.equals("body") ? "body" : parte;
                     if (n.equals("body") || n.equals("torso") || n.equals("head") || n.endsWith("Arm") || n.endsWith("Leg")) {
-                        float[] o = EstaticaCine.parte(a, n, t);
-                        v = new Vec3f(v.getX() + o[0] * k, v.getY() + o[1] * k, v.getZ() + o[2] * k);
+                        float[] o = EstaticaCine.parte(a, n, t), aj = EstaticaCine.ajuste(a, n, t);
+                        v = new Vec3f(v.getX() + (o[0] + aj[0] * c) * k, v.getY() + (o[1] + aj[1] * c) * k, v.getZ() + (o[2] + aj[2] * c) * k);
                     }
+                } else if (tipo == TransformType.BEND) {
+                    v = Articulaciones.sumar(parte, v, EstaticaCine.dobla(a, parte, t), k);
                 }
             }
         }
@@ -74,6 +78,13 @@ public class AnimEstatica implements IAnimation {
                 float az = brazo ? (s == 1 ? 0.5F : -0.5F) + Pista.sacudida(t, s * 7 + 3) * 0.4F : Pista.sacudida(t, s * 7 + 3) * 0.15F;
                 v = new Vec3f(v.getX() + ax * kl, v.getY() + Pista.sacudida(t, s * 7 + 5) * 0.2F * kl, v.getZ() + az * kl);
             }
+        }
+        if (kl > 0 && tipo == TransformType.BEND && (Articulaciones.brazo(parte) || Articulaciones.pierna(parte))) {
+            // agarrado: codos y rodillas a tirones
+            float t = (p.tickCount + td) * 1.0F;
+            int s = parte.startsWith("right") ? 1 : 2;
+            float f = Articulaciones.brazo(parte) ? 0.6F + Pista.sacudida(t, s * 13) * 0.5F : 0.3F + Pista.sacudida(t, s * 13 + 4) * 0.3F;
+            v = Articulaciones.sumar(parte, v, f, kl);
         }
         return v;
     }

@@ -4,6 +4,7 @@ import com.miscelanea.tortura.aparatos.AparatosVictimas;
 import com.miscelanea.tortura.aparatos.DoncellaBlockEntity;
 import com.miscelanea.tortura.aparatos.PenduloBlockEntity;
 import com.miscelanea.tortura.aparatos.PotroBlockEntity;
+import com.miscelanea.client.Articulaciones;
 import dev.kosmx.playerAnim.api.TransformType;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.core.util.Vec3f;
@@ -49,6 +50,31 @@ public class AnimAparato implements IAnimation {
     @Override
     public void setupAnim(float td) {}
 
+    /** Con bendy-lib, en las sillas el brazo baja casi vertical y el antebrazo se apoya doblado en el reposabrazos. */
+    static final float CODO_AJ = 0.4F * Articulaciones.K, CODO_SILLA = 1.25F, RODILLA_SILLA = 1.45F;
+
+    /** Flexión de codos y rodillas de cada aparato (las capas de las cinemáticas suman por encima). */
+    private Vec3f doblar(int m, String parte, Vec3f v, float k, float t, float td) {
+        boolean brazo = Articulaciones.brazo(parte);
+        if (!brazo && !Articulaciones.pierna(parte)) return v;
+        switch (m) {
+            case AparatosVictimas.SILLA, AparatosVictimas.INMERSION: {
+                // sentado: rodillas a ~85º (la espinilla cuelga) y antebrazos en los reposabrazos; con la descarga o
+                // bajo el agua, los puños se cierran y los codos se encogen a tirones
+                float d = m == AparatosVictimas.SILLA ? AparatosCliente.descarga(p.getId(), td) : p.isEyeInFluid(FluidTags.WATER) ? 0.6F : 0F;
+                float j = Mth.sin(t * (m == AparatosVictimas.SILLA ? 8.3F : 3.3F) + (parte.startsWith("left") ? 1.7F : 0F)) * 0.25F * d;
+                return Articulaciones.fijar(parte, v, brazo ? CODO_SILLA + 0.2F * d + j : RODILLA_SILLA - 0.2F * d + j, k);
+            }
+            case AparatosVictimas.DONCELLA:
+                return brazo ? Articulaciones.fijar(parte, v, 0.25F, k) : Articulaciones.fijar(parte, v, 0.05F, k);
+            case AparatosVictimas.POTRO, AparatosVictimas.PENDULO:
+                // atado y estirado: casi rectos (un pelín doblados al tirar de las correas)
+                return Articulaciones.fijar(parte, v, brazo ? 0.08F + 0.06F * Math.max(0F, Mth.sin(t * 0.31F)) : 0.04F, k);
+            default:
+                return v;
+        }
+    }
+
     private static Vec3f mezclar(float k, Vec3f v, float x, float y, float z) {
         return new Vec3f(Mth.lerp(k, v.getX(), x), Mth.lerp(k, v.getY(), y), Mth.lerp(k, v.getZ(), z));
     }
@@ -60,6 +86,7 @@ public class AnimAparato implements IAnimation {
         if (k <= 0 || m == 0) return v;
         float t = p.tickCount + td;
         AparatosVictimas.Entrada en = AparatosVictimas.de(p.getId());
+        if (tt == TransformType.BEND) return doblar(m, parte, v, k, t, td);
         switch (m) {
             case AparatosVictimas.DONCELLA: {
                 if (tt != TransformType.ROTATION) return v;
@@ -104,8 +131,8 @@ public class AnimAparato implements IAnimation {
                 float a = d * (0.18F + AparatosCliente.voltajeDescarga(p.getId()) * 0.03F);
                 float j1 = Mth.sin(t * 7.3F) * a, j2 = Mth.sin(t * 9.1F + 1.3F) * a, j3 = Mth.sin(t * 6.1F + 2.1F) * a;
                 return switch (parte) {
-                    case "rightArm" -> mezclar(k, v, -0.62F + j1, 0.1F, 0.08F + j2 * 0.5F);
-                    case "leftArm" -> mezclar(k, v, -0.62F + j2, -0.1F, -0.08F + j3 * 0.5F);
+                    case "rightArm" -> mezclar(k, v, -0.62F + CODO_AJ + j1, 0.1F, 0.08F + j2 * 0.5F);
+                    case "leftArm" -> mezclar(k, v, -0.62F + CODO_AJ + j2, -0.1F, -0.08F + j3 * 0.5F);
                     case "head" -> mezclar(k, v, d > 0 ? -0.45F * Math.min(1F, d * 3) + j3 : v.getX(), d > 0 ? j1 * 0.5F : v.getY(), j2 * 0.6F);
                     case "body" -> mezclar(k, v, j1 * 0.25F, 0F, j3 * 0.25F);
                     case "rightLeg" -> d > 0 ? new Vec3f(v.getX() + j2 * 0.4F, v.getY(), v.getZ() + j1 * 0.2F) : v;
@@ -132,8 +159,8 @@ public class AnimAparato implements IAnimation {
                 float a = p.isEyeInFluid(FluidTags.WATER) ? 0.22F : 0.02F;
                 float j1 = Mth.sin(t * 3.1F) * a, j2 = Mth.sin(t * 3.7F + 1.1F) * a, j3 = Mth.sin(t * 2.3F + 2.0F) * a;
                 return switch (parte) {
-                    case "rightArm" -> mezclar(k, v, -0.62F + j1, 0.1F, 0.08F + j2 * 0.4F);
-                    case "leftArm" -> mezclar(k, v, -0.62F + j2, -0.1F, -0.08F + j3 * 0.4F);
+                    case "rightArm" -> mezclar(k, v, -0.62F + CODO_AJ + j1, 0.1F, 0.08F + j2 * 0.4F);
+                    case "leftArm" -> mezclar(k, v, -0.62F + CODO_AJ + j2, -0.1F, -0.08F + j3 * 0.4F);
                     case "head" -> mezclar(k, v, v.getX() * 0.6F + j3, v.getY() * 0.6F + j1, j2 * 0.5F);
                     case "body" -> mezclar(k, v, j1 * 0.2F, 0F, j3 * 0.2F);
                     case "rightLeg" -> new Vec3f(v.getX() + j2 * 0.5F, v.getY(), v.getZ() + j1 * 0.2F);

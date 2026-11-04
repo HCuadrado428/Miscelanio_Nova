@@ -88,6 +88,10 @@ public final class ClientEvents {
             dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                     new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "aliento"), 1100,
                     com.miscelanea.client.nucleo.AlientoAnimacion::new);
+            // Sentado en sillas y sofás: rodillas dobladas (solo con bendy-lib); por debajo de todo
+            dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
+                    new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "sentado"), 800,
+                    com.miscelanea.client.AnimSentado::new);
         }
 
         @SubscribeEvent

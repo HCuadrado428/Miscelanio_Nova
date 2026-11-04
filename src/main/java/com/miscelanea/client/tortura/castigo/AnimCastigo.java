@@ -2,6 +2,7 @@ package com.miscelanea.client.tortura.castigo;
 
 import com.miscelanea.tortura.castigo.CepoEntity;
 import com.miscelanea.tortura.castigo.JaulaEntity;
+import com.miscelanea.client.Articulaciones;
 import dev.kosmx.playerAnim.api.TransformType;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.core.util.Vec3f;
@@ -80,6 +81,8 @@ public class AnimCastigo implements IAnimation {
                 if (parte.equals("head")) return new Vec3f(v.getX() - inc * 1.6F * k, v.getY(), v.getZ());
                 return v;
             }
+            // brazos rectos por los agujeros de la tabla; las rodillas, un pelín flojas
+            if (tipo == TransformType.BEND) return Articulaciones.fijar(parte, v, Articulaciones.pierna(parte) ? 0.12F : 0.05F, k);
             if (tipo != TransformType.ROTATION) return v;
             float resp = Mth.sin(t * 0.12F) * 0.02F;   // respira, muy poco
             return switch (parte) {
@@ -91,6 +94,16 @@ public class AnimCastigo implements IAnimation {
                 case "leftLeg" -> mezclar(k, v, -DOBLADO - resp, 0F, -0.04F);
                 default -> v;
             };
+        }
+        if (tipo == TransformType.BEND) {
+            if (!Articulaciones.brazo(parte)) return v;
+            float f = switch (m) {
+                case JAULA -> 0.5F + Mth.sin(t * 0.35F) * 0.25F;        // colgado de los barrotes: se aúpa y se deja caer
+                case BOLA -> 0.45F;                                     // la bola abrazada contra el pecho
+                case LANZA -> Mth.lerp(Mth.clamp((p.tickCount - CastigoCliente.lanzadoT + td) / 4F, 0F, 1F), 0.9F, 0.05F);
+                default -> 0F;
+            };
+            return Articulaciones.fijar(parte, v, f, k);
         }
         if (tipo != TransformType.ROTATION) return v;
         switch (m) {
@@ -104,8 +117,8 @@ public class AnimCastigo implements IAnimation {
             }
             case BOLA:
                 return switch (parte) {
-                    case "rightArm" -> mezclar(k, v, -1.0F, -0.42F, 0F);
-                    case "leftArm" -> mezclar(k, v, -1.0F, 0.42F, 0F);
+                    case "rightArm" -> mezclar(k, v, -1.0F + 0.25F * Articulaciones.K, -0.42F, 0F);
+                    case "leftArm" -> mezclar(k, v, -1.0F + 0.25F * Articulaciones.K, 0.42F, 0F);
                     case "body" -> mezclar(k, v, 0.08F, v.getY(), v.getZ());
                     default -> v;
                 };

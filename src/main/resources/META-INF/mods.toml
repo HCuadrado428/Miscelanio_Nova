@@ -45,6 +45,16 @@ description='''${mod_description}'''
     ordering="AFTER"
     side="BOTH"
 
+# Opcional (recomendado en el cliente): bendy-lib de KosmX. Con él, playerAnimator dobla codos y rodillas y las
+# animaciones del mod los usan (arrodillarse sin hundirse, sentado con la espinilla colgando...). Sin él, todo igual
+# que antes, con brazos y piernas rectos. En el servidor no hace falta.
+[[dependencies.${mod_id}]]
+    modId="bendylib"
+    mandatory=false
+    versionRange="[4.0.0,)"
+    ordering="NONE"
+    side="CLIENT"
+
 # Opcional: Simple Voice Chat (si está, las pociones de voz cambian la voz; sin él solo faltan las voces)
 [[dependencies.${mod_id}]]
     modId="voicechat"

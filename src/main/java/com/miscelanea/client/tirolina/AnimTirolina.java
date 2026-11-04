@@ -1,6 +1,7 @@
 package com.miscelanea.client.tirolina;
 
 import com.miscelanea.tirolina.Polea;
+import com.miscelanea.client.Articulaciones;
 import dev.kosmx.playerAnim.api.TransformType;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.core.util.Vec3f;
@@ -37,12 +38,18 @@ public class AnimTirolina implements IAnimation {
 
     @Override
     public @NotNull Vec3f get3DTransform(@NotNull String modelName, @NotNull TransformType type, float td, @NotNull Vec3f v) {
-        if (type != TransformType.ROTATION) return v;
+        if (type != TransformType.ROTATION && type != TransformType.BEND) return v;
         float k = Mth.lerp(td, pesoO, peso);
         if (k <= 0) return v;
         float vel = p.getVehicle() instanceof Polea po ? Math.abs(po.velocidad()) : 0;
         float t = p.tickCount + td;
         float bal = Mth.sin(t * 0.22F) * (0.12F + vel * 0.25F);
+        if (type == TransformType.BEND) {
+            // colgado de la polea: codos casi rectos y las rodillas recogidas (más cuanto más deprisa va)
+            if (Articulaciones.brazo(modelName)) return Articulaciones.fijar(modelName, v, 0.12F, k);
+            if (Articulaciones.pierna(modelName)) return Articulaciones.fijar(modelName, v, 0.35F + vel * 0.6F + (modelName.equals("rightLeg") ? bal : -bal) * 0.5F, k);
+            return v;
+        }
         return switch (modelName) {
             case "rightArm" -> new Vec3f(Mth.lerp(k, v.getX(), -2.95F), Mth.lerp(k, v.getY(), 0F), Mth.lerp(k, v.getZ(), 0.18F));
             case "leftArm" -> new Vec3f(Mth.lerp(k, v.getX(), -2.95F), Mth.lerp(k, v.getY(), 0F), Mth.lerp(k, v.getZ(), -0.18F));

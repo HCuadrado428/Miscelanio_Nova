@@ -194,6 +194,27 @@ public final class EstaticaCine {
         return new float[]{v[0], -v[1], -v[2]};
     }
 
+    /** Nombre de la pieza del otro lado (para el espejo). */
+    private static String otroLado(String n) {
+        if (n.startsWith("right")) return "left" + n.substring(5);
+        if (n.startsWith("left")) return "right" + n.substring(4);
+        return n;
+    }
+
+    /** Retoque de la pose con bendy-lib ("&lt;pieza&gt;Aj", "posAj"; ver Articulaciones), o ceros. */
+    static float[] ajuste(Activa a, String n, float t) {
+        Pista p = PISTAS.get((a.espejo ? otroLado(n) : n) + "Aj");
+        if (p == null) return new float[3];
+        float[] v = p.v(t);
+        if (!a.espejo) return v;
+        return n.equals("pos") ? new float[]{-v[0], v[1], v[2]} : new float[]{v[0], -v[1], -v[2]};
+    }
+
+    /** Flexión natural (rad) del codo/rodilla de la pieza ("&lt;pieza&gt;Dobla"). */
+    static float dobla(Activa a, String n, float t) {
+        return x((a.espejo ? otroLado(n) : n) + "Dobla", t, 0F);
+    }
+
     // ------------------------------------------------------------------ ticks: sucesos con tiempo
     @SubscribeEvent
     public static void tick(TickEvent.ClientTickEvent e) {

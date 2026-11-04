@@ -3,6 +3,7 @@ package com.miscelanea.client.tortura.muertes;
 import dev.kosmx.playerAnim.api.TransformType;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.core.util.Vec3f;
+import com.miscelanea.client.Articulaciones;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,9 @@ import org.jetbrains.annotations.NotNull;
  * oso). Las pistas son DELTAS que se suman a la pose que ya traen las capas de abajo (sentado en la silla, tumbado en el
  * potro, colgado...), con el temblor y la convulsión de la cinemática. Entra en 3 ticks y, al morir, se apaga en medio
  * segundo (manda la animación de muerte normal).
+ * <p>
+ * Codos y rodillas (con bendy-lib, ver {@link Articulaciones}): las pistas "&lt;pieza&gt;Dobla" suman flexión y las
+ * "&lt;pieza&gt;Aj" / "posAj" retocan la pose solo si las piezas se doblan de verdad (arrodillarse sin hundirse...).
  */
 public class AnimMuerte implements IAnimation {
     private final AbstractClientPlayer p;
@@ -72,6 +76,10 @@ public class AnimMuerte implements IAnimation {
                 o = MuertesCliente.posicion(a, parte + "Pos", t);
                 if (o == null) return v;
             }
+            if (parte.equals("body") && Articulaciones.ACTIVO) {
+                Pista aj = a.def.pista("posAj");
+                if (aj != null) o = new float[]{o[0] + aj.en(t, 0), o[1] + aj.en(t, 1), o[2] + aj.en(t, 2)};
+            }
             float x = v.getX() + o[0] * k, y = v.getY() + o[1] * k, z = v.getZ() + o[2] * k;
             if (d != 0F) {
                 // Rz(d)·T(p') = T(p)·Rz(d) con p' = Rz(-d)(p + 0,7) - 0,7 (el giro del cuerpo de playerAnimator es en 0,7)
@@ -80,10 +88,22 @@ public class AnimMuerte implements IAnimation {
             }
             return new Vec3f(x, y, z);
         }
+        if (tipo == TransformType.BEND) {
+            if (!Articulaciones.brazo(parte) && !Articulaciones.pierna(parte)) return v;
+            return Articulaciones.sumar(parte, v, a.def.x(parte + "Dobla", t, 0F), k);
+        }
         if (tipo != TransformType.ROTATION) return v;
         int i = indice(parte);
         if (i < 0) return v;
         float[] o = MuertesCliente.parte(a, i, t);
+        if (Articulaciones.ACTIVO) {
+            Pista aj = a.def.pista(parte + "Aj");
+            if (aj != null) {
+                o[0] += aj.en(t, 0);
+                o[1] += aj.en(t, 1);
+                o[2] += aj.en(t, 2);
+            }
+        }
         return new Vec3f(v.getX() + o[0] * k, v.getY() + o[1] * k, v.getZ() + o[2] * k - d);
     }
 

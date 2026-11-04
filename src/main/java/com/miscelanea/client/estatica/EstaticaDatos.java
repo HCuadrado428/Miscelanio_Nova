@@ -17,7 +17,7 @@ public final class EstaticaDatos {
     public static final int GRITO = 66;
     public static final int ESTALLIDO = 78;
     public static final int LEVANTA = 86;
-    public static final String[] N = {"cam", "mira", "pos", "body", "torso", "head", "rightArm", "leftArm", "rightLeg", "leftLeg", "temblor", "convulsion", "cobertura", "ojos", "ruido", "vhs", "barras"};
+    public static final String[] N = {"cam", "mira", "pos", "body", "torso", "head", "rightArm", "leftArm", "rightLeg", "leftLeg", "temblor", "convulsion", "cobertura", "ojos", "ruido", "vhs", "barras", "rightArmAj", "leftArmAj", "rightArmDobla", "leftArmDobla", "rightLegDobla", "leftLegDobla", "leftLegAj", "posAj"};
     public static final float[][][] K = {
             {{0F, 25F, 6F, 2.9F, 1F}, {10F, 8F, 3F, 2F, 1F}, {24F, 4F, -2F, 1.6F, 1F}, {38F, -6F, -6F, 1.45F, 1F}, {52F, -14F, 6F, 2.3F, 1F}, {64F, 0F, 2F, 1.9F, 1F}, {78F, 0F, -10F, 1.55F, 1F}, {84F, 0F, -8F, 1.85F, 2F}, {104F, 18F, 9F, 2.7F, 1F}, {112F, 22F, 10F, 2.9F, 1F}},
             {{0F, 0F, 1.35F, 0F, 1F}, {24F, 0F, 1.4F, 0F, 1F}, {38F, 0F, 1.2F, 0.2F, 1F}, {52F, 0F, 1.4F, 0.3F, 1F}, {64F, 0F, 0.95F, 0.15F, 1F}, {80F, 0F, 1F, 0.1F, 1F}, {100F, 0F, 1.35F, 0F, 1F}},
@@ -36,5 +36,13 @@ public final class EstaticaDatos {
             {{0F, 0F, 1F}, {10F, 0.04F, 1F}, {26F, 0.07F, 1F}, {40F, 0.1F, 1F}, {58F, 0.14F, 1F}, {74F, 0.22F, 3F}, {78F, 0.85F, 2F}, {84F, 0.18F, 1F}, {100F, 0.04F, 1F}, {112F, 0F, 1F}},
             {{0F, 0.1F, 1F}, {26F, 0.25F, 1F}, {54F, 0.45F, 1F}, {76F, 0.8F, 3F}, {84F, 0.4F, 1F}, {104F, 0.1F, 1F}, {112F, 0F, 1F}},
             {{0F, 0F, 1F}, {6F, 1F, 2F}, {104F, 1F, 1F}, {112F, 0F, 1F}},
+            {{0F, 0F, 0F, 0F, 1F}, {8F, 0F, 0F, 0F, 1F}, {12F, -0.117F, 0.487F, 0.286F, 2F}, {22F, -0.017F, 0.537F, 0.266F, 1F}, {28F, 0F, 0F, 0F, 1F}, {38F, 0F, 0F, 0F, 1F}, {44F, 0.869F, 1.289F, 0.646F, 2F}, {54F, 0.919F, 1.339F, 0.696F, 1F}, {60F, 0F, 0F, 0F, 5F}, {66F, 0F, 0F, 0F, 1F}, {72F, 0F, 0F, 0F, 2F}, {80F, 0F, 0F, 0F, 1F}, {92F, 0F, 0F, 0F, 1F}, {112F, 0F, 0F, 0F, 1F}},
+            {{0F, 0F, 0F, 0F, 1F}, {12F, 0F, 0F, 0F, 1F}, {22F, 0F, 0F, 0F, 1F}, {28F, 0F, 0F, 0F, 1F}, {38F, 0F, 0F, 0F, 1F}, {44F, 0.869F, -1.289F, -0.646F, 2F}, {54F, 0.919F, -1.339F, -0.696F, 1F}, {60F, 0F, 0F, 0F, 5F}, {66F, 0F, 0F, 0F, 1F}, {72F, 0F, 0F, 0F, 2F}, {80F, 0F, 0F, 0F, 1F}, {92F, 0F, 0F, 0F, 1F}, {112F, 0F, 0F, 0F, 1F}},
+            {{0F, 0.12F, 1F}, {8F, 0.12F, 1F}, {12F, 0.726F, 2F}, {22F, 0.726F, 1F}, {28F, 1F, 1F}, {38F, 1.05F, 1F}, {44F, 1.418F, 2F}, {54F, 1.418F, 1F}, {60F, 0.3F, 5F}, {66F, 0.35F, 1F}, {72F, 0.15F, 2F}, {80F, 0.1F, 1F}, {92F, 0.2F, 1F}, {112F, 0.12F, 1F}},
+            {{0F, 0.12F, 1F}, {12F, 0.3F, 1F}, {22F, 0.3F, 1F}, {28F, 1F, 1F}, {38F, 1.05F, 1F}, {44F, 1.418F, 2F}, {54F, 1.418F, 1F}, {60F, 0.3F, 5F}, {66F, 0.35F, 1F}, {72F, 0.15F, 2F}, {80F, 0.1F, 1F}, {92F, 0.2F, 1F}, {112F, 0.12F, 1F}},
+            {{0F, 0F, 1F}, {54F, 0F, 1F}, {60F, 1.5F, 5F}, {84F, 1.5F, 1F}, {100F, 0F, 1F}},
+            {{0F, 0F, 1F}, {54F, 0F, 1F}, {60F, 1.5F, 5F}, {84F, 1.5F, 1F}, {100F, 0F, 1F}},
+            {{0F, 0F, 0F, 0F, 1F}, {54F, 0F, 0F, 0F, 1F}, {60F, -0.9F, 0F, 0F, 5F}, {84F, -0.9F, 0F, 0F, 1F}, {100F, 0F, 0F, 0F, 1F}},
+            {{0F, 0F, 0F, 0F, 1F}, {54F, 0F, 0F, 0F, 1F}, {60F, 0F, 0.2F, 0F, 5F}, {84F, 0F, 0.2F, 0F, 1F}, {100F, 0F, 0F, 0F, 1F}},
     };
 }

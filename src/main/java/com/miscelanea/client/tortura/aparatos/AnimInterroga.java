@@ -4,6 +4,7 @@ import com.miscelanea.tortura.aparatos.AparatosVictimas;
 import com.miscelanea.tortura.aparatos.GanchoBlockEntity;
 import com.miscelanea.tortura.aparatos.Herramienta;
 import com.miscelanea.tortura.aparatos.SillaInterrogatorioBlockEntity;
+import com.miscelanea.client.Articulaciones;
 import dev.kosmx.playerAnim.api.TransformType;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.core.util.Vec3f;
@@ -61,9 +62,25 @@ public class AnimInterroga implements IAnimation {
     public @NotNull Vec3f get3DTransform(@NotNull String parte, @NotNull TransformType tt, float td, @NotNull Vec3f v) {
         float k = Mth.lerp(td, pesoO, peso);
         int m = tipo != 0 ? tipo : ultimo;
-        if (k <= 0 || m == 0 || tt != TransformType.ROTATION) return v;
+        if (k <= 0 || m == 0 || (tt != TransformType.ROTATION && tt != TransformType.BEND)) return v;
         float t = p.tickCount + td;
         AparatosVictimas.Entrada en = AparatosVictimas.de(p.getId());
+        if (tt == TransformType.BEND) {
+            // codos y rodillas (bendy-lib): sentado con los antebrazos en los reposabrazos y las rodillas a ~85º;
+            // colgado, los brazos casi rectos (encogidos al agarrarse a la cuerda)
+            boolean brazo = Articulaciones.brazo(parte);
+            if (!brazo && !Articulaciones.pierna(parte)) return v;
+            if (m == AparatosVictimas.INTERROGATORIO) {
+                SillaInterrogatorioBlockEntity be = en != null && p.level().getBlockEntity(en.pos()) instanceof SillaInterrogatorioBlockEntity s ? s : null;
+                boolean paro = be != null && be.paroCli > 0;
+                float d = AparatosCliente.descarga(p.getId(), td);
+                float j = Mth.sin(t * 8.3F + (parte.startsWith("left") ? 1.7F : 0F)) * 0.25F * d;
+                return Articulaciones.fijar(parte, v, brazo ? (paro ? 0.5F : 1.1F + 0.25F * d) + j : 1.45F - 0.2F * d + j, k);
+            }
+            GanchoBlockEntity g = en != null && p.level().getBlockEntity(en.pos()) instanceof GanchoBlockEntity gb ? gb : null;
+            boolean agarra = g != null && g.agarrado();
+            return Articulaciones.fijar(parte, v, brazo ? (agarra ? 0.7F : 0.15F + 0.05F * Mth.sin(t * 0.12F)) : (agarra ? 0.35F : 0.05F), k);
+        }
         if (m == AparatosVictimas.INTERROGATORIO) {
             SillaInterrogatorioBlockEntity be = en != null && p.level().getBlockEntity(en.pos()) instanceof SillaInterrogatorioBlockEntity s ? s : null;
             boolean paro = be != null && be.paroCli > 0;
@@ -79,8 +96,8 @@ public class AnimInterroga implements IAnimation {
             float cabezaX = paro ? 0.75F : resp - (herr == Herramienta.ALICATES.ordinal() ? 0.55F : 0.2F) * resp2 + j3;
             float cuerpoX = paro ? 0.32F : resp * 0.5F + (herr == Herramienta.LLAVE.ordinal() ? 0.3F : 0.08F) * resp2 + j1 * 0.25F;
             return switch (parte) {
-                case "rightArm" -> mezclar(k, v, (paro ? -0.45F : -0.62F) + j1, 0.1F, 0.08F + j2 * 0.5F);
-                case "leftArm" -> mezclar(k, v, (paro ? -0.45F : -0.62F) + j2, -0.1F, -0.08F + j3 * 0.5F);
+                case "rightArm" -> mezclar(k, v, (paro ? -0.45F : -0.62F + 0.3F * Articulaciones.K) + j1, 0.1F, 0.08F + j2 * 0.5F);
+                case "leftArm" -> mezclar(k, v, (paro ? -0.45F : -0.62F + 0.3F * Articulaciones.K) + j2, -0.1F, -0.08F + j3 * 0.5F);
                 case "head" -> mezclar(k, v, cabezaX, paro ? 0.25F : v.getY() * 0.8F + j1 * 0.5F, (paro ? 0.2F : 0F) + j2 * 0.6F);
                 case "body" -> mezclar(k, v, cuerpoX, 0F, j3 * 0.25F);
                 case "rightLeg" -> d > 0 ? new Vec3f(v.getX() + j2 * 0.4F, v.getY(), v.getZ() + j1 * 0.2F) : v;

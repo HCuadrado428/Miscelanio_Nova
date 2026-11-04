@@ -6,6 +6,7 @@ import com.miscelanea.feria.AtraccionBlockEntity;
 import com.miscelanea.feria.CocheChoque;
 import com.miscelanea.feria.SustoBlockEntity;
 import com.miscelanea.feria.VagonetaBruja;
+import com.miscelanea.client.Articulaciones;
 import dev.kosmx.playerAnim.api.TransformType;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.core.util.Vec3f;
@@ -18,7 +19,8 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Pasajeros de la feria (capa de playerAnimator, 1150): brazos y cuerpo según la atracción y su estado. Las piernas se
- * quedan con la pose de montar (los asientos están medidos con ella) y la cabeza libre (mira donde mira el jugador).
+ * quedan con la pose de montar (los asientos están medidos con ella), pero con bendy-lib doblan las rodillas (la
+ * espinilla cuelga en vez de ir recta hacia delante); la cabeza, libre (mira donde mira el jugador).
  * <ul>
  * <li>Noria: mirar el paisaje, apoyarse en la barandilla del hueco, señalar fuera, saludar; arriba y en marcha, más euforia.</li>
  * <li>Tiovivo: una mano en la barra y la otra saludando o dando vueltas como un vaquero; sube y baja con el caballo.</li>
@@ -373,7 +375,20 @@ public class AnimPasajero implements IAnimation {
     @Override
     public @NotNull Vec3f get3DTransform(@NotNull String parte, @NotNull TransformType tt, float td, @NotNull Vec3f v) {
         float k = Mth.lerp(td, pesoO, peso);
-        if (k <= 0 || tipo == 0 || tt != TransformType.ROTATION) return v;
+        if (k <= 0 || tipo == 0) return v;
+        if (tt == TransformType.BEND) {
+            // sentado: las rodillas dobladas y la espinilla colgando (con bendy-lib), según el asiento
+            if (!Articulaciones.pierna(parte)) return v;
+            float f = switch (tipo) {
+                case NORIA -> 1.45F;
+                case TIOVIVO -> 1.05F;   // a caballo, con los pies en los estribos
+                case PULPO, TREN -> 1.35F;
+                case COCHE -> 0.95F;     // los pies hacia los pedales
+                default -> 0F;
+            };
+            return Articulaciones.fijar(parte, v, f, k);
+        }
+        if (tt != TransformType.ROTATION) return v;
         return switch (parte) {
             case "rightArm" -> ocupado(HumanoidArm.RIGHT) ? v : mezclar(k, v, rot(ra));
             case "leftArm" -> ocupado(HumanoidArm.LEFT) ? v : mezclar(k, v, rot(la));

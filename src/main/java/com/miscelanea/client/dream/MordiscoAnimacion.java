@@ -1,5 +1,6 @@
 package com.miscelanea.client.dream;
 
+import com.miscelanea.client.Articulaciones;
 import dev.kosmx.playerAnim.api.TransformType;
 import dev.kosmx.playerAnim.api.firstPerson.FirstPersonConfiguration;
 import dev.kosmx.playerAnim.api.firstPerson.FirstPersonMode;
@@ -39,6 +40,8 @@ public class MordiscoAnimacion implements IAnimation {
     private ClientMordiscos.Estado estado;
     private float peso;
     private final Map<String, Vec3f> rot = new HashMap<>();
+    /** Flexión de codos y rodillas (rad, con bendy-lib). */
+    private final Map<String, Float> dob = new HashMap<>();
     private Vec3f cabeza, cuerpo;
 
     public MordiscoAnimacion(AbstractClientPlayer player) {
@@ -67,6 +70,7 @@ public class MordiscoAnimacion implements IAnimation {
     @Override
     public void setupAnim(float pt) {
         rot.clear();
+        dob.clear();
         cabeza = cuerpo = null;
         if (estado == null) return;
         float t = ClientMordiscos.ahora(pt);
@@ -88,6 +92,11 @@ public class MordiscoAnimacion implements IAnimation {
             cabeza = new Vec3f(0.55F + 0.22F * tiron + Mth.sin(t * 0.3F) * 0.03F, 0.42F + ruido(t, 1) * 0.05F * tiron,
                     0.28F + 0.08F * tiron * Mth.sin(t * 2.2F));
             cuerpo = new Vec3f(-0.24F - 0.06F * tiron, 0.08F, 0.0F); // x<0: inclinado hacia la víctima
+            // agarra a la víctima por los hombros con los codos doblados; la pierna de atrás, flexionada para empujar
+            dob.put("rightArm", 0.75F + 0.2F * tiron);
+            dob.put("leftArm", 0.75F + 0.2F * tiron);
+            dob.put("rightLeg", 0.35F);
+            dob.put("leftLeg", 0.12F);
         } else {
             float lucha = Mth.sin(t * 1.4F);
             float j = 0.25F * tiron;
@@ -103,6 +112,11 @@ public class MordiscoAnimacion implements IAnimation {
             // la cabeza se aparta (cuello al descubierto) y mira al cielo con el mordisco
             cabeza = new Vec3f(-0.3F - 0.3F * tiron + ruido(t, 8) * j, -0.5F + Mth.sin(t * 1.1F) * 0.12F, -0.3F - 0.15F * tiron);
             cuerpo = new Vec3f(0.14F + 0.08F * tiron, 0.0F, ruido(t, 9) * j * 0.3F); // x>0: echada hacia atrás
+            // empuja con los codos medio doblados (se encogen con el espasmo) y patalea doblando las rodillas
+            dob.put("rightArm", 0.55F + lucha * 0.25F + 0.5F * tiron);
+            dob.put("leftArm", 0.55F - lucha * 0.25F + 0.5F * tiron);
+            dob.put("rightLeg", 0.45F + Mth.sin(t * 1.7F + 0.6F) * 0.4F);
+            dob.put("leftLeg", 0.45F - Mth.sin(t * 1.7F + 0.6F) * 0.4F);
         }
     }
 
@@ -112,6 +126,10 @@ public class MordiscoAnimacion implements IAnimation {
 
     @Override
     public @NotNull Vec3f get3DTransform(@NotNull String modelName, @NotNull TransformType type, float pt, @NotNull Vec3f value0) {
+        if (type == TransformType.BEND) {
+            Float f = dob.get(modelName);
+            return f == null ? value0 : Articulaciones.fijar(modelName, value0, f, peso);
+        }
         if (type != TransformType.ROTATION) return value0;
         if (modelName.equals("head") && cabeza != null) return value0.add(cabeza.scale(peso));
         if (modelName.equals("body") && cuerpo != null) return cuerpo.scale(peso);

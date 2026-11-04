@@ -1,5 +1,6 @@
 package com.miscelanea.client.juegos;
 
+import com.miscelanea.client.Articulaciones;
 import com.miscelanea.juegos.Gestos;
 import dev.kosmx.playerAnim.api.TransformType;
 import dev.kosmx.playerAnim.api.firstPerson.FirstPersonConfiguration;
@@ -27,6 +28,10 @@ public class AnimGesto implements IAnimation {
     private final float[][] rot = new float[6][3];
     private final float[] peso = new float[6];
     private final float[] desp = new float[3];
+    /** Flexión de codos y rodillas (rad, con bendy-lib) y su peso. */
+    private final float[] flex = new float[6], pesoF = new float[6];
+    /** Retoques de la pose que solo valen con los codos doblados. */
+    private static final float AJ = Articulaciones.K;
     private float pesoCont, pesoContO;
     private GestosCliente.Postura ultima;
 
@@ -73,6 +78,17 @@ public class AnimGesto implements IAnimation {
         peso[parte] = Math.max(peso[parte], w);
     }
 
+    /** Flexión (rad) de codo/rodilla de la parte, mezclada como {@link #poner}. */
+    private void doblar(int parte, float w, float f) {
+        if (pesoF[parte] <= 0) {
+            flex[parte] = f;
+            pesoF[parte] = w;
+            return;
+        }
+        flex[parte] = Mth.lerp(w, flex[parte], f);
+        pesoF[parte] = Math.max(pesoF[parte], w);
+    }
+
     /** {x, y} del brazo (derecho o izquierdo) para que apunte al punto del mundo. */
     private float[] ik(Vec3 obj, boolean derecho, float pt) {
         Vec3 pos = p.getPosition(pt);
@@ -112,6 +128,7 @@ public class AnimGesto implements IAnimation {
     @Override
     public void setupAnim(float pt) {
         java.util.Arrays.fill(peso, 0);
+        java.util.Arrays.fill(pesoF, 0);
         java.util.Arrays.fill(desp, 0);
         // ---- postura continua (futbolín, air hockey)
         float wc = suave(Mth.lerp(pt, pesoContO, pesoCont));
@@ -172,6 +189,7 @@ public class AnimGesto implements IAnimation {
         // un pelín más allá al tocar (se nota el "toque")
         float toque = Mth.sin(Mth.clamp((u - 2.5F) / 3F, 0, 1) * Mth.PI) * 0.08F;
         poner(der ? RA : LA, w, a[0] - toque, a[1], der ? 0.04F : -0.04F);
+        doblar(der ? RA : LA, w, 0.12F);
         float[] h = mirar(o, pt);
         poner(H, w * 0.8F, h[0], h[1], 0);
         poner(B, w, -0.1F, 0, 0);
@@ -184,18 +202,24 @@ public class AnimGesto implements IAnimation {
         float[] h = mirar(o, pt);
         if (u < 11) {
             float s = Mth.sin(u * 2.6F);
-            poner(RA, w, -1.3F + 0.2F * s, -0.4F, 0.06F * Mth.sin(u * 2.6F + 1.2F));
-            poner(LA, w, -1.15F + 0.12F * s, 0.5F, 0);
+            poner(RA, w, -1.3F + 0.35F * AJ + 0.2F * s, -0.4F, 0.06F * Mth.sin(u * 2.6F + 1.2F));
+            poner(LA, w, -1.15F + 0.3F * AJ + 0.12F * s, 0.5F, 0);
+            // el puño agitando delante del pecho: el codo hace el vaivén
+            doblar(RA, w, 1.0F + 0.25F * s);
+            doblar(LA, w, 0.95F + 0.15F * s);
         } else if (u < 14) {
             // recoge el brazo arriba para tomar impulso
             float k = suave((u - 11) / 3F);
-            poner(RA, w, Mth.lerp(k, -1.3F, -2.0F), Mth.lerp(k, -0.4F, a[1] * 0.5F), 0);
-            poner(LA, w * (1 - k * 0.7F), -1.15F, 0.5F, 0);
+            poner(RA, w, Mth.lerp(k, -1.3F + 0.35F * AJ, -2.0F), Mth.lerp(k, -0.4F, a[1] * 0.5F), 0);
+            poner(LA, w * (1 - k * 0.7F), -1.15F + 0.3F * AJ, 0.5F, 0);
+            doblar(RA, w, Mth.lerp(k, 1.0F, 1.5F));
+            doblar(LA, w * (1 - k * 0.7F), 0.95F);
         } else {
             // lanzamiento: el brazo baja de golpe hacia el tablero, un poco más allá
             float k = suave((u - 14) / 2.5F);
             poner(RA, w, Mth.lerp(k, -2.0F, a[0] - 0.15F), Mth.lerp(k, a[1] * 0.5F, a[1]), 0.05F);
             poner(LA, w * 0.3F, -0.6F, 0.2F, 0);
+            doblar(RA, w, Mth.lerp(k, 1.5F, 0.08F));      // el codo se estira de golpe al soltar
         }
         poner(H, w * 0.7F, h[0], h[1], 0);
         poner(B, w, u < 14 ? -0.04F : -0.14F, 0, 0);
@@ -208,6 +232,7 @@ public class AnimGesto implements IAnimation {
         float k = suave((u - 1) / 3F);
         float latigo = Mth.sin(Mth.clamp((u - 2) / 4F, 0, 1) * Mth.PI) * 0.35F;
         poner(RA, w, Mth.lerp(k, -1.0F, a[0]), Mth.lerp(k, -0.55F, a[1]) + latigo, 0.05F + latigo * 0.3F);
+        doblar(RA, w, Mth.lerp(k, 1.25F, 0.12F));
         float[] h = mirar(o, pt);
         poner(H, w * 0.7F, h[0], h[1], 0);
         poner(B, w, -0.08F, 0, 0);
@@ -227,6 +252,9 @@ public class AnimGesto implements IAnimation {
         }
         poner(LA, w, -1.45F, ry * 0.8F + 0.18F, -0.05F);
         poner(RA, w, -0.55F + 0.35F * tirar - 0.6F * empujar, ry * 0.6F + 0.08F, 0.1F);
+        // puente con la izquierda casi recta; con la derecha el antebrazo hace de péndulo
+        doblar(LA, w, 0.3F);
+        doblar(RA, w, 0.6F + 0.7F * tirar - 0.4F * empujar);
         poner(B, w, -0.32F, 0, 0);
         desp[1] = -0.1F * w;
         poner(H, w, -0.35F, ry * 0.5F, 0);
@@ -238,6 +266,8 @@ public class AnimGesto implements IAnimation {
         float s = Mth.sin(u * 1.6F);
         poner(RA, w, -1.0F - 0.4F * s, 0.1F, 0.12F);
         poner(LA, w, -1.0F - 0.4F * s, -0.1F, -0.12F);
+        doblar(RA, w, 0.6F + 0.25F * s);
+        doblar(LA, w, 0.6F + 0.25F * s);
     }
 
     /** Empujón del mazo hacia el punto. */
@@ -245,6 +275,7 @@ public class AnimGesto implements IAnimation {
         float w = envolvente(u, dur, 2, 4);
         float[] a = ik(o, true, pt);
         poner(RA, w, a[0] - 0.15F, a[1], 0.05F);
+        doblar(RA, w, 0.2F);
         poner(B, w, -0.18F, 0, 0);
     }
 
@@ -254,6 +285,9 @@ public class AnimGesto implements IAnimation {
         float pump = Math.abs(Mth.sin(u * 0.32F * Mth.PI / 1.6F));
         poner(RA, w, -2.85F + 0.55F * pump, 0.1F, 0.25F);
         poner(LA, w, -0.25F, 0, -0.18F);
+        // el puño sube estirando el codo y baja doblándolo; el otro brazo, relajado
+        doblar(RA, w, 0.25F + 1.25F * pump);
+        doblar(LA, w, 0.35F);
         poner(H, w, -0.25F, 0, 0);
         poner(B, w, 0.06F, 0, 0);
         desp[1] = 0.03F * pump * w;
@@ -263,8 +297,10 @@ public class AnimGesto implements IAnimation {
     private void aplauso(float u, float dur) {
         float w = envolvente(u, dur, 3, 5);
         float c = 0.5F + 0.5F * Mth.sin(u * 1.35F);
-        poner(RA, w, -1.25F, -0.08F - 0.42F * c, 0.02F);
-        poner(LA, w, -1.25F, 0.08F + 0.42F * c, -0.02F);
+        poner(RA, w, -1.25F + 0.4F * AJ, -0.08F - 0.42F * c, 0.02F);
+        poner(LA, w, -1.25F + 0.4F * AJ, 0.08F + 0.42F * c, -0.02F);
+        doblar(RA, w, 0.9F);
+        doblar(LA, w, 0.9F);
         poner(H, w, -0.08F, 0, 0);
     }
 
@@ -278,13 +314,20 @@ public class AnimGesto implements IAnimation {
         poner(H, w, -0.1F, 0, -0.12F * s);
         poner(RL, w, 0.3F * s, 0, 0.04F);
         poner(LL, w, -0.3F * s, 0, -0.04F);
+        doblar(RA, w, 0.5F + 0.45F * s);
+        doblar(LA, w, 0.5F - 0.45F * s);
+        doblar(RL, w, 0.15F + 0.35F * Math.max(0, s));      // la pierna que va atrás dobla la rodilla
+        doblar(LL, w, 0.15F + 0.35F * Math.max(0, -s));
         desp[1] = 0.04F * Math.abs(Mth.cos(f)) * w;
     }
 
     /** Mano a la cara y cabeza gacha, negando. */
     private void facepalm(float u, float dur) {
         float w = envolvente(u, dur, 4, 7);
-        poner(RA, w, -2.05F, -0.62F, 0.05F);
+        // con el codo doblado la palma llega de verdad a la frente
+        poner(RA, w, -2.05F - 0.03F * AJ, -0.62F + 0.28F * AJ, 0.05F + 0.41F * AJ);
+        doblar(RA, w, 0.75F);
+        doblar(LA, w, 0.2F);
         poner(H, w, 0.45F, 0.14F * Mth.sin(u * 0.55F), 0);
         poner(LA, w, -0.1F, 0, -0.06F);
         poner(B, w, -0.05F, 0, 0);
@@ -294,8 +337,11 @@ public class AnimGesto implements IAnimation {
     private void encogerse(float u, float dur) {
         float w = envolvente(u, dur, 4, 6);
         float k = Mth.sin(Mth.clamp((u - 2) / (dur - 8), 0, 1) * Mth.PI);
-        poner(RA, w, -0.5F, 0.25F, 0.4F + 0.25F * k);
-        poner(LA, w, -0.5F, -0.25F, -0.4F - 0.25F * k);
+        poner(RA, w, -0.5F + 0.35F * AJ, 0.25F, 0.4F + 0.25F * k);
+        poner(LA, w, -0.5F + 0.35F * AJ, -0.25F, -0.4F - 0.25F * k);
+        // codos pegados al cuerpo y antebrazos hacia delante, palmas arriba
+        doblar(RA, w, 0.9F + 0.45F * k);
+        doblar(LA, w, 0.9F + 0.45F * k);
         poner(H, w, 0.05F, 0, 0.22F * k);
         desp[1] = 0.035F * k * w;
     }
@@ -321,6 +367,10 @@ public class AnimGesto implements IAnimation {
         if (tipo == TransformType.POSITION) {
             if (i != B || (desp[0] == 0 && desp[1] == 0 && desp[2] == 0)) return v;
             return new Vec3f(v.getX() + desp[0], v.getY() + desp[1], v.getZ() + desp[2]);
+        }
+        if (tipo == TransformType.BEND) {
+            float wf = pesoF[i];
+            return wf > 0 ? Articulaciones.fijar(nombre, v, flex[i], wf) : v;
         }
         if (tipo != TransformType.ROTATION) return v;
         float w = peso[i];
