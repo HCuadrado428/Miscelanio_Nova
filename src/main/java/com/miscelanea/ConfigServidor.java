@@ -35,6 +35,11 @@ public final class ConfigServidor {
     private static final ForgeConfigSpec.IntValue GLITCH_RADIO, GLITCH_BLOQUES_TICK;
     private static final ForgeConfigSpec.BooleanValue GLITCH_DESTRUIR, GLITCH_CONTENEDORES;
     private static final ForgeConfigSpec.DoubleValue GLITCH_DANO;
+    // ---- bromas (y la rueda de Catalina)
+    private static final ForgeConfigSpec.BooleanValue BROMA_UWU, BROMA_CONTROLES, BROMA_CARTEL, BROMA_DUENDE, BROMA_REVES, RUEDA_MUERTE;
+    private static final ForgeConfigSpec.IntValue BROMA_UWU_S, BROMA_CONTROLES_S, BROMA_CARTEL_S, BROMA_DUENDE_S, BROMA_DUENDE_CADA_S,
+            BROMA_REVES_S, BROMA_ENFRIAMIENTO_S, RUEDA_ACIERTOS, RUEDA_MUERTE_S;
+    private static final ForgeConfigSpec.DoubleValue RUEDA_DANO;
 
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
@@ -145,6 +150,32 @@ public final class ConfigServidor {
                 .defineInRange("bloques_por_tick", 160, 8, 4096);
         b.pop();
 
+        b.comment("Bromas (objetos de creativo): se activan / desactivan una a una y se ajusta cuánto duran.").push("bromas");
+        BROMA_UWU = b.comment("Varita uwu: el chat de la víctima sale en \"uwu\" (r/l -> w, nya~, >w<...).").define("uwu_activada", true);
+        BROMA_UWU_S = b.comment("Segundos que dura el hechizo uwu.").defineInRange("uwu_segundos", 180, 1, 86400);
+        BROMA_CONTROLES = b.comment("Poción de controles cambiados: W<->S y A<->D.").define("controles_activada", true);
+        BROMA_CONTROLES_S = b.comment("Segundos que duran los controles cambiados.").defineInRange("controles_segundos", 30, 1, 3600);
+        BROMA_CARTEL = b.comment("Cartel de \"PATÉAME\" en la espalda (cada golpe que recibe: confeti y \"boing\").").define("cartel_activada", true);
+        BROMA_CARTEL_S = b.comment("Segundos que dura el cartel pegado (también se cae al morir, o la víctima se lo quita: agachada + clic derecho con la mano vacía).")
+                .defineInRange("cartel_segundos", 600, 1, 86400);
+        BROMA_DUENDE = b.comment("Duende travieso: revuelve el inventario de la víctima (nunca borra nada).").define("duende_activada", true);
+        BROMA_DUENDE_S = b.comment("Segundos que dura el duende.").defineInRange("duende_segundos", 300, 1, 86400);
+        BROMA_DUENDE_CADA_S = b.comment("Cada cuántos segundos revuelve el inventario.").defineInRange("duende_cada_segundos", 60, 5, 3600);
+        BROMA_REVES = b.comment("Espejo del revés: la pantalla de la víctima se pone boca abajo.").define("reves_activada", true);
+        BROMA_REVES_S = b.comment("Segundos que dura la pantalla del revés.").defineInRange("reves_segundos", 20, 1, 600);
+        BROMA_ENFRIAMIENTO_S = b.comment("Segundos de espera de quien gasta la broma antes de poder repetirla con el mismo objeto.")
+                .defineInRange("enfriamiento_segundos", 10, 0, 3600);
+        b.pop();
+
+        b.comment("Rueda de Catalina (sala de juegos).").push("rueda_catalina");
+        RUEDA_ACIERTOS = b.comment("Rondas del minijuego (mantener la mirilla en el blanco) que hay que superar para soltar cada una de las 4 correas.")
+                .defineInRange("aciertos_por_correa", 2, 1, 20);
+        RUEDA_DANO = b.comment("Daño de cada ronda fallada (sube un poco con la velocidad de la rueda).").defineInRange("dano_fallo", 2.0, 0.0, 100.0);
+        RUEDA_MUERTE = b.comment("Si la rueda puede llegar a matar (solo después de rueda_muerte_segundos atado).").define("puede_matar", true);
+        RUEDA_MUERTE_S = b.comment("Segundos atado a la rueda antes de que los fallos puedan matar (hasta entonces te deja con 1 corazón).")
+                .defineInRange("muerte_tras_segundos", 600, 0, 86400);
+        b.pop();
+
         SPEC = b.build();
     }
 
@@ -232,4 +263,24 @@ public final class ConfigServidor {
     public static boolean glitchAfectarContenedores() { return b(GLITCH_CONTENEDORES); }
     public static float glitchDano() { return (float) d(GLITCH_DANO); }
     public static int glitchBloquesPorTick() { return Math.max(1, i(GLITCH_BLOQUES_TICK)); }
+
+    // ------------------------------------------------------------------ bromas (duraciones en ticks)
+    public static boolean bromaUwu() { return b(BROMA_UWU); }
+    public static int bromaUwuTicks() { return i(BROMA_UWU_S) * 20; }
+    public static boolean bromaControles() { return b(BROMA_CONTROLES); }
+    public static int bromaControlesTicks() { return i(BROMA_CONTROLES_S) * 20; }
+    public static boolean bromaCartel() { return b(BROMA_CARTEL); }
+    public static int bromaCartelTicks() { return i(BROMA_CARTEL_S) * 20; }
+    public static boolean bromaDuende() { return b(BROMA_DUENDE); }
+    public static int bromaDuendeTicks() { return i(BROMA_DUENDE_S) * 20; }
+    public static int bromaDuendeCadaTicks() { return Math.max(100, i(BROMA_DUENDE_CADA_S) * 20); }
+    public static boolean bromaReves() { return b(BROMA_REVES); }
+    public static int bromaRevesTicks() { return i(BROMA_REVES_S) * 20; }
+    public static int bromaEnfriamientoTicks() { return i(BROMA_ENFRIAMIENTO_S) * 20; }
+
+    // ------------------------------------------------------------------ rueda de Catalina
+    public static int ruedaAciertosPorCorrea() { return Math.max(1, i(RUEDA_ACIERTOS)); }
+    public static float ruedaDanoFallo() { return (float) d(RUEDA_DANO); }
+    public static boolean ruedaPuedeMatar() { return b(RUEDA_MUERTE); }
+    public static int ruedaMuerteTicks() { return i(RUEDA_MUERTE_S) * 20; }
 }

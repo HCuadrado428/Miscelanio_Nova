@@ -18,6 +18,8 @@ public final class AparatosVictimas {
     public static final int DONCELLA = 1, POTRO = 2, SILLA = 3, PENDULO = 4, INMERSION = 5;
     /** Silla de interrogatorio y colgado boca abajo (números altos a propósito: otras ramas añaden los suyos tras el 5). */
     public static final int INTERROGATORIO = 20, COLGADO = 21;
+    /** Rueda de Catalina (RuedaBlockEntity). */
+    public static final int RUEDA = 22;
     private static final long CADUCA_MS = 400;
 
     public record Entrada(BlockPos pos, int tipo, long visto) {}
