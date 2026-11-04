@@ -35,6 +35,7 @@ public abstract class LivingEntityRendererMixin {
     private void miscelanea$grilletes(LivingEntity e, float yaw, float pt, PoseStack ps, MultiBufferSource buf, int luz, CallbackInfo ci) {
         com.miscelanea.client.tortura.PoseGrilletes.posar(((LivingEntityRenderer<?, ?>) (Object) this).getModel(), e);
         com.miscelanea.client.tortura.EjecucionCliente.posar(((LivingEntityRenderer<?, ?>) (Object) this).getModel(), e, pt);
+        com.miscelanea.client.tortura.muertes.MuertesCliente.posar(((LivingEntityRenderer<?, ?>) (Object) this).getModel(), e, pt);
         com.miscelanea.client.tortura.castigo.PoseCastigo.posar(((LivingEntityRenderer<?, ?>) (Object) this).getModel(), e, pt);
     }
 

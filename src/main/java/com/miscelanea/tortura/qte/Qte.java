@@ -65,6 +65,8 @@ public final class Qte {
     /** Empieza un minijuego para el jugador. Devuelve su id. */
     public static int iniciar(ServerPlayer p, QteTipo tipo, QteParams params, QteCallback cb) {
         cancelar(p);
+        // en plena cinemática de muerte ya no hay nada que jugar
+        if (com.miscelanea.tortura.muertes.Muertes.en(p)) return -1;
         if (params.semilla == 0) params.semilla = ThreadLocalRandom.current().nextLong() | 1L;
         int id = siguiente++;
         SESIONES.put(p.getUUID(), new Sesion(id, tipo, params, cb, p.level().dimension()));

@@ -42,6 +42,10 @@ public final class AparatosRed {
                     .encoder(InterrogaAccionPacket::encode).decoder(InterrogaAccionPacket::new).consumerMainThread(InterrogaAccionPacket::handle).add();
             CANAL.messageBuilder(InterrogaEfectoPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                     .encoder(InterrogaEfectoPacket::encode).decoder(InterrogaEfectoPacket::new).consumerMainThread(InterrogaEfectoPacket::handle).add();
+            // cinemáticas de muerte (al final, para no mover los ids)
+            CANAL.messageBuilder(com.miscelanea.tortura.muertes.MuertePacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                    .encoder(com.miscelanea.tortura.muertes.MuertePacket::encode).decoder(com.miscelanea.tortura.muertes.MuertePacket::new)
+                    .consumerMainThread(com.miscelanea.tortura.muertes.MuertePacket::handle).add();
         });
     }
 

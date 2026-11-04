@@ -335,6 +335,12 @@ public class SillaInterrogatorioBlockEntity extends AparatoBlockEntity {
         });
     }
 
+    /** Cinemática de muerte (Muertes): el corazón sigue parado (monitor plano) sin volver a contar ni cegar. */
+    public void paroPorMuerte(boolean inicio) {
+        if (paro < 2) paro = 2;
+        if (inicio) sincronizar();
+    }
+
     // ------------------------------------------------------------------ tick
     @Override
     protected void tickAparato(ServerLevel sl) {
@@ -364,7 +370,7 @@ public class SillaInterrogatorioBlockEntity extends AparatoBlockEntity {
             if (paro == 0) {
                 // nadie le puso la adrenalina a tiempo
                 Aparatos.matar(v, AparatosRegistro.DANO_PARO, quien != null ? quien : captor);
-                if (!v.isAlive()) return;
+                if (!v.isAlive() || com.miscelanea.tortura.muertes.Muertes.en(v)) return;
                 bpm = 40F;   // (por si algo le ha salvado: tótem...)
                 sincronizar();
             }
@@ -394,7 +400,8 @@ public class SillaInterrogatorioBlockEntity extends AparatoBlockEntity {
     protected void tickVisual() {
         reloj++;
         bpmVisO = bpmVis;
-        if (paroCli > 0) paroCli--;
+        // (en la cinemática de muerte el monitor se queda plano)
+        if (paroCli > 0 && !(victimaId >= 0 && com.miscelanea.tortura.muertes.Muertes.enId(victimaId))) paroCli--;
         float obj = ocupado() ? bpm : 0F;
         bpmVis += (obj - bpmVis) * 0.12F;
         if (!ocupado() || paroCli > 0 || bpm <= 1F) {

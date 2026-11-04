@@ -241,7 +241,7 @@ public final class CajaAgua {
 
     // ------------------------------------------------------------------ meter las manos
     public static void meterManos(ServerPlayer p) {
-        if (!tiene(p) || !p.isAlive()) return;
+        if (!tiene(p) || !p.isAlive() || com.miscelanea.tortura.muertes.Muertes.en(p)) return;
         CompoundTag c = caja(p);
         if (c.getInt("Abierta") > 0) return;
         if (!c.getBoolean("Activa")) {

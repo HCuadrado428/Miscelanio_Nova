@@ -390,6 +390,13 @@ public class GanchoBlockEntity extends AparatoBlockEntity {
         }
     }
 
+    /** Cinemática de muerte (Muertes): el último balanceo se va apagando. */
+    public void frenarPorMuerte(long t) {
+        est.wx *= 0.9;
+        est.wz *= 0.9;
+        if (t % 5 == 0) marcar();
+    }
+
     // ------------------------------------------------------------------ cliente
     @Override
     protected void tickVisual() {

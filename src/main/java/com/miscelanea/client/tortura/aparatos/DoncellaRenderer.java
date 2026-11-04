@@ -14,6 +14,9 @@ public class DoncellaRenderer implements BlockEntityRenderer<DoncellaBlockEntity
     @Override
     public void render(DoncellaBlockEntity be, float pt, PoseStack ps, MultiBufferSource buf, int luz, int ov) {
         float k = Mth.lerp(pt, be.visO, be.vis);
+        // cinemática de muerte: las puertas se cierran de golpe (nunca se abren más de lo que están)
+        float c = com.miscelanea.client.tortura.muertes.MuertesCliente.canal(be.victimaId(), "puertas", pt);
+        if (!Float.isNaN(c)) k = Math.max(k, c);
         float ang = (1F - k) * ModelosAparatos.PUERTA_ABIERTA;
         ps.pushPose();
         ModelosAparatos.orientar(ps, be.frente());

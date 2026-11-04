@@ -119,6 +119,10 @@ public final class AparatosCliente {
         if (desmayo > 0) desmayo--;
         DESCARGAS.values().removeIf(d -> d[0] < reloj);
         int yo = mc.player.getId();
+        if (com.miscelanea.client.tortura.muertes.MuertesCliente.localActiva()) {
+            doncella = null;
+            pulso = null;
+        }
         AparatosVictimas.Entrada en = AparatosVictimas.de(yo);
         if (doncella != null) {
             if (en == null || !en.pos().equals(doncella.pos) || !(mc.level.getBlockEntity(doncella.pos) instanceof DoncellaBlockEntity d)) {
@@ -218,6 +222,9 @@ public final class AparatosCliente {
         }
         float giro = 180F - yaw;
         float estira = 1F + 0.07F * Mth.lerp(pt, pb.tensionVisO, pb.tensionVis);
+        // cinemática de muerte: se estira de más
+        float c = com.miscelanea.client.tortura.muertes.MuertesCliente.canal(le.getId(), "estira", pt);
+        if (!Float.isNaN(c)) estira = Math.max(estira, c);
         ps.mulPose(Axis.YP.rotationDegrees(giro));
         ps.translate(0, jugador ? PotroBlockEntity.ALZA : Math.min(0.4F, le.getBbWidth() * 0.45F), 0);
         ps.mulPose(Axis.XP.rotationDegrees(90F));
@@ -234,6 +241,8 @@ public final class AparatosCliente {
     public static void hud(ForgeGui gui, GuiGraphics g, float pt, int w, int h) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
+        // en la cinemática de muerte se ve desde fuera: nada de minijuegos ni del interior de la doncella
+        if (com.miscelanea.client.tortura.muertes.MuertesCliente.localActiva()) return;
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         AparatosVictimas.Entrada en = AparatosVictimas.de(mc.player.getId());

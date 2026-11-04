@@ -137,6 +137,8 @@ public final class CollarCliente {
         RenderSystem.defaultBlendFunc();
         float t = reloj + pt;
         int cx = w / 2, y = 6;
+        // con la cinemática de muerte en marcha manda ella (pitidos, pantalla)
+        if (e.detona >= 0 && com.miscelanea.tortura.muertes.Muertes.en(p)) return;
         if (e.detona >= 0) {
             // cuenta final: rojo que sube, sin destellos
             float k = 1F - Mth.clamp(e.detona / (float) Collares.DETONA, 0F, 1F);

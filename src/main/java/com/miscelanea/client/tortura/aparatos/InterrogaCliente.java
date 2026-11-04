@@ -349,6 +349,7 @@ public final class InterrogaCliente {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer p = mc.player;
         if (p == null || mc.level == null) return;
+        if (com.miscelanea.client.tortura.muertes.MuertesCliente.localActiva()) return;
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         boolean ocultar = mc.options.hideGui;

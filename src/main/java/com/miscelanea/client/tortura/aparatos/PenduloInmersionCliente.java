@@ -187,6 +187,7 @@ public final class PenduloInmersionCliente {
     public static void hud(ForgeGui gui, GuiGraphics g, float pt, int w, int h) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
+        if (com.miscelanea.client.tortura.muertes.MuertesCliente.localActiva()) return;
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         boolean ocultar = mc.options.hideGui;

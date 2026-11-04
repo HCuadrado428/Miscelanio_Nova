@@ -87,7 +87,7 @@ public final class Aparatos {
         if (v instanceof Player p) {
             if (p.isSpectator()) return false;
         } else if (!(v instanceof Mob)) return false;
-        if (esJefe(v) || TrampaOso.ejecutando(v)) return false;
+        if (esJefe(v) || TrampaOso.ejecutando(v) || com.miscelanea.tortura.muertes.Muertes.en(v)) return false;
         return v.getBbHeight() <= 2.6F && v.getBbWidth() <= 1.6F;
     }
 
@@ -172,8 +172,12 @@ public final class Aparatos {
      */
     public static void danar(LivingEntity v, ResourceKey<DamageType> k, float dano, @Nullable UUID captor) {
         if (!(v.level() instanceof ServerLevel sl) || dano <= 0 || !v.isAlive()) return;
+        // en plena cinemática de muerte el aparato ya no hace nada; el golpe mortal la empieza (ver Muertes)
+        if (com.miscelanea.tortura.muertes.Muertes.en(v)) return;
+        boolean mortal = dano >= v.getHealth() + v.getAbsorptionAmount();
+        if (mortal && com.miscelanea.tortura.muertes.Muertes.intentar(v, k, captor)) return;
         Entity c = null;
-        if (dano >= v.getHealth() + v.getAbsorptionAmount()) {
+        if (mortal) {
             IncapCompat.asegurar();   // también sin captor (caja de agua...)
             if (captor != null) {
                 c = sl.getEntity(captor);
@@ -185,8 +189,15 @@ public final class Aparatos {
         v.hurt(fuente(sl, k, c), dano);
     }
 
-    /** Mata en el acto con el daño del aparato (y su mensaje). */
+    /** Mata con el daño del aparato (y su mensaje): con su cinemática de muerte si la tiene (ver Muertes), si no en el acto. */
     public static void matar(LivingEntity v, ResourceKey<DamageType> k, @Nullable UUID captor) {
+        if (!(v.level() instanceof ServerLevel) || !v.isAlive()) return;
+        if (com.miscelanea.tortura.muertes.Muertes.intentar(v, k, captor)) return;
+        matarYa(v, k, captor);
+    }
+
+    /** Mata en el acto con el daño del aparato (y su mensaje); sin cinemática. */
+    public static void matarYa(LivingEntity v, ResourceKey<DamageType> k, @Nullable UUID captor) {
         if (!(v.level() instanceof ServerLevel sl) || !v.isAlive()) return;
         Entity c = null;
         if (captor != null) {

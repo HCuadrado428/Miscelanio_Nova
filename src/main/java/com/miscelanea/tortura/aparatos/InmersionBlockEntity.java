@@ -189,6 +189,15 @@ public class InmersionBlockEntity extends AparatoBlockEntity {
         }
     }
 
+    /** Cinemática de muerte (Muertes): la silla se queda abajo, en el agua, hasta el final. */
+    public void hundirPorMuerte() {
+        mantener = 6;
+        if (objetivo != 1F) {
+            objetivo = 1F;
+            marcar();
+        }
+    }
+
     // ------------------------------------------------------------------ tick
     private float mover(float b) {
         if (b < objetivo) return Math.min(objetivo, b + BAJA);
