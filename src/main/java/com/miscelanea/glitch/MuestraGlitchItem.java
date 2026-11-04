@@ -107,7 +107,7 @@ public class MuestraGlitchItem extends Item {
         int m = d.getInt(MECHA) + 1;
         d.putInt(MECHA, m);
         float k = Math.min(1.0F, m / (float) MECHA_TICKS);
-        var r = ent.getRandom();
+        var r = level.random;
         if (level instanceof ServerLevel sl) {
             if (m == 1) {
                 ent.setNeverPickUp();
