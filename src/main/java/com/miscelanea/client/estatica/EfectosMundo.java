@@ -283,6 +283,9 @@ public final class EfectosMundo {
         return new Vec3(Mth.lerp(pt, e.xo, e.getX()), Mth.lerp(pt, e.yo, e.getY()), Mth.lerp(pt, e.zo, e.getZ()));
     }
 
+    /** Desde dónde (0..1 del largo) se usa la punta deshilachada de la textura. */
+    private static final float PUNTA = 0.72F;
+
     private static void dibujarTentaculos(VertexConsumer vc, PoseStack ps, net.minecraft.client.multiplayer.ClientLevel l, Tent x, long t, float pt, Vec3 cam, int cuadro) {
         Entity a = l.getEntity(x.atk), v = l.getEntity(x.obj);
         if (!(a instanceof LivingEntity la) || v == null) return;
@@ -304,8 +307,9 @@ public final class EfectosMundo {
         double[][] raices = {{0.32 * lado, 1.38, -0.12}, {0.18 * lado, 1.05, -0.2}, {-0.1 * lado, 1.25, -0.2}};
         Matrix4f m = ps.last().pose();
         Matrix3f nm = ps.last().normal();
+        // textura: 8 fotogramas de 16 de ancho; en cada uno, el cuerpo (8, se repite a lo largo) y la punta (8, deshilachada)
         int f = (cuadro + x.atk) % 8;
-        float u0 = f / 8F, u1 = (f + 1) / 8F;
+        float u0 = f / 8F, um = (f + 0.5F) / 8F, u1 = (f + 1) / 8F;
         for (int i = 0; i < 3; i++) {
             Vec3 raiz = pa.add(der.scale(raices[i][0])).add(0, raices[i][1], 0).add(fr.scale(raices[i][2]));
             // cada tentáculo se agarra a un punto distinto del objetivo
@@ -330,7 +334,7 @@ public final class EfectosMundo {
             Vec3 ctrl = raiz.add(d.scale(0.4)).add(arr.scale(len * 0.28 + 0.3)).add(lat.scale((i - 1) * 0.9)).add(arr.scale((i - 1) * 0.25)).add(fr.scale(-0.35));
             int N = 22;
             Vec3 prev = null, prevW = null;
-            float vPrev = 0;
+            float vPrev = 0, vtPrev = 0;
             for (int j = 0; j <= N; j++) {
                 float s = j / (float) N * ext;
                 float om = 1 - s;
@@ -344,17 +348,22 @@ public final class EfectosMundo {
                 if (w.lengthSqr() < 1.0E-8) w = lat;
                 float ancho = 0.11F * (1 - s * 0.8F) * (0.85F + 0.15F * Mth.sin(k * 0.7F + j));
                 w = w.normalize().scale(ancho);
-                float vv = s * 3F + k * 0.08F;
+                // a lo largo: unos 2 texels por píxel (64 texels = 2 bloques) y deslizándose; la punta, de 0 a 1 en su tramo
+                float vv = (float) (s * len * 0.5) + k * 0.05F;
+                float sr = j / (float) N, vt = Math.max(0F, (sr - PUNTA) / (1 - PUNTA));
                 if (prev != null) {
                     int al = (int) (235 * Mth.clamp(ext * 1.4F, 0, 1));
-                    vertice(vc, m, nm, (float) (prev.x - prevW.x), (float) (prev.y - prevW.y), (float) (prev.z - prevW.z), u0, vPrev, al);
-                    vertice(vc, m, nm, (float) (prev.x + prevW.x), (float) (prev.y + prevW.y), (float) (prev.z + prevW.z), u1, vPrev, al);
-                    vertice(vc, m, nm, (float) (q.x + w.x), (float) (q.y + w.y), (float) (q.z + w.z), u1, vv, al);
-                    vertice(vc, m, nm, (float) (q.x - w.x), (float) (q.y - w.y), (float) (q.z - w.z), u0, vv, al);
+                    boolean punta = sr > PUNTA;
+                    float ua = punta ? um : u0, ub = punta ? u1 : um, va = punta ? vtPrev : vPrev, vb = punta ? vt : vv;
+                    vertice(vc, m, nm, (float) (prev.x - prevW.x), (float) (prev.y - prevW.y), (float) (prev.z - prevW.z), ua, va, al);
+                    vertice(vc, m, nm, (float) (prev.x + prevW.x), (float) (prev.y + prevW.y), (float) (prev.z + prevW.z), ub, va, al);
+                    vertice(vc, m, nm, (float) (q.x + w.x), (float) (q.y + w.y), (float) (q.z + w.z), ub, vb, al);
+                    vertice(vc, m, nm, (float) (q.x - w.x), (float) (q.y - w.y), (float) (q.z - w.z), ua, vb, al);
                 }
                 prev = q;
                 prevW = w;
                 vPrev = vv;
+                vtPrev = vt;
             }
         }
     }

@@ -233,6 +233,7 @@ public final class EstaticaCliente {
         INFO.clear();
         for (Mascara m : MASCARAS.values()) m.cerrar();
         MASCARAS.clear();
+        Mascara.olvidarPieles();
         BUCLES.clear();
         EMPUJADOS.clear();
         propio = null;
@@ -299,8 +300,10 @@ public final class EstaticaCliente {
         cab.xRot = xr * Mth.DEG_TO_RAD;
         cab.yRot = Mth.wrapDegrees(hy - by) * Mth.DEG_TO_RAD;
         cab.zRot = 0;
-        float parp = 0.75F + 0.25F * Mth.sin((p.tickCount + pt) * 0.13F);
-        var vc = buf.getBuffer(RenderType.eyes(OJOS));
+        float parp = 0.85F * EstaticaLayer.parpadeoOjos(p.getId(), p.tickCount + pt);
+        Mascara mk = mascara(p.getId());
+        mk.adaptar(p);
+        var vc = buf.getBuffer(RenderType.eyes(mk.rlOjos));
         cab.render(ps, vc, 0xF000F0, OverlayTexture.NO_OVERLAY, parp, parp, parp, 1F);
         gorro.copyFrom(cab);
         gorro.render(ps, vc, 0xF000F0, OverlayTexture.NO_OVERLAY, parp * 0.6F, parp * 0.6F, parp * 0.6F, 1F);
@@ -324,6 +327,7 @@ public final class EstaticaCliente {
         else pr.renderLeftHand(e.getPoseStack(), e.getMultiBufferSource(), e.getPackedLight(), p);
         float cob = EstaticaCine.cobertura(p.getId(), 0F);
         Mascara mk = mascara(p.getId());
+        mk.adaptar(p);
         mk.actualizar(Float.isNaN(cob) ? 1F : cob, net.minecraft.Util.getMillis() + p.getId() * 37L);
         PlayerModel<AbstractClientPlayer> m = pr.getModel();
         var vc = e.getMultiBufferSource().getBuffer(RenderType.entityTranslucent(mk.rl));
