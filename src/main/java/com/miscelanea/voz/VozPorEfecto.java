@@ -65,6 +65,10 @@ public final class VozPorEfecto {
     /** Voces activas de una entidad, por sus efectos: lista de (id de voz, amplificador), sin repetir ids. */
     public static List<VozEntrada> vocesDe(LivingEntity e) {
         List<VozEntrada> out = new ArrayList<>();
+        // voces puestas a mano con /miscelanea voz (duran hasta quitarlas; se guardan con el jugador)
+        if (e instanceof net.minecraft.world.entity.player.Player p) {
+            for (String v : VozComando.fijas(p)) out.add(new VozEntrada(v, 1));
+        }
         for (MobEffectInstance m : e.getActiveEffects()) {
             MobEffect ef = m.getEffect();
             ResourceLocation id = ForgeRegistries.MOB_EFFECTS.getKey(ef);

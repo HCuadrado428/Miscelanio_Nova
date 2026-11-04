@@ -2339,5 +2339,9 @@
   "subtitles.miscelanea.estatica_apagon": "A light goes out",
   "subtitles.miscelanea.estatica_tentaculo": "Static tentacles",
   "subtitles.miscelanea.estatica_golpe": "Slammed into the ground",
-  "subtitles.miscelanea.estatica_imitacion": "A voice in the static"
+  "subtitles.miscelanea.estatica_imitacion": "A voice in the static",
+  "miscelanea.voz.cmd.desconocida": "Unknown voice: %s. Voices: %s",
+  "miscelanea.voz.cmd.puesta": "Voice \"%s\" set for %s player(s)",
+  "miscelanea.voz.cmd.quitada": "Voice \"%s\" removed from %s player(s)",
+  "miscelanea.voz.cmd.limpia": "Voices cleared for %s player(s)"
 }

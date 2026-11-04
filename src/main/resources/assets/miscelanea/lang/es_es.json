@@ -2339,5 +2339,9 @@
   "subtitles.miscelanea.estatica_apagon": "Una luz se apaga",
   "subtitles.miscelanea.estatica_tentaculo": "Tentáculos de estática",
   "subtitles.miscelanea.estatica_golpe": "Golpe contra el suelo",
-  "subtitles.miscelanea.estatica_imitacion": "Una voz entre la estática"
+  "subtitles.miscelanea.estatica_imitacion": "Una voz entre la estática",
+  "miscelanea.voz.cmd.desconocida": "Voz desconocida: %s. Voces: %s",
+  "miscelanea.voz.cmd.puesta": "Voz «%s» puesta a %s jugador(es)",
+  "miscelanea.voz.cmd.quitada": "Voz «%s» quitada a %s jugador(es)",
+  "miscelanea.voz.cmd.limpia": "Voces quitadas a %s jugador(es)"
 }
