@@ -355,15 +355,15 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
         q(buf, m, px1 - in - 0.6F, y0 + in, px1 - in, y0 + ph - in, 0.15F, tubo, LUZ);
         String tit = I18n.get("ranking.miscelanea.tablon.titulo");
         float kt = Math.min((ph - 5) / 7.5F, (px1 - px0 - 8) / Math.max(1, font.width(tit)));
-        float tx = (W - font.width(tit) * kt) / 2, ty = y0 + (ph - 7 * kt) / 2;
+        float tx = (W - font.width(tit) * kt) / 2, tyt = y0 + (ph - 7 * kt) / 2;
         int nucleo = parpadeo ? 0xFFB070A0 : 0xFFFFE0F8, brillo = parpadeo ? 0x30FF3CC8 : 0x90FF3CC8;
         for (float[] o : new float[][]{{-0.5F, 0}, {0.5F, 0}, {0, -0.5F}, {0, 0.5F}})
-            textoL(ps, buf, font, tit, tx + o[0], ty + o[1], kt, 0.35F, brillo, LUZ);
-        textoL(ps, buf, font, tit, tx, ty, kt, 0.4F, nucleo, LUZ);
+            textoL(ps, buf, font, tit, tx + o[0], tyt + o[1], kt, 0.35F, brillo, LUZ);
+        textoL(ps, buf, font, tit, tx, tyt, kt, 0.4F, nucleo, LUZ);
         // etiqueta de papel con la categoría (y dos trozos de celo)
         float y1 = y0 + ph + 2.5F, lh = grande ? 11 : 8;
         String nombre = com.miscelanea.ranking.Ranking.nombre(cat).getString();
-        float maxW = W - 2 * F - 16;
+        float maxW = W - 2 * F - 26;
         float kl = Math.min((lh - 3) / 7.5F, maxW / Math.max(1, font.width(nombre)));
         float lw = Math.max(30, font.width(nombre) * kl + 10), lx = (W - lw) / 2;
         q(buf, m, lx + 0.8F, y1 + 0.8F, lx + lw + 0.8F, y1 + lh + 0.8F, 0.16F, 0x50000000, luz);

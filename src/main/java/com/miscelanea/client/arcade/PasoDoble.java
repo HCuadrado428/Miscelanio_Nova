@@ -371,7 +371,8 @@ public class PasoDoble extends JuegoArcade {
         int arriba = yh + 7, abajo = Math.min(Pantalla.H + 4, ye + 7);
         if (abajo <= arriba) return;
         if (est == JuicioBaile.FALLADA) {
-            // rota: gris, partida en trozos que se caen
+            // rota: gris, partida en trozos que se caen (solo por debajo de los receptores)
+            arriba = Math.max(arriba, OBJ_Y + 7);
             int caida = Math.max(0, tiempo - tRoto) / 2;
             for (int y = arriba, k = 0; y < abajo; y += 9, k++) {
                 int h = Math.min(6, abajo - y), dx = (k % 2) - (k % 3 == 0 ? 1 : 0);
