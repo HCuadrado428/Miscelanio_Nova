@@ -13,7 +13,7 @@ import java.util.List;
  * Reglas de las mezclas del caldero:
  * <ul>
  *   <li>Vale cualquier poción con efectos (normal, arrojadiza o persistente, del juego o del mod), los frascos de mezcla
- *       y la esencia de Dream.</li>
+ *       y la esencia y el veneno de Dream.</li>
  *   <li>El mismo efecto dos veces: se queda el más fuerte (más nivel; a igual nivel, el más largo).</li>
  *   <li>Cuantos más efectos distintos, menos dura cada uno: x1, x0,8, x0,65, x0,5 para 1-4 efectos (y un poco menos aún
  *       si una poción traía varios: nunca baja de x0,3). Los instantáneos (curación, daño) no cambian.</li>
@@ -33,6 +33,7 @@ public final class Mezclas {
     public static List<MobEffectInstance> efectosDe(ItemStack st) {
         if (st.isEmpty()) return List.of();
         if (st.getItem() instanceof EsenciaDreamItem) return List.of(new MobEffectInstance(DreamRegistro.MORDISCO.get(), DURACION_ESENCIA));
+        if (st.getItem() instanceof VenenoDreamItem) return PotionUtils.getMobEffects(VenenoDreamItem.asegurar(st.copy()));
         if (st.getItem() instanceof PotionItem) return PotionUtils.getMobEffects(st);
         return List.of();
     }

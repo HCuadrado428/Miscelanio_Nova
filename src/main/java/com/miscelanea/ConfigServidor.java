@@ -27,8 +27,9 @@ public final class ConfigServidor {
             SALIDA_S, GANCHO_DANO_DESDE_S, CEPO_S;
     // ---- Dream (mordisco venenoso y anillo de medianoche)
     private static final ForgeConfigSpec.BooleanValue MORDISCO_ACTIVADO, MORDISCO_JUGADORES;
-    private static final ForgeConfigSpec.IntValue MORDISCO_WITHER_NIVEL, MORDISCO_WITHER_S, ANILLO_ENFRIAMIENTO_S;
-    private static final ForgeConfigSpec.DoubleValue MORDISCO_DANO, MORDISCO_UMBRAL;
+    private static final ForgeConfigSpec.IntValue MORDISCO_LENTITUD_MAX, MORDISCO_LENTITUD_S, MORDISCO_NAUSEA_S,
+            MORDISCO_DESANGRADO_NIVEL, MORDISCO_DESANGRADO_S, MORDISCO_DEBILIDAD_S, VENENO_ENFRIAMIENTO_S, ANILLO_ENFRIAMIENTO_S;
+    private static final ForgeConfigSpec.DoubleValue MORDISCO_DANO, MORDISCO_UMBRAL, DESANGRADO_DANO;
     private static final ForgeConfigSpec.ConfigValue<String> ANILLO_DIMENSION;
     // ---- glitch (muestra de glitch)
     private static final ForgeConfigSpec.IntValue GLITCH_RADIO, GLITCH_BLOQUES_TICK;
@@ -103,12 +104,26 @@ public final class ConfigServidor {
                 .define("mordisco_activado", true);
         MORDISCO_JUGADORES = b.comment("Si se puede morder a otros jugadores (además de respetar el PvP del servidor y los equipos).")
                 .define("mordisco_a_jugadores", true);
-        MORDISCO_WITHER_NIVEL = b.comment("Nivel del Wither de cada mordisco (0 = Wither I, 1 = Wither II...).")
-                .defineInRange("mordisco_wither_nivel", 1, 0, 4);
-        MORDISCO_WITHER_S = b.comment("Segundos de Wither que deja cada mordisco (muerde cada 1,5 s).")
-                .defineInRange("mordisco_wither_segundos", 4, 1, 60);
-        MORDISCO_DANO = b.comment("Daño directo de cada mordisco, aparte del Wither (sirve también contra no muertos, que no sufren Wither).")
+        MORDISCO_LENTITUD_MAX = b.comment("Veneno paralizante: cada mordisco deja Lentitud, que sube un nivel cada dos mordiscos seguidos",
+                        "hasta este tope (0 = Lentitud I, 1 = II, 2 = III...).")
+                .defineInRange("mordisco_lentitud_max", 2, 0, 6);
+        MORDISCO_LENTITUD_S = b.comment("Segundos de Lentitud que deja cada mordisco (muerde cada 1,5 s).")
+                .defineInRange("mordisco_lentitud_segundos", 8, 1, 120);
+        MORDISCO_NAUSEA_S = b.comment("Segundos de Náuseas (mareo) que deja cada mordisco. 0 = sin náuseas.")
+                .defineInRange("mordisco_nausea_segundos", 10, 0, 120);
+        MORDISCO_DESANGRADO_NIVEL = b.comment("Nivel del Desangrado de cada mordisco (0 = I: pierde vida cada 2 s; II cada 1 s...).")
+                .defineInRange("mordisco_desangrado_nivel", 0, 0, 3);
+        MORDISCO_DESANGRADO_S = b.comment("Segundos de Desangrado que deja cada mordisco. 0 = no sangra.")
+                .defineInRange("mordisco_desangrado_segundos", 10, 0, 300);
+        MORDISCO_DEBILIDAD_S = b.comment("Segundos de Debilidad I que deja cada mordisco. 0 = sin debilidad.")
+                .defineInRange("mordisco_debilidad_segundos", 6, 0, 120);
+        MORDISCO_DANO = b.comment("Daño directo de cada mordisco (los colmillos), aparte del desangrado.")
                 .defineInRange("mordisco_dano", 1.0, 0.0, 100.0);
+        DESANGRADO_DANO = b.comment("Daño de cada pérdida de sangre del efecto Desangrado (ignora la armadura).")
+                .defineInRange("desangrado_dano", 1.0, 0.0, 100.0);
+        VENENO_ENFRIAMIENTO_S = b.comment("Segundos sin veneno después de extraerlo en una botella (Veneno de Dream): mientras tanto",
+                        "no se puede volver a extraer ni morder. 0 = sin espera.")
+                .defineInRange("veneno_enfriamiento_segundos", 300, 0, 86400);
         MORDISCO_UMBRAL = b.comment("Daño de un solo golpe que, recibido por quien muerde, le obliga a soltar a su presa.")
                 .defineInRange("mordisco_umbral_soltar", 3.0, 0.0, 1000.0);
         ANILLO_DIMENSION = b.comment("Dimensión a la que lleva el anillo de medianoche (la de «The Midnight» de Cryptic Mushroom).")
@@ -201,8 +216,14 @@ public final class ConfigServidor {
     // ------------------------------------------------------------------ Dream
     public static boolean mordiscoActivado() { return b(MORDISCO_ACTIVADO); }
     public static boolean mordiscoJugadores() { return b(MORDISCO_JUGADORES); }
-    public static int mordiscoWitherNivel() { return i(MORDISCO_WITHER_NIVEL); }
-    public static int mordiscoWitherTicks() { return Math.max(20, i(MORDISCO_WITHER_S) * 20); }
+    public static int mordiscoLentitudMax() { return i(MORDISCO_LENTITUD_MAX); }
+    public static int mordiscoLentitudTicks() { return Math.max(20, i(MORDISCO_LENTITUD_S) * 20); }
+    public static int mordiscoNauseaTicks() { return i(MORDISCO_NAUSEA_S) * 20; }
+    public static int mordiscoDesangradoNivel() { return i(MORDISCO_DESANGRADO_NIVEL); }
+    public static int mordiscoDesangradoTicks() { return i(MORDISCO_DESANGRADO_S) * 20; }
+    public static int mordiscoDebilidadTicks() { return i(MORDISCO_DEBILIDAD_S) * 20; }
+    public static float desangradoDano() { return (float) d(DESANGRADO_DANO); }
+    public static int venenoEnfriamientoTicks() { return i(VENENO_ENFRIAMIENTO_S) * 20; }
     public static float mordiscoDano() { return (float) d(MORDISCO_DANO); }
     public static float mordiscoUmbral() { return (float) d(MORDISCO_UMBRAL); }
     public static String anilloDimension() { return s(ANILLO_DIMENSION); }

@@ -208,6 +208,16 @@ public final class Heridas {
     private static void heridasPorDano(ServerPlayer p, DamageSource s, float dano, HeridasDatos d) {
         RandomSource r = p.getRandom();
         int g = gravedad(dano);
+        // --- mordisco de Dream: los colmillos en un lado del cuello (abajo de la cabeza, hacia delante), siempre el
+        //     mismo lado para el mismo mordedor; el desangrado que deja no hace herida nueva
+        if (s.is(com.miscelanea.dream.Mordiscos.DANO)) {
+            Entity mordedor = s.getEntity();
+            boolean der = mordedor != null ? (mordedor.getUUID().hashCode() & 1) == 0 : r.nextBoolean();
+            int fx = der ? 165 + r.nextInt(80) : 10 + r.nextInt(80);
+            agregar(d, nueva(p, Parte.CABEZA, Tipo.CORTE, Math.max(2, g), der ? Herida.DERECHA : Herida.IZQUIERDA, fx, 200 + r.nextInt(50), false));
+            return;
+        }
+        if (s.is(com.miscelanea.dream.DesangradoEfecto.DANO)) return;
         // --- caídas: las dos piernas, por abajo
         if (s.is(DamageTypeTags.IS_FALL) && !s.is(DamageTypes.STALAGMITE)) {
             int gp = gravedad(dano / 1.5F);

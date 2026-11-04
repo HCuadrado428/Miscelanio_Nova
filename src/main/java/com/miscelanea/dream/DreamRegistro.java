@@ -33,9 +33,13 @@ public final class DreamRegistro {
 
     /** Verde veneno oscuro del mordisco (efecto, esencia, partículas y viñeta). */
     public static final int COLOR_MORDISCO = 0x2E5A1C;
+    /** Rojo sangre oscuro del desangrado. */
+    public static final int COLOR_DESANGRADO = 0x8A0F12;
 
     // ---- efecto
     public static final RegistryObject<MobEffect> MORDISCO = EFFECTS.register("mordisco_venenoso", MordiscoEfecto::new);
+    /** Lo que deja el veneno del mordisco (como la baba de un dragón de Komodo): la herida no deja de sangrar. */
+    public static final RegistryObject<MobEffect> DESANGRADO = EFFECTS.register("desangrado", DesangradoEfecto::new);
 
     // ---- caldero de mezclas
     public static final RegistryObject<Block> CALDERO = BLOCKS.register("caldero_mezclas",
@@ -52,6 +56,10 @@ public final class DreamRegistro {
             () -> new FrascoMezclaItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> FRASCO_MEZCLA_ARROJADIZO = ITEMS.register("frasco_mezcla_arrojadizo",
             () -> new FrascoArrojadizoItem(new Item.Properties().stacksTo(1)));
+
+    // ---- veneno de Dream: solo se consigue extrayéndolo con el mordisco activo (agachado + botella vacía)
+    public static final RegistryObject<Item> VENENO = ITEMS.register("veneno_dream",
+            () -> new VenenoDreamItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
 
     // ---- solo de creativo
     public static final RegistryObject<Item> ESENCIA = ITEMS.register("esencia_dream",

@@ -2241,7 +2241,7 @@
   "subtitles.miscelanea.anillo_salto": "Se abre una grieta",
   "jei.miscelanea.info.caldero_mezclas": "Caldero de mezclas: clic derecho con una poción para echarla (te devuelve la botella); caben hasta 4. El líquido se tiñe con cada una. Con una botella vacía sacas un frasco de mezcla con TODOS los efectos juntos: salen tantos frascos como pociones echaste. Cuantos más efectos, menos dura cada uno (x1, x0,8, x0,65, x0,5); si un efecto se repite se queda el más fuerte. Pólvora: los frascos salen arrojadizos. Agachado con la mano vacía: vaciar.",
   "jei.miscelanea.info.frasco_mezcla": "Se llena en el caldero de mezclas y lleva varios efectos a la vez. El arrojadizo (mezcla con pólvora) salpica todos sus efectos al romperse.",
-  "jei.miscelanea.info.esencia_dream": "Solo de creativo. Da «Mordisco venenoso» 5 minutos: con la mano vacía, clic derecho sobre un jugador o un mob para agarrarlo y morderle (Wither cada 1,5 s). La víctima se suelta con un minijuego de forcejeo; quien muerde suelta agachándose o si le pegan fuerte. También se puede echar al caldero de mezclas.",
+  "jei.miscelanea.info.esencia_dream": "Solo de creativo. Da «Mordisco venenoso» 5 minutos: con la mano vacía, clic derecho sobre un jugador o un mob para agarrarlo y morderle cada 1,5 s. El veneno es como la baba de un dragón de Komodo: paraliza (Lentitud que sube con los mordiscos, hasta III), marea (Náuseas), desangra (Desangrado, con heridas en el cuello) y debilita. La víctima se suelta con un minijuego de forcejeo; quien muerde suelta agachándose o si le pegan fuerte. Agachado con una botella vacía extrae Veneno de Dream (y se queda sin veneno ni mordisco 5 minutos). También se puede echar al caldero de mezclas.",
   "jei.miscelanea.info.anillo_medianoche": "Solo de creativo. Mantén clic derecho 3 segundos para viajar a la dimensión de The Midnight; en ella, vuelve al sitio de donde saliste. Necesita el mod The Midnight (la dimensión se cambia en la configuración del servidor).",
   "item.miscelanea.muestra_glitch": "Muestra de glitch",
   "item.miscelanea.muestra_glitch.lore1": "Un trozo de «el glitch», todavía vivo.",
@@ -2265,5 +2265,14 @@
   "subtitles.miscelanea.glitch_estallido": "La muestra de glitch se rompe",
   "subtitles.miscelanea.frasco_llenar": "Frasco de muestras se llena",
   "jei.miscelanea.info.muestra_glitch": "Solo de creativo. Una muestra viva de «el glitch». Si se suelta (Q, sacarla del inventario...) tiembla y sisea un segundo y medio y se rompe; si se quema o explota, al momento. Clic derecho: se lanza como una poción arrojadiza y se rompe al chocar. Al romperse, una esfera de corrupción crece desde ahí: los bloques se glitchean y desaparecen, los objetos tirados se borran y a los seres vivos les da náuseas, oscuridad y un poco de daño. El radio y si se destruyen los bloques se cambian en la configuración del servidor.",
-  "jei.miscelanea.info.frasco_muestras": "Solo de creativo. Clic derecho sobre un bloque corrupto (del núcleo de error o de una onda de glitch), sobre alguien con el efecto Glitch o dentro de una onda que siga viva: se llena con una muestra de glitch. El bloque del que se saca se deshace."
+  "jei.miscelanea.info.frasco_muestras": "Solo de creativo. Clic derecho sobre un bloque corrupto (del núcleo de error o de una onda de glitch), sobre alguien con el efecto Glitch o dentro de una onda que siga viva: se llena con una muestra de glitch. El bloque del que se saca se deshace.",
+  "item.miscelanea.esencia_dream.uso2": "Con el efecto: agachado + clic derecho con una botella vacía para extraer veneno",
+  "item.miscelanea.veneno_dream": "Veneno de Dream",
+  "item.miscelanea.veneno_dream.lore": "Espeso como la baba de un dragón de Komodo: paraliza, marea y desangra.",
+  "effect.miscelanea.desangrado": "Desangrado",
+  "miscelanea.veneno.agotado": "Te has quedado sin veneno (%s)",
+  "miscelanea.veneno.extraido": "Escupes el veneno de tus colmillos en la botella",
+  "death.attack.miscelanea.desangrado": "%1$s se desangró",
+  "death.attack.miscelanea.desangrado.player": "%1$s se desangró huyendo de %2$s",
+  "jei.miscelanea.info.veneno_dream": "Solo se consigue con «Mordisco venenoso» activo: agachado, clic derecho con una botella vacía para extraer el veneno de los colmillos. Después te quedas sin veneno un rato (5 minutos por defecto): ni puedes volver a extraer ni morder. Al beberlo da Lentitud II, Náuseas, Desangrado y Debilidad durante unos segundos. Se puede echar al caldero de mezclas."
 }

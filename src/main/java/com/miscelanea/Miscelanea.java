@@ -218,6 +218,7 @@ public class Miscelanea {
             event.accept(com.miscelanea.dream.DreamRegistro.CALDERO_ITEM);
             for (var st : com.miscelanea.dream.Mezclas.ejemplos()) event.accept(st);
             event.accept(com.miscelanea.dream.DreamRegistro.ESENCIA);
+            event.accept(com.miscelanea.dream.VenenoDreamItem.nuevo()); // en supervivencia solo se extrae (sin receta)
             // --- pociones (otros paquetes añaden aquí)
         }
         // ---- Varios
