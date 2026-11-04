@@ -47,6 +47,7 @@ public class Miscelanea {
         com.miscelanea.dream.DreamRegistro.registrar(modBus);
         com.miscelanea.glitch.GlitchRegistro.registrar(modBus);
         com.miscelanea.bromas.BromasRegistro.registrar(modBus);
+        com.miscelanea.estatica.EstaticaRegistro.registrar(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::creativeTabs);
@@ -216,6 +217,8 @@ public class Miscelanea {
             for (var st : com.miscelanea.dream.Mezclas.ejemplos()) event.accept(st);
             event.accept(com.miscelanea.dream.DreamRegistro.ESENCIA);
             event.accept(com.miscelanea.dream.VenenoDreamItem.nuevo()); // en supervivencia solo se extrae (sin receta)
+            // el hombre de estática (solo creativo)
+            event.accept(com.miscelanea.estatica.EstaticaRegistro.POCION);
             // --- pociones (otros paquetes añaden aquí)
         }
         // ---- Varios

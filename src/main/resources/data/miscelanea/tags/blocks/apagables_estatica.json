@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:redstone_lamp",
+    "#minecraft:candles",
+    "#minecraft:candle_cakes",
+    "#minecraft:campfires",
+    "miscelanea:lampara"
+  ]
+}

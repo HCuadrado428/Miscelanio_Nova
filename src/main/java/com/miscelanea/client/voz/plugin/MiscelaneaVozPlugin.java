@@ -51,6 +51,8 @@ public class MiscelaneaVozPlugin implements VoicechatPlugin {
     private static void recibir(ClientReceiveSoundEvent e, UUID hablante) {
         short[] audio = e.getRawAudio();
         if (audio == null || audio.length == 0 || hablante == null) return;
+        // el hombre de estática graba (sin procesar) lo que dicen los de alrededor, para imitarlo
+        com.miscelanea.client.estatica.ImitarVoz.grabar(hablante, audio);
         // se modifica en el sitio; setRawAudio por si la implementación copia el array
         if (VozCliente.procesar(hablante, audio)) e.setRawAudio(audio);
     }

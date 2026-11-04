@@ -79,6 +79,11 @@ public final class VozCliente {
         voicechat = true;
     }
 
+    /** ¿Está Simple Voice Chat cargado en este cliente? (lo usa el poder de imitar voces). */
+    public static boolean hayVoicechat() {
+        return voicechat;
+    }
+
     public static void hablando() {
         hablandoHasta = System.currentTimeMillis() + 250;
     }
@@ -118,7 +123,7 @@ public final class VozCliente {
     // ------------------------------------------------------------------ HUD: aviso de que tu voz suena distinta
     private static final String[] VOCES_CONOCIDAS = {VozPorEfecto.HELIO, VozPorEfecto.TARTAMUDEO, VozPorEfecto.VENTILADOR,
             VozPorEfecto.LENGUA_TRAPO, VozPorEfecto.GRAVE, VozPorEfecto.AGUDO, VozPorEfecto.SUSURRO, VozPorEfecto.FANTASMA,
-            VozPorEfecto.GUTURAL, VozPorEfecto.AMORTIGUADO};
+            VozPorEfecto.GUTURAL, VozPorEfecto.AMORTIGUADO, VozPorEfecto.ESTATICA};
 
     /** Voces del jugador local, por sus propios efectos (sin esperar al servidor). */
     static List<String> vocesPropias(LocalPlayer p) {

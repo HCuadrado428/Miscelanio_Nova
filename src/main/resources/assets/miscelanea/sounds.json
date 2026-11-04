@@ -2412,5 +2412,79 @@
       "miscelanea:miedo_inversion"
     ],
     "subtitle": "subtitles.miscelanea.miedo_inversion"
+  },
+  "estatica_bucle": {
+    "sounds": [
+      {
+        "name": "miscelanea:estatica_bucle",
+        "attenuation_distance": 12
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.estatica_bucle"
+  },
+  "estatica_propia": {
+    "sounds": [
+      "miscelanea:estatica_propia"
+    ],
+    "subtitle": "subtitles.miscelanea.estatica_propia"
+  },
+  "estatica_crujido": {
+    "sounds": [
+      "miscelanea:estatica_crujido1",
+      "miscelanea:estatica_crujido2",
+      "miscelanea:estatica_crujido3"
+    ],
+    "subtitle": "subtitles.miscelanea.estatica_crujido"
+  },
+  "estatica_estallido": {
+    "sounds": [
+      "miscelanea:estatica_estallido"
+    ],
+    "subtitle": "subtitles.miscelanea.estatica_estallido"
+  },
+  "estatica_parpadeo": {
+    "sounds": [
+      "miscelanea:estatica_parpadeo"
+    ],
+    "subtitle": "subtitles.miscelanea.estatica_parpadeo"
+  },
+  "estatica_chispa": {
+    "sounds": [
+      "miscelanea:estatica_chispa"
+    ],
+    "subtitle": "subtitles.miscelanea.estatica_chispa"
+  },
+  "estatica_pantalla": {
+    "sounds": [
+      "miscelanea:estatica_pantalla"
+    ],
+    "subtitle": "subtitles.miscelanea.estatica_pantalla"
+  },
+  "estatica_apagon": {
+    "sounds": [
+      "miscelanea:estatica_apagon"
+    ],
+    "subtitle": "subtitles.miscelanea.estatica_apagon"
+  },
+  "estatica_tentaculo": {
+    "sounds": [
+      "miscelanea:estatica_tentaculo"
+    ],
+    "subtitle": "subtitles.miscelanea.estatica_tentaculo"
+  },
+  "estatica_golpe": {
+    "sounds": [
+      "miscelanea:estatica_golpe"
+    ],
+    "subtitle": "subtitles.miscelanea.estatica_golpe"
+  },
+  "estatica_imitacion": {
+    "sounds": [
+      {
+        "name": "miscelanea:estatica_chispa",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.estatica_imitacion"
   }
 }
