@@ -5,7 +5,7 @@
     "dstrgb": "zero"
   },
   "vertex": "sobel",
-  "fragment": "miscelanea:miedo",
+  "fragment": "miscelanea:miedo_vivo",
   "attributes": [
     "Position"
   ],
@@ -70,6 +70,46 @@
       "count": 1,
       "values": [
         1.0
+      ]
+    },
+    {
+      "name": "Golpe",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "Pesadilla",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "Estira",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "Desenfoque",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
+      ]
+    },
+    {
+      "name": "Reloj",
+      "type": "float",
+      "count": 1,
+      "values": [
+        0.0
       ]
     }
   ]

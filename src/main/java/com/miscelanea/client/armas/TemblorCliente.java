@@ -1,40 +1,45 @@
 package com.miscelanea.client.armas;
 
 import com.miscelanea.Miscelanea;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.Mth;
+import com.miscelanea.client.camara.Sacudida;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-/** Sacudida de cámara que se apaga poco a poco. */
+/**
+ * Sacudida de cámara que se apaga poco a poco (la manda el servidor con {@code TemblorPacket}): ruido suave con
+ * trauma que decae ({@link Sacudida}), en vez de senos rápidos que se notaban mecánicos.
+ */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
 public final class TemblorCliente {
-    private static float fuerza;
-    private static long inicio, fin;
-
     private TemblorCliente() {}
 
+    /** Hasta 3 grados con trauma 1; la caída se ajusta en cada golpe a la duración pedida. */
+    private static Sacudida actual;
+    private static float fuerzaActual;
+
+    /** @param f grados (como antes, hasta 3); @param duracion ticks hasta apagarse */
     public static void empezar(float f, int duracion) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null) return;
-        long t = mc.level.getGameTime();
-        if (t < fin && fuerza * (fin - t) / Math.max(1F, fin - inicio) > f) return;
-        fuerza = Math.min(f, 3F);
-        inicio = t;
-        fin = t + duracion;
+        f = Math.min(f, 3F);
+        if (f <= 0F || duracion <= 0) return;
+        // si ya hay uno más fuerte en marcha, se queda ese
+        if (actual != null && actual.trauma() * fuerzaActual > f) return;
+        float seg = duracion / 20F;
+        // con trauma² y caída lineal, se apaga del todo en "seg" segundos
+        actual = new Sacudida(f, f, f * 0.7F, 10F, 1F / seg);
+        actual.golpe(1F);
+        fuerzaActual = f;
     }
 
     @SubscribeEvent
     public static void camara(ViewportEvent.ComputeCameraAngles e) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null) return;
-        float t = mc.level.getGameTime() + (float) e.getPartialTick();
-        if (t >= fin) return;
-        float k = fuerza * (fin - t) / Math.max(1F, fin - inicio);
-        e.setPitch(e.getPitch() + Mth.sin(t * 2.7F) * k);
-        e.setYaw(e.getYaw() + Mth.sin(t * 3.3F + 1.1F) * k);
-        e.setRoll(e.getRoll() + Mth.sin(t * 4.1F + 2.2F) * k * 0.7F);
+        Sacudida s = actual;
+        if (s == null) return;
+        if (s.quieta()) {
+            actual = null;
+            return;
+        }
+        s.aplicar(e, Sacudida.escalaPantalla());
     }
 }

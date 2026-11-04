@@ -30,6 +30,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.PlayerModelPart;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.block.Blocks;
@@ -67,6 +68,8 @@ import java.util.List;
  *   <li>TU DOBLE: una copia de ti (tu skin, lo que llevas en la mano) muy lejos, quieta, mirándote. Si te fijas (la
  *       miras fijamente, te acercas o usas el catalejo), ya no está. Si dejas de mirarla, a veces está más cerca.</li>
  *   <li>MANOS fantasma que asoman por los bordes de la pantalla y se retiran.</li>
+ *   <li>SILUETA: el Espantapájaros quieto a lo lejos, en el borde de la vista (de reojo). En cuanto lo miras de frente,
+ *       ya no está (sin humo: simplemente no estaba).</li>
  * </ul>
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
@@ -91,6 +94,10 @@ public final class MiedoMundo {
     // manos
     private static final List<Mano> MANOS = new ArrayList<>();
     private static int proxManos = -1;
+    // la silueta de reojo
+    private static LivingEntity silueta;
+    private static double sx, sy, sz;
+    private static int proxSilueta = -1, siluetaVida;
 
     private record Mano(int lado, int ini, int dur, float pos, boolean espejo) {}
 
@@ -113,6 +120,14 @@ public final class MiedoMundo {
         return !MANOS.isEmpty();
     }
 
+    /** Las luces fallan ya (lo pide un susto de apagón). */
+    static void pedirApagon(int ticks) {
+        int reloj = MiedoCliente.reloj();
+        apagonDesde = reloj;
+        apagonHasta = reloj + Math.max(20, ticks);
+        pedirOscuridad(ticks + 20);
+    }
+
     static void pedirOscuridad(int ticks) {
         oscuridadHasta = Math.max(oscuridadHasta, MiedoCliente.reloj() + ticks);
     }
@@ -120,9 +135,10 @@ public final class MiedoMundo {
     /** Al acabarse el miedo: fuera el doble, las manos y la puerta (la niebla y la oscuridad se apagan solas). */
     static void limpiar() {
         doble = null;
+        silueta = null;
         MANOS.clear();
         restaurarPuerta();
-        proxNiebla = proxCielo = proxApagon = proxPuerta = proxDoble = proxManos = -1;
+        proxNiebla = proxCielo = proxApagon = proxPuerta = proxDoble = proxManos = proxSilueta = -1;
         nieblaHasta = cieloHasta = 0;
         apagonDesde = apagonHasta = -1;
         oscuridadHasta = 0;
@@ -145,7 +161,8 @@ public final class MiedoMundo {
         nieblaO = niebla;
         cieloO = cielo;
         float objNiebla = etapa == 0 ? 0F : etapa == 1 ? 0.12F : etapa == 2 ? 0.3F : 0.45F;
-        if (etapa > 0 && MiedoWarden.activo()) objNiebla = Math.max(objNiebla, 0.62F);
+        // con un warden, más niebla, pero no tanta que se lo trague: tiene que verse sólido
+        if (etapa > 0 && MiedoWarden.activo()) objNiebla = Math.max(objNiebla, 0.5F);
         if (etapa >= 3) {
             if (proxNiebla < 0) proxNiebla = reloj + 80 + r.nextInt(160);
             if (reloj >= proxNiebla) {
@@ -183,6 +200,7 @@ public final class MiedoMundo {
         puertas(mc, l, p, r, reloj);
         doble(mc, l, p, r, etapa, reloj, ritmo);
         manos(mc, r, etapa, reloj, ritmo);
+        silueta(mc, l, p, r, etapa, reloj, ritmo);
     }
 
     /** Pone o quita la oscuridad de vanilla en el jugador (solo en el cliente). Nunca toca una que haya puesto el servidor. */
@@ -209,8 +227,11 @@ public final class MiedoMundo {
         float tt = reloj - apagonDesde + pt;
         float dur = apagonHasta - apagonDesde;
         float env = Mth.clamp(Math.min(tt / 15F, (dur - tt) / 20F), 0F, 1F);
-        float onda = 0.5F + 0.5F * Mth.sin(tt * 0.31F) * Mth.sin(tt * 0.13F + 1.7F);
-        return env * (0.12F + 0.28F * onda);
+        // como una bombilla que falla: un fondo que respira (ruido suave, ~1,5 Hz) y bajones sueltos e irregulares
+        // (crestas del ruido); todo oscurece, nada destella, y nada pasa de ~3 Hz
+        float onda = 0.5F + 0.5F * com.miscelanea.client.camara.Ruido.perlin(9011, tt * 0.075);
+        float bajon = Math.max(0F, com.miscelanea.client.camara.Ruido.perlin(9012, tt * 0.14) - 0.25F) * 1.6F;
+        return env * Math.min(0.62F, 0.1F + 0.22F * onda + 0.45F * bajon);
     }
 
     // ------------------------------------------------------------------ niebla y cielo
@@ -225,7 +246,8 @@ public final class MiedoMundo {
         // interpolación exponencial: 0,12 → ~2/3 de la distancia; 0,45 → ~1/5; 0,93 → ~6 bloques
         float hasta = e.getMode() == FogRenderer.FogMode.FOG_SKY ? 2F : 5F;
         float nl = lejos * (float) Math.pow(Math.max(hasta, 0.01F) / Math.max(lejos, hasta), k);
-        float nc = Math.min(cerca, nl * 0.12F);
+        // con un warden, la niebla empieza más lejos (se ve entero hasta que está lejos de verdad)
+        float nc = Math.min(cerca, nl * (MiedoWarden.activo() ? 0.35F : 0.12F));
         e.setFarPlaneDistance(Math.min(lejos, nl));
         e.setNearPlaneDistance(nc);
         e.setCanceled(true);
@@ -419,18 +441,14 @@ public final class MiedoMundo {
             // tiene que verse desde donde estás
             BlockHitResult bh = l.clip(new ClipContext(p.getEyePosition(), new Vec3(fx, fy + 1.6, fz), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, p));
             if (bh.getType() != HitResult.Type.MISS) continue;
-            byte partes = 0;
-            for (PlayerModelPart part : PlayerModelPart.values()) if (p.isModelPartShown(part)) partes |= (byte) part.getMask();
             Doble d;
             try {
-                d = new Doble(l, p.getGameProfile(), partes);
+                d = crearDoble(l, p, -5000 - (MiedoCliente.reloj() & 0xFFF));
             } catch (Exception ex) {
                 Miscelanea.LOGGER.warn("[miscelanea] No se pudo crear el doble del miedo", ex);
                 proxDoble = Integer.MAX_VALUE;
                 return;
             }
-            d.setId(-5000 - (MiedoCliente.reloj() & 0xFFF));
-            d.setItemSlot(EquipmentSlot.MAINHAND, p.getMainHandItem().copy());
             d.x = fx;
             d.y = fy;
             d.z = fz;
@@ -440,6 +458,92 @@ public final class MiedoMundo {
             d.zo = fz;
             doble = d;
             return;
+        }
+    }
+
+    /** Una copia de ti (tu skin, tus capas, lo que llevas en la mano) que solo se dibuja. */
+    static Doble crearDoble(ClientLevel l, LocalPlayer p, int id) {
+        byte partes = 0;
+        for (PlayerModelPart part : PlayerModelPart.values()) if (p.isModelPartShown(part)) partes |= (byte) part.getMask();
+        Doble d = new Doble(l, p.getGameProfile(), partes);
+        d.setId(id);
+        d.setItemSlot(EquipmentSlot.MAINHAND, p.getMainHandItem().copy());
+        return d;
+    }
+
+    // ------------------------------------------------------------------ la silueta de reojo
+    private static void silueta(Minecraft mc, ClientLevel l, LocalPlayer p, RandomSource r, int etapa, int reloj, float ritmo) {
+        if (etapa < 2) return;
+        if (silueta == null) {
+            if (proxSilueta < 0) proxSilueta = reloj + 240 + r.nextInt(300);
+            if (reloj < proxSilueta || MiedoSusto.enCurso()) return;
+            proxSilueta = reloj + (int) ((520 + r.nextInt(420)) / ritmo);
+            for (int i = 0; i < 8; i++) {
+                // en el borde de la vista, a un lado
+                float a = p.getYRot() + (r.nextBoolean() ? 1F : -1F) * (38F + r.nextFloat() * 14F);
+                double d = 16 + r.nextDouble() * 12;
+                float rad = a * Mth.DEG_TO_RAD;
+                double fx = p.getX() - Mth.sin(rad) * d, fz = p.getZ() + Mth.cos(rad) * d;
+                double fy = MiedoCliente.suelo(l, fx, p.getY(), fz);
+                if (Double.isNaN(fy)) continue;
+                BlockHitResult bh = l.clip(new ClipContext(p.getEyePosition(), new Vec3(fx, fy + 2.0, fz), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, p));
+                if (bh.getType() != HitResult.Type.MISS) continue;
+                try {
+                    silueta = MiedoSusto.espantapajaros(l);
+                } catch (Exception ex) {
+                    proxSilueta = Integer.MAX_VALUE;
+                    return;
+                }
+                sx = fx;
+                sy = fy;
+                sz = fz;
+                siluetaVida = 0;
+                break;
+            }
+            return;
+        }
+        siluetaVida++;
+        LivingEntity s = silueta;
+        s.tickCount++;
+        double dx = p.getX() - sx, dz = p.getZ() - sz, dist = Math.sqrt(dx * dx + dz * dz);
+        float yaw = (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) - 90F;
+        s.setYRot(yaw);
+        s.yRotO = yaw;
+        s.yBodyRot = s.yBodyRotO = yaw;
+        s.yHeadRot = s.yHeadRotO = yaw;
+        s.setPos(sx, sy, sz);
+        s.xo = sx;
+        s.yo = sy;
+        s.zo = sz;
+        Vec3 hacia = new Vec3(sx, sy + 2.0, sz).subtract(p.getEyePosition()).normalize();
+        // mirada directa (a menos de ~22°), muy cerca o mucho rato: ya no está
+        if (p.getViewVector(1F).dot(hacia) > 0.927 || dist < 9 || siluetaVida > 360 || MiedoSusto.enCurso()) {
+            if (siluetaVida > 5 && r.nextInt(3) == 0)
+                MiedoCliente.sonar(mc, EfectosRegistro.MIEDO_SUSURROS.get(), new Vec3(sx, sy + 2, sz), 0.35F, 0.6F);
+            silueta = null;
+        }
+    }
+
+    @SubscribeEvent
+    public static void dibujarSilueta(RenderLevelStageEvent e) {
+        if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITIES || silueta == null) return;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null) return;
+        Vec3 cam = e.getCamera().getPosition();
+        PoseStack ps = e.getPoseStack();
+        MultiBufferSource.BufferSource bs = mc.renderBuffers().bufferSource();
+        // una sombra recortada contra el fondo
+        MultiBufferSource sombra = rt -> new MiedoCliente.Tinte(bs.getBuffer(rt), 0.1F, 0.12F, 0.1F);
+        EntityRenderDispatcher rd = mc.getEntityRenderDispatcher();
+        rd.setRenderShadow(false);
+        try {
+            rd.render(silueta, sx - cam.x, sy - cam.y, sz - cam.z, silueta.getYRot(), e.getPartialTick(), ps, sombra, 0xF000F0);
+        } catch (Exception ex) {
+            silueta = null;
+            proxSilueta = Integer.MAX_VALUE;
+        } finally {
+            rd.setRenderShadow(true);
+            bs.endBatch();
         }
     }
 
