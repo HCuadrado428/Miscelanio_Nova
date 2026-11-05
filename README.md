@@ -1,137 +1,177 @@
-# Miscelánea (Forge 1.20.1)
+# Miscelánea
 
-Un mod de cosas que no tienen nada que ver entre sí, pero que molan.
+**Un mod de Minecraft lleno de ideas que no tenían por qué estar juntas… y por eso mismo molan.** Convierte tu mundo en una mezcla de arsenal de acción, salón recreativo, feria, museo de bichos, parque de atracciones y caja de sorpresas.
 
-## Contenido actual
+> **Versión:** Minecraft Java 1.20.1 · **Cargador:** Forge 47.x · **Idioma:** español
 
-### Efecto: Cupido 💘
-- Si dos entidades (jugadores **o mobs**) tienen Cupido y están a ≤ 32 bloques, se atraen solas hacia la otra.
-- Cuanto más lejos, más fuerte el tirón. Cualquier movimiento que los aleje se anula: no se pueden separar.
-- Sin daño de caída mientras tira, saltan escalones solos y sueltan corazones.
-- Con 3+ entidades con Cupido, cada una va hacia la más cercana.
+## ¿Qué puedes hacer como jugador?
 
-### Efecto: Enemigo 💔
-- Si dos entidades con Enemigo están a ≤ 5 bloques, ambas reciben daño cada segundo.
-- Nivel I: medio corazón/s. Nivel II: 1,5 corazones/s. Pegados (≤ 2 bloques): daño doble.
-- Ignora armadura, funciona con el PvP desactivado y los mobs afectados se pelean entre ellos.
-- Mensaje de muerte propio: "X fue consumido por su odio hacia Y".
+- Jugar y competir con amigos en **recreativas, juegos de mesa y atracciones**.
+- Explorar para encontrar **bichos, peces, fósiles y tesoros**.
+- Usar armas y objetos con **modelos, animaciones, sonidos y efectos propios**.
+- Construir un espacio para jugar, descansar y cocinar con **muebles y bloques interactivos**.
+- Gastar bromas, lanzar pociones y probar poderes extraños (mejor con gente que se apunte a la diversión).
 
-Entre dos afectados se ve un **lazo**: una cinta rosa que cuelga y late (Cupido) o un rayo rojo en zigzag que chisporrotea más cuanto más cerca están (Enemigo).
+## Contenido
 
-### Efecto: Fantasma 👻 (solo creativo)
-- Quien lo lleva (jugador **o mob**) no se ve: ni modelo, ni armadura, ni objetos, ni partículas, ni nombre, ni sombra.
-- Solo asoma por el **rabillo del ojo**: cuando queda en el borde del campo de visión de quien mira (entre el 75 % y el 105 % del borde de su pantalla, con el FOV real). Al mirarlo de frente se **desvanece** en un instante (almas y ceniza donde estaba) y al apartar la vista vuelve a asomar, translúcido y pálido, con un soplo. A la espalda nunca se ve.
-- En el servidor no cambia nada: choca, se le puede pegar a ciegas y hace sus ruidos. Los mobs no lo eligen como objetivo. Los espectadores lo ven como siempre.
-- Uno mismo se ve en tercera persona como un fantasma tenue y lleva el icono latiendo en el HUD.
-- Pociones **Fantasma** (3:00) y **Fantasma larga** (8:00), con arrojadiza, persistente y flecha; **sin receta**, en la pestaña de combate junto al resto de la sala de juegos (y en la de comida, como toda poción). `/effect give @s miscelanea:fantasma 120`.
+- [Combate y objetos especiales](#combate-y-objetos-especiales)
+- [Efectos, pociones y bromas](#efectos-pociones-y-bromas)
+- [Colección, pesca y tesoros](#colección-pesca-y-tesoros)
+- [Feria, recreativas y juegos](#feria-recreativas-y-juegos)
+- [Exploración y movimiento](#exploración-y-movimiento)
+- [Casa y cocina](#casa-y-cocina)
+- [Controles y multijugador](#controles-y-multijugador)
+- [Instalación](#instalación)
 
-### Pociones y recetas de alquimia
-| Poción | Receta | Duración |
-|---|---|---|
-| Cupido | Poción rara + Pétalos rosas | 3:00 |
-| Cupido (larga) | Cupido + Redstone | 8:00 |
-| Cupido II | Cupido + Polvo de piedra luminosa | 1:30 |
-| Enemistad | Cupido + Ojo de araña fermentado | 1:00 |
-| Enemistad (larga) | Cupido largo + Ojo fermentado, o Enemistad + Redstone | 2:00 |
-| Enemistad II | Cupido II + Ojo fermentado, o Enemistad + Piedra luminosa | 0:30 |
+## Combate y objetos especiales
 
-Pólvora (arrojadiza), aliento de dragón (persistente) y flechas con efecto funcionan como en vanilla.
+### Aspirafantasmas 3000 👻
 
-Comandos de prueba:
-```
+Un equipo de dos piezas: ponte la **mochila en el hueco del pecho** y usa la **boquilla en la mano**. La manguera, los modelos y las animaciones acompañan la acción.
+
+- **Clic derecho:** aspira objetos y experiencia, y atrae entidades hacia la boquilla. Algunas criaturas pequeñas se pueden capturar; resiste su tirón moviendo la cámara en la dirección indicada.
+- **Tecla R:** suelta la última captura (tecla configurable).
+- **Shift + clic derecho:** sopla aire; con los encantamientos adecuados desbloqueas modos especiales.
+- **Destello:** carga y libera un flash que ciega y aturde a quien te mire.
+- **Desatascador:** dispara una ventosa; vuelve a aspirar para tirar del objetivo.
+- **Soplido:** empuja con más fuerza, puede devolver proyectiles y permite lanzar una captura.
+- **Turbo:** te propulsa en dirección contraria a la boquilla.
+- **Alquimista:** absorbe pociones y efectos para guardarlos en el tanque y utilizarlos después.
+- **Mochila:** pulsa **B** (configurable) para revisar las capturas y gestionar el contenido del tanque.
+
+La boquilla se calienta al usarla: fíjate en el indicador y deja que se enfríe si se sobrecalienta. Los modos se aplican a la boquilla mediante encantamiento.
+
+### Porra eléctrica ⚡
+
+La porra y su batería de espalda forman un arma de corto alcance. Los golpes descargan electricidad y pueden bloquear temporalmente el uso de objetos. También puedes agarrar a un objetivo cercano, forcejear para liberarte o ayudar a otra persona golpeando al agresor. La batería se gasta al descargar y se recarga con el tiempo; una tormenta acelera la recarga.
+
+### Medigun 💉
+
+Ponte la mochila médica y usa la medigun para **curar a un jugador a distancia**. El rayo puede seguir conectado mientras el paciente permanezca cerca y a la vista. Curar carga la **ÜberCarga**: cuando esté lista, actívala con **Shift + clic derecho** para protegerte a ti y a tu paciente durante unos segundos. Puedes teñir la medigun para cambiar el color de sus luces y del rayo.
+
+### Núcleo de error 🟪⬛ *(solo creativo)*
+
+Un núcleo visualmente corrupto que permite cargar y disparar un potente aliento de energía. Cuanto más lo cargas, más alcance y potencia obtiene; el disparo puede romper ciertos bloques blandos, pero no bloques resistentes o contenedores. Tras usarlo, necesita recargarse.
+
+### Arsenal de acción
+
+Armas y equipo inspirados en videojuegos, cada uno con sus propios controles y animaciones:
+
+- **Superescopeta:** dispara con clic derecho y usa el gancho con clic izquierdo mantenido.
+- **Lanzacohetes:** dispara cohetes y los recarga automáticamente, de uno en uno.
+- **Ballesta de repetición, BFG y mazo arrojadizo:** otras herramientas de combate para probar.
+- **Llave Espada:** combos en tierra y en el aire, ataques mágicos, fijación de objetivo y apertura de algunas cerraduras. Incluye comandos como Piro, Hielo y Cura.
+- **Hacha Leviatán:** combos, lanzamiento y llamada del hacha, escudo con parry, esquivas y ataques rúnicos.
+- **Pistola de gravedad, lanzatintas y rodillo:** herramientas de física y combate con estilos distintos.
+
+Los controles de cada objeto aparecen en sus descripciones y se pueden consultar o reasignar desde **Opciones → Controles**.
+
+## Efectos, pociones y bromas
+
+### Cupido 💘 y Enemigo 💔
+
+- **Cupido:** atrae entre sí a las entidades afectadas que estén cerca; el tirón aumenta con la distancia. Se ven corazones y un lazo rosa.
+- **Enemigo:** las entidades afectadas que se acercan se hacen daño entre sí. El efecto tiene niveles y un lazo rojo muestra la conexión.
+- Las pociones admiten variantes normales, arrojadizas, persistentes y flechas con efecto. Se pueden preparar versiones largas o potenciadas con los ingredientes habituales de alquimia.
+
+Para probarlos con permisos de operador:
+
+```mcfunction
 /effect give @a miscelanea:cupido 60
 /effect give @e[type=zombie] miscelanea:enemigo 60
 ```
 
-### Aspirafantasmas 3000 👻 (GeckoLib)
-Necesitas **la mochila puesta** (hueco del pecho) y **la boquilla en la mano**. Las dos tienen modelo 3D animado y texturas pintadas; una **manguera 3D** une la mochila con la boquilla. En tercera persona se sujeta **a dos manos** (gatillo detrás, empuñadura delante) y apunta hacia donde miras; en primera persona apunta al frente. La succión usa el humo de las fogatas.
+### Fantasma 👻 *(solo creativo)*
 
-**Clic derecho (mantener): aspirar**
-- Absorbe en un cono de 8 bloques los ítems y la experiencia y los mete en tu inventario.
-- Atrae a mobs y jugadores. Los grandes y los jefes se resisten más. Si llegan a la boca, la aspiradora les hace **daño** (1,5 corazones cada medio segundo).
-- **Captura:** los mobs pequeños (`data/miscelanea/tags/entity_types/capturable.json`) se resisten cuando están cerca. Gira la cámara **al lado contrario** de su tirón hasta vaciar la barra. Se guardan hasta 3 en el depósito.
-- **R** suelta la última captura (se cambia en Controles).
+El efecto oculta al portador y hace que solo se intuya al mirarlo de reojo. No elimina su presencia en el mundo: puede chocar y recibir golpes. Hay pociones de duración normal y larga, también en variantes arrojadizas, persistentes y flechas.
 
-**Shift + clic derecho sin encantamiento:** expulsa aire (empuja cosas y gente y apaga el fuego).
+### Sueños, poderes y efectos especiales
 
-**Shift + clic derecho: según el encantamiento** (solo uno por boquilla, se ponen en mesa o con libro)
-| Encantamiento | Uso |
-|---|---|
-| Destello | Mantén 1 s y suelta. Ciega y aturde a quien esté delante y te esté mirando. Los jugadores ven un flashbang blanco con pitido. Los mobs aturdidos se capturan más fácil. |
-| Desatascador | Dispara una ventosa atada con una cuerda floja. Si da a alguien, **aspira (clic normal)**: la cuerda se va tensando cuanto más se acerca hasta que queda **agarrado** delante de la boquilla. Mientras mantengas el clic sigue agarrado (calienta poco, aguanta ~25 s) y la barra de **fuerza** se carga (hasta x1,8 en 3 s). Al soltar: mirando abajo lo **estampas**, mirando arriba lo mandas **a las nubes** y al frente lo **lanzas**. Si al soltar das un **latigazo de cámara** (giras el ratón rápido), sale disparado hasta x7 más fuerte, y con carga completa y latigazo máximo puede volar más de 100 bloques. El daño del impacto también sube. Si da en un bloque, aspirar te lleva hasta él como un gancho. |
-| Soplido | Versión mejorada del soplido: más fuerza. Mantén para empujar a todo, apagar fuego y **devolver proyectiles**. Con un toque rápido dispara un mob capturado como **bala de cañón**. |
-| Turbo | Impulso hacia el lado contrario de donde apunta la boquilla: si apuntas al suelo, sales volando. |
-| Alquimista | Con este encantamiento, el **clic derecho** aspira como siempre y además **absorbe**: nubes de pociones persistentes (apuntando a cualquier parte, también aliento de dragón y nubes de otros mods), **pociones lanzadas** en pleno vuelo y **un efecto por segundo** de quien tengas delante. Los efectos **negativos** van al tanque y con **Shift + clic derecho** se sueltan en un **chorro continuo, como un lanzallamas**: lo que toca el chorro recibe los efectos y en el suelo quedan charquitos de nube (el tanque lleno dura unos 5 s). Los **positivos** se guardan en la **reserva** de la mochila y se activan solos, como un faro, solo mientras hacen falta. Velocidad y salto mientras corres, regeneración si te falta vida, curación instantánea por debajo del 40 %, resistencia al fuego si te quemas, respiración acuática si te ahogas, visión nocturna a oscuras, caída lenta al caer, fuerza al pelear, prisa al picar, invisibilidad agachado, resistencia y absorción al recibir daño, saturación con hambre. La reserva solo se gasta mientras está activa. |
+El mod incluye más sistemas de efectos y objetos para descubrir: mezclas de pociones en un caldero, frascos especiales, habilidades de temática sobrenatural y poderes visuales con enfriamientos. Las reglas y los efectos disponibles pueden variar según la configuración del servidor.
 
-**Ventana de la mochila (tecla B, con la mochila puesta):** tres tarros con los bichos capturados flotando dentro (botón para soltar cada uno), el tubo del tanque con su color y sus efectos (rociar o tirar), y la **Reserva** con una barra de tiempo por efecto y botones para **pausar** su uso automático, **tomarlo todo ya** o **tirarlo**. Sin texto: al pasar el ratón por encima sale la descripción.
+### Bromas para jugar en compañía
 
-**Sensaciones:** zumbido continuo que sube de tono con el calor (más agudo al soplar, más grave con el lanzallamas), la vista tiembla y se mete hacia dentro al aspirar o se abre al soplar, y la boca de la boquilla se pone **al rojo** a partir del 30 % de calor. Boquilla y mochila tienen animaciones distintas para aspirar, soplar, lanzallamas y cargar el destello. Al capturar, el tira y afloja se ve con una **barra y una flecha** (sin texto) y el bicho te arrastra la cámara hacia su lado.
+Hay objetos para hechizar el chat con «uwu», invertir los controles, poner la pantalla del revés, pegar un cartel de «PATÉAME» o enviar un duende travieso a revolver la mochila. **No se destruyen objetos**, y el servidor puede desactivar cada broma.
 
-**Sobrecalentamiento:** la barra de la boquilla pasa de verde a rojo. Al llenarse se bloquea echando humo hasta enfriarse del todo (unos 6 s).
+## Colección, pesca y tesoros
 
-**Recetas**
-- Mochila: `hierro, cristal, hierro / bloque de redstone, tolva, bloque de redstone / hierro, diamante, hierro`
-- Boquilla (en diagonal): tolva arriba a la derecha, diamante en el centro, bloque de redstone a su derecha y hierro abajo a la izquierda.
+### Bichos y peces
 
-Los modelos son `.geo.json` de Blockbench (`assets/miscelanea/geo/item/...`) y se pueden abrir con el plugin de GeckoLib para retocarlos. Si la boquilla sale mal colocada en la mano, ajusta `display` en `models/item/aspirafantasmas.json`.
+- Captura insectos con la **red**; acercarte despacio o agachado ayuda.
+- Pesca con la **caña** y completa el minijuego cuando pique.
+- Consulta lo que has encontrado, sus hábitats y tus registros en la **Bichopedia**.
+- Dona ejemplares a una **vitrina de museo**; también puedes exhibir bichos en un terrario y peces en un acuario.
 
-### Porra eléctrica y generador ⚡ (GeckoLib + playerAnimator)
-Inspirado en el carcelero de The Outlast Trials, con diseño propio. El **generador** (carcasa militar caqui con pegatina de alto voltaje, bastidor tubular con asa, cilindro con aletas, depósito de gasolina con mirilla, arranque de tirón, silenciador perforado con escape que echa humo, alternador de cobre y panel de control) va en el hueco del pecho y la **porra** en la mano. Un cable 3D une la caja eléctrica con la porra, y la punta brilla y chisporrotea (delata dónde estás).
+Hay mariposas, polillas, luciérnagas, libélulas, abejorros, mariquitas, escarabajos, saltamontes, escorpiones y cigarras, además de peces de distintos hábitats.
 
-- **Golpe normal:** chispazo extra (+1,5 corazones) y **bloquea los ítems de uso** del golpeado 5 s (escudo, arco, aspiradora…).
-- **Agarrar:** clic derecho a alguien cercano (3 bloques), o automáticamente si alguien **choca contigo corriendo**. Funciona con jugadores y mobs de tamaño normal.
-- **Durante el agarre:**
-  - La víctima queda levantada delante de ti, sin poder moverse, atacar ni usar nada.
-  - Su **cámara** queda obligada a mirarte y tiembla con cada descarga.
-  - Recibe una **descarga** cada 1,5 s (1,5 corazones y 10 s de ítems bloqueados).
-- **Forcejeo:** la víctima pulsa repetidamente las teclas de movimiento o salto para soltarse (barra azul). Cada descarga le quita progreso. Si se suelta, tú quedas aturdido.
-- **Rescate:** si otro golpea al agresor, suelta a la víctima y queda aturdido.
-- **Soltar:** clic derecho otra vez (empujón). El agarre dura como mucho 7 s.
-- **Ejecución:** si la víctima tiene ≤30 % de vida, el clic derecho la ejecuta. Levantas la porra en alto, se carga de chispas y la hundes.
-- **Animaciones** en primera y tercera persona, calculadas para que la mano llegue al cuello y la porra apunte a la víctima. Entran y salen suavemente. La víctima ve sus propias manos forcejeando.
-- **Ataque normal:** estocada con zancada (brazo atrás, torso girado, y pincha recto hacia donde miras).
-- **Arco eléctrico:** cada golpe con carga y cada descarga del agarre lanzan un arco visible de la punta de la porra a la víctima.
-- **Generador:** cada descarga gasta carga (barra en el ítem). Se recarga sola tras 3 s sin usarla y muy rápido bajo una tormenta.
+### Detector y cápsulas del tiempo
 
-**Recetas**
-- Porra (en diagonal): lingote de cobre arriba a la derecha, pararrayos en el centro y lingote de hierro abajo a la izquierda.
-- Generador: `cobre, cuero, cobre / hierro, bloque de redstone, hierro / hierro, hierro, hierro`
+Recorre el mundo con el **detector de metales**: la señal se acelera al acercarte y te indica dónde cavar. Puedes encontrar tesoros, fósiles y cápsulas con notas. Expón los fósiles en el museo.
 
-### Medigun 💉 (GeckoLib, inspirada en TF2)
-Pistola blanca con emisor de tres púas y medidor de carga, y **mochila médica** con dos depósitos y un vial que se llena con la ÜberCarga. Las une una manguera 3D. Se lleva a dos manos.
+## Feria, recreativas y juegos
 
-- **Curar:** mantén clic derecho apuntando a un jugador (hasta 10 bloques). El rayo se queda enganchado aunque dejes de apuntarle, mientras esté a menos de 14 bloques y a la vista (aguanta 1 s detrás de una esquina).
-- **Curación:** 1 corazón/s, que sube hasta 3 corazones/s si el paciente lleva 3 s sin recibir daño. Con la vida llena le **sobrecura** hasta 4 corazones dorados extra, que se pierden poco a poco.
-- **ÜberCarga:** se llena curando (40 s con heridos, el doble si están sanos). Con la barra llena, **Shift + clic derecho**: tú y tu paciente sois **invulnerables 8 s** (salvo el vacío y /kill), con una capa brillante del color del rayo y los golpes rebotan.
-- **El rayo** es una cinta ondulante con dos hilos en espiral que sale de la boca de la pistola y se dobla hacia donde miras. Zumba mientras cura.
-- **Color:** medigun + cualquier tinte en la mesa de crafteo. Cambia el rayo, la capa de ÜberCarga y las luces de la pistola y la mochila.
-- **HUD sin texto:** barra de ÜberCarga abajo a la derecha (parpadea cuando está lista) y la vida del paciente bajo la mira.
+### Salón recreativo 🕹️
 
-**Recetas**
-- Medigun: `_, oro, lágrima de ghast / hierro, diamante, oro / hierro, _, _`
-- Mochila médica: `cuero, _, cuero / cristal, manzana dorada, cristal / hierro, soporte para pociones, hierro`
+Construye una recreativa, inserta fichas y juega. Hay máquinas individuales, recreativas dobles y cabinas para juegos concretos; algunos juegos admiten dos jugadores y guardan récords. Entre los títulos encontrarás **Comecocos, Pinball Galaxia, Astro Patrulla, Comando Chatarra, Mazmorra 3D, Turbo Costa, Puños de Barrio, Duelo Final**, además de clásicos como **Tetrominós, Serpiente, Pong** y otros.
 
-### Núcleo de error 🟪⬛ (solo creativo)
-Un núcleo de "textura que falta" incrustado en el pecho: cubo de damero magenta y negro que late y se desgarra, con grietas violetas y fragmentos que orbitan a saltos. Todas sus texturas están animadas.
+### Feria 🎡
 
-- **Mantén Shift + clic derecho con la mano vacía** para cargar el aliento del núcleo, a lo aliento atómico, y **suelta** para disparar. **Cuanto más cargas, más grande es el rayo.**
-  - **Carga (hasta 5 s):** te arqueas, echas la cabeza atrás, el error te sube por el cuerpo y las tres espinas de la espalda se encienden una tras otra. Delante de la boca crece una bola de cuadros de error. Bajo la mira aparece una barra de damero que se llena y parpadea al máximo. Con menos de 0,6 s no dispara. A los 8 s se dispara solo.
-  - **Rayo:** de 1,5 a 4,5 s según la carga. Pasa de 24 a 56 bloques de alcance y de fino a enorme. Hace de 2 a 6 corazones cada 0,2 s y marchita. Abre un túnel de 1 bloque con poca carga y de hasta 5 de ancho con la carga máxima.
-  - Rompe solo bloques blandos (hasta dureza 3), nunca obsidiana, bedrock ni nada con inventario, y respeta las zonas protegidas. Algunos bloques rotos se quedan como **bloque corrupto** un rato.
-  - Retroceso y temblor de cámara según el tamaño, también para los que están cerca. El rugido se corta justo al acabar.
-- **Recarga:** de 6 a 25 s según la potencia del último rayo. Abajo a la izquierda, un cuadrito de damero se va llenando.
+Monta atracciones como la **noria**, el **tiovivo** y el **pulpo**, y prueba puestos y máquinas: pesca de patitos, tiro con escopeta de corcho, gancho de premios, tragaperras, gachapón, bolos, dardos, torre de bloques, canasta, boxeo y martillo de fuerza. También hay algodón de azúcar, palomitas y una máquina de fuegos artificiales. La pizarra y los carteles permiten mostrar récords.
 
-## Compilar
-Cada vez que se sube algo a GitHub, **GitHub Actions** compila el mod y publica el `.jar` en **Releases**.
+### Juegos de mesa y mesas recreativas
 
-En local requiere JDK 17 e internet (descarga Forge y GeckoLib 4.8.4 la primera vez). Para jugar, **GeckoLib** y **playerAnimator** (1.0.2-rc1+1.20) tienen que estar también en la carpeta `mods`:
+Desafía a otra persona o, en algunos juegos, a la CPU:
+
+- En el tablero: **ajedrez, damas y Reversi**.
+- En sus tableros propios: **Imperio**, **Parchís**, **Juego de la Oca**, **Cuatro en raya**, **Hundir la flota** y **dominó**.
+- En mesas y pistas: **billar**, **futbolín**, **air hockey**, juegos de cartas y **baile**.
+
+## Exploración y movimiento
+
+- **Ocarina:** toca melodías para cambiar la hora, alterar el clima o regresar a casa. Las notas se pueden reasignar.
+- **Pip-Boy:** llévalo en la muñeca para consultar datos del mundo y del jugador, ver un mapa con marcadores y escuchar sus emisoras de radio.
+- **Tirolina:** conecta dos postes con un carrete de cable (hasta 64 bloques) y lánzate entre ellos.
+- **Trampolín:** rebota y prueba maniobras en el aire.
+
+## Casa y cocina
+
+Decora con **sillas, sofás, mesas, taburetes y lámparas**; algunos muebles permiten sentarse y las lámparas se pueden encender. Cultiva **tomates y arroz** y prepara comida en el fogón: paella, tortilla, gazpacho y churros, entre otras recetas. Algunos platos también aportan efectos temporales.
+
+## Controles y multijugador
+
+- Las teclas propias del mod aparecen en **Opciones → Controles → Miscelánea** y se pueden reasignar.
+- También puedes usar los controles de movimiento/salto de Minecraft en ciertos minijuegos.
+- Las recreativas, juegos de mesa y varias actividades están pensadas para jugar con otras personas; algunas ofrecen rivales controlados por la CPU.
+- En servidores, el administrador puede configurar o desactivar determinados efectos, bromas y poderes.
+- La compatibilidad con **Simple Voice Chat** es opcional; sus funciones solo se activan si el mod está instalado.
+
+## Instalación
+
+1. Instala **Minecraft Java 1.20.1** con **Forge 47.x**.
+2. Descarga el `.jar` de Miscelánea desde [Releases](https://github.com/HCuadrado428/Miscelanio_Nova/releases) y colócalo en la carpeta `mods`.
+3. Instala también las dependencias necesarias en `mods`:
+   - **GeckoLib para Forge 1.20.1**.
+   - **playerAnimator** compatible con Forge 1.20.1.
+4. Inicia el juego con el perfil de Forge. En multijugador, el servidor también debe tener el mod y sus dependencias.
+
+**Opcionales:** JEI permite consultar recetas compatibles; Simple Voice Chat habilita la integración de voz. No son necesarios para cargar el mod.
+
+## Compilar desde el código fuente
+
+Se necesita **JDK 17** e internet para descargar las dependencias la primera vez.
+
+```bash
+./gradlew build
 ```
-./gradlew build        (Windows: gradlew.bat build)
+
+En Windows:
+
+```bat
+gradlew.bat build
 ```
-El .jar sale en `build/libs/miscelanea-1.0.0.jar` → cópialo a `.minecraft/mods`.
 
-Para probar directamente: `./gradlew runClient`.
+El `.jar` se genera en `build/libs/`. Para probar el cliente desde Gradle, ejecuta `./gradlew runClient`.
 
-## Ajustes rápidos
-- Radio de Cupido / fuerza del tirón: `effect/CupidoEffect.java` (`RADIUS`, `MAX_PULL`).
-- Radio y daño de Enemigo: `effect/EnemigoEffect.java` (`RADIUS`, `CLOSE_RADIUS`, `DAMAGE_INTERVAL`).
+---
+
+Miscelánea es un mod en constante evolución: explora las pestañas creativas, lee las descripciones de los objetos y prueba las interacciones para encontrar todos sus secretos.
