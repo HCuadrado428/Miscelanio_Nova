@@ -91,8 +91,9 @@ public class JuegoCortarCables extends JuegoQte {
             sonido(TorturaRegistro.QTE_PULSAR.get(), 1.4F, 0.4F);
             return;
         }
-        if (key >= GLFW.GLFW_KEY_1 && key <= GLFW.GLFW_KEY_6 && accion == GLFW.GLFW_PRESS) {
-            int i = key - GLFW.GLFW_KEY_1;
+        int num = com.miscelanea.client.TeclasMod.numero(key, scan, 6);   // teclas de la barra rápida (1-6)
+        if (num >= 0 && accion == GLFW.GLFW_PRESS) {
+            int i = num;
             if (i < n && !cortados.contains(i)) {
                 sel = i;
                 cambioSel = ms();
@@ -129,8 +130,8 @@ public class JuegoCortarCables extends JuegoQte {
         int x0 = -anchoTotal / 2, y0 = -alto / 2;
         modulo(g, x0, y0, 214, alto);
         manual(g, x0 + 222, y0, anchoTotal - 222, alto);
-        Component ayuda = Component.translatable("qte.miscelanea.ayuda.cables", nombreTecla(mc.options.keyUp), nombreTecla(mc.options.keyDown),
-                nombreTecla(mc.options.keyJump));
+        Component ayuda = Component.translatable("qte.miscelanea.ayuda.cables", nombreTecla(com.miscelanea.client.TeclasMod.MJ_ARRIBA), nombreTecla(com.miscelanea.client.TeclasMod.MJ_ABAJO),
+                nombreTecla(com.miscelanea.client.TeclasMod.MJ_ACCION), nombreTecla(mc.options.keyHotbarSlots[0]), nombreTecla(mc.options.keyHotbarSlots[Math.max(0, n - 1)]));
         marco(g, 0, y0, y0 + alto, ayuda);
         g.pose().popPose();
     }

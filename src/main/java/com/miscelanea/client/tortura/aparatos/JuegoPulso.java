@@ -165,7 +165,7 @@ public class JuegoPulso {
         Dibujo.texto(g, mc.font, Component.translatable("hud.miscelanea.silla.pulso").withStyle(ChatFormatting.BOLD), x0 + ancho / 2F, y0 - 16,
                 1F, 0xFFC8FFD8, true);
         Dibujo.texto(g, mc.font, Component.literal(Math.round(bpm(t)) + " LPM"), x0 + ancho - 22, y0 + 4, 0.75F, 0xFF90FFB0, true);
-        Dibujo.texto(g, mc.font, Component.translatable("hud.miscelanea.silla.pulso_ayuda", mc.options.keyJump.getTranslatedKeyMessage()),
+        Dibujo.texto(g, mc.font, Component.translatable("hud.miscelanea.silla.pulso_ayuda", com.miscelanea.client.TeclasMod.MJ_ACCION.getTranslatedKeyMessage()),
                 x0 + ancho / 2F, y0 + alto + 14, 0.7F, 0xFFB0C0B8, true);
         float k = Math.max(0F, 1F - (t - juicioT) / 400F);
         if (k > 0.05F) {

@@ -128,7 +128,7 @@ public class PescaScreen extends Screen {
         // textos
         g.drawCenteredString(font, Component.translatable("pesca.miscelanea.pica"), width / 2 - 60, y + 10, 0xFFFFFFFF);
         g.drawCenteredString(font, Component.literal("★".repeat(especie.estrellas)), width / 2 - 60, y + 24, 0xFFFFD040);
-        g.drawCenteredString(font, Component.translatable("pesca.miscelanea.ayuda"), width / 2 - 60, y + ALTO - 10, 0xFFDDDDDD);
+        g.drawCenteredString(font, Component.translatable("pesca.miscelanea.ayuda", com.miscelanea.client.TeclasMod.MJ_ACCION.getTranslatedKeyMessage()), width / 2 - 60, y + ALTO - 10, 0xFFDDDDDD);
     }
 
     @Override
@@ -145,7 +145,7 @@ public class PescaScreen extends Screen {
 
     @Override
     public boolean keyPressed(int key, int scan, int mods) {
-        if (key == GLFW.GLFW_KEY_SPACE) {
+        if (com.miscelanea.client.TeclasMod.esAccion(key, scan)) {
             pulsado = true;
             return true;
         }
@@ -154,7 +154,7 @@ public class PescaScreen extends Screen {
 
     @Override
     public boolean keyReleased(int key, int scan, int mods) {
-        if (key == GLFW.GLFW_KEY_SPACE) {
+        if (com.miscelanea.client.TeclasMod.esAccion(key, scan)) {
             pulsado = false;
             return true;
         }

@@ -74,11 +74,12 @@ public class RuedaPoderes extends Screen {
 
     @Override
     public boolean keyPressed(int key, int scan, int mods) {
-        if (key >= GLFW.GLFW_KEY_1 && key < GLFW.GLFW_KEY_1 + Math.min(9, poderes.size())) {
-            elegir(key - GLFW.GLFW_KEY_1);
+        int n = com.miscelanea.client.TeclasMod.numero(key, scan, Math.min(9, poderes.size()));   // teclas de la barra rápida (1-9)
+        if (n >= 0) {
+            elegir(n);
             return true;
         }
-        if (key == GLFW.GLFW_KEY_0) {
+        if (com.miscelanea.client.TeclasMod.RUEDA_NINGUNO.matches(key, scan)) {
             elegir(-1);
             return true;
         }

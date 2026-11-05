@@ -220,7 +220,7 @@ public class PipBoyScreen extends Screen {
             g.fill(x, y + 10, x + 146, y + 11, VERDE_O);
             y += 14;
         }
-        texto(g, Component.translatable("pipboy.miscelanea.quitar").getString(), x0 + 172, y0 + H - 30, VERDE_O | 0xFF000000);
+        texto(g, Component.translatable("pipboy.miscelanea.quitar", com.miscelanea.client.TeclasMod.PIP_QUITAR.getTranslatedKeyMessage()).getString(), x0 + 172, y0 + H - 30, VERDE_O | 0xFF000000);
         // notas
         texto(g, Component.translatable("pipboy.miscelanea.notas").getString(), x0 + 172, y0 + 32, VERDE);
         for (int i = 0; i < notas.size(); i++) {
@@ -416,10 +416,11 @@ public class PipBoyScreen extends Screen {
     public boolean keyPressed(int key, int scan, int mods) {
         boolean escribiendo = getFocused() instanceof EditBox e && e.isFocused();
         if (!escribiendo) {
-            if (key == GLFW.GLFW_KEY_Q || key == GLFW.GLFW_KEY_LEFT) { cambiar(pestana - 1); return true; }
-            if (key == GLFW.GLFW_KEY_E || key == GLFW.GLFW_KEY_RIGHT || key == GLFW.GLFW_KEY_TAB) { cambiar(pestana + 1); return true; }
+            // pestañas: las teclas configurables (Q/E) y, como navegación de interfaz, las flechas y Tab
+            if (com.miscelanea.client.TeclasMod.PIP_ANTERIOR.matches(key, scan) || key == GLFW.GLFW_KEY_LEFT) { cambiar(pestana - 1); return true; }
+            if (com.miscelanea.client.TeclasMod.PIP_SIGUIENTE.matches(key, scan) || key == GLFW.GLFW_KEY_RIGHT || key == GLFW.GLFW_KEY_TAB) { cambiar(pestana + 1); return true; }
             if (PipBoyCliente.ABRIR.matches(key, scan)) { onClose(); return true; }
-            if (key == GLFW.GLFW_KEY_DELETE && pestana == 0) {
+            if (com.miscelanea.client.TeclasMod.PIP_QUITAR.matches(key, scan) && pestana == 0) {
                 ModNetwork.CHANNEL.sendToServer(PipBoyAccionPacket.simple(PipBoyAccionPacket.QUITAR));
                 onClose();
                 return true;

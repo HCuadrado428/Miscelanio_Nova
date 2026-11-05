@@ -91,7 +91,9 @@ public final class GanchoCliente {
         var g = e.getGuiGraphics();
         int W = g.guiWidth(), H = g.guiHeight();
         long quedan = Math.max(0, (MaquinaAltaBlockEntity.MOVER - (mc.level.getGameTime() - be.inicio)) / 20);
-        String s = I18n.get("miscelanea.gancho.mandos", quedan);
+        var o = mc.options;
+        String s = I18n.get("miscelanea.gancho.mandos", quedan, o.keyUp.getTranslatedKeyMessage().getString() + o.keyLeft.getTranslatedKeyMessage().getString()
+                + o.keyDown.getTranslatedKeyMessage().getString() + o.keyRight.getTranslatedKeyMessage().getString(), o.keyJump.getTranslatedKeyMessage().getString());
         int w = mc.font.width(s) + 16;
         g.fill(W / 2 - w / 2, H - 78, W / 2 + w / 2, H - 62, 0xC0301040);
         g.fill(W / 2 - w / 2, H - 78, W / 2 + w / 2, H - 77, 0xFFF0A0D0);

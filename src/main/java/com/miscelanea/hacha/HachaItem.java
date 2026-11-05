@@ -48,7 +48,9 @@ public class HachaItem extends Item implements GeoItem {
     @Override
     public void appendHoverText(ItemStack s, @Nullable Level level, List<Component> lista, TooltipFlag flag) {
         for (int i = 1; i <= 6; i++)
-            lista.add(Component.translatable("item.miscelanea.hacha_leviatan.ayuda" + i).withStyle(ChatFormatting.GRAY));
+            lista.add(Component.translatable("item.miscelanea.hacha_leviatan.ayuda" + i, Component.keybind("key.miscelanea.comando"),
+                    Component.keybind("key.miscelanea.escudo"), Component.keybind("key.miscelanea.cambiar_comando"),
+                    Component.keybind("key.miscelanea.fijar"), Component.keybind("key.miscelanea.apuntar")).withStyle(ChatFormatting.GRAY));
     }
 
     @Override

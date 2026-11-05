@@ -147,6 +147,6 @@ public class JuegoRitmo extends JuegoQte {
             if (cuenta <= 3 && cuenta > 0)
                 Dibujo.texto(g, mc.font, Component.literal(String.valueOf(cuenta)), cx, y0 + alto / 2F - 8, 2F, 0xFFFFFFFF, true);
         }
-        marco(g, cx, y0 - 10, y0 + alto + 10, Component.translatable("qte.miscelanea.ayuda.ritmo", nombreTecla(mc.options.keyJump)));
+        marco(g, cx, y0 - 10, y0 + alto + 10, Component.translatable("qte.miscelanea.ayuda.ritmo", nombreTecla(com.miscelanea.client.TeclasMod.MJ_ACCION)));
     }
 }

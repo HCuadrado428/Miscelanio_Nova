@@ -56,7 +56,7 @@ public class ConsolaScreen extends Screen {
     @Override
     public boolean keyPressed(int key, int scan, int mods) {
         if (key == GLFW.GLFW_KEY_ESCAPE) return super.keyPressed(key, scan, mods);
-        int b = Botones.boton(key);
+        int b = Botones.boton(key, scan);
         if (b >= 0) {
             bot.pulsar(b);
             return true;
@@ -65,8 +65,28 @@ public class ConsolaScreen extends Screen {
     }
 
     @Override
+    public boolean mouseClicked(double mx, double my, int boton) {
+        int b = Botones.botonRaton(boton);
+        if (b >= 0) {
+            bot.pulsar(b);
+            return true;
+        }
+        return super.mouseClicked(mx, my, boton);
+    }
+
+    @Override
+    public boolean mouseReleased(double mx, double my, int boton) {
+        int b = Botones.botonRaton(boton);
+        if (b >= 0) {
+            bot.soltar(b);
+            return true;
+        }
+        return super.mouseReleased(mx, my, boton);
+    }
+
+    @Override
     public boolean keyReleased(int key, int scan, int mods) {
-        int b = Botones.boton(key);
+        int b = Botones.boton(key, scan);
         if (b >= 0) {
             bot.soltar(b);
             return true;
@@ -226,7 +246,7 @@ public class ConsolaScreen extends Screen {
         g.pose().popPose();
         g.pose().popPose();
 
-        String ayuda = I18n.get("consola.miscelanea.controles");
+        String ayuda = com.miscelanea.client.TeclasMod.ayudaConsola("consola.miscelanea.controles");
         float s = Math.min(1F, (width - 8F) / font.width(ayuda));
         g.pose().pushPose();
         g.pose().translate(width / 2F, height - 12, 0);

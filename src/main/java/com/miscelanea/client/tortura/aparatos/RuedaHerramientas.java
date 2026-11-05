@@ -94,8 +94,9 @@ public class RuedaHerramientas extends Screen {
 
     @Override
     public boolean keyPressed(int key, int scan, int mods) {
-        if (key >= GLFW.GLFW_KEY_1 && key < GLFW.GLFW_KEY_1 + Herramienta.V.length) {
-            usar(key - GLFW.GLFW_KEY_1);
+        int n = com.miscelanea.client.TeclasMod.numero(key, scan, Herramienta.V.length);   // teclas de la barra rápida (1-4)
+        if (n >= 0) {
+            usar(n);
             return true;
         }
         return super.keyPressed(key, scan, mods);
@@ -142,7 +143,8 @@ public class RuedaHerramientas extends Screen {
             Dibujo.texto(g, font, Component.literal(paro ? "---" : String.valueOf(Math.round(bpm))), cx, cy - 7, 1.1F, MonitorEcg.color(bpm, paro), true);
             Dibujo.texto(g, font, Component.literal("LPM"), cx, cy + 5, 0.55F, 0xFFB8B0A0, true);
         }
-        Dibujo.texto(g, font, Component.translatable("gui.miscelanea.rueda_herramientas.ayuda"), cx, cy + R1 + 18, 0.7F, 0xFFD8D0C0, true);
+        Dibujo.texto(g, font, Component.translatable("gui.miscelanea.rueda_herramientas.ayuda",
+                Component.keybind("key.hotbar.1"), Component.keybind("key.hotbar." + Herramienta.V.length)), cx, cy + R1 + 18, 0.7F, 0xFFD8D0C0, true);
         RenderSystem.disableBlend();
     }
 }

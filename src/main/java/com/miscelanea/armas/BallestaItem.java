@@ -131,7 +131,7 @@ public class BallestaItem extends Item implements GeoItem {
     @Override
     public void appendHoverText(ItemStack s, @Nullable Level level, List<Component> lista, TooltipFlag flag) {
         lista.add(Component.translatable("item.miscelanea.ballesta_repeticion.virotes", Ballesta.cargados(s), Ballesta.MAX).withStyle(ChatFormatting.GOLD));
-        lista.add(Component.translatable("item.miscelanea.ballesta_repeticion.ayuda").withStyle(ChatFormatting.GRAY));
+        lista.add(Component.translatable("item.miscelanea.ballesta_repeticion.ayuda", Component.keybind("key.miscelanea.recargar_ballesta")).withStyle(ChatFormatting.GRAY));
     }
 
     // El NBT cambia con cada disparo: que no re-equipe ni corte el uso

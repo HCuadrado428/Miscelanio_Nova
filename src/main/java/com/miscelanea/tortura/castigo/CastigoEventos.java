@@ -161,7 +161,7 @@ public final class CastigoEventos {
             e.setCanceled(true);
             if (quien instanceof Player p && p.tickCount % 20 == 0)
                 p.displayClientMessage(Component.translatable(j.puerta() == JaulaEntity.CON_LLAVE ? "msg.miscelanea.jaula.encerrado"
-                        : "msg.miscelanea.jaula.puerta_cerrada").withStyle(ChatFormatting.RED), true);
+                        : "msg.miscelanea.jaula.puerta_cerrada", Component.keybind("key.left"), Component.keybind("key.right")).withStyle(ChatFormatting.RED), true);
         } else if (veh instanceof CepoEntity c && !c.dejaBajar()) {
             e.setCanceled(true);
         }

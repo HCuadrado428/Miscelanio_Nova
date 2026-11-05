@@ -203,19 +203,24 @@ public final class BaileCliente {
     }
 
     // ------------------------------------------------------------------ teclas
-    static int carrilDe(int key, Minecraft mc) {
-        if (key == GLFW.GLFW_KEY_LEFT || mc.options.keyLeft.getKey().getValue() == key) return 0;
-        if (key == GLFW.GLFW_KEY_DOWN || mc.options.keyDown.getKey().getValue() == key) return 1;
-        if (key == GLFW.GLFW_KEY_UP || mc.options.keyUp.getKey().getValue() == key) return 2;
-        if (key == GLFW.GLFW_KEY_RIGHT || mc.options.keyRight.getKey().getValue() == key) return 3;
+    /** Carril de una tecla: "Ritmo: flecha ..." (flechas) o, de reserva, el movimiento de vanilla (WASD). */
+    static int carrilDe(int key, int scan, Minecraft mc) {
+        var vanilla = new net.minecraft.client.KeyMapping[]{mc.options.keyLeft, mc.options.keyDown, mc.options.keyUp, mc.options.keyRight};
+        for (int c = 0; c < 4; c++) if (com.miscelanea.client.TeclasMod.RITMO[c].matches(key, scan)) return c;
+        for (int c = 0; c < 4; c++) if (vanilla[c].matches(key, scan)) return c;
         return -1;
+    }
+
+    /** Si hay una pista de baile en marcha (menú, canción o resultado). */
+    public static boolean activo() {
+        return modo != NADA;
     }
 
     @SubscribeEvent
     public static void tecla(InputEvent.Key e) {
         Minecraft mc = Minecraft.getInstance();
         if (modo == NADA || mc.player == null) return;
-        int c = carrilDe(e.getKey(), mc);
+        int c = carrilDe(e.getKey(), e.getScanCode(), mc);
         if (e.getAction() == GLFW.GLFW_RELEASE) {
             if (c >= 0) {
                 pisando[c] = false;
@@ -310,12 +315,11 @@ public final class BaileCliente {
 
     static boolean teclaAbajo(Minecraft mc, int c) {
         long w = mc.getWindow().getWindow();
-        int[] flecha = {GLFW.GLFW_KEY_LEFT, GLFW.GLFW_KEY_DOWN, GLFW.GLFW_KEY_UP, GLFW.GLFW_KEY_RIGHT};
         var km = new net.minecraft.client.KeyMapping[]{mc.options.keyLeft, mc.options.keyDown, mc.options.keyUp, mc.options.keyRight}[c];
         int k = km.getKey().getValue();
         // solo teclas del teclado (si el paso está en un botón del ratón, se mira si el botón sigue pulsado)
         boolean teclado = km.getKey().getType() == com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM && k >= 32;
-        return GLFW.glfwGetKey(w, flecha[c]) == GLFW.GLFW_PRESS || (teclado ? GLFW.glfwGetKey(w, k) == GLFW.GLFW_PRESS : km.isDown());
+        return com.miscelanea.client.TeclasMod.pulsada(com.miscelanea.client.TeclasMod.RITMO[c]) || (teclado ? GLFW.glfwGetKey(w, k) == GLFW.GLFW_PRESS : km.isDown());
     }
 
     @SubscribeEvent
@@ -397,7 +401,8 @@ public final class BaileCliente {
             String[] d = {"paso.miscelanea.facil", "paso.miscelanea.normal", "paso.miscelanea.dificil"};
             int yd = y0 + 30 + filas * 18;
             g.drawCenteredString(font, "◄ " + I18n.get(d[dif]) + " ►", W / 2, yd, 0xFF69DC67);
-            g.drawCenteredString(font, I18n.get("baile.miscelanea.menu_ayuda"), W / 2, yd + 16, (menuT / 10) % 2 == 0 ? 0xFFFFE05A : 0xFFC0A040);
+            g.drawCenteredString(font, I18n.get("baile.miscelanea.menu_ayuda", com.miscelanea.client.TeclasMod.corto(com.miscelanea.client.TeclasMod.RITMO[2]), com.miscelanea.client.TeclasMod.corto(com.miscelanea.client.TeclasMod.RITMO[1]), com.miscelanea.client.TeclasMod.corto(com.miscelanea.client.TeclasMod.RITMO[0]), com.miscelanea.client.TeclasMod.corto(com.miscelanea.client.TeclasMod.RITMO[3]),
+                    mc.options.keyJump.getTranslatedKeyMessage().getString()), W / 2, yd + 16, (menuT / 10) % 2 == 0 ? 0xFFFFE05A : 0xFFC0A040);
             return;
         }
         // pista de flechas a la derecha de la pantalla (la cámara deja al que baila a la izquierda)

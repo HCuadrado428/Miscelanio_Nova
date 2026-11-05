@@ -110,7 +110,7 @@ public class JaulaAnclaBlock extends HorizontalDirectionalBlock {
     public void appendHoverText(ItemStack st, @Nullable BlockGetter l, List<Component> t, TooltipFlag f) {
         t.add(Component.translatable("block.miscelanea.jaula_colgante.ayuda").withStyle(ChatFormatting.GRAY));
         t.add(Component.translatable("block.miscelanea.jaula_colgante.ayuda2").withStyle(ChatFormatting.GRAY));
-        t.add(Component.translatable("block.miscelanea.jaula_colgante.ayuda3").withStyle(ChatFormatting.GRAY));
+        t.add(Component.translatable("block.miscelanea.jaula_colgante.ayuda3", Component.keybind("key.left"), Component.keybind("key.right")).withStyle(ChatFormatting.GRAY));
         t.add(Component.translatable("item.miscelanea.solo_creativo").withStyle(ChatFormatting.DARK_PURPLE));
     }
 }

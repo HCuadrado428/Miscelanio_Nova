@@ -38,7 +38,7 @@ public class JuegoBarraZona extends JuegoQte {
         objVel += (objMeta - obj) * (0.012F + dif * 0.02F);
         objVel *= 0.84F;
         obj = Mth.clamp(obj + objVel, 0.02F, 0.98F);
-        boolean subir = mc.options.keyJump.isDown();
+        boolean subir = com.miscelanea.client.TeclasMod.accionPulsada();
         zonaVel += subir ? 0.012F : -0.010F;
         zonaVel *= 0.9F;
         zona += zonaVel;
@@ -91,6 +91,6 @@ public class JuegoBarraZona extends JuegoQte {
         g.fill(bx, y, bx + 8, y + alto, 0xFF1C1C20);
         int col = pr > 0.66F ? 0xFF50E060 : pr > 0.33F ? 0xFFE8C040 : 0xFFE85030;
         g.fillGradient(bx, y + alto - (int) (pr * alto), bx + 8, y + alto, Dibujo.mezcla(col, 0xFFFFFFFF, 0.25F), col);
-        marco(g, x + ancho / 2F + 13, y - 8, y + alto + 8, Component.translatable("qte.miscelanea.ayuda.barra", nombreTecla(mc.options.keyJump)));
+        marco(g, x + ancho / 2F + 13, y - 8, y + alto + 8, Component.translatable("qte.miscelanea.ayuda.barra", nombreTecla(com.miscelanea.client.TeclasMod.MJ_ACCION)));
     }
 }

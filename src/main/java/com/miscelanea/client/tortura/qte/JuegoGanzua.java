@@ -55,7 +55,7 @@ public class JuegoGanzua extends JuegoQte {
             acabar(QteResultado.FALLO);
             return;
         }
-        boolean girar = mc.options.keyLeft.isDown();
+        boolean girar = com.miscelanea.client.TeclasMod.direccionPulsada(2);
         forzando = false;
         if (girar) {
             float max = QteLogica.ganMaxGiro(pick, semilla, dif);
@@ -125,6 +125,6 @@ public class JuegoGanzua extends JuegoQte {
         int bw = 70;
         int x0 = (int) (cx - bw / 2F), y0 = (int) (cy + S / 2F + 4);
         Dibujo.barra(g, x0, y0, bw, 3, 1F - dano, 0xFFE8D8B0, 0xFF907850);
-        marco(g, cx, cy - S / 2F, y0 + 4, Component.translatable("qte.miscelanea.ayuda.ganzua", nombreTecla(mc.options.keyLeft)));
+        marco(g, cx, cy - S / 2F, y0 + 4, Component.translatable("qte.miscelanea.ayuda.ganzua", nombreTecla(com.miscelanea.client.TeclasMod.MJ_IZQ)));
     }
 }

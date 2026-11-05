@@ -155,7 +155,7 @@ public class SillaInterrogatorioBlockEntity extends AparatoBlockEntity {
         this.quien = quien == null ? null : quien.getUUID();
         if (v instanceof ServerPlayer sp)
             sp.displayClientMessage(Component.translatable("msg.miscelanea.interrogatorio.dentro_ayuda",
-                    Component.keybind("key.jump")).withStyle(ChatFormatting.GRAY), false);
+                    Component.keybind("key.miscelanea.mj_accion")).withStyle(ChatFormatting.GRAY), false);
     }
 
     @Override

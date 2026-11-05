@@ -157,7 +157,7 @@ public final class AparatosCliente {
     public static void tecla(InputEvent.Key e) {
         Minecraft mc = Minecraft.getInstance();
         if (pulso == null || mc.screen != null || e.getAction() != GLFW.GLFW_PRESS) return;
-        if (e.getKey() == GLFW.GLFW_KEY_SPACE || mc.options.keyJump.matches(e.getKey(), e.getScanCode())) pulso.pulsar(mc);
+        if (com.miscelanea.client.TeclasMod.esAccion(e.getKey(), e.getScanCode())) pulso.pulsar(mc);
     }
 
     @SubscribeEvent

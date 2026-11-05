@@ -68,7 +68,7 @@ public class OcarinaItem extends Item implements GeoItem {
 
     @Override
     public void appendHoverText(ItemStack s, @Nullable Level level, List<Component> lista, TooltipFlag flag) {
-        lista.add(Component.translatable("item.miscelanea.ocarina.ayuda").withStyle(ChatFormatting.GRAY));
+        lista.add(Component.translatable("item.miscelanea.ocarina.ayuda", Component.keybind("key.hotbar.1"), Component.keybind("key.hotbar.5")).withStyle(ChatFormatting.GRAY));
         for (Cancion c : Cancion.values())
             lista.add(Component.translatable(c.clave()).withStyle(ChatFormatting.GOLD).append(Component.literal(": ").withStyle(ChatFormatting.DARK_GRAY)).append(notas(c.notas)));
     }

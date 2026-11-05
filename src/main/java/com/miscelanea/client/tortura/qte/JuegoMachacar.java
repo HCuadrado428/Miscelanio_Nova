@@ -86,7 +86,7 @@ public class JuegoMachacar extends JuegoQte {
         long ahora = ms();
         float pulso = Math.max(0, 1 - (ahora - golpe) / 110F);
         if (alternar) {
-            String a = nombreTecla(mc.options.keyLeft), d = nombreTecla(mc.options.keyRight);
+            String a = nombreTecla(com.miscelanea.client.TeclasMod.MJ_IZQ), d = nombreTecla(com.miscelanea.client.TeclasMod.MJ_DER);
             int t = 26;
             for (int lado = 2; lado <= 3; lado++) {
                 int x = (int) (cx + (lado == 2 ? -t - 8 : 8));
@@ -94,7 +94,7 @@ public class JuegoMachacar extends JuegoQte {
                 Dibujo.tecla(g, mc.font, x, (int) cy - 22, t, t, lado == 2 ? a : d, est, 0.8F);
             }
         } else {
-            String s = nombreTecla(mc.options.keyJump);
+            String s = nombreTecla(com.miscelanea.client.TeclasMod.MJ_ACCION);
             int t = Math.max(70, mc.font.width(s) + 20);
             int est = pulso > 0.4F ? 2 : (terminado ? 0 : 1);
             Dibujo.tecla(g, mc.font, (int) (cx - t / 2F), (int) cy - 20, t, 22, s, est, 0.5F + pulso * 0.5F);

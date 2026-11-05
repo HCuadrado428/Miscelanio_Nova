@@ -235,6 +235,7 @@ public final class ClientEvents {
             event.register(com.miscelanea.client.combate.HachaCliente.APUNTAR);
             event.register(com.miscelanea.client.combate.HachaCliente.ESCUDO);
             event.register(com.miscelanea.client.pipboy.PipBoyCliente.ABRIR);
+            TeclasMod.registrar(event);
         }
 
         @SubscribeEvent

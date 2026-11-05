@@ -86,7 +86,7 @@ public class JuegoEsquiva extends JuegoQte {
                 Dibujo.disco(g, px + s * i * 5F, py + i * 0.6F, Math.max(0.6F, r * (0.5F - i * 0.12F)), Dibujo.alfa(col, 0.35F - i * 0.08F));
         }
         // teclas: la buena brilla
-        String a = nombreTecla(mc.options.keyLeft), d = nombreTecla(mc.options.keyRight);
+        String a = nombreTecla(com.miscelanea.client.TeclasMod.MJ_IZQ), d = nombreTecla(com.miscelanea.client.TeclasMod.MJ_DER);
         int tt = 22;
         float brilloK = 0.5F + 0.5F * (float) Math.sin(ms() * 0.03);
         int estA = pulsada == 2 ? (tecla == 2 ? 3 : 4) : (tecla == 2 && !terminado ? 1 : 0);

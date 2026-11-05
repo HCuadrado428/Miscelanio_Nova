@@ -22,7 +22,10 @@ public class ObjetoTortura extends Item {
     @Override
     public void appendHoverText(ItemStack s, @Nullable Level level, List<Component> l, TooltipFlag f) {
         for (int i = 1; i <= lineas; i++)
-            l.add(Component.translatable(getDescriptionId() + ".ayuda" + (i == 1 ? "" : String.valueOf(i))).withStyle(ChatFormatting.GRAY));
+            l.add(Component.translatable(getDescriptionId() + ".ayuda" + (i == 1 ? "" : String.valueOf(i)),
+                    // teclas que pueden citar las líneas (ganzúa: girar; maletín: atajos 1-4)
+                    Component.keybind("key.miscelanea.mj_izquierda"), Component.keybind("key.left"),
+                    Component.keybind("key.hotbar.1"), Component.keybind("key.hotbar.4")).withStyle(ChatFormatting.GRAY));
         l.add(Component.translatable("item.miscelanea.solo_creativo").withStyle(ChatFormatting.DARK_PURPLE));
     }
 }

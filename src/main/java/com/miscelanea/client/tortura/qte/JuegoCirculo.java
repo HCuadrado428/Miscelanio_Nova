@@ -125,7 +125,7 @@ public class JuegoCirculo extends JuegoQte {
         Dibujo.disco(g, cx, cy, 2.2F, 0xFFE8241C);
         g.pose().popPose();
         // tecla en el centro, debajo, y rondas
-        String t = nombreTecla(mc.options.keyJump);
+        String t = nombreTecla(com.miscelanea.client.TeclasMod.MJ_ACCION);
         int tw = Math.max(34, mc.font.width(t) + 12);
         Dibujo.tecla(g, mc.font, (int) (cx - tw / 2F), (int) (cy + R + 14), tw, 14, t, estado == GIRANDO ? 1 : 0, 0.6F);
         for (int i = 0; i < rondas && rondas > 1; i++) {

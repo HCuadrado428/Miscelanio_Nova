@@ -362,7 +362,7 @@ public class CepoEntity extends Entity {
         if (v instanceof ServerPlayer sp) com.miscelanea.tortura.qte.Qte.cancelar(sp);
         Escarnio.iniciar(v);
         l.playSound(null, pos, TorturaRegistro.CEPO_CERRAR.get(), SoundSource.BLOCKS, 1F, 1F);
-        if (v instanceof ServerPlayer sp) sp.sendSystemMessage(Component.translatable("msg.miscelanea.cepo.encerrado_tu").withStyle(ChatFormatting.RED));
+        if (v instanceof ServerPlayer sp) sp.sendSystemMessage(Component.translatable("msg.miscelanea.cepo.encerrado_tu", Component.keybind("key.left"), Component.keybind("key.right")).withStyle(ChatFormatting.RED));
         if (captor != null)
             captor.displayClientMessage(Component.translatable("msg.miscelanea.cepo.encerrado", v.getDisplayName()).withStyle(ChatFormatting.GOLD), true);
     }

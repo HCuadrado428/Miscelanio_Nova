@@ -1,7 +1,5 @@
 package com.miscelanea.client.consola;
 
-import org.lwjgl.glfw.GLFW;
-
 /** Estado de los botones de la consola (cruceta, A, B, Start, Select) a 60 pasos por segundo. */
 public class Botones {
     public static final int ARRIBA = 0, ABAJO = 1, IZQ = 2, DER = 3, A = 4, B = 5, START = 6, SELECT = 7, C = 8, N = 9;
@@ -9,19 +7,18 @@ public class Botones {
     final boolean[] nuevo = new boolean[N];
     final int[] tiempo = new int[N];
 
-    public static int boton(int tecla) {
-        return switch (tecla) {
-            case GLFW.GLFW_KEY_UP, GLFW.GLFW_KEY_W -> ARRIBA;
-            case GLFW.GLFW_KEY_DOWN, GLFW.GLFW_KEY_S -> ABAJO;
-            case GLFW.GLFW_KEY_LEFT, GLFW.GLFW_KEY_A -> IZQ;
-            case GLFW.GLFW_KEY_RIGHT, GLFW.GLFW_KEY_D -> DER;
-            case GLFW.GLFW_KEY_Z, GLFW.GLFW_KEY_SPACE, GLFW.GLFW_KEY_J -> A;
-            case GLFW.GLFW_KEY_X, GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_RIGHT_SHIFT, GLFW.GLFW_KEY_K -> B;
-            case GLFW.GLFW_KEY_ENTER, GLFW.GLFW_KEY_KP_ENTER -> START;
-            case GLFW.GLFW_KEY_TAB, GLFW.GLFW_KEY_BACKSPACE -> SELECT;
-            case GLFW.GLFW_KEY_C, GLFW.GLFW_KEY_L -> C;
-            default -> -1;
-        };
+    /** Botón que corresponde a una tecla, según las teclas configurables "Consola: ..." (principal y alternativa). */
+    public static int boton(int tecla, int scan) {
+        for (int i = 0; i < N; i++)
+            for (net.minecraft.client.KeyMapping k : com.miscelanea.client.TeclasMod.CONSOLA[i]) if (k.matches(tecla, scan)) return i;
+        return -1;
+    }
+
+    /** Botón asignado a un botón del ratón (si alguien pone uno en Controles), o -1. */
+    public static int botonRaton(int boton) {
+        for (int i = 0; i < N; i++)
+            for (net.minecraft.client.KeyMapping k : com.miscelanea.client.TeclasMod.CONSOLA[i]) if (k.matchesMouse(boton)) return i;
+        return -1;
     }
 
     void pulsar(int b) {

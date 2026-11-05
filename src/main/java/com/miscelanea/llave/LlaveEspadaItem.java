@@ -55,7 +55,8 @@ public class LlaveEspadaItem extends Item implements GeoItem {
     @Override
     public void appendHoverText(ItemStack s, @Nullable Level level, List<Component> lista, TooltipFlag flag) {
         for (int i = 1; i <= 5; i++)
-            lista.add(Component.translatable("item.miscelanea.llave_espada.ayuda" + i).withStyle(ChatFormatting.GRAY));
+            lista.add(Component.translatable("item.miscelanea.llave_espada.ayuda" + i, Component.keybind("key.miscelanea.comando"),
+                    Component.keybind("key.miscelanea.cambiar_comando"), Component.keybind("key.miscelanea.fijar")).withStyle(ChatFormatting.GRAY));
     }
 
     @Override

@@ -96,22 +96,19 @@ public abstract class JuegoQte {
     }
 
     // ------------------------------------------------------------------ teclas
+    /** Acción: la tecla "Minijuegos: acción" (Espacio) o Saltar de vanilla. */
     protected boolean esSalto(int key, int scan) {
-        return key == GLFW.GLFW_KEY_SPACE || mc.options.keyJump.matches(key, scan);
+        return com.miscelanea.client.TeclasMod.esAccion(key, scan);
     }
 
-    /** 0 arriba, 1 abajo, 2 izquierda, 3 derecha (WASD configurados o cursores), -1 si no es una dirección. */
+    /** 0 arriba, 1 abajo, 2 izquierda, 3 derecha ("Minijuegos: ..." o WASD de vanilla), -1 si no es una dirección. */
     protected int direccion(int key, int scan) {
-        if (key == GLFW.GLFW_KEY_UP || mc.options.keyUp.matches(key, scan)) return 0;
-        if (key == GLFW.GLFW_KEY_DOWN || mc.options.keyDown.matches(key, scan)) return 1;
-        if (key == GLFW.GLFW_KEY_LEFT || mc.options.keyLeft.matches(key, scan)) return 2;
-        if (key == GLFW.GLFW_KEY_RIGHT || mc.options.keyRight.matches(key, scan)) return 3;
-        return -1;
+        return com.miscelanea.client.TeclasMod.direccion(key, scan);
     }
 
     /** Nombre corto de la tecla configurada (para dibujarla en la tecla). */
     protected static String nombreTecla(net.minecraft.client.KeyMapping k) {
-        String s = k.getTranslatedKeyMessage().getString();
+        String s = com.miscelanea.client.TeclasMod.corto(k);
         return s.length() > 7 ? s.substring(0, 7) : s.toUpperCase();
     }
 

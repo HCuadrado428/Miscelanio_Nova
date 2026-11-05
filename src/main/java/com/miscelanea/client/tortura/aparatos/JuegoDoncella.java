@@ -42,7 +42,7 @@ public class JuegoDoncella {
         zonaVel += (zonaMeta - zona) * (0.008F + cierre * 0.028F);
         zonaVel *= 0.86F;
         zona = Mth.clamp(zona + zonaVel, 0.06F, 0.94F);
-        boolean sube = mc.options.keyJump.isDown();
+        boolean sube = com.miscelanea.client.TeclasMod.accionPulsada();
         vel += sube ? 0.0115F : -0.0095F;
         vel *= 0.88F;
         marca += vel;
@@ -95,7 +95,7 @@ public class JuegoDoncella {
         Dibujo.triangulo(g, mx - 5, my, mx + 5, my, mx, my + 6, Dibujo.mezcla(col, 0xFF000000, 0.3F));
         Dibujo.texto(g, mc.font, Component.translatable("hud.miscelanea.doncella.titulo").withStyle(ChatFormatting.BOLD), x + ancho / 2F, y - 20,
                 1F, 0xFFE8D8C0, true);
-        Dibujo.texto(g, mc.font, Component.translatable("hud.miscelanea.doncella.ayuda", mc.options.keyJump.getTranslatedKeyMessage()),
+        Dibujo.texto(g, mc.font, Component.translatable("hud.miscelanea.doncella.ayuda", com.miscelanea.client.TeclasMod.MJ_ACCION.getTranslatedKeyMessage()),
                 x + ancho / 2F, y + alto + 12, 0.75F, 0xFFBFB8B0, true);
         if (rojo > 0.02F) g.fill(0, 0, w, h, ((int) (rojo * 90) << 24) | 0x900000);
     }

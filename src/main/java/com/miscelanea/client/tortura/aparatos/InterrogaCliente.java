@@ -219,7 +219,7 @@ public final class InterrogaCliente {
     public static void tecla(InputEvent.Key e) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.screen != null || e.getAction() != GLFW.GLFW_PRESS || esperaTecla > 0 || QteCliente.activo()) return;
-        if (!mc.options.keyJump.matches(e.getKey(), e.getScanCode())) return;
+        if (!com.miscelanea.client.TeclasMod.esAccion(e.getKey(), e.getScanCode())) return;
         AparatosVictimas.Entrada en = AparatosVictimas.de(mc.player.getId());
         if (en == null) return;
         if (en.tipo() == AparatosVictimas.INTERROGATORIO) {

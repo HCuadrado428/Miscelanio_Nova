@@ -51,7 +51,7 @@ public class PipBoyItem extends Item implements GeoItem {
             PipBoy.poner(sp, true);
             PipBoy.enviarDatos(sp);
             level.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.PIPBOY_PONER.get(), SoundSource.PLAYERS, 0.9F, 1.0F);
-            sp.displayClientMessage(Component.translatable("msg.miscelanea.pipboy_puesto"), true);
+            sp.displayClientMessage(Component.translatable("msg.miscelanea.pipboy_puesto", Component.keybind("key.miscelanea.pipboy")), true);
         }
         if (!player.getAbilities().instabuild) s.shrink(1);
         return InteractionResultHolder.sidedSuccess(s, level.isClientSide);
@@ -60,7 +60,7 @@ public class PipBoyItem extends Item implements GeoItem {
     @Override
     public void appendHoverText(ItemStack s, @Nullable Level level, List<Component> lista, TooltipFlag flag) {
         lista.add(Component.translatable("item.miscelanea.pipboy.ayuda1").withStyle(ChatFormatting.GRAY));
-        lista.add(Component.translatable("item.miscelanea.pipboy.ayuda2").withStyle(ChatFormatting.GRAY));
+        lista.add(Component.translatable("item.miscelanea.pipboy.ayuda2", Component.keybind("key.miscelanea.pipboy")).withStyle(ChatFormatting.GRAY));
     }
 
     @Override

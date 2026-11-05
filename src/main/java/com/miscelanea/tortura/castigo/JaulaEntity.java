@@ -242,7 +242,7 @@ public class JaulaEntity extends Entity {
         }
         if (p == null && puerta() == ABIERTA && enSuelo() && tickCount % 4 == 0) trampa();
         if (p instanceof ServerPlayer sp && puerta() != ABIERTA && tickCount % 60 == 0 && !enSuelo())
-            sp.displayClientMessage(Component.translatable(puerta() == CON_LLAVE ? "hud.miscelanea.jaula.llave" : "hud.miscelanea.jaula.cerrada")
+            sp.displayClientMessage(Component.translatable(puerta() == CON_LLAVE ? "hud.miscelanea.jaula.llave" : "hud.miscelanea.jaula.cerrada", Component.keybind("key.left"), Component.keybind("key.right"))
                     .withStyle(ChatFormatting.GOLD), true);
     }
 
@@ -514,7 +514,7 @@ public class JaulaEntity extends Entity {
         // desde dentro
         if (hasPassenger(p)) {
             if (pu == CON_LLAVE && !(st.getItem() instanceof LlaveCarceleroItem)) {
-                p.displayClientMessage(Component.translatable("msg.miscelanea.jaula.encerrado").withStyle(ChatFormatting.RED), true);
+                p.displayClientMessage(Component.translatable("msg.miscelanea.jaula.encerrado", Component.keybind("key.left"), Component.keybind("key.right")).withStyle(ChatFormatting.RED), true);
                 return InteractionResult.CONSUME;
             }
             entityData.set(PUERTA, ABIERTA);
@@ -530,7 +530,7 @@ public class JaulaEntity extends Entity {
                 entityData.set(PUERTA, CON_LLAVE);
                 p.displayClientMessage(Component.translatable("msg.miscelanea.jaula.con_llave").withStyle(ChatFormatting.GOLD), true);
                 if (preso() instanceof ServerPlayer sp)
-                    sp.displayClientMessage(Component.translatable("msg.miscelanea.jaula.balanceo").withStyle(ChatFormatting.YELLOW), false);
+                    sp.displayClientMessage(Component.translatable("msg.miscelanea.jaula.balanceo", Component.keybind("key.left"), Component.keybind("key.right")).withStyle(ChatFormatting.YELLOW), false);
             }
             level().playSound(null, getX(), getY() + 1, getZ(), TorturaRegistro.JAULA_CERROJO.get(), SoundSource.BLOCKS, 1F, pu == CON_LLAVE ? 1.1F : 0.9F);
             return InteractionResult.CONSUME;

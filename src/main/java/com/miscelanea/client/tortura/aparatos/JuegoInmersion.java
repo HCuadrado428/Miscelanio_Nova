@@ -52,7 +52,7 @@ public class JuegoInmersion {
         zonaVel += (zonaMeta - zona) * (0.008F + ap * 0.03F);
         zonaVel *= 0.86F;
         zona = Mth.clamp(zona + zonaVel, 0.06F, 0.94F);
-        boolean sube = mc.options.keyJump.isDown();
+        boolean sube = com.miscelanea.client.TeclasMod.accionPulsada();
         vel += sube ? 0.011F : -0.009F;
         vel *= 0.88F;
         marca += vel;
@@ -112,7 +112,7 @@ public class JuegoInmersion {
         g.fillGradient(ax, y + alto - lleno, ax + 3, y + alto, 0xFFB8F0FF, 0xFF3A8AC0);
         Dibujo.texto(g, mc.font, Component.translatable("hud.miscelanea.inmersion.titulo").withStyle(ChatFormatting.BOLD), x + ancho / 2F, y - 20,
                 1F, 0xFFD8F0FF, true);
-        Dibujo.texto(g, mc.font, Component.translatable("hud.miscelanea.inmersion.ayuda", mc.options.keyJump.getTranslatedKeyMessage()),
+        Dibujo.texto(g, mc.font, Component.translatable("hud.miscelanea.inmersion.ayuda", com.miscelanea.client.TeclasMod.MJ_ACCION.getTranslatedKeyMessage()),
                 x + ancho / 2F, y + alto + 12, 0.75F, 0xFFB0C8D0, true);
         if (rojo > 0.02F) g.fill(0, 0, w, h, ((int) (rojo * 70) << 24) | 0x600000);
         // se acaba el aire: se oscurece todo por los bordes

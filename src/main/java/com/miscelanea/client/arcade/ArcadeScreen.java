@@ -94,6 +94,11 @@ public class ArcadeScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mx, double my, int boton) {
+        int bb = Botones.botonRaton(boton);
+        if (bb >= 0) {
+            Botones.Acceso.pulsar(bot, bb);
+            return true;
+        }
         if (estado == Estado.JUEGO && juego != null) {
             int x = (int) Math.floor((mx - origenX) / escala - lx), y = (int) Math.floor((my - origenY) / escala - ly);
             juego.ratonX = x;
@@ -103,6 +108,16 @@ public class ArcadeScreen extends Screen {
             return true;
         }
         return super.mouseClicked(mx, my, boton);
+    }
+
+    @Override
+    public boolean mouseReleased(double mx, double my, int boton) {
+        int bb = Botones.botonRaton(boton);
+        if (bb >= 0) {
+            Botones.Acceso.soltar(bot, bb);
+            return true;
+        }
+        return super.mouseReleased(mx, my, boton);
     }
 
     public ArcadeScreen(BlockPos pos, int creditos, boolean libre, boolean doble, boolean invitado, String companero) {
@@ -134,7 +149,7 @@ public class ArcadeScreen extends Screen {
     @Override
     public boolean keyPressed(int key, int scan, int mods) {
         if (key == GLFW.GLFW_KEY_ESCAPE) return super.keyPressed(key, scan, mods);
-        int b = Botones.boton(key);
+        int b = Botones.boton(key, scan);
         if (b >= 0) {
             Botones.Acceso.pulsar(bot, b);
             return true;
@@ -144,7 +159,7 @@ public class ArcadeScreen extends Screen {
 
     @Override
     public boolean keyReleased(int key, int scan, int mods) {
-        int b = Botones.boton(key);
+        int b = Botones.boton(key, scan);
         if (b >= 0) {
             Botones.Acceso.soltar(bot, b);
             return true;
@@ -585,7 +600,7 @@ public class ArcadeScreen extends Screen {
         g.fill(6, 5, 90, 7, 0x18FFFFFF);
         g.pose().popPose();
         g.pose().popPose();
-        String ayuda = I18n.get("consola.miscelanea.controles_arcade2");
+        String ayuda = com.miscelanea.client.TeclasMod.ayudaConsola("consola.miscelanea.controles_arcade2");
         float s = Math.min(1F, (width - 8F) / font.width(ayuda));
         g.pose().pushPose();
         g.pose().translate(width / 2F, height - 12, 0);

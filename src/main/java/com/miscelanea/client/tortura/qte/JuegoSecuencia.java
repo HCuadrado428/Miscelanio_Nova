@@ -71,6 +71,7 @@ public class JuegoSecuencia extends JuegoQte {
         float resto = listo ? 1F - (ahora - QteLogica.SEC_PREVIO_MS) / (float) tiempo : 1F;
         int c0 = resto > 0.5F ? 0xFF60E070 : resto > 0.25F ? 0xFFE8C040 : 0xFFF04030;
         Dibujo.barra(g, x0, y0 + t + 8, ancho, 4, resto, c0, Dibujo.mezcla(c0, 0xFF000000, 0.35F));
-        marco(g, cx, y0 - 14, y0 + t + 20, Component.translatable("qte.miscelanea.ayuda.secuencia"));
+        marco(g, cx, y0 - 14, y0 + t + 20, Component.translatable("qte.miscelanea.ayuda.secuencia", nombreTecla(com.miscelanea.client.TeclasMod.MJ_ARRIBA) + nombreTecla(com.miscelanea.client.TeclasMod.MJ_IZQ) + nombreTecla(com.miscelanea.client.TeclasMod.MJ_ABAJO) + nombreTecla(com.miscelanea.client.TeclasMod.MJ_DER),
+                nombreTecla(mc.options.keyUp) + nombreTecla(mc.options.keyLeft) + nombreTecla(mc.options.keyDown) + nombreTecla(mc.options.keyRight)));
     }
 }

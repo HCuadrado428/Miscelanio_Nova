@@ -76,7 +76,7 @@ public class MochilaItem extends ArmorItem implements GeoItem {
                         .withStyle(ChatFormatting.BLUE));
             }
         }
-        tooltip.add(Component.translatable(p + "soltar").withStyle(ChatFormatting.DARK_GRAY));
+        tooltip.add(Component.translatable(p + "soltar", Component.keybind("key.miscelanea.soltar_captura")).withStyle(ChatFormatting.DARK_GRAY));
     }
 
     // ============================================================ GeckoLib
