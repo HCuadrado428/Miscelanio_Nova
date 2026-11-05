@@ -22,19 +22,6 @@ public class PotionMixRecipe implements IBrewingRecipe {
         this.to = to;
     }
 
-    /** Poción de partida (para enseñar la receta, p. ej. en el manual del mod). */
-    public Potion from() {
-        return from;
-    }
-
-    public Item ingredient() {
-        return ingredient;
-    }
-
-    public Potion to() {
-        return to;
-    }
-
     @Override
     public boolean isInput(ItemStack input) {
         Item item = input.getItem();

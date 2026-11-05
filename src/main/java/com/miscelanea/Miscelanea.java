@@ -48,7 +48,6 @@ public class Miscelanea {
         com.miscelanea.glitch.GlitchRegistro.registrar(modBus);
         com.miscelanea.bromas.BromasRegistro.registrar(modBus);
         com.miscelanea.estatica.EstaticaRegistro.registrar(modBus);
-        com.miscelanea.manual.ManualRegistro.registrar(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::creativeTabs);

@@ -53,8 +53,6 @@ public final class ConfigServidor {
     private static final ForgeConfigSpec.BooleanValue MESAS_VICTORIAS_CPU;
     private static final ForgeConfigSpec.DoubleValue EST_VELOCIDAD, EST_GRAVEDAD, EST_CAIDA, EST_TOQUE_DANO, EST_PARPADEO_DIST, EST_OSCURIDAD_QUIETO_S,
             EST_ARRASTRAR_ALCANCE, EST_ARRASTRAR_DIST, EST_TENTACULOS_ALCANCE, EST_LANZAR_FUERZA, EST_ESTAMPAR_DANO, EST_ESTAMPAR_ALTURA;
-    // ---- manual del mod
-    private static final ForgeConfigSpec.BooleanValue MANUAL_REGALO;
 
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
@@ -263,11 +261,6 @@ public final class ConfigServidor {
         MESAS_VICTORIAS_CPU = b.comment("Contar en el marcador de victorias las partidas ganadas solo contra la CPU.").define("victorias_contra_cpu", true);
         b.pop();
 
-        b.comment("Manual del mod (libro con la guía de todo lo que trae Miscelánea).").push("manual");
-        MANUAL_REGALO = b.comment("Regalar el manual a cada jugador la primera vez que entra al mundo (solo una vez por jugador).")
-                .define("regalo_al_entrar", true);
-        b.pop();
-
         SPEC = b.build();
     }
 
@@ -429,6 +422,4 @@ public final class ConfigServidor {
     public static int mesasTurnoTicks() { return i(MESAS_TURNO_S) * 20; }
     public static int mesasAusenciaTicks() { return Math.max(60, i(MESAS_AUSENCIA_S) * 20); }
     public static boolean mesasVictoriasContraCpu() { return b(MESAS_VICTORIAS_CPU); }
-    // ------------------------------------------------------------------ manual
-    public static boolean manualRegalo() { return b(MANUAL_REGALO); }
 }
