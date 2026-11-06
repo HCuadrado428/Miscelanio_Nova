@@ -70,6 +70,7 @@ public class DardoMiedoEntity extends ThrowableItemProjectile {
             return;
         }
         for (int i = 0; i < 8; i++)
-            level().addParticle(ParticleTypes.ENTITY_EFFECT, getX(), getY(), getZ(), 0.31, 0.54, 0.18);
+            level().addParticle(EfectosRegistro.GAS.get(), getX(), getY(), getZ(), (random.nextDouble() - 0.5) * 0.12, 0.02 + random.nextDouble() * 0.04,
+                    (random.nextDouble() - 0.5) * 0.12);
     }
 }

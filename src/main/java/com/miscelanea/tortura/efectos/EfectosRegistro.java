@@ -39,6 +39,11 @@ public final class EfectosRegistro {
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, Miscelanea.MOD_ID);
     public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, Miscelanea.MOD_ID);
     public static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(ForgeRegistries.POTIONS, Miscelanea.MOD_ID);
+    public static final DeferredRegister<net.minecraft.core.particles.ParticleType<?>> PARTICULAS =
+            DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, Miscelanea.MOD_ID);
+    /** Voluta del gas del miedo (humo como el de vanilla, teñido de verde). */
+    public static final RegistryObject<net.minecraft.core.particles.SimpleParticleType> GAS =
+            PARTICULAS.register("gas_miedo", () -> new net.minecraft.core.particles.SimpleParticleType(false));
 
     // ---- tipo de daño (data/miscelanea/damage_type/collar_explosivo.json)
     public static final ResourceKey<DamageType> DANO_COLLAR =
@@ -123,5 +128,6 @@ public final class EfectosRegistro {
         ENTITIES.register(modBus);
         EFFECTS.register(modBus);
         POTIONS.register(modBus);
+        PARTICULAS.register(modBus);
     }
 }

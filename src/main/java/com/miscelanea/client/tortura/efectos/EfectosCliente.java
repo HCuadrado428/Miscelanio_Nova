@@ -54,15 +54,15 @@ public final class EfectosCliente {
                 }
             }
         } else if (p.tipo == SustoPacket.GAS) {
-            float cr = ((MiedoEffect.COLOR >> 16) & 255) / 255F, cg = ((MiedoEffect.COLOR >> 8) & 255) / 255F, cb = (MiedoEffect.COLOR & 255) / 255F;
-            for (int i = 0; i < 90; i++) {
-                float k = 0.7F + r.nextFloat() * 0.5F;
-                DustParticleOptions gas = new DustParticleOptions(new Vector3f(cr * k, cg * k, cb * k * 0.8F), 2.5F + r.nextFloat() * 1.5F);
-                double a = r.nextDouble() * Math.PI * 2, v = 0.05 + r.nextDouble() * 0.22;
-                l.addParticle(gas, p.x, p.y + 0.2, p.z, Math.cos(a) * v, 0.02 + r.nextDouble() * 0.08, Math.sin(a) * v);
+            // el estallido: una bocanada de volutas que se abre a ras de suelo, y luego la nube que se queda (GasMiedoCliente)
+            for (int i = 0; i < 60; i++) {
+                double an = r.nextDouble() * Math.PI * 2, v = 0.06 + r.nextDouble() * 0.2;
+                l.addParticle(com.miscelanea.tortura.efectos.EfectosRegistro.GAS.get(), p.x, p.y + 0.15 + r.nextDouble() * 0.4, p.z,
+                        Math.cos(an) * v, 0.01 + r.nextDouble() * 0.05, Math.sin(an) * v);
             }
-            for (int i = 0; i < 20; i++)
-                l.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, p.x + r.nextGaussian() * 0.6, p.y + 0.2, p.z + r.nextGaussian() * 0.6, 0, 0.015, 0);
+            for (int i = 0; i < 8; i++)
+                l.addParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, p.x + r.nextGaussian() * 0.5, p.y + 0.2, p.z + r.nextGaussian() * 0.5, 0, 0.012, 0);
+            GasMiedoCliente.nube(p.x, p.y, p.z);
         }
     }
 

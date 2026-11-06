@@ -27,6 +27,11 @@ public final class EfectosClienteMod {
     }
 
     @SubscribeEvent
+    public static void particulas(net.minecraftforge.client.event.RegisterParticleProvidersEvent e) {
+        e.registerSpriteSet(EfectosRegistro.GAS.get(), GasMiedoParticula.Provider::new);
+    }
+
+    @SubscribeEvent
     public static void modelos(ModelEvent.RegisterAdditional e) {
         e.register(CollarLayer.COLLAR);
         e.register(CollarLayer.LUZ);
