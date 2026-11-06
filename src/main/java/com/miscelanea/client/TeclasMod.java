@@ -11,7 +11,7 @@ import org.lwjgl.glfw.GLFW;
 
 /**
  * Teclas configurables de los minijuegos y pantallas del mod (Opciones → Controles → Miscelánea). Los nombres llevan
- * un prefijo ("Minijuegos: ", "Ritmo: ", "Consola: ", "Pip-Boy: ") para que salgan agrupadas, porque la lista de
+ * un prefijo ("Minijuegos: ", "Ritmo: ", "Consola: ") para que salgan agrupadas, porque la lista de
  * controles ordena cada categoría por nombre.
  * <p>
  * Cada grupo tiene su propio contexto de conflicto ({@link Contexto}): solo choca consigo mismo, así que Espacio para
@@ -53,13 +53,6 @@ public final class TeclasMod {
             public boolean isActive() {
                 Screen s = Minecraft.getInstance().screen;
                 return s instanceof com.miscelanea.client.estatica.RuedaPoderes || s instanceof com.miscelanea.client.tortura.aparatos.RuedaHerramientas;
-            }
-        },
-        /** Pantalla del Pip-Boy. */
-        PIPBOY {
-            @Override
-            public boolean isActive() {
-                return Minecraft.getInstance().screen instanceof com.miscelanea.client.pipboy.PipBoyScreen;
             }
         };
 
@@ -105,11 +98,6 @@ public final class TeclasMod {
         }
     }
 
-    // ---------------------------------------------------------------- Pip-Boy
-    public static final KeyMapping PIP_ANTERIOR = k("pipboy_anterior", Contexto.PIPBOY, GLFW.GLFW_KEY_Q);
-    public static final KeyMapping PIP_SIGUIENTE = k("pipboy_siguiente", Contexto.PIPBOY, GLFW.GLFW_KEY_E);
-    public static final KeyMapping PIP_QUITAR = k("pipboy_quitar", Contexto.PIPBOY, GLFW.GLFW_KEY_DELETE);
-
     // ---------------------------------------------------------------- ruedas (los números 1-9 son los de la barra rápida)
     public static final KeyMapping RUEDA_NINGUNO = k("rueda_ninguno", Contexto.RUEDAS, GLFW.GLFW_KEY_0);
 
@@ -122,9 +110,6 @@ public final class TeclasMod {
         e.register(MJ_DER);
         for (KeyMapping m : RITMO) e.register(m);
         for (KeyMapping[] par : CONSOLA) for (KeyMapping m : par) e.register(m);
-        e.register(PIP_ANTERIOR);
-        e.register(PIP_SIGUIENTE);
-        e.register(PIP_QUITAR);
     }
 
     // ---------------------------------------------------------------- utilidades

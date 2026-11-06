@@ -261,6 +261,8 @@ public final class ConfigServidor {
         MESAS_VICTORIAS_CPU = b.comment("Contar en el marcador de victorias las partidas ganadas solo contra la CPU.").define("victorias_contra_cpu", true);
         b.pop();
 
+        com.miscelanea.movil.MovilConfig.definir(b);
+
         SPEC = b.build();
     }
 

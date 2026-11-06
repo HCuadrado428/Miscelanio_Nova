@@ -89,8 +89,6 @@ public final class ModItems {
             () -> new com.miscelanea.hacha.EscudoItem(new Item.Properties().stacksTo(1)));
 
     // ---- Fallout
-    public static final RegistryObject<Item> PIPBOY = ITEMS.register("pipboy",
-            () -> new com.miscelanea.pipboy.PipBoyItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
 
     // ---- Animal Crossing / Stardew: bichos, peces y museo
     public static final RegistryObject<Item> RED = ITEMS.register("red",
