@@ -259,7 +259,7 @@ final class VistasBanco {
         }
 
         private static int ky(int i) {
-            return Y0 + 70 + (i / 3) * 22;
+            return Y0 + 76 + (i / 3) * 22;
         }
 
         @Override

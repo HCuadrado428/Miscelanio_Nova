@@ -508,7 +508,7 @@ final class VistasMinegram {
     static final class Nuevo extends Vista {
         private int foto = -1, esperaCamara = -2;
         private final VistasChat.Campo pie = new VistasChat.Campo(150);
-        private static final int PW = 72, PH = 128;
+        private static final int PW = 54, PH = 96;
 
         @Override
         void abierta() {
