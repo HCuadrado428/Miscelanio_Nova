@@ -55,6 +55,8 @@
 | **OmegaChips** | El banco usa sus monedas en vez de esmeraldas |
 | **JEI** | Consultar recetas |
 | **Incapacitated** | La sala de juegos respeta el estado de "incapacitado" |
+| **WaterFrames** | Sus teles, cuadros y proyectores cuentan como pantallas para la estática |
+| **SecurityCraft** | La estática viaja por las cámaras de seguridad y sale en los monitores |
 
 ---
 
@@ -188,7 +190,7 @@ La **poción de estática** (solo de creativo) te convierte en un ser de ruido d
 | **Tentáculos** | Agarras a alguien y eliges: clic izquierdo lo estampa, clic derecho lo lanza y, si no haces nada, lo atraes |
 | **Pausa** | Congelas al objetivo; todo el daño que reciba le llega de golpe al soltarlo, multiplicado por 1,5 |
 | **Canal perdido** | Metes a la víctima en un vacío de estática y la escupes lejos, mareada |
-| **Meterse en pantallas** | Entras por una tele o recreativa y sales por otra con un fogonazo; tu cara se ve en las pantallas por las que pasas |
+| **Meterse en pantallas** | Entras por una tele, recreativa, pantalla de WaterFrames o cámara de SecurityCraft y sales por otra con un fogonazo; tu cara se ve en las pantallas por las que pasas y en el monitor de quien mire esa cámara |
 | **Imitar voces** | Reproduces voces grabadas desde un bloque y las teles cercanas (con Simple Voice Chat) |
 | **Rebobinar** | Vuelves a donde estabas hace 4 segundos, con la vida de entonces |
 | **Sin señal** | Una zona de ruido donde los enemigos no ven y tú pegas más fuerte |
