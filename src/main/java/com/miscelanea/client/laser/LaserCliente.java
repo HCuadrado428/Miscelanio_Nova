@@ -43,7 +43,7 @@ public final class LaserCliente {
     private static final ResourceLocation DESTELLO = new ResourceLocation(Miscelanea.MOD_ID, "textures/misc/laser_destello.png");
 
     /** Punta del puntero en primera persona (espacio de vista, bloques; x a la derecha, y arriba, z hacia delante) con FOV 70. */
-    private static final float PP_X = 0.47F, PP_Y = -0.44F, PP_Z = 0.94F;
+    private static final float PP_X = 0.39F, PP_Y = -0.37F, PP_Z = 0.96F;
     /** Tercera persona: del hombro a la punta a lo largo del brazo, y separación lateral del eje del brazo (bloques). */
     private static final double TP_LARGO = 0.80, TP_LADO = 0.35, TP_ALTO = 1.29, TP_ALTO_AGACHADO = 0.977;
 
@@ -72,7 +72,7 @@ public final class LaserCliente {
         if (!Laser.apuntando(pl)) return false;
         int i = brazo == HumanoidArm.RIGHT ? 1 : -1;
         float t = pl.tickCount + pt;
-        ps.translate(i * 0.50F + Mth.sin(t * 0.9F) * 0.002F, -0.46F + Mth.sin(t * 1.3F) * 0.002F, -0.70F);
+        ps.translate(i * 0.42F + Mth.sin(t * 0.9F) * 0.002F, -0.38F + Mth.sin(t * 1.3F) * 0.002F, -0.72F);
         ps.mulPose(Axis.XP.rotationDegrees(Mth.sin(t * 0.7F) * 0.25F));
         return true;
     }
