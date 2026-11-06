@@ -750,19 +750,23 @@ public final class MiedoCliente {
         float a = Mth.clamp(0.42F * kk + 0.28F * kk * latido + 0.4F * tension, 0F, 0.95F);
         float esc = 1F + 0.05F * latido * kk + 0.025F * Mth.sin(t * 0.05F);
         int ew = Math.round(w * esc), eh = Math.round(h * esc);
-        g.setColor(1F, 1F, 1F, a);
-        g.blit(VINETA, (w - ew) / 2, (h - eh) / 2, 0, 0, ew, eh, ew, eh);
-        // segunda viñeta, girada, para que "repte"
-        g.pose().pushPose();
-        g.pose().translate(w / 2F, h / 2F, 0);
-        g.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees(180F + Mth.sin(t * 0.021F) * 6F));
-        g.setColor(1F, 1F, 1F, a * 0.45F);
-        int ew2 = Math.round(w * (esc + 0.08F)), eh2 = Math.round(h * (esc + 0.08F));
-        g.blit(VINETA, -ew2 / 2, -eh2 / 2, 0, 0, ew2, eh2, ew2, eh2);
-        g.pose().popPose();
-        // con la vida falsa, los bordes se enrojecen al ritmo del latido
+        // con la vida falsa (o un golpe) los bordes pasan a rojo: el verde se aparta para que no se monten los dos
+        float rojo = MiedoEngano.vidaFalsaVisible() ? 1F : Math.min(1F, MiedoCamara.rojo() * 1.5F);
+        float verde = a * (1F - 0.85F * rojo);
+        if (verde > 0.01F) {
+            g.setColor(0.36F, 0.62F, 0.24F, verde);
+            g.blit(VINETA, (w - ew) / 2, (h - eh) / 2, 0, 0, ew, eh, ew, eh);
+            // segunda viñeta, girada y más floja, para que "repte"
+            g.pose().pushPose();
+            g.pose().translate(w / 2F, h / 2F, 0);
+            g.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees(180F + Mth.sin(t * 0.021F) * 6F));
+            g.setColor(0.24F, 0.46F, 0.16F, verde * 0.3F);
+            int ew2 = Math.round(w * (esc + 0.08F)), eh2 = Math.round(h * (esc + 0.08F));
+            g.blit(VINETA, -ew2 / 2, -eh2 / 2, 0, 0, ew2, eh2, ew2, eh2);
+            g.pose().popPose();
+        }
         if (MiedoEngano.vidaFalsaVisible()) {
-            g.setColor(0.75F, 0.05F, 0.05F, 0.35F + 0.35F * latido);
+            g.setColor(0.7F, 0.06F, 0.05F, 0.3F + 0.3F * latido);
             g.blit(VINETA, (w - ew) / 2, (h - eh) / 2, 0, 0, ew, eh, ew, eh);
         }
         g.setColor(1F, 1F, 1F, 1F);

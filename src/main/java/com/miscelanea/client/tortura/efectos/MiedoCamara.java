@@ -267,6 +267,11 @@ public final class MiedoCamara {
     }
 
     // ------------------------------------------------------------------ HUD (encima de todo)
+    /** Cuánto rojo hay ahora en pantalla (fogonazo y viñeta del golpe), para apartar el verde. */
+    static float rojo() {
+        return Math.max(fogonazo(), golpeShader());
+    }
+
     static boolean hayHud() {
         return fogonazo() > 0.003F || golpeShader() > 0.01F || pesadillaShader() > 0.01F;
     }

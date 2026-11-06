@@ -196,6 +196,7 @@ public class Miscelanea {
             event.accept(com.miscelanea.tortura.efectos.EfectosRegistro.DETONADOR);
             event.accept(com.miscelanea.tortura.efectos.EfectosRegistro.ALICATES);
             event.accept(com.miscelanea.tortura.efectos.EfectosRegistro.GRANADA_MIEDO);
+            event.accept(com.miscelanea.tortura.efectos.EfectosRegistro.CABEZA_ESPANTAPAJAROS);
             event.accept(com.miscelanea.tortura.efectos.EfectosRegistro.DARDO_MIEDO);
             event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.INTERROGATORIO_ITEM);
             event.accept(com.miscelanea.tortura.aparatos.AparatosRegistro.MALETIN);

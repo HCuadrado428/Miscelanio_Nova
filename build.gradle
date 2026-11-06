@@ -123,6 +123,14 @@ tasks.named('processResources', ProcessResources).configure {
     filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
         expand replaceProperties + [project: project]
     }
+
+    // Minecraft no pasa de es_mx (o catalán, gallego, euskera) a es_es sino al inglés: esas variantes llevan el texto en español
+    ['es_mx', 'es_ar', 'es_cl', 'es_ec', 'es_uy', 'es_ve', 'ca_es', 'gl_es', 'eu_es'].each { v ->
+        from('src/main/resources/assets/miscelanea/lang/es_es.json') {
+            into 'assets/miscelanea/lang'
+            rename { "${v}.json" }
+        }
+    }
 }
 
 tasks.named('jar', Jar).configure {

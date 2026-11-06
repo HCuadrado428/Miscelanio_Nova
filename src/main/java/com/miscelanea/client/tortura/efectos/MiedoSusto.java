@@ -132,10 +132,10 @@ public final class MiedoSusto {
     }
 
     // ------------------------------------------------------------------ figuras
-    /** El Espantapájaros: esqueleto wither (alto y flaco) con calabaza tallada y una hoz (azada de hierro). */
+    /** El Espantapájaros: esqueleto wither (alto y flaco) con su saco de arpillera por cabeza y una hoz (azada de hierro). */
     static LivingEntity espantapajaros(ClientLevel l) {
         WitherSkeleton w = new WitherSkeleton(EntityType.WITHER_SKELETON, l);
-        w.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.CARVED_PUMPKIN));
+        w.setItemSlot(EquipmentSlot.HEAD, new ItemStack(com.miscelanea.tortura.efectos.EfectosRegistro.CABEZA_ESPANTAPAJAROS.get()));
         w.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_HOE));
         // brazos por delante (pose de ataque del modelo de esqueleto sin arco)
         w.setAggressive(true);

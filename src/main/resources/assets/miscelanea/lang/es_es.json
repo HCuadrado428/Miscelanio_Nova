@@ -2682,5 +2682,6 @@
   "movil.miscelanea.cajero_no_llevas": "No llevas tanto encima",
   "movil.miscelanea.cajero_sin_saldo": "Saldo insuficiente",
   "movil.miscelanea.cajero_ingresado": "Ingresado: %s",
-  "movil.miscelanea.cajero_retirado": "Retirado: %s"
+  "movil.miscelanea.cajero_retirado": "Retirado: %s",
+  "item.miscelanea.cabeza_espantapajaros": "Saco del Espantapájaros"
 }

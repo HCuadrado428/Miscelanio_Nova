@@ -78,6 +78,9 @@ public final class EfectosRegistro {
                     .sized(0.2F, 0.2F).clientTrackingRange(8).updateInterval(1).build("dardo_miedo"));
 
     // ---- objetos
+    /** Saco del Espantapájaros: su cabeza en los sustos del miedo (y se puede llevar puesto). */
+    public static final RegistryObject<Item> CABEZA_ESPANTAPAJAROS = ITEMS.register("cabeza_espantapajaros",
+            () -> new CabezaEspantapajarosItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> COLLAR = ITEMS.register("collar_explosivo",
             () -> new CollarItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
     public static final RegistryObject<Item> DETONADOR = ITEMS.register("detonador",
