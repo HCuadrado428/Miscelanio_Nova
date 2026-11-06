@@ -34,6 +34,8 @@ public final class PocionesRegistro {
     public static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, Miscelanea.MOD_ID);
     public static final DeferredRegister<Potion> POTIONS = DeferredRegister.create(ForgeRegistries.POTIONS, Miscelanea.MOD_ID);
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, Miscelanea.MOD_ID);
+    public static final DeferredRegister<net.minecraft.core.particles.ParticleType<?>> PARTICLES =
+            DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, Miscelanea.MOD_ID);
 
     // ---- colores (también el de la botella)
     public static final int COLOR_ESPEJISMO = 0x9C6BFF, COLOR_SOMBRA = 0x1C1A26, COLOR_GIGANTE = 0xD98B2B, COLOR_ENANO = 0x6BC26B,
@@ -101,6 +103,11 @@ public final class PocionesRegistro {
     public static final RegistryObject<SoundEvent> SIRENA = sonido("pociones_sirena");
     public static final RegistryObject<SoundEvent> PISOTON = sonido("pociones_pisoton");
 
+    // ---- partículas
+    /** Voluta de humo negro que suelta la sombra (se deshace al subir). */
+    public static final RegistryObject<net.minecraft.core.particles.SimpleParticleType> HUMO_SOMBRA =
+            PARTICLES.register("sombra_humo", () -> new net.minecraft.core.particles.SimpleParticleType(false));
+
     private static RegistryObject<SoundEvent> sonido(String n) {
         return SOUNDS.register(n, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Miscelanea.MOD_ID, n)));
     }
@@ -109,6 +116,7 @@ public final class PocionesRegistro {
         EFFECTS.register(modBus);
         POTIONS.register(modBus);
         SOUNDS.register(modBus);
+        PARTICLES.register(modBus);
     }
 
     /** Efecto sin lógica propia en el tick: todo lo hacen los eventos (PocionesEventos) y el cliente. */

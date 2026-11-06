@@ -151,10 +151,8 @@ public final class NieblaCliente {
             for (int x = -T; x < w + T; x += T)
                 g.blit(GRANO, x + ox - T, y + oy - T, 0, 0, T, T, T, T);
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-        // un velo gris muy leve que oscurece el centro menos que los bordes
-        int a = Math.round(f * 40);
-        g.fillGradient(0, 0, w, h / 3, (a << 24) | 0x404040, 0x00404040);
-        g.fillGradient(0, h - h / 3, w, h, 0x00404040, (a << 24) | 0x404040);
         RenderSystem.disableBlend();
+        // una viñeta gris ceniza: los bordes se pierden en la niebla
+        Vineta.dibujar(g, w, h, 0x4A4846, 0.5F * f, 1.05F);
     }
 }

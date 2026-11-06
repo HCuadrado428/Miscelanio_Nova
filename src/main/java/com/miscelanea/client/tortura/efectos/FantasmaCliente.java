@@ -11,7 +11,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -43,7 +42,7 @@ import java.util.Map;
  *       borde de la pantalla en esa misma dirección (con el FOV real de este fotograma y la proporción de la
  *       ventana). Solo asoma si el ángulo queda entre el 75 % y el 105 % de ese borde: el rabillo del ojo.</li>
  *   <li>Al mirarlo más de frente (o perderlo del todo) se desvanece en ~3 ticks con unas partículas de alma y
- *       ceniza donde estaba; al volver al borde reaparece con un soplo (como mucho uno cada 4 s por fantasma).</li>
+ *       ceniza donde estaba; al volver al borde reaparece en silencio (ningún sonido lo delata).</li>
  *   <li>Mientras se ve va medio transparente y pálido (ver {@code LivingEntityRendererMixin}): sin capas (armadura,
  *       objetos, flechas) y con el modelo al 80 % de opacidad por el fundido. Detrás de la cámara nunca se ve.</li>
  *   <li>Uno mismo se ve en tercera persona como un fantasma tenue (30 %), para saber que está activo; en el HUD, el
@@ -59,9 +58,9 @@ public final class FantasmaCliente {
 
     /** Fracción del borde de la pantalla entre la que asoma (rabillo del ojo). */
     public static final float BORDE_INTERIOR = 0.75F, BORDE_EXTERIOR = 1.05F;
-    /** Ticks del fundido y margen entre dos soplos del mismo fantasma. */
+    /** Paso del fundido por tick y margen entre dos nubes de partículas del mismo fantasma. */
     private static final float PASO_FUNDIDO = 1F / 3F;
-    private static final int MARGEN_SOPLO = 80, MARGEN_PARTICULAS = 20;
+    private static final int MARGEN_PARTICULAS = 20;
     /** Opacidad en el rabillo del ojo y la de uno mismo en tercera persona. */
     public static final float ALFA_RABILLO = 0.8F, ALFA_PROPIO = 0.3F;
 
@@ -69,7 +68,7 @@ public final class FantasmaCliente {
     public static final class Estado {
         float alfa, alfaAnt;
         boolean asoma;
-        long ultimoSoplo = -MARGEN_SOPLO, ultimasParticulas = -MARGEN_PARTICULAS;
+        long ultimasParticulas = -MARGEN_PARTICULAS;
     }
 
     private static final Map<Integer, Estado> FANTASMAS = new HashMap<>();
@@ -159,13 +158,7 @@ public final class FantasmaCliente {
             boolean asoma = yo.isSpectator() || enRabillo(cam, le);
             if (asoma != s.asoma) {
                 s.asoma = asoma;
-                if (asoma) {
-                    if (reloj - s.ultimoSoplo >= MARGEN_SOPLO) {
-                        s.ultimoSoplo = reloj;
-                        level.playLocalSound(le.getX(), le.getEyeY(), le.getZ(), EfectosRegistro.FANTASMA_ALIENTO.get(), SoundSource.PLAYERS,
-                                0.35F, 0.85F + level.getRandom().nextFloat() * 0.3F, false);
-                    }
-                } else if (s.alfa > 0 && reloj - s.ultimasParticulas >= MARGEN_PARTICULAS) {
+                if (!asoma && s.alfa > 0 && reloj - s.ultimasParticulas >= MARGEN_PARTICULAS) {
                     s.ultimasParticulas = reloj;
                     particulas(level, le);
                 }

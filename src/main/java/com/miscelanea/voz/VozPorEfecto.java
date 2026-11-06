@@ -19,7 +19,8 @@ import java.util.Map;
  * ({@code VozPorEfecto.poner(new ResourceLocation("miscelanea", "mi_efecto"), "mi_voz")}) y registrar el
  * procesador de esa voz en {@code Voces}. Un efecto puede tener varias voces separadas por comas ("grave,amortiguado").
  * <p>
- * Los ids de otras ramas (gigante, enano, sombra, fantasma, sed_sangre, niebla) ya están apuntados: si el efecto no
+ * Los ids de otras ramas (gigante, enano, sombra, sed_sangre, niebla) ya están apuntados; el efecto
+ * fantasma NO cambia la voz (la voz "fantasma" sigue existiendo para ponerla a mano con /miscelanea voz): si el efecto no
  * existe en el juego, la entrada simplemente no se usa.
  */
 public final class VozPorEfecto {
@@ -41,7 +42,6 @@ public final class VozPorEfecto {
         delMod("gigante", GRAVE);
         delMod("enano", AGUDO);
         delMod("sombra", SUSURRO);
-        delMod("fantasma", FANTASMA);
         delMod("sed_sangre", GUTURAL);
         delMod("niebla", AMORTIGUADO);
         // el hombre de estática: radio rota

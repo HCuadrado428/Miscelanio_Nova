@@ -112,8 +112,6 @@ public final class EfectosRegistro {
     public static final RegistryObject<SoundEvent> MIEDO_RODEA = sonido("miedo_rodea");
     public static final RegistryObject<SoundEvent> MIEDO_DISOLVER = sonido("miedo_disolver");
     public static final RegistryObject<SoundEvent> MIEDO_INVERSION = sonido("miedo_inversion");
-    /** Fantasma: el soplo "hh" cuando asoma por el rabillo del ojo (se dispara en el cliente). */
-    public static final RegistryObject<SoundEvent> FANTASMA_ALIENTO = sonido("fantasma_aliento");
 
     private static RegistryObject<SoundEvent> sonido(String n) {
         return SOUNDS.register(n, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Miscelanea.MOD_ID, n)));

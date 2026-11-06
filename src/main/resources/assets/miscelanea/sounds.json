@@ -2049,15 +2049,6 @@
     ],
     "subtitle": "subtitles.miscelanea.miedo_pitido"
   },
-  "fantasma_aliento": {
-    "sounds": [
-      {
-        "name": "miscelanea:fantasma_aliento",
-        "volume": 0.6
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.fantasma_aliento"
-  },
   "pociones_palmada": {
     "sounds": [
       {
