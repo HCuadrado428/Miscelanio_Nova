@@ -49,6 +49,7 @@ public class Miscelanea {
         com.miscelanea.bromas.BromasRegistro.registrar(modBus);
         com.miscelanea.estatica.EstaticaRegistro.registrar(modBus);
         com.miscelanea.laser.LaserRegistro.registrar(modBus);
+        com.miscelanea.movil.MovilRegistro.registrar(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::creativeTabs);
@@ -232,7 +233,7 @@ public class Miscelanea {
         if (event.getTabKey() == ModTabs.VARIOS.getKey()) {
             event.accept(ModItems.ASPIRAFANTASMAS);
             event.accept(ModItems.MOCHILA);
-            event.accept(ModItems.PIPBOY);
+            event.accept(com.miscelanea.movil.MovilRegistro.MOVIL);
             event.accept(ModItems.OCARINA);
             event.accept(ModItems.RED);
             event.accept(ModItems.CANA);

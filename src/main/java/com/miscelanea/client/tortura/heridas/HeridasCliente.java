@@ -278,7 +278,7 @@ public final class HeridasCliente {
 
     private static final int VERDE = 0x1AFF80, VERDE_OSCURO = 0x0B6E3A, AMBAR = 0xFFC23A, ROJO = 0xFF3A2E;
 
-    /** Silueta del cuerpo abajo a la izquierda, como el estado de las extremidades del Pip-Boy. */
+    /** Silueta del cuerpo abajo a la izquierda, con el estado de cada extremidad. */
     public static void silueta(ForgeGui gui, GuiGraphics g, float partial, int w, int h) {
         Minecraft mc = Minecraft.getInstance();
         HeridasDatos d = mias();

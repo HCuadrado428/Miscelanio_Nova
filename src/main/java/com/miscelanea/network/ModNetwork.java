@@ -117,21 +117,6 @@ public final class ModNetwork {
                 .decoder(com.miscelanea.hacha.PosturaOtroPacket::new)
                 .consumerMainThread(com.miscelanea.hacha.PosturaOtroPacket::handle)
                 .add();
-        CHANNEL.messageBuilder(com.miscelanea.pipboy.PipBoyEstadoPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(com.miscelanea.pipboy.PipBoyEstadoPacket::encode)
-                .decoder(com.miscelanea.pipboy.PipBoyEstadoPacket::new)
-                .consumerMainThread(com.miscelanea.pipboy.PipBoyEstadoPacket::handle)
-                .add();
-        CHANNEL.messageBuilder(com.miscelanea.pipboy.PipBoyDatosPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(com.miscelanea.pipboy.PipBoyDatosPacket::encode)
-                .decoder(com.miscelanea.pipboy.PipBoyDatosPacket::new)
-                .consumerMainThread(com.miscelanea.pipboy.PipBoyDatosPacket::handle)
-                .add();
-        CHANNEL.messageBuilder(com.miscelanea.pipboy.PipBoyAccionPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(com.miscelanea.pipboy.PipBoyAccionPacket::encode)
-                .decoder(com.miscelanea.pipboy.PipBoyAccionPacket::new)
-                .consumerMainThread(com.miscelanea.pipboy.PipBoyAccionPacket::handle)
-                .add();
         CHANNEL.messageBuilder(com.miscelanea.bichos.ColeccionPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(com.miscelanea.bichos.ColeccionPacket::encode)
                 .decoder(com.miscelanea.bichos.ColeccionPacket::new)

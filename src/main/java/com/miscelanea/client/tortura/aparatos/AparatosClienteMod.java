@@ -24,7 +24,7 @@ public final class AparatosClienteMod {
 
     @SubscribeEvent
     public static void setup(FMLClientSetupEvent e) {
-        // por encima del lazo y los grilletes, por debajo de la ejecución de la trampa (1300 lo usa el Pip-Boy)
+        // por encima del lazo y los grilletes, por debajo de la ejecución de la trampa (1300 lo usa el móvil)
         dev.kosmx.playerAnim.minecraftApi.PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(
                 new ResourceLocation(Miscelanea.MOD_ID, "aparato"), 1310, AnimAparato::new);
         e.enqueueWork(() -> ItemProperties.register(AparatosRegistro.HIERRO_MARCAR.get(), new ResourceLocation(Miscelanea.MOD_ID, "calor"),

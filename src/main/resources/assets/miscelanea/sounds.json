@@ -344,63 +344,6 @@
     ],
     "subtitle": "subtitles.miscelanea.punetazo"
   },
-  "radio_0": {
-    "sounds": [
-      {
-        "name": "miscelanea:radio_0",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.radio"
-  },
-  "radio_1": {
-    "sounds": [
-      {
-        "name": "miscelanea:radio_1",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.radio"
-  },
-  "radio_2": {
-    "sounds": [
-      {
-        "name": "miscelanea:radio_2",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.radio"
-  },
-  "radio_estatica": {
-    "sounds": [
-      "miscelanea:radio_estatica"
-    ],
-    "subtitle": "subtitles.miscelanea.radio_estatica"
-  },
-  "pipboy_abrir": {
-    "sounds": [
-      "miscelanea:pipboy_abrir"
-    ],
-    "subtitle": "subtitles.miscelanea.pipboy_abrir"
-  },
-  "pipboy_clic": {
-    "sounds": [
-      "miscelanea:pipboy_clic"
-    ],
-    "subtitle": "subtitles.miscelanea.pipboy_clic"
-  },
-  "pipboy_encender": {
-    "sounds": [
-      "miscelanea:pipboy_encender"
-    ],
-    "subtitle": "subtitles.miscelanea.pipboy_encender"
-  },
-  "pipboy_poner": {
-    "sounds": [
-      "miscelanea:pipboy_poner"
-    ],
-    "subtitle": "subtitles.miscelanea.pipboy_poner"
-  },
   "gb_mover": {
     "sounds": [
       "miscelanea:gb_mover"
@@ -2495,5 +2438,65 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.estatica_imitacion"
+  },
+  "movil_tono_0": {
+    "sounds": [
+      "miscelanea:movil_tono_0"
+    ],
+    "subtitle": "subtitles.miscelanea.movil_tono"
+  },
+  "movil_tono_1": {
+    "sounds": [
+      "miscelanea:movil_tono_1"
+    ],
+    "subtitle": "subtitles.miscelanea.movil_tono"
+  },
+  "movil_tono_2": {
+    "sounds": [
+      "miscelanea:movil_tono_2"
+    ],
+    "subtitle": "subtitles.miscelanea.movil_tono"
+  },
+  "movil_vibrar": {
+    "sounds": [
+      "miscelanea:movil_vibrar"
+    ],
+    "subtitle": "subtitles.miscelanea.movil_vibrar"
+  },
+  "movil_mensaje": {
+    "sounds": [
+      "miscelanea:movil_mensaje"
+    ],
+    "subtitle": "subtitles.miscelanea.movil_mensaje"
+  },
+  "movil_obturador": {
+    "sounds": [
+      "miscelanea:movil_obturador"
+    ],
+    "subtitle": "subtitles.miscelanea.movil_obturador"
+  },
+  "movil_clic": {
+    "sounds": [
+      "miscelanea:movil_clic"
+    ],
+    "subtitle": "subtitles.miscelanea.movil_clic"
+  },
+  "movil_espera": {
+    "sounds": [
+      "miscelanea:movil_espera"
+    ],
+    "subtitle": "subtitles.miscelanea.movil_espera"
+  },
+  "movil_colgar": {
+    "sounds": [
+      "miscelanea:movil_colgar"
+    ],
+    "subtitle": "subtitles.miscelanea.movil_colgar"
+  },
+  "movil_alarma": {
+    "sounds": [
+      "miscelanea:movil_alarma"
+    ],
+    "subtitle": "subtitles.miscelanea.movil_alarma"
   }
 }

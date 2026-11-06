@@ -344,6 +344,7 @@ public final class ConfigServidor {
         LASER_MOBS = b.comment("Los mobs cerca del punto se quedan mirándolo.").define("mobs_miran", true);
         LASER_DESLUMBRAR = b.comment("Apuntar a los ojos de un jugador que te mira le deslumbra un momento (solo un destello en su pantalla).").define("deslumbrar", true);
         b.pop();
+        com.miscelanea.movil.MovilConfig.definir(b);
 
         SPEC = b.build();
     }
