@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["CGC", "CRC", "CAC"],
+  "key": {
+    "C": {"item": "minecraft:copper_ingot"},
+    "G": {"item": "minecraft:glass_pane"},
+    "R": {"item": "minecraft:redstone"},
+    "A": {"item": "minecraft:amethyst_shard"}
+  },
+  "result": {"item": "miscelanea:movil"}
+}

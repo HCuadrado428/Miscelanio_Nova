@@ -13,7 +13,7 @@ final class VistasApps {
 
     static final int FONDOS = 4;
 
-    static ResourceLocation fondo(int i) {
+    static ResourceLocation fondoTex(int i) {
         return new ResourceLocation(Miscelanea.MOD_ID, "textures/gui/movil/fondo_" + Math.floorMod(i, FONDOS) + ".png");
     }
 
@@ -50,7 +50,7 @@ final class VistasApps {
 
         @Override
         void dibujar(GuiGraphics g, int mx, int my, float pt) {
-            g.blit(fondo(MovilCliente.fondo), 0, 0, 0, 0, W, H, W, H);
+            g.blit(fondoTex(MovilCliente.fondo), 0, 0, 0, 0, W, H, W, H);
             // reloj y fecha
             Ui.grande(g, MovilCliente.hora(), W / 2, 22, 2, 0xFFFFFFFF);
             var l = Minecraft.getInstance().level;
@@ -218,7 +218,7 @@ final class VistasApps {
             for (int i = 0; i < FONDOS; i++) {
                 int fx = 9 + i * 29;
                 if (i == MovilCliente.fondo) Ui.redondo(g, fx - 2, y - 2, 28, 49, 4, Ui.ACENTO);
-                g.blit(fondo(i), fx, y, 24, 45, 0, 0, W, H, W, H);
+                g.blit(fondoTex(i), fx, y, 24, 45, 0, 0, W, H, W, H);
             }
             y += 52;
             Ui.rect(g, 8, y, W - 16, 1, Ui.LINEA);

@@ -148,7 +148,7 @@ public final class MovilCaptura {
                 b.get(arr);
                 out.write(arr, 0, size);
             })) {
-                if (!STBImageWrite.stbi_write_jpg_to_func(cb, 0L, w, h, 3, px, calidad)) return null;
+                if (STBImageWrite.stbi_write_jpg_to_func(cb, 0L, w, h, 3, px, calidad) == 0) return null;
             }
             return out.toByteArray();
         } catch (Throwable t) {
