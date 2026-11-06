@@ -64,9 +64,7 @@ public final class PantallaCliente {
 
     private static Direction cara(@Nullable net.minecraft.world.level.Level l, BlockPos bp) {
         if (l == null) return Direction.NORTH;
-        var s = l.getBlockState(bp);
-        return s.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING)
-                ? s.getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING) : Direction.NORTH;
+        return com.miscelanea.estatica.PantallasServidor.frente(l.getBlockState(bp));
     }
 
     public static boolean dentro() {
@@ -131,7 +129,15 @@ public final class PantallaCliente {
         if (!dentro() || entity != mc.player || SALIDAS.isEmpty()) return null;
         BlockPos bp = SALIDAS.get(Mth.clamp(sel, 0, SALIDAS.size() - 1));
         Direction f = CARAS.get(Mth.clamp(sel, 0, CARAS.size() - 1));
-        Vec3 c = Vec3.atBottomCenterOf(bp).add(f.getStepX() * 0.62, 1.25, f.getStepZ() * 0.62);
+        var st = mc.level == null ? null : mc.level.getBlockState(bp);
+        // las recreativas (dos bloques) tienen la pantalla arriba; teles, cuadros y cámaras, a media altura
+        double alto = st != null && st.getBlock() instanceof com.miscelanea.arcade.RecreativaBlock ? 1.25 : 0.5;
+        Vec3 c = Vec3.atBottomCenterOf(bp).add(f.getStepX() * 0.62, alto + f.getStepY() * 0.62, f.getStepZ() * 0.62);
+        if (f.getAxis().isVertical()) {
+            // un cuadro en el suelo o una cámara en el techo: se mira alrededor libremente, hacia fuera
+            float pitch = f == Direction.DOWN ? Mth.clamp(mc.player.getViewXRot(pt), 20F, 90F) : Mth.clamp(mc.player.getViewXRot(pt), -90F, -20F);
+            return new double[]{c.x, c.y, c.z, mc.player.getViewYRot(pt), pitch};
+        }
         // la cabeza se puede mover un poco (mirar alrededor desde la pantalla)
         float dyaw = Mth.clamp(Mth.wrapDegrees(mc.player.getViewYRot(pt) - f.toYRot()), -55F, 55F);
         float pitch = Mth.clamp(mc.player.getViewXRot(pt), -40F, 40F);

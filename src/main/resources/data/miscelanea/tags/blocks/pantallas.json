@@ -6,6 +6,34 @@
     "miscelanea:cabina_carreras",
     "miscelanea:recreativa_pistola",
     "miscelanea:mesa_coctel",
-    "miscelanea:tragaperras"
+    "miscelanea:tragaperras",
+    {
+      "id": "waterframes:frame",
+      "required": false
+    },
+    {
+      "id": "waterframes:tv",
+      "required": false
+    },
+    {
+      "id": "waterframes:big_tv",
+      "required": false
+    },
+    {
+      "id": "waterframes:tv_box",
+      "required": false
+    },
+    {
+      "id": "waterframes:projector",
+      "required": false
+    },
+    {
+      "id": "waterframes:golden_projector",
+      "required": false
+    },
+    {
+      "id": "securitycraft:security_camera",
+      "required": false
+    }
   ]
 }

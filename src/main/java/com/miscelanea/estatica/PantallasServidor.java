@@ -52,8 +52,33 @@ public final class PantallasServidor {
     }
 
     public static Direction cara(ServerLevel l, BlockPos pos) {
-        BlockState s = l.getBlockState(pos);
-        return s.hasProperty(BlockStateProperties.HORIZONTAL_FACING) ? s.getValue(BlockStateProperties.HORIZONTAL_FACING) : Direction.NORTH;
+        return frente(l.getBlockState(pos));
+    }
+
+    /**
+     * Hacia dónde mira la pantalla: su propiedad "facing", sea la de vanilla o la de otro mod (WaterFrames, las cámaras de
+     * SecurityCraft...). Puede ser arriba o abajo (un cuadro en el suelo, una cámara en el techo).
+     */
+    public static Direction frente(BlockState s) {
+        if (s.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) return s.getValue(BlockStateProperties.HORIZONTAL_FACING);
+        for (net.minecraft.world.level.block.state.properties.Property<?> pr : s.getProperties())
+            if (pr instanceof net.minecraft.world.level.block.state.properties.DirectionProperty dp && pr.getName().equals("facing")) return s.getValue(dp);
+        return Direction.NORTH;
+    }
+
+    /** También a quien esté mirando por una cámara cercana con el monitor de SecurityCraft, aunque su cuerpo esté lejos. */
+    private static void aCamaras(ServerLevel l, BlockPos bp, Object msg) {
+        for (ServerPlayer o : l.players()) {
+            var cam = o.getCamera();
+            if (cam != o && cam.distanceToSqr(bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5) < 9
+                    && o.distanceToSqr(bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5) > 64 * 64) EstaticaRed.a(o, msg);
+        }
+    }
+
+    /** ¿Es una cámara de seguridad (SecurityCraft)? Se viaja por ellas igual, pero no tienen pantalla donde salir la cara. */
+    public static boolean esCamara(BlockState s) {
+        var id = net.minecraftforge.registries.ForgeRegistries.BLOCKS.getKey(s.getBlock());
+        return id != null && id.getNamespace().equals("securitycraft") && id.getPath().contains("camera");
     }
 
     /** Pantallas con entidad de bloque en el radio (ordenadas por distancia). */
@@ -112,6 +137,7 @@ public final class PantallasServidor {
         // se avisa cerca de la nueva (y de la vieja, que vuelve a la normalidad con un golpe de nieve)
         EstaticaRed.CaraPantalla msg = new EstaticaRed.CaraPantalla(p.getId(), p.getUUID(), Estatica.semilla(p), bp, true);
         EstaticaRed.cerca(l, bp.getX() + 0.5, bp.getY() + 1, bp.getZ() + 0.5, 64, msg);
+        aCamaras(l, bp, msg);
         if (ant != null && ant.distSqr(bp) > 48 * 48) EstaticaRed.cerca(l, ant.getX() + 0.5, ant.getY() + 1, ant.getZ() + 0.5, 64, msg);
         Estatica.sonido(l, Vec3.atCenterOf(bp), EstaticaRegistro.CRUJIDO.get(), 0.6F, 0.7F);
     }
@@ -119,16 +145,18 @@ public final class PantallasServidor {
     private static void quitarCara(ServerPlayer p) {
         BlockPos ant = CARA.remove(p.getUUID());
         if (ant == null) return;
-        EstaticaRed.cerca(p.serverLevel(), ant.getX() + 0.5, ant.getY() + 1, ant.getZ() + 0.5, 96,
-                new EstaticaRed.CaraPantalla(p.getId(), p.getUUID(), Estatica.semilla(p), ant, false));
+        EstaticaRed.CaraPantalla fin = new EstaticaRed.CaraPantalla(p.getId(), p.getUUID(), Estatica.semilla(p), ant, false);
+        EstaticaRed.cerca(p.serverLevel(), ant.getX() + 0.5, ant.getY() + 1, ant.getZ() + 0.5, 96, fin);
+        aCamaras(p.serverLevel(), ant, fin);
     }
 
     /** A quien llega cerca: las caras que ya están en las pantallas (se repite cada pocos segundos). */
     static void repasarCaras(ServerPlayer p) {
         BlockPos bp = CARA.get(p.getUUID());
         if (bp == null) return;
-        EstaticaRed.cerca(p.serverLevel(), bp.getX() + 0.5, bp.getY() + 1, bp.getZ() + 0.5, 64,
-                new EstaticaRed.CaraPantalla(p.getId(), p.getUUID(), Estatica.semilla(p), bp, true));
+        EstaticaRed.CaraPantalla msg = new EstaticaRed.CaraPantalla(p.getId(), p.getUUID(), Estatica.semilla(p), bp, true);
+        EstaticaRed.cerca(p.serverLevel(), bp.getX() + 0.5, bp.getY() + 1, bp.getZ() + 0.5, 64, msg);
+        aCamaras(p.serverLevel(), bp, msg);
     }
 
     /** Sale por el destino 'indice' (o por la entrada si es -1 o no vale). */
@@ -146,7 +174,7 @@ public final class PantallasServidor {
         }
         float yaw = d.yaw;
         if (dest == null) dest = d.fijo;
-        else yaw = cara(l, bp).toYRot();
+        else if (cara(l, bp).getAxis().isHorizontal()) yaw = cara(l, bp).toYRot();
         Estatica.mover(p, dest, yaw, 0F);
         p.setDeltaMovement(Vec3.ZERO);
         p.hurtMarked = true;
@@ -173,7 +201,7 @@ public final class PantallasServidor {
     private static Vec3 salida(ServerLevel l, ServerPlayer p, BlockPos bp) {
         Direction f = cara(l, bp);
         BlockPos delante = bp.relative(f);
-        for (int dy = 0; dy <= 1; dy++) {
+        for (int dy : f == Direction.DOWN ? new int[]{-1, 0} : new int[]{0, 1, -1}) {
             Vec3 q = new Vec3(delante.getX() + 0.5, delante.getY() + dy, delante.getZ() + 0.5);
             if (Estatica.cabe(l, p, q)) return q;
         }

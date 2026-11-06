@@ -184,6 +184,7 @@ public final class EstaticaHud {
             }
             if (corrupto() && !mc.options.hideGui) barraCorrupta(mc, g, w, h, t);
             pantallazos(mc, g, w, h, t, pt);
+            CaraPantalla.enMonitor(g, w, h, t, pt);
         }
         RenderSystem.depthMask(true);
         RenderSystem.disableBlend();

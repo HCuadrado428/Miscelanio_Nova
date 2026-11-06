@@ -123,6 +123,33 @@ public final class CaraPantalla {
         }
     }
 
+    /**
+     * Quien mira una cámara de seguridad de SecurityCraft (con el monitor) mientras el de estática está dentro de ella ve
+     * su cara llenando la pantalla, entre nieve.
+     */
+    public static void enMonitor(net.minecraft.client.gui.GuiGraphics g, int w, int h, long t, float pt) {
+        var mc = Minecraft.getInstance();
+        var ce = mc.getCameraEntity();
+        if (CARAS.isEmpty() || ce == null || ce == mc.player || mc.level == null) return;
+        var id = net.minecraftforge.registries.ForgeRegistries.ENTITY_TYPES.getKey(ce.getType());
+        if (id == null || !id.getNamespace().equals("securitycraft")) return;
+        for (Cara c : CARAS.values()) {
+            if (c.rl == null || c.pos.distToCenterSqr(ce.position()) > 1.5 * 1.5) continue;
+            float edad = t - c.desde + pt;
+            float k = net.minecraft.util.Mth.clamp(edad / 6F, 0F, 1F);
+            EstaticaHud.ruido(g, w, h, 0.9F - 0.5F * k);
+            // la cara, a toda la altura, con saltos de imagen de vez en cuando
+            int alto = h, ancho = Math.round(h * c.w / (float) c.h);
+            int dx = Mascara.hash(c.id, (int) (t / 3), 3, 7) < 0.12F ? (int) ((Mascara.hash(c.id, (int) t, 4, 7) - 0.5F) * 40) : 0;
+            com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+            g.setColor(1F, 1F, 1F, 0.85F * k * (Mascara.hash(c.id, (int) t, 5, 7) < 0.06F ? 0.3F : 1F));
+            g.blit(c.rl, (w - ancho) / 2 + dx, 0, ancho, alto, 0, 0, c.w, c.h, c.w, c.h);
+            g.setColor(1F, 1F, 1F, 1F);
+            EstaticaHud.vhs(g, w, h, 0.7F, t, pt);
+            return;
+        }
+    }
+
     /** ¿Se está viendo una cara en esta pantalla? (para quien quiera esconder su imagen normal). */
     public static boolean ocupada(BlockPos pos) {
         for (Cara c : CARAS.values()) if (c.pos.equals(pos)) return true;
@@ -161,13 +188,29 @@ public final class CaraPantalla {
             forma[0] = 10.8F / 6F;
             return new Matrix4f(-10.8F * s, 0, 0, 0, 0, -6F * s, 0, 0, 0, 0, -0.05F * s, 0, 13.4F * s, 23.8F * s, 0.5F * s, 1);
         }
+        // WaterFrames: la imagen de cada uno de sus modelos (tamaño por defecto)
+        var id = net.minecraftforge.registries.ForgeRegistries.BLOCKS.getKey(st.getBlock());
+        if (id != null && id.getNamespace().equals("waterframes")) {
+            if (!com.miscelanea.estatica.PantallasServidor.frente(st).getAxis().isHorizontal()) return null;
+            float[] r = switch (id.getPath()) {
+                case "frame" -> new float[]{16, 16, 16, 16, 15.4F};
+                case "tv" -> new float[]{24, 19, 32, 21, 9.6F};
+                case "big_tv" -> new float[]{30, 32, 44, 30, 1.9F};
+                case "tv_box" -> new float[]{15, 14, 14, 8, -0.1F};
+                default -> null;        // los proyectores pintan en otra pared
+            };
+            if (r == null) return null;
+            forma[0] = r[2] / r[3];
+            return new Matrix4f(-r[2] * s, 0, 0, 0, 0, -r[3] * s, 0, 0, 0, 0, -0.05F * s, 0, r[0] * s, r[1] * s, r[4] * s, 1);
+        }
+        if (com.miscelanea.estatica.PantallasServidor.esCamara(st)) return null;
         // cualquier otra pantalla de la etiqueta: un rectángulo en su cara de delante
         forma[0] = 4F / 3F;
         return new Matrix4f(-10F * s, 0, 0, 0, 0, -7.5F * s, 0, 0, 0, 0, -0.05F * s, 0, 13F * s, 13.5F * s, -0.1F * s, 1);
     }
 
     private static Direction cara(BlockState st) {
-        return st.hasProperty(BlockStateProperties.HORIZONTAL_FACING) ? st.getValue(BlockStateProperties.HORIZONTAL_FACING) : Direction.NORTH;
+        return com.miscelanea.estatica.PantallasServidor.frente(st);
     }
 
     // ------------------------------------------------------------------ la cara de la piel (8x8, con la capa de fuera)
@@ -330,10 +373,13 @@ public final class CaraPantalla {
                 it.remove();
                 continue;
             }
-            if (mc.player != null && mc.player.distanceToSqr(Vec3.atCenterOf(c.pos)) > 96 * 96) continue;
+            var ojo = mc.getCameraEntity() != null ? mc.getCameraEntity() : mc.player;
+            if (ojo != null && ojo.distanceToSqr(Vec3.atCenterOf(c.pos)) > 96 * 96) continue;
             BlockState st = mc.level.getBlockState(c.pos);
             float[] forma = {4F / 3F};
-            if (plano(st, forma) == null) continue;
+            boolean camara = com.miscelanea.estatica.PantallasServidor.esCamara(st);
+            if (camara) forma[0] = 16F / 9F;      // la cara solo se ve por el monitor de cámaras
+            else if (plano(st, forma) == null) continue;
             int h = Math.max(16, Math.round(ANCHO / forma[0]));
             if (c.tex == null || c.w != ANCHO || c.h != h) {
                 c.cerrar();
