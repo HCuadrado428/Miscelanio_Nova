@@ -188,7 +188,7 @@ public class CajeroScreen extends Screen {
 
     // ------------------------------------------------------------------ entrada
     private void clic() {
-        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.6F, 0.35F));
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1.6F, 0.35F));
     }
 
     private void teclear(String k) {
