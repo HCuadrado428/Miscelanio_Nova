@@ -20,7 +20,7 @@ import java.util.List;
  * botones rápidos por moneda y ingresar / retirar (sin el límite del móvil). Todo lo comprueba el servidor.
  */
 public class CajeroScreen extends Screen {
-    private static final int PW = 236, PH = 196;
+    private static final int PW = 236, PH = 218;
     private static final int MARCO = 0xFF2B3138, MARCO2 = 0xFF1B1F24, PANT = 0xFF0B2A1E, PANT2 = 0xFF0F3A29, VERDE = 0xFF34E08A,
             VERDE2 = 0xFF9DD9B8, TECLA = 0xFF3A424B, TECLA_SO = 0xFF4C5661, ROJO = 0xFFFF6B6B, AMARILLO = 0xFFE8C66A;
     private static final String[] TECLAS = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "C", "0", "<"};
@@ -90,7 +90,8 @@ public class CajeroScreen extends Screen {
 
     private static final int KW = 28, KH = 18;
     /** Botones de abajo: ingresar, retirar, todo (ingresar), todo (retirar). */
-    private static final int[][] BOT = {{10, 156, 52, 18}, {66, 156, 52, 18}, {10, 177, 52, 12}, {66, 177, 52, 12}};
+    /** Botones: ingresar, retirar, todo (ingresar), todo (retirar), 1 ficha, 10 fichas. */
+    private static final int[][] BOT = {{10, 156, 52, 18}, {66, 156, 52, 18}, {10, 177, 52, 12}, {66, 177, 52, 12}, {10, 198, 108, 14}, {122, 198, 104, 14}};
 
     // ------------------------------------------------------------------ dibujo
     @Override
@@ -164,13 +165,17 @@ public class CajeroScreen extends Screen {
         }
         g.drawString(font, t("cajero_rapido"), x + 132, y + 180 + 2, 0xFF8A949E, false);
         // botones
-        String[] bt = {t("banco_ingresar"), t("banco_retirar"), t("cajero_todo_in"), t("cajero_todo_out")};
-        for (int i = 0; i < 4; i++) {
+        int pf = BancoCliente.precioFicha;
+        String[] bt = {t("banco_ingresar"), t("banco_retirar"), t("cajero_todo_in"), t("cajero_todo_out"),
+                t("cajero_ficha", 1, miles(pf)), t("cajero_fichas", 10, miles(10L * pf))};
+        g.fill(x + 6, y + 194, x + PW - 6, y + 195, 0xFF1B1F24);
+        for (int i = 0; i < BOT.length; i++) {
             int[] b = BOT[i];
             boolean so = rx >= b[0] && rx < b[0] + b[2] && ry >= b[1] && ry < b[1] + b[3];
-            int fondo = i == 0 ? (so ? 0xFF22B868 : 0xFF17A05A) : i == 1 ? (so ? 0xFFE0A02A : 0xFFC8881A) : (so ? TECLA_SO : TECLA);
+            int fondo = i == 0 ? (so ? 0xFF22B868 : 0xFF17A05A) : i == 1 ? (so ? 0xFFE0A02A : 0xFFC8881A)
+                    : i >= 4 ? (so ? 0xFF5A4A9A : 0xFF483A82) : (so ? TECLA_SO : TECLA);
             tecla(g, x + b[0], y + b[1], b[2], b[3], fondo);
-            float esc = i < 2 ? 1F : 0.75F;
+            float esc = i < 2 || i >= 4 ? 1F : 0.75F;
             g.pose().pushPose();
             g.pose().translate(x + b[0] + b[2] / 2F - font.width(bt[i]) * esc / 2F, y + b[1] + (b[3] - 8 * esc) / 2F, 0);
             g.pose().scale(esc, esc, 1F);
@@ -226,6 +231,16 @@ public class CajeroScreen extends Screen {
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.2F, 0.4F));
     }
 
+    private void fichas(int n) {
+        if ((long) n * BancoCliente.precioFicha > BancoCliente.saldo) {
+            avisar(t("cajero_sin_saldo"));
+            return;
+        }
+        MovilRed.alServidor(MovilRed.C_FICHAS, b -> b.writeVarInt(n));
+        avisar(t("cajero_fichas_ok", n));
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(com.miscelanea.registry.ModSounds.ARCADE_FICHA.get(), 1F, 0.5F));
+    }
+
     private void retirar(long v) {
         if (v <= 0) return;
         if (v > BancoCliente.saldo) {
@@ -256,7 +271,7 @@ public class CajeroScreen extends Screen {
                 return true;
             }
         }
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < BOT.length; i++) {
             int[] b = BOT[i];
             if (rx < b[0] || rx >= b[0] + b[2] || ry < b[1] || ry >= b[1] + b[3]) continue;
             clic();
@@ -264,7 +279,8 @@ public class CajeroScreen extends Screen {
                 case 0 -> ingresar(valor());
                 case 1 -> retirar(valor());
                 case 2 -> ingresar(BancoCliente.enInventario);
-                default -> retirar(BancoCliente.saldo);
+                case 3 -> retirar(BancoCliente.saldo);
+                default -> fichas(i == 4 ? 1 : 10);
             }
             return true;
         }

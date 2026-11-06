@@ -50,6 +50,9 @@ public final class Banco {
             case MovilRed.C_BANCO_RETIRAR -> retirar(p, b.readVarInt());
             case MovilRed.C_BIZUM -> bizum(p, b.readUUID(), b.readVarLong(), b.readUtf(256));
             case MovilRed.C_ENVIAR_OBJETO -> objeto(p, b.readUUID(), b.readVarInt(), b.readVarInt());
+            case MovilRed.C_DATAFONO_CONF -> datafonoConf(p, b.readBlockPos(), b.readVarLong(), b.readUtf(256));
+            case MovilRed.C_DATAFONO_PAGAR -> datafonoPagar(p, b.readBlockPos(), b.readVarLong());
+            case MovilRed.C_FICHAS -> fichas(p, b.readVarInt());
             default -> {
             }
         }
@@ -114,6 +117,7 @@ public final class Banco {
             b.writeBoolean(caj);
             b.writeBoolean(Dinero.omega());
             b.writeVarLong(caj ? Long.MAX_VALUE / 4 : limiteMovil(p));
+            b.writeVarInt(MovilConfig.precioFicha());
             b.writeVarInt(MovilConfig.bancoMaxTransferencia());
             b.writeVarInt(MovilConfig.bancoMaxConcepto());
             b.writeBoolean(MovilConfig.bancoObjetos());
@@ -229,6 +233,69 @@ public final class Banco {
         MovilServidor.noti(o, MovilRed.APP_BANCO, MovilServidor.nombre(p), MovilServidor.tr("objeto_noti", desc), true);
         estado(p);
         estado(o);
+    }
+
+    // ------------------------------------------------------------------ fichas de recreativa en el cajero
+    private static void fichas(ServerPlayer p, int n) {
+        if (rapido(p) || !enCajero(p) || n <= 0 || n > 64) return;
+        long precio = (long) n * MovilConfig.precioFicha();
+        BancoDatos d = BancoDatos.de(p.server);
+        if (precio > 0 && !d.mover(p.getUUID(), -precio)) {
+            MovilServidor.aviso(p, "movil.miscelanea.aviso.banco_saldo", "");
+            estado(p);
+            return;
+        }
+        ItemStack s = new ItemStack(com.miscelanea.registry.ModItems.FICHA.get(), n);
+        if (!p.getInventory().add(s) || !s.isEmpty()) p.drop(s, false);
+        if (precio > 0) d.anotar(p.getUUID(), new BancoDatos.Movimiento(System.currentTimeMillis(), BancoDatos.M_RETIRADA, null, "", -precio,
+                MovilServidor.tr("fichas_concepto", n)));
+        LOG.info("[Banco] {} compra {} fichas por {}", MovilServidor.nombre(p), n, precio);
+        estado(p);
+    }
+
+    // ------------------------------------------------------------------ datáfono
+    private static DatafonoBlockEntity datafono(ServerPlayer p, net.minecraft.core.BlockPos pos) {
+        if (p.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 8 * 8 || !p.level().isLoaded(pos)) return null;
+        return p.level().getBlockEntity(pos) instanceof DatafonoBlockEntity be ? be : null;
+    }
+
+    private static void datafonoConf(ServerPlayer p, net.minecraft.core.BlockPos pos, long precio, String concepto) {
+        DatafonoBlockEntity be = datafono(p, pos);
+        if (be == null || !(be.esDueno(p) || p.hasPermissions(2))) return;
+        be.configurar(Math.max(0, Math.min(precio, MovilConfig.bancoMaxTransferencia())), MovilServidor.limpiar(concepto, MovilConfig.bancoMaxConcepto()));
+        MovilServidor.aviso(p, "movil.miscelanea.aviso.datafono_ok", String.valueOf(be.precio()));
+    }
+
+    private static void datafonoPagar(ServerPlayer p, net.minecraft.core.BlockPos pos, long visto) {
+        if (rapido(p)) return;
+        DatafonoBlockEntity be = datafono(p, pos);
+        if (be == null || be.dueno() == null || be.esDueno(p)) return;
+        long n = be.precio();
+        // si el dueño cambió el precio mientras el cliente miraba, no se cobra
+        if (n <= 0 || n != visto) {
+            MovilServidor.aviso(p, "movil.miscelanea.aviso.datafono_cambio", "");
+            return;
+        }
+        BancoDatos d = BancoDatos.de(p.server);
+        if (!d.mover(p.getUUID(), -n)) {
+            MovilServidor.aviso(p, "movil.miscelanea.aviso.banco_saldo", "");
+            estado(p);
+            return;
+        }
+        d.mover(be.dueno(), n);
+        long t = System.currentTimeMillis();
+        String yo = MovilServidor.nombre(p), concepto = be.concepto();
+        d.anotar(p.getUUID(), new BancoDatos.Movimiento(t, BancoDatos.M_ENVIADO, be.dueno(), be.nombreDueno(), -n, concepto));
+        d.anotar(be.dueno(), new BancoDatos.Movimiento(t, BancoDatos.M_RECIBIDO, p.getUUID(), yo, n, concepto));
+        LOG.info("[Banco] Datáfono {} -> {}: {} ({})", yo, be.nombreDueno(), n, concepto);
+        p.level().playSound(null, pos, net.minecraft.sounds.SoundEvents.NOTE_BLOCK_BELL.value(), net.minecraft.sounds.SoundSource.BLOCKS, 0.8F, 1.6F);
+        MovilServidor.aviso(p, "movil.miscelanea.aviso.datafono_pagado", n + " → " + be.nombreDueno());
+        estado(p);
+        ServerPlayer o = p.server.getPlayerList().getPlayer(be.dueno());
+        if (o != null) {
+            MovilServidor.noti(o, MovilRed.APP_BANCO, yo, MovilServidor.tr(concepto.isEmpty() ? "datafono_noti" : "datafono_noti_concepto", n, concepto), true);
+            estado(o);
+        }
     }
 
     // ------------------------------------------------------------------ comando de operadores

@@ -14,7 +14,7 @@ public final class MovilConfig {
     private static ForgeConfigSpec.BooleanValue SIN_LIMITE, ENTRE_DIMENSIONES, VIDEO;
     private static ForgeConfigSpec.BooleanValue NOTAS_VOZ, MINEGRAM, UBICACION, BANCO, BANCO_OBJETOS, LINTERNA_REAL;
     private static ForgeConfigSpec.IntValue VOZ_SEGUNDOS, VOZ_MAX_BYTES, MG_MAX_POSTS, MG_MAX_COMENT, MG_MAX_PIE, MG_MAX_COMENTARIOS, UBI_MAX_MIN,
-            BANCO_MAX_TRANSFER, BANCO_MAX_CONCEPTO, LINTERNA_NIVEL, LINTERNA_ALCANCE, BANCO_MOVIL_OP, BANCO_MOVIL_DIA, BANCO_CAJERO_DIST;
+            BANCO_MAX_TRANSFER, BANCO_MAX_CONCEPTO, LINTERNA_NIVEL, LINTERNA_ALCANCE, BANCO_MOVIL_OP, BANCO_MOVIL_DIA, BANCO_CAJERO_DIST, PRECIO_FICHA;
 
     /** Fotos de 180x320 en JPEG: unos 12-25 KB cada una. El paquete del cliente al servidor no puede pasar de 32 KB. */
     public static final int TOPE_BYTES_FOTO = 30000;
@@ -76,6 +76,8 @@ public final class MovilConfig {
         BANCO_MOVIL_DIA = b.comment("Desde el móvil: máximo al día (sumando ingresos y retiradas; el día se reinicia a medianoche del servidor).")
                 .defineInRange("movil_max_dia", 729, 0, Integer.MAX_VALUE);
         BANCO_CAJERO_DIST = b.comment("Distancia (bloques) a la que se puede usar un cajero.").defineInRange("cajero_distancia", 6, 2, 16);
+        PRECIO_FICHA = b.comment("Precio de cada ficha de recreativa en el cajero (en chips o esmeraldas). 0 = gratis.")
+                .defineInRange("precio_ficha", 9, 0, 100000);
         BANCO_MAX_TRANSFER = b.comment("Dinero como máximo por transferencia (Bizum).").defineInRange("max_transferencia", 100000, 1, Integer.MAX_VALUE);
         BANCO_MAX_CONCEPTO = b.comment("Longitud máxima del concepto.").defineInRange("max_concepto", 40, 0, 120);
         b.pop();
@@ -135,6 +137,7 @@ public final class MovilConfig {
     public static int bancoMovilOperacion() { return i(BANCO_MOVIL_OP); }
     public static int bancoMovilDia() { return i(BANCO_MOVIL_DIA); }
     public static int bancoCajeroDistancia() { return i(BANCO_CAJERO_DIST); }
+    public static int precioFicha() { return i(PRECIO_FICHA); }
     public static boolean linternaReal() { return b(LINTERNA_REAL); }
     public static int linternaNivel() { return i(LINTERNA_NIVEL); }
     public static int linternaAlcance() { return i(LINTERNA_ALCANCE); }

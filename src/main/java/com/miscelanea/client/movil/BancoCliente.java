@@ -15,6 +15,7 @@ public final class BancoCliente {
     public static long saldo, enInventario, limite;
     /** enCajero: el servidor lo ve junto a un cajero (sin límite); omega: el dinero son chips de OmegaChips (si no, esmeraldas). */
     public static boolean enCajero, omega;
+    public static int precioFicha = 9;
     public static int maxTransferencia = 100000, maxConcepto = 40;
     public static boolean objetos, cargado;
     public static final List<Mov> HISTORIAL = new ArrayList<>();
@@ -25,6 +26,7 @@ public final class BancoCliente {
         enCajero = b.readBoolean();
         omega = b.readBoolean();
         limite = b.readVarLong();
+        precioFicha = b.readVarInt();
         maxTransferencia = b.readVarInt();
         maxConcepto = b.readVarInt();
         objetos = b.readBoolean();
@@ -34,7 +36,7 @@ public final class BancoCliente {
             long t = b.readLong();
             int tipo = b.readByte();
             UUID o = b.readBoolean() ? b.readUUID() : null;
-            HISTORIAL.add(new Mov(t, tipo, o, b.readUtf(), b.readLong(), b.readUtf()));
+            HISTORIAL.add(new Mov(t, tipo, o, b.readUtf(), b.readLong(), MovilCliente.traducir(b.readUtf())));
         }
         cargado = true;
     }

@@ -31,6 +31,16 @@ public final class MovilRegistro {
                     .strength(3.5F, 1200F).sound(net.minecraft.world.level.block.SoundType.METAL).noOcclusion().requiresCorrectToolForDrops().lightLevel(st -> 6)));
     public static final RegistryObject<Item> CAJERO_ITEM = ITEMS.register("cajero",
             () -> new net.minecraft.world.item.BlockItem(CAJERO.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<net.minecraft.world.level.block.Block> DATAFONO = BLOQUES.register("datafono",
+            () -> new DatafonoBlock(net.minecraft.world.level.block.state.BlockBehaviour.Properties.of().mapColor(net.minecraft.world.level.material.MapColor.COLOR_GRAY)
+                    .strength(1.5F, 6F).sound(net.minecraft.world.level.block.SoundType.METAL).noOcclusion()));
+    public static final RegistryObject<Item> DATAFONO_ITEM = ITEMS.register("datafono",
+            () -> new net.minecraft.world.item.BlockItem(DATAFONO.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final DeferredRegister<net.minecraft.world.level.block.entity.BlockEntityType<?>> BES =
+            DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Miscelanea.MOD_ID);
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<net.minecraft.world.level.block.entity.BlockEntityType<DatafonoBlockEntity>> DATAFONO_BE = BES.register("datafono",
+            () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(DatafonoBlockEntity::new, DATAFONO.get()).build(null));
     public static final RegistryObject<Item> MOVIL = ITEMS.register("movil", () -> new MovilItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<RecipeSerializer<MovilTinteReceta>> TINTE =
             RECETAS.register("movil_tinte", () -> new SimpleCraftingRecipeSerializer<>(MovilTinteReceta::new));
@@ -55,6 +65,7 @@ public final class MovilRegistro {
 
     public static void registrar(IEventBus bus) {
         BLOQUES.register(bus);
+        BES.register(bus);
         ITEMS.register(bus);
         SONIDOS.register(bus);
         RECETAS.register(bus);
