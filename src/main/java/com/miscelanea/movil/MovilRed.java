@@ -43,8 +43,8 @@ public final class MovilRed {
             C_BANCO = 30, C_BANCO_INGRESAR = 31, C_BANCO_RETIRAR = 32, C_BIZUM = 33, C_ENVIAR_OBJETO = 34,
             // linterna
             C_LINTERNA = 35,
-            // datáfono (pos, precio, concepto / pos, precio visto) y fichas en el cajero (cuántas)
-            C_DATAFONO_CONF = 36, C_DATAFONO_PAGAR = 37, C_FICHAS = 38;
+            // fichas de recreativa en el cajero (cuántas)
+            C_FICHAS = 38;
     // ---------------------------------------------------------------- servidor → cliente
     public static final int S_SYNC = 0, S_CHAT = 1, S_MENSAJE = 2, S_FOTOS = 3, S_FOTO = 4, S_LLAMADA = 5, S_VIDEO = 6, S_POSE = 7,
             S_AVISO = 8, S_CHAT_ID = 9, S_VOZ = 10, S_UBI = 11, S_NOTI = 12, S_MG_FEED = 13, S_MG_POST = 14, S_MG_PERFIL = 15,

@@ -236,7 +236,6 @@ public class Miscelanea {
             event.accept(ModItems.MOCHILA);
             event.accept(com.miscelanea.movil.MovilRegistro.MOVIL);
             event.accept(com.miscelanea.movil.MovilRegistro.CAJERO_ITEM);
-            event.accept(com.miscelanea.movil.MovilRegistro.DATAFONO_ITEM);
             event.accept(ModItems.OCARINA);
             event.accept(ModItems.RED);
             event.accept(ModItems.CANA);

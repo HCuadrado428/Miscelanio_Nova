@@ -112,10 +112,9 @@ El banco guarda el dinero de cada jugador en el servidor.
 - **Desde el móvil**, lejos de un cajero, solo se puede mover un poco: por defecto 81 por operación y 729 al día. Se cambia en la configuración.
 - **Bizum**: transferencias a cualquier contacto, con concepto y notificación. También funciona aunque el otro no esté conectado.
 - **Enviar objetos**: pasa un objeto de tu inventario a otro jugador conectado.
-- **Datáfono** (bloque): para tiendas de jugadores. Quien lo pone es el dueño y elige precio y concepto; los demás pagan con clic derecho desde su saldo y el dinero va directo a la cuenta del dueño, con notificación en su móvil.
 - **Fichas de recreativa**: se compran en el cajero con el saldo (por defecto 9 cada una) y sirven para las recreativas y la feria.
 
-Receta del cajero: lingotes de hierro, panel de cristal, redstone y un lingote de oro. Receta del datáfono: panel de cristal, redstone y lingote de hierro, en columna. Cada movimiento queda en el historial de la app y en el registro del servidor (`[Banco] ...`).
+Receta del cajero: lingotes de hierro, panel de cristal, redstone y un lingote de oro. Cada movimiento queda en el historial de la app y en el registro del servidor (`[Banco] ...`).
 
 ---
 

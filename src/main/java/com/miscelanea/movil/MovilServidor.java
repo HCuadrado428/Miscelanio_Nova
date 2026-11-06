@@ -136,7 +136,7 @@ public final class MovilServidor {
                 case MovilRed.C_MG_FEED, MovilRed.C_MG_PUBLICAR, MovilRed.C_MG_LIKE, MovilRed.C_MG_POST, MovilRed.C_MG_COMENTAR,
                      MovilRed.C_MG_BORRAR, MovilRed.C_MG_PERFIL, MovilRed.C_MG_SEGUIR, MovilRed.C_MG_NOTIS -> Minegram.recibir(p, tipo, b);
                 case MovilRed.C_BANCO, MovilRed.C_BANCO_INGRESAR, MovilRed.C_BANCO_RETIRAR, MovilRed.C_BIZUM, MovilRed.C_ENVIAR_OBJETO,
-                     MovilRed.C_DATAFONO_CONF, MovilRed.C_DATAFONO_PAGAR, MovilRed.C_FICHAS ->
+                     MovilRed.C_FICHAS ->
                         Banco.recibir(p, tipo, b);
                 case MovilRed.C_LINTERNA -> LinternaLuz.cambiar(p, b.readBoolean());
                 default -> {
