@@ -71,7 +71,6 @@ public final class Charcos {
                     if (ult != null && t - ult < 20) continue;
                     PISADO.put(v.getId(), t);
                     Estatica.sonido(l, v.position(), EstaticaRegistro.CRUJIDO.get(), 0.7F, 1.1F + l.random.nextFloat() * 0.3F);
-                    l.sendParticles(EstaticaRegistro.CHISPA.get(), v.getX(), v.getY() + 0.1, v.getZ(), 6, 0.25, 0.05, 0.25, 0.0);
                     if (v instanceof ServerPlayer vp) EstaticaRed.a(vp, new EstaticaRed.Nieve(14, true, 0));
                 }
             }

@@ -174,8 +174,6 @@ public final class ImitarVoz {
             out(pcm, i, x);
         }
         mc.getSoundManager().play(new EstaticaSonidos.Voz(p.x, p.y, p.z, pcm, SR));
-        for (int i = 0; i < 12; i++)
-            mc.level.addParticle(com.miscelanea.estatica.EstaticaRegistro.CHISPA.get(), p.x + (Math.random() - 0.5), p.y + (Math.random() - 0.5), p.z + (Math.random() - 0.5), 0, 0, 0);
     }
 
     private static void out(short[] pcm, int i, float x) {

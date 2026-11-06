@@ -60,7 +60,7 @@ public class PocionEstaticaItem extends Item {
         Player p = e instanceof Player pl ? pl : null;
         if (p instanceof ServerPlayer sp) CriteriaTriggers.CONSUME_ITEM.trigger(sp, st);
         if (!l.isClientSide) {
-            e.addEffect(new MobEffectInstance(EstaticaRegistro.EFECTO.get(), ConfigServidor.estaticaDuracionTicks(), 0, false, true, true));
+            e.addEffect(new MobEffectInstance(EstaticaRegistro.EFECTO.get(), ConfigServidor.estaticaDuracionTicks(), 0, false, false, true));
             if (p instanceof ServerPlayer sp) Estatica.transformar(sp);
         }
         if (p != null) {

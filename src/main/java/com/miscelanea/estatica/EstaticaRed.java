@@ -133,7 +133,8 @@ public final class EstaticaRed {
 
     /** Efectos visuales sueltos (estelas, estallidos, chispazos, golpes, apagones, ocultar a alguien un momento). */
     public static class Fx {
-        public static final int ESTELA = 0, ESTALLIDO = 1, CHISPAZO = 2, GOLPE_SUELO = 3, APAGON = 4, OCULTAR = 5, FRAGMENTO = 6;
+        public static final int ESTELA = 0, ESTALLIDO = 1, CHISPAZO = 2, GOLPE_SUELO = 3, APAGON = 4, OCULTAR = 5, FRAGMENTO = 6,
+                ARCO = 7, ATURDIDO = 8, NOVA = 9;
         public final int tipo, id, extra;
         public final double x, y, z, x2, y2, z2;
 
