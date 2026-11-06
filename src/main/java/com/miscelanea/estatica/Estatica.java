@@ -157,9 +157,11 @@ public final class Estatica {
     /** Daño de estática del jugador a 'v' (con el factor de jefes; las partes de un ser grande reenvían el daño a su dueño). */
     public static boolean golpear(ServerPlayer p, Entity v, float dano) {
         Entity dueño = v instanceof PartEntity<?> pe ? pe.getParent() : v;
-        float d = dano * factor(dueño);
+        float d = dano * factor(dueño) * PoderesNuevos.bono(p);
         if (d <= 0) return false;
-        return v.hurt(fuente(p), d);
+        boolean ok = v.hurt(fuente(p), d);
+        if (ok && dueño instanceof LivingEntity) Senal.alAcertar(p, dueño);
+        return ok;
     }
 
     /** Empuje horizontal (y algo hacia arriba) respetando la resistencia al empuje. */
@@ -387,6 +389,8 @@ public final class Estatica {
         PantallasServidor.salir(p, -1);
         QUIETO.remove(p.getUUID());
         Tentaculos.soltarDe(p);
+        PoderesNuevos.soltarDe(p);
+        Senal.vaciar(p);
         ENVIADO.remove(p.getUUID());
         // el efecto aún no se ha quitado del todo en este evento: se manda "nada" a mano
         EstaticaRed.alrededor(p, new EstaticaRed.Estado(p.getId(), semilla(p), 0));
@@ -397,6 +401,8 @@ public final class Estatica {
         if (e.getEntity() instanceof ServerPlayer p) {
             PantallasServidor.salir(p, -1);
             Tentaculos.soltarDe(p);
+            PoderesNuevos.soltarDe(p);
+            Senal.olvidar(p.getUUID());
             ENVIADO.remove(p.getUUID());
             QUIETO.remove(p.getUUID());
             ULTIMA_POS.remove(p.getUUID());
@@ -418,6 +424,8 @@ public final class Estatica {
         Luces.restaurarTodo(e.getServer());
         TAREAS.clear();
         Tentaculos.limpiar();
+        PoderesNuevos.limpiar();
+        Senal.limpiar();
         Charcos.limpiar();
         INTERF.clear();
         ATURDIDOS.clear();
@@ -453,6 +461,7 @@ public final class Estatica {
         if (regen > 0 && oscuro && t % 20 == p.getId() % 20 && p.getHealth() < p.getMaxHealth() && !p.isDeadOrDying()) p.heal(regen);
 
         PantallasServidor.tick(p);
+        Senal.tick(p);
         if (t % 10 == p.getId() % 10 && ConfigServidor.estaticaLuces() && !PantallasServidor.dentro(p)) Luces.apagarCerca(p);
         if (ConfigServidor.estaticaCharcos() && !PantallasServidor.dentro(p)) Charcos.tickJugador(p);
 
@@ -484,6 +493,7 @@ public final class Estatica {
             }
         }
         Tentaculos.tick(srv);
+        PoderesNuevos.tick(srv);
         tickAturdidos(t);
         if (t % 4 == 0) Charcos.tick(srv);
         if (t % 20 == 0) Luces.tick(srv);
@@ -517,6 +527,7 @@ public final class Estatica {
     private static void punetazo(ServerPlayer p, Entity t, LivingEntity v) {
         float carga = p.getAttackStrengthScale(0.5F);
         p.resetAttackStrengthTicker();
+        Senal.golpe(p);
         if (dueñoInvalido(p, v)) return;
         // Fuerza / debilidad cuentan (el ataque base de la mano es 1)
         float base = ConfigServidor.estaticaToqueDano() + (float) Math.max(-ConfigServidor.estaticaToqueDano(), p.getAttributeValue(Attributes.ATTACK_DAMAGE) - 1);
@@ -526,6 +537,7 @@ public final class Estatica {
         float vidaAntes = v.getHealth();
         if (!golpear(p, t, dano)) return;
         p.setLastHurtMob(v);
+        if (carga > 0.5F) Senal.ganar(p, ConfigServidor.estaticaSenalPuno() * carga);
         ServerLevel l = p.serverLevel();
         Vec3 c = v.getBoundingBox().getCenter();
         float yaw = p.getYRot() * Mth.DEG_TO_RAD;
@@ -591,7 +603,7 @@ public final class Estatica {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void recibirAtaque(LivingAttackEvent e) {
         if (!(e.getEntity() instanceof ServerPlayer p) || !es(p)) return;
-        if (PantallasServidor.dentro(p) || enCinematica(p)) {
+        if (PantallasServidor.dentro(p) || enCinematica(p) || PoderesNuevos.rebobinando(p)) {
             if (!e.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) e.setCanceled(true);
             return;
         }

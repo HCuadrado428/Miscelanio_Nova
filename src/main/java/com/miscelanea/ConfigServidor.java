@@ -56,6 +56,13 @@ public final class ConfigServidor {
     private static final ForgeConfigSpec.BooleanValue EST_LECHE, EST_CINEMATICA, EST_TOQUE, EST_PARPADEO, EST_PANTALLAS, EST_LUCES, EST_IMITAR,
             EST_CHARCOS, EST_OSCURIDAD, EST_ARRASTRAR, EST_FRAGMENTARSE, EST_ATRAER, EST_LANZAR, EST_ESTAMPAR,
             EST_JEFES_AGARRABLES, EST_FRAG_PROYECTILES, EST_SOBRECARGA;
+    // ---- estática: Señal y poderes nuevos
+    private static final ForgeConfigSpec.BooleanValue EST_PAUSA, EST_REBOBINAR, EST_SIN_SENAL, EST_GRABACION;
+    private static final ForgeConfigSpec.IntValue EST_PAUSA_ENF_S, EST_REBOBINAR_ENF_S, EST_SIN_SENAL_ENF_S, EST_GRABACION_ENF_S,
+            EST_COSTE_PAUSA, EST_COSTE_CANAL, EST_COSTE_REBOBINAR, EST_COSTE_SIN_SENAL, EST_COSTE_GRABACION, EST_SENAL_PUNO, EST_SENAL_PODER,
+            EST_CANAL_S, EST_SIN_SENAL_S;
+    private static final ForgeConfigSpec.DoubleValue EST_PAUSA_S, EST_PAUSA_MULT, EST_SIN_SENAL_RADIO, EST_SIN_SENAL_BONO, EST_GRABACION_DANO,
+            EST_TENT_DANO, EST_CANAL_DANO, EST_ECO_DANO, EST_PANTALLA_DANO;
     // ---- juegos de mesa
     private static final ForgeConfigSpec.IntValue MESAS_TURNO_S, MESAS_AUSENCIA_S;
     private static final ForgeConfigSpec.BooleanValue MESAS_VICTORIAS_CPU;
@@ -266,7 +273,7 @@ public final class ConfigServidor {
         EST_OSCURIDAD = b.comment("Fundirse en la oscuridad: quieto a oscuras se vuelve invisible (solo se le ven los ojos).").define("oscuridad_activado", true);
         EST_OSCURIDAD_LUZ = b.comment("Luz máxima (0-15) para fundirse.").defineInRange("oscuridad_luz_maxima", 4, 0, 15);
         EST_OSCURIDAD_QUIETO_S = b.comment("Segundos quieto a oscuras antes de fundirse.").defineInRange("oscuridad_segundos", 2.0, 0.0, 60.0);
-        EST_ARRASTRAR = b.comment("Poder Arrastrar a la estática: se lleva consigo a quien mira y aparecen juntos unos bloques más allá.")
+        EST_ARRASTRAR = b.comment("Poder Canal perdido: mete a quien mira en un vacío de estática unos segundos y lo escupe en otro sitio, mareado.")
                 .define("arrastrar_activado", true);
         EST_FRAGMENTARSE = b.comment("Fragmentarse (pasivo): al recibir un golpe cuerpo a cuerpo se deshace en estática (sin daño), aparece detrás",
                 "del atacante y le da una descarga.").define("fragmentarse_activado", true);
@@ -322,11 +329,44 @@ public final class ConfigServidor {
         EST_ESTAMPAR_ALTURA = b.comment("Estampar: altura (bloques) a la que lo sube.").defineInRange("estampar_altura", 6.0, 1.0, 16.0);
         EST_ESTAMPAR_ONDA = b.comment("Estampar: radio de la onda del golpe (los de alrededor reciben la mitad). 0 = sin onda.").defineInRange("estampar_onda_radio", 3.5, 0.0, 12.0);
         EST_ESTAMPAR_ENF_S = b.comment("Estampar: segundos de espera.").defineInRange("estampar_enfriamiento_segundos", 7, 0, 600);
-        EST_SOBRECARGA_RADIO = b.comment("Sobrecarga: radio (bloques).").defineInRange("sobrecarga_radio", 8.0, 2.0, 24.0);
-        EST_SOBRECARGA_DANO = b.comment("Sobrecarga: daño en el centro (en el borde, la mitad).").defineInRange("sobrecarga_dano", 20.0, 0.0, 400.0);
+        EST_SOBRECARGA_RADIO = b.comment("Sobrecarga: radio (bloques).").defineInRange("sobrecarga_radio", 12.0, 2.0, 32.0);
+        EST_SOBRECARGA_DANO = b.comment("Sobrecarga: daño en el centro (en el borde, la mitad).").defineInRange("sobrecarga_dano", 32.0, 0.0, 400.0);
         EST_SOBRECARGA_EMPUJE = b.comment("Sobrecarga: fuerza con la que lanza.").defineInRange("sobrecarga_empuje", 1.8, 0.0, 8.0);
         EST_SOBRECARGA_CEGUERA_S = b.comment("Sobrecarga: segundos de ceguera.").defineInRange("sobrecarga_ceguera_segundos", 3, 0, 60);
-        EST_SOBRECARGA_ENF_S = b.comment("Sobrecarga: segundos de espera.").defineInRange("sobrecarga_enfriamiento_segundos", 30, 0, 3600);
+        EST_SOBRECARGA_ENF_S = b.comment("Sobrecarga: segundos de espera.").defineInRange("sobrecarga_enfriamiento_segundos", 20, 0, 3600);
+        EST_TENT_DANO = b.comment("Tentáculos: daño cada medio segundo mientras lo tienes agarrado esperando qué hacer.").defineInRange("tentaculos_dano_agarrado", 2.0, 0.0, 50.0);
+        EST_ECO_DANO = b.comment("Parpadeo: daño de la silueta que dejas atrás al explotar.").defineInRange("parpadeo_eco_dano", 7.0, 0.0, 200.0);
+        EST_PANTALLA_DANO = b.comment("Pantallas: daño del fogonazo al salir (también ciega y aturde a los de alrededor).").defineInRange("pantallas_fogonazo_dano", 6.0, 0.0, 200.0);
+        b.pop();
+
+        b.comment("Señal: la barra del hombre de estática. Se llena al golpear y al acertar poderes; los poderes fuertes la gastan.",
+                "La Sobrecarga necesita la barra llena (100) y la vacía.").push("senal");
+        EST_SENAL_PUNO = b.comment("Señal por puñetazo cargado.").defineInRange("senal_puno", 12, 0, 100);
+        EST_SENAL_PODER = b.comment("Señal por cada enemigo al que alcanza un poder.").defineInRange("senal_poder", 6, 0, 100);
+        EST_COSTE_PAUSA = b.comment("Coste de Pausa.").defineInRange("coste_pausa", 30, 0, 100);
+        EST_COSTE_CANAL = b.comment("Coste de Canal perdido.").defineInRange("coste_canal", 35, 0, 100);
+        EST_COSTE_REBOBINAR = b.comment("Coste de Rebobinar.").defineInRange("coste_rebobinar", 20, 0, 100);
+        EST_COSTE_SIN_SENAL = b.comment("Coste de Sin señal.").defineInRange("coste_sin_senal", 40, 0, 100);
+        EST_COSTE_GRABACION = b.comment("Coste de Grabación.").defineInRange("coste_grabacion", 25, 0, 100);
+        b.pop();
+
+        b.comment("Poderes nuevos de la estática.").push("poderes_nuevos");
+        EST_PAUSA = b.comment("Pausa: congela al objetivo con líneas de VHS; el daño que recibe mientras se le aplica de golpe al soltarlo.").define("pausa_activado", true);
+        EST_PAUSA_S = b.comment("Pausa: segundos congelado.").defineInRange("pausa_segundos", 3.0, 0.5, 20.0);
+        EST_PAUSA_MULT = b.comment("Pausa: multiplicador del daño acumulado.").defineInRange("pausa_multiplicador", 1.5, 1.0, 5.0);
+        EST_PAUSA_ENF_S = b.comment("Pausa: segundos de espera.").defineInRange("pausa_enfriamiento_segundos", 14, 0, 600);
+        EST_CANAL_S = b.comment("Canal perdido: segundos que la víctima pasa en el vacío de estática.").defineInRange("canal_segundos", 5, 1, 30);
+        EST_CANAL_DANO = b.comment("Canal perdido: daño al escupirla.").defineInRange("canal_dano", 8.0, 0.0, 200.0);
+        EST_REBOBINAR = b.comment("Rebobinar: vuelves por el mismo camino a donde estabas hace 4 s (y a la vida de entonces, si era más).").define("rebobinar_activado", true);
+        EST_REBOBINAR_ENF_S = b.comment("Rebobinar: segundos de espera.").defineInRange("rebobinar_enfriamiento_segundos", 25, 0, 600);
+        EST_SIN_SENAL = b.comment("Sin señal: una zona donde los enemigos ven ruido en la pantalla y tú haces más daño y apenas se te ve.").define("sin_senal_activado", true);
+        EST_SIN_SENAL_RADIO = b.comment("Sin señal: radio (bloques).").defineInRange("sin_senal_radio", 7.0, 2.0, 24.0);
+        EST_SIN_SENAL_S = b.comment("Sin señal: segundos que dura la zona.").defineInRange("sin_senal_segundos", 8, 1, 60);
+        EST_SIN_SENAL_BONO = b.comment("Sin señal: daño extra dentro de la zona (0.3 = un 30 % más).").defineInRange("sin_senal_bono", 0.3, 0.0, 3.0);
+        EST_SIN_SENAL_ENF_S = b.comment("Sin señal: segundos de espera.").defineInRange("sin_senal_enfriamiento_segundos", 30, 0, 600);
+        EST_GRABACION = b.comment("Grabación: un clon de estática repite por donde fuiste los últimos 3 s (y tus golpes) y descarga a quien toca.").define("grabacion_activado", true);
+        EST_GRABACION_DANO = b.comment("Grabación: daño del clon por toque y por cada golpe que repite.").defineInRange("grabacion_dano", 7.0, 0.0, 200.0);
+        EST_GRABACION_ENF_S = b.comment("Grabación: segundos de espera.").defineInRange("grabacion_enfriamiento_segundos", 16, 0, 600);
         b.pop();
         b.pop();
 
@@ -528,6 +568,32 @@ public final class ConfigServidor {
     public static int estaticaAtraerObjetivos() { return i(EST_ATRAER_N); }
     public static float estaticaLanzarImpacto() { return (float) d(EST_LANZAR_IMPACTO); }
     public static boolean estaticaSobrecarga() { return b(EST_SOBRECARGA); }
+    public static boolean estaticaPausa() { return b(EST_PAUSA); }
+    public static boolean estaticaRebobinar() { return b(EST_REBOBINAR); }
+    public static boolean estaticaSinSenal() { return b(EST_SIN_SENAL); }
+    public static boolean estaticaGrabacion() { return b(EST_GRABACION); }
+    public static int estaticaPausaEnfriamiento() { return i(EST_PAUSA_ENF_S) * 20; }
+    public static int estaticaRebobinarEnfriamiento() { return i(EST_REBOBINAR_ENF_S) * 20; }
+    public static int estaticaSinSenalEnfriamiento() { return i(EST_SIN_SENAL_ENF_S) * 20; }
+    public static int estaticaGrabacionEnfriamiento() { return i(EST_GRABACION_ENF_S) * 20; }
+    public static int estaticaCostePausa() { return i(EST_COSTE_PAUSA); }
+    public static int estaticaCosteCanal() { return i(EST_COSTE_CANAL); }
+    public static int estaticaCosteRebobinar() { return i(EST_COSTE_REBOBINAR); }
+    public static int estaticaCosteSinSenal() { return i(EST_COSTE_SIN_SENAL); }
+    public static int estaticaCosteGrabacion() { return i(EST_COSTE_GRABACION); }
+    public static int estaticaSenalPuno() { return i(EST_SENAL_PUNO); }
+    public static int estaticaSenalPoder() { return i(EST_SENAL_PODER); }
+    public static int estaticaCanalTicks() { return i(EST_CANAL_S) * 20; }
+    public static float estaticaCanalDano() { return (float) d(EST_CANAL_DANO); }
+    public static int estaticaPausaTicks() { return (int) Math.round(d(EST_PAUSA_S) * 20); }
+    public static float estaticaPausaMult() { return (float) d(EST_PAUSA_MULT); }
+    public static double estaticaSinSenalRadio() { return d(EST_SIN_SENAL_RADIO); }
+    public static int estaticaSinSenalTicks() { return i(EST_SIN_SENAL_S) * 20; }
+    public static float estaticaSinSenalBono() { return (float) d(EST_SIN_SENAL_BONO); }
+    public static float estaticaGrabacionDano() { return (float) d(EST_GRABACION_DANO); }
+    public static float estaticaTentDano() { return (float) d(EST_TENT_DANO); }
+    public static float estaticaEcoDano() { return (float) d(EST_ECO_DANO); }
+    public static float estaticaPantallaDano() { return (float) d(EST_PANTALLA_DANO); }
     public static double estaticaSobrecargaRadio() { return d(EST_SOBRECARGA_RADIO); }
     public static float estaticaSobrecargaDano() { return (float) d(EST_SOBRECARGA_DANO); }
     public static double estaticaSobrecargaEmpuje() { return d(EST_SOBRECARGA_EMPUJE); }

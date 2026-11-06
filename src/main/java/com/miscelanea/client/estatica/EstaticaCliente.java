@@ -355,6 +355,13 @@ public final class EstaticaCliente {
             e.setSwingHand(false);
             return;
         }
+        // con alguien sostenido por los tentáculos: clic izquierdo lo estampa, clic derecho lo lanza
+        if ((e.isAttack() || e.isUseItem()) && EfectosMundo.sosteniendo()) {
+            EstaticaRed.CANAL.sendToServer(new EstaticaRed.AccionTent(e.isAttack() ? 1 : 2));
+            e.setCanceled(true);
+            e.setSwingHand(true);
+            return;
+        }
         if ((e.isAttack() || e.isUseItem()) && Estatica.esArma(mc.player.getItemInHand(e.getHand()))) {
             e.setCanceled(true);
             e.setSwingHand(false);
@@ -389,10 +396,10 @@ public final class EstaticaCliente {
                 ImitarVoz.usar(donde);
                 return true;
             }
-            case ARRASTRAR, ATRAER, LANZAR, ESTAMPAR -> {
+            case CANAL, TENTACULOS, PAUSA -> {
                 if (obj < 0) {
                     // el objetivo puede estar más lejos que el alcance de la mano: el más cercano en la mirada
-                    Entity m = EfectosMundo.mirado(mc, pd == Poder.ARRASTRAR ? com.miscelanea.ConfigServidor.estaticaArrastrarAlcance()
+                    Entity m = EfectosMundo.mirado(mc, pd == Poder.CANAL ? com.miscelanea.ConfigServidor.estaticaArrastrarAlcance()
                             : com.miscelanea.ConfigServidor.estaticaTentaculosAlcance());
                     if (m != null) obj = m.getId();
                 }
@@ -406,8 +413,8 @@ public final class EstaticaCliente {
     /** Poderes que salen en la rueda (los activados en el servidor; Imitar solo con el voicechat). */
     static List<Poder> poderesRueda() {
         List<Poder> l = new ArrayList<>();
-        for (Poder p : Poder.V) {
-            if (p == Poder.NINGUNO || !p.activo()) continue;
+        for (Poder p : Poder.RUEDA) {
+            if (!p.activo()) continue;
             if (p == Poder.IMITAR && !com.miscelanea.client.voz.VozCliente.hayVoicechat()) continue;
             l.add(p);
         }

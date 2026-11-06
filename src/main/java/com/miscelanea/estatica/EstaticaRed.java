@@ -27,7 +27,7 @@ import java.util.function.Supplier;
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class EstaticaRed {
-    private static final String PROTOCOLO = "1";
+    private static final String PROTOCOLO = "2";
 
     public static final SimpleChannel CANAL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "estatica"), () -> PROTOCOLO, PROTOCOLO::equals, PROTOCOLO::equals);
@@ -54,6 +54,10 @@ public final class EstaticaRed {
             CANAL.messageBuilder(Grabacion.class, id++, NetworkDirection.PLAY_TO_SERVER).encoder(Grabacion::encode).decoder(Grabacion::new).consumerMainThread(Grabacion::handle).add();
             CANAL.messageBuilder(VerPantalla.class, id++, NetworkDirection.PLAY_TO_SERVER).encoder(VerPantalla::encode).decoder(VerPantalla::new).consumerMainThread(VerPantalla::handle).add();
             CANAL.messageBuilder(CaraPantalla.class, id++, NetworkDirection.PLAY_TO_CLIENT).encoder(CaraPantalla::encode).decoder(CaraPantalla::new).consumerMainThread(CaraPantalla::handle).add();
+            CANAL.messageBuilder(SenalMsg.class, id++, NetworkDirection.PLAY_TO_CLIENT).encoder(SenalMsg::encode).decoder(SenalMsg::new).consumerMainThread(SenalMsg::handle).add();
+            CANAL.messageBuilder(Pantallazo.class, id++, NetworkDirection.PLAY_TO_CLIENT).encoder(Pantallazo::encode).decoder(Pantallazo::new).consumerMainThread(Pantallazo::handle).add();
+            CANAL.messageBuilder(Clon.class, id++, NetworkDirection.PLAY_TO_CLIENT).encoder(Clon::encode).decoder(Clon::new).consumerMainThread(Clon::handle).add();
+            CANAL.messageBuilder(AccionTent.class, id++, NetworkDirection.PLAY_TO_SERVER).encoder(AccionTent::encode).decoder(AccionTent::new).consumerMainThread(AccionTent::handle).add();
         });
     }
 
@@ -136,7 +140,9 @@ public final class EstaticaRed {
     /** Efectos visuales sueltos (estelas, estallidos, chispazos, golpes, apagones, ocultar a alguien un momento). */
     public static class Fx {
         public static final int ESTELA = 0, ESTALLIDO = 1, CHISPAZO = 2, GOLPE_SUELO = 3, APAGON = 4, OCULTAR = 5, FRAGMENTO = 6,
-                ARCO = 7, ATURDIDO = 8, NOVA = 9;
+                ARCO = 7, ATURDIDO = 8, NOVA = 9,
+                /** silueta que se queda y explota (extra = yaw) */ ECO = 10, /** zona de Sin señal (extra = radio x10, x2 = ticks) */ ZONA = 11,
+                /** líneas de pausa sobre alguien (extra = ticks) */ PAUSA = 12, /** se rompe la pausa */ PLAY = 13;
         public final int tipo, id, extra;
         public final double x, y, z, x2, y2, z2;
 
@@ -304,17 +310,19 @@ public final class EstaticaRed {
 
     /** Tentáculos de estática de 'atacante' a 'objetivo' (tipo = Poder.ordinal()). */
     public static class Tentaculo {
-        public final int atacante, objetivo, tipo, duracion;
+        /** inicio: ticks que ya han pasado (al cambiar de agarrar a estampar/lanzar/atraer, los tentáculos ya están puestos). */
+        public final int atacante, objetivo, tipo, duracion, inicio;
 
-        public Tentaculo(int atacante, int objetivo, int tipo, int duracion) {
+        public Tentaculo(int atacante, int objetivo, int tipo, int duracion, int inicio) {
             this.atacante = atacante;
             this.objetivo = objetivo;
             this.tipo = tipo;
             this.duracion = duracion;
+            this.inicio = inicio;
         }
 
         public Tentaculo(FriendlyByteBuf b) {
-            this(b.readVarInt(), b.readVarInt(), b.readByte(), b.readVarInt());
+            this(b.readVarInt(), b.readVarInt(), b.readByte(), b.readVarInt(), b.readVarInt());
         }
 
         void encode(FriendlyByteBuf b) {
@@ -322,6 +330,7 @@ public final class EstaticaRed {
             b.writeVarInt(objetivo);
             b.writeByte(tipo);
             b.writeVarInt(duracion);
+            b.writeVarInt(inicio);
         }
 
         void handle(Supplier<NetworkEvent.Context> c) {
@@ -455,6 +464,126 @@ public final class EstaticaRed {
 
         void handle(Supplier<NetworkEvent.Context> c) {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.miscelanea.client.estatica.EstaticaRedCliente.cara(this));
+        }
+    }
+    /** Cuánta Señal tiene el jugador local (0-100). */
+    public static class SenalMsg {
+        public final int valor;
+
+        public SenalMsg(int valor) {
+            this.valor = valor;
+        }
+
+        public SenalMsg(FriendlyByteBuf b) {
+            this(b.readByte());
+        }
+
+        void encode(FriendlyByteBuf b) {
+            b.writeByte(valor);
+        }
+
+        void handle(Supplier<NetworkEvent.Context> c) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.miscelanea.client.estatica.EstaticaRedCliente.senal(this));
+        }
+    }
+
+    /** Lo que ve en su pantalla quien lo recibe: el vacío de Canal perdido, la pausa, sin señal o el rebobinado. */
+    public static class Pantallazo {
+        public static final int VACIO = 0, PAUSA = 1, SIN_SENAL = 2, REBOBINAR = 3;
+        public final int tipo, ticks, extra;
+
+        public Pantallazo(int tipo, int ticks, int extra) {
+            this.tipo = tipo;
+            this.ticks = ticks;
+            this.extra = extra;
+        }
+
+        public Pantallazo(FriendlyByteBuf b) {
+            this(b.readByte(), b.readVarInt(), b.readInt());
+        }
+
+        void encode(FriendlyByteBuf b) {
+            b.writeByte(tipo);
+            b.writeVarInt(ticks);
+            b.writeInt(extra);
+        }
+
+        void handle(Supplier<NetworkEvent.Context> c) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.miscelanea.client.estatica.EstaticaRedCliente.pantallazo(this));
+        }
+    }
+
+    /** Clon de Grabación: el camino que repite (un punto por tick) y en qué ticks da un golpe. */
+    public static class Clon {
+        public final int dueno, semilla;
+        public final float[] x, y, z, yaw;
+        public final boolean[] golpe;
+
+        public Clon(int dueno, int semilla, float[] x, float[] y, float[] z, float[] yaw, boolean[] golpe) {
+            this.dueno = dueno;
+            this.semilla = semilla;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+            this.yaw = yaw;
+            this.golpe = golpe;
+        }
+
+        public Clon(FriendlyByteBuf b) {
+            dueno = b.readVarInt();
+            semilla = b.readInt();
+            int n = Math.min(200, b.readVarInt());
+            x = new float[n];
+            y = new float[n];
+            z = new float[n];
+            yaw = new float[n];
+            golpe = new boolean[n];
+            for (int i = 0; i < n; i++) {
+                x[i] = b.readFloat();
+                y[i] = b.readFloat();
+                z[i] = b.readFloat();
+                yaw[i] = b.readFloat();
+                golpe[i] = b.readBoolean();
+            }
+        }
+
+        void encode(FriendlyByteBuf b) {
+            b.writeVarInt(dueno);
+            b.writeInt(semilla);
+            b.writeVarInt(x.length);
+            for (int i = 0; i < x.length; i++) {
+                b.writeFloat(x[i]);
+                b.writeFloat(y[i]);
+                b.writeFloat(z[i]);
+                b.writeFloat(yaw[i]);
+                b.writeBoolean(golpe[i]);
+            }
+        }
+
+        void handle(Supplier<NetworkEvent.Context> c) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.miscelanea.client.estatica.EstaticaRedCliente.clon(this));
+        }
+    }
+
+    /** Con alguien agarrado por los tentáculos: 1 = estampar (clic izquierdo), 2 = lanzar (clic derecho). */
+    public static class AccionTent {
+        public final int modo;
+
+        public AccionTent(int modo) {
+            this.modo = modo;
+        }
+
+        public AccionTent(FriendlyByteBuf b) {
+            this(b.readByte());
+        }
+
+        void encode(FriendlyByteBuf b) {
+            b.writeByte(modo);
+        }
+
+        void handle(Supplier<NetworkEvent.Context> c) {
+            ServerPlayer p = c.get().getSender();
+            if (p != null) Tentaculos.elegir(p, modo == 1 ? Poder.ESTAMPAR : Poder.LANZAR);
         }
     }
 }

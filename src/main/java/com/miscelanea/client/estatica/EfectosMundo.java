@@ -78,7 +78,31 @@ public final class EfectosMundo {
         var l = Minecraft.getInstance().level;
         if (l == null) return;
         TENTS.removeIf(t -> t.atk == p.atacante && t.obj == p.objetivo);
-        TENTS.add(new Tent(p.atacante, p.objetivo, Poder.de(p.tipo), p.duracion, l.getGameTime()));
+        TENTS.add(new Tent(p.atacante, p.objetivo, Poder.de(p.tipo), p.duracion, l.getGameTime() - p.inicio));
+    }
+
+    /** ¿El jugador local tiene a alguien sostenido con los tentáculos (esperando a elegir)? */
+    static boolean sosteniendo() {
+        var mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null || TENTS.isEmpty()) return false;
+        long t = mc.level.getGameTime();
+        for (Tent x : TENTS) {
+            long k = t - x.desde;
+            if (x.atk == mc.player.getId() && x.pd == Poder.TENTACULOS && k >= Tentaculos.AGARRA - 1 && k < x.dur) return true;
+        }
+        return false;
+    }
+
+    // ------------------------------------------------------------------ clones de Grabación
+    private record ClonC(int dueno, float[] x, float[] y, float[] z, float[] yaw, boolean[] golpe, long desde) {}
+
+    private static final List<ClonC> CLONES = new ArrayList<>();
+
+    static void clon(EstaticaRed.Clon p) {
+        var l = Minecraft.getInstance().level;
+        if (l == null || p.x.length < 2) return;
+        CLONES.add(new ClonC(p.dueno, p.x, p.y, p.z, p.yaw, p.golpe, l.getGameTime()));
+        if (CLONES.size() > 16) CLONES.remove(0);
     }
 
     public static boolean agarrado(int id) {
@@ -104,13 +128,14 @@ public final class EfectosMundo {
         return switch (t.pd) {
             case LANZAR -> 11;
             case ESTAMPAR -> 30;
+            case TENTACULOS -> t.dur + 1000;    // la suelta otro (se cambia a estampar, lanzar o atraer)
             default -> t.dur - 3;
         };
     }
 
     // ------------------------------------------------------------------ destellos (geometría con nieve: nada de partículas)
     private static final ResourceLocation DESTELLO = new ResourceLocation(Miscelanea.MOD_ID, "textures/entity/estatica_destello.png");
-    private static final int ANILLO = 0, ARCO = 1, SILUETA = 2, HALO = 3, CUPULA = 4;
+    private static final int ANILLO = 0, ARCO = 1, SILUETA = 2, HALO = 3, CUPULA = 4, ZONA = 5, LINEAS = 6, SILUETA_FIJA = 7;
 
     /** a, b: puntos (o centro); r: radio / largo; dur en ticks; desde puede ser futuro (retraso). */
     private record Destello(int tipo, Vec3 a, Vec3 b, float r, long desde, int dur, int sem, float yaw, int id) {}
@@ -196,6 +221,23 @@ public final class EfectosMundo {
                 }
             }
             case EstaticaRed.Fx.OCULTAR -> OCULTOS.put(f.id, l.getGameTime() + f.extra);
+            case EstaticaRed.Fx.ECO -> {
+                destello(SILUETA_FIJA, a, a, 1, 0, 20, f.extra, -1);
+                destello(ANILLO, a.add(0, 0.05, 0), a, 1.1F, 0, 20, 0, -1);
+            }
+            case EstaticaRed.Fx.ZONA -> {
+                float r = Math.max(1F, f.extra / 10F);
+                int dur = (int) Math.max(1, f.x2);
+                destello(ZONA, a, a, r, 0, dur, 0, -1);
+                destello(ANILLO, a.add(0, 0.06, 0), a, r, 0, 12, 0, -1);
+                destello(CUPULA, a, a, r, 0, 12, 0, -1);
+            }
+            case EstaticaRed.Fx.PAUSA -> destello(LINEAS, a, a, 0, 0, Math.max(4, f.extra), 0, f.id);
+            case EstaticaRed.Fx.PLAY -> {
+                DESTELLOS.removeIf(d -> d.tipo == LINEAS && d.id == f.id);
+                estallido(a, f.extra > 10 ? 1.8F : 1.2F);
+                rayos(a, 6 + Math.min(10, f.extra / 3), 1.2, 5);
+            }
             default -> {}
         }
     }
@@ -227,6 +269,7 @@ public final class EfectosMundo {
             TENTS.clear();
             OCULTOS.clear();
             DESTELLOS.clear();
+            CLONES.clear();
             return;
         }
         long t = l.getGameTime();
@@ -234,6 +277,7 @@ public final class EfectosMundo {
         TENTS.removeIf(x -> t - x.desde > x.dur + 12 || t < x.desde - 40);
         OCULTOS.values().removeIf(h -> t > h);
         DESTELLOS.removeIf(d -> t > d.desde + d.dur + 1 || t < d.desde - 200);
+        CLONES.removeIf(c -> t - c.desde > c.x.length + 2 || t < c.desde - 40);
     }
 
     @SubscribeEvent
@@ -242,12 +286,13 @@ public final class EfectosMundo {
         TENTS.clear();
         OCULTOS.clear();
         DESTELLOS.clear();
+        CLONES.clear();
     }
 
     // ------------------------------------------------------------------ dibujo
     @SubscribeEvent
     public static void dibujar(RenderLevelStageEvent e) {
-        if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES || (CHARCOS.isEmpty() && TENTS.isEmpty() && DESTELLOS.isEmpty())) return;
+        if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES || (CHARCOS.isEmpty() && TENTS.isEmpty() && DESTELLOS.isEmpty() && CLONES.isEmpty())) return;
         Minecraft mc = Minecraft.getInstance();
         var l = mc.level;
         if (l == null) return;
@@ -293,6 +338,12 @@ public final class EfectosMundo {
             RenderType rt = RenderType.entityTranslucent(DESTELLO);
             VertexConsumer vc = bs.getBuffer(rt);
             for (Destello d : DESTELLOS) dibujarDestello(vc, ps, l, d, t, pt, cam);
+            bs.endBatch(rt);
+        }
+        if (!CLONES.isEmpty()) {
+            RenderType rt = RenderType.entityTranslucent(DESTELLO);
+            VertexConsumer vc = bs.getBuffer(rt);
+            for (ClonC c : CLONES) dibujarClon(vc, ps, c, t, pt);
             bs.endBatch(rt);
         }
         ps.popPose();
@@ -466,6 +517,51 @@ public final class EfectosMundo {
                     prevW = w;
                 }
             }
+            case SILUETA_FIJA -> {
+                // la silueta del parpadeo: quieta, temblando cada vez más hasta reventar
+                int a = (int) (215 * (0.6F + 0.4F * Mth.sin(edad * 1.7F)) * (k > 0.85F ? (1 - k) / 0.15F : 1F));
+                figura(c, m, nm, d.a, d.yaw, d.sem, t, 0.08F + 0.35F * k * k, 0F, a, v0, v1);
+            }
+            case ZONA -> {
+                // borde de la zona de Sin señal: anillo en el suelo y una pared baja de nieve que parpadea
+                float fin = Mth.clamp((d.dur - edad) / 10F, 0F, 1F), ini = Mth.clamp(edad / 6F, 0F, 1F);
+                float parp = Mascara.hash(d.sem, (int) t, 3, 9) < 0.15F ? 0.4F : 1F;
+                int a = (int) (190 * fin * ini * parp);
+                anillo(c, m, nm, d.a.add(0, 0.05, 0), d.r, 0.12F, edad * 0.02F, v0, v1, a, 255);
+                int n = Math.max(24, (int) (d.r * 8));
+                float h = 0.9F + 0.25F * Mth.sin(edad * 0.3F);
+                for (int j = 0; j < n; j++) {
+                    if (Mascara.hash(d.sem, j, (int) (t / 2), 5) < 0.25F) continue;   // huecos que van cambiando
+                    double a0 = j * Mth.TWO_PI / n, a1 = (j + 1) * Mth.TWO_PI / n;
+                    Vec3 p0 = d.a.add(Math.cos(a0) * d.r, 0, Math.sin(a0) * d.r), p1 = d.a.add(Math.cos(a1) * d.r, 0, Math.sin(a1) * d.r);
+                    quad(c, m, nm, p0, p1, p1.add(0, h, 0), p0.add(0, h, 0), j * 0.5F, (j + 1) * 0.5F, v1, v0, 230, (int) (a * 0.55F));
+                }
+            }
+            case LINEAS -> {
+                // pausa de VHS: bandas horizontales que recorren a la víctima y dos barras de pausa encima
+                Entity e = l.getEntity(d.id);
+                if (e == null) return;
+                Vec3 pe = posicion(e, pt);
+                float w = e.getBbWidth() * 0.5F + 0.12F, hh = e.getBbHeight();
+                float fin = Mth.clamp((d.dur - edad) / 4F, 0F, 1F);
+                for (int i = 0; i < 4; i++) {
+                    float y = (float) ((edad * 0.07F + i * 0.27F + Mascara.hash(d.sem, i, 1, 3) * 0.2F) % 1.0F) * hh;
+                    float alto = 0.05F + 0.04F * Mascara.hash(d.sem, i, (int) t, 7);
+                    int a = (int) (200 * fin);
+                    Vec3 o = pe.add(-w, y, -w);
+                    caja(c, m, nm, o, new Vec3(w * 2, 0, 0), new Vec3(0, alto, 0), new Vec3(0, 0, w * 2), v0, v1, a);
+                }
+                // ‖ encima de la cabeza, mirando a la cámara
+                Vec3 cab = pe.add(0, hh + 0.45, 0);
+                Vec3 lado = cam.subtract(cab).cross(new Vec3(0, 1, 0));
+                if (lado.lengthSqr() < 1.0E-4) lado = new Vec3(1, 0, 0);
+                lado = lado.normalize();
+                int a = (int) (240 * fin * (0.75F + 0.25F * Mth.sin(edad * 0.6F)));
+                for (int s2 = -1; s2 <= 1; s2 += 2) {
+                    Vec3 b0 = cab.add(lado.scale(s2 * 0.09)), b1 = b0.add(lado.scale(s2 * 0.08));
+                    quad(c, m, nm, b0.add(0, -0.17, 0), b1.add(0, -0.17, 0), b1.add(0, 0.17, 0), b0.add(0, 0.17, 0), 0, 0.2F, v1, v0, 255, a);
+                }
+            }
             case SILUETA -> {
                 float yaw = d.yaw * Mth.DEG_TO_RAD;
                 Vec3 der = new Vec3(-Mth.cos(yaw), 0, -Mth.sin(yaw)), fr = new Vec3(-Mth.sin(yaw), 0, Mth.cos(yaw));
@@ -483,6 +579,44 @@ public final class EfectosMundo {
             }
             default -> {}
         }
+    }
+
+    /** Figura de persona hecha de cajas de nieve (cabeza, cuerpo, brazos y piernas), con temblor 'jit' y brazo derecho 'brazo' (0-1 = golpe). */
+    private static void figura(VertexConsumer c, Matrix4f m, Matrix3f nm, Vec3 pie, float yawGrados, int sem, long t, float jit, float brazo, int a, float v0, float v1) {
+        if (a <= 0) return;
+        float yaw = yawGrados * Mth.DEG_TO_RAD;
+        Vec3 der = new Vec3(-Mth.cos(yaw), 0, -Mth.sin(yaw)), fr = new Vec3(-Mth.sin(yaw), 0, Mth.cos(yaw));
+        double[][] cajas = {{-0.25, 1.5, 0.5, 0.5, 0.5}, {-0.25, 0.75, 0.5, 0.75, 0.25}, {-0.5, 0.75, 0.25, 0.75, 0.25},
+                {0.25, 0.75, 0.25, 0.75, 0.25}, {-0.25, 0, 0.25, 0.75, 0.25}, {0, 0, 0.25, 0.75, 0.25}};
+        for (int i = 0; i < cajas.length; i++) {
+            double[] b = cajas[i];
+            float jx = (Mascara.hash(sem, i, (int) t, 3) - 0.5F) * jit, jy = (Mascara.hash(sem, i, (int) t, 4) - 0.5F) * jit * 0.5F;
+            Vec3 o = pie.add(der.scale(b[0] + jx)).add(0, b[1] + jy, 0).add(fr.scale(-b[4] / 2));
+            if (i == 2 && brazo > 0) {
+                // brazo derecho estirado hacia delante (puñetazo)
+                Vec3 hombro = pie.add(der.scale(b[0] + jx)).add(0, 1.38, 0).add(fr.scale(-b[4] / 2));
+                caja(c, m, nm, hombro, der.scale(b[2]), new Vec3(0, 0.25, 0), fr.scale(0.25 + 0.55 * brazo), v0, v1, a);
+                continue;
+            }
+            caja(c, m, nm, o, der.scale(b[2]), new Vec3(0, b[3], 0), fr.scale(b[4]), v0, v1, a);
+        }
+    }
+
+    private static void dibujarClon(VertexConsumer c, PoseStack ps, ClonC cl, long t, float pt) {
+        float k = t - cl.desde + pt;
+        int n = cl.x.length;
+        if (k < 0 || k >= n - 1) return;
+        int i = (int) k;
+        float f = k - i;
+        Vec3 pie = new Vec3(Mth.lerp(f, cl.x[i], cl.x[i + 1]), Mth.lerp(f, cl.y[i], cl.y[i + 1]), Mth.lerp(f, cl.z[i], cl.z[i + 1]));
+        float yaw = Mth.rotLerp(f, cl.yaw[i], cl.yaw[i + 1]);
+        float brazo = 0;
+        for (int j = Math.max(0, i - 4); j <= i; j++) if (cl.golpe[j]) brazo = Math.max(brazo, 1F - (i - j + f) / 5F);
+        float ini = Mth.clamp(k / 4F, 0F, 1F), fin = Mth.clamp((n - 1 - k) / 6F, 0F, 1F);
+        boolean corte = Mascara.hash(cl.dueno, (int) (t / 3), 7, 11) < 0.1F;
+        int a = (int) (225 * ini * fin * (corte ? 0.35F : 1F));
+        int fr = (int) ((t + cl.dueno) % 8);
+        figura(c, ps.last().pose(), ps.last().normal(), pie, yaw, cl.dueno, t, corte ? 0.3F : 0.06F, brazo, a, fr / 8F, (fr + 1) / 8F);
     }
 
     private static void anillo(VertexConsumer c, Matrix4f m, Matrix3f nm, Vec3 cen, float rad, float w, float giro, float v0, float v1, int a, int gris) {

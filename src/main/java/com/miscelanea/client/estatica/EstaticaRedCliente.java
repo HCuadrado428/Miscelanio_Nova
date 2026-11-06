@@ -41,4 +41,16 @@ public final class EstaticaRedCliente {
     public static void cara(EstaticaRed.CaraPantalla p) {
         CaraPantalla.recibir(p);
     }
+
+    public static void senal(EstaticaRed.SenalMsg p) {
+        EstaticaHud.senal(p.valor);
+    }
+
+    public static void pantallazo(EstaticaRed.Pantallazo p) {
+        EstaticaHud.pantallazo(p.tipo, p.ticks, p.extra);
+    }
+
+    public static void clon(EstaticaRed.Clon p) {
+        EfectosMundo.clon(p);
+    }
 }

@@ -45,8 +45,11 @@ public final class Luces {
     }
 
     static void apagarCerca(ServerPlayer p) {
+        apagarCerca(p, ConfigServidor.estaticaLucesRadio());
+    }
+
+    static void apagarCerca(ServerPlayer p, int r) {
         ServerLevel l = p.serverLevel();
-        int r = ConfigServidor.estaticaLucesRadio();
         long t = l.getGameTime();
         BlockPos c = p.blockPosition();
         int n = 0;

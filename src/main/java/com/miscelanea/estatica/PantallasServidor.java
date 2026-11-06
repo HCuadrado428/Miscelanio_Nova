@@ -57,7 +57,7 @@ public final class PantallasServidor {
     }
 
     /** Pantallas con entidad de bloque en el radio (ordenadas por distancia). */
-    private static List<BlockPos> buscar(ServerLevel l, BlockPos centro, int radio) {
+    static List<BlockPos> buscar(ServerLevel l, BlockPos centro, int radio) {
         List<BlockPos> out = new ArrayList<>();
         int c0x = (centro.getX() - radio) >> 4, c1x = (centro.getX() + radio) >> 4, c0z = (centro.getZ() - radio) >> 4, c1z = (centro.getZ() + radio) >> 4;
         double r2 = (double) radio * radio;
@@ -153,6 +153,15 @@ public final class PantallasServidor {
         Vec3 c = Vec3.atCenterOf(bp);
         EstaticaRed.cerca(l, c.x, c.y, c.z, 64, new EstaticaRed.Fx(EstaticaRed.Fx.ESTELA, p.getId(), c.x, c.y - 0.2, c.z, dest.x, dest.y, dest.z, Math.round(yaw)));
         EstaticaRed.cerca(l, dest.x, dest.y, dest.z, 64, EstaticaRed.Fx.en(EstaticaRed.Fx.ESTALLIDO, p.getId(), dest.add(0, 1, 0), 1));
+        // la pantalla revienta en un fogonazo: ciega, aturde y quema un poco a los de delante
+        Vec3 fc = Vec3.atCenterOf(bp);
+        for (net.minecraft.world.entity.LivingEntity v : l.getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class,
+                new net.minecraft.world.phys.AABB(fc, fc).inflate(5), x -> Estatica.objetivoValido(p, x) && x.distanceToSqr(fc) < 25)) {
+            Estatica.efecto(v, net.minecraft.world.effect.MobEffects.BLINDNESS, 60, 0, p);
+            if (Estatica.golpear(p, v, ConfigServidor.estaticaPantallaDano())) Estatica.interferir(p, v, 2);
+            if (v instanceof ServerPlayer vp) EstaticaRed.a(vp, new EstaticaRed.Nieve(40, false, 0));
+        }
+        EstaticaRed.cerca(l, fc.x, fc.y, fc.z, 64, EstaticaRed.Fx.en(EstaticaRed.Fx.CHISPAZO, p.getId(), fc, 1));
         Estatica.sonido(l, c, EstaticaRegistro.PANTALLA.get(), 1F, 0.8F);
         Estatica.sonido(l, dest, EstaticaRegistro.ESTALLIDO.get(), 0.7F, 1.2F);
         EstaticaRed.a(p, new EstaticaRed.Pantallas(d.entrada, List.of(), new byte[0], 0));

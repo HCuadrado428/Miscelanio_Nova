@@ -21,6 +21,8 @@ public final class Tentaculos {
     private Tentaculos() {}
 
     public static final int AGARRA = 6;
+    /** Ticks que se sostiene a la víctima esperando a que elija (luego la atrae sola). */
+    public static final int SOSTENER = 40;
 
     /** Duración (ticks) de cada poder (= cliente). */
     public static int duracion(Poder pd) {
@@ -28,6 +30,7 @@ public final class Tentaculos {
             case ATRAER -> 22;
             case LANZAR -> 20;
             case ESTAMPAR -> 44;
+            case TENTACULOS -> SOSTENER + 6;
             default -> 10;
         };
     }
@@ -35,8 +38,8 @@ public final class Tentaculos {
     private static final class Agarre {
         final ServerPlayer atk;
         final LivingEntity v;
-        final Poder pd;
-        final double y0;
+        Poder pd;
+        double y0;
         /** Posición en el grupo (Atraer agarra a varios: cada uno llega a un sitio distinto delante de él). */
         final int i;
         int t;
@@ -77,13 +80,51 @@ public final class Tentaculos {
         for (LivingEntity v : vs) {
             if (agarrado(v)) continue;
             ACT.add(new Agarre(p, v, pd, i++));
-            EstaticaRed.Tentaculo msg = new EstaticaRed.Tentaculo(p.getId(), v.getId(), pd.ordinal(), duracion(pd));
+            EstaticaRed.Tentaculo msg = new EstaticaRed.Tentaculo(p.getId(), v.getId(), pd.ordinal(), duracion(pd), 0);
             Vec3 c = p.position().add(v.position()).scale(0.5);
             EstaticaRed.cerca(p.serverLevel(), c.x, c.y, c.z, 80, msg);
         }
         if (i == 0) return false;
         Estatica.sonido(p.serverLevel(), p.position().add(0, 1.2, 0), EstaticaRegistro.TENTACULO.get(), 1F, 1F);
         return true;
+    }
+
+    /** ¿Tiene a alguien agarrado esperando qué hacer? */
+    public static boolean sosteniendo(ServerPlayer p) {
+        for (Agarre a : ACT) if (a.atk == p && a.pd == Poder.TENTACULOS) return true;
+        return false;
+    }
+
+    /** Con la víctima sostenida: pasa a estampar, lanzar o atraer (los tentáculos ya están puestos). */
+    static void elegir(ServerPlayer p, Poder pd) {
+        for (Agarre a : ACT) {
+            if (a.atk != p || a.pd != Poder.TENTACULOS || a.t < AGARRA) continue;
+            cambiar(a, pd);
+            return;
+        }
+    }
+
+    private static void cambiar(Agarre a, Poder pd) {
+        a.pd = pd;
+        a.t = AGARRA;
+        a.y0 = a.v.getY();
+        a.golpe = false;
+        Vec3 c = a.atk.position().add(a.v.position()).scale(0.5);
+        EstaticaRed.cerca(a.atk.serverLevel(), c.x, c.y, c.z, 80, new EstaticaRed.Tentaculo(a.atk.getId(), a.v.getId(), pd.ordinal(), duracion(pd), AGARRA));
+        Estatica.sonido(a.atk.serverLevel(), a.v.position(), EstaticaRegistro.TENTACULO.get(), 0.9F, pd == Poder.ESTAMPAR ? 0.7F : 1.2F);
+    }
+
+    /** Sostenida delante, retorciéndose: daño poco a poco; si no eliges, la atrae sola. */
+    private static boolean sostener(Agarre a) {
+        LivingEntity v = a.v;
+        Vec3 dest = a.atk.getEyePosition().add(a.atk.getLookAngle().scale(2.6 + v.getBbWidth() * 0.5)).add(0, -v.getBbHeight() * 0.5 + 0.2, 0);
+        hacia(v, dest, 0.3, 0.9);
+        if ((a.t - AGARRA) % 10 == 9) {
+            if (Estatica.golpear(a.atk, v, ConfigServidor.estaticaTentDano())) v.invulnerableTime = Math.min(v.invulnerableTime, 9);
+            if (v instanceof ServerPlayer vp) EstaticaRed.a(vp, new EstaticaRed.Nieve(8, true, 0));
+        }
+        if (a.t >= SOSTENER) cambiar(a, Poder.ATRAER);
+        return false;
     }
 
     static void soltarDe(ServerPlayer p) {
@@ -118,6 +159,7 @@ public final class Tentaculos {
                 case ATRAER -> atraer(a);
                 case LANZAR -> lanzar(a);
                 case ESTAMPAR -> estampar(a);
+                case TENTACULOS -> sostener(a);
                 default -> true;
             };
             v.hurtMarked = true;
@@ -144,7 +186,7 @@ public final class Tentaculos {
         hacia(a.v, dest, 0.32, 1.3);
         if (a.t >= duracion(a.pd) - 4 || a.v.position().distanceToSqr(dest) < 0.3) {
             a.v.setDeltaMovement(a.v.getDeltaMovement().scale(0.2));
-            Estatica.interferir(a.atk, a.v, 1);
+            Estatica.interferir(a.atk, a.v, 2);
             return true;
         }
         return false;

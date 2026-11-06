@@ -18,7 +18,8 @@ import java.util.List;
 /**
  * Rueda de poderes del hombre de estática (como la de herramientas del maletín, estilo GTA): sale al mantener la tecla,
  * se apunta con el ratón y al SOLTAR la tecla se elige el poder marcado (en el centro = ninguno). También vale un clic o
- * los números. No pausa el juego. Luego el poder se usa con clic derecho y la mano vacía.
+ * los números. No pausa el juego y se puede seguir andando, saltando y corriendo con la rueda abierta. Luego el poder se
+ * usa con clic derecho y la mano vacía.
  */
 public class RuedaPoderes extends Screen {
     private static final float R0 = 34F, R1 = 100F;
@@ -43,6 +44,29 @@ public class RuedaPoderes extends Screen {
     @Override
     public void tick() {
         if (!EstaticaCliente.yo() || EstaticaCine.localActiva()) onClose();
+        moverse();
+    }
+
+    /** Las teclas de moverse siguen funcionando con la rueda abierta (se leen directamente del teclado). */
+    static void moverse() {
+        Minecraft mc = Minecraft.getInstance();
+        long win = mc.getWindow().getWindow();
+        var o = mc.options;
+        for (net.minecraft.client.KeyMapping k : new net.minecraft.client.KeyMapping[]{o.keyUp, o.keyDown, o.keyLeft, o.keyRight, o.keyJump, o.keySprint, o.keyShift}) {
+            com.mojang.blaze3d.platform.InputConstants.Key key = k.getKey();
+            boolean abajo = switch (key.getType()) {
+                case KEYSYM -> key.getValue() > 0 && com.mojang.blaze3d.platform.InputConstants.isKeyDown(win, key.getValue());
+                case MOUSE -> GLFW.glfwGetMouseButton(win, key.getValue()) == GLFW.GLFW_PRESS;
+                default -> false;
+            };
+            net.minecraft.client.KeyMapping.set(key, abajo);
+        }
+    }
+
+    @Override
+    public void removed() {
+        super.removed();
+        moverse();
     }
 
     private int sector(double mx, double my) {
@@ -98,6 +122,7 @@ public class RuedaPoderes extends Screen {
         float k = 1F - (1F - ap) * (1F - ap);
         float cx = width / 2F, cy = height / 2F;
         marcada = sector(mx, my);
+        moverse();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         EstaticaHud.borde(g, width, height, 0.5F * k);
@@ -114,10 +139,14 @@ public class RuedaPoderes extends Screen {
             float rm = (r0 + r1) / 2F;
             int ix = Math.round(cx + (float) Math.sin(am) * rm), iy = Math.round(cy - (float) Math.cos(am) * rm);
             int t = sel ? 38 : 30;
-            RenderSystem.setShaderColor(1F, 1F, 1F, sel ? 1F : 0.8F);
+            boolean llega = EstaticaHud.senal() >= poderes.get(i).coste();
+            float gris = llega ? 1F : 0.45F;
+            RenderSystem.setShaderColor(gris, gris, gris, sel ? 1F : 0.8F);
             g.blit(icono(poderes.get(i)), ix - t / 2, iy - t / 2, t, t, 0F, 0F, 64, 64, 64, 64);
             RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-            Dibujo.texto(g, font, Component.literal(String.valueOf(i + 1)), ix + t / 2F - 2, iy + t / 2F - 6, 0.6F, 0xFFB0B0B8, true);
+            if (i < 9) Dibujo.texto(g, font, Component.literal(String.valueOf(i + 1)), ix + t / 2F - 2, iy + t / 2F - 6, 0.6F, 0xFFB0B0B8, true);
+            int coste = poderes.get(i).coste();
+            if (coste > 0) Dibujo.texto(g, font, Component.literal(String.valueOf(coste)), ix, iy + t / 2F - 4, 0.55F, llega ? 0xFFE8E8F0 : 0xFFFF6060, true);
         }
         Dibujo.disco(g, cx, cy, (R0 - 3) * k, 0xD0080808);
         Poder p = marcada >= 0 ? poderes.get(marcada) : Poder.NINGUNO;
@@ -125,6 +154,8 @@ public class RuedaPoderes extends Screen {
         Component corto = p == Poder.IMITAR ? Component.translatable("estatica.miscelanea.imitar_hay", ImitarVoz.cuantos(), ImitarVoz.proximo())
                 : Component.translatable(p.clave() + ".corto");
         Dibujo.texto(g, font, corto, cx, cy + 3, 0.5F, 0xFFB0B0B8, true);
+        if (p.coste() > 0) Dibujo.texto(g, font, Component.translatable("estatica.miscelanea.coste", p.coste(), EstaticaHud.senal()), cx, cy + 11, 0.5F,
+                EstaticaHud.senal() >= p.coste() ? 0xFFD0D0FF : 0xFFFF7070, true);
         Dibujo.texto(g, font, Component.translatable("gui.miscelanea.rueda_estatica.ayuda"), cx, cy + R1 + 18, 0.7F, 0xFFD8D8E0, true);
         RenderSystem.disableBlend();
     }
