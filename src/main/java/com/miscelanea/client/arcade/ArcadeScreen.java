@@ -79,10 +79,13 @@ public class ArcadeScreen extends Screen {
     private final Map<Integer, Integer> remotas = new HashMap<>(), locales = new HashMap<>();
     private ArcadeCliente.Remota remota;
     private float escala = 1, origenX, origenY;
-    /** Máquina de un solo juego (cabina de carreras, recreativa de pistola): no hay menú para elegir. */
+    /**
+     * Máquina de un solo juego (recreativas dedicadas, cabina de carreras, recreativa de pistola): no hay menú para elegir;
+     * al abrirla empieza ese juego directamente y, al acabar, A vuelve a jugarlo y B sale.
+     */
     private String fijo = "";
-    /** Paso Doble: dónde suena la canción que este jugador ha puesto (su máquina), o null. */
-    private BlockPos musicaPaso;
+    /** Ya se ha pedido la primera partida de una máquina de un solo juego (solo se hace una vez al abrir). */
+    private boolean arrancado;
 
     public ArcadeScreen fijar(String id) {
         if (ArcadeJuegos.esArcade(id)) {
@@ -189,7 +192,6 @@ public class ArcadeScreen extends Screen {
     public void removed() {
         ModNetwork.CHANNEL.sendToServer(new ArcadeAccionPacket(pos, ArcadeAccionPacket.CERRAR, "", 0));
         pararMusica();
-        pararPaso();
         if (tex != null) tex.cerrar();
         super.removed();
     }
@@ -207,12 +209,6 @@ public class ArcadeScreen extends Screen {
                 estado = Estado.MENU;
                 mostrarAviso(I18n.get(doble && companero.length() > 0 && ArcadeJuegos.dosJugadores(ArcadeJuegos.IDS[sel])
                         ? "consola.miscelanea.dos_fichas" : "consola.miscelanea.inserta_ficha"));
-                JuegoGB.sonido(ModSounds.GB_FIN, 1.6F);
-            }
-            case 6 -> {
-                // Paso Doble: suena otra pista de baile o recreativa cerca (no se mezclan las músicas)
-                estado = Estado.MENU;
-                mostrarAviso(I18n.get("paso.miscelanea.otra_sonando", m.jugadores));
                 JuegoGB.sonido(ModSounds.GB_FIN, 1.6F);
             }
             case 5 -> {
@@ -271,7 +267,6 @@ public class ArcadeScreen extends Screen {
             case "comecocos" -> juego = new Comecocos(bs, semilla, jug);
             case "pinball" -> juego = new Pinball(bs, semilla, jug);
             case "bloques" -> juego = new DueloBloques(bs, semilla, jug);
-            case "paso" -> juego = new PasoDoble(bs, semilla, jug);
             case "pistola" -> juego = new PistolaChatarra(bs, semilla, 1);
             case "astro" -> clasico = new AstroPatrulla(bot);
             default -> {
@@ -322,6 +317,19 @@ public class ArcadeScreen extends Screen {
         switch (estado) {
             case MENU -> {
                 if (invitado) break;
+                // máquina de un solo juego: empieza directamente, sin pantalla de selección (ya hay crédito o juego libre:
+                // el servidor no la abre sin él)
+                if (!fijo.isEmpty() && !arrancado) {
+                    arrancado = true;
+                    if (creditos > 0 || libre) {
+                        pedirPartida();
+                        break;
+                    }
+                }
+                if (!fijo.isEmpty() && bot.pulsa(Botones.B)) {
+                    onClose();
+                    break;
+                }
                 int n = ArcadeJuegos.IDS.length;
                 if (!fijo.isEmpty()) n = 0;
                 if (n > 0 && bot.repite(Botones.ABAJO, 14, 5)) {
@@ -360,48 +368,9 @@ public class ArcadeScreen extends Screen {
             juego.cambiarMusica = null;
             juego.pararMusica = false;
         }
-        if (estado == Estado.JUEGO && juego instanceof PasoDoble pd) pasoDoble(pd);
         // retransmitir la pantalla a los que miran (10 imágenes por segundo); el invitado no retransmite
         if (++pasos % 6 == 0 && (!invitado || !propia.equals(pos)))
             ModNetwork.CHANNEL.sendToServer(new ArcadeFramePacket(invitado ? propia : pos, Trama.codificar(pant)));
-    }
-
-    /**
-     * Paso Doble con las canciones de la pista de baile: al empezar la canción se pone la música en la máquina (con posición),
-     * el jugador baila la coreografía y se avisa al servidor (los de alrededor la oyen y le ven bailar); al acabar, los
-     * puntos de este jugador van al ranking de esa canción y dificultad.
-     */
-    private void pasoDoble(PasoDoble pd) {
-        Minecraft mc = Minecraft.getInstance();
-        int yo = invitado ? 1 : 0;
-        if (pd.empiezaId != null) {
-            String id = pd.empiezaId;
-            pd.empiezaId = null;
-            pararPaso();
-            com.miscelanea.baile.CancionesBaile.Cancion c = com.miscelanea.baile.CancionesBaile.de(id);
-            if (c != null) {
-                musicaPaso = invitado ? propia : pos;
-                com.miscelanea.client.baile.BaileCliente.ponerMusica(musicaPaso, c, true);
-                if (mc.player != null) {
-                    long ahora = System.currentTimeMillis();
-                    com.miscelanea.client.baile.BailePoses.empezar(mc.player.getId(), c, ahora + PasoDoble.LATENCIA * 1000L / 60);
-                    com.miscelanea.client.baile.BailePoses.hasta(mc.player.getId(), ahora + (long) (c.duracion * 1000) + 3000);
-                }
-            }
-            ModNetwork.CHANNEL.sendToServer(new com.miscelanea.baile.BailePacket(com.miscelanea.baile.BailePacket.ARCADE_EMPIEZA, pos, 0, 0, pd.dif(yo), id));
-        }
-        if (pd.acaba) {
-            pd.acaba = false;
-            pararPaso();
-            ModNetwork.CHANNEL.sendToServer(new com.miscelanea.baile.BailePacket(com.miscelanea.baile.BailePacket.ARCADE_FIN, pos, 0, pd.puntosDe(yo), pd.notaDe(yo)));
-        }
-    }
-
-    private void pararPaso() {
-        if (musicaPaso != null) com.miscelanea.client.baile.BaileCliente.quitarMusica(musicaPaso);
-        musicaPaso = null;
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null && !com.miscelanea.client.baile.BaileCliente.raton()) com.miscelanea.client.baile.BailePoses.parar(mc.player.getId());
     }
 
     /** Un paso de la partida a dos: manda los mandos de un paso futuro y avanza solo si ya tiene los del compañero. */
@@ -461,6 +430,11 @@ public class ArcadeScreen extends Screen {
             if (creditos <= 0 && !libre) ModNetwork.CHANNEL.sendToServer(new ArcadeAccionPacket(pos, ArcadeAccionPacket.FICHA, "", 0));
             else pedirPartida();
         } else if (tFin > 40 && bot.pulsa(Botones.B)) {
+            // en una máquina de un solo juego no hay menú al que volver: se sale
+            if (!fijo.isEmpty()) {
+                onClose();
+                return;
+            }
             estado = Estado.MENU;
             t = 0;
         }
@@ -498,6 +472,10 @@ public class ArcadeScreen extends Screen {
         }
         p.limpiar(33);
         for (int y = 0; y < 24; y++) p.rect(0, y, Pantalla.W, 1, y < 22 ? 42 : 45);
+        if (!fijo.isEmpty()) {
+            portada(p);
+            return;
+        }
         p.textoC("MISCELÁNEA ARCADE", 128, 7, 20);
         int visibles = 8, primero = Math.max(0, Math.min(sel - 3, ArcadeJuegos.IDS.length - visibles));
         if (primero > 0 && (t / 15) % 2 == 0) p.textoC("▲", 128, 24, 6);
@@ -532,6 +510,35 @@ public class ArcadeScreen extends Screen {
         }
     }
 
+    /**
+     * Pantalla de espera de una máquina de un solo juego (sin lista de juegos): su título, sus mejores marcas y los créditos.
+     * Solo se ve si no se pudo empezar (sin créditos) o mientras llega la partida.
+     */
+    private void portada(Pantalla p) {
+        p.textoC("MISCELÁNEA ARCADE", 128, 7, 20);
+        p.rect(24, 30, 208, 22, 35);
+        p.marco(24, 30, 208, 22, 45);
+        p.textoC(I18n.get("juego.miscelanea." + fijo), 128, 37, 20);
+        ListTag tb = ArcadeCliente.tabla(fijo);
+        p.textoC(I18n.get("consola.miscelanea.record"), 128, 60, 39);
+        for (int i = 0; i < Math.min(8, tb.size()); i++) {
+            CompoundTag c = tb.getCompound(i);
+            int y = 73 + i * 11;
+            p.texto((i + 1) + ". " + recorta(c.getString("n")), 40, y, i == 0 ? 20 : 6);
+            p.textoD(Integer.toString(c.getInt("p")), 216, y, i == 0 ? 20 : 6);
+        }
+        p.rect(0, 166, Pantalla.W, 26, 1);
+        if (aviso > 0) {
+            if ((aviso / 8) % 2 == 0) p.textoC(avisoTxt, 128, 176, 12);
+        } else if (estado == Estado.ESPERA) p.textoC("...", 128, 176, 6);
+        else {
+            String cr = libre ? I18n.get("consola.miscelanea.libre") : creditos > 0 ? I18n.get("consola.miscelanea.creditos", creditos)
+                    : (t / 20) % 2 == 0 ? I18n.get("consola.miscelanea.start_ficha") : "";
+            p.textoC(cr, 128, 170, creditos > 0 || libre ? 19 : 15);
+            p.textoC(I18n.get(creditos > 0 || libre ? "consola.miscelanea.jugar_salir" : "consola.miscelanea.salir_b"), 128, 181, 6);
+        }
+    }
+
     private void marcoClasico(Pantalla p) {
         p.limpiar(1);
         for (int y = 0; y < Pantalla.H; y += 4) p.rect(0, y, Pantalla.W, 1, 2);
@@ -555,7 +562,8 @@ public class ArcadeScreen extends Screen {
         }
         if (puesto == 1 && (tFin / 10) % 2 == 0) p.textoC(I18n.get("consola.miscelanea.record_mundial"), 128, 146, 20);
         else if (puesto > 1) p.textoC(I18n.get("consola.miscelanea.top", puesto), 128, 146, 20);
-        if (tFin > 40) p.textoC(I18n.get(invitado ? "consola.miscelanea.espera_j1" : "consola.miscelanea.otra_ficha"), 128, 160, 7);
+        if (tFin > 40) p.textoC(I18n.get(invitado ? "consola.miscelanea.espera_j1" : fijo.isEmpty() ? "consola.miscelanea.otra_ficha" : "consola.miscelanea.otra_salir"),
+                128, 160, 7);
     }
 
     private static String recorta(String s) {

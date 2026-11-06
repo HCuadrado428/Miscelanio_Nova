@@ -3,7 +3,6 @@ package com.miscelanea.client.baile;
 import com.miscelanea.baile.PistaBaileBlock;
 import com.miscelanea.baile.CancionesBaile;
 import com.miscelanea.baile.PistaBaileBlockEntity;
-import com.miscelanea.client.arcade.PasoDoble;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -56,7 +55,7 @@ public class PistaBaileRenderer implements BlockEntityRenderer<PistaBaileBlockEn
 
     /** Dibuja la flecha (máscara de 14x14) a escala de 0.4 px por celda, tumbada sobre la pista. */
     static void flecha(VertexConsumer vc, Matrix4f m, int c, float cx, float cz, int argb) {
-        String[] f = PasoDoble.FLECHA;
+        String[] f = BaileCliente.FLECHA;
         float e = 0.4F / 16;
         int a = argb >>> 24, r = (argb >> 16) & 255, g = (argb >> 8) & 255, b = argb & 255;
         for (int y = 0; y < 14; y++)

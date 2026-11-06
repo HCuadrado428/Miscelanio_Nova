@@ -19,18 +19,10 @@ public class MusicaPista extends AbstractTickableSoundInstance {
     /** ¿Ya se ha visto en la pista (cliente) la canción puesta? Hasta entonces no se compara (el aviso llega antes que los datos). */
     private boolean vista;
     private int edad;
-    /** En una recreativa de Paso Doble (no en una pista): se corta si la recreativa desaparece o se quita a mano. */
-    private final boolean arcade;
-
     public MusicaPista(SoundEvent ev, BlockPos pista, String cancion) {
-        this(ev, pista, cancion, false);
-    }
-
-    public MusicaPista(SoundEvent ev, BlockPos pista, String cancion, boolean arcade) {
         super(ev, SoundSource.RECORDS, RandomSource.create());
         this.pista = pista.immutable();
         this.cancion = cancion;
-        this.arcade = arcade;
         this.looping = false;
         this.delay = 0;
         this.relative = false;
@@ -50,11 +42,6 @@ public class MusicaPista extends AbstractTickableSoundInstance {
             return;
         }
         edad++;
-        if (arcade) {
-            if (!mc.level.isLoaded(pista) || !(mc.level.getBlockEntity(pista) instanceof com.miscelanea.arcade.RecreativaBlockEntity rb) || rb.isRemoved()
-                    || mc.player.distanceToSqr(x, y, z) > 64 * 64) stop();
-            return;
-        }
         if (!mc.level.isLoaded(pista) || !(mc.level.getBlockEntity(pista) instanceof PistaBaileBlockEntity be) || be.isRemoved()) {
             stop();
             return;
