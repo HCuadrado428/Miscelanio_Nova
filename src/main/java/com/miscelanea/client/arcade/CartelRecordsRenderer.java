@@ -62,7 +62,7 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
         Matrix4f m = new Matrix4f(der.getStepX() * S, 0, der.getStepZ() * S, 0, 0, -S, 0, 0, nx * S, 0, nz * S, 0, cx, cy, cz, 1);
         ps.last().pose().mul(m);
         int estilo = be.getBlockState().getBlock() instanceof CartelRecordsBlock cb ? cb.estilo : CartelRecordsBlock.ARCADE;
-        if (estilo == CartelRecordsBlock.FERIA) pizarra(ps, buf, w * 64, h * 64, w, h);
+        if (estilo == CartelRecordsBlock.FERIA) pizarra(ps, buf, w * 64, h * 64, w, h, luz, nx, nz);
         else if (estilo == CartelRecordsBlock.TABLON) tablon(ps, buf, w * 64, h * 64, w, h, be.categoria, luz);
         else retro(ps, buf, w * 64, h * 64, w, h);
         ps.popPose();
@@ -166,101 +166,81 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
 
     // ------------------------------------------------------------------ pizarra de tiza de la feria
     static final int[] TIZAS = {0xFFFFE97A, 0xFFFF9CC8, 0xFF9CDCFF, 0xFFB8F59A, 0xFFFFB27A, 0xFFE0C0FF};
+    private static final int TIZA_BLANCA = 0xFFF2EFE4;
 
-    private void pizarra(PoseStack ps, MultiBufferSource buf, int W, int H, int w, int h) {
+    /** Pizarra: el dibujo es pixel art a 32 px por bloque ({@link PizarraTextura}); encima, la tiza con la luz del sitio. */
+    private void pizarra(PoseStack ps, MultiBufferSource buf, int W, int H, int w, int h, int luzSitio, float nx, float nz) {
         Font font = Minecraft.getInstance().font;
         long ms = System.currentTimeMillis();
         Matrix4f m = ps.last().pose();
-        VertexConsumer vc = buf.getBuffer(RenderType.textBackground());
-        // marco de madera con vetas
-        quad(buf.getBuffer(RenderType.textBackground()), m, 0, 0, W, H, 0, 0xFF7A4A24);
-        for (int k = 0; k < 6; k++) {
-            float y = 1 + k * 0.7F;
-            quad(buf.getBuffer(RenderType.textBackground()), m, 0, y, W, y + 0.25F, 0.02F, 0xFF5E3618);
-            quad(buf.getBuffer(RenderType.textBackground()), m, 0, H - y - 0.25F, W, H - y, 0.02F, 0xFF5E3618);
-        }
-        quad(buf.getBuffer(RenderType.textBackground()), m, 0, 0, W, 0.8F, 0.03F, 0xFF9A6434);
-        // pizarra verde con manchas de borrador
-        quad(buf.getBuffer(RenderType.textBackground()), m, 5, 5, W - 5, H - 7, 0.1F, 0xFF1F3A2C);
-        java.util.Random r = new java.util.Random(W * 31L + H);
-        for (int k = 0; k < (w * h) * 6; k++) {
-            float x = 6 + r.nextFloat() * (W - 22), y = 6 + r.nextFloat() * (H - 24), sw = 6 + r.nextFloat() * 14;
-            quad(buf.getBuffer(RenderType.textBackground()), m, x, y, x + sw, y + 2 + r.nextFloat() * 4, 0.11F, 0x0EFFFFFF);
-        }
-        // repisa con tizas y borrador
-        quad(buf.getBuffer(RenderType.textBackground()), m, 3, H - 7, W - 3, H - 4, 0.15F, 0xFF8A5530);
-        quad(buf.getBuffer(RenderType.textBackground()), m, 3, H - 4, W - 3, H - 3.2F, 0.15F, 0xFF5E3618);
-        for (int k = 0; k < Math.min(5, w + 1); k++) quad(buf.getBuffer(RenderType.textBackground()), m, 8 + k * 7, H - 8.6F, 13 + k * 7, H - 7, 0.2F, TIZAS[k % TIZAS.length] | 0xFF000000);
-        quad(buf.getBuffer(RenderType.textBackground()), m, W - 20, H - 9.5F, W - 9, H - 7, 0.2F, 0xFF3A3A44);
-        quad(buf.getBuffer(RenderType.textBackground()), m, W - 20, H - 10.5F, W - 9, H - 9.5F, 0.2F, 0xFFD8C090);
-        // guirnalda de banderines
-        int nb = Math.max(4, w * 4);
-        float paso = (W - 10) / (float) nb;
-        quad(buf.getBuffer(RenderType.textBackground()), m, 5, 6.2F, W - 5, 6.6F, 0.2F, 0xFFF0E8D0);
-        int[] bandera = {0xFFE03030, 0xFFFFD040, 0xFF3070E0, 0xFFF4F4F4, 0xFF40B060};
-        for (int k = 0; k < nb; k++) {
-            float bx = 5 + k * paso + paso * 0.15F, bw = paso * 0.7F;
-            int c = bandera[k % bandera.length];
-            for (int s = 0; s < 4; s++) {
-                float inset = bw * s / 8F;
-                quad(buf.getBuffer(RenderType.textBackground()), m, bx + inset, 6.6F + s * 1.2F, bx + bw - inset, 6.6F + (s + 1) * 1.2F, 0.21F, c);
-            }
-        }
-        int y0 = 13;
+        // un poco de luz siempre, para que la tiza se lea de noche
+        int luz = net.minecraft.client.renderer.LightTexture.pack(Math.max(5, net.minecraft.client.renderer.LightTexture.block(luzSitio)),
+                net.minecraft.client.renderer.LightTexture.sky(luzSitio));
+        VertexConsumer vc = buf.getBuffer(RenderType.entityCutoutNoCull(PizarraTextura.de(w, h)));
+        var nm = ps.last().normal();
+        float z = 0;
+        vc.vertex(m, 0, 0, z).color(255, 255, 255, 255).uv(0, 0).overlayCoords(net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY)
+                .uv2(luz).normal(nm, nx, 0, nz).endVertex();
+        vc.vertex(m, 0, H, z).color(255, 255, 255, 255).uv(0, 1).overlayCoords(net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY)
+                .uv2(luz).normal(nm, nx, 0, nz).endVertex();
+        vc.vertex(m, W, H, z).color(255, 255, 255, 255).uv(1, 1).overlayCoords(net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY)
+                .uv2(luz).normal(nm, nx, 0, nz).endVertex();
+        vc.vertex(m, W, 0, z).color(255, 255, 255, 255).uv(1, 0).overlayCoords(net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY)
+                .uv2(luz).normal(nm, nx, 0, nz).endVertex();
+        // zona donde se escribe (en unidades de 1/64 de bloque: 1 píxel de la textura = 2)
+        float arriba = 2 * (PizarraTextura.MARCO + PizarraTextura.GUIRNALDA) + 1, abajo = H - 2 * (PizarraTextura.MARCO + PizarraTextura.REPISA) - 4;
+        float izq = 2 * PizarraTextura.MARCO + 3, der = W - 2 * PizarraTextura.MARCO - 3;
+        float y0 = arriba;
         if (h >= 2) {
-            float kk = Math.min(2.2F, Math.max(1F, w * 0.5F));
-            String tit = I18n.get("cartel.miscelanea.titulo_feria");
-            texto(ps, buf, font, tit, W / 2F, y0, kk, 0xF0FFFFFF, true);
+            String tit = I18n.get("cartel.miscelanea.titulo_feria").toUpperCase();
+            float kk = Math.min(2F, (der - izq) / Math.max(1, font.width(tit)));
+            kk = Math.max(1F, (float) Math.floor(kk * 2) / 2F);        // a medios píxeles, para que no se emborrone
+            float tx = (W - font.width(tit) * kk) / 2;
+            textoL(ps, buf, font, tit, tx, y0, kk, 0.4F, TIZA_BLANCA, luz);
+            // subrayado de tiza a trozos, en la rejilla de píxeles
             float tw = font.width(tit) * kk;
-            for (float dx = 0; dx < tw; dx += 2) {
-                float yy = y0 + 10 * kk + (float) Math.sin(dx * 0.4F) * 0.6F;
-                quad(buf.getBuffer(RenderType.textBackground()), m, W / 2F - tw / 2 + dx, yy, W / 2F - tw / 2 + dx + 2.2F, yy + 0.7F, 0.2F, 0xC0FFFFFF);
-            }
-            y0 += (int) (12 * kk) + 3;
+            for (float dx = 0; dx < tw; dx += 4)
+                if (((int) dx / 4) % 5 != 3) q(buf, m, tx + dx, y0 + 9 * kk, tx + dx + 3, y0 + 9 * kk + 1, 0.3F, 0xD0F2EFE4, luz);
+            y0 += 9 * kk + 5;
         }
         int cols = Math.max(1, w / 2), filas = Math.max(1, h / 2);
-        float pw = (W - 14) / (float) cols, ph = (H - y0 - 10) / (float) filas;
+        float pw = (der - izq) / cols, ph = (abajo - y0) / filas;
         String[] ids = com.miscelanea.arcade.ArcadeJuegos.FERIA;
         int total = cols * filas, pagina = (int) (ms / 9000);
         for (int fila = 0; fila < filas; fila++)
             for (int col = 0; col < cols; col++) {
                 int idx = Math.floorMod(pagina * total + fila * cols + col, ids.length);
-                panelTiza(ps, buf, font, 7 + col * pw, y0 + fila * ph, pw - 3, ph - 3, ids[idx], idx);
+                panelTiza(ps, buf, font, izq + col * pw, y0 + fila * ph, pw - 4, ph - 2, ids[idx], idx, luz);
             }
     }
 
-    private void panelTiza(PoseStack ps, MultiBufferSource buf, Font font, float x, float y, float pw, float ph, String id, int n) {
-        float kk = Math.min(pw / 66F, ph / 56F) * 0.85F;
+    private void panelTiza(PoseStack ps, MultiBufferSource buf, Font font, float x, float y, float pw, float ph, String id, int n, int luz) {
         Matrix4f m = ps.last().pose();
-        VertexConsumer vc = buf.getBuffer(RenderType.textBackground());
         int tiza = TIZAS[n % TIZAS.length];
-        String nombre = "★ " + I18n.get("juego.miscelanea." + id) + " ★";
-        texto(ps, buf, font, nombre, x + pw / 2, y + 1, kk, tiza, true);
-        float tw = font.width(nombre) * kk;
-        quad(buf.getBuffer(RenderType.textBackground()), m, x + pw / 2 - tw / 2, y + 10 * kk, x + pw / 2 + tw / 2, y + 10.6F * kk, 0.2F, (tiza & 0x00FFFFFF) | 0xA0000000);
+        String nombre = I18n.get("juego.miscelanea." + id);
+        float kt = Math.min(1F, pw / Math.max(1, font.width(nombre)));
+        textoL(ps, buf, font, nombre, x + pw / 2 - font.width(nombre) * kt / 2, y, kt, 0.4F, tiza, luz);
+        float tw = font.width(nombre) * kt;
+        for (float dx = 0; dx < tw; dx += 2) q(buf, m, x + pw / 2 - tw / 2 + dx, y + 9, x + pw / 2 - tw / 2 + dx + 1, y + 10, 0.3F, (tiza & 0x00FFFFFF) | 0xB0000000, luz);
         ListTag tb = ArcadeCliente.tabla(id);
-        float yy = y + 13 * kk, linea = 9.5F * kk;
-        int max = Math.max(1, Math.min(10, (int) ((y + ph - yy - 2) / linea)));
+        float yy = y + 13, linea = 9.5F;
+        int max = Math.max(1, Math.min(10, (int) ((y + ph - yy) / linea)));
         String unidad = I18n.get("cartel.miscelanea.unidad." + id);
         if (tb.isEmpty()) {
-            texto(ps, buf, font, I18n.get("cartel.miscelanea.vacio_feria"), x + pw / 2, yy + linea * 0.5F, kk * 0.8F, 0xC8FFFFFF, true);
+            String v = I18n.get("cartel.miscelanea.vacio_feria");
+            float kv = Math.min(1F, pw / Math.max(1, font.width(v)));
+            textoL(ps, buf, font, v, x + pw / 2 - font.width(v) * kv / 2, yy, kv, 0.4F, 0xC8F2EFE4, luz);
             return;
         }
-        float anchoTxt = pw / kk - 6;
         for (int i = 0; i < Math.min(max, tb.size()); i++) {
             CompoundTag c = tb.getCompound(i);
-            int col = i == 0 ? 0xFFFFE97A : 0xE6FFFFFF;
-            String pts = c.getInt("p") + " " + unidad;
+            int col = i == 0 ? 0xFFFFE97A : i < 3 ? 0xFFF2EFE4 : 0xD8D8D4C8;
+            String pts = c.getInt("p") + (unidad.isEmpty() ? "" : " " + unidad);
             String nm = (i + 1) + ". " + c.getString("n");
             int wp = font.width(pts);
-            nm = font.plainSubstrByWidth(nm, (int) Math.max(10, anchoTxt - wp - 4));
-            textoIzq(ps, buf, font, nm, x + 3 * kk, yy, kk, col);
-            textoIzq(ps, buf, font, pts, x + pw - 3 * kk - wp * kk, yy, kk, col);
-            if (i == 0) {
-                // subrayado de tiza bajo el ganador
-                for (float dx = 0; dx < pw - 6 * kk; dx += 2)
-                    quad(buf.getBuffer(RenderType.textBackground()), m, x + 3 * kk + dx, yy + 8.4F * kk + (float) Math.sin(dx * 0.5F) * 0.4F, x + 3 * kk + dx + 2.2F, yy + 9F * kk + (float) Math.sin(dx * 0.5F) * 0.4F, 0.19F, 0xB0FFE97A);
-            }
+            nm = font.plainSubstrByWidth(nm, (int) Math.max(10, pw - wp - 4));
+            textoL(ps, buf, font, nm, x, yy, 1F, 0.4F, col, luz);
+            textoL(ps, buf, font, pts, x + pw - wp, yy, 1F, 0.4F, col, luz);
             yy += linea;
         }
     }
