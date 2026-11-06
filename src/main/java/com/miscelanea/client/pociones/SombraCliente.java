@@ -283,13 +283,13 @@ public final class SombraCliente {
     private static void humo(ClientLevel l, RandomSource r, Player p) {
         float yaw = p.yBodyRot * Mth.DEG_TO_RAD;
         double fx = -Mth.sin(yaw), fz = Mth.cos(yaw), rx = -Mth.cos(yaw), rz = -Mth.sin(yaw);
-        if (r.nextFloat() < 0.55F) {
+        if (r.nextFloat() < 0.3F) {
             double a = (r.nextDouble() * 2 - 1) * 0.85, b = (r.nextDouble() * 2 - 1) * 0.3;
             l.addParticle(PocionesRegistro.HUMO_SOMBRA.get(), p.getX() + fx * a + rx * b, p.getY() + 0.06, p.getZ() + fz * a + rz * b,
                     0, 0.012 + r.nextDouble() * 0.02, 0);
         }
         double vel = Math.sqrt(p.getDeltaMovement().x * p.getDeltaMovement().x + p.getDeltaMovement().z * p.getDeltaMovement().z);
-        if (vel > 0.02 && r.nextFloat() < Math.min(0.9, vel * 8)) {
+        if (vel > 0.02 && r.nextFloat() < Math.min(0.5, vel * 5)) {
             double b = (r.nextDouble() * 2 - 1) * 0.25;
             l.addParticle(PocionesRegistro.HUMO_SOMBRA.get(), p.getX() - fx * 1.0 + rx * b, p.getY() + 0.05, p.getZ() - fz * 1.0 + rz * b,
                     -p.getDeltaMovement().x * 0.2, 0.008, -p.getDeltaMovement().z * 0.2);
