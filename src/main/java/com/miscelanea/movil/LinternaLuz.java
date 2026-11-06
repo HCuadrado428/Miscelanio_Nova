@@ -198,7 +198,10 @@ public final class LinternaLuz {
             return;
         }
         if (!l.isLoaded(gp.pos())) return;
-        if (l.getBlockState(gp.pos()).is(Blocks.LIGHT)) l.setBlock(gp.pos(), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+        BlockState st = l.getBlockState(gp.pos());
+        // si le ha entrado agua, se deja el agua (createLegacyBlock da aire si no hay fluido)
+        if (st.is(Blocks.LIGHT))
+            l.setBlock(gp.pos(), st.getFluidState().createLegacyBlock(), Block.UPDATE_ALL);
         r.quitar(gp);
     }
 

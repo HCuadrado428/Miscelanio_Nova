@@ -89,7 +89,10 @@ public final class MovilRedCliente {
                 case MovilRed.S_BANCO -> BancoCliente.recibir(b);
                 case MovilRed.S_LINTERNA -> {
                     int id = b.readVarInt();
-                    if (b.readBoolean()) LINTERNAS.add(id);
+                    boolean on = b.readBoolean();
+                    var yo = net.minecraft.client.Minecraft.getInstance().player;
+                    if (yo != null && yo.getId() == id) linterna = on;
+                    else if (on) LINTERNAS.add(id);
                     else LINTERNAS.remove(id);
                 }
                 default -> {
