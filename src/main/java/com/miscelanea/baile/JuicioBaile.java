@@ -1,7 +1,7 @@
 package com.miscelanea.baile;
 
 /**
- * Reglas de juicio de las flechas, las mismas en la pista de baile y en la recreativa Paso Doble. El tiempo va en pasos de
+ * Reglas de juicio de las flechas, las de la pista de baile. El tiempo va en pasos de
  * 1/60 s desde que empieza la canción (como {@link CancionesBaile.Nota#t}).
  * <ul>
  *   <li>Pisar: la flecha pendiente más cercana del carril a menos de {@link #VENTANA} pasos; ≤3 perfecto, ≤6 genial, si no bien.</li>

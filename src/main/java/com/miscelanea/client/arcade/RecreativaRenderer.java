@@ -12,11 +12,28 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import org.joml.Matrix4f;
 
-/** Dibuja la pantalla de la recreativa: lo que juega alguien (retransmitido) o la demostración con los récords. */
+import javax.annotation.Nullable;
+import java.util.function.BiFunction;
+
+/**
+ * Dibuja la pantalla de la recreativa: lo que juega alguien en tiempo real (retransmitido 10 veces por segundo, o lo del
+ * propio jugador) o, si nadie juega, la demostración con los récords. Las dos llevan el toque de tubo de imagen.
+ */
 public class RecreativaRenderer implements BlockEntityRenderer<RecreativaBlockEntity> {
     private static final int LUZ = 0xF000F0;
+
+    /**
+     * Gancho del cliente para otros sistemas (p. ej. el hombre estático metido en una máquina): si no es null y para esta
+     * recreativa (posición de su mitad de abajo, nivel del cliente) devuelve una textura, se dibuja esa a pantalla completa
+     * en vez del juego o la demostración (sin textos encima). Devolver null deja la pantalla normal.
+     */
+    @Nullable
+    public static BiFunction<BlockPos, Level, ResourceLocation> PANTALLA_ESPECIAL;
 
     public RecreativaRenderer(BlockEntityRendererProvider.Context c) {}
 
@@ -24,8 +41,18 @@ public class RecreativaRenderer implements BlockEntityRenderer<RecreativaBlockEn
     public void render(RecreativaBlockEntity be, float pt, PoseStack ps, MultiBufferSource buf, int luz, int overlay) {
         Direction f = be.getBlockState().getValue(RecreativaBlock.FACING);
         Pantalla lcd;
+        ResourceLocation rl = null;
+        if (PANTALLA_ESPECIAL != null && be.getLevel() != null) {
+            try {
+                rl = PANTALLA_ESPECIAL.apply(be.getBlockPos(), be.getLevel());
+            } catch (RuntimeException ignored) {
+            }
+        }
         PantallaTextura tex;
-        if (be.pantallaCliente instanceof ArcadeCliente.Remota r && r.tex != null && System.currentTimeMillis() - r.ultimo < 2500) {
+        if (rl != null) {
+            lcd = null;
+            tex = null;
+        } else if (be.pantallaCliente instanceof ArcadeCliente.Remota r && r.tex != null && System.currentTimeMillis() - r.ultimo < 2500) {
             lcd = r.pantalla;
             tex = r.tex;
         } else {
@@ -54,11 +81,15 @@ public class RecreativaRenderer implements BlockEntityRenderer<RecreativaBlockEn
         }
         ps.last().pose().mul(m);
         Matrix4f pm = ps.last().pose();
-        VertexConsumer vc = buf.getBuffer(RenderType.text(tex.rl));
+        VertexConsumer vc = buf.getBuffer(RenderType.text(rl != null ? rl : tex.rl));
         vc.vertex(pm, 0, 0, 0).color(255, 255, 255, 255).uv(0, 0).uv2(LUZ).endVertex();
         vc.vertex(pm, 0, Pantalla.H, 0).color(255, 255, 255, 255).uv(0, 1).uv2(LUZ).endVertex();
         vc.vertex(pm, Pantalla.W, Pantalla.H, 0).color(255, 255, 255, 255).uv(1, 1).uv2(LUZ).endVertex();
         vc.vertex(pm, Pantalla.W, 0, 0).color(255, 255, 255, 255).uv(1, 0).uv2(LUZ).endVertex();
+        if (lcd == null) {
+            ps.popPose();
+            return;
+        }
         Font font = Minecraft.getInstance().font;
         ps.translate(0, 0, 0.5F);
         Matrix4f tm = ps.last().pose();

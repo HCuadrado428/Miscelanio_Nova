@@ -16,8 +16,8 @@ public class ArcadeFramePacket {
     final BlockPos pos;
     final byte[] datos;
 
-    /** Una pantalla de 256×192 comprimida (aun sin comprimir nada) más los textos cabe de sobra en esto. */
-    static final int MAX_BYTES = 65_536;
+    /** Lo más que manda el cliente (Trama.MAX): un paquete del cliente al servidor no puede pasar de 32767 bytes. */
+    static final int MAX_BYTES = 32_000;
 
     public ArcadeFramePacket(BlockPos pos, byte[] datos) {
         this.pos = pos;

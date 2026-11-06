@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
- * Servidor: sitios donde suena (o va a sonar) una canción de baile, sean pistas de baile o recreativas de Paso Doble.
+ * Servidor: sitios donde suena (o va a sonar) una canción de baile, las pistas de baile.
  * Mientras uno suena, ningún otro a menos de {@link com.miscelanea.ConfigServidor#baileRadioPistas()} bloques puede
  * empezar (para que no se mezclen las músicas). Cada entrada caduca sola en el tic indicado (o nunca, con Long.MAX_VALUE).
  */

@@ -70,21 +70,41 @@ public final class ArcadeCliente {
             be.pantallaCliente = r;
         }
         if (!Trama.decodificar(datos, r.pantalla)) return;
-        if (r.tex == null) r.tex = new PantallaTextura("remota_" + pos.asLong());
+        if (r.tex == null) r.tex = new PantallaTextura("remota_" + pos.asLong(), true);
         r.tex.subir(r.pantalla);
         r.ultimo = System.currentTimeMillis();
         if (mc.screen instanceof ArcadeScreen s && s.pos.equals(pos)) s.frameRemoto(r);
+    }
+
+    /**
+     * Lo que tiene en pantalla el propio jugador va también a su máquina en el mundo (el servidor no se lo reenvía a él):
+     * así, en tercera persona o detrás del menú, ve en la recreativa lo mismo que juega.
+     */
+    public static void local(BlockPos pos, Pantalla p) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || !(mc.level.getBlockEntity(pos) instanceof RecreativaBlockEntity be)) return;
+        Remota r;
+        if (be.pantallaCliente instanceof Remota existente) r = existente;
+        else {
+            r = new Remota();
+            be.pantallaCliente = r;
+        }
+        System.arraycopy(p.buf, 0, r.pantalla.buf, 0, r.pantalla.buf.length);
+        r.pantalla.textos.clear();
+        for (Object[] t : p.textos) r.pantalla.textos.add(t.clone());
+        if (r.tex == null) r.tex = new PantallaTextura("remota_" + pos.asLong(), true);
+        r.tex.subir(r.pantalla);
+        r.ultimo = System.currentTimeMillis();
     }
 
     public static ListTag tabla(String juego) {
         return ArcadeRecordsPacket.cliente.getList(juego, Tag.TAG_COMPOUND);
     }
 
-    /** Al salir de un servidor se olvidan sus tablas y su lista de canciones (el siguiente manda las suyas). */
+    /** Al salir de un servidor se olvidan sus tablas (el siguiente manda las suyas). */
     @SubscribeEvent
     public static void salir(net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggingOut e) {
         ArcadeRecordsPacket.cliente = new CompoundTag();
-        com.miscelanea.baile.CancionesPacket.servidor = null;
     }
 
     // ------------------------------------------------------------------ modo demostración (lo que se ve cuando nadie juega)
@@ -129,7 +149,7 @@ public final class ArcadeCliente {
             }
         }
         if ((t / 15) % 2 == 0) l.textoC(I18n.get("consola.miscelanea.inserta_ficha"), 128, 176, 19);
-        if (demoTex == null) demoTex = new PantallaTextura("demo");
+        if (demoTex == null) demoTex = new PantallaTextura("demo", true);
         demoTex.subir(l);
     }
 }

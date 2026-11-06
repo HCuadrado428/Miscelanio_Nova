@@ -39,7 +39,7 @@ public final class TeclasMod {
                 return Minecraft.getInstance().screen == null && com.miscelanea.client.baile.BaileCliente.activo();
             }
         },
-        /** Consola portátil y recreativas (incluido Paso Doble). */
+        /** Consola portátil y recreativas. */
         CONSOLA {
             @Override
             public boolean isActive() {

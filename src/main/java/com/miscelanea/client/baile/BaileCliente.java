@@ -5,7 +5,6 @@ import com.miscelanea.baile.BailePacket;
 import com.miscelanea.baile.CancionesBaile;
 import com.miscelanea.baile.JuicioBaile;
 import com.miscelanea.baile.PistaBaileBlock;
-import com.miscelanea.client.arcade.PasoDoble;
 import com.miscelanea.network.ModNetwork;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.CameraType;
@@ -47,6 +46,10 @@ public final class BaileCliente {
     static final String[] JUICIOS = {"paso.miscelanea.perfecto", "paso.miscelanea.genial", "paso.miscelanea.bien", "paso.miscelanea.fallo",
             "paso.miscelanea.mantenido", "paso.miscelanea.soltado"};
     static final int[] COLOR_JUICIO = {0xFFFFE05A, 0xFF5ADCFF, 0xFF69DC67, 0xFFFF5050, 0xFFFFE05A, 0xFFFF8040};
+    /** Flecha de la pista (14x14, apuntando arriba): '#' rellena. */
+    public static final String[] FLECHA = {
+            "......##......", ".....####.....", "....######....", "...########...", "..##########..", ".############.",
+            "##############", "....######....", "....######....", "....######....", "....######....", "....######....", "....######....", "....######...."};
     static boolean[][][] mascaras;
 
     static int modo, sel, dif = 1, menuT;
@@ -56,7 +59,7 @@ public final class BaileCliente {
     static float frente;
     static CancionesBaile.Cancion cancion;
     static long inicio;
-    /** Juicio de las flechas de la canción en marcha (las mismas reglas que la recreativa Paso Doble). */
+    /** Juicio de las flechas de la canción en marcha. */
     static JuicioBaile jb;
     static int juicio = -1;
     static long juicioT, finT;
@@ -115,19 +118,6 @@ public final class BaileCliente {
                 } else BailePoses.empezar(m.entidad, c, System.currentTimeMillis());
             }
             case BailePacket.PASO -> BailePoses.paso(m.entidad, m.a, m.b);
-            case BailePacket.ARCADE_EMPIEZA -> {
-                // alguien baila Paso Doble en una recreativa: su música (si a == 1) y su coreografía
-                CancionesBaile.Cancion c = CancionesBaile.de(m.cancion);
-                if (c == null || m.entidad == yo.getId()) return;
-                if (m.a == 1) ponerMusica(m.pos, c, true);
-                BailePoses.empezar(m.entidad, c, System.currentTimeMillis());
-                BailePoses.hasta(m.entidad, System.currentTimeMillis() + (long) (c.duracion * 1000) + 3000);
-            }
-            case BailePacket.ARCADE_PARA -> {
-                if (m.entidad == yo.getId()) return;
-                BailePoses.parar(m.entidad);
-                if (m.a == 1) quitarMusica(m.pos);
-            }
             case BailePacket.PARA -> {
                 BailePoses.parar(m.entidad);
                 quitarMusica(m.pos);
@@ -140,17 +130,13 @@ public final class BaileCliente {
     /** Canción que suena en cada pista (solo se corta la de esa pista, no las de las demás). */
     static final java.util.Map<BlockPos, MusicaPista> MUSICA = new java.util.HashMap<>();
 
+    /** Pone la canción con posición en una pista. */
     static void ponerMusica(BlockPos pos, CancionesBaile.Cancion c) {
-        ponerMusica(pos, c, false);
-    }
-
-    /** Pone la canción con posición en una pista (o en una recreativa de Paso Doble, si arcade). */
-    public static void ponerMusica(BlockPos pos, CancionesBaile.Cancion c, boolean arcade) {
         quitarMusica(pos);
         ResourceLocation rl = ResourceLocation.tryParse(c.sonido.contains(":") ? c.sonido : Miscelanea.MOD_ID + ":" + c.sonido);
         if (rl == null) return;
         // no hace falta que el sonido esté registrado: basta con que esté en el sounds.json de su espacio
-        MusicaPista mp = new MusicaPista(SoundEvent.createVariableRangeEvent(rl), pos, c.id, arcade);
+        MusicaPista mp = new MusicaPista(SoundEvent.createVariableRangeEvent(rl), pos, c.id);
         MUSICA.put(mp.pista, mp);
         Minecraft.getInstance().getSoundManager().play(mp);
     }
@@ -339,7 +325,7 @@ public final class BaileCliente {
             mascaras = new boolean[4][14][14];
             for (int y = 0; y < 14; y++)
                 for (int x = 0; x < 14; x++) {
-                    boolean v = PasoDoble.FLECHA[y].charAt(x) == '#';
+                    boolean v = FLECHA[y].charAt(x) == '#';
                     mascaras[2][y][x] = v;
                     mascaras[1][13 - y][x] = v;
                     mascaras[0][x][y] = v;

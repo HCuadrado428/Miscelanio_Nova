@@ -65,7 +65,7 @@ public class PistaBaileBlockEntity extends BlockEntity {
         if (otra != null) avisarOtra(sp, otra);
     }
 
-    /** Otra pista (o recreativa de Paso Doble) con canción a menos del radio de la configuración (o null). */
+    /** Otra pista con canción a menos del radio de la configuración (o null). */
     BlockPos otraSonando() {
         if (level == null) return null;
         return FuentesMusica.otra(level, worldPosition, ConfigServidor.baileRadioPistas());

@@ -35,7 +35,7 @@ import java.util.UUID;
  * <ul>
  *   <li>Juegos de recreativa y casetas de la feria: su id tal cual ({@code chatarra}, {@code tiro}, {@code bolos}...), los de
  *       {@link ArcadeJuegos#IDS} y {@link ArcadeJuegos#FERIA}. Llegan por {@code ArcadeRecords.registrar}.</li>
- *   <li>Paso Doble por canción y dificultad: {@code paso/<canción>/<0..2>}; pista de baile: {@code pista/<canción>/<0..2>}.</li>
+ *   <li>Pista de baile por canción y dificultad: {@code pista/<canción>/<0..2>}.</li>
  *   <li>Victorias en juegos de mesa: {@code mesa/<juego>} (se suman). Gancho para los juegos de mesa:
  *       {@link #victoria(ServerPlayer, String)} o {@link #victoria(MinecraftServer, UUID, String, String)}; cualquier otra
  *       cosa que cuente puede usar {@link #sumar} o {@link #mejor} con su propia categoría.</li>
@@ -48,7 +48,7 @@ import java.util.UUID;
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID)
 public class Ranking extends SavedData {
     private static final String NOMBRE = "miscelanea_ranking";
-    public static final String PASO = "paso/", PISTA = "pista/", MESA = "mesa/", GLOBAL = "global/";
+    public static final String PISTA = "pista/", MESA = "mesa/", GLOBAL = "global/";
     public static final String[] GLOBALES = {"global/campeones", "global/podios", "global/victorias"};
     public static final int TOP = 10;
 
@@ -66,6 +66,14 @@ public class Ranking extends SavedData {
         Ranking r = new Ranking();
         r.cats = t.getCompound("cats");
         r.migrado = t.getBoolean("migrado");
+        // el juego Paso Doble ya no existe (lo hace la pista de baile): fuera sus categorías de mundos viejos
+        boolean quitado = false;
+        for (String k : new ArrayList<>(r.cats.getAllKeys()))
+            if (k.equals("paso") || k.startsWith("paso/")) {
+                r.cats.remove(k);
+                quitado = true;
+            }
+        if (quitado) r.setDirty();
         return r;
     }
 
@@ -109,10 +117,6 @@ public class Ranking extends SavedData {
     }
 
     // ------------------------------------------------------------------ categorías
-    public static String categoriaPaso(String cancion, int dif) {
-        return PASO + cancion + "/" + Math.max(0, Math.min(2, dif));
-    }
-
     public static String categoriaPista(String cancion, int dif) {
         return PISTA + cancion + "/" + Math.max(0, Math.min(2, dif));
     }
@@ -128,9 +132,8 @@ public class Ranking extends SavedData {
 
     /** Nombre para enseñar de una categoría (se traduce en el cliente). */
     public static MutableComponent nombre(String cat) {
-        if (cat.startsWith(PASO) || cat.startsWith(PISTA)) {
-            boolean paso = cat.startsWith(PASO);
-            String resto = cat.substring(paso ? PASO.length() : PISTA.length());
+        if (cat.startsWith(PISTA)) {
+            String resto = cat.substring(PISTA.length());
             int b = resto.lastIndexOf('/');
             String id = b < 0 ? resto : resto.substring(0, b);
             int d = 1;
@@ -141,7 +144,7 @@ public class Ranking extends SavedData {
             CancionesBaile.Cancion c = CancionesBaile.de(id);
             Component titulo = c == null ? Component.literal(id.substring(id.indexOf(':') + 1))
                     : c.tituloClave != null ? Component.translatableWithFallback(c.tituloClave, c.titulo) : Component.literal(c.titulo);
-            return Component.translatable(paso ? "ranking.miscelanea.cat.paso" : "ranking.miscelanea.cat.pista", titulo,
+            return Component.translatable("ranking.miscelanea.cat.pista", titulo,
                     Component.translatable("paso.miscelanea." + CancionesBaile.DIFICULTADES[Math.max(0, Math.min(2, d))]));
         }
         if (cat.startsWith(MESA)) {
@@ -173,9 +176,10 @@ public class Ranking extends SavedData {
         // también las canciones que hay aunque nadie las haya bailado aún
         for (CancionesBaile.Cancion c : CancionesBaile.lista())
             for (int d = 0; d < 3; d++) {
-                for (String k : new String[]{categoriaPaso(c.id, d), categoriaPista(c.id, d)}) if (!resto.contains(k)) resto.add(k);
+                String k = categoriaPista(c.id, d);
+                if (!resto.contains(k)) resto.add(k);
             }
-        resto.sort(Comparator.comparingInt((String k) -> k.startsWith(PASO) ? 0 : k.startsWith(PISTA) ? 1 : k.startsWith(MESA) ? 2 : 3)
+        resto.sort(Comparator.comparingInt((String k) -> k.startsWith(PISTA) ? 0 : k.startsWith(MESA) ? 1 : 2)
                 .thenComparing(k -> k));
         l.addAll(resto);
         return l;

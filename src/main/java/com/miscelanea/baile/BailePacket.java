@@ -16,13 +16,9 @@ import java.util.function.Supplier;
 /**
  * Mensajes de la pista de baile en los dos sentidos. Cliente → servidor: EMPIEZA (canción), PASO (carril y juicio),
  * FIN (puntos), SALIR. Servidor → cliente: ABRIR (menú), EMPIEZA (suena y empieza), PASO (luces y traspiés de otro), PARA.
- * <p>
- * Recreativa Paso Doble (pos = la recreativa): cliente → servidor ARCADE_EMPIEZA (canción y dificultad del que la manda) y
- * ARCADE_FIN (puntos y nota); servidor → los de alrededor ARCADE_EMPIEZA (música si a == 1 y coreografía del jugador) y
- * ARCADE_PARA (deja de bailar; quita la música si a == 1). Ver {@link com.miscelanea.arcade.PasoDobleServidor}.
  */
 public class BailePacket {
-    public static final int ABRIR = 0, EMPIEZA = 1, PASO = 2, FIN = 3, SALIR = 4, PARA = 5, ARCADE_EMPIEZA = 6, ARCADE_FIN = 7, ARCADE_PARA = 8;
+    public static final int ABRIR = 0, EMPIEZA = 1, PASO = 2, FIN = 3, SALIR = 4, PARA = 5;
     public final int tipo, entidad, a, b;
     public final BlockPos pos;
     /** Canción (EMPIEZA): por su id, para que no se líe si el servidor y el cliente no tienen las mismas canciones. */
@@ -58,10 +54,6 @@ public class BailePacket {
         ServerPlayer p = ctx.get().getSender();
         if (p == null) {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.miscelanea.client.baile.BaileCliente.recibir(this));
-            return;
-        }
-        if (tipo == ARCADE_EMPIEZA || tipo == ARCADE_FIN) {
-            com.miscelanea.arcade.PasoDobleServidor.recibir(p, this);
             return;
         }
         if (p.distanceToSqr(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5) > 36) return;
