@@ -31,6 +31,8 @@ public final class PantallasServidor {
     private record Dentro(BlockPos entrada, List<BlockPos> destinos, long desde, Vec3 fijo, float yaw, float pitch) {}
 
     private static final Map<UUID, Dentro> DENTRO = new HashMap<>();
+    /** La pantalla en la que se le ve la cara ahora mismo (la que tiene elegida para mirar). */
+    private static final Map<UUID, BlockPos> CARA = new HashMap<>();
 
     public static boolean dentro(ServerPlayer p) {
         return !DENTRO.isEmpty() && DENTRO.containsKey(p.getUUID());
@@ -90,12 +92,49 @@ public final class PantallasServidor {
         Estatica.sonido(l, Vec3.atCenterOf(pos), EstaticaRegistro.PANTALLA.get(), 1F, 1F);
         EstaticaRed.a(p, new EstaticaRed.Pantallas(pos, destinos, caras, ConfigServidor.estaticaPantallasMaxTicks()));
         Estatica.sincronizar(p);
+        // el cliente empieza mirando por el primer destino (o por la entrada si no hay otro)
+        ponerCara(p, destinos.isEmpty() ? pos : destinos.get(0));
         return true;
+    }
+
+    /** El cliente ha cambiado de pantalla (con la rueda del ratón): su cara se pasa a esa. */
+    public static void ver(ServerPlayer p, int indice) {
+        Dentro d = DENTRO.get(p.getUUID());
+        if (d == null) return;
+        BlockPos bp = indice >= 0 && indice < d.destinos.size() ? d.destinos.get(indice) : d.entrada;
+        if (bp.equals(CARA.get(p.getUUID()))) return;
+        ponerCara(p, bp);
+    }
+
+    private static void ponerCara(ServerPlayer p, BlockPos bp) {
+        ServerLevel l = p.serverLevel();
+        BlockPos ant = CARA.put(p.getUUID(), bp);
+        // se avisa cerca de la nueva (y de la vieja, que vuelve a la normalidad con un golpe de nieve)
+        EstaticaRed.CaraPantalla msg = new EstaticaRed.CaraPantalla(p.getId(), p.getUUID(), Estatica.semilla(p), bp, true);
+        EstaticaRed.cerca(l, bp.getX() + 0.5, bp.getY() + 1, bp.getZ() + 0.5, 64, msg);
+        if (ant != null && ant.distSqr(bp) > 48 * 48) EstaticaRed.cerca(l, ant.getX() + 0.5, ant.getY() + 1, ant.getZ() + 0.5, 64, msg);
+        Estatica.sonido(l, Vec3.atCenterOf(bp), EstaticaRegistro.CRUJIDO.get(), 0.6F, 0.7F);
+    }
+
+    private static void quitarCara(ServerPlayer p) {
+        BlockPos ant = CARA.remove(p.getUUID());
+        if (ant == null) return;
+        EstaticaRed.cerca(p.serverLevel(), ant.getX() + 0.5, ant.getY() + 1, ant.getZ() + 0.5, 96,
+                new EstaticaRed.CaraPantalla(p.getId(), p.getUUID(), Estatica.semilla(p), ant, false));
+    }
+
+    /** A quien llega cerca: las caras que ya están en las pantallas (se repite cada pocos segundos). */
+    static void repasarCaras(ServerPlayer p) {
+        BlockPos bp = CARA.get(p.getUUID());
+        if (bp == null) return;
+        EstaticaRed.cerca(p.serverLevel(), bp.getX() + 0.5, bp.getY() + 1, bp.getZ() + 0.5, 64,
+                new EstaticaRed.CaraPantalla(p.getId(), p.getUUID(), Estatica.semilla(p), bp, true));
     }
 
     /** Sale por el destino 'indice' (o por la entrada si es -1 o no vale). */
     public static void salir(ServerPlayer p, int indice) {
         Dentro d = DENTRO.remove(p.getUUID());
+        quitarCara(p);
         if (d == null) return;
         ServerLevel l = p.serverLevel();
         BlockPos bp = indice >= 0 && indice < d.destinos.size() ? d.destinos.get(indice) : d.entrada;
@@ -140,6 +179,7 @@ public final class PantallasServidor {
             salir(p, -1);
             return;
         }
+        if ((p.serverLevel().getGameTime() - d.desde) % 40 == 20) repasarCaras(p);
         if (p.position().distanceToSqr(d.fijo) > 0.04) Estatica.mover(p, d.fijo, p.getYRot(), p.getXRot());
         p.setDeltaMovement(Vec3.ZERO);
         p.fallDistance = 0;

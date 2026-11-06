@@ -37,4 +37,8 @@ public final class EstaticaRedCliente {
     public static void tentaculo(EstaticaRed.Tentaculo p) {
         EfectosMundo.tentaculo(p);
     }
+
+    public static void cara(EstaticaRed.CaraPantalla p) {
+        CaraPantalla.recibir(p);
+    }
 }
