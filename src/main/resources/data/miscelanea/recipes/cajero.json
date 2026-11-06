@@ -1,0 +1,26 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "IGI",
+  "IRI",
+  "IOI"
+ ],
+ "key": {
+  "I": {
+   "item": "minecraft:iron_ingot"
+  },
+  "G": {
+   "item": "minecraft:glass_pane"
+  },
+  "R": {
+   "item": "minecraft:redstone"
+  },
+  "O": {
+   "item": "minecraft:gold_ingot"
+  }
+ },
+ "result": {
+  "item": "miscelanea:cajero"
+ }
+}

@@ -14,7 +14,7 @@ public final class MovilConfig {
     private static ForgeConfigSpec.BooleanValue SIN_LIMITE, ENTRE_DIMENSIONES, VIDEO;
     private static ForgeConfigSpec.BooleanValue NOTAS_VOZ, MINEGRAM, UBICACION, BANCO, BANCO_OBJETOS, LINTERNA_REAL;
     private static ForgeConfigSpec.IntValue VOZ_SEGUNDOS, VOZ_MAX_BYTES, MG_MAX_POSTS, MG_MAX_COMENT, MG_MAX_PIE, MG_MAX_COMENTARIOS, UBI_MAX_MIN,
-            BANCO_MAX_TRANSFER, BANCO_MAX_CONCEPTO, LINTERNA_NIVEL, LINTERNA_ALCANCE;
+            BANCO_MAX_TRANSFER, BANCO_MAX_CONCEPTO, LINTERNA_NIVEL, LINTERNA_ALCANCE, BANCO_MOVIL_OP, BANCO_MOVIL_DIA, BANCO_CAJERO_DIST;
 
     /** Fotos de 180x320 en JPEG: unos 12-25 KB cada una. El paquete del cliente al servidor no puede pasar de 32 KB. */
     public static final int TOPE_BYTES_FOTO = 30000;
@@ -65,11 +65,18 @@ public final class MovilConfig {
         UBI_MAX_MIN = b.comment("Minutos máximos que se puede compartir de una vez (las opciones son 15, 30 y 60).").defineInRange("max_minutos", 60, 15, 600);
         b.pop();
 
-        b.comment("Banco y Bizum: saldo de esmeraldas en el móvil, transferencias entre jugadores y envío de objetos.",
+        b.comment("Banco y Bizum: saldo en el móvil, transferencias entre jugadores y envío de objetos. Con OmegaChips el dinero son",
+                "chips (1 = moneda de cobre; hierro 9, oro 81, diamante 729, bloques x4); sin él, esmeraldas.",
+                "El cajero (bloque) ingresa y retira sin límite; desde el móvil solo un poco.",
                 "Comando de operadores: /miscelanea banco <jugador> ver|dar|quitar <cantidad>.").push("banco");
         BANCO = b.comment("Activar la app Banco.").define("activado", true);
         BANCO_OBJETOS = b.comment("Permitir enviar objetos del inventario a otro jugador conectado.").define("enviar_objetos", true);
-        BANCO_MAX_TRANSFER = b.comment("Esmeraldas como máximo por transferencia.").defineInRange("max_transferencia", 100000, 1, Integer.MAX_VALUE);
+        BANCO_MOVIL_OP = b.comment("Desde el móvil (lejos de un cajero): máximo por cada ingreso o retirada. 0 = solo en el cajero.")
+                .defineInRange("movil_max_operacion", 81, 0, Integer.MAX_VALUE);
+        BANCO_MOVIL_DIA = b.comment("Desde el móvil: máximo al día (sumando ingresos y retiradas; el día se reinicia a medianoche del servidor).")
+                .defineInRange("movil_max_dia", 729, 0, Integer.MAX_VALUE);
+        BANCO_CAJERO_DIST = b.comment("Distancia (bloques) a la que se puede usar un cajero.").defineInRange("cajero_distancia", 6, 2, 16);
+        BANCO_MAX_TRANSFER = b.comment("Dinero como máximo por transferencia (Bizum).").defineInRange("max_transferencia", 100000, 1, Integer.MAX_VALUE);
         BANCO_MAX_CONCEPTO = b.comment("Longitud máxima del concepto.").defineInRange("max_concepto", 40, 0, 120);
         b.pop();
 
@@ -125,6 +132,9 @@ public final class MovilConfig {
     public static boolean bancoObjetos() { return b(BANCO_OBJETOS); }
     public static int bancoMaxTransferencia() { return i(BANCO_MAX_TRANSFER); }
     public static int bancoMaxConcepto() { return i(BANCO_MAX_CONCEPTO); }
+    public static int bancoMovilOperacion() { return i(BANCO_MOVIL_OP); }
+    public static int bancoMovilDia() { return i(BANCO_MOVIL_DIA); }
+    public static int bancoCajeroDistancia() { return i(BANCO_CAJERO_DIST); }
     public static boolean linternaReal() { return b(LINTERNA_REAL); }
     public static int linternaNivel() { return i(LINTERNA_NIVEL); }
     public static int linternaAlcance() { return i(LINTERNA_ALCANCE); }

@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/cajero"
+  },
+  "facing=east": {
+   "model": "miscelanea:block/cajero",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/cajero",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/cajero",
+   "y": 270
+  }
+ }
+}

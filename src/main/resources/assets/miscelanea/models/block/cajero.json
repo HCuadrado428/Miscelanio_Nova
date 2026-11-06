@@ -1,0 +1,232 @@
+{
+ "parent": "block/block",
+ "textures": {
+  "lado": "miscelanea:block/cajero_lado",
+  "frente": "miscelanea:block/cajero_frente",
+  "cartel": "miscelanea:block/cajero_cartel",
+  "teclado": "miscelanea:block/cajero_teclado",
+  "particle": "miscelanea:block/cajero_lado"
+ },
+ "elements": [
+  {
+   "name": "cuerpo",
+   "from": [
+    1,
+    0,
+    4
+   ],
+   "to": [
+    15,
+    16,
+    16
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      1,
+      0,
+      15,
+      16
+     ],
+     "texture": "#frente"
+    },
+    "south": {
+     "uv": [
+      1,
+      0,
+      15,
+      16
+     ],
+     "texture": "#lado"
+    },
+    "east": {
+     "uv": [
+      0,
+      0,
+      12,
+      16
+     ],
+     "texture": "#lado"
+    },
+    "west": {
+     "uv": [
+      4,
+      0,
+      16,
+      16
+     ],
+     "texture": "#lado"
+    },
+    "up": {
+     "uv": [
+      1,
+      4,
+      15,
+      16
+     ],
+     "texture": "#lado"
+    },
+    "down": {
+     "uv": [
+      1,
+      4,
+      15,
+      16
+     ],
+     "texture": "#lado"
+    }
+   }
+  },
+  {
+   "name": "visera",
+   "from": [
+    1,
+    13,
+    1
+   ],
+   "to": [
+    15,
+    15,
+    4
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      1,
+      0,
+      15,
+      2
+     ],
+     "texture": "#cartel"
+    },
+    "east": {
+     "uv": [
+      12,
+      1,
+      15,
+      3
+     ],
+     "texture": "#lado"
+    },
+    "west": {
+     "uv": [
+      1,
+      1,
+      4,
+      3
+     ],
+     "texture": "#lado"
+    },
+    "up": {
+     "uv": [
+      1,
+      1,
+      15,
+      4
+     ],
+     "texture": "#lado"
+    },
+    "down": {
+     "uv": [
+      1,
+      6,
+      15,
+      9
+     ],
+     "texture": "#cartel"
+    }
+   }
+  },
+  {
+   "name": "repisa",
+   "from": [
+    2,
+    5,
+    1
+   ],
+   "to": [
+    14,
+    6.5,
+    4
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      2,
+      10,
+      14,
+      11.5
+     ],
+     "texture": "#lado"
+    },
+    "east": {
+     "uv": [
+      12,
+      10,
+      15,
+      11.5
+     ],
+     "texture": "#lado"
+    },
+    "west": {
+     "uv": [
+      1,
+      10,
+      4,
+      11.5
+     ],
+     "texture": "#lado"
+    },
+    "up": {
+     "uv": [
+      2,
+      0,
+      14,
+      3
+     ],
+     "texture": "#teclado"
+    },
+    "down": {
+     "uv": [
+      2,
+      12,
+      14,
+      15
+     ],
+     "texture": "#lado"
+    }
+   }
+  }
+ ],
+ "display": {
+  "gui": {
+   "rotation": [
+    30,
+    225,
+    0
+   ],
+   "translation": [
+    0,
+    0,
+    0
+   ],
+   "scale": [
+    0.625,
+    0.625,
+    0.625
+   ]
+  },
+  "fixed": {
+   "rotation": [
+    0,
+    180,
+    0
+   ],
+   "scale": [
+    0.5,
+    0.5,
+    0.5
+   ]
+  }
+ }
+}

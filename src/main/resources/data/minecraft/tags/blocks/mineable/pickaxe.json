@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "miscelanea:caldero_mezclas"
+    "miscelanea:caldero_mezclas",
+    "miscelanea:cajero"
   ]
 }

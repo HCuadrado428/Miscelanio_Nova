@@ -6,20 +6,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/** Estado del Banco que manda el servidor: saldo, esmeraldas en el inventario, límites e historial. */
+/** Estado del Banco que manda el servidor: saldo, dinero en el inventario, límites e historial. */
 public final class BancoCliente {
     private BancoCliente() {}
 
     public record Mov(long t, int tipo, UUID otro, String nombre, long cantidad, String texto) {}
 
-    public static long saldo;
-    public static int enInventario, maxTransferencia = 100000, maxConcepto = 40;
+    public static long saldo, enInventario, limite;
+    /** enCajero: el servidor lo ve junto a un cajero (sin límite); omega: el dinero son chips de OmegaChips (si no, esmeraldas). */
+    public static boolean enCajero, omega;
+    public static int maxTransferencia = 100000, maxConcepto = 40;
     public static boolean objetos, cargado;
     public static final List<Mov> HISTORIAL = new ArrayList<>();
 
     static void recibir(FriendlyByteBuf b) {
         saldo = b.readVarLong();
-        enInventario = b.readVarInt();
+        enInventario = b.readVarLong();
+        enCajero = b.readBoolean();
+        omega = b.readBoolean();
+        limite = b.readVarLong();
         maxTransferencia = b.readVarInt();
         maxConcepto = b.readVarInt();
         objetos = b.readBoolean();

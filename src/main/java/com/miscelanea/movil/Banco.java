@@ -28,8 +28,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Banco y Bizum (lado servidor). Cada jugador tiene un saldo de esmeraldas ({@link BancoDatos}): las ingresa desde su
- * inventario, las retira como objetos y se las manda a otros (Bizum, con concepto). También puede mandar un objeto de su
+ * Banco y Bizum (lado servidor). Cada jugador tiene un saldo ({@link BancoDatos}, en chips de OmegaChips o esmeraldas: ver
+ * {@link Dinero}): lo ingresa desde su inventario, lo retira en monedas (sin límite en un cajero, poco desde el móvil) y se las manda a otros (Bizum, con concepto). También puede mandar un objeto de su
  * inventario a otro jugador conectado. El saldo nunca baja de 0, todo pasa por el servidor y queda en el registro
  * ({@code [Banco] ...}). Las confirmaciones ("¿Seguro?") las pide el cliente.
  * <p>
@@ -63,10 +63,45 @@ public final class Banco {
         return false;
     }
 
-    static int esmeraldas(ServerPlayer p) {
-        int n = 0;
-        for (ItemStack s : p.getInventory().items) if (s.is(Items.EMERALD)) n += s.getCount();
-        return n;
+    // ------------------------------------------------------------------ cajero y límite del móvil
+    private record Cajero(net.minecraft.core.BlockPos pos, net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> dim) {}
+
+    private static final Map<UUID, Cajero> CAJERO = new HashMap<>();
+    /** Lo movido hoy desde el móvil: día (desde 1970) y cantidad. */
+    private static final Map<UUID, long[]> HOY = new HashMap<>();
+
+    /** Al usar un cajero: se apunta y se le manda el estado (el cliente abre la pantalla del cajero). */
+    public static void abrirCajero(ServerPlayer p, net.minecraft.core.BlockPos pos) {
+        CAJERO.put(p.getUUID(), new Cajero(pos.immutable(), p.level().dimension()));
+        estado(p);
+    }
+
+    public static boolean enCajero(ServerPlayer p) {
+        Cajero c = CAJERO.get(p.getUUID());
+        if (c == null || c.dim != p.level().dimension()) return false;
+        double d = MovilConfig.bancoCajeroDistancia();
+        if (p.distanceToSqr(c.pos.getX() + 0.5, c.pos.getY() + 0.5, c.pos.getZ() + 0.5) > d * d) return false;
+        return p.level().getBlockState(c.pos).getBlock() instanceof CajeroBlock;
+    }
+
+    private static long dia() {
+        return java.time.LocalDate.now().toEpochDay();
+    }
+
+    /** Lo que aún se puede mover hoy desde el móvil en una operación. */
+    static long limiteMovil(ServerPlayer p) {
+        long[] h = HOY.get(p.getUUID());
+        long usado = h != null && h[0] == dia() ? h[1] : 0;
+        return Math.max(0, Math.min(MovilConfig.bancoMovilOperacion(), MovilConfig.bancoMovilDia() - usado));
+    }
+
+    private static void usarMovil(ServerPlayer p, long n) {
+        long[] h = HOY.computeIfAbsent(p.getUUID(), k -> new long[]{dia(), 0});
+        if (h[0] != dia()) {
+            h[0] = dia();
+            h[1] = 0;
+        }
+        h[1] += n;
     }
 
     public static void estado(ServerPlayer p) {
@@ -74,7 +109,11 @@ public final class Banco {
         List<BancoDatos.Movimiento> h = d.historial.getOrDefault(p.getUUID(), List.of());
         MovilRed.aJugador(p, MovilRed.S_BANCO, b -> {
             b.writeVarLong(d.saldo(p.getUUID()));
-            b.writeVarInt(esmeraldas(p));
+            b.writeVarLong(Dinero.enInventario(p));
+            boolean caj = enCajero(p);
+            b.writeBoolean(caj);
+            b.writeBoolean(Dinero.omega());
+            b.writeVarLong(caj ? Long.MAX_VALUE / 4 : limiteMovil(p));
             b.writeVarInt(MovilConfig.bancoMaxTransferencia());
             b.writeVarInt(MovilConfig.bancoMaxConcepto());
             b.writeBoolean(MovilConfig.bancoObjetos());
@@ -91,44 +130,51 @@ public final class Banco {
         });
     }
 
-    private static void ingresar(ServerPlayer p, int n) {
+    private static void ingresar(ServerPlayer p, int pedido) {
         if (rapido(p)) return;
-        n = Math.min(n, esmeraldas(p));
-        if (n <= 0) return;
-        int falta = n;
-        for (ItemStack s : p.getInventory().items) {
-            if (falta <= 0) break;
-            if (!s.is(Items.EMERALD)) continue;
-            int q = Math.min(falta, s.getCount());
-            s.shrink(q);
-            falta -= q;
+        long n = Math.min(pedido, Dinero.enInventario(p));
+        boolean caj = enCajero(p);
+        if (!caj) {
+            long lim = limiteMovil(p);
+            if (lim <= 0) {
+                MovilServidor.aviso(p, "movil.miscelanea.aviso.banco_cajero", "");
+                estado(p);
+                return;
+            }
+            n = Math.min(n, lim);
         }
-        int hecho = n - falta;
+        if (n <= 0) return;
+        long hecho = Dinero.cobrar(p, n);
+        if (hecho <= 0) return;
+        if (!caj) usarMovil(p, hecho);
         BancoDatos d = BancoDatos.de(p.server);
         d.mover(p.getUUID(), hecho);
         d.anotar(p.getUUID(), new BancoDatos.Movimiento(System.currentTimeMillis(), BancoDatos.M_INGRESO, null, "", hecho, ""));
         p.getInventory().setChanged();
-        LOG.info("[Banco] {} ingresa {} esmeraldas (saldo {})", MovilServidor.nombre(p), hecho, d.saldo(p.getUUID()));
+        LOG.info("[Banco] {} ingresa {} ({}; saldo {})", MovilServidor.nombre(p), hecho, caj ? "cajero" : "móvil", d.saldo(p.getUUID()));
         estado(p);
     }
 
     private static void retirar(ServerPlayer p, int n) {
         if (rapido(p)) return;
         BancoDatos d = BancoDatos.de(p.server);
-        if (n <= 0 || n > 64 * 36 || !d.mover(p.getUUID(), -n)) {
+        boolean caj = enCajero(p);
+        if (!caj && n > limiteMovil(p)) {
+            MovilServidor.aviso(p, "movil.miscelanea.aviso.banco_cajero", "");
+            estado(p);
+            return;
+        }
+        // como mucho lo que quepa en 36 montones de la moneda más grande
+        long tope = 36L * 64 * Dinero.monedas().get(0).valor();
+        if (n <= 0 || n > tope || !d.mover(p.getUUID(), -n)) {
             MovilServidor.aviso(p, "movil.miscelanea.aviso.banco_saldo", "");
             estado(p);
             return;
         }
-        int falta = n;
-        while (falta > 0) {
-            int q = Math.min(64, falta);
-            ItemStack s = new ItemStack(Items.EMERALD, q);
-            if (!p.getInventory().add(s) || !s.isEmpty()) p.drop(s, false);
-            falta -= q;
-        }
+        if (!caj) usarMovil(p, n);
+        Dinero.dar(p, n);
         d.anotar(p.getUUID(), new BancoDatos.Movimiento(System.currentTimeMillis(), BancoDatos.M_RETIRADA, null, "", -n, ""));
-        LOG.info("[Banco] {} retira {} esmeraldas (saldo {})", MovilServidor.nombre(p), n, d.saldo(p.getUUID()));
+        LOG.info("[Banco] {} retira {} ({}; saldo {})", MovilServidor.nombre(p), n, caj ? "cajero" : "móvil", d.saldo(p.getUUID()));
         estado(p);
     }
 
@@ -148,7 +194,7 @@ public final class Banco {
         String yo = MovilServidor.nombre(p);
         d.anotar(p.getUUID(), new BancoDatos.Movimiento(t, BancoDatos.M_ENVIADO, a, otro.nombre, -n, concepto));
         d.anotar(a, new BancoDatos.Movimiento(t, BancoDatos.M_RECIBIDO, p.getUUID(), yo, n, concepto));
-        LOG.info("[Banco] Bizum {} -> {}: {} esmeraldas ({})", yo, otro.nombre, n, concepto);
+        LOG.info("[Banco] Bizum {} -> {}: {} ({})", yo, otro.nombre, n, concepto);
         MovilServidor.aviso(p, "movil.miscelanea.aviso.bizum_ok", n + " → " + otro.nombre);
         estado(p);
         ServerPlayer o = p.server.getPlayerList().getPlayer(a);

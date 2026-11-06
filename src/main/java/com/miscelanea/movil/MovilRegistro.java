@@ -24,6 +24,13 @@ public final class MovilRegistro {
     public static final DeferredRegister<SoundEvent> SONIDOS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, Miscelanea.MOD_ID);
     public static final DeferredRegister<RecipeSerializer<?>> RECETAS = DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Miscelanea.MOD_ID);
 
+    public static final DeferredRegister<net.minecraft.world.level.block.Block> BLOQUES = DeferredRegister.create(ForgeRegistries.BLOCKS, Miscelanea.MOD_ID);
+    /** Cajero automático del Banco. */
+    public static final RegistryObject<net.minecraft.world.level.block.Block> CAJERO = BLOQUES.register("cajero",
+            () -> new CajeroBlock(net.minecraft.world.level.block.state.BlockBehaviour.Properties.of().mapColor(net.minecraft.world.level.material.MapColor.METAL)
+                    .strength(3.5F, 1200F).sound(net.minecraft.world.level.block.SoundType.METAL).noOcclusion().requiresCorrectToolForDrops().lightLevel(st -> 6)));
+    public static final RegistryObject<Item> CAJERO_ITEM = ITEMS.register("cajero",
+            () -> new net.minecraft.world.item.BlockItem(CAJERO.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> MOVIL = ITEMS.register("movil", () -> new MovilItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<RecipeSerializer<MovilTinteReceta>> TINTE =
             RECETAS.register("movil_tinte", () -> new SimpleCraftingRecipeSerializer<>(MovilTinteReceta::new));
@@ -47,6 +54,7 @@ public final class MovilRegistro {
     }
 
     public static void registrar(IEventBus bus) {
+        BLOQUES.register(bus);
         ITEMS.register(bus);
         SONIDOS.register(bus);
         RECETAS.register(bus);

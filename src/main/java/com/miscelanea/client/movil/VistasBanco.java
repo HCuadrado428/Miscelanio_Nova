@@ -28,8 +28,21 @@ final class VistasBanco {
         MovilRed.alServidor(MovilRed.C_BANCO, null);
     }
 
+    /** Icono del dinero: una moneda dorada (chips de OmegaChips) o una esmeralda. */
     static void esmeralda(GuiGraphics g, int x, int y) {
-        Ui.glifo(g, Ui.G_ESMERALDA, x, y, 0xFF2EE87A);
+        if (!BancoCliente.omega) {
+            Ui.glifo(g, Ui.G_ESMERALDA, x, y, 0xFF2EE87A);
+            return;
+        }
+        Ui.circulo(g, x + 4, y + 4, 4, 0xFF8A6420);
+        Ui.circulo(g, x + 4, y + 4, 3, 0xFFE8C66A);
+        Ui.rect(g, x + 3, y + 2, 2, 4, 0xFFB8964A);
+        Ui.rect(g, x + 2, y + 2, 1, 1, 0xFFFFF0B0);
+    }
+
+    /** "1.234 chips" o "1.234 esmeraldas". */
+    static String dinero(long n) {
+        return Vista.t(BancoCliente.omega ? "banco_chips" : "banco_esmeraldas", Ui.miles(n));
     }
 
     // ================================================================== inicio del banco
@@ -58,7 +71,7 @@ final class VistasBanco {
             esmeralda(g, 15, ty + 21);
             String s = BancoCliente.cargado ? Ui.miles(BancoCliente.saldo) : "…";
             Ui.grande(g, s, 26 + Ui.ancho(s), ty + 19, 2, 0xFFFFFFFF);
-            Ui.texto(g, t("banco_en_inventario", BancoCliente.enInventario), 15, ty + 39, 0xFF9DD9B8);
+            Ui.texto(g, t("banco_en_inventario", Ui.miles(BancoCliente.enInventario)), 15, ty + 39, 0xFF9DD9B8);
             // chip de la tarjeta
             Ui.redondo(g, W - 30, ty + 6, 12, 9, 2, 0xFFE8C66A);
             Ui.rect(g, W - 30, ty + 10, 12, 1, 0xFFB8964A);
@@ -248,8 +261,8 @@ final class VistasBanco {
 
         private long maximo() {
             return switch (modo) {
-                case INGRESAR -> BancoCliente.enInventario;
-                case RETIRAR -> Math.min(BancoCliente.saldo, 64 * 36);
+                case INGRESAR -> Math.min(BancoCliente.enInventario, BancoCliente.limite);
+                case RETIRAR -> Math.min(BancoCliente.saldo, BancoCliente.limite);
                 default -> Math.min(BancoCliente.saldo, BancoCliente.maxTransferencia);
             };
         }
@@ -276,7 +289,7 @@ final class VistasBanco {
             int sw = Ui.ancho(s) * 2 + 12;
             esmeralda(g, W / 2 - sw / 2, y + 23);
             Ui.grande(g, s, W / 2 + 6, y + 20, 2, v > max ? Ui.ROJO : num.length() == 0 ? 0xFF59636D : 0xFFFFFFFF);
-            String lim = t("banco_max", Ui.miles(max));
+            String lim = modo != BIZUM && !BancoCliente.enCajero ? t("banco_max_movil", Ui.miles(max)) : t("banco_max", Ui.miles(max));
             g.pose().pushPose();
             g.pose().translate(W / 2F - Ui.ancho(lim) / 4F, y + 38, 0);
             g.pose().scale(0.5F, 0.5F, 1);
