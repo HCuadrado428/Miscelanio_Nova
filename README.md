@@ -39,7 +39,7 @@
 ## Instalación
 
 1. Instala **Minecraft Java 1.20.1** con **Forge 47.x**.
-2. Descarga el `.jar` de Miscelánea desde [Releases](https://github.com/HCuadrado428/miscelanio_nova/releases) y ponlo en la carpeta `mods`.
+2. Descarga el `.jar` de Miscelánea desde [Releases](https://github.com/HCuadrado428/Miscelanio_Nova/releases) y ponlo en la carpeta `mods`.
 3. Añade las dependencias obligatorias:
    - **GeckoLib** (Forge 1.20.1)
    - **playerAnimator** (Forge 1.20.1)
