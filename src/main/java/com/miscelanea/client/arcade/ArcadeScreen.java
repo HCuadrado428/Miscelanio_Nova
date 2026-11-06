@@ -369,8 +369,13 @@ public class ArcadeScreen extends Screen {
             juego.pararMusica = false;
         }
         // retransmitir la pantalla a los que miran (10 imágenes por segundo); el invitado no retransmite
-        if (++pasos % 6 == 0 && (!invitado || !propia.equals(pos)))
-            ModNetwork.CHANNEL.sendToServer(new ArcadeFramePacket(invitado ? propia : pos, Trama.codificar(pant)));
+        // (una imagen que no quepa en un paquete no se manda: se salta esa y ya irá la siguiente)
+        if (++pasos % 6 == 0 && (!invitado || !propia.equals(pos))) {
+            BlockPos donde = invitado ? propia : pos;
+            byte[] tr = Trama.codificar(pant);
+            if (tr != null) ModNetwork.CHANNEL.sendToServer(new ArcadeFramePacket(donde, tr));
+            ArcadeCliente.local(donde, pant);
+        }
     }
 
     /** Un paso de la partida a dos: manda los mandos de un paso futuro y avanza solo si ya tiene los del compañero. */

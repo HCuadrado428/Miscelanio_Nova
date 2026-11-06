@@ -12,8 +12,21 @@ import java.util.zip.Inflater;
 public final class Trama {
     private Trama() {}
 
+    /**
+     * Tope de una imagen: los paquetes del cliente al servidor no pueden pasar de 32767 bytes (si no, el servidor echa al
+     * jugador), y van con la cabecera del canal y la posición.
+     */
+    public static final int MAX = 32_000;
+
+    /** La pantalla empaquetada, o null si ni comprimiendo al máximo cabe en {@link #MAX}. */
     public static byte[] codificar(Pantalla p) {
-        Deflater d = new Deflater(Deflater.BEST_SPEED);
+        byte[] r = codificar(p, Deflater.BEST_SPEED);
+        if (r.length > MAX) r = codificar(p, Deflater.BEST_COMPRESSION);
+        return r.length > MAX ? null : r;
+    }
+
+    private static byte[] codificar(Pantalla p, int nivel) {
+        Deflater d = new Deflater(nivel);
         d.setInput(p.buf);
         d.finish();
         ByteArrayOutputStream o = new ByteArrayOutputStream(8192);
