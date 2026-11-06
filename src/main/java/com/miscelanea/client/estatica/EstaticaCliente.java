@@ -188,6 +188,8 @@ public final class EstaticaCliente {
             mc.level.playLocalSound(mc.player.getX(), mc.player.getEyeY(), mc.player.getZ(), EstaticaRegistro.CRUJIDO.get(), SoundSource.PLAYERS, 0.25F, 1.5F, false);
         }
         ImitarVoz.tick(yo && Poder.IMITAR.activo() && com.miscelanea.client.voz.VozCliente.hayVoicechat());
+        if (!EfectosMundo.sosteniendo()) tentSoltado = false;
+        else if (!mc.options.keyUse.isDown()) tentSoltado = true;
         // la rueda: mantener la tecla
         if (yo && mc.screen == null && EstaticaClienteMod.RUEDA.isDown() && !EstaticaCine.localActiva() && !PantallaCliente.dentro())
             mc.setScreen(new RuedaPoderes());
@@ -357,7 +359,8 @@ public final class EstaticaCliente {
         }
         // con alguien sostenido por los tentáculos: clic izquierdo lo estampa, clic derecho lo lanza
         if ((e.isAttack() || e.isUseItem()) && EfectosMundo.sosteniendo()) {
-            EstaticaRed.CANAL.sendToServer(new EstaticaRed.AccionTent(e.isAttack() ? 1 : 2));
+            // el clic derecho que agarró no cuenta: hay que soltarlo y volver a pulsar para lanzar
+            if (e.isAttack() || tentSoltado) EstaticaRed.CANAL.sendToServer(new EstaticaRed.AccionTent(e.isAttack() ? 1 : 2));
             e.setCanceled(true);
             e.setSwingHand(true);
             return;
@@ -374,6 +377,9 @@ public final class EstaticaCliente {
             e.setSwingHand(true);
         }
     }
+
+    /** ¿Se ha soltado el clic derecho desde que se agarró a alguien con los tentáculos? */
+    private static boolean tentSoltado;
 
     private static boolean usarPoder(Minecraft mc, Poder pd) {
         HitResult hr = mc.hitResult;

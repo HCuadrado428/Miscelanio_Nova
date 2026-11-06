@@ -147,7 +147,6 @@ public final class PoderesNuevos {
         final Vec3 pos;
         final float yaw, pitch;
         final long fin;
-        final boolean sinIa;
         float acum;
 
         Pausado(ServerPlayer atk, LivingEntity v, long fin) {
@@ -157,7 +156,6 @@ public final class PoderesNuevos {
             this.yaw = v.getYRot();
             this.pitch = v.getXRot();
             this.fin = fin;
-            this.sinIa = v instanceof Mob m && m.isNoAi();
         }
     }
 
@@ -178,10 +176,10 @@ public final class PoderesNuevos {
         ServerLevel l = p.serverLevel();
         int dur = Math.max(10, Math.round(ConfigServidor.estaticaPausaTicks() * Estatica.factor(v)));
         PAUSAS.add(new Pausado(p, v, l.getGameTime() + dur));
-        if (v instanceof Mob m) {
-            m.setNoAi(true);
-            m.getNavigation().stop();
-        }
+        // congelado: sin fuerza para hacer daño ni minar (no se toca el NoAI: si se guardara así, se quedaría quieto para siempre)
+        Estatica.efecto(v, MobEffects.WEAKNESS, dur, 127, p);
+        Estatica.efecto(v, MobEffects.DIG_SLOWDOWN, dur, 4, p);
+        Estatica.efecto(v, MobEffects.MOVEMENT_SLOWDOWN, dur, 9, p);
         Vec3 c = v.getBoundingBox().getCenter();
         EstaticaRed.cerca(l, c.x, c.y, c.z, 64, EstaticaRed.Fx.en(EstaticaRed.Fx.PAUSA, v.getId(), c, dur));
         if (v instanceof ServerPlayer vp) EstaticaRed.a(vp, new EstaticaRed.Pantallazo(EstaticaRed.Pantallazo.PAUSA, dur, 0));
@@ -196,10 +194,13 @@ public final class PoderesNuevos {
             LivingEntity v = x.v;
             if (!v.isAlive() || v.isRemoved()) {
                 it.remove();
-                if (v instanceof Mob m && !x.sinIa) m.setNoAi(false);
                 continue;
             }
             if (t < x.fin && x.atk.level() == v.level()) {
+                if (v instanceof Mob m) {
+                    m.getNavigation().stop();
+                    m.setTarget(null);
+                }
                 v.setDeltaMovement(Vec3.ZERO);
                 v.fallDistance = 0;
                 if (v.position().distanceToSqr(x.pos) > 0.04) Estatica.mover(v, x.pos, x.yaw, x.pitch);
@@ -207,7 +208,9 @@ public final class PoderesNuevos {
                 continue;
             }
             it.remove();
-            if (v instanceof Mob m && !x.sinIa) m.setNoAi(false);
+            v.removeEffect(MobEffects.WEAKNESS);
+            v.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+            v.removeEffect(MobEffects.DIG_SLOWDOWN);
             ServerLevel l = (ServerLevel) v.level();
             Vec3 c = v.getBoundingBox().getCenter();
             EstaticaRed.cerca(l, c.x, c.y, c.z, 64, EstaticaRed.Fx.en(EstaticaRed.Fx.PLAY, v.getId(), c, Math.round(x.acum)));
@@ -455,10 +458,7 @@ public final class PoderesNuevos {
         }
         for (Iterator<Pausado> it = PAUSAS.iterator(); it.hasNext(); ) {
             Pausado x = it.next();
-            if (x.atk == p || x.v == p) {
-                it.remove();
-                if (x.v instanceof Mob m && !x.sinIa) m.setNoAi(false);
-            }
+            if (x.atk == p || x.v == p) it.remove();
         }
         ZONAS.removeIf(z -> z.p == p);
         CLONES.removeIf(c -> c.p == p);
@@ -466,7 +466,6 @@ public final class PoderesNuevos {
     }
 
     static void limpiar() {
-        for (Pausado x : PAUSAS) if (x.v instanceof Mob m && !x.sinIa) m.setNoAi(false);
         CANALES.clear();
         PAUSAS.clear();
         ZONAS.clear();
