@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "miscelanea.refmap.json",
   "mixins": [
-    "LivingEntityAireMixin"
+    "LivingEntityAireMixin",
+    "LivingEntityGolpeAccessor"
   ],
   "client": [
     "CameraMixin",

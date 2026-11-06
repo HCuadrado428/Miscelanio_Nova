@@ -93,7 +93,7 @@ public class RodilloItem extends Item implements GeoItem {
         AABB caja = new AABB(ahora.add(fwd.scale(1.2)), ahora.add(fwd.scale(1.2))).inflate(1.2, 0.8, 1.2).move(0, 0.6, 0);
         for (LivingEntity v : sl.getEntitiesOfClass(LivingEntity.class, caja, v -> v != p && v.isAlive())) {
             if (v instanceof Player o && ArmaTinta.colorJugador(o) == color) continue;
-            if (v.hurt(sl.damageSources().playerAttack(p), com.miscelanea.ConfigServidor.rodilloGolpe())) {
+            if (com.miscelanea.armas.DanoArma.golpear(v, sl.damageSources().playerAttack(p), com.miscelanea.ConfigServidor.rodilloGolpe(), com.miscelanea.armas.DanoArma.Arma.RODILLO)) {
                 v.knockback(0.6, -fwd.x, -fwd.z);
                 Tinta.salpicar(sl, v.position(), 1.0, color);
                 level.playSound(null, v.getX(), v.getY(), v.getZ(), SoundEvents.SLIME_BLOCK_FALL, SoundSource.PLAYERS, 1.0F, 0.7F);

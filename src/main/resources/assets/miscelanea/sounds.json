@@ -2229,6 +2229,24 @@
     ],
     "subtitle": "subtitles.miscelanea.ballesta_disparo"
   },
+  "laser_encender": {
+    "sounds": [
+      {
+        "name": "miscelanea:laser_encender",
+        "attenuation_distance": 12
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.laser_encender"
+  },
+  "laser_apagar": {
+    "sounds": [
+      {
+        "name": "miscelanea:laser_apagar",
+        "attenuation_distance": 12
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.laser_apagar"
+  },
   "ballesta_palanca": {
     "sounds": [
       {

@@ -177,7 +177,7 @@ public final class Leviatan {
             }
             v.invulnerableTime = 0;
             float dano = (g.dano() + (helada ? 3 : 0)) * com.miscelanea.ConfigServidor.hachaMult();
-            if (!v.hurt(sl.damageSources().playerAttack(p), dano)) continue;
+            if (!com.miscelanea.armas.DanoArma.golpear(v, sl.damageSources().playerAttack(p), dano, com.miscelanea.armas.DanoArma.Arma.HACHA)) continue;
             acerto = true;
             efecto(p, v, g.efecto());
             if (helada) helar(v, 60, 1);
@@ -264,7 +264,7 @@ public final class Leviatan {
                 if (k % 3 == 1) sl.playSound(null, q.x, q.y, q.z, ModSounds.ESCARCHA.get(), SoundSource.PLAYERS, 0.6F, 1.4F);
                 for (LivingEntity v : sl.getEntitiesOfClass(LivingEntity.class, new AABB(q, q).inflate(1.2, 1.5, 1.2), x -> x != p && x.isAlive())) {
                     v.invulnerableTime = 0;
-                    if (v.hurt(sl.damageSources().playerAttack(p), 9.0F * com.miscelanea.ConfigServidor.hachaMult())) {
+                    if (com.miscelanea.armas.DanoArma.golpear(v, sl.damageSources().playerAttack(p), 9.0F * com.miscelanea.ConfigServidor.hachaMult(), com.miscelanea.armas.DanoArma.Arma.HACHA)) {
                         efecto(p, v, AccionHacha.Efecto.LANZAR);
                         helar(v, 80, 2);
                     }

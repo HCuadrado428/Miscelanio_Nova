@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "miscelanea:estatica_pura"
+    "miscelanea:estatica_pura",
+    "miscelanea:arma_verdadera"
   ]
 }

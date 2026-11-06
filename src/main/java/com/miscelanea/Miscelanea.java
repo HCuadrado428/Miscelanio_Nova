@@ -48,6 +48,7 @@ public class Miscelanea {
         com.miscelanea.glitch.GlitchRegistro.registrar(modBus);
         com.miscelanea.bromas.BromasRegistro.registrar(modBus);
         com.miscelanea.estatica.EstaticaRegistro.registrar(modBus);
+        com.miscelanea.laser.LaserRegistro.registrar(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::creativeTabs);
@@ -154,6 +155,11 @@ public class Miscelanea {
             event.accept(ModItems.LANZACOHETES);
             event.accept(ModItems.COHETE);
             event.accept(ModItems.BALLESTA_REPETICION);
+            for (int c = 0; c < com.miscelanea.laser.Laser.COLORES.length; c++) {
+                net.minecraft.world.item.ItemStack laser = new net.minecraft.world.item.ItemStack(com.miscelanea.laser.LaserRegistro.PUNTERO.get());
+                if (c > 0) laser.getOrCreateTag().putInt(com.miscelanea.laser.Laser.COLOR, c);
+                event.accept(laser);
+            }
             event.accept(ModItems.BFG);
             event.accept(ModItems.MAZO_WEMMBU);
             event.accept(ModItems.LLAVE_ESPADA);

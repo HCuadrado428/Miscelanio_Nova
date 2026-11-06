@@ -59,6 +59,7 @@ public final class MazoEventos {
         float mult = com.miscelanea.ConfigServidor.mazoMult();
         if (p.isFallFlying() || p.fallDistance <= 1.5F) {
             if (mult != 1F) e.setAmount(e.getAmount() * mult);
+            DanoArma.repartir(e, DanoArma.Arma.MAZO);
             return;
         }
         float caida = p.fallDistance;
@@ -73,6 +74,7 @@ public final class MazoEventos {
             if (normal > 0.01F) dano *= conBrecha / normal;
         }
         e.setAmount(dano * mult);
+        DanoArma.repartir(e, DanoArma.Arma.MAZO);
         Vec3 c = objetivo.position();
         BlockState suelo = sl.getBlockState(objetivo.blockPosition().below());
         if (!suelo.isAir()) sl.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, suelo), c.x, c.y + 0.1, c.z, 60, 1.4, 0.1, 1.4, 0.2);
@@ -117,7 +119,7 @@ public final class MazoEventos {
             float f = (float) (1 - 0.6 * d / radio);
             interno = true;
             try {
-                o.hurt(sl.damageSources().playerAttack(p), dano * f);
+                DanoArma.golpear(o, sl.damageSources().playerAttack(p), dano * f, DanoArma.Arma.MAZO);
             } finally {
                 interno = false;
             }
@@ -164,7 +166,7 @@ public final class MazoEventos {
             o.invulnerableTime = 0;
             interno = true;
             try {
-                o.hurt(fuente, 12F * com.miscelanea.ConfigServidor.mazoMult());
+                DanoArma.golpear(o, fuente, 12F * com.miscelanea.ConfigServidor.mazoMult(), DanoArma.Arma.MAZO);
             } finally {
                 interno = false;
             }

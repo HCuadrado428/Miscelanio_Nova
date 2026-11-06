@@ -206,7 +206,7 @@ public final class Agarres {
         PorraItem.marcarDescarga(a.agresor.getMainHandItem());
         LivingEntity v = a.victima;
         v.invulnerableTime = 0;
-        v.hurt(ModDamageTypes.descarga(level, a.agresor), com.miscelanea.ConfigServidor.porraDescarga());
+        com.miscelanea.armas.DanoArma.golpear(v, ModDamageTypes.descarga(level, a.agresor), com.miscelanea.ConfigServidor.porraDescarga(), com.miscelanea.armas.DanoArma.Arma.PORRA_DESCARGA);
         bloquearItems(v, BLOQUEO_AGARRE);
         a.resistencia = Math.min(RESISTENCIA_MAX, a.resistencia + 12.0F);
 
