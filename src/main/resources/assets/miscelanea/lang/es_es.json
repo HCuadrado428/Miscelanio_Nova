@@ -2683,5 +2683,6 @@
   "movil.miscelanea.cajero_sin_saldo": "Saldo insuficiente",
   "movil.miscelanea.cajero_ingresado": "Ingresado: %s",
   "movil.miscelanea.cajero_retirado": "Retirado: %s",
-  "item.miscelanea.cabeza_espantapajaros": "Saco del Espantapájaros"
+  "item.miscelanea.cabeza_espantapajaros": "Saco del Espantapájaros",
+  "miscelanea.pruebas.hecho": "Zona de pruebas lista: %s bloques colocados en %s calles (una por pestaña), con cofres del resto de objetos y uno con dinero. Fallaron: %s"
 }

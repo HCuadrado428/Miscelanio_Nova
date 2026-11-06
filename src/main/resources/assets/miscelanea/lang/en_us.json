@@ -2683,5 +2683,6 @@
   "movil.miscelanea.cajero_sin_saldo": "Insufficient balance",
   "movil.miscelanea.cajero_ingresado": "Deposited: %s",
   "movil.miscelanea.cajero_retirado": "Withdrawn: %s",
-  "item.miscelanea.cabeza_espantapajaros": "Scarecrow's Sack"
+  "item.miscelanea.cabeza_espantapajaros": "Scarecrow's Sack",
+  "miscelanea.pruebas.hecho": "Test area ready: %s blocks placed in %s streets (one per tab), with chests holding the other items and one with money. Failed: %s"
 }
