@@ -6,7 +6,6 @@ import de.maxhenkel.voicechat.api.VoicechatApi;
 import de.maxhenkel.voicechat.api.VoicechatPlugin;
 import de.maxhenkel.voicechat.api.events.ClientReceiveSoundEvent;
 import de.maxhenkel.voicechat.api.events.EventRegistration;
-import de.maxhenkel.voicechat.api.events.ClientSoundEvent;
 import java.util.UUID;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 
@@ -15,8 +14,8 @@ import net.minecraftforge.fml.loading.FMLEnvironment;
  * referencia nadie del mod: la descubre el propio voicechat por la anotación cuando está instalado; si no lo está,
  * nunca se carga y no pasa nada. Lo que hace: cuando llega el audio de otro jugador
  * ({@link ClientReceiveSoundEvent}, en el cliente de quien escucha), se lo pasa a {@link VozCliente} para que le
- * aplique las voces que ese jugador tenga. El micro propio ({@link ClientSoundEvent}) no se procesa (uno se oye
- * normal); solo sirve para animar el icono del HUD. En un servidor dedicado no registra nada (los eventos que usa
+ * aplique las voces que ese jugador tenga. El micro propio no se procesa ni se señala en pantalla (uno se oye
+ * normal y nada avisa de que su voz suena distinta). En un servidor dedicado no registra nada (los eventos que usa
  * son de cliente) y así no carga clases de cliente.
  */
 @ForgeVoicechatPlugin
@@ -39,8 +38,6 @@ public class MiscelaneaVozPlugin implements VoicechatPlugin {
         r.registerEvent(ClientReceiveSoundEvent.EntitySound.class, e -> recibir(e, e.getId()));
         r.registerEvent(ClientReceiveSoundEvent.LocationalSound.class, e -> recibir(e, e.getId()));
         r.registerEvent(ClientReceiveSoundEvent.StaticSound.class, e -> recibir(e, e.getId()));
-        // el micro propio (en el cliente; MicrophonePacketEvent es del servidor y aquí nunca llegaba)
-        r.registerEvent(ClientSoundEvent.class, MiscelaneaVozPlugin::micro);
     }
 
     // en métodos aparte para que la clase de cliente solo se cargue si se llega a ejecutar (nunca en el servidor)
@@ -55,9 +52,5 @@ public class MiscelaneaVozPlugin implements VoicechatPlugin {
         com.miscelanea.client.estatica.ImitarVoz.grabar(hablante, audio);
         // se modifica en el sitio; setRawAudio por si la implementación copia el array
         if (VozCliente.procesar(hablante, audio)) e.setRawAudio(audio);
-    }
-
-    private static void micro(ClientSoundEvent e) {
-        VozCliente.hablando();
     }
 }

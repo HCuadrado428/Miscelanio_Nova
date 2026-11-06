@@ -32,14 +32,14 @@ public final class SangreCliente {
         // latido doble (bum-bum) a ~75 por minuto, nunca más de 2 Hz y nunca a cero: sin destellos
         float fase = (t % 16F) / 16F;
         float latido = Math.max(0, Mth.sin(fase * Mth.PI * 2)) * 0.7F + Math.max(0, Mth.sin((fase - 0.22F) * Mth.PI * 2)) * 0.3F;
+        // un velo rojo muy leve en toda la pantalla y una viñeta roja que se cierra un poco con cada latido; por
+        // fuera, otra más oscura (bordes casi granate)
         float k = 0.16F + 0.14F * latido;
         RenderSystem.enableBlend();
-        g.fillGradient(0, 0, w, h, (Math.round(k * 255) << 24) | 0xA00008, (Math.round(k * 0.6F * 255) << 24) | 0x600004);
-        // viñeta: los bordes más oscuros y rojos
-        int borde = Math.round(k * 1.6F * 255);
-        g.fillGradient(0, 0, w, h / 3, (borde << 24) | 0x500000, 0x00500000);
-        g.fillGradient(0, h - h / 3, w, h, 0x00500000, (borde << 24) | 0x500000);
+        g.fill(0, 0, w, h, (Math.round(k * 0.6F * 255) << 24) | 0x8A0006);
         RenderSystem.disableBlend();
+        Vineta.dibujar(g, w, h, 0x9A0408, 0.55F + 0.35F * latido, 1.02F - 0.05F * latido);
+        Vineta.dibujar(g, w, h, 0x2A0002, 0.45F + 0.2F * latido, 1.22F);
     }
 
     public static void reventar(ReventarPacket p) {

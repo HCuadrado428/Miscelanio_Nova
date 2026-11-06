@@ -382,9 +382,8 @@ public final class EcoCliente {
         if (!activo()) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.options.hideGui) return;
+        Vineta.dibujar(g, w, h, 0x0A2030, 0.6F, 1.08F);
         RenderSystem.enableBlend();
-        g.fillGradient(0, 0, w, h / 4, 0x5A0A2030, 0x00000000);
-        g.fillGradient(0, h - h / 4, w, h, 0x00000000, 0x5A0A2030);
         // el enfriamiento de la palmada: una barrita que se rellena
         int bw = 40, bx = w / 2 - bw / 2, by = h - 70;
         int lleno = Math.round(bw * (1F - enfriamiento / (float) ENFRIAMIENTO));
