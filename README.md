@@ -1,190 +1,312 @@
 # Miscelánea
 
-**Un mod de Minecraft lleno de ideas que no tenían por qué estar juntas… y por eso mismo molan.** Convierte tu mundo en una mezcla de arsenal de acción, salón recreativo, feria, museo de bichos, hogar y laboratorio de cosas extrañas. Hay objetos para combatir, explorar, coleccionar, decorar y, sobre todo, compartir situaciones divertidas con otras personas.
+**Un mod de Forge para Minecraft 1.20.1 que junta en uno solo una sala recreativa, una feria, juegos de mesa, un móvil con apps, armas sacadas de videojuegos, pociones raras, bromas entre amigos y un hombre de estática.** Está hecho para servidores de amigos y rol: casi todo se juega con otras personas.
 
-> **Versión:** Minecraft Java 1.20.1 · **Cargador:** Forge 47.x · **Idioma:** español
+| | |
+|---|---|
+| **Minecraft** | Java 1.20.1 |
+| **Cargador** | Forge 47.x |
+| **Lado** | Cliente **y** servidor (los dos necesitan el mod) |
+| **Idiomas** | Español e inglés |
+| **Arte** | Pixel art a 32×32 (2 texeles por píxel del modelo), sonidos generados por código |
 
-## ¿Qué puedes hacer como jugador?
+---
 
-- **Montar un salón recreativo:** coloca máquinas, consigue fichas y compite en juegos individuales o para varias personas.
-- **Crear una feria:** instala atracciones y puestos con actividades de puntería, habilidad y azar.
-- **Explorar y coleccionar:** captura insectos, pesca, busca fósiles y tesoros, y registra tus hallazgos.
-- **Probar equipo de combate:** usa armas y herramientas con modelos, animaciones, sonidos y comportamientos propios.
-- **Construir un espacio para vivir:** amuebla tu casa, cultiva ingredientes y cocina.
-- **Moverte de maneras distintas:** deslízate por una tirolina, rebota en trampolines o toca la ocarina para cambiar ciertos aspectos del mundo.
-- **Jugar con efectos y bromas:** lanza pociones y usa objetos peculiares; algunas bromas afectan a otros jugadores, así que conviene acordarlas antes.
+## Índice
 
-## Contenido
+1. [Instalación](#instalación)
+2. [Primeros pasos](#primeros-pasos)
+3. [El móvil](#el-móvil)
+4. [Banco, Bizum y cajero](#banco-bizum-y-cajero)
+5. [Sala recreativa](#sala-recreativa)
+6. [Feria](#feria)
+7. [Juegos de mesa y mesas](#juegos-de-mesa-y-mesas)
+8. [Pista de baile](#pista-de-baile)
+9. [Armas y equipo](#armas-y-equipo)
+10. [El hombre de estática](#el-hombre-de-estática)
+11. [Pociones y efectos](#pociones-y-efectos)
+12. [Bromas](#bromas)
+13. [Sala de juegos](#sala-de-juegos)
+14. [Colección, pesca y tesoros](#colección-pesca-y-tesoros)
+15. [Casa, cocina y movimiento](#casa-cocina-y-movimiento)
+16. [Comandos](#comandos)
+17. [Configuración](#configuración)
+18. [Compatibilidad con otros mods](#compatibilidad-con-otros-mods)
+19. [Compilar desde el código](#compilar-desde-el-código)
 
-- [Combate y objetos especiales](#combate-y-objetos-especiales)
-- [Efectos, pociones y bromas](#efectos-pociones-y-bromas)
-- [Colección, pesca y tesoros](#colección-pesca-y-tesoros)
-- [Feria, recreativas y juegos](#feria-recreativas-y-juegos)
-- [Exploración y movimiento](#exploración-y-movimiento)
-- [Casa y cocina](#casa-y-cocina)
-- [Controles y multijugador](#controles-y-multijugador)
-- [Instalación](#instalación)
-- [Compilar desde el código fuente](#compilar-desde-el-código-fuente)
-
-## Combate y objetos especiales
-
-### Aspirafantasmas 3000 👻
-
-Un equipo de dos piezas inspirado en los aparatos cazafantasmas: equipa la **mochila en el hueco del pecho** y lleva la **boquilla en la mano**. La manguera conecta visualmente ambas partes y acompaña las animaciones mientras usas el equipo.
-
-- **Clic derecho — aspirar:** absorbe objetos y experiencia del suelo y atrae entidades hacia la boquilla. Algunas criaturas pequeñas pueden capturarse. Si una criatura se resiste al tirón, mueve la cámara en la dirección indicada para mantenerla bajo control.
-- **Tecla R — liberar:** suelta la captura más reciente. La tecla se puede cambiar en las opciones de controles.
-- **Shift + clic derecho — soplar:** expulsa aire. Los encantamientos de la boquilla desbloquean variantes y usos adicionales de esta acción.
-- **Destello:** carga y libera un flash que afecta a las criaturas que te estén mirando, cegándolas y aturdiéndolas brevemente.
-- **Desatascador:** lanza una ventosa para alcanzar un objetivo; vuelve a aspirar para tirar de él.
-- **Soplido mejorado:** empuja con más fuerza, puede desviar proyectiles y permite lanzar una captura.
-- **Turbo:** genera un impulso que te propulsa en dirección contraria a la boquilla.
-- **Alquimista:** absorbe pociones y efectos para guardarlos en el tanque y poder utilizarlos después.
-- **Mochila — tecla B:** abre la interfaz para revisar las capturas y gestionar el contenido del tanque. La tecla también es configurable.
-
-La boquilla acumula calor al utilizarla. Vigila su indicador y deja que se enfríe si se sobrecalienta. Los modos especiales se aplican mediante encantamientos, así que revisa las descripciones de la boquilla y sus encantamientos para conocer las opciones disponibles.
-
-### Porra eléctrica ⚡
-
-La porra y su batería de espalda forman un arma de corto alcance. Sus golpes descargan electricidad, pueden aturdir al objetivo y bloquear temporalmente el uso de objetos. También permite agarrar a un objetivo cercano para controlar el enfrentamiento. Es una opción de combate directo: acércate, administra tus golpes y ten en cuenta que su efecto es temporal.
-
-### Medigun 💉
-
-Equipa la mochila médica y apunta la medigun a otro jugador para curarlo a distancia. El rayo de curación puede permanecer conectado mientras el paciente siga cerca y dentro de tu línea de visión. Curar carga la **ÜberCarga**, una reserva que da acceso a su función especial cuando está lista. Es un equipo de apoyo pensado para acompañar a tus compañeros, no para sustituir la precaución en combate.
-
-### Núcleo de error 🟪⬛ *(solo creativo)*
-
-Un objeto de aspecto corrupto que concentra energía antes de disparar un potente aliento. Mantener la carga aumenta el alcance y la potencia del ataque. El disparo puede romper ciertos bloques blandos, por lo que es mejor probarlo en una zona adecuada y tener cuidado con las construcciones cercanas.
-
-### Arsenal de acción
-
-El mod reúne armas y equipo inspirados en videojuegos. Cada objeto tiene un estilo, animaciones y controles propios; consulta su descripción y revisa **Opciones → Controles** antes de usarlo.
-
-- **Superescopeta:** dispara con clic derecho y utiliza un gancho al mantener clic izquierdo, útil para desplazarte y acercarte a los objetivos.
-- **Lanzacohetes:** lanza cohetes y recarga automáticamente, de uno en uno, para que puedas volver a disparar sin recargar toda la munición a la vez.
-- **Ballesta de repetición:** ofrece una alternativa de disparo a distancia con un ritmo distinto al de un arma de fuego.
-- **BFG:** un arma de gran potencia para enfrentamientos; úsala con cuidado por el alcance de sus efectos.
-- **Mazo arrojadizo:** permite atacar lanzando el arma y aporta una opción de combate diferente a las armas de proyectil convencionales.
-- **Llave Espada:** combina ataques cuerpo a cuerpo en tierra y en el aire con ataques mágicos, fijación de objetivo y la posibilidad de abrir algunas cerraduras. Incluye comandos mágicos como **Piro**, **Hielo** y **Cura**.
-- **Hacha Leviatán:** encadena golpes, lanza y llama de vuelta el hacha, y combina defensa y movilidad con escudo, parry, esquivas y ataques rúnicos.
-- **Pistola de gravedad:** interactúa con objetos mediante sus capacidades de manipulación física, además de servir como herramienta de combate.
-- **Lanzatintas y rodillo:** llevan al mundo de Minecraft un estilo de combate basado en la tinta, con formas de uso distintas para el disparo y el ataque cercano.
-
-Los controles de cada objeto aparecen en sus descripciones y se pueden consultar o reasignar desde **Opciones → Controles**.
-
-## Efectos, pociones y bromas
-
-### Cupido 💘 y Enemigo 💔
-
-Son efectos que alteran la relación entre las entidades afectadas y se pueden aplicar con pociones.
-
-- **Cupido:** atrae entre sí a las entidades afectadas que están cerca. El tirón se hace más fuerte cuanto mayor es la distancia entre ellas. Los corazones y el lazo rosa permiten reconocer visualmente el vínculo.
-- **Enemigo:** hace que las entidades afectadas se dañen entre sí cuando se acercan. Tiene niveles de efecto y el lazo rojo muestra quién está conectado.
-- Ambos efectos tienen variantes de poción **normal, arrojadiza, persistente y en flecha**. También se pueden preparar versiones de mayor duración o potencia con los ingredientes habituales de alquimia.
-
-Para probarlos con permisos de operador:
-
-```mcfunction
-/effect give @a miscelanea:cupido 60
-/effect give @e[type=zombie] miscelanea:enemigo 60
-```
-
-### Fantasma 👻 *(solo creativo)*
-
-Oculta al portador y hace que solo se intuya al mirarlo de reojo. No elimina su presencia física del mundo: todavía puede chocar con otras entidades y recibir golpes. Hay pociones de duración normal y larga, además de variantes arrojadizas, persistentes y flechas con el efecto.
-
-### Sueños, poderes y efectos especiales
-
-Hay más sistemas sobrenaturales y objetos por descubrir: mezclas de pociones en un caldero, frascos especiales, habilidades temáticas y poderes visuales con tiempos de enfriamiento. Experimenta con las descripciones de los objetos y sus recetas para descubrir cómo se consiguen y qué condiciones tienen.
-
-### Bromas para jugar en compañía
-
-Algunos objetos permiten hechizar el chat para que escriba «uwu», invertir los controles, poner la pantalla del revés, colocar un cartel de «PATÉAME» o enviar un duende travieso a revolver la mochila. Están pensados como bromas entre amigos: acuerda su uso con el grupo y revisa las opciones del servidor si prefieres limitar estos efectos.
-
-## Colección, pesca y tesoros
-
-### Bichos y peces
-
-El mundo incluye criaturas para observar y registrar, además de herramientas y lugares donde exhibirlas.
-
-- **Red:** captura insectos. Acercarte despacio o agachado ayuda a no espantarlos.
-- **Caña de pescar:** espera a que pique un pez y completa el minijuego para intentar atraparlo.
-- **Bichopedia:** consulta las criaturas descubiertas, sus hábitats y tus registros de colección.
-- **Vitrina de museo:** dona ejemplares y conviértelos en parte de una exposición.
-- **Terrario y acuario:** exhibe insectos y peces en tu casa o museo.
-
-Entre los insectos hay mariposas, polillas, luciérnagas, libélulas, abejorros, mariquitas, escarabajos, saltamontes, escorpiones y cigarras. También puedes encontrar peces de distintos hábitats.
-
-### Detector y cápsulas del tiempo
-
-Usa el **detector de metales** mientras recorres el mundo: la señal se acelera al acercarte a un hallazgo y te ayuda a localizar el punto donde cavar. La búsqueda puede revelar tesoros, fósiles y cápsulas con notas. Los fósiles se pueden exponer en el museo para completar la parte arqueológica de tu colección.
-
-## Feria, recreativas y juegos
-
-### Salón recreativo 🕹️
-
-Construye un salón, coloca máquinas e inserta fichas para empezar a jugar. Hay máquinas individuales, recreativas dobles y cabinas dedicadas a juegos concretos. Algunos juegos admiten dos participantes y guardan récords, así que puedes competir y volver después para intentar superar la mejor puntuación. Las máquinas y sus interfaces varían según el juego: acércate e interactúa para ver sus opciones.
-
-### Feria 🎡
-
-Monta atracciones como la **noria**, el **tiovivo** y el **pulpo**, y completa tu feria con puestos y máquinas. Hay actividades de puntería, coordinación, azar y premios: pesca de patitos, tiro con escopeta de corcho, gancho de premios, tragaperras, gachapón, bolos y más. Combina atracciones y puestos para crear un espacio de juego para tus visitantes.
-
-### Juegos de mesa y mesas recreativas
-
-Desafía a otra persona o, en algunos juegos, a la CPU. Interactúa con el tablero o la mesa para iniciar una partida y sigue las indicaciones que aparecen en la interfaz.
-
-- **Tablero clásico:** ajedrez, damas y Reversi.
-- **Tableros propios:** Imperio, Parchís, Juego de la Oca, Cuatro en raya, Hundir la flota y dominó.
-- **Mesas y pistas:** billar, futbolín, air hockey, juegos de cartas y baile.
-
-Los juegos están pensados para dar variedad a una base o zona comunitaria: algunos dependen de turnos y estrategia, otros de habilidad o reflejos. Comprueba en cada mesa si se juega contra otra persona o si hay una opción de CPU.
-
-## Exploración y movimiento
-
-- **Ocarina:** toca melodías para cambiar la hora, alterar el clima o regresar a casa. Las notas se pueden reasignar; consulta los controles de la ocarina para aprender cada melodía.
-- **Móvil:** smartphone con chats entre jugadores (individuales y de grupo, con fotos), cámara con selfie y galería, llamadas y videollamadas (con Simple Voice Chat), agenda, reloj con alarma, linterna que ilumina de verdad (bloques de luz invisibles que se quitan solos) y ajustes. Apps: **Minegram** (red social del servidor: fotos con pie, me gusta con doble clic, comentarios, seguir, perfiles y notificaciones), **notas de voz** en los chats (mantén pulsado el micro; con Simple Voice Chat), **ubicación en tiempo real** (15/30/60 min, desde un chat o un contacto), **Mapa y GPS** (mapa estilo vanilla de lo explorado, puntos guardados, amigos que comparten su ubicación y flecha de navegación en el HUD) y **Banco y Bizum** (saldo de esmeraldas, transferencias con concepto, enviar objetos; `/miscelanea banco <jugador> ver|dar|quitar` para operadores). Se abre con clic derecho o con **B**; se tiñe con tintes. Los mensajes, fotos, notas de voz y publicaciones se guardan en el servidor; el mapa explorado, en el cliente (`config/miscelanea_movil_mapa/`).
-- **Tirolina:** conecta dos postes usando un carrete de cable, con una distancia máxima de 64 bloques. Una vez instalada, permite lanzarte de un extremo al otro para cruzar zonas con rapidez.
-- **Trampolín:** rebota al pisarlo y te permite encadenar saltos y maniobras en el aire.
-
-## Casa y cocina
-
-Decora y equipa tus espacios con **sillas, sofás, mesas, taburetes y lámparas**. Algunos muebles permiten sentarse y las lámparas se pueden encender, para que la decoración también resulte interactiva. Cultiva **tomates y arroz** y prepara comida en el fogón, incluida paella y otras recetas. Revisa las recetas y las descripciones de los bloques para saber qué ingredientes necesita cada preparación.
-
-## Controles y multijugador
-
-- Las teclas propias del mod aparecen en **Opciones → Controles → Miscelánea** y se pueden reasignar. Si una acción no responde, comprueba que su tecla no esté asignada también a otra función.
-- Algunos minijuegos usan los controles habituales de movimiento y salto de Minecraft; sigue las indicaciones de la interfaz del juego.
-- Las recreativas, los juegos de mesa y varias actividades están pensadas para jugar con otras personas. Algunos juegos también ofrecen rivales controlados por la CPU.
-- En servidores, el administrador puede configurar o desactivar determinados efectos, bromas y poderes. Respeta las reglas del servidor y el consentimiento de los demás jugadores.
-- La compatibilidad con **Simple Voice Chat** es opcional; sus funciones solo se activan si el mod está instalado.
+---
 
 ## Instalación
 
 1. Instala **Minecraft Java 1.20.1** con **Forge 47.x**.
-2. Descarga el `.jar` de Miscelánea desde [Releases](https://github.com/HCuadrado428/Miscelanio_Nova/releases) y colócalo en la carpeta `mods`.
-3. Instala también las dependencias necesarias en `mods`:
-   - **GeckoLib para Forge 1.20.1**.
-   - **playerAnimator** compatible con Forge 1.20.1.
-4. Inicia el juego con el perfil de Forge. En multijugador, el servidor también debe tener el mod y sus dependencias.
+2. Descarga el `.jar` de Miscelánea desde [Releases](https://github.com/HCuadrado428/miscelanio_nova/releases) y ponlo en la carpeta `mods`.
+3. Añade las dependencias obligatorias:
+   - **GeckoLib** (Forge 1.20.1)
+   - **playerAnimator** (Forge 1.20.1)
+4. En un servidor, el mod y las dependencias van **en el servidor y en todos los clientes**, siempre en la misma versión. Si las versiones no coinciden, el juego no deja entrar.
 
-**Opcionales:** JEI permite consultar recetas compatibles; Simple Voice Chat habilita la integración de voz. No son necesarios para cargar el mod.
+**Opcionales** (el mod funciona sin ellos y, si están, se integra con ellos):
 
-## Compilar desde el código fuente
-
-Se necesita **JDK 17** e internet para descargar las dependencias la primera vez.
-
-```bash
-./gradlew build
-```
-
-En Windows:
-
-```bat
-gradlew.bat build
-```
-
-El `.jar` se genera en `build/libs/`. Para probar el cliente desde Gradle, ejecuta `./gradlew runClient`.
+| Mod | Para qué |
+|---|---|
+| **Simple Voice Chat** (2.5.0 o más) | Llamadas y videollamadas, notas de voz, imitar voces de la estática y voces con efecto |
+| **Customizable Player Models** | Las texturas de la estática y las heridas se adaptan a cada modelo |
+| **bendy-lib** (4.0.x) | Codos y rodillas que se doblan en las animaciones |
+| **OmegaChips** | El banco usa sus monedas en vez de esmeraldas |
+| **JEI** | Consultar recetas |
+| **Incapacitated** | La sala de juegos respeta el estado de "incapacitado" |
 
 ---
 
-Miscelánea es un mod en constante evolución: explora las pestañas creativas, lee las descripciones de los objetos y prueba las interacciones para encontrar todos sus secretos.
+## Primeros pasos
+
+- Todo el contenido está en **8 pestañas del creativo**: Feria y atracciones, Sala recreativa, Juegos de mesa, Armas y combate, Sala de juegos, Pociones y efectos, Bromas y Varios.
+- Las teclas propias están en **Opciones → Controles → Miscelánea** y se pueden cambiar todas. Si algo no responde, mira que su tecla no choque con otra.
+- Cada objeto explica en su descripción cómo se usa.
+- Los marcadores de récords y los rankings se guardan en el servidor. Usa `/miscelanea ranking` para verlos.
+
+---
+
+## El móvil
+
+Un smartphone de verdad dentro del juego. Se abre con **clic derecho** o con su tecla (**B** por defecto) y la carcasa se tiñe con tintes.
+
+| App | Qué hace |
+|---|---|
+| **Chats** | Mensajes privados y de grupo, con fotos y notas de voz (mantén pulsado el micro) |
+| **Teléfono** | Llamadas y videollamadas con Simple Voice Chat, a cualquier distancia |
+| **Agenda** | Contactos con número propio y si están conectados |
+| **Cámara y galería** | Fotos y selfies que se guardan en el servidor |
+| **Minegram** | La red social del servidor: publicaciones con pie de foto, me gusta (doble clic), comentarios, seguidores, perfiles y notificaciones |
+| **Ubicación** | Compartir dónde estás en tiempo real durante 15, 30 o 60 minutos |
+| **Mapa y GPS** | Mapa de lo explorado, puntos guardados, amigos que comparten ubicación y una flecha de navegación en el HUD |
+| **Banco** | Saldo, Bizum, enviar objetos e historial (ver abajo) |
+| **Reloj** | Hora y alarma |
+| **Linterna** | Ilumina de verdad con luces invisibles que se quitan solas |
+| **Ajustes** | Tono de llamada y otras opciones |
+
+Los mensajes, fotos y publicaciones se guardan en el servidor. El mapa explorado se guarda en el cliente, en `config/miscelanea_movil_mapa/`.
+
+---
+
+## Banco, Bizum y cajero
+
+El banco guarda el dinero de cada jugador en el servidor.
+
+- **Con OmegaChips**, el dinero son **chips**: 1 chip = 1 moneda de cobre.
+
+  | Moneda | Valor | Bloque (4 monedas) |
+  |---|---|---|
+  | Cobre | 1 | 4 |
+  | Hierro | 9 | 36 |
+  | Oro | 81 | 324 |
+  | Diamante | 729 | 2916 |
+
+- **Sin OmegaChips**, el dinero son esmeraldas (1) y bloques de esmeralda (9).
+
+**Dónde se mueve el dinero**
+
+- **Cajero automático** (bloque): ingresa y retira **sin límite**. Tiene teclado, un botón por moneda para sumar su valor, "Ingresar todo" y "Retirar todo", y muestra el saldo desglosado en monedas. Al retirar te da el mínimo de monedas posible, y si pagas de más te devuelve el cambio.
+- **Desde el móvil**, lejos de un cajero, solo se puede mover un poco: por defecto 81 por operación y 729 al día. Se cambia en la configuración.
+- **Bizum**: transferencias a cualquier contacto, con concepto y notificación. También funciona aunque el otro no esté conectado.
+- **Enviar objetos**: pasa un objeto de tu inventario a otro jugador conectado.
+
+Receta del cajero: lingotes de hierro, panel de cristal, redstone y un lingote de oro. Cada movimiento queda en el historial de la app y en el registro del servidor (`[Banco] ...`).
+
+---
+
+## Sala recreativa
+
+Máquinas que funcionan con **fichas**. Hay recreativas sencillas, dobles para 2 jugadores, mesa cóctel, cabina de carreras y recreativa de pistola, además de una **consola de bolsillo** con cartuchos.
+
+- **Juegos:** Tetrominós, Serpiente, Ladrillos, Pong, Pájaro Saltarín, Invasores, Comecocos, Duelo de Bloques, Comando Chatarra, Puños de Barrio, Duelo Final, Pinball Galaxia, Mazmorra 3D, Turbo Costa y Astro Patrulla.
+- Las máquinas de un solo juego empiezan directamente.
+- Si alguien está jugando, la partida se ve en la pantalla **en tiempo real** para los que miran.
+- El **marcador retro** y el **tablón de récords** guardan las mejores puntuaciones.
+
+## Feria
+
+- **Atracciones** en las que se puede montar: noria, tiovivo, pulpo, coches de choque, vagoneta de la bruja y caja de sustos.
+- **Puestos:** caseta de tiro con escopeta de corcho, pesca de patitos, tómbola, máquina de gancho, tragaperras, gachapón, canastas, boxeo, martillo de fuerza, bolos, dardos, petanca, boliche, torre de bloques y churrería.
+- **Comida y ambiente:** algodón de azúcar, palomitas, churros y castillo de fuegos artificiales.
+- Los premios son peluches, chapas y cápsulas sorpresa.
+
+## Juegos de mesa y mesas
+
+- **Tablero de juegos:** ajedrez, damas y Reversi.
+- **Tableros propios:** Imperio (juego de propiedades), Parchís, Oca, Cuatro en raya, Hundir la flota y Dominó.
+- **Mesas:** billar, futbolín, air hockey y cartas.
+- Se juega contra otras personas o, en algunos juegos, contra la CPU. La cámara y los gestos ayudan a ver el tablero, sin textos flotantes.
+
+## Pista de baile
+
+Un juego de ritmo para varios jugadores, con flechas (teclas configurables), notas largas, una cámara que sigue la coreografía y una coreografía propia para cada canción.
+
+Las canciones con copyright **no están en este repositorio**: se añaden aparte al `.jar` del servidor privado.
+
+---
+
+## Armas y equipo
+
+Cada arma tiene modelo, animaciones, sonidos y controles propios. Hacen bastante daño en servidores con mods fuertes (Ice and Fire, Protección V), porque parte del daño atraviesa la armadura.
+
+| Objeto | En pocas palabras |
+|---|---|
+| **Aspirafantasmas 3000** | Aspira objetos y criaturas, sopla, ciega con un destello y guarda pociones. Mochila en el pecho y boquilla en la mano; los encantamientos desbloquean modos |
+| **Porra eléctrica** | Descargas que aturden y bloquean el uso de objetos; también agarra al objetivo |
+| **Medigun** | Cura a distancia con un rayo y carga la ÜberCarga |
+| **Superescopeta** | Disparo potente y gancho para acercarte |
+| **Lanzacohetes** | Recarga de cohete en cohete |
+| **Ballesta de repetición** | Ráfagas con recarga propia |
+| **BFG** | Cañón de plasma enorme |
+| **Llave Espada** | Combos en tierra y aire, fijar objetivo y los comandos Piro, Hielo y Cura |
+| **Hacha Leviatán** | Lanzar y recuperar el hacha, escudo, parry, esquivas y ataques rúnicos |
+| **Pistola de gravedad** | Coger, mover y lanzar cosas |
+| **Lanzatintas y rodillo** | Combate con tinta |
+| **Puntero láser** | Apunta, deslumbra y vuelve locos a los gatos |
+| **Núcleo de error** *(creativo)* | Carga un aliento que corrompe bloques blandos |
+
+---
+
+## El hombre de estática
+
+La **poción de estática** (solo de creativo) te convierte en un ser de ruido de televisión. Tiene una cinemática de transformación y la textura de estática se adapta a cada skin y a CPM.
+
+**Pasivos**
+- El puñetazo con la mano vacía da una descarga que salta a los enemigos de alrededor.
+- **Fragmentarse:** esquivas golpes y flechas deshaciéndote en estática.
+- **Fundirse en la oscuridad:** si te quedas quieto a oscuras, solo se te ven los ojos.
+- Te curas a oscuras, las luces se apagan a tu paso y dejas charcos de estática.
+
+**Señal:** una barra que se llena al golpear, al acertar poderes y despacio a oscuras. Los poderes fuertes la gastan.
+
+**Rueda de poderes:** mantén su tecla, elige con el ratón o con los números, y usa el poder con **clic derecho y la mano vacía**. Puedes seguir andando con la rueda abierta.
+
+| Poder | Qué hace |
+|---|---|
+| **Parpadeo** | Hasta 3 saltos seguidos. Dejas una silueta que explota y el tercer salto pega el doble |
+| **Tentáculos** | Agarras a alguien y eliges: clic izquierdo lo estampa, clic derecho lo lanza y, si no haces nada, lo atraes |
+| **Pausa** | Congelas al objetivo; todo el daño que reciba le llega de golpe al soltarlo, multiplicado por 1,5 |
+| **Canal perdido** | Metes a la víctima en un vacío de estática y la escupes lejos, mareada |
+| **Meterse en pantallas** | Entras por una tele o recreativa y sales por otra con un fogonazo; tu cara se ve en las pantallas por las que pasas |
+| **Imitar voces** | Reproduces voces grabadas desde un bloque y las teles cercanas (con Simple Voice Chat) |
+| **Rebobinar** | Vuelves a donde estabas hace 4 segundos, con la vida de entonces |
+| **Sin señal** | Una zona de ruido donde los enemigos no ven y tú pegas más fuerte |
+| **Grabación** | Un clon repite tus últimos 3 segundos y tus golpes |
+| **Sobrecarga** | La definitiva: gasta toda la Señal, hace un daño enorme y deja a todos sin señal |
+
+---
+
+## Pociones y efectos
+
+Casi todos los efectos tienen poción normal, arrojadiza, persistente y flecha. El **caldero de mezclas** combina varios efectos en un frasco.
+
+- **Relaciones:** Cupido (atrae a los afectados entre sí) y Enemigo (se hacen daño al acercarse).
+- **Cuerpo:** Gigante, Enano, Helio, Ventilador y Borrachera.
+- **Mente:** Miedo, Espejismo, Tartamudeo y Sed de sangre.
+- **Sigilo:** Fantasma *(creativo)*, Sombra, Ecolocalización y Niebla viviente.
+- **Rol** *(creativo)*:
+  - Esencia y Veneno de Dream. El veneno mata al instante, con su propia animación.
+  - Anillo de medianoche: mantén clic derecho para ir a The Midnight.
+  - Mordisco venenoso: un agarre con veneno sostenido y un minijuego para escapar.
+  - Muestra de glitch.
+  - Estática (ver la sección anterior).
+
+---
+
+## Bromas
+
+Inofensivas pero molestas. Mejor acordarlas con el grupo antes de usarlas.
+
+- **Varita uwu:** el chat de la víctima escribe "uwu".
+- **Poción de controles cambiados.**
+- **Espejo del revés:** pone la pantalla al revés.
+- **Cartel de «PATÉAME».**
+- **Duende travieso:** te revuelve el inventario.
+- **Rueda de Catalina.**
+
+## Sala de juegos
+
+Trampas y aparatos "de película de miedo", en versión graciosa: cepos, grilletes, jaulas, la caja de agua, el péndulo, la silla de inmersión, la silla de interrogatorio y más. Muchos tienen su minijuego para escapar (ganzúa, alicates, sierra...), y al que está en el cepo se le pueden tirar tomates y huevos podridos. Es para rol y hay que acordarlo con quien participe. El administrador puede desactivar partes en la configuración.
+
+---
+
+## Colección, pesca y tesoros
+
+- **Red cazabichos y caña de pescar:** mariposas, luciérnagas, escorpiones, celacantos y más. Cada pez tiene su tamaño en centímetros.
+- **Bichopedia:** lo que has encontrado y dónde vive cada criatura.
+- **Vitrina del museo, acuario y terrario:** para exponer la colección.
+- **Detector de metales:** fósiles, mosquito en ámbar, tesoros y cápsulas del tiempo con notas.
+
+## Casa, cocina y movimiento
+
+- **Muebles:** sillas, sofás, mesas que se unen entre ellas, taburetes y lámparas de pie.
+- **Cocina:** tomates y arroz, fogón, paella, tortilla de patatas, gazpacho y chocolate con churros.
+- **Ocarina:** melodías que cambian la hora o el tiempo, o te llevan a casa.
+- **Tirolina:** dos postes unidos por cable, hasta 64 bloques.
+- **Trampolín.**
+
+---
+
+## Comandos
+
+Todos empiezan por `/miscelanea`. Menos `ranking`, todos necesitan nivel de operador 2.
+
+| Comando | Para qué |
+|---|---|
+| `ranking [categoría]` | Ver los 10 mejores de un juego, o la lista de categorías |
+| `banco <jugador> ver` · `dar <n>` · `quitar <n>` | Ver o cambiar el saldo del banco |
+| `voz <jugadores> poner <voz>` · `quitar <voz>` · `limpiar` | Voces con efecto fijas (por ejemplo, con estática), sin necesidad de poción |
+| `heridas poner <jugador> <parte> <tipo> <gravedad>` · `heridas curar <jugador>` | Heridas visibles para rol |
+| `espejismo <jugador> <objetivo>` | El jugador ve a otro con el aspecto del objetivo |
+
+---
+
+## Configuración
+
+Todo está en **`serverconfig/miscelanea-server.toml`**, dentro de la carpeta del mundo. Forge la copia a los clientes al entrar.
+
+Se puede activar o desactivar cada sistema por separado y ajustar sus números: daños y enfriamientos de armas y poderes, costes de Señal, límites del banco y del móvil, bromas y sala de juegos, radios, duraciones, etc. Cada opción lleva un comentario en español que explica qué hace.
+
+Si actualizas el mod con un archivo de configuración ya creado, se mantienen tus valores. Para recuperar un valor por defecto nuevo, borra esa línea y Forge la vuelve a escribir.
+
+---
+
+## Compatibilidad con otros mods
+
+Probado pensando en un servidor con, entre otros:
+
+- **Customizable Player Models**
+- **Simple Voice Chat**
+- **Incapacitated**
+- **Ice and Fire**
+- **Corail Tombstone**
+- **OmegaChips**
+
+Además:
+
+- El daño de las armas y de la estática atraviesa en parte la armadura y la Protección, para que siga contando contra equipo muy fuerte.
+- Los jefes (dragón, wither y la etiqueta `forge:bosses`) reciben menos efectos; se ajusta en la configuración.
+- Los contactos y el Bizum se guardan por el identificador interno de cada jugador (UUID), así que cambiarse el nombre (Fakename) no los rompe.
+
+---
+
+## Compilar desde el código
+
+Necesitas **JDK 17**. La primera vez hace falta internet para descargar las dependencias.
+
+```bash
+./gradlew build          # Linux / macOS
+gradlew.bat build        # Windows
+```
+
+El `.jar` sale en `build/libs/`. Para probar el cliente: `./gradlew runClient`.
+
+Notas para quien contribuya:
+
+- Las texturas, modelos y sonidos se generan con scripts de Python. Las canciones con copyright no se suben al repositorio (están en `.gitignore`).
+- Cada `push` a `main` compila en GitHub Actions y publica el `.jar` en Releases como `build-N`.
+
+---
+
+Miscelánea sigue creciendo. Abre las pestañas del creativo, lee las descripciones y prueba cosas con tus amigos.
