@@ -102,16 +102,16 @@ final class VistasTelefono {
         }
 
         private static int ty(int y0, int i) {
-            return y0 + 44 + (i / 3) * 30;
+            return y0 + 46 + (i / 3) * 27;
         }
 
         private void dibujarTeclado(GuiGraphics g, int mx, int my, int y0, String falta) {
             String n = num.length() == 0 ? "" : num.toString();
-            Ui.grande(g, n, W / 2, y0 + 12, 2, Ui.TEXTO);
+            Ui.grande(g, n, W / 2, y0 + 6, 2, Ui.TEXTO);
             String quien = "";
             for (MovilCliente.Contacto k : MovilCliente.CONTACTOS) if (k.numero().contentEquals(num)) quien = k.nombre();
-            if (!quien.isEmpty()) Ui.centrado(g, quien, W / 2, y0 + 31, Ui.ACENTO);
-            else if (num.length() == 0) Ui.centrado(g, t("mi_numero_es", MovilCliente.miNumero), W / 2, y0 + 31, Ui.TEXTO2);
+            if (!quien.isEmpty()) Ui.centrado(g, quien, W / 2, y0 + 23, Ui.ACENTO);
+            else if (num.length() == 0) Ui.centrado(g, t("mi_numero_es", MovilCliente.miNumero), W / 2, y0 + 23, Ui.TEXTO2);
             for (int i = 0; i < TECLAS.length; i++) {
                 if (TECLAS[i].isEmpty()) continue;
                 int cx = tx(i), cy = ty(y0, i);

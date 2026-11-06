@@ -142,7 +142,7 @@ Los juegos están pensados para dar variedad a una base o zona comunitaria: algu
 ## Exploración y movimiento
 
 - **Ocarina:** toca melodías para cambiar la hora, alterar el clima o regresar a casa. Las notas se pueden reasignar; consulta los controles de la ocarina para aprender cada melodía.
-- **Pip-Boy:** se lleva en la muñeca y sirve como interfaz portátil para consultar datos del mundo y del jugador, ver un mapa con marcadores y escuchar emisoras de radio.
+- **Móvil:** smartphone con chats entre jugadores (individuales y de grupo, con fotos), cámara con selfie y galería, llamadas y videollamadas (con Simple Voice Chat), agenda, reloj con alarma, linterna y ajustes. Se abre con clic derecho o con **B**; se tiñe con tintes. Los mensajes y fotos se guardan en el servidor.
 - **Tirolina:** conecta dos postes usando un carrete de cable, con una distancia máxima de 64 bloques. Una vez instalada, permite lanzarte de un extremo al otro para cruzar zonas con rapidez.
 - **Trampolín:** rebota al pisarlo y te permite encadenar saltos y maniobras en el aire.
 
