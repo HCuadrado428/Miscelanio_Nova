@@ -137,7 +137,7 @@ public class CoheteEntity extends Projectile implements GeoEntity {
             float f = (float) (1.0 - 0.5 * d / RADIO);
             float base = com.miscelanea.ConfigServidor.cohete();
             float dmg = (e == directo ? base : base * f) * (propio ? 0.35F : 1.0F);
-            e.hurt(damageSources().explosion(this, duenyo), dmg);
+            DanoArma.golpear(e, damageSources().explosion(this, duenyo), dmg, DanoArma.Arma.COHETE);
             Vec3 emp = centro.subtract(c);
             emp = emp.lengthSqr() < 1e-4 ? new Vec3(0, 1, 0) : emp.normalize();
             double fuerza = propio ? 1.25 * f : 0.9 * f;

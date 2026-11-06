@@ -110,7 +110,7 @@ public class PlasmaEntity extends Projectile {
             if (obj.distanceTo(c) > alcance) continue;
             if (!sobre() && sl.clip(new ClipContext(c, obj, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this)).getType() != HitResult.Type.MISS) continue;
             e.invulnerableTime = 0; // los rayos van cada 5 ticks: sin esto la invulnerabilidad se los comeria
-            e.hurt(damageSources().indirectMagic(this, duenyo), com.miscelanea.ConfigServidor.bfgRayo());
+            DanoArma.golpear(e, damageSources().indirectMagic(this, duenyo), com.miscelanea.ConfigServidor.bfgRayo(), DanoArma.Arma.BFG_RAYO);
             Vec3 d = obj.subtract(c);
             int pasos = (int) (d.length() * 4);
             for (int i = 0; i <= pasos; i++) {
@@ -146,7 +146,7 @@ public class PlasmaEntity extends Projectile {
             if (d > radio) continue;
             float f = (float) (1 - 0.6 * d / radio);
             e.invulnerableTime = 0; // que el ultimo rayo no reduzca el estallido
-            e.hurt(damageSources().indirectMagic(this, duenyo), com.miscelanea.ConfigServidor.bfgEsfera() * (sobre() ? 1.7F : 1F) * f * (e == duenyo ? 0.25F : 1F));
+            DanoArma.golpear(e, damageSources().indirectMagic(this, duenyo), com.miscelanea.ConfigServidor.bfgEsfera() * (sobre() ? 1.7F : 1F) * f * (e == duenyo ? 0.25F : 1F), DanoArma.Arma.BFG);
             Vec3 emp = centro.subtract(c);
             emp = emp.lengthSqr() < 1e-4 ? new Vec3(0, 1, 0) : emp.normalize();
             e.setDeltaMovement(e.getDeltaMovement().add(emp.scale(1.2 * f)).add(0, 0.3 * f, 0));

@@ -94,10 +94,10 @@ public class HechizoEntity extends Projectile {
         Entity duenyo = getOwner();
         v.invulnerableTime = 0;
         if (tipo() == PIRO) {
-            v.hurt(damageSources().indirectMagic(this, duenyo), 7.0F);
+            com.miscelanea.armas.DanoArma.golpear(v, damageSources().indirectMagic(this, duenyo), 7.0F * com.miscelanea.ConfigServidor.llaveMult(), com.miscelanea.armas.DanoArma.Arma.LLAVE);
             v.setSecondsOnFire(4);
         } else {
-            v.hurt(damageSources().indirectMagic(this, duenyo), 5.0F);
+            com.miscelanea.armas.DanoArma.golpear(v, damageSources().indirectMagic(this, duenyo), 5.0F * com.miscelanea.ConfigServidor.llaveMult(), com.miscelanea.armas.DanoArma.Arma.LLAVE);
             v.setTicksFrozen(Math.max(v.getTicksFrozen(), v.getTicksRequiredToFreeze() + 80));
             v.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 70, 2));
         }

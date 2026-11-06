@@ -98,7 +98,7 @@ public class VorticeEntity extends Entity {
             e.fallDistance = 0;
             if (e instanceof LivingEntity le && dist < 2.2 && tickCount % 10 == 0) {
                 le.invulnerableTime = 0;
-                le.hurt(damageSources().indirectMagic(this, duenyo), grande() ? 5F : 3F);
+                DanoArma.golpear(le, damageSources().indirectMagic(this, duenyo), (grande() ? 5F : 3F) * com.miscelanea.ConfigServidor.bfgVorticeMult(), DanoArma.Arma.BFG_VORTICE);
             }
         }
         if (tickCount >= dura()) {
@@ -111,7 +111,7 @@ public class VorticeEntity extends Entity {
                 Vec3 d = le.position().subtract(c);
                 Vec3 emp = d.lengthSqr() < 1e-4 ? new Vec3(0, 1, 0) : d.normalize();
                 le.invulnerableTime = 0;
-                le.hurt(damageSources().indirectMagic(this, duenyo), grande() ? 30F : 18F);
+                DanoArma.golpear(le, damageSources().indirectMagic(this, duenyo), (grande() ? 30F : 18F) * com.miscelanea.ConfigServidor.bfgVorticeMult(), DanoArma.Arma.BFG_VORTICE);
                 le.setDeltaMovement(emp.scale(1.4).add(0, 0.6, 0));
                 le.hurtMarked = true;
             }

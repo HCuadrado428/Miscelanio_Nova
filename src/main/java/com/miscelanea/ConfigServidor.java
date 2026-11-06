@@ -17,6 +17,12 @@ public final class ConfigServidor {
     // ---- armas
     private static final ForgeConfigSpec.DoubleValue ESCOPETA_PERDIGON, COHETE, BFG_ESFERA, BFG_RAYO, BALLESTA_MULT,
             PORRA_DESCARGA, LANZATINTAS, RODILLO_GOLPE, MAZO_MULT, HACHA_MULT, LLAVE_MULT;
+    private static final ForgeConfigSpec.DoubleValue PORRA_GOLPE_MULT, BFG_VORTICE_MULT, GRAVEDAD_MULT;
+    // ---- puntero láser
+    private static final ForgeConfigSpec.DoubleValue LASER_ALCANCE;
+    private static final ForgeConfigSpec.BooleanValue LASER_GATOS, LASER_MOBS, LASER_DESLUMBRAR;
+    private static final ForgeConfigSpec.DoubleValue[] ARMA_PERFORACION = new ForgeConfigSpec.DoubleValue[com.miscelanea.armas.DanoArma.Arma.values().length],
+            ARMA_VERDADERO = new ForgeConfigSpec.DoubleValue[com.miscelanea.armas.DanoArma.Arma.values().length];
     // ---- tortura
     private static final ForgeConfigSpec.BooleanValue MUERTE_INSTANTANEA, APARATOS_SUPERVIVENCIA, MUERTES_ANIMADAS;
     // ---- bichos
@@ -57,29 +63,57 @@ public final class ConfigServidor {
     static {
         ForgeConfigSpec.Builder b = new ForgeConfigSpec.Builder();
 
-        b.comment("Daño de las armas del mod (en puntos de vida: 2 = un corazón).").push("armas");
-        ESCOPETA_PERDIGON = b.comment("Superescopeta: daño de cada perdigón a quemarropa (16 perdigones, caen con la distancia; 1 = hasta 16 a bocajarro cada 1,3 s, como dos espadazos de netherita, y gasta cartuchos).")
-                .defineInRange("escopeta_perdigon", 1.0, 0.0, 1000.0);
-        COHETE = b.comment("Lanzacohetes: daño del impacto directo del cohete (la explosión hace menos según la distancia).")
-                .defineInRange("lanzacohetes_cohete", 14.0, 0.0, 1000.0);
-        BFG_ESFERA = b.comment("BFG: daño de la esfera de plasma al estallar (la sobrecargada hace x1,7).")
-                .defineInRange("bfg_esfera", 60.0, 0.0, 10000.0);
-        BFG_RAYO = b.comment("BFG: daño de cada rayo que suelta la esfera a los que pasan cerca.")
-                .defineInRange("bfg_rayo", 7.0, 0.0, 1000.0);
-        BALLESTA_MULT = b.comment("Ballesta de repetición: multiplicador del daño de los virotes (1 = como una flecha normal de ballesta).")
-                .defineInRange("ballesta_multiplicador", 1.0, 0.0, 100.0);
-        PORRA_DESCARGA = b.comment("Porra eléctrica: daño de cada descarga durante el agarre (atraviesa la armadura; una cada 1,5 s, unas 4 por agarre: 2,5 = media vida).")
-                .defineInRange("porra_descarga", 2.5, 0.0, 1000.0);
-        LANZATINTAS = b.comment("Lanzatintas: daño de cada chorro de tinta (salen 6,7 por segundo: 1,5 = unos 10 por segundo si aciertan todos, algo menos que una espada de netherita).")
-                .defineInRange("lanzatintas", 1.5, 0.0, 1000.0);
-        RODILLO_GOLPE = b.comment("Rodillo de tinta: daño del golpe al pasarlo por encima de alguien.")
-                .defineInRange("rodillo_golpe", 8.0, 0.0, 1000.0);
-        MAZO_MULT = b.comment("Mazo de Wemmbu: multiplicador de todo su daño (golpe, caída, sismo y lanzamiento).")
-                .defineInRange("mazo_multiplicador", 1.0, 0.0, 100.0);
-        HACHA_MULT = b.comment("Hacha Leviatán: multiplicador de todo su daño (combos, lanzamientos y rúnicos). 0,75: el combo ligero hace 4,5-6,75 por golpe (como una espada de diamante-netherita), el lanzamiento 6 (como un arco) y los rúnicos 6-9.")
-                .defineInRange("hacha_multiplicador", 0.75, 0.0, 100.0);
-        LLAVE_MULT = b.comment("Llave Espada: multiplicador del daño de sus combos.")
-                .defineInRange("llave_espada_multiplicador", 1.0, 0.0, 100.0);
+        b.comment("Daño de las armas del mod (en puntos de vida: 2 = un corazón).",
+                "Ajustado para competir con el equipo de Ice and Fire (espada de acero de dragón: unos 21-25 de daño, 28 con Afilado V)",
+                "contra jugadores con armadura de escamas/acero de dragón (unos 26 de armadura, dureza 2-6) y Protección V en las 4 piezas.",
+                "Cuentas de referencia contra ese jugador: la armadura se queda el 75-80 % (tope 80 %) y Protección V otro 80 % (tope 20 de",
+                "protección en total), así que de un golpe normal solo llega un 4-6 %: la espada de dragón hace ~1,9 por golpe (~3/s).",
+                "Por eso cada arma reparte su daño en tres partes: <arma>_perforacion (fracción 0-1 que se salta la armadura pero no Protección)",
+                "y <arma>_verdadero (fracción 0-1 que se salta armadura Y encantamientos de protección; la Resistencia sigue contando).",
+                "El resto es daño normal. Ejemplo: 10 de daño con perforación 0,3 y verdadero 0,05 = 6,5 normal + 3 perforante + 0,5 verdadero.",
+                "OJO: los mundos que ya tenían este archivo conservan los valores viejos; para coger los nuevos borra la sección [armas]",
+                "(o el archivo serverconfig/miscelanea-server.toml entero) y se regenera al arrancar.").push("armas");
+        ESCOPETA_PERDIGON = b.comment("Superescopeta: daño de cada perdigón a quemarropa (16 perdigones, caen hasta el 25 % con la distancia).",
+                        "2,5 = hasta 40 a bocajarro cada 1,3 s (gasta un cartucho). Contra armadura de dragón + Protección V: ~7,5 por disparo.")
+                .defineInRange("escopeta_perdigon", 2.5, 0.0, 1000.0);
+        COHETE = b.comment("Lanzacohetes: daño del impacto directo del cohete (la explosión hace hasta la mitad según la distancia; a ti un 35 %).",
+                        "30 = un impacto directo deja ~5,8 a un jugador con armadura de dragón + Protección V (4 cohetes por cargador).")
+                .defineInRange("lanzacohetes_cohete", 30.0, 0.0, 1000.0);
+        BFG_ESFERA = b.comment("BFG (solo creativo): daño de la esfera de plasma al estallar en el centro (baja al 40 % en el borde; la sobrecargada hace x1,7).",
+                        "Ya es daño mágico (se salta la armadura). 90 con 30 % verdadero = ~40 en el centro a un jugador con dragón + Protección V.")
+                .defineInRange("bfg_esfera", 90.0, 0.0, 10000.0);
+        BFG_RAYO = b.comment("BFG: daño de cada rayo que suelta la esfera a los que pasan cerca (4 por segundo; mágico). 10 = ~3 contra dragón + Prot. V.")
+                .defineInRange("bfg_rayo", 10.0, 0.0, 1000.0);
+        BALLESTA_MULT = b.comment("Ballesta de repetición: multiplicador del daño de los virotes (1 = como una flecha normal de ballesta, unos 6-7).",
+                        "2 = unos 12 por virote, 6 virotes a 3,3 por segundo (~1,6 por virote contra dragón + Protección V).")
+                .defineInRange("ballesta_multiplicador", 2.0, 0.0, 100.0);
+        PORRA_DESCARGA = b.comment("Porra eléctrica: daño de cada descarga durante el agarre (ya atraviesa la armadura; una cada 1,5 s, unas 4 por agarre).",
+                        "4 con 50 % verdadero = ~2,4 por descarga contra dragón + Protección V (~10 por agarre).")
+                .defineInRange("porra_descarga", 4.0, 0.0, 1000.0);
+        LANZATINTAS = b.comment("Lanzatintas: daño de cada chorro de tinta (salen 6,7 por segundo: 3 = unos 20 por segundo si aciertan todos; ~2,7/s contra dragón + Prot. V).")
+                .defineInRange("lanzatintas", 3.0, 0.0, 1000.0);
+        RODILLO_GOLPE = b.comment("Rodillo de tinta: daño del golpe al pasarlo por encima de alguien (hasta 2 por segundo). 14 = ~1,2 por golpe contra dragón + Prot. V.")
+                .defineInRange("rodillo_golpe", 14.0, 0.0, 1000.0);
+        MAZO_MULT = b.comment("Mazo de Wemmbu (solo creativo): multiplicador de todo su daño (golpe, caída, sismo, rayo y lanzamiento).",
+                        "1,8: el golpe normal hace 18 (~3,3 contra dragón + Prot. V) y el golpe en caída mucho más.")
+                .defineInRange("mazo_multiplicador", 1.8, 0.0, 100.0);
+        HACHA_MULT = b.comment("Hacha Leviatán: multiplicador de todo su daño (combos, lanzamientos y rúnicos). 1,6: el combo ligero hace 9,6-14,4 por golpe",
+                        "(casi 3 golpes por segundo, ~3,7/s contra dragón + Prot. V, algo más que la espada de dragón), el pesado 16-19, el lanzamiento 11-21 y los rúnicos 10-19.")
+                .defineInRange("hacha_multiplicador", 1.6, 0.0, 100.0);
+        LLAVE_MULT = b.comment("Llave Espada: multiplicador del daño de sus combos, lanzamiento y hechizos. 1,6: el combo hace 9,6 por golpe (~4,3/s contra dragón + Prot. V).")
+                .defineInRange("llave_espada_multiplicador", 1.6, 0.0, 100.0);
+        PORRA_GOLPE_MULT = b.comment("Porra eléctrica: multiplicador del golpe cuerpo a cuerpo normal (6 de base: 2 = 12, como una espada de acero de dragón floja).")
+                .defineInRange("porra_golpe_multiplicador", 2.0, 0.0, 100.0);
+        BFG_VORTICE_MULT = b.comment("BFG: multiplicador del daño del agujero negro que deja la esfera (3-5 por tirón y 18-30 al reventar con 1).")
+                .defineInRange("bfg_vortice_multiplicador", 1.5, 0.0, 100.0);
+        GRAVEDAD_MULT = b.comment("Pistola de gravedad: multiplicador del daño de lo que lanzas (16 como mucho con 1). 1,5 = hasta 24 (~2,5 contra dragón + Prot. V).")
+                .defineInRange("pistola_gravedad_multiplicador", 1.5, 0.0, 100.0);
+        for (com.miscelanea.armas.DanoArma.Arma a : com.miscelanea.armas.DanoArma.Arma.values()) {
+            ARMA_PERFORACION[a.ordinal()] = b.comment("Fracción del daño de " + a.id + " que se salta la armadura (no Protección). 0 = nada, 1 = todo.")
+                    .defineInRange(a.id + "_perforacion", a.perforacionDef, 0.0, 1.0);
+            ARMA_VERDADERO[a.ordinal()] = b.comment("Fracción del daño de " + a.id + " que se salta armadura y encantamientos de protección (daño verdadero).")
+                    .defineInRange(a.id + "_verdadero", a.verdaderoDef, 0.0, 1.0);
+        }
         b.pop();
 
         b.comment("Sala de juegos (aparatos de tortura).").push("tortura");
@@ -261,6 +295,13 @@ public final class ConfigServidor {
         MESAS_VICTORIAS_CPU = b.comment("Contar en el marcador de victorias las partidas ganadas solo contra la CPU.").define("victorias_contra_cpu", true);
         b.pop();
 
+        b.comment("Puntero láser (mantén clic derecho: rayo visible con un punto brillante; no hace daño).").push("puntero_laser");
+        LASER_ALCANCE = b.comment("Alcance del rayo en bloques.").defineInRange("alcance", 64.0, 4.0, 256.0);
+        LASER_GATOS = b.comment("Los gatos y ocelotes persiguen el punto (y le dan zarpazos).").define("gatos_persiguen", true);
+        LASER_MOBS = b.comment("Los mobs cerca del punto se quedan mirándolo.").define("mobs_miran", true);
+        LASER_DESLUMBRAR = b.comment("Apuntar a los ojos de un jugador que te mira le deslumbra un momento (solo un destello en su pantalla).").define("deslumbrar", true);
+        b.pop();
+
         SPEC = b.build();
     }
 
@@ -309,6 +350,11 @@ public final class ConfigServidor {
     public static float mazoMult() { return (float) d(MAZO_MULT); }
     public static float hachaMult() { return (float) d(HACHA_MULT); }
     public static float llaveMult() { return (float) d(LLAVE_MULT); }
+    public static float porraGolpeMult() { return (float) d(PORRA_GOLPE_MULT); }
+    public static float bfgVorticeMult() { return (float) d(BFG_VORTICE_MULT); }
+    public static float gravedadMult() { return (float) d(GRAVEDAD_MULT); }
+    public static double armaPerforacion(com.miscelanea.armas.DanoArma.Arma a) { return d(ARMA_PERFORACION[a.ordinal()]); }
+    public static double armaVerdadero(com.miscelanea.armas.DanoArma.Arma a) { return d(ARMA_VERDADERO[a.ordinal()]); }
 
     // ------------------------------------------------------------------ tortura
     public static boolean muerteInstantanea() { return b(MUERTE_INSTANTANEA); }
@@ -422,4 +468,10 @@ public final class ConfigServidor {
     public static int mesasTurnoTicks() { return i(MESAS_TURNO_S) * 20; }
     public static int mesasAusenciaTicks() { return Math.max(60, i(MESAS_AUSENCIA_S) * 20); }
     public static boolean mesasVictoriasContraCpu() { return b(MESAS_VICTORIAS_CPU); }
+
+    // ------------------------------------------------------------------ puntero láser
+    public static double laserAlcance() { return d(LASER_ALCANCE); }
+    public static boolean laserGatos() { return b(LASER_GATOS); }
+    public static boolean laserMobsMiran() { return b(LASER_MOBS); }
+    public static boolean laserDeslumbrar() { return b(LASER_DESLUMBRAR); }
 }

@@ -86,7 +86,7 @@ public class TintaProyectil extends ThrowableProjectile {
         super.onHitEntity(hit);
         if (!(hit.getEntity() instanceof LivingEntity le) || le == getOwner()) return;
         if (le instanceof Player p && ArmaTinta.colorJugador(p) == color()) return;
-        le.hurt(damageSources().thrown(this, getOwner()), dano);
+        com.miscelanea.armas.DanoArma.golpear(le, damageSources().thrown(this, getOwner()), dano, com.miscelanea.armas.DanoArma.Arma.LANZATINTAS);
         le.invulnerableTime = Math.min(le.invulnerableTime, 4);   // los chorros seguidos pegan todos
     }
 

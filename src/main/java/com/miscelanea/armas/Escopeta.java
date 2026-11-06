@@ -72,7 +72,7 @@ public final class Escopeta {
         }
         for (Map.Entry<LivingEntity, Float> e : dano.entrySet()) {
             LivingEntity v = e.getKey();
-            if (v.hurt(sl.damageSources().playerAttack(p), e.getValue())) {
+            if (DanoArma.golpear(v, sl.damageSources().playerAttack(p), e.getValue(), DanoArma.Arma.ESCOPETA)) {
                 Vec3 emp = v.position().subtract(p.position()).normalize();
                 v.knockback(Math.min(1.6, e.getValue() / 10.0), -emp.x, -emp.z);
             }

@@ -284,8 +284,8 @@ public final class Gravedad {
             final Entity lanzado = e;
             Entity quien = ((ServerLevel) e.level()).getEntity(la.quien);
             for (LivingEntity v : e.level().getEntitiesOfClass(LivingEntity.class, caja, v -> v != lanzado && v != quien && v.isAlive())) {
-                float dano = (float) Math.min(16.0, vel * (e instanceof FallingBlockEntity ? 9.0 : 6.0));
-                v.hurt(quien instanceof Player pq ? v.damageSources().playerAttack(pq) : v.damageSources().flyIntoWall(), dano);
+                float dano = (float) Math.min(16.0, vel * (e instanceof FallingBlockEntity ? 9.0 : 6.0)) * com.miscelanea.ConfigServidor.gravedadMult();
+                com.miscelanea.armas.DanoArma.golpear(v, quien instanceof Player pq ? v.damageSources().playerAttack(pq) : v.damageSources().flyIntoWall(), dano, com.miscelanea.armas.DanoArma.Arma.GRAVEDAD);
                 v.knockback(0.8, -e.getDeltaMovement().x, -e.getDeltaMovement().z);
                 e.level().playSound(null, v.getX(), v.getY(), v.getZ(), SoundEvents.ANVIL_LAND, SoundSource.PLAYERS, 0.4F, 1.4F);
                 e.setDeltaMovement(e.getDeltaMovement().scale(0.4));
