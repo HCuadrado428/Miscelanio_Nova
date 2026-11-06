@@ -17,6 +17,33 @@ public final class MovilVoz {
     private MovilVoz() {}
 
     static volatile boolean disponible;
+
+    // ------------------------------------------------------------------ notas de voz (cliente)
+    /** Codificador Opus (48 kHz, mono, tramas de 960 muestras). */
+    public interface Codificador {
+        byte[] codificar(short[] pcm);
+
+        void cerrar();
+    }
+
+    public interface Decodificador {
+        short[] decodificar(byte[] opus);
+
+        void cerrar();
+    }
+
+    /** Los pone el plugin del voicechat al iniciarse (en el cliente y en el servidor). */
+    public static volatile java.util.function.Supplier<Codificador> nuevoCodificador;
+    public static volatile java.util.function.Supplier<Decodificador> nuevoDecodificador;
+    /**
+     * Mientras se graba una nota de voz, el plugin le pasa aquí cada trama del micro del jugador local (desde el hilo del
+     * micro del voicechat: el receptor tiene que ser seguro entre hilos).
+     */
+    public static volatile java.util.function.Consumer<short[]> microCliente;
+
+    public static boolean codecDisponible() {
+        return nuevoCodificador != null && nuevoDecodificador != null;
+    }
     static volatile Predicate<UUID> conectado = u -> false;
     public static final Map<UUID, UUID> SOCIOS = new ConcurrentHashMap<>();
 

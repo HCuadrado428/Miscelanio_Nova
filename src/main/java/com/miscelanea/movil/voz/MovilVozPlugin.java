@@ -5,7 +5,11 @@ import de.maxhenkel.voicechat.api.ForgeVoicechatPlugin;
 import de.maxhenkel.voicechat.api.Group;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
 import de.maxhenkel.voicechat.api.VoicechatPlugin;
+import de.maxhenkel.voicechat.api.VoicechatApi;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
+import de.maxhenkel.voicechat.api.events.ClientSoundEvent;
+import de.maxhenkel.voicechat.api.opus.OpusDecoder;
+import de.maxhenkel.voicechat.api.opus.OpusEncoder;
 import de.maxhenkel.voicechat.api.events.EntitySoundPacketEvent;
 import de.maxhenkel.voicechat.api.events.EventRegistration;
 import de.maxhenkel.voicechat.api.events.LocationalSoundPacketEvent;
@@ -25,6 +29,7 @@ import java.util.UUID;
  *       oye a cualquier distancia o dimensión).</li>
  *   <li>La copia normal por proximidad que le llegaría a la pareja se cancela, para no oírlo doble.</li>
  *   <li>Si los dos están ya en el mismo grupo del voicechat no se hace nada (ya se oyen).</li>
+ *   <li>Notas de voz: da el códec Opus del voicechat y, en el cliente, copia el micro del jugador mientras graba.</li>
  * </ul>
  */
 @ForgeVoicechatPlugin
@@ -36,8 +41,47 @@ public class MovilVozPlugin implements VoicechatPlugin {
         return "miscelanea_movil";
     }
 
+    /** Da al móvil el códec Opus del voicechat (para las notas de voz). */
+    @Override
+    public void initialize(VoicechatApi api) {
+        MovilVoz.nuevoCodificador = () -> {
+            OpusEncoder e = api.createEncoder();
+            return new MovilVoz.Codificador() {
+                @Override
+                public byte[] codificar(short[] pcm) {
+                    return e.encode(pcm);
+                }
+
+                @Override
+                public void cerrar() {
+                    e.close();
+                }
+            };
+        };
+        MovilVoz.nuevoDecodificador = () -> {
+            OpusDecoder d = api.createDecoder();
+            return new MovilVoz.Decodificador() {
+                @Override
+                public short[] decodificar(byte[] opus) {
+                    return d.decode(opus);
+                }
+
+                @Override
+                public void cerrar() {
+                    d.close();
+                }
+            };
+        };
+    }
+
     @Override
     public void registerEvents(EventRegistration r) {
+        // micro del jugador local (cliente) mientras graba una nota de voz
+        r.registerEvent(ClientSoundEvent.class, e -> {
+            var c = MovilVoz.microCliente;
+            short[] a = e.getRawAudio();
+            if (c != null && a != null && a.length > 0) c.accept(a.clone());
+        });
         r.registerEvent(VoicechatServerStartedEvent.class, e -> {
             api = e.getVoicechat();
             MovilVoz.activar(MovilVozPlugin::conectado);

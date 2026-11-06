@@ -12,6 +12,9 @@ public final class MovilConfig {
     private static ForgeConfigSpec.IntValue MAX_FOTOS, MAX_BYTES_FOTO, VIDEO_FPS, VIDEO_ANCHO, VIDEO_MAX_BYTES, HISTORIAL, MAX_CHATS,
             DISTANCIA, TIMBRE_S;
     private static ForgeConfigSpec.BooleanValue SIN_LIMITE, ENTRE_DIMENSIONES, VIDEO;
+    private static ForgeConfigSpec.BooleanValue NOTAS_VOZ, MINEGRAM, UBICACION, BANCO, BANCO_OBJETOS, LINTERNA_REAL;
+    private static ForgeConfigSpec.IntValue VOZ_SEGUNDOS, VOZ_MAX_BYTES, MG_MAX_POSTS, MG_MAX_COMENT, MG_MAX_PIE, MG_MAX_COMENTARIOS, UBI_MAX_MIN,
+            BANCO_MAX_TRANSFER, BANCO_MAX_CONCEPTO, LINTERNA_NIVEL, LINTERNA_ALCANCE;
 
     /** Fotos de 180x320 en JPEG: unos 12-25 KB cada una. El paquete del cliente al servidor no puede pasar de 32 KB. */
     public static final int TOPE_BYTES_FOTO = 30000;
@@ -40,6 +43,42 @@ public final class MovilConfig {
                 .defineInRange("video_ancho", 72, 36, 144);
         VIDEO_MAX_BYTES = b.comment("Tamaño máximo de cada imagen de vídeo (bytes); las más grandes se descartan.")
                 .defineInRange("video_max_bytes", 9000, 1000, 30000);
+
+        b.comment("Notas de voz en los chats (necesitan Simple Voice Chat en el cliente y en el servidor; se comprimen en Opus).",
+                "Las notas se guardan EN EL SERVIDOR (miscelanea_movil/voz/) hasta que salen del historial del chat.").push("notas_voz");
+        NOTAS_VOZ = b.comment("Permitir notas de voz.").define("activadas", true);
+        VOZ_SEGUNDOS = b.comment("Duración máxima de cada nota (segundos).").defineInRange("max_segundos", 30, 3, 120);
+        VOZ_MAX_BYTES = b.comment("Tamaño máximo de cada nota en bytes (30 s en Opus son unos 60-110 KB).").defineInRange("max_bytes", 160000, 8000, 900000);
+        b.pop();
+
+        b.comment("Minegram: red social del servidor (fotos con pie, me gusta, comentarios, seguir).",
+                "Las publicaciones y sus fotos se guardan EN EL SERVIDOR (data/miscelanea_minegram.dat y miscelanea_movil/minegram/).").push("minegram");
+        MINEGRAM = b.comment("Activar la app Minegram.").define("activada", true);
+        MG_MAX_POSTS = b.comment("Publicaciones como máximo por jugador (al llegar, hay que borrar alguna).").defineInRange("max_posts_jugador", 30, 1, 1000);
+        MG_MAX_PIE = b.comment("Longitud máxima del pie de foto.").defineInRange("max_pie", 150, 0, 256);
+        MG_MAX_COMENT = b.comment("Longitud máxima de cada comentario.").defineInRange("max_comentario", 120, 10, 256);
+        MG_MAX_COMENTARIOS = b.comment("Comentarios como máximo por publicación (los más viejos se borran).").defineInRange("max_comentarios_post", 100, 5, 1000);
+        b.pop();
+
+        b.comment("Ubicación en tiempo real: compartir tu posición con otros jugadores durante unos minutos (reales).").push("ubicacion");
+        UBICACION = b.comment("Permitir compartir la ubicación.").define("activada", true);
+        UBI_MAX_MIN = b.comment("Minutos máximos que se puede compartir de una vez (las opciones son 15, 30 y 60).").defineInRange("max_minutos", 60, 15, 600);
+        b.pop();
+
+        b.comment("Banco y Bizum: saldo de esmeraldas en el móvil, transferencias entre jugadores y envío de objetos.",
+                "Comando de operadores: /miscelanea banco <jugador> ver|dar|quitar <cantidad>.").push("banco");
+        BANCO = b.comment("Activar la app Banco.").define("activado", true);
+        BANCO_OBJETOS = b.comment("Permitir enviar objetos del inventario a otro jugador conectado.").define("enviar_objetos", true);
+        BANCO_MAX_TRANSFER = b.comment("Esmeraldas como máximo por transferencia.").defineInRange("max_transferencia", 100000, 1, Integer.MAX_VALUE);
+        BANCO_MAX_CONCEPTO = b.comment("Longitud máxima del concepto.").defineInRange("max_concepto", 40, 0, 120);
+        b.pop();
+
+        b.comment("Linterna: ilumina de verdad colocando bloques de luz invisibles (minecraft:light) en el aire delante del jugador.",
+                "Nunca sustituye bloques que no sean aire y los quita al moverse, apagarla, salir, morir o parar el servidor.").push("linterna");
+        LINTERNA_REAL = b.comment("Luz de verdad (si es false, solo el efecto visual en el cliente).").define("luz_real", true);
+        LINTERNA_NIVEL = b.comment("Nivel de luz del haz (1-15).").defineInRange("nivel", 12, 1, 15);
+        LINTERNA_ALCANCE = b.comment("Distancia máxima del haz en bloques.").defineInRange("alcance", 10, 2, 24);
+        b.pop();
         b.pop();
     }
 
@@ -72,4 +111,21 @@ public final class MovilConfig {
     public static int videoAncho() { return i(VIDEO_ANCHO) & ~1; }
     public static int videoAlto() { return (videoAncho() * 16 / 9) & ~1; }
     public static int videoMaxBytes() { return i(VIDEO_MAX_BYTES); }
+    public static boolean notasVoz() { return b(NOTAS_VOZ); }
+    public static int vozSegundos() { return i(VOZ_SEGUNDOS); }
+    public static int vozMaxBytes() { return i(VOZ_MAX_BYTES); }
+    public static boolean minegram() { return b(MINEGRAM); }
+    public static int mgMaxPosts() { return i(MG_MAX_POSTS); }
+    public static int mgMaxPie() { return i(MG_MAX_PIE); }
+    public static int mgMaxComentario() { return i(MG_MAX_COMENT); }
+    public static int mgMaxComentarios() { return i(MG_MAX_COMENTARIOS); }
+    public static boolean ubicacion() { return b(UBICACION); }
+    public static int ubiMaxMinutos() { return i(UBI_MAX_MIN); }
+    public static boolean banco() { return b(BANCO); }
+    public static boolean bancoObjetos() { return b(BANCO_OBJETOS); }
+    public static int bancoMaxTransferencia() { return i(BANCO_MAX_TRANSFER); }
+    public static int bancoMaxConcepto() { return i(BANCO_MAX_CONCEPTO); }
+    public static boolean linternaReal() { return b(LINTERNA_REAL); }
+    public static int linternaNivel() { return i(LINTERNA_NIVEL); }
+    public static int linternaAlcance() { return i(LINTERNA_ALCANCE); }
 }

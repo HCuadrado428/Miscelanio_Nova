@@ -7,6 +7,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.FormattedCharSequence;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.List;
 import java.util.UUID;
 
 /** Teléfono (recientes y teclado), agenda de contactos, ficha de contacto y la pantalla de llamada / videollamada. */
@@ -295,8 +296,34 @@ final class VistasTelefono {
                 Ui.boton(g, bx(i), cy, 12, s ? 0xFF33404C : 0xFF222A32, gl[i], i == 0 ? Ui.ACENTO : i == 1 ? Ui.ACENTO : Ui.AZUL);
                 Ui.centrado(g, tx[i], bx(i), cy + 16, Ui.TEXTO2);
             }
+            // segunda fila: ubicación, Bizum y perfil de Minegram
+            int cy2 = cy + 36;
+            int[] gl2 = {Ui.G_PIN, Ui.G_TRANSFER, Ui.G_FOTO};
+            String[] tx2 = {t("ubicacion"), t("banco_bizum"), "Minegram"};
+            boolean[] on2 = {MovilCliente.ubicacion, MovilCliente.banco, MovilCliente.minegram};
+            for (int i = 0; i < 3; i++) {
+                if (!on2[i]) continue;
+                boolean s = Ui.enCirculo(mx, my, bx(i), cy2, 12);
+                boolean activo = i == 0 && MovilCliente.ubiMia(id) != null;
+                Ui.boton(g, bx(i), cy2, 12, s ? 0xFF33404C : 0xFF222A32, gl2[i], i == 0 ? (activo ? Ui.AZUL : Ui.TEXTO) : i == 1 ? VistasBanco.VERDE : VistasMinegram.ROSA);
+                Ui.centrado(g, tx2[i], bx(i), cy2 + 16, activo ? Ui.AZUL : Ui.TEXTO2);
+            }
+            MovilCliente.UbiAmigo ua = MovilCliente.ubiDe(id);
+            if (ua != null) {
+                boolean s = Ui.dentro(mx, my, 10, cy2 + 30, W - 20, 14);
+                Ui.pastilla(g, 10, cy2 + 30, W - 20, 14, t("ubi_ver_mapa"), s ? 0xFF2B6FB0 : 0xFF1F4F80, 0xFFFFFFFF);
+            }
             String falta = faltaVoz();
-            if (falta != null) avisoVoz(g, falta, cy + 34);
+            if (falta != null) {
+                // aviso compacto abajo (en la ficha no cabe la tarjeta grande)
+                List<FormattedCharSequence> ls = Ui.font().split(net.minecraft.network.chat.Component.literal(falta), (W - 16) * 2);
+                int yy = H - ABAJO - 2 - ls.size() * 5;
+                g.pose().pushPose();
+                g.pose().translate(8, yy, 0);
+                g.pose().scale(0.5F, 0.5F, 1);
+                for (int i = 0; i < ls.size(); i++) g.drawString(Ui.font(), ls.get(i), 0, i * 10, Ui.AMARILLO, false);
+                g.pose().popPose();
+            }
             cabecera(g, t("contacto"), mx, my);
         }
 
@@ -314,6 +341,23 @@ final class VistasTelefono {
                     b.writeUUID(id);
                 });
                 else if (faltaVoz() == null) MovilCliente.llamar(id, i == 2);
+                return true;
+            }
+            int cy2 = cy + 36;
+            boolean[] on2 = {MovilCliente.ubicacion, MovilCliente.banco, MovilCliente.minegram};
+            for (int i = 0; i < 3; i++) {
+                if (!on2[i] || !Ui.enCirculo(x, y, bx(i), cy2, 13)) continue;
+                MovilCliente.clic();
+                MovilCliente.Contacto k = MovilCliente.contacto(id);
+                String nombre = k == null ? "?" : k.nombre();
+                if (i == 0) m.abrir(new VistasMapa.Compartir(java.util.List.of(id), nombre));
+                else if (i == 1) m.abrir(new VistasBanco.Cantidad(VistasBanco.Cantidad.BIZUM, id, nombre));
+                else m.abrir(new VistasMinegram.Perfil(id));
+                return true;
+            }
+            if (MovilCliente.ubiDe(id) != null && Ui.dentro(x, y, 10, cy2 + 30, W - 20, 14)) {
+                MovilCliente.clic();
+                m.abrir(new VistasMapa.Mapa(id));
                 return true;
             }
             return false;

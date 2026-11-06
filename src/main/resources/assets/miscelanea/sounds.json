@@ -2498,5 +2498,13 @@
       "miscelanea:movil_alarma"
     ],
     "subtitle": "subtitles.miscelanea.movil_alarma"
+  },
+  "movil_nota_voz": {
+    "sounds": [
+      {
+        "name": "miscelanea:movil_clic",
+        "stream": true
+      }
+    ]
   }
 }

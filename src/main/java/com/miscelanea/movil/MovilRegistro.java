@@ -39,6 +39,8 @@ public final class MovilRegistro {
     public static final RegistryObject<SoundEvent> ESPERA = sonido("movil_espera");
     public static final RegistryObject<SoundEvent> COLGAR = sonido("movil_colgar");
     public static final RegistryObject<SoundEvent> ALARMA = sonido("movil_alarma");
+    /** Notas de voz: sonido "en streaming" cuyo audio lo da el propio SoundInstance (el archivo de sounds.json no se usa). */
+    public static final RegistryObject<SoundEvent> NOTA_VOZ = sonido("movil_nota_voz");
 
     private static RegistryObject<SoundEvent> sonido(String n) {
         return SONIDOS.register(n, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Miscelanea.MOD_ID, n)));

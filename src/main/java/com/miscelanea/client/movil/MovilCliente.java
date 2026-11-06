@@ -47,7 +47,21 @@ public final class MovilCliente {
     // ------------------------------------------------------------------ datos del servidor
     public record Contacto(UUID id, String nombre, String numero, boolean conectado) {}
 
-    public record Msg(long sec, UUID de, String nombreDe, long t, String texto, int adjunto) {}
+    public record Msg(long sec, UUID de, String nombreDe, long t, String texto, int adjunto, int voz, int vozMs, byte[] onda) {}
+
+    /** Alguien que me comparte su ubicación (posición de hace como mucho ~2 s). */
+    public record UbiAmigo(UUID id, String nombre, String dim, double x, double y, double z, float yaw, int restanS, long recibido) {
+        public int restan() {
+            return Math.max(0, restanS - (int) ((Util.getMillis() - recibido) / 1000));
+        }
+    }
+
+    /** Con quién comparto yo la mía. */
+    public record UbiMia(UUID id, String nombre, int restanS, long recibido) {
+        public int restan() {
+            return Math.max(0, restanS - (int) ((Util.getMillis() - recibido) / 1000));
+        }
+    }
 
     public record Registro(UUID otro, String nombre, long t, int tipo, int dur, boolean video) {}
 
@@ -91,7 +105,15 @@ public final class MovilCliente {
     public static long llInicio, llFin;
     public static int vFps = 5, vW = 72, vH = 128, vMax = 9000;
 
+    public static final int MG_SEGUIR = com.miscelanea.movil.MinegramDatos.N_SEGUIR;
     public static boolean linterna;
+    // funciones del protocolo 2 (las activa el servidor)
+    public static boolean notasVozServidor, minegram, ubicacion, banco, bancoObjetos, linternaReal;
+    public static int vozMaxSeg = 30, vozMaxBytes = 160000;
+    public static final List<UbiAmigo> UBI_LE = new ArrayList<>();
+    public static final List<UbiMia> UBI_MIAS = new ArrayList<>();
+    /** Jugadores (id de entidad) con la linterna encendida, para dibujar su haz. */
+    public static final java.util.Set<Integer> LINTERNAS = new java.util.HashSet<>();
     public static int colorAbierto = MovilItem.COLOR_BASE;
     private static final Map<Integer, Integer> POSES = new HashMap<>();
     private static int poseLocal;
@@ -101,6 +123,47 @@ public final class MovilCliente {
     // ------------------------------------------------------------------ utilidades
     public static boolean vozLocal() {
         return ModList.get().isLoaded("voicechat");
+    }
+
+    /** Se pueden grabar y oír notas de voz (voicechat en los dos lados y su códec cargado). */
+    public static boolean notasVoz() {
+        return notasVozServidor && vozLocal() && com.miscelanea.movil.MovilVoz.codecDisponible();
+    }
+
+    public static UbiAmigo ubiDe(UUID id) {
+        for (UbiAmigo u : UBI_LE) if (u.id().equals(id)) return u;
+        return null;
+    }
+
+    public static UbiMia ubiMia(UUID id) {
+        for (UbiMia u : UBI_MIAS) if (u.id().equals(id)) return u;
+        return null;
+    }
+
+    /** Enciende o apaga la linterna (y se lo dice al servidor, que pone la luz de verdad). */
+    public static void linterna(boolean on) {
+        if (linterna == on) return;
+        linterna = on;
+        MovilRed.alServidor(MovilRed.C_LINTERNA, b -> b.writeBoolean(on));
+    }
+
+    /** Traduce los textos que manda el servidor como {@code \u0001clave\u0001arg...}. */
+    public static String traducir(String s) {
+        if (s.isEmpty() || s.charAt(0) != '\u0001') return s;
+        String[] p = s.substring(1).split("\u0001", -1);
+        Object[] args = new Object[p.length - 1];
+        System.arraycopy(p, 1, args, 0, args.length);
+        return Component.translatable("movil.miscelanea." + p[0], args).getString();
+    }
+
+    /** Notificación genérica del servidor (Minegram, Bizum, ubicación...). */
+    static void noti(int app, String titulo, String texto, boolean sonar) {
+        Minecraft mc = Minecraft.getInstance();
+        String tit = traducir(titulo), txt = traducir(texto);
+        if (app == Ui.APP_MINEGRAM) MinegramCliente.noVistas++;
+        if (sonar && !silencio) sonido(MovilRegistro.MENSAJE.get(), 0.7F, app == Ui.APP_BANCO ? 1.3F : 1.1F);
+        if (mc.screen instanceof MovilScreen s) s.banner(app, tit, txt, -1);
+        else mc.getToasts().addToast(new MovilToast(app, tit, txt));
     }
 
     public static Contacto contacto(UUID id) {
@@ -250,7 +313,8 @@ public final class MovilCliente {
         boolean mio = mc.player != null && m.de().equals(mc.player.getUUID());
         if (!mio && !viendo) ci.noLeidos++;
         if (!avisar || viendo) return;
-        String texto = m.adjunto() >= 0 ? Component.translatable("movil.miscelanea.foto_adjunta").getString() : m.texto();
+        String texto = m.adjunto() >= 0 ? Component.translatable("movil.miscelanea.foto_adjunta").getString()
+                : m.voz() >= 0 ? Component.translatable("movil.miscelanea.nota_voz", duracion(m.vozMs() / 1000)).getString() : m.texto();
         String titulo = grupo ? m.nombreDe() + " @ " + nombreChat : m.nombreDe();
         if (!silencio) sonido(MovilRegistro.MENSAJE.get(), 0.8F, 1.0F);
         if (s != null) s.banner(Ui.APP_CHATS, titulo, texto, chatId);
@@ -333,7 +397,9 @@ public final class MovilCliente {
                 sonido(silencio ? MovilRegistro.VIBRAR.get() : MovilRegistro.ALARMA.get(), 0.9F, 1.0F);
             }
         }
-        if (linterna && movilEnMano(p) == null) linterna = false;
+        if (linterna && movilEnMano(p) == null && !(mc.screen instanceof MovilScreen)) linterna(false);
+        NotasVozCliente.tick();
+        MapaCache.tick();
     }
 
     private static ItemStack movilEnMano(Player p) {
@@ -390,5 +456,12 @@ public final class MovilCliente {
         poseLocal = 0;
         linterna = false;
         FotoCache.limpiar();
+        UBI_LE.clear();
+        UBI_MIAS.clear();
+        LINTERNAS.clear();
+        NotasVozCliente.limpiar();
+        MinegramCliente.limpiar();
+        BancoCliente.limpiar();
+        MapaCache.salir();
     }
 }

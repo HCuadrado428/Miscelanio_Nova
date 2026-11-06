@@ -32,6 +32,16 @@ public final class Fotos {
         return raiz(s).resolve("adjuntos").resolve(id + ".jpg");
     }
 
+    /** Foto de una publicación de Minegram (copia propia, así borrar la de la galería no la quita). */
+    static Path minegram(MinecraftServer s, int id) {
+        return raiz(s).resolve("minegram").resolve(id + ".jpg");
+    }
+
+    /** Nota de voz de un chat (Opus en el formato de {@code NotasVoz}). */
+    static Path voz(MinecraftServer s, int id) {
+        return raiz(s).resolve("voz").resolve(id + ".mvz");
+    }
+
     /** ¿Parece una imagen JPEG o PNG de tamaño aceptable? */
     public static boolean valida(byte[] b, int max) {
         if (b == null || b.length < 64 || b.length > max) return false;

@@ -72,6 +72,9 @@ public final class MovilServidor {
     public static void salir(PlayerEvent.PlayerLoggedOutEvent e) {
         if (e.getEntity() instanceof ServerPlayer p) {
             Llamadas.salir(p);
+            NotasVoz.salir(p);
+            Ubicaciones.salir(p);
+            LinternaLuz.apagar(p);
             POSES.remove(p.getUUID());
             ULT_MENSAJE.remove(p.getUUID());
             ULT_FOTO.remove(p.getUUID());
@@ -92,7 +95,11 @@ public final class MovilServidor {
 
     @SubscribeEvent
     public static void tick(TickEvent.ServerTickEvent e) {
-        if (e.phase == TickEvent.Phase.END && e.getServer() != null) Llamadas.tick(e.getServer());
+        if (e.phase == TickEvent.Phase.END && e.getServer() != null) {
+            Llamadas.tick(e.getServer());
+            Ubicaciones.tick(e.getServer());
+            LinternaLuz.tick(e.getServer());
+        }
     }
 
     // ------------------------------------------------------------------ paquetes
@@ -122,12 +129,41 @@ public final class MovilServidor {
                 case MovilRed.C_AJUSTES -> ajustes(p, b.readBoolean(), b.readByte(), b.readByte(), b.readInt());
                 case MovilRed.C_CHAT_LEIDO -> leido(p, b.readVarInt());
                 case MovilRed.C_CHAT_SALIR -> salirChat(p, b.readVarInt());
+                case MovilRed.C_VOZ_TROZO -> NotasVoz.trozo(p, b);
+                case MovilRed.C_VOZ_PEDIR -> NotasVoz.pedir(p, b.readVarInt());
+                case MovilRed.C_UBI_COMPARTIR -> Ubicaciones.compartir(p, b);
+                case MovilRed.C_UBI_PARAR -> Ubicaciones.parar(p, b);
+                case MovilRed.C_MG_FEED, MovilRed.C_MG_PUBLICAR, MovilRed.C_MG_LIKE, MovilRed.C_MG_POST, MovilRed.C_MG_COMENTAR,
+                     MovilRed.C_MG_BORRAR, MovilRed.C_MG_PERFIL, MovilRed.C_MG_SEGUIR, MovilRed.C_MG_NOTIS -> Minegram.recibir(p, tipo, b);
+                case MovilRed.C_BANCO, MovilRed.C_BANCO_INGRESAR, MovilRed.C_BANCO_RETIRAR, MovilRed.C_BIZUM, MovilRed.C_ENVIAR_OBJETO ->
+                        Banco.recibir(p, tipo, b);
+                case MovilRed.C_LINTERNA -> LinternaLuz.cambiar(p, b.readBoolean());
                 default -> {
                 }
             }
         } catch (RuntimeException ex) {
             // paquete mal formado: se ignora
         }
+    }
+
+    /** Clave de traducción + argumentos para una notificación ({@code \u0001clave\u0001arg...}; la traduce el cliente). */
+    public static String tr(String clave, Object... args) {
+        StringBuilder b = new StringBuilder("\u0001").append(clave);
+        for (Object a : args) b.append('\u0001').append(a);
+        return b.toString();
+    }
+
+    /** Notificación genérica (banner dentro del móvil o aviso con él cerrado): icono de app, título y texto. */
+    public static void noti(ServerPlayer p, int app, String titulo, String texto, boolean sonar) {
+        if (!tieneMovil(p)) return;
+        MovilRed.aJugador(p, MovilRed.S_NOTI, b -> {
+            b.writeByte(app);
+            b.writeUtf(titulo);
+            b.writeUtf(texto);
+            b.writeBoolean(sonar);
+        });
+        if (sonar)
+            p.level().playSound(null, p.getX(), p.getY(), p.getZ(), MovilRegistro.VIBRAR.get(), SoundSource.PLAYERS, datos(p.server).perfil(p.getUUID(), null).silencio ? 0.25F : 0.4F, 1.0F);
     }
 
     public static void aviso(ServerPlayer p, String clave, String arg) {
@@ -191,6 +227,16 @@ public final class MovilServidor {
                 b.writeVarInt(r.dur());
                 b.writeBoolean(r.video());
             }
+            // funciones nuevas (protocolo 2)
+            b.writeBoolean(MovilConfig.notasVoz() && MovilVoz.disponible());
+            b.writeVarInt(MovilConfig.vozSegundos());
+            b.writeVarInt(MovilConfig.vozMaxBytes());
+            b.writeBoolean(MovilConfig.minegram());
+            b.writeVarInt(Minegram.noVistas(p));
+            b.writeBoolean(MovilConfig.ubicacion());
+            b.writeBoolean(MovilConfig.banco());
+            b.writeBoolean(MovilConfig.bancoObjetos());
+            b.writeBoolean(MovilConfig.linternaReal());
         });
     }
 
@@ -207,6 +253,19 @@ public final class MovilServidor {
         b.writeLong(m.t());
         b.writeUtf(m.texto());
         b.writeVarInt(m.adjunto() + 1);
+        b.writeVarInt(m.voz() + 1);
+        b.writeVarInt(m.vozMs());
+        b.writeByteArray(m.onda());
+    }
+
+    /** Borra los archivos (foto/nota de voz) de un mensaje que desaparece. */
+    static void borrarArchivos(MinecraftServer s, MovilDatos.Mensaje m) {
+        if (m.adjunto() >= 0) Fotos.borrar(Fotos.adjunto(s, m.adjunto()));
+        if (m.voz() >= 0) Fotos.borrar(Fotos.voz(s, m.voz()));
+    }
+
+    static MovilDatos.Chat chatDeJugador(ServerPlayer p, int id) {
+        return chatDe(p, id);
     }
 
     // ------------------------------------------------------------------ chats
@@ -289,12 +348,14 @@ public final class MovilServidor {
             }
         }
         if (texto.isEmpty() && adj < 0) return;
-        MovilDatos.Mensaje m = new MovilDatos.Mensaje(++c.sec, p.getUUID(), System.currentTimeMillis(), texto, adj);
+        difundir(p, c, new MovilDatos.Mensaje(++c.sec, p.getUUID(), System.currentTimeMillis(), texto, adj));
+    }
+
+    /** Añade el mensaje (ya con su número) al chat, recorta el historial y se lo manda a los miembros conectados. */
+    static void difundir(ServerPlayer p, MovilDatos.Chat c, MovilDatos.Mensaje m) {
+        MovilDatos d = datos(p.server);
         c.msgs.add(m);
-        while (c.msgs.size() > MovilConfig.historial()) {
-            MovilDatos.Mensaje viejo = c.msgs.remove(0);
-            if (viejo.adjunto() >= 0) Fotos.borrar(Fotos.adjunto(p.server, viejo.adjunto()));
-        }
+        while (c.msgs.size() > MovilConfig.historial()) borrarArchivos(p.server, c.msgs.remove(0));
         d.perfil(p.getUUID(), nombre(p)).leido.put(c.id, c.sec);
         d.setDirty();
         for (UUID u : c.miembros) {
@@ -329,7 +390,7 @@ public final class MovilServidor {
         c.miembros.remove(p.getUUID());
         d.perfil(p.getUUID(), nombre(p)).leido.remove(c.id);
         if (c.miembros.size() < (c.grupo ? 1 : 2)) {
-            for (MovilDatos.Mensaje m : c.msgs) if (m.adjunto() >= 0) Fotos.borrar(Fotos.adjunto(p.server, m.adjunto()));
+            for (MovilDatos.Mensaje m : c.msgs) borrarArchivos(p.server, m);
             d.chats.remove(c.id);
             for (UUID u : c.miembros) d.perfil(u, null).leido.remove(c.id);
         }
@@ -390,6 +451,8 @@ public final class MovilServidor {
                 if (puede) break;
             }
             if (puede) img = Fotos.leer(Fotos.adjunto(p.server, id));
+        } else if (tipo == MovilRed.FOTO_MINEGRAM) {
+            if (MinegramDatos.de(p.server).posts.containsKey(id)) img = Fotos.leer(Fotos.minegram(p.server, id));
         }
         byte[] fin = img == null ? new byte[0] : img;
         MovilRed.aJugador(p, MovilRed.S_FOTO, b -> {

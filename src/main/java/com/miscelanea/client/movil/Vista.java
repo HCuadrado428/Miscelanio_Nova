@@ -21,6 +21,16 @@ abstract class Vista {
         return false;
     }
 
+    /**
+     * Al bajar el botón. Si devuelve true, la vista se queda con el gesto: recibe {@link #soltar} al levantarlo (y no hay
+     * clic ni desplazamiento). Para botones de "mantener pulsado" (grabar una nota de voz).
+     */
+    boolean pulsar(double x, double y) {
+        return false;
+    }
+
+    void soltar(double x, double y) {}
+
     void arrastrar(double x, double y, double dx, double dy) {
         scroll = Mth.clamp(scroll - dy, 0, Math.max(0, scrollMax));
     }

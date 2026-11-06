@@ -25,9 +25,10 @@ final class VistasApps {
     // ================================================================== inicio
     static final class Inicio extends Vista {
         /** apps de la cuadrícula y del dock. */
-        private static final int[] REJILLA = {Ui.APP_AGENDA, Ui.APP_RELOJ, Ui.APP_LINTERNA, Ui.APP_AJUSTES},
+        private static final int[] REJILLA = {Ui.APP_MINEGRAM, Ui.APP_MAPA, Ui.APP_BANCO, Ui.APP_AGENDA, Ui.APP_RELOJ, Ui.APP_LINTERNA, Ui.APP_AJUSTES},
                 DOCK = {Ui.APP_LLAMAR, Ui.APP_CHATS, Ui.APP_CAMARA, Ui.APP_FOTOS};
-        private static final String[] NOMBRES = {"app_chats", "app_llamar", "app_agenda", "app_camara", "app_fotos", "app_reloj", "app_linterna", "app_ajustes"};
+        private static final String[] NOMBRES = {"app_chats", "app_llamar", "app_agenda", "app_camara", "app_fotos", "app_reloj", "app_linterna", "app_ajustes",
+                "app_minegram", "app_mapa", "app_banco"};
 
         @Override
         int fondoBarra() {
@@ -39,7 +40,7 @@ final class VistasApps {
         }
 
         private static int ry(int i) {
-            return 70 + (i / 3) * 46;
+            return 56 + (i / 3) * 42;
         }
 
         private static int dx(int i) {
@@ -65,7 +66,9 @@ final class VistasApps {
             Ui.icono(g, app, cx - 12, y);
             if (Ui.dentro(mx, my, cx - 12, y, 24, 24)) Ui.redondo(g, cx - 12, y, 24, 24, 6, 0x40000000);
             if (etiqueta) g.drawCenteredString(Ui.font(), t(NOMBRES[app]), cx, y + 27, 0xFFFFFFFF);
-            int n = app == Ui.APP_CHATS ? MovilCliente.noLeidos() : app == Ui.APP_LLAMAR ? MovilCliente.perdidas() : 0;
+            int n = app == Ui.APP_CHATS ? MovilCliente.noLeidos() : app == Ui.APP_LLAMAR ? MovilCliente.perdidas()
+                    : app == Ui.APP_MINEGRAM ? MinegramCliente.noVistas : 0;
+            if (app == Ui.APP_MAPA && Waypoints.navegando()) Ui.circulo(g, cx + 10, y + 2, 3, Ui.AZUL);
             if (n > 0) Ui.insignia(g, n, cx + 11, y + 1, Ui.ROJO);
         }
 
@@ -88,9 +91,33 @@ final class VistasApps {
                 case Ui.APP_FOTOS -> new VistasFotos.Galeria(null);
                 case Ui.APP_RELOJ -> new Reloj();
                 case Ui.APP_LINTERNA -> new Linterna();
+                case Ui.APP_MINEGRAM -> MovilCliente.minegram ? new VistasMinegram.Feed() : new Desactivada("app_minegram");
+                case Ui.APP_MAPA -> new VistasMapa.Mapa();
+                case Ui.APP_BANCO -> MovilCliente.banco ? new VistasBanco.Banco() : new Desactivada("app_banco");
                 default -> new Ajustes();
             });
             return true;
+        }
+    }
+
+    /** Una app que el servidor tiene desactivada. */
+    static final class Desactivada extends Vista {
+        private final String app;
+
+        Desactivada(String app) {
+            this.app = app;
+        }
+
+        @Override
+        void dibujar(GuiGraphics g, int mx, int my, float pt) {
+            fondo(g);
+            Ui.centrado(g, t("app_desactivada"), W / 2, H / 2 - 4, Ui.TEXTO2);
+            cabecera(g, t(app), mx, my);
+        }
+
+        @Override
+        boolean clic(double x, double y) {
+            return clicAtras(x, y);
         }
     }
 
@@ -173,6 +200,7 @@ final class VistasApps {
             g.pose().popPose();
             Ui.centrado(g, t(on ? "linterna_on" : "linterna_off"), cx, cy + 40, on ? 0xFF4A4232 : Ui.TEXTO2);
             Ui.centrado(g, t("linterna_ayuda"), cx, cy + 52, on ? 0xFF8A8068 : 0xFF59636D);
+            if (MovilCliente.linternaReal) Ui.centrado(g, t("linterna_real"), cx, cy + 62, on ? 0xFF8A8068 : 0xFF59636D);
             boolean s = Ui.dentro(mx, my, 4, BARRA + 2, 16, 16);
             Ui.glifo(g, Ui.G_ATRAS, 6, BARRA + 6, s ? 0xFFFFFFFF : on ? 0xFF4A4232 : Ui.TEXTO);
         }
@@ -181,7 +209,7 @@ final class VistasApps {
         boolean clic(double x, double y) {
             if (clicAtras(x, y)) return true;
             if (Ui.enCirculo(x, y, W / 2, H / 2 - 8, 28)) {
-                MovilCliente.linterna = !MovilCliente.linterna;
+                MovilCliente.linterna(!MovilCliente.linterna);
                 MovilCliente.sonido(MovilRegistro.CLIC.get(), 0.7F, MovilCliente.linterna ? 1.3F : 0.9F);
                 return true;
             }

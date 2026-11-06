@@ -13,7 +13,8 @@ public final class MovilRedCliente {
     private MovilRedCliente() {}
 
     static Msg leerMensaje(FriendlyByteBuf b) {
-        return new Msg(b.readLong(), b.readUUID(), b.readUtf(), b.readLong(), b.readUtf(), b.readVarInt() - 1);
+        return new Msg(b.readLong(), b.readUUID(), b.readUtf(), b.readLong(), b.readUtf(), b.readVarInt() - 1, b.readVarInt() - 1, b.readVarInt(),
+                b.readByteArray(64));
     }
 
     public static void recibir(int tipo, FriendlyByteBuf b) {
@@ -69,6 +70,28 @@ public final class MovilRedCliente {
                 case MovilRed.S_POSE -> poseRemota(b.readVarInt(), b.readByte());
                 case MovilRed.S_AVISO -> aviso(Component.translatable(b.readUtf(), b.readUtf()));
                 case MovilRed.S_CHAT_ID -> chatPendiente = b.readVarInt();
+                case MovilRed.S_VOZ -> {
+                    int id = b.readVarInt();
+                    NotasVozCliente.recibir(id, b.readByteArray());
+                }
+                case MovilRed.S_UBI -> {
+                    UBI_LE.clear();
+                    int n = b.readVarInt();
+                    long ahora = net.minecraft.Util.getMillis();
+                    for (int i = 0; i < n; i++)
+                        UBI_LE.add(new UbiAmigo(b.readUUID(), b.readUtf(), b.readUtf(), b.readDouble(), b.readDouble(), b.readDouble(), b.readFloat(), b.readVarInt(), ahora));
+                    UBI_MIAS.clear();
+                    n = b.readVarInt();
+                    for (int i = 0; i < n; i++) UBI_MIAS.add(new UbiMia(b.readUUID(), b.readUtf(), b.readVarInt(), ahora));
+                }
+                case MovilRed.S_NOTI -> MovilCliente.noti(b.readByte(), b.readUtf(), b.readUtf(), b.readBoolean());
+                case MovilRed.S_MG_FEED, MovilRed.S_MG_POST, MovilRed.S_MG_PERFIL, MovilRed.S_MG_NOTIS -> MinegramCliente.recibir(tipo, b);
+                case MovilRed.S_BANCO -> BancoCliente.recibir(b);
+                case MovilRed.S_LINTERNA -> {
+                    int id = b.readVarInt();
+                    if (b.readBoolean()) LINTERNAS.add(id);
+                    else LINTERNAS.remove(id);
+                }
                 default -> {
                 }
             }
@@ -104,6 +127,15 @@ public final class MovilRedCliente {
         REGISTRO.clear();
         n = b.readVarInt();
         for (int i = 0; i < n; i++) REGISTRO.add(new Registro(b.readUUID(), b.readUtf(), b.readLong(), b.readByte(), b.readVarInt(), b.readBoolean()));
+        notasVozServidor = b.readBoolean();
+        vozMaxSeg = b.readVarInt();
+        vozMaxBytes = b.readVarInt();
+        minegram = b.readBoolean();
+        MinegramCliente.noVistas = b.readVarInt();
+        ubicacion = b.readBoolean();
+        banco = b.readBoolean();
+        bancoObjetos = b.readBoolean();
+        linternaReal = b.readBoolean();
         sincronizado = true;
     }
 }

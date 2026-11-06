@@ -36,7 +36,7 @@ public class MovilScreen extends Screen {
     private float esc = 1, ox, oy;
     // ratón
     private double pulX, pulY;
-    private boolean pulsado, arrastrado;
+    private boolean pulsado, arrastrado, capturado;
     // banner de aviso dentro del móvil
     private String banTitulo, banTexto;
     private int banApp, banChat;
@@ -310,6 +310,7 @@ public class MovilScreen extends Screen {
         }
         pulsado = Ui.dentro(x, y, 0, 0, SW, SH);
         arrastrado = false;
+        capturado = pulsado && pila.peek() != null && pila.peek().pulsar(x, y);
         pulX = x;
         pulY = y;
         return true;
@@ -317,7 +318,7 @@ public class MovilScreen extends Screen {
 
     @Override
     public boolean mouseDragged(double mx, double my, int b, double dx, double dy) {
-        if (!pulsado || b != 0) return true;
+        if (!pulsado || b != 0 || capturado) return true;
         double x = lx(mx), y = ly(my);
         if (Math.abs(x - pulX) + Math.abs(y - pulY) > 4) arrastrado = true;
         if (arrastrado && pila.peek() != null && pulY < SH - 12 && pulX > 10) pila.peek().arrastrar(x, y, dx / esc, dy / esc);
@@ -331,6 +332,11 @@ public class MovilScreen extends Screen {
         double x = lx(mx), y = ly(my);
         Vista v = pila.peek();
         if (v == null) return true;
+        if (capturado) {
+            capturado = false;
+            v.soltar(x, y);
+            return true;
+        }
         if (pulY >= SH - 12 && (y - pulY < -24 || !arrastrado)) {
             if (pila.size() > 1) MovilCliente.clic();
             inicio();

@@ -30,11 +30,14 @@ public final class Ui {
 
     // iconos de apps (24x24, fila 0)
     public static final int APP_CHATS = 0, APP_LLAMAR = 1, APP_AGENDA = 2, APP_CAMARA = 3, APP_FOTOS = 4, APP_RELOJ = 5, APP_LINTERNA = 6,
-            APP_AJUSTES = 7;
+            APP_AJUSTES = 7, APP_MINEGRAM = 8, APP_MAPA = 9, APP_BANCO = 10;
     // glifos 9x9 blancos (fila y=32, cada 10 px)
     public static final int G_ATRAS = 0, G_ENVIAR = 1, G_MAS = 2, G_TELEFONO = 3, G_VIDEO = 4, G_COLGAR = 5, G_CAMARA = 6, G_BORRAR = 7,
             G_GIRAR = 8, G_OK = 9, G_SILENCIO = 10, G_SALIR = 11, G_SALIENTE = 12, G_ENTRANTE = 13, G_PERDIDA = 14, G_MENSAJE = 15,
-            G_GRUPO = 16, G_FOTO = 17, G_ALARMA = 18, G_DERECHA = 19, G_MENOS = 20, G_BORRAR_TECLA = 21, G_LINTERNA = 22, G_VIDEO_NO = 23;
+            G_GRUPO = 16, G_FOTO = 17, G_ALARMA = 18, G_DERECHA = 19, G_MENOS = 20, G_BORRAR_TECLA = 21, G_LINTERNA = 22, G_VIDEO_NO = 23,
+            G_CORAZON = 24, G_CORAZON_V = 25, G_COMENTARIO = 26, G_MICRO = 27, G_PLAY = 28, G_PAUSA = 29, G_PIN = 30, G_NAVEGAR = 31,
+            G_ESMERALDA = 32, G_TRANSFER = 33, G_SEGUIR = 34, G_CENTRAR = 35, G_PERFIL = 36, G_CASA = 37, G_LISTA = 38, G_CAMPANA = 39,
+            G_COFRE = 40;
 
     public static Font font() {
         return Minecraft.getInstance().font;
@@ -94,7 +97,9 @@ public final class Ui {
 
     public static void icono(GuiGraphics g, int app, int x, int y) {
         RenderSystem.enableBlend();
-        g.blit(ICONOS, x, y, app * 24, 0, 24, 24, ICONOS_TAM, ICONOS_TAM);
+        // apps 0-9 en la fila de arriba; de la 10 en adelante, en la fila y=64
+        if (app < 10) g.blit(ICONOS, x, y, app * 24, 0, 24, 24, ICONOS_TAM, ICONOS_TAM);
+        else g.blit(ICONOS, x, y, (app - 10) * 24, 64, 24, 24, ICONOS_TAM, ICONOS_TAM);
     }
 
     public static void glifo(GuiGraphics g, int i, int x, int y, int color) {
@@ -141,6 +146,61 @@ public final class Ui {
         int c = cols[Math.floorMod(nombre.hashCode(), cols.length)];
         redondo(g, x, y, tam, tam, tam / 2, c);
         glifo(g, G_GRUPO, x + tam / 2 - 4, y + tam / 2 - 4, 0xFFFFFFFF);
+    }
+
+    /** Flecha (triángulo) que apunta en el ángulo dado (radianes, 0 = arriba, sentido horario), en píxeles. */
+    public static void flecha(GuiGraphics g, int cx, int cy, int r, double ang, int relleno, int borde) {
+        double s = Math.sin(ang), c = -Math.cos(ang);
+        // punta, y las dos esquinas de atrás
+        double px = cx + s * r, py = cy + c * r;
+        double bx1 = cx - s * r * 0.75 + (-c) * r * 0.7, by1 = cy - c * r * 0.75 + s * r * 0.7;
+        double bx2 = cx - s * r * 0.75 - (-c) * r * 0.7, by2 = cy - c * r * 0.75 - s * r * 0.7;
+        double mx = cx - s * r * 0.35, my = cy - c * r * 0.35;
+        for (int y = cy - r - 1; y <= cy + r + 1; y++)
+            for (int x = cx - r - 1; x <= cx + r + 1; x++) {
+                double qx = x + 0.5, qy = y + 0.5;
+                boolean a = enTri(qx, qy, px, py, bx1, by1, mx, my) || enTri(qx, qy, px, py, mx, my, bx2, by2);
+                if (a) g.fill(x, y, x + 1, y + 1, relleno);
+            }
+        if (borde != 0) {
+            // contorno de un píxel: píxeles fuera que tocan a uno dentro
+            for (int y = cy - r - 2; y <= cy + r + 2; y++)
+                for (int x = cx - r - 2; x <= cx + r + 2; x++) {
+                    double qx = x + 0.5, qy = y + 0.5;
+                    if (enTri(qx, qy, px, py, bx1, by1, mx, my) || enTri(qx, qy, px, py, mx, my, bx2, by2)) continue;
+                    boolean toca = false;
+                    for (int k = 0; k < 4 && !toca; k++) {
+                        double ox = qx + (k == 0 ? 1 : k == 1 ? -1 : 0), oy = qy + (k == 2 ? 1 : k == 3 ? -1 : 0);
+                        toca = enTri(ox, oy, px, py, bx1, by1, mx, my) || enTri(ox, oy, px, py, mx, my, bx2, by2);
+                    }
+                    if (toca) g.fill(x, y, x + 1, y + 1, borde);
+                }
+        }
+    }
+
+    private static boolean enTri(double x, double y, double ax, double ay, double bx, double by, double cx, double cy) {
+        double d1 = (x - bx) * (ay - by) - (ax - bx) * (y - by);
+        double d2 = (x - cx) * (by - cy) - (bx - cx) * (y - cy);
+        double d3 = (x - ax) * (cy - ay) - (cx - ax) * (y - ay);
+        boolean neg = d1 < 0 || d2 < 0 || d3 < 0, pos = d1 > 0 || d2 > 0 || d3 > 0;
+        return !(neg && pos);
+    }
+
+    /** Botón "pastilla" con texto centrado. */
+    public static void pastilla(GuiGraphics g, int x, int y, int w, int h, String s, int fondo, int color) {
+        redondo(g, x, y, w, h, h / 2, fondo);
+        centrado(g, cortar(s, w - 6), x + w / 2, y + (h - 8) / 2, color);
+    }
+
+    /** Número con separador de miles (1.234.567). */
+    public static String miles(long n) {
+        String s = Long.toString(Math.abs(n));
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            if (i > 0 && (s.length() - i) % 3 == 0) b.append('.');
+            b.append(s.charAt(i));
+        }
+        return (n < 0 ? "-" : "") + b;
     }
 
     public static void insignia(GuiGraphics g, int n, int cx, int cy, int color) {

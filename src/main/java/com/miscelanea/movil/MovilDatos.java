@@ -46,7 +46,15 @@ public class MovilDatos extends SavedData {
 
     public record Registro(UUID otro, long t, int tipo, int dur, boolean video) {}
 
-    public record Mensaje(long sec, UUID de, long t, String texto, int adjunto) {}
+    /**
+     * Un mensaje: texto, o foto adjunta ({@code adjunto} &ge; 0), o nota de voz ({@code voz} &ge; 0, con su duración en ms y
+     * su forma de onda: una barra 0..255 por byte).
+     */
+    public record Mensaje(long sec, UUID de, long t, String texto, int adjunto, int voz, int vozMs, byte[] onda) {
+        public Mensaje(long sec, UUID de, long t, String texto, int adjunto) {
+            this(sec, de, t, texto, adjunto, -1, 0, new byte[0]);
+        }
+    }
 
     public static final class Chat {
         public final int id;
@@ -67,7 +75,7 @@ public class MovilDatos extends SavedData {
 
     public final Map<UUID, Perfil> perfiles = new LinkedHashMap<>();
     public final Map<Integer, Chat> chats = new LinkedHashMap<>();
-    public int sigChat = 1, sigAdjunto = 1;
+    public int sigChat = 1, sigAdjunto = 1, sigVoz = 1;
 
     public static MovilDatos de(MinecraftServer s) {
         return s.overworld().getDataStorage().computeIfAbsent(MovilDatos::cargar, MovilDatos::new, NOMBRE);
@@ -209,6 +217,11 @@ public class MovilDatos extends SavedData {
                 x.putLong("t", m.t());
                 x.putString("x", m.texto());
                 if (m.adjunto() >= 0) x.putInt("a", m.adjunto());
+                if (m.voz() >= 0) {
+                    x.putInt("v", m.voz());
+                    x.putInt("vms", m.vozMs());
+                    x.putByteArray("onda", m.onda());
+                }
                 mm.add(x);
             }
             c.put("msgs", mm);
@@ -217,6 +230,7 @@ public class MovilDatos extends SavedData {
         t.put("chats", cs);
         t.putInt("sigChat", sigChat);
         t.putInt("sigAdjunto", sigAdjunto);
+        t.putInt("sigVoz", sigVoz);
         return t;
     }
 
@@ -263,12 +277,14 @@ public class MovilDatos extends SavedData {
             for (int j = 0; j < mm.size(); j++) {
                 CompoundTag x = mm.getCompound(j);
                 if (!x.hasUUID("de")) continue;
-                ch.msgs.add(new Mensaje(x.getLong("s"), x.getUUID("de"), x.getLong("t"), x.getString("x"), x.contains("a") ? x.getInt("a") : -1));
+                ch.msgs.add(new Mensaje(x.getLong("s"), x.getUUID("de"), x.getLong("t"), x.getString("x"), x.contains("a") ? x.getInt("a") : -1,
+                        x.contains("v") ? x.getInt("v") : -1, x.getInt("vms"), x.getByteArray("onda")));
             }
             d.chats.put(ch.id, ch);
         }
         d.sigChat = Math.max(1, t.getInt("sigChat"));
         d.sigAdjunto = Math.max(1, t.getInt("sigAdjunto"));
+        d.sigVoz = Math.max(1, t.getInt("sigVoz"));
         for (Chat ch : d.chats.values()) d.sigChat = Math.max(d.sigChat, ch.id + 1);
         return d;
     }

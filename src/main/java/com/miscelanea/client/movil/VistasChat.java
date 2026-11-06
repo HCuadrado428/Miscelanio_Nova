@@ -86,7 +86,7 @@ final class VistasChat {
         if (m == null) return "";
         var p = Minecraft.getInstance().player;
         String quien = p != null && m.de().equals(p.getUUID()) ? Vista.t("tu") + ": " : grupo ? m.nombreDe() + ": " : "";
-        return quien + (m.adjunto() >= 0 ? Vista.t("foto_adjunta") : m.texto());
+        return quien + (m.adjunto() >= 0 ? Vista.t("foto_adjunta") : m.voz() >= 0 ? Vista.t("nota_voz", MovilCliente.duracion(m.vozMs() / 1000)) : m.texto());
     }
 
     /** Lista de chats para tocar uno (la usan la app y "enviar foto a..."). */
@@ -102,8 +102,8 @@ final class VistasChat {
                 Ui.texto(g, Ui.cortar(c.nombre, Vista.W - 40 - Ui.anchoMini(hora)), 31, y + 5, Ui.TEXTO);
                 Ui.mini(g, hora, Vista.W - 6 - Ui.anchoMini(hora), y + 7, c.noLeidos > 0 ? Ui.ACENTO : Ui.TEXTO2);
                 int px = 31;
-                if (c.ultimo != null && c.ultimo.adjunto() >= 0) {
-                    Ui.glifo(g, Ui.G_FOTO, 31, y + 16, Ui.TEXTO2);
+                if (c.ultimo != null && (c.ultimo.adjunto() >= 0 || c.ultimo.voz() >= 0)) {
+                    Ui.glifo(g, c.ultimo.voz() >= 0 ? Ui.G_MICRO : Ui.G_FOTO, 31, y + 16, c.ultimo.voz() >= 0 ? Ui.ACENTO : Ui.TEXTO2);
                     px = 42;
                 }
                 int anchoPrev = Vista.W - px - 6 - (c.noLeidos > 0 ? 14 : 0);
@@ -167,7 +167,9 @@ final class VistasChat {
         private double desdeAbajo, maxAbajo;
         private final Map<MovilCliente.Msg, Burbuja> cache = new IdentityHashMap<>();
         private long confirmarSalir;
-        private final List<Object[]> fotosVisibles = new ArrayList<>();
+        private final List<Object[]> fotosVisibles = new ArrayList<>(), vocesVisibles = new ArrayList<>();
+        /** El micro está pulsado (grabando una nota de voz). */
+        private boolean microPulsado;
 
         private record Burbuja(List<FormattedCharSequence> lineas, int w, int h, boolean mia, boolean nombre) {}
 
@@ -182,11 +184,41 @@ final class VistasChat {
         }
 
         @Override
+        void cerrada() {
+            if (microPulsado) NotasVozCliente.terminar(false);
+            microPulsado = false;
+        }
+
+        private boolean microVisible() {
+            return campo.s.length() == 0 && MovilCliente.notasVoz();
+        }
+
+        @Override
+        boolean pulsar(double x, double y) {
+            int abajo = H - ABAJO - ENTRADA;
+            if (microVisible() && Ui.dentro(x, y, W - 20, abajo, 20, ENTRADA) && NotasVozCliente.empezar(id)) {
+                microPulsado = true;
+                MovilCliente.sonido(com.miscelanea.movil.MovilRegistro.CLIC.get(), 0.6F, 1.6F);
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        void soltar(double x, double y) {
+            if (!microPulsado) return;
+            microPulsado = false;
+            // deslizar hacia arriba (fuera de la barra) = cancelar
+            NotasVozCliente.terminar(y >= H - ABAJO - ENTRADA - 26);
+            desdeAbajo = 0;
+        }
+
+        @Override
         boolean escribiendo() {
             return true;
         }
 
-        private static final int ENTRADA = 18, MAXW = 92;
+        private static final int ENTRADA = 18, MAXW = 92, VOZ_W = 96, BARRAS = 40;
 
         private Burbuja burbuja(MovilCliente.Msg msg, boolean grupo) {
             return cache.computeIfAbsent(msg, k -> {
@@ -198,8 +230,9 @@ final class VistasChat {
                 for (FormattedCharSequence s : l) w = Math.max(w, Ui.font().width(s));
                 if (nombre) w = Math.max(w, Math.min(MAXW, Ui.ancho(k.nombreDe())));
                 if (k.adjunto() >= 0) w = Math.max(w, 54);
+                if (k.voz() >= 0) w = Math.max(w, VOZ_W);
                 w = Math.max(w, Ui.anchoMini("00:00") + 4) + 8;
-                int h = 4 + l.size() * 9 + 7 + (nombre ? 10 : 0) + (k.adjunto() >= 0 ? 98 : 0);
+                int h = 4 + l.size() * 9 + 7 + (nombre ? 10 : 0) + (k.adjunto() >= 0 ? 98 : 0) + (k.voz() >= 0 ? 18 : 0);
                 return new Burbuja(l, w, h, mia, nombre);
             });
         }
@@ -212,6 +245,7 @@ final class VistasChat {
             MovilCliente.ChatAbierto c = MovilCliente.chat != null && MovilCliente.chat.id == id ? MovilCliente.chat : null;
             int abajo = H - ABAJO - ENTRADA;
             fotosVisibles.clear();
+            vocesVisibles.clear();
             if (c == null) Ui.centrado(g, t("cargando"), W / 2, H / 2 - 4, Ui.TEXTO2);
             else {
                 recortar(g, Y0, abajo);
@@ -235,12 +269,32 @@ final class VistasChat {
             }
             // barra de escribir
             Ui.rect(g, 0, abajo, W, ENTRADA + ABAJO, Ui.CABECERA);
-            boolean sf = Ui.dentro(mx, my, 0, abajo, 16, ENTRADA);
-            Ui.glifo(g, Ui.G_CAMARA, 5, abajo + 5, sf ? 0xFFFFFFFF : Ui.TEXTO2);
-            Ui.redondo(g, 17, abajo + 2, W - 37, 14, 7, 0xFF2A333D);
-            campo.dibujar(g, 23, abajo + 5, W - 47, t("escribe"), true);
-            boolean hay = campo.s.length() > 0;
-            Ui.boton(g, W - 10, abajo + 9, 7, hay ? Ui.ACENTO : 0xFF2A333D, Ui.G_ENVIAR, hay ? 0xFF0F1419 : Ui.TEXTO2);
+            if (microPulsado && NotasVozCliente.grabando()) {
+                long ms = NotasVozCliente.msGrabados();
+                boolean cancelar = my < abajo - 26 && my > -900;
+                if ((Util.getMillis() / 400) % 2 == 0) Ui.circulo(g, 8, abajo + 9, 3, Ui.ROJO);
+                String tt = MovilCliente.duracion(ms / 1000) + " / " + MovilCliente.duracion(MovilCliente.vozMaxSeg);
+                Ui.texto(g, tt, 15, abajo + 5, Ui.TEXTO);
+                g.pose().pushPose();
+                g.pose().translate(18 + Ui.ancho(tt), abajo + 5, 0);
+                g.pose().scale(0.5F, 0.5F, 1);
+                g.drawString(Ui.font(), t(cancelar ? "nota_suelta_cancelar" : "nota_suelta_enviar"), 0, 0, cancelar ? Ui.ROJO : Ui.TEXTO2, false);
+                g.drawString(Ui.font(), t("nota_desliza"), 0, 9, 0xFF66717C, false);
+                g.pose().popPose();
+                int r = 9 + (int) (NotasVozCliente.nivel() * 6);
+                Ui.circulo(g, W - 12, abajo + 4, r, 0x40EF4B4B);
+                Ui.boton(g, W - 12, abajo + 4, 9, cancelar ? 0xFF59636D : Ui.ROJO, Ui.G_MICRO, 0xFFFFFFFF);
+            } else {
+                boolean sf = Ui.dentro(mx, my, 0, abajo, 16, ENTRADA);
+                Ui.glifo(g, Ui.G_CAMARA, 5, abajo + 5, sf ? 0xFFFFFFFF : Ui.TEXTO2);
+                Ui.redondo(g, 17, abajo + 2, W - 37, 14, 7, 0xFF2A333D);
+                campo.dibujar(g, 23, abajo + 5, W - 47, t("escribe"), true);
+                boolean hay = campo.s.length() > 0;
+                if (!hay && MovilCliente.notasVoz()) {
+                    boolean sm = Ui.dentro(mx, my, W - 20, abajo, 20, ENTRADA);
+                    Ui.boton(g, W - 10, abajo + 9, 7, sm ? 0xFF2FBF73 : Ui.ACENTO, Ui.G_MICRO, 0xFF0F1419);
+                } else Ui.boton(g, W - 10, abajo + 9, 7, hay ? Ui.ACENTO : 0xFF2A333D, Ui.G_ENVIAR, hay ? 0xFF0F1419 : Ui.TEXTO2);
+            }
             // cabecera
             Ui.rect(g, 0, 0, W, BARRA + CAB, Ui.CABECERA);
             Ui.glifo(g, Ui.G_ATRAS, 5, BARRA + 6, Ui.TEXTO);
@@ -249,7 +303,9 @@ final class VistasChat {
             boolean grupo = c != null ? c.grupo : ci != null && ci.grupo;
             if (ci != null) avatar(g, ci, 17, BARRA + 3, 14, Ui.CABECERA);
             else if (c != null && !grupo) Ui.cara(g, otro(new ArrayList<>(c.miembros.keySet())), 17, BARRA + 3, 14, Ui.CABECERA);
-            Ui.texto(g, Ui.cortar(nombre, W - 52), 35, BARRA + 2, Ui.TEXTO);
+            UUID otroId = c != null && !grupo ? otro(new ArrayList<>(c.miembros.keySet())) : null;
+            int ind = VistasMapa.indicador(g, otroId, W - 31, BARRA + 1);
+            Ui.texto(g, Ui.cortar(nombre, W - 66 - ind), 35, BARRA + 2, Ui.TEXTO);
             String sub = "";
             if (c != null) {
                 if (grupo) sub = t("miembros", c.miembros.size());
@@ -263,6 +319,12 @@ final class VistasChat {
             g.pose().scale(0.5F, 0.5F, 1);
             g.drawString(Ui.font(), sub, 0, 0, 0xFF7FD7A5, false);
             g.pose().popPose();
+            if (c != null && MovilCliente.ubicacion) {
+                boolean compartiendo = false;
+                for (UUID u : c.miembros.keySet()) if (MovilCliente.ubiMia(u) != null) compartiendo = true;
+                boolean sp = Ui.dentro(mx, my, W - 31, BARRA, 14, CAB);
+                Ui.glifo(g, Ui.G_PIN, W - 27, BARRA + 6, compartiendo ? Ui.AZUL : sp ? 0xFFFFFFFF : Ui.TEXTO2);
+            }
             if (grupo) {
                 boolean conf = Util.getMillis() - confirmarSalir < 3000;
                 Ui.glifo(g, Ui.G_SALIR, W - 13, BARRA + 6, conf ? Ui.ROJO : Ui.TEXTO2);
@@ -290,6 +352,33 @@ final class VistasChat {
                 int[] cols = {0xFF7FB8FF, 0xFFFFA07A, 0xFF8FE3A8, 0xFFE0A6FF, 0xFFFFD27F, 0xFF7FE0E0};
                 Ui.texto(g, Ui.cortar(msg.nombreDe(), MAXW), x + 4, ty, cols[Math.floorMod(msg.de().hashCode(), cols.length)]);
                 ty += 10;
+            }
+            if (msg.voz() >= 0) {
+                int cx = x + 11, cy = ty + 8;
+                boolean suena = NotasVozCliente.sonando(msg.voz()), carga = NotasVozCliente.cargando(msg.voz());
+                boolean falta = NotasVozCliente.falta(msg.voz());
+                Ui.circulo(g, cx, cy, 7, b.mia ? 0xFF2C8A68 : 0xFF33404C);
+                if (carga) {
+                    int k = (int) (Util.getMillis() / 120 % 8);
+                    for (int i = 0; i < 8; i++) {
+                        double a = i * Math.PI / 4;
+                        Ui.rect(g, cx + (int) Math.round(Math.cos(a) * 4), cy + (int) Math.round(Math.sin(a) * 4), 1, 1, i == k ? 0xFFFFFFFF : 0x60FFFFFF);
+                    }
+                } else Ui.glifo(g, falta ? Ui.G_BORRAR : suena ? Ui.G_PAUSA : Ui.G_PLAY, cx - 4, cy - 4, falta ? Ui.ROJO : 0xFFFFFFFF);
+                float prog = NotasVozCliente.progreso(msg.voz());
+                byte[] onda = msg.onda();
+                int bx = x + 21;
+                for (int i = 0; i < BARRAS; i++) {
+                    int v = onda.length == 0 ? 40 : onda[Math.min(onda.length - 1, i * onda.length / BARRAS)] & 0xFF;
+                    int h = 1 + v * 11 / 255;
+                    boolean oida = suena && i < prog * BARRAS;
+                    int col = oida ? (b.mia ? 0xFFB9F5D2 : Ui.AZUL) : 0x90FFFFFF;
+                    Ui.rect(g, bx + i * 2 - (i > 0 ? 0 : 0), cy - h / 2, 1, h, col);
+                }
+                String d = MovilCliente.duracion((suena ? (long) (prog * msg.vozMs()) : msg.vozMs()) / 1000);
+                Ui.mini(g, d, bx, ty + 17, 0x99FFFFFF);
+                vocesVisibles.add(new Object[]{msg.voz(), x, y, b.w, b.h});
+                ty += 18;
             }
             if (msg.adjunto() >= 0) {
                 FotoCache.Tex t = FotoCache.get(MovilRed.FOTO_ADJUNTA, msg.adjunto());
@@ -352,7 +441,23 @@ final class VistasChat {
             if (clicAtras(x, y)) return true;
             int abajo = H - ABAJO - ENTRADA;
             MovilCliente.ChatAbierto c = MovilCliente.chat != null && MovilCliente.chat.id == id ? MovilCliente.chat : null;
-            if (Ui.dentro(x, y, W - 20, BARRA, 20, CAB) && c != null) {
+            if (c != null && MovilCliente.ubicacion && Ui.dentro(x, y, W - 31, BARRA, 14, CAB)) {
+                MovilCliente.clic();
+                List<UUID> otros = new ArrayList<>();
+                var yo = Minecraft.getInstance().player;
+                for (UUID u : c.miembros.keySet()) if (yo == null || !u.equals(yo.getUUID())) otros.add(u);
+                m.abrir(new VistasMapa.Compartir(otros, c.nombre));
+                return true;
+            }
+            if (c != null && !c.grupo) {
+                UUID o = otro(new ArrayList<>(c.miembros.keySet()));
+                if (o != null && MovilCliente.ubiDe(o) != null && Ui.dentro(x, y, 35, BARRA, W - 66, CAB) && x > W - 31 - 60) {
+                    MovilCliente.clic();
+                    m.abrir(new VistasMapa.Mapa(o));
+                    return true;
+                }
+            }
+            if (Ui.dentro(x, y, W - 17, BARRA, 17, CAB) && c != null) {
                 if (c.grupo) {
                     if (Util.getMillis() - confirmarSalir < 3000) {
                         MovilRed.alServidor(MovilRed.C_CHAT_SALIR, b -> b.writeVarInt(id));
@@ -378,6 +483,11 @@ final class VistasChat {
                 enviar();
                 return true;
             }
+            for (Object[] v : vocesVisibles)
+                if (Ui.dentro(x, y, (int) v[1], (int) v[2], (int) v[3], (int) v[4]) && y >= Y0 && y < abajo) {
+                    NotasVozCliente.alternar((int) v[0]);
+                    return true;
+                }
             for (Object[] f : fotosVisibles)
                 if (Ui.dentro(x, y, (int) f[1], (int) f[2], (int) f[3], (int) f[4]) && y >= Y0 && y < abajo) {
                     MovilCliente.clic();
