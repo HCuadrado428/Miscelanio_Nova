@@ -82,7 +82,7 @@ public final class CaraPantalla {
         // las recreativas y la mesa cóctel enseñan la cara en lugar de su imagen (gancho de su renderer, encadenado)
         var antes = com.miscelanea.client.arcade.RecreativaRenderer.PANTALLA_ESPECIAL;
         com.miscelanea.client.arcade.RecreativaRenderer.PANTALLA_ESPECIAL = (pos, lvl) -> {
-            for (Cara c : CARAS.values()) if (c.rl != null && c.pos.equals(pos)) return c.rl;
+            for (Cara c : CaraPantalla.CARAS.values()) if (c.rl != null && c.pos.equals(pos)) return c.rl;
             return antes != null ? antes.apply(pos, lvl) : null;
         };
     }
