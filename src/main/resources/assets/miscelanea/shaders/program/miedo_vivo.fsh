@@ -8,7 +8,6 @@
 //  Desenfoque  0..1  visión de túnel: los bordes se desenfocan (enfoque que se va al centro).
 //  Reloj       segundos (tiempo real, sin vueltas cada segundo).
 uniform sampler2D DiffuseSampler;
-uniform vec2 InSize;
 uniform float Intensidad;
 uniform float Golpe;
 uniform float Pesadilla;
