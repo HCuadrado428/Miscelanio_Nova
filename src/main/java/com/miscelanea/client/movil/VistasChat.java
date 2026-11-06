@@ -372,8 +372,8 @@ final class VistasChat {
                     int v = onda.length == 0 ? 40 : onda[Math.min(onda.length - 1, i * onda.length / BARRAS)] & 0xFF;
                     int h = 1 + v * 11 / 255;
                     boolean oida = suena && i < prog * BARRAS;
-                    int col = oida ? (b.mia ? 0xFFB9F5D2 : Ui.AZUL) : 0x90FFFFFF;
-                    Ui.rect(g, bx + i * 2 - (i > 0 ? 0 : 0), cy - h / 2, 1, h, col);
+                    int cb = oida ? (b.mia ? 0xFFB9F5D2 : Ui.AZUL) : 0x90FFFFFF;
+                    Ui.rect(g, bx + i * 2, cy - h / 2, 1, h, cb);
                 }
                 String d = MovilCliente.duracion((suena ? (long) (prog * msg.vozMs()) : msg.vozMs()) / 1000);
                 Ui.mini(g, d, bx, ty + 17, 0x99FFFFFF);
