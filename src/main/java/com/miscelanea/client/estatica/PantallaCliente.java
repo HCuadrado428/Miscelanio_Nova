@@ -92,6 +92,8 @@ public final class PantallaCliente {
         e.setCanceled(true);
         int n = SALIDAS.size();
         sel = Math.floorMod(sel + (e.getScrollDelta() > 0 ? -1 : 1), n);
+        // la cara se pasa a la pantalla nueva (la ven los de alrededor)
+        EstaticaRed.CANAL.sendToServer(new EstaticaRed.VerPantalla(sel - 1));
         var l = Minecraft.getInstance().level;
         if (l != null) {
             cambio = l.getGameTime();

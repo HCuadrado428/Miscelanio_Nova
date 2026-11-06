@@ -260,14 +260,9 @@ public final class EstaticaCine {
                 l.playLocalSound(c.x, c.y, c.z, EstaticaRegistro.CRUJIDO.get(), SoundSource.PLAYERS, 0.25F + 0.7F * f, 0.8F + r.nextFloat() * 0.5F + f * 0.3F, false);
         }
         if (k == 2 && local) mc.getSoundManager().play(SimpleSoundInstance.forUI(EstaticaRegistro.PROPIA.get(), 0.7F, 0.6F));
-        // gotas y chispas de las partes que ya son estática
-        if (k > 10 && k % 2 == 0 && ent instanceof LivingEntity le) EstaticaCliente.gotear(le, 1 + (k > 50 ? 1 : 0));
         if (k == EstaticaDatos.ESTALLIDO) {
             l.playLocalSound(c.x, c.y, c.z, EstaticaRegistro.ESTALLIDO.get(), SoundSource.PLAYERS, 1.2F, 0.9F, false);
-            for (int i = 0; i < 70; i++) {
-                double vx = r.nextGaussian() * 0.25, vy = r.nextGaussian() * 0.2 + 0.05, vz = r.nextGaussian() * 0.25;
-                l.addParticle(EstaticaRegistro.CHISPA.get(), c.x + vx, c.y + vy * 2, c.z + vz, vx, vy, vz);
-            }
+            EfectosMundo.estallido(c, 1.8F);
             if (local) {
                 destelloHasta = l.getGameTime() + 10;
                 com.miscelanea.client.armas.TemblorCliente.empezar(1.2F, 12);

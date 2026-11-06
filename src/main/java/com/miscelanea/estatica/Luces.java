@@ -2,7 +2,6 @@ package com.miscelanea.estatica;
 
 import com.miscelanea.ConfigServidor;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -66,8 +65,6 @@ public final class Luces {
             if (n++ < 3) {
                 Vec3 q = Vec3.atCenterOf(fija);
                 Estatica.sonido(l, q, EstaticaRegistro.APAGON.get(), 0.6F, 0.9F + l.random.nextFloat() * 0.3F);
-                l.sendParticles(ParticleTypes.SMOKE, q.x, q.y + 0.3, q.z, 6, 0.15, 0.1, 0.15, 0.01);
-                l.sendParticles(EstaticaRegistro.CHISPA.get(), q.x, q.y, q.z, 5, 0.25, 0.25, 0.25, 0.0);
             }
         }
     }

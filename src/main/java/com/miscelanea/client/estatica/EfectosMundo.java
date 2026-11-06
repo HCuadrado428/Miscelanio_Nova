@@ -34,8 +34,8 @@ import java.util.Map;
 
 /**
  * Lo que la estática pinta en el mundo: charcos (no son bloques), tentáculos (cintas de nieve onduladas que salen de su
- * cuerpo, llegan al objetivo con un latigazo y se recogen), estelas y estallidos de partículas, y esconder a alguien un
- * momento (arrastrar a la estática).
+ * cuerpo, llegan al objetivo con un latigazo y se recogen), destellos (anillos, rayos, siluetas y halos hechos de
+ * geometría con nieve: la estática no suelta ni una partícula) y esconder a alguien un momento (arrastrar a la estática).
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
 public final class EfectosMundo {
@@ -108,69 +108,95 @@ public final class EfectosMundo {
         };
     }
 
+    // ------------------------------------------------------------------ destellos (geometría con nieve: nada de partículas)
+    private static final ResourceLocation DESTELLO = new ResourceLocation(Miscelanea.MOD_ID, "textures/entity/estatica_destello.png");
+    private static final int ANILLO = 0, ARCO = 1, SILUETA = 2, HALO = 3, CUPULA = 4;
+
+    /** a, b: puntos (o centro); r: radio / largo; dur en ticks; desde puede ser futuro (retraso). */
+    private record Destello(int tipo, Vec3 a, Vec3 b, float r, long desde, int dur, int sem, float yaw, int id) {}
+
+    private static final List<Destello> DESTELLOS = new ArrayList<>();
+
+    private static void destello(int tipo, Vec3 a, Vec3 b, float r, int retraso, int dur, float yaw, int id) {
+        var l = Minecraft.getInstance().level;
+        if (l == null) return;
+        DESTELLOS.add(new Destello(tipo, a, b, r, l.getGameTime() + retraso, dur, l.getRandom().nextInt(), yaw, id));
+        if (DESTELLOS.size() > 400) DESTELLOS.remove(0);
+    }
+
+    /** Rayitos que salen de un punto en direcciones al azar. */
+    private static void rayos(Vec3 c, int n, double largo, int dur) {
+        var l = Minecraft.getInstance().level;
+        if (l == null) return;
+        RandomSource r = l.getRandom();
+        for (int i = 0; i < n; i++) {
+            Vec3 d = new Vec3(r.nextGaussian(), r.nextGaussian() * 0.7, r.nextGaussian());
+            if (d.lengthSqr() < 1.0E-4) continue;
+            d = d.normalize().scale(largo * (0.6 + r.nextDouble() * 0.6));
+            destello(ARCO, c, c.add(d), 0, r.nextInt(2), dur, 0, -1);
+        }
+    }
+
+    /** Estallido de estática (anillo que se abre y unos rayos). */
+    static void estallido(Vec3 c, float tam) {
+        destello(ANILLO, c, c, tam, 0, 9, 0, -1);
+        rayos(c, 5, tam * 0.7, 4);
+    }
+
     static void fx(EstaticaRed.Fx f) {
         Minecraft mc = Minecraft.getInstance();
         var l = mc.level;
         if (l == null) return;
-        RandomSource r = l.getRandom();
         Vec3 a = new Vec3(f.x, f.y, f.z), b = new Vec3(f.x2, f.y2, f.z2);
         switch (f.tipo) {
             case EstaticaRed.Fx.ESTELA -> {
-                silueta(a, f.extra);
-                double d = a.distanceTo(b);
-                for (double s = 0; s <= d; s += 0.2) {
-                    Vec3 q = a.lerp(b, s / Math.max(0.01, d)).add(0, 0.4 + r.nextFloat() * 1.2, 0);
-                    l.addParticle(EstaticaRegistro.CHISPA.get(), q.x, q.y, q.z, r.nextGaussian() * 0.01, 0.002, r.nextGaussian() * 0.01);
-                }
+                destello(SILUETA, a, a, 1, 0, 14, f.extra, -1);
+                destello(ARCO, a.add(0, 1.2, 0), b.add(0, 1.2, 0), 0, 0, 6, 0, -1);
+                destello(ARCO, a.add(0, 0.5, 0), b.add(0, 0.6, 0), 0, 1, 5, 0, -1);
             }
             case EstaticaRed.Fx.FRAGMENTO -> {
                 Entity e = l.getEntity(f.id);
-                silueta(a, e instanceof LivingEntity le ? Math.round(le.yBodyRot) : 0);
-                estallido(a.add(0, 1, 0), 40, 0.25);
-                estallido(b.add(0, 1, 0), 30, 0.18);
+                destello(SILUETA, a, a, 1, 0, 16, e instanceof LivingEntity le ? Math.round(le.yBodyRot) : 0, -1);
+                estallido(a.add(0, 1, 0), 1.3F);
+                estallido(b.add(0, 1, 0), 1.0F);
+                destello(ARCO, a.add(0, 1, 0), b.add(0, 1, 0), 0, 0, 5, 0, -1);
             }
-            case EstaticaRed.Fx.ESTALLIDO -> estallido(a, f.extra > 0 ? 45 : 20, 0.22);
+            case EstaticaRed.Fx.ESTALLIDO -> estallido(a, f.extra > 0 ? 1.6F : 1.0F);
             case EstaticaRed.Fx.CHISPAZO -> {
-                for (int i = 0; i < 18; i++)
-                    l.addParticle(EstaticaRegistro.CHISPA.get(), a.x + r.nextGaussian() * 0.3, a.y + r.nextGaussian() * 0.4, a.z + r.nextGaussian() * 0.3,
-                            r.nextGaussian() * 0.06, r.nextGaussian() * 0.06, r.nextGaussian() * 0.06);
+                rayos(a, f.extra > 0 ? 9 : 5, f.extra > 0 ? 1.3 : 0.9, 4);
+                destello(ANILLO, a, a, f.extra > 0 ? 1.2F : 0.8F, 0, 6, 0, -1);
             }
+            case EstaticaRed.Fx.ARCO -> {
+                destello(ARCO, a, b, 0, 0, 6, 0, -1);
+                destello(ARCO, a, b, 0, 1, 5, 0, -1);
+                rayos(b, 3, 0.6, 4);
+            }
+            case EstaticaRed.Fx.ATURDIDO -> destello(HALO, a, a, 0.42F, 0, Math.max(4, f.extra), 0, f.id);
             case EstaticaRed.Fx.GOLPE_SUELO -> {
                 if (mc.player != null) {
                     double d = mc.player.position().distanceTo(a);
                     if (d < 16) com.miscelanea.client.armas.TemblorCliente.empezar((float) (1.4 * (1 - d / 16)), 10);
                 }
-                estallido(a.add(0, 0.2, 0), 40, 0.3);
+                float r = f.extra > 0 ? f.extra / 10F : 1.6F;
+                destello(ANILLO, a.add(0, 0.06, 0), a, r, 0, 11, 0, -1);
+                destello(CUPULA, a, a, r * 0.7F, 0, 8, 0, -1);
+            }
+            case EstaticaRed.Fx.NOVA -> {
+                float r = Math.max(1F, f.extra / 10F);
+                Vec3 pies = a.add(0, -0.85, 0);
+                destello(ANILLO, pies.add(0, 0.06, 0), pies, r, 0, 12, 0, -1);
+                destello(ANILLO, pies.add(0, 0.08, 0), pies, r * 0.65F, 3, 10, 0, -1);
+                destello(CUPULA, pies, pies, r, 0, 12, 0, -1);
+                destello(ANILLO, a.add(0, 0.4, 0), a, r * 0.9F, 1, 9, 0, -1);
+                rayos(a, 12, r * 0.55, 5);
+                rayos(a, 8, r * 0.35, 4);
+                if (mc.player != null) {
+                    double d = mc.player.position().distanceTo(pies);
+                    if (d < r * 2.5) com.miscelanea.client.armas.TemblorCliente.empezar((float) (2.0 * (1 - d / (r * 2.5))), 14);
+                }
             }
             case EstaticaRed.Fx.OCULTAR -> OCULTOS.put(f.id, l.getGameTime() + f.extra);
             default -> {}
-        }
-    }
-
-    private static void estallido(Vec3 c, int n, double v) {
-        var l = Minecraft.getInstance().level;
-        if (l == null) return;
-        RandomSource r = l.getRandom();
-        for (int i = 0; i < n; i++)
-            l.addParticle(EstaticaRegistro.CHISPA.get(), c.x, c.y, c.z, r.nextGaussian() * v, r.nextGaussian() * v * 0.8, r.nextGaussian() * v);
-    }
-
-    /** La silueta del cuerpo hecha de nieve que se queda un momento donde estaba (velocidad 0 = partícula quieta y larga). */
-    private static void silueta(Vec3 pies, int yawGrados) {
-        var l = Minecraft.getInstance().level;
-        if (l == null) return;
-        RandomSource r = l.getRandom();
-        float yaw = yawGrados * Mth.DEG_TO_RAD;
-        Vec3 der = new Vec3(-Mth.cos(yaw), 0, -Mth.sin(yaw));
-        // cajas (derecha, arriba, ancho, alto) en bloques
-        double[][] cajas = {{-0.25, 1.5, 0.5, 0.5}, {-0.25, 0.75, 0.5, 0.75}, {-0.5, 0.75, 0.25, 0.75}, {0.25, 0.75, 0.25, 0.75}, {-0.25, 0, 0.5, 0.75}};
-        for (double[] c : cajas) {
-            int n = (int) (c[2] * c[3] * 90);
-            for (int i = 0; i < n; i++) {
-                double x = c[0] + r.nextDouble() * c[2], y = c[1] + r.nextDouble() * c[3];
-                Vec3 q = pies.add(der.scale(x)).add(0, y, 0);
-                l.addParticle(EstaticaRegistro.CHISPA.get(), q.x, q.y, q.z, 0, 0, 0);
-            }
         }
     }
 
@@ -200,24 +226,14 @@ public final class EfectosMundo {
             CHARCOS.clear();
             TENTS.clear();
             OCULTOS.clear();
+            DESTELLOS.clear();
             return;
         }
         long t = l.getGameTime();
         CHARCOS.removeIf(c -> t > c.hasta || t < c.desde - 40);
         TENTS.removeIf(x -> t - x.desde > x.dur + 12 || t < x.desde - 40);
         OCULTOS.values().removeIf(h -> t > h);
-        RandomSource r = l.getRandom();
-        for (Charco c : CHARCOS)
-            if (r.nextInt(8) == 0)
-                l.addParticle(EstaticaRegistro.CHISPA.get(), c.pos.x + r.nextGaussian() * 0.25, c.pos.y + 0.05, c.pos.z + r.nextGaussian() * 0.25, 0, 0.01, 0);
-        // los tentáculos chisporrotean por donde pasan
-        for (Tent x : TENTS) {
-            Entity v = l.getEntity(x.obj);
-            if (v != null && r.nextInt(2) == 0) {
-                Vec3 c = v.getBoundingBox().getCenter();
-                l.addParticle(EstaticaRegistro.CHISPA.get(), c.x + r.nextGaussian() * 0.3, c.y + r.nextGaussian() * 0.3, c.z + r.nextGaussian() * 0.3, 0, 0, 0);
-            }
-        }
+        DESTELLOS.removeIf(d -> t > d.desde + d.dur + 1 || t < d.desde - 200);
     }
 
     @SubscribeEvent
@@ -225,12 +241,13 @@ public final class EfectosMundo {
         CHARCOS.clear();
         TENTS.clear();
         OCULTOS.clear();
+        DESTELLOS.clear();
     }
 
     // ------------------------------------------------------------------ dibujo
     @SubscribeEvent
     public static void dibujar(RenderLevelStageEvent e) {
-        if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES || (CHARCOS.isEmpty() && TENTS.isEmpty())) return;
+        if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES || (CHARCOS.isEmpty() && TENTS.isEmpty() && DESTELLOS.isEmpty())) return;
         Minecraft mc = Minecraft.getInstance();
         var l = mc.level;
         if (l == null) return;
@@ -270,6 +287,12 @@ public final class EfectosMundo {
             RenderType rt = RenderType.entityTranslucent(TENTACULO);
             VertexConsumer vc = bs.getBuffer(rt);
             for (Tent x : TENTS) dibujarTentaculos(vc, ps, l, x, t, pt, cam, cuadro);
+            bs.endBatch(rt);
+        }
+        if (!DESTELLOS.isEmpty()) {
+            RenderType rt = RenderType.entityTranslucent(DESTELLO);
+            VertexConsumer vc = bs.getBuffer(rt);
+            for (Destello d : DESTELLOS) dibujarDestello(vc, ps, l, d, t, pt, cam);
             bs.endBatch(rt);
         }
         ps.popPose();
@@ -366,5 +389,123 @@ public final class EfectosMundo {
                 vtPrev = vt;
             }
         }
+    }
+
+    // ------------------------------------------------------------------ dibujo de los destellos
+    private static void vc(VertexConsumer vc, Matrix4f m, Matrix3f nm, Vec3 q, float u, float v, int gris, int a) {
+        vc.vertex(m, (float) q.x, (float) q.y, (float) q.z).color(gris, gris, Math.min(255, gris + 12), a).uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(0xF000F0).normal(nm, 0, 1, 0).endVertex();
+    }
+
+    private static void quad(VertexConsumer c, Matrix4f m, Matrix3f nm, Vec3 p0, Vec3 p1, Vec3 p2, Vec3 p3, float u0, float u1, float v0, float v1, int gris, int a) {
+        vc(c, m, nm, p0, u0, v0, gris, a);
+        vc(c, m, nm, p1, u1, v0, gris, a);
+        vc(c, m, nm, p2, u1, v1, gris, a);
+        vc(c, m, nm, p3, u0, v1, gris, a);
+    }
+
+    private static void dibujarDestello(VertexConsumer c, PoseStack ps, net.minecraft.client.multiplayer.ClientLevel l, Destello d, long t, float pt, Vec3 cam) {
+        float edad = t - d.desde + pt;
+        if (edad < 0) return;
+        float k = Mth.clamp(edad / d.dur, 0F, 1F);
+        if (k >= 1F) return;
+        Matrix4f m = ps.last().pose();
+        Matrix3f nm = ps.last().normal();
+        // fotograma de la nieve (8 de 16x16 en vertical) que cambia cada tick
+        int f = (int) ((t + (d.sem & 7)) % 8);
+        float v0 = f / 8F, v1 = (f + 1) / 8F;
+        switch (d.tipo) {
+            case ANILLO -> {
+                float rad = d.r * (1 - (1 - k) * (1 - k)), w = 0.16F + 0.05F * d.r;
+                anillo(c, m, nm, d.a, rad, w, 0, v0, v1, (int) (230 * (1 - k)), 255);
+            }
+            case CUPULA -> {
+                float rad = d.r * (1 - (1 - k) * (1 - k)), h = 0.3F + 2.2F * (1 - k);
+                int n = Math.max(16, (int) (rad * 10));
+                int a = (int) (170 * (1 - k));
+                for (int j = 0; j < n; j++) {
+                    double a0 = j * Mth.TWO_PI / n, a1 = (j + 1) * Mth.TWO_PI / n;
+                    Vec3 p0 = d.a.add(Math.cos(a0) * rad, 0, Math.sin(a0) * rad), p1 = d.a.add(Math.cos(a1) * rad, 0, Math.sin(a1) * rad);
+                    float u0 = j * 0.5F, u1 = (j + 1) * 0.5F;
+                    quad(c, m, nm, p0, p1, p1.add(0, h, 0), p0.add(0, h, 0), u0, u1, v1, v0, 235, a);
+                }
+            }
+            case HALO -> {
+                Entity e = l.getEntity(d.id);
+                if (e == null) return;
+                Vec3 cab = posicion(e, pt).add(0, e.getBbHeight() + 0.2 + 0.04 * Mth.sin(edad * 0.8F), 0);
+                float fin = Mth.clamp((d.dur - edad) / 4F, 0F, 1F);
+                anillo(c, m, nm, cab, d.r * (0.9F + 0.1F * Mth.sin(edad * 1.3F)), 0.07F, edad * 0.25F, v0, v1, (int) (230 * fin), 240);
+            }
+            case ARCO -> {
+                Vec3 dd = d.b.subtract(d.a);
+                double len = dd.length();
+                if (len < 0.05) return;
+                Vec3 dn = dd.scale(1 / len);
+                Vec3 l1 = dn.cross(new Vec3(0, 1, 0));
+                if (l1.lengthSqr() < 1.0E-4) l1 = new Vec3(1, 0, 0);
+                l1 = l1.normalize();
+                Vec3 l2 = l1.cross(dn).normalize();
+                int n = Math.max(4, (int) (len * 3));
+                long tick = t;
+                Vec3 prev = d.a, prevW = null;
+                int a = (int) (255 * (1 - k * k));
+                for (int j = 1; j <= n; j++) {
+                    float s = j / (float) n;
+                    // zigzag que cambia cada tick (como un rayo), sujeto en los dos extremos
+                    float amp = (float) Math.min(0.35, len * 0.12) * Mth.sin(Mth.PI * s);
+                    float h1 = Mascara.hash(d.sem, j, (int) tick, 17) - 0.5F, h2 = Mascara.hash(d.sem, j, (int) tick, 29) - 0.5F;
+                    Vec3 q = j == n ? d.b : d.a.add(dd.scale(s)).add(l1.scale(h1 * 2 * amp)).add(l2.scale(h2 * 2 * amp));
+                    Vec3 tang = q.subtract(prev);
+                    Vec3 w = tang.cross(cam.subtract(q));
+                    if (w.lengthSqr() < 1.0E-8) w = l1;
+                    w = w.normalize().scale(0.05 + 0.03 * (1 - k));
+                    if (prevW == null) prevW = w;
+                    quad(c, m, nm, prev.subtract(prevW), prev.add(prevW), q.add(w), q.subtract(w), (j - 1) * 0.25F, j * 0.25F, v0, v0 + 1 / 128F, 255, a);
+                    prev = q;
+                    prevW = w;
+                }
+            }
+            case SILUETA -> {
+                float yaw = d.yaw * Mth.DEG_TO_RAD;
+                Vec3 der = new Vec3(-Mth.cos(yaw), 0, -Mth.sin(yaw)), fr = new Vec3(-Mth.sin(yaw), 0, Mth.cos(yaw));
+                // cajas (derecha, arriba, ancho, alto, fondo) en bloques: cabeza, cuerpo, brazos y piernas
+                double[][] cajas = {{-0.25, 1.5, 0.5, 0.5, 0.5}, {-0.25, 0.75, 0.5, 0.75, 0.25}, {-0.5, 0.75, 0.25, 0.75, 0.25},
+                        {0.25, 0.75, 0.25, 0.75, 0.25}, {-0.25, 0, 0.25, 0.75, 0.25}, {0, 0, 0.25, 0.75, 0.25}};
+                int a = (int) (200 * (1 - k));
+                for (int i = 0; i < cajas.length; i++) {
+                    double[] b = cajas[i];
+                    // cada trozo se desplaza a saltos (como la imagen de una tele mal sintonizada) y se va subiendo un poco
+                    float jx = (Mascara.hash(d.sem, i, (int) t, 3) - 0.5F) * 0.14F * (0.3F + k);
+                    Vec3 o = d.a.add(der.scale(b[0] + jx)).add(0, b[1] + k * 0.15, 0).add(fr.scale(-b[4] / 2));
+                    caja(c, m, nm, o, der.scale(b[2]), new Vec3(0, b[3], 0), fr.scale(b[4]), v0, v1, a);
+                }
+            }
+            default -> {}
+        }
+    }
+
+    private static void anillo(VertexConsumer c, Matrix4f m, Matrix3f nm, Vec3 cen, float rad, float w, float giro, float v0, float v1, int a, int gris) {
+        if (rad <= 0.01F || a <= 0) return;
+        int n = Math.max(14, (int) (rad * 12));
+        float ri = Math.max(0, rad - w), re = rad + w;
+        for (int j = 0; j < n; j++) {
+            double a0 = giro + j * Mth.TWO_PI / n, a1 = giro + (j + 1) * Mth.TWO_PI / n;
+            float c0 = (float) Math.cos(a0), s0 = (float) Math.sin(a0), c1 = (float) Math.cos(a1), s1 = (float) Math.sin(a1);
+            Vec3 i0 = cen.add(c0 * ri, 0, s0 * ri), e0 = cen.add(c0 * re, 0, s0 * re), i1 = cen.add(c1 * ri, 0, s1 * ri), e1 = cen.add(c1 * re, 0, s1 * re);
+            quad(c, m, nm, i0, i1, e1, e0, j * 0.5F, (j + 1) * 0.5F, v0, v1, gris, a);
+        }
+    }
+
+    /** Caja de nieve (6 caras) con origen o y aristas ex, ey, ez. */
+    private static void caja(VertexConsumer c, Matrix4f m, Matrix3f nm, Vec3 o, Vec3 ex, Vec3 ey, Vec3 ez, float v0, float v1, int a) {
+        Vec3 x = o.add(ex), y = o.add(ey), z = o.add(ez), xy = x.add(ey), xz = x.add(ez), yz = y.add(ez), xyz = xy.add(ez);
+        float ux = (float) ex.length() * 2, uy = (float) ey.length() * 2, uz = (float) ez.length() * 2;
+        quad(c, m, nm, o, x, xy, y, 0, ux, v1, v0, 220, a);
+        quad(c, m, nm, z, xz, xyz, yz, 0.3F, 0.3F + ux, v1, v0, 220, a);
+        quad(c, m, nm, o, z, yz, y, 0.6F, 0.6F + uz, v1, v0, 200, a);
+        quad(c, m, nm, x, xz, xyz, xy, 0.1F, 0.1F + uz, v1, v0, 200, a);
+        quad(c, m, nm, y, xy, xyz, yz, 0.2F, 0.2F + ux, v0, v1, 240, a);
+        quad(c, m, nm, o, x, xz, z, 0.4F, 0.4F + ux, v0, v1, 170, a);
     }
 }

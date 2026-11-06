@@ -14,7 +14,6 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
@@ -140,27 +139,6 @@ public final class EstaticaCliente {
         return m;
     }
 
-    // ------------------------------------------------------------------ gotas
-    /** Gotas que caen de las partes de estática (puntos de la máscara llevados al mundo con el giro del cuerpo). */
-    static void gotear(LivingEntity e, int n) {
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null) return;
-        Mascara m = mascara(e.getId());
-        if (m.puntos.isEmpty()) return;
-        float cob = Float.isNaN(EstaticaCine.cobertura(e.getId(), 0)) ? 1F : EstaticaCine.cobertura(e.getId(), 0);
-        RandomSource r = mc.level.getRandom();
-        float yaw = e.yBodyRot * Mth.DEG_TO_RAD;
-        Vec3 der = new Vec3(-Mth.cos(yaw), 0, -Mth.sin(yaw)), fr = new Vec3(-Mth.sin(yaw), 0, Mth.cos(yaw));
-        double esc = 0.9375 / 16 * (e.isCrouching() ? 0.9 : 1);
-        for (int i = 0; i < n * 3 && n > 0; i++) {
-            float[] p = m.puntos.get(r.nextInt(m.puntos.size()));
-            if (p[3] > cob) continue;
-            n--;
-            Vec3 w = e.position().add(der.scale(p[0] * esc)).add(0, p[1] * esc, 0).add(fr.scale(-p[2] * esc));
-            mc.level.addParticle(EstaticaRegistro.GOTA.get(), w.x, w.y, w.z, r.nextGaussian() * 0.004, -0.01, r.nextGaussian() * 0.004);
-        }
-    }
-
     // ------------------------------------------------------------------ tick
     @SubscribeEvent
     public static void tick(TickEvent.ClientTickEvent e) {
@@ -200,10 +178,9 @@ public final class EstaticaCliente {
             mc.getSoundManager().play(propio);
         }
         if (!yo && elegido != Poder.NINGUNO) elegido = Poder.NINGUNO;
-        // gotas, microcortes y antorchas que parpadean
+        // antorchas que chisporrotean (solo el sonido: la estática no suelta partículas; las gotas van pintadas en el cuerpo)
         for (Player o : mc.level.players()) {
             if (!conEstatica(o.getId()) || o.distanceToSqr(mc.player) > 32 * 32 || bandera(o.getId(), EstaticaRed.Estado.DENTRO)) continue;
-            if (!EstaticaCine.activa(o.getId()) && r.nextFloat() < 0.3F && !bandera(o.getId(), EstaticaRed.Estado.FUNDIDO)) gotear(o, 1);
             if (t % 10 == (o.getId() & 7)) antorchas(mc, o, r);
         }
         if (yo && !EstaticaCine.localActiva() && t > cortoHasta + 60 && r.nextInt(260) == 0) {
@@ -223,8 +200,6 @@ public final class EstaticaCliente {
             if (!mc.level.getBlockState(bp).is(EstaticaRegistro.PARPADEAN)) continue;
             if (r.nextFloat() > 0.45F) continue;
             double x = bp.getX() + 0.5, y = bp.getY() + 0.7, z = bp.getZ() + 0.5;
-            mc.level.addParticle(ParticleTypes.SMOKE, x + r.nextGaussian() * 0.05, y, z + r.nextGaussian() * 0.05, 0, 0.02, 0);
-            mc.level.addParticle(EstaticaRegistro.CHISPA.get(), x + r.nextGaussian() * 0.15, y, z + r.nextGaussian() * 0.15, 0, 0, 0);
             if (n++ < 1 && r.nextInt(3) == 0) mc.level.playLocalSound(x, y, z, EstaticaRegistro.APAGON.get(), SoundSource.BLOCKS, 0.15F, 1.6F, false);
         }
     }
@@ -417,7 +392,8 @@ public final class EstaticaCliente {
             case ARRASTRAR, ATRAER, LANZAR, ESTAMPAR -> {
                 if (obj < 0) {
                     // el objetivo puede estar más lejos que el alcance de la mano: el más cercano en la mirada
-                    Entity m = EfectosMundo.mirado(mc, pd == Poder.ARRASTRAR ? 5 : 12);
+                    Entity m = EfectosMundo.mirado(mc, pd == Poder.ARRASTRAR ? com.miscelanea.ConfigServidor.estaticaArrastrarAlcance()
+                            : com.miscelanea.ConfigServidor.estaticaTentaculosAlcance());
                     if (m != null) obj = m.getId();
                 }
             }

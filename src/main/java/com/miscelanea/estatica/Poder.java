@@ -5,7 +5,7 @@ import com.miscelanea.ConfigServidor;
 /** Poderes de la rueda (se usan con clic derecho y la mano vacía). El orden es el de la rueda y el de la red. */
 public enum Poder {
     NINGUNO("ninguno"), PARPADEO("parpadeo"), PANTALLA("pantalla"), IMITAR("imitar"), ARRASTRAR("arrastrar"),
-    ATRAER("atraer"), LANZAR("lanzar"), ESTAMPAR("estampar");
+    ATRAER("atraer"), LANZAR("lanzar"), ESTAMPAR("estampar"), SOBRECARGA("sobrecarga");
 
     public static final Poder[] V = values();
     public final String id;
@@ -29,6 +29,7 @@ public enum Poder {
             case ATRAER -> ConfigServidor.estaticaAtraer();
             case LANZAR -> ConfigServidor.estaticaLanzar();
             case ESTAMPAR -> ConfigServidor.estaticaEstampar();
+            case SOBRECARGA -> ConfigServidor.estaticaSobrecarga();
         };
     }
 
@@ -36,13 +37,14 @@ public enum Poder {
     public int enfriamiento() {
         return switch (this) {
             case NINGUNO -> 0;
-            case PARPADEO -> ConfigServidor.estaticaParpadeoEnfriamiento();
+            case PARPADEO -> 5;   // entre cargas seguidas; cada carga se recarga aparte (Poderes.cargas)
             case PANTALLA -> ConfigServidor.estaticaPantallasEnfriamiento();
             case IMITAR -> ConfigServidor.estaticaImitarEnfriamiento();
             case ARRASTRAR -> ConfigServidor.estaticaArrastrarEnfriamiento();
             case ATRAER -> ConfigServidor.estaticaAtraerEnfriamiento();
             case LANZAR -> ConfigServidor.estaticaLanzarEnfriamiento();
             case ESTAMPAR -> ConfigServidor.estaticaEstamparEnfriamiento();
+            case SOBRECARGA -> ConfigServidor.estaticaSobrecargaEnfriamiento();
         };
     }
 

@@ -52,6 +52,8 @@ public final class EstaticaRed {
             CANAL.messageBuilder(Usar.class, id++, NetworkDirection.PLAY_TO_SERVER).encoder(Usar::encode).decoder(Usar::new).consumerMainThread(Usar::handle).add();
             CANAL.messageBuilder(SalirPantalla.class, id++, NetworkDirection.PLAY_TO_SERVER).encoder(SalirPantalla::encode).decoder(SalirPantalla::new).consumerMainThread(SalirPantalla::handle).add();
             CANAL.messageBuilder(Grabacion.class, id++, NetworkDirection.PLAY_TO_SERVER).encoder(Grabacion::encode).decoder(Grabacion::new).consumerMainThread(Grabacion::handle).add();
+            CANAL.messageBuilder(VerPantalla.class, id++, NetworkDirection.PLAY_TO_SERVER).encoder(VerPantalla::encode).decoder(VerPantalla::new).consumerMainThread(VerPantalla::handle).add();
+            CANAL.messageBuilder(CaraPantalla.class, id++, NetworkDirection.PLAY_TO_CLIENT).encoder(CaraPantalla::encode).decoder(CaraPantalla::new).consumerMainThread(CaraPantalla::handle).add();
         });
     }
 
@@ -133,7 +135,8 @@ public final class EstaticaRed {
 
     /** Efectos visuales sueltos (estelas, estallidos, chispazos, golpes, apagones, ocultar a alguien un momento). */
     public static class Fx {
-        public static final int ESTELA = 0, ESTALLIDO = 1, CHISPAZO = 2, GOLPE_SUELO = 3, APAGON = 4, OCULTAR = 5, FRAGMENTO = 6;
+        public static final int ESTELA = 0, ESTALLIDO = 1, CHISPAZO = 2, GOLPE_SUELO = 3, APAGON = 4, OCULTAR = 5, FRAGMENTO = 6,
+                ARCO = 7, ATURDIDO = 8, NOVA = 9;
         public final int tipo, id, extra;
         public final double x, y, z, x2, y2, z2;
 
@@ -398,6 +401,60 @@ public final class EstaticaRed {
         void handle(Supplier<NetworkEvent.Context> c) {
             ServerPlayer p = c.get().getSender();
             if (p != null) Poderes.imitar(p, pos, datos);
+        }
+    }
+
+    /** Por qué pantalla está mirando ahora (dentro de las pantallas): -1 = la de entrada, si no el índice del destino. */
+    public static class VerPantalla {
+        public final int indice;
+
+        public VerPantalla(int indice) {
+            this.indice = indice;
+        }
+
+        public VerPantalla(FriendlyByteBuf b) {
+            this(b.readVarInt() - 1);
+        }
+
+        void encode(FriendlyByteBuf b) {
+            b.writeVarInt(indice + 1);
+        }
+
+        void handle(Supplier<NetworkEvent.Context> c) {
+            ServerPlayer p = c.get().getSender();
+            if (p != null) PantallasServidor.ver(p, indice);
+        }
+    }
+
+    /** La cara de alguien de estática sale en una pantalla (activa = false: ya no está en ninguna). */
+    public static class CaraPantalla {
+        public final int id, semilla;
+        public final java.util.UUID quien;
+        public final BlockPos pos;
+        public final boolean activa;
+
+        public CaraPantalla(int id, java.util.UUID quien, int semilla, BlockPos pos, boolean activa) {
+            this.id = id;
+            this.quien = quien;
+            this.semilla = semilla;
+            this.pos = pos;
+            this.activa = activa;
+        }
+
+        public CaraPantalla(FriendlyByteBuf b) {
+            this(b.readVarInt(), b.readUUID(), b.readInt(), b.readBlockPos(), b.readBoolean());
+        }
+
+        void encode(FriendlyByteBuf b) {
+            b.writeVarInt(id);
+            b.writeUUID(quien);
+            b.writeInt(semilla);
+            b.writeBlockPos(pos);
+            b.writeBoolean(activa);
+        }
+
+        void handle(Supplier<NetworkEvent.Context> c) {
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.miscelanea.client.estatica.EstaticaRedCliente.cara(this));
         }
     }
 }

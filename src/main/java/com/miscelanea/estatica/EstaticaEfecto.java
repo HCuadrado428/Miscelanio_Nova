@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * «Estática»: parte del cuerpo hecha de nieve de televisión. Por sí mismo solo cambia el movimiento (algo más lento, menos
- * gravedad: saltos más largos y caídas suaves); los poderes y el resto viven en {@link EstaticaEventos} y en el cliente.
+ * «Estática»: parte del cuerpo hecha de nieve de televisión. Por sí mismo solo cambia el movimiento (más rápido, menos
+ * gravedad: saltos más largos); nunca suelta partículas (Estatica.tickJugador lo pone sin ellas); los poderes y el resto viven en {@link EstaticaEventos} y en el cliente.
  * Los modificadores se ponen al aplicar el efecto (no en el constructor: la gravedad de Forge se registra después que los
  * efectos) y leen la configuración en ese momento. La leche no lo quita salvo que se active en la configuración.
  */
