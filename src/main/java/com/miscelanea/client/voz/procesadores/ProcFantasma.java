@@ -9,7 +9,7 @@ import com.miscelanea.client.voz.dsp.Dsp;
  */
 public class ProcFantasma implements ProcesadorVoz {
     private final Dsp.Tono tono = new Dsp.Tono(1.0);
-    private final Dsp.Eco eco = new Dsp.Eco(120, 0.5F, 0.6F, 2600);
+    private final Dsp.Eco eco = new Dsp.Eco(120, 0.4F, 0.45F, 2600);
     private final Dsp.Eco eco2 = new Dsp.Eco(73, 0.35F, 0.35F, 2000);
     private final Dsp.Biquad lejos = Dsp.Biquad.pasoBajo(2500, 0.7);
     private double fase;

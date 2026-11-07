@@ -25,11 +25,6 @@ public final class PocionesClienteMod {
         e.registerBelowAll("pociones_sangre", SangreCliente::hud);
         e.registerBelowAll("pociones_niebla", NieblaCliente::hud);
         e.registerBelowAll("pociones_eco", EcoCliente::hud);
-        e.registerBelowAll("pociones_sombra", SombraCliente::hud);
     }
 
-    @SubscribeEvent
-    public static void particulas(RegisterParticleProvidersEvent e) {
-        e.registerSpriteSet(PocionesRegistro.HUMO_SOMBRA.get(), SombraHumoParticula.Provider::new);
-    }
 }

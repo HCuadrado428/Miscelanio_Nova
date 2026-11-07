@@ -20,6 +20,9 @@ public final class Dsp {
     public static void aShort(float[] in, short[] out) {
         for (int i = 0; i < out.length; i++) {
             float v = in[i];
+            // por encima de 0,8 se aplasta suave en vez de cortar en seco (el corte seco suena a altavoz roto)
+            float av = Math.abs(v);
+            if (av > 0.8F) v = Math.copySign(0.8F + 0.2F * suave((av - 0.8F) * 5F), v);
             if (v > 1F) v = 1F;
             else if (v < -1F) v = -1F;
             out[i] = (short) Math.round(v * 32767F);
@@ -83,25 +86,30 @@ public final class Dsp {
         }
     }
 
-    // ------------------------------------------------------------------ desplazador de tono (dos lecturas sobre una línea de retardo, fundido seno/coseno)
+    // ------------------------------------------------------------------ desplazador de tono (empalmes alineados con el tono de la voz)
     /**
-     * Cambio de tono en tiempo real, en el dominio del tiempo: dos cabezales leen de una línea de retardo a una
-     * velocidad distinta de la de escritura (más rápido = más agudo) dentro de una ventana de {@link #VENTANA}
-     * muestras (40 ms) y se funden con ganancias sin²/cos² para que el salto al volver al principio no se oiga.
-     * Latencia máxima: la ventana (≤ 40 ms). Calidad "de juguete" pero continua entre fotogramas; la razón puede
-     * cambiar muestra a muestra ({@link #setRazon}), lo que sirve para vibratos y flutter.
+     * Cambio de tono en tiempo real, en el dominio del tiempo. Un cabezal lee de una línea de retardo a una velocidad
+     * distinta de la de escritura (más rápido = más agudo). Cuando se acerca al borde del margen permitido salta atrás
+     * (o adelante) un trozo, pero no un trozo cualquiera: busca el salto en el que la onda se parece más a la de ahora
+     * (un número entero de periodos de la voz) y funde los dos cabezales en 8 ms. Así no hay el efecto de "tubo" ni el
+     * gorjeo metálico de los cambiadores de dos cabezales fijos. Latencia: unos 12-60 ms. La razón puede cambiar
+     * muestra a muestra ({@link #setRazon}), lo que sirve para vibratos.
      */
     public static final class Tono {
+        /** Compatibilidad: tamaño aproximado de la ventana (40 ms). */
         public static final int VENTANA = 1920;
         private static final int N = 8192, MASK = N - 1;
+        /** Retardo mínimo y máximo del cabezal (muestras) y saltos posibles (2,5 a 25 ms: cubre voces de 40 a 400 Hz). */
+        private static final int DMIN = 576, DMAX = 2880, JMIN = 120, JMAX = 1200, FUNDE = 384, CORR = 384;
         private final float[] buf = new float[N];
         private int w;
-        private double d1;        // retardo (muestras) del cabezal 1; el 2 va media ventana por delante
+        private double d = (DMIN + DMAX) / 2.0;     // retardo del cabezal
+        private double dViejo;                       // cabezal que se apaga en un fundido
+        private int fundido;                          // muestras de fundido que quedan
         private double razon = 1;
 
         public Tono(double razon) {
             setRazon(razon);
-            d1 = VENTANA * 0.25;
         }
 
         public void setRazon(double r) {
@@ -116,21 +124,64 @@ public final class Dsp {
             double pos = w - retardo;
             int i0 = (int) Math.floor(pos);
             float fr = (float) (pos - i0);
-            float a = buf[i0 & MASK], b = buf[(i0 + 1) & MASK];
-            return a + (b - a) * fr;
+            // interpolación cúbica (Catmull-Rom): menos zumbido que la lineal al leer a otra velocidad
+            float y0 = buf[(i0 - 1) & MASK], y1 = buf[i0 & MASK], y2 = buf[(i0 + 1) & MASK], y3 = buf[(i0 + 2) & MASK];
+            float c1 = 0.5F * (y2 - y0), c2 = y0 - 2.5F * y1 + 2F * y2 - 0.5F * y3, c3 = 0.5F * (y3 - y0) + 1.5F * (y1 - y2);
+            return ((c3 * fr + c2) * fr + c1) * fr + y1;
+        }
+
+        /** El salto (en muestras, con signo: + = más retardo) que mejor empalma la onda desde el retardo actual. */
+        private int mejorSalto(int signo) {
+            int base = (int) d;
+            double mejor = -2;
+            int elegido = signo * (JMIN + JMAX) / 2;
+            // energía del trozo de ahora (lo que sonaría a continuación)
+            for (int j = JMIN; j <= JMAX; j += 2) {
+                int dn = base + signo * j;
+                if (dn < CORR + 4 || dn > N - 8) continue;
+                if (signo < 0 && dn < 8 + CORR) continue;
+                double xy = 0, xx = 0, yy = 0;
+                for (int k = 0; k < CORR; k += 3) {
+                    float a = buf[(w - base + k) & MASK], b = buf[(w - dn + k) & MASK];
+                    xy += a * b;
+                    xx += a * a;
+                    yy += b * b;
+                }
+                double c = xx * yy > 1e-12 ? xy / Math.sqrt(xx * yy) : 0;
+                // a igualdad, mejor saltos largos: menos empalmes por segundo
+                c += 0.00015 * (j - JMIN) / 8.0;
+                if (c > mejor) {
+                    mejor = c;
+                    elegido = signo * j;
+                }
+            }
+            return elegido;
         }
 
         public float tick(float x) {
             buf[w & MASK] = x;
-            // el cabezal avanza a 'razon' por cada muestra escrita: el retardo cambia (1 - razon) por muestra
-            d1 += 1 - razon;
-            if (d1 < 1) d1 += VENTANA;
-            else if (d1 >= VENTANA + 1) d1 -= VENTANA;
-            double d2 = d1 + VENTANA / 2.0;
-            if (d2 >= VENTANA + 1) d2 -= VENTANA;
-            double ph = Math.PI * (d1 - 1) / VENTANA;
-            float g1 = (float) Math.sin(ph), g2 = (float) Math.cos(ph);
-            float y = leer(d1) * g1 * g1 + leer(d2) * g2 * g2;
+            // el cabezal avanza 'razon' por cada muestra escrita: el retardo cambia (1 - razon) por muestra
+            d += 1 - razon;
+            if (fundido > 0) dViejo += 1 - razon;
+            if (fundido == 0) {
+                if (d < DMIN && razon > 1) {
+                    dViejo = d;
+                    d += mejorSalto(1);
+                    fundido = FUNDE;
+                } else if (d > DMAX && razon < 1) {
+                    dViejo = d;
+                    d += mejorSalto(-1);
+                    if (d < 2) d = 2;
+                    fundido = FUNDE;
+                } else if (d < 2) d = 2;
+            }
+            float y;
+            if (fundido > 0) {
+                float k = (float) fundido / FUNDE;                  // 1 → 0
+                float gv = (float) Math.sin(k * Math.PI / 2), gn = (float) Math.cos(k * Math.PI / 2);
+                y = leer(Math.max(2, dViejo)) * gv + leer(d) * gn;
+                fundido--;
+            } else y = leer(d);
             w++;
             return y;
         }

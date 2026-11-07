@@ -43,7 +43,6 @@ public abstract class EntityRenderDispatcherMixin {
             index = 6, require = 0)
     private float miscelanea$tamanoSombra(PoseStack ps, MultiBufferSource buf, Entity e, float fuerza, float pt, LevelReader nivel, float radio) {
         try {
-            if (Estados.sombra(e)) return 0F;
             float s = TamanoCliente.escalaVista(e, pt);
             return s == 1F ? radio : Math.min(radio * s, 32F);
         } catch (RuntimeException ex) {

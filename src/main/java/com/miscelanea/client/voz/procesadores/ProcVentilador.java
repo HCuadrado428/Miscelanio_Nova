@@ -11,7 +11,7 @@ public class ProcVentilador implements ProcesadorVoz {
 
     @Override
     public void procesar(short[] frame, int amp) {
-        double f = 25 + 6 * amp, prof = 0.8;
+        double f = 22 + 4 * amp, prof = 0.6;
         double incr = 2 * Math.PI * f / SR, incrFl = 2 * Math.PI * (f * 0.5) / SR;
         b = Dsp.aFloat(frame, b);
         for (int i = 0; i < b.length; i++) {
@@ -22,7 +22,7 @@ public class ProcVentilador implements ProcesadorVoz {
             // ventana de las aspas: casi apagado entre aspa y aspa
             double g = 1 - prof * (0.5 - 0.5 * Math.cos(fase));
             tono.setRazon(1 + 0.03 * Math.sin(faseFl));
-            b[i] = tono.tick(b[i]) * (float) g * 1.25F;
+            b[i] = tono.tick(b[i]) * (float) g * 1.15F;
         }
         Dsp.aShort(b, frame);
     }

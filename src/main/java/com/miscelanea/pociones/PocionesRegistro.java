@@ -22,8 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Pociones "del cuerpo" (solo de creativo, sin receta de alquimia): espejismo (te ven como otro jugador), sombra (la
- * sombra de Hollow Knight), gigante y enano (Forge escala el tamaño), ecolocalización (a ciegas, ves por los sonidos),
+ * Pociones "del cuerpo" (solo de creativo, sin receta de alquimia): espejismo (te ven como otro jugador), gigante y enano (Forge escala el tamaño), ecolocalización (a ciegas, ves por los sonidos),
  * sed de sangre (berserk de Doom) y niebla viviente (Silent Hill). Cada efecto tiene su poción de 3:00 y la larga de
  * 8:00; las arrojadizas y persistentes salen solas en la pestaña de combate. Registro aparte (como EfectosRegistro):
  * basta con {@link #registrar(IEventBus)} desde el constructor del mod. Todo funciona también con /effect.
@@ -38,14 +37,12 @@ public final class PocionesRegistro {
             DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, Miscelanea.MOD_ID);
 
     // ---- colores (también el de la botella)
-    public static final int COLOR_ESPEJISMO = 0x9C6BFF, COLOR_SOMBRA = 0x1C1A26, COLOR_GIGANTE = 0xD98B2B, COLOR_ENANO = 0x6BC26B,
+    public static final int COLOR_ESPEJISMO = 0x9C6BFF, COLOR_GIGANTE = 0xD98B2B, COLOR_ENANO = 0x6BC26B,
             COLOR_ECO = 0x58C8FF, COLOR_SANGRE = 0xB3121B, COLOR_NIEBLA = 0xA9A39B;
 
     // ---- efectos
     public static final RegistryObject<MobEffect> ESPEJISMO = EFFECTS.register("espejismo",
             () -> new EfectoCuerpo(MobEffectCategory.NEUTRAL, COLOR_ESPEJISMO));
-    public static final RegistryObject<MobEffect> SOMBRA = EFFECTS.register("sombra",
-            () -> new EfectoCuerpo(MobEffectCategory.NEUTRAL, COLOR_SOMBRA));
     public static final RegistryObject<MobEffect> GIGANTE = EFFECTS.register("gigante",
             () -> new EfectoCuerpo(MobEffectCategory.BENEFICIAL, COLOR_GIGANTE));
     public static final RegistryObject<MobEffect> ENANO = EFFECTS.register("enano",
@@ -63,8 +60,6 @@ public final class PocionesRegistro {
     private static final List<RegistryObject<Potion>> TODAS = new ArrayList<>();
     public static final RegistryObject<Potion> P_ESPEJISMO = pocion("espejismo", ESPEJISMO, 3600);
     public static final RegistryObject<Potion> P_ESPEJISMO_LARGA = pocion("espejismo_largo", "espejismo", ESPEJISMO, 9600);
-    public static final RegistryObject<Potion> P_SOMBRA = pocion("sombra", SOMBRA, 3600);
-    public static final RegistryObject<Potion> P_SOMBRA_LARGA = pocion("sombra_largo", "sombra", SOMBRA, 9600);
     public static final RegistryObject<Potion> P_GIGANTE = pocion("gigante", GIGANTE, 3600);
     public static final RegistryObject<Potion> P_GIGANTE_LARGA = pocion("gigante_largo", "gigante", GIGANTE, 9600);
     public static final RegistryObject<Potion> P_ENANO = pocion("enano", ENANO, 3600);
@@ -102,11 +97,6 @@ public final class PocionesRegistro {
     public static final RegistryObject<SoundEvent> REVENTAR = sonido("pociones_reventar");
     public static final RegistryObject<SoundEvent> SIRENA = sonido("pociones_sirena");
     public static final RegistryObject<SoundEvent> PISOTON = sonido("pociones_pisoton");
-
-    // ---- partículas
-    /** Voluta de humo negro que suelta la sombra (se deshace al subir). */
-    public static final RegistryObject<net.minecraft.core.particles.SimpleParticleType> HUMO_SOMBRA =
-            PARTICLES.register("sombra_humo", () -> new net.minecraft.core.particles.SimpleParticleType(false));
 
     private static RegistryObject<SoundEvent> sonido(String n) {
         return SOUNDS.register(n, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Miscelanea.MOD_ID, n)));

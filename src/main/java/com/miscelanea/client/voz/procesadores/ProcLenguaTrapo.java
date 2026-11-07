@@ -17,7 +17,7 @@ public class ProcLenguaTrapo implements ProcesadorVoz {
 
     @Override
     public void procesar(short[] frame, int amp) {
-        double prof = Math.min(0.3, 0.15 + 0.05 * amp);
+        double prof = Math.min(0.17, 0.08 + 0.03 * amp);
         double incr = 2 * Math.PI * 0.5 / SR;
         b = Dsp.aFloat(frame, b);
         if (tiron <= 0 && r.entero(100) < 4 + 2 * amp) tiron = tironTotal = SR * (180 + r.entero(260)) / 1000;
@@ -28,7 +28,7 @@ public class ProcLenguaTrapo implements ProcesadorVoz {
             if (tiron > 0) {
                 // tirón: baja hasta 0,8 y vuelve, con forma de campana
                 double u = 1 - tiron / (double) tironTotal;
-                razon *= 1 - 0.2 * Math.sin(Math.PI * u);
+                razon *= 1 - 0.12 * Math.sin(Math.PI * u);
                 tiron--;
             }
             tono.setRazon(razon);

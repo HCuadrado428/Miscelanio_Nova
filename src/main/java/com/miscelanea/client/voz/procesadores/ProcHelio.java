@@ -10,7 +10,7 @@ public class ProcHelio implements ProcesadorVoz {
 
     @Override
     public void procesar(short[] frame, int amp) {
-        tono.setRazon(Math.min(2.2, 1.6 + 0.2 * amp));
+        tono.setRazon(Math.min(2.0, 1.6 + 0.15 * amp));
         b = Dsp.aFloat(frame, b);
         tono.procesar(b);
         Dsp.aShort(b, frame);

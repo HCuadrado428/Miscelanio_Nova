@@ -47,7 +47,6 @@ import java.util.List;
  * Lógica de las pociones del cuerpo (servidor, y lo que hace falta en los dos lados):
  * <ul>
  *   <li>Espejismo: al ponerse elige a quién imitar; el estado va a los clientes cada segundo ({@link EstadoPacket}).</li>
- *   <li>Sombra: pose de reptar forzada (caja 0,5 x 0,5), nada de usar, pegar, romper ni poner; sin daño de caída.</li>
  *   <li>Gigante / enano: caja y ojos a escala ({@link Tamanos}), salto, empujón x3, pisotón al aterrizar; el enano
  *       recibe x1,5 de daño.</li>
  *   <li>Sed de sangre: con algo en la mano no se pega; a puño limpio 50 de daño, empujón enorme y, si mata, la víctima
@@ -61,10 +60,6 @@ public final class PocionesEventos {
 
     private static final String CLAVE_AIRE = "MiscelaneaGigAire", CLAVE_CAIDA = "MiscelaneaGigCaida", CLAVE_REVENTAR = "MiscelaneaReventar";
     public static final float DANO_PUNO = 50F;
-
-    private static boolean sombra(Entity e) {
-        return e instanceof LivingEntity v && v.hasEffect(PocionesRegistro.SOMBRA.get());
-    }
 
     private static boolean sed(Entity e) {
         return e instanceof LivingEntity v && v.hasEffect(PocionesRegistro.SED_DE_SANGRE.get());
@@ -113,34 +108,19 @@ public final class PocionesEventos {
         if (enAire) d.putFloat(CLAVE_CAIDA, v.fallDistance);
     }
 
-    /** Sombra: la pose de reptar en los dos lados (después de que Player.tick la haya calculado). */
-    @SubscribeEvent
-    public static void tickJugador(TickEvent.PlayerTickEvent e) {
-        if (e.phase != TickEvent.Phase.END) return;
-        Player p = e.player;
-        if (sombra(p) && !p.isSleeping() && !p.isFallFlying() && !p.isPassenger() && !p.isSpectator() && p.getPose() != Pose.SWIMMING)
-            p.setPose(Pose.SWIMMING);
-    }
-
     // ------------------------------------------------------------------ caja y ojos
     @SubscribeEvent
     public static void tamano(EntityEvent.Size e) {
         if (!(e.getEntity() instanceof LivingEntity v)) return;
-        boolean sombra;
         float escala;
         try {
-            sombra = v instanceof Player && v.hasEffect(PocionesRegistro.SOMBRA.get());
             escala = Tamanos.escala(v);
         } catch (RuntimeException ex) {
             return;   // la entidad aún no está lista
         }
-        if (!sombra && escala == 1F) return;
+        if (escala == 1F) return;
         EntityDimensions base = e.getNewSize();
         float ojos = e.getNewEyeHeight();
-        if (sombra) {
-            base = EntityDimensions.fixed(0.5F, 0.5F);
-            ojos = 0.4F;
-        }
         e.setNewSize(base.scale(escala));
         e.setNewEyeHeight(ojos * escala);
     }
@@ -158,7 +138,7 @@ public final class PocionesEventos {
         } else if (ef == PocionesRegistro.SED_DE_SANGRE.get()) {
             v.level().playSound(null, v.getX(), v.getY(), v.getZ(), PocionesRegistro.BERSERK.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
         }
-        if (ef == PocionesRegistro.ESPEJISMO.get() || ef == PocionesRegistro.SOMBRA.get() || ef == PocionesRegistro.NIEBLA_VIVIENTE.get()
+        if (ef == PocionesRegistro.ESPEJISMO.get() || ef == PocionesRegistro.NIEBLA_VIVIENTE.get()
                 || ef == PocionesRegistro.GIGANTE.get() || ef == PocionesRegistro.ENANO.get())
             Espejismos.enviarATodos(v, null);
     }
@@ -183,7 +163,7 @@ public final class PocionesEventos {
     }
 
     private static boolean esNuestro(MobEffect ef) {
-        return ef == PocionesRegistro.ESPEJISMO.get() || ef == PocionesRegistro.SOMBRA.get() || ef == PocionesRegistro.NIEBLA_VIVIENTE.get()
+        return ef == PocionesRegistro.ESPEJISMO.get() || ef == PocionesRegistro.NIEBLA_VIVIENTE.get()
                 || ef == PocionesRegistro.GIGANTE.get() || ef == PocionesRegistro.ENANO.get();
     }
 
@@ -193,61 +173,16 @@ public final class PocionesEventos {
             Espejismos.enviarA(t, quien);
     }
 
-    // ------------------------------------------------------------------ sombra: no puede hacer nada con las manos
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void usarObjeto(PlayerInteractEvent.RightClickItem e) {
-        if (sombra(e.getEntity())) cancelar(e);
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void usarBloque(PlayerInteractEvent.RightClickBlock e) {
-        if (sombra(e.getEntity())) cancelar(e);
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void picarBloque(PlayerInteractEvent.LeftClickBlock e) {
-        if (sombra(e.getEntity())) cancelar(e);
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void usarEntidad(PlayerInteractEvent.EntityInteract e) {
-        if (sombra(e.getEntity())) cancelar(e);
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void usarEntidadPunto(PlayerInteractEvent.EntityInteractSpecific e) {
-        if (sombra(e.getEntity())) cancelar(e);
-    }
-
-    private static void cancelar(PlayerInteractEvent e) {
-        e.setCanceled(true);
-        e.setCancellationResult(InteractionResult.FAIL);
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void romper(BlockEvent.BreakEvent e) {
-        if (sombra(e.getPlayer())) e.setCanceled(true);
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public static void poner(BlockEvent.EntityPlaceEvent e) {
-        if (sombra(e.getEntity())) e.setCanceled(true);
-    }
-
-    /** Sombra: no pega. Sed de sangre: con algo en la mano, el golpe no sale (solo a puño limpio). */
+    /** Sed de sangre: con algo en la mano, el golpe no sale (solo a puño limpio). */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void atacar(AttackEntityEvent e) {
         Player p = e.getEntity();
-        if (sombra(p) || (sed(p) && !p.getMainHandItem().isEmpty())) e.setCanceled(true);
+        if (sed(p) && !p.getMainHandItem().isEmpty()) e.setCanceled(true);
     }
 
     @SubscribeEvent
     public static void caer(LivingFallEvent e) {
         LivingEntity v = e.getEntity();
-        if (sombra(v)) {
-            e.setCanceled(true);
-            return;
-        }
         float s = Tamanos.escala(v);
         if (s > 1F) e.setDistance(e.getDistance() / s);   // el gigante cae "menos" a su escala
     }

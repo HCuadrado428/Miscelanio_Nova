@@ -7,12 +7,12 @@ import com.miscelanea.client.voz.dsp.Dsp;
 public class ProcAmortiguado implements ProcesadorVoz {
     private final Dsp.Biquad bajo1 = Dsp.Biquad.pasoBajo(600, 0.7);
     private final Dsp.Biquad bajo2 = Dsp.Biquad.pasoBajo(700, 0.7);
-    private final Dsp.Eco eco = new Dsp.Eco(90, 0.45F, 0.5F, 800);
+    private final Dsp.Eco eco = new Dsp.Eco(90, 0.3F, 0.3F, 900);
     private float[] b;
 
     @Override
     public void procesar(short[] frame, int amp) {
-        double fc = Math.max(300, 600 - 120 * amp);
+        double fc = Math.max(450, 950 - 150 * amp);
         bajo1.setPasoBajo(fc, 0.7);
         bajo2.setPasoBajo(fc * 1.15, 0.7);
         b = Dsp.aFloat(frame, b);

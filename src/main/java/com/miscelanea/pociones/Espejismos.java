@@ -55,7 +55,7 @@ public final class Espejismos {
 
     // ------------------------------------------------------------------ estado para los clientes
     public static boolean tieneAlgo(LivingEntity v) {
-        return v.hasEffect(PocionesRegistro.SOMBRA.get()) || v.hasEffect(PocionesRegistro.NIEBLA_VIVIENTE.get())
+        return v.hasEffect(PocionesRegistro.NIEBLA_VIVIENTE.get())
                 || v.hasEffect(PocionesRegistro.ESPEJISMO.get()) || v.hasEffect(PocionesRegistro.GIGANTE.get())
                 || v.hasEffect(PocionesRegistro.ENANO.get());
     }
@@ -63,7 +63,6 @@ public final class Espejismos {
     /** El paquete con el estado actual; {@code ignorar}: un efecto que se está quitando ahora mismo (aún figura). */
     public static EstadoPacket estado(LivingEntity v, MobEffect ignorar) {
         int b = 0;
-        if (tiene(v, PocionesRegistro.SOMBRA.get(), ignorar)) b |= EstadoPacket.SOMBRA;
         if (tiene(v, PocionesRegistro.NIEBLA_VIVIENTE.get(), ignorar)) b |= EstadoPacket.NIEBLA;
         UUID espejo = null;
         String nombre = "";

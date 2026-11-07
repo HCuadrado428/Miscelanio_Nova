@@ -68,12 +68,6 @@ public final class Estados {
         return e == Minecraft.getInstance().player;
     }
 
-    public static boolean sombra(Entity e) {
-        if (esYo(e)) return ((LivingEntity) e).hasEffect(PocionesRegistro.SOMBRA.get());
-        Estado s = remoto(e);
-        return s != null && (s.banderas & EstadoPacket.SOMBRA) != 0;
-    }
-
     public static boolean niebla(Entity e) {
         if (esYo(e)) return ((LivingEntity) e).hasEffect(PocionesRegistro.NIEBLA_VIVIENTE.get());
         Estado s = remoto(e);
