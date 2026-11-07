@@ -126,6 +126,8 @@ Máquinas que funcionan con **fichas**. Hay recreativas sencillas, dobles para 2
 
 - **Juegos:** Tetrominós, Serpiente, Ladrillos, Pong, Pájaro Saltarín, Invasores, Comecocos, Duelo de Bloques, Comando Chatarra, Puños de Barrio, Duelo Final, Pinball Galaxia, Mazmorra 3D, Turbo Costa y Astro Patrulla.
 - Las máquinas de un solo juego empiezan directamente.
+- **Juegos de dos jugadores:** al meter la ficha sale «Esperando a otro jugador». Otro jugador se une con clic derecho en esa misma máquina con su ficha, o abajo está el botón **Jugar contra la CPU** (o START).
+- La **pista de baile** y la **gramola de videoclip** también están en la pestaña de la sala recreativa, como en el tablón de récords.
 - Si alguien está jugando, la partida se ve en la pantalla **en tiempo real** para los que miran.
 - **Bolera**, la típica de salón recreativo: la plataforma con los diez bolos y su marcador, la bola y los tramos de **pista de bolos** (la misma madera con canaletas negras) para alargar la calle por delante. Receta de la pista: tinte negro, tablones y tinte negro (da 4).
 - El **marcador retro** y el **tablón de récords** guardan las mejores puntuaciones.
@@ -134,7 +136,7 @@ Máquinas que funcionan con **fichas**. Hay recreativas sencillas, dobles para 2
 ## Feria
 
 - **Atracciones** en las que se puede montar: noria, tiovivo, pulpo, coches de choque, vagoneta de la bruja y caja de sustos.
-- **Puestos:** caseta de tiro con escopeta de corcho, pesca de patitos, tómbola, máquina de gancho, tragaperras, gachapón, canastas, boxeo, martillo de fuerza, dardos, petanca, torre de bloques y churrería.
+- **Puestos:** caseta de tiro con escopeta de corcho (la escopeta es prestada: se recoge sola al acabar), pesca de patitos, tómbola, máquina de gancho, tragaperras, gachapón, canastas, boxeo, martillo de fuerza, dardos, petanca, torre de bloques y churrería.
 - **Pizarra de récords de la feria:** una pizarra de tiza con marco de madera, banderines y repisa. Varias juntas forman una pizarra grande que enseña más juegos a la vez.
 - **Comida y ambiente:** algodón de azúcar, palomitas, churros y castillo de fuegos artificiales.
 - Los premios son peluches, chapas y cápsulas sorpresa.

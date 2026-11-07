@@ -182,6 +182,11 @@ public class RecreativaBlock extends BaseEntityBlock {
             unirse(l, be, sp, null);
             return InteractionResult.CONSUME;
         }
+        // alguien espera rival en esta máquina: el que llega se une como jugador 2 (con su ficha)
+        if (!doble && be.esperaRival && be.ocupadaPorOtro(sp) && (be.jugador2 == null || be.jugador2.equals(sp.getUUID()))) {
+            unirse(l, be, sp, null);
+            return InteractionResult.CONSUME;
+        }
         if (be.ocupadaPorOtro(sp)) {
             sp.displayClientMessage(Component.translatable("msg.miscelanea.arcade.ocupada").withStyle(ChatFormatting.RED), true);
             return InteractionResult.CONSUME;

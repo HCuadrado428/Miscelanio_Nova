@@ -109,8 +109,6 @@ public class Miscelanea {
             event.accept(ModItems.TRAMPOLIN);
             event.accept(ModItems.POSTE_TIROLINA);
             event.accept(ModItems.CABLE_TIROLINA);
-            event.accept(ModItems.PISTA_BAILE);
-            event.accept(ModItems.GRAMOLA);
             event.accept(ModItems.PIZARRA_FERIA);
             for (int i = 0; i < com.miscelanea.feria.ChapaItem.DIBUJOS.length; i++) event.accept(com.miscelanea.feria.ChapaItem.de(i));
         }
@@ -128,6 +126,9 @@ public class Miscelanea {
             event.accept(ModItems.BOLERA);
             event.accept(ModItems.PISTA_BOLOS);
             event.accept(ModItems.BOLA_BOLOS);
+            // baile: la pista y la gramola de videoclip (como en el tablón de récords, son de la sala recreativa)
+            event.accept(ModItems.PISTA_BAILE);
+            event.accept(ModItems.GRAMOLA);
             event.accept(ModItems.FICHA);
             event.accept(ModItems.CONSOLA);
             for (var c : ModItems.cartuchosJuego()) event.accept(c);

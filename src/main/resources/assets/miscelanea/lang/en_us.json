@@ -2693,5 +2693,10 @@
   "gramola.miscelanea.espera": "The song has already started: join before the next one",
   "gramola.miscelanea.llena": "Five people are already dancing at this jukebox",
   "gramola.miscelanea.se_une": "%s joins as a backup dancer",
-  "baile.miscelanea.nivel": "%s arrows · level %s of 10"
+  "baile.miscelanea.nivel": "%s arrows · level %s of 10",
+  "consola.miscelanea.esperando_rival": "WAITING FOR ANOTHER PLAYER",
+  "consola.miscelanea.esperando_ayuda1": "Another player: right-click",
+  "consola.miscelanea.esperando_ayuda2": "this machine with a token",
+  "consola.miscelanea.esperando_cpu": "START: VS CPU · B: EXIT",
+  "consola.miscelanea.contra_cpu": "Play against the CPU"
 }

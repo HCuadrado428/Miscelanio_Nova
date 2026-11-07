@@ -19,6 +19,8 @@ public class RecreativaBlockEntity extends BlockEntity {
     /** Compañero en la recreativa doble (jugador 2). */
     @Nullable
     public UUID jugador2;
+    /** Servidor: el jugador 1 está en la pantalla de "esperando a otro jugador" (se puede unir cualquiera aquí mismo). */
+    public boolean esperaRival;
     /** Recreativa enlazada con cable desde la que juega el jugador 2 (servidor). */
     @Nullable
     public BlockPos enlazada;
@@ -98,6 +100,7 @@ public class RecreativaBlockEntity extends BlockEntity {
         boolean cambio = false;
         if (be.jugador != null && !cerca(l, pos, be.jugador)) {
             be.jugador = null;
+            be.esperaRival = false;
             be.acabarPartida();
             cambio = true;
         }

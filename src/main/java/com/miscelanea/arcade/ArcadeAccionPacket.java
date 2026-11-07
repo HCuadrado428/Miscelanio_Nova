@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 /** Cliente → servidor: cerrar, empezar partida (gasta crédito), meter ficha o enviar puntuación. */
 public class ArcadeAccionPacket {
-    public static final int CERRAR = 0, EMPEZAR = 1, FICHA = 2, RECORD = 3;
+    public static final int CERRAR = 0, EMPEZAR = 1, FICHA = 2, RECORD = 3, ESPERAR = 4;
     private final BlockPos pos;
     private final int accion, puntos;
     private final String juego;
@@ -60,7 +60,12 @@ public class ArcadeAccionPacket {
         boolean libre = p.getAbilities().instabuild;
         if (soy2 && accion == EMPEZAR) return;
         switch (accion) {
+            case ESPERAR -> {
+                // el jugador 1 espera rival: cualquiera puede unirse con clic derecho en esta máquina
+                if (!soy2) be.esperaRival = true;
+            }
             case CERRAR -> {
+                be.esperaRival = false;
                 be.soltarEnlace(be.jugador2);
                 if (soy2) be.jugador2 = null;
                 else {
@@ -79,6 +84,7 @@ public class ArcadeAccionPacket {
                 ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> p), new ArcadeAbrirPacket(pos, be.creditos, libre, 1, be.doble(), 0, "", "", 1));
             }
             case EMPEZAR -> {
+                be.esperaRival = false;
                 ServerPlayer p2 = be.jugador2 == null ? null : p.server.getPlayerList().getPlayer(be.jugador2);
                 int jug = p2 != null && ArcadeJuegos.dosJugadores(juego) ? 2 : 1;
                 boolean ok = libre || be.creditos >= jug;

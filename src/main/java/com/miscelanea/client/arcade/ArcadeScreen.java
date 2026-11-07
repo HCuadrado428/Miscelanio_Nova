@@ -36,7 +36,7 @@ import java.util.Map;
  * sus mandos unos pasos por adelantado y nadie avanza hasta tener los del otro.
  */
 public class ArcadeScreen extends Screen {
-    private enum Estado {MENU, ESPERA, JUEGO}
+    private enum Estado {MENU, ESPERA, RIVAL, JUEGO}
 
     private static final int RETRASO = 4;
     private static final Map<String, int[]> PALETAS = Map.of(
@@ -97,6 +97,14 @@ public class ArcadeScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mx, double my, int boton) {
+        if (estado == Estado.RIVAL && boton == 0) {
+            int[] b = botonCpu();
+            double bx = (mx - origenX) / escala, by = (my - origenY) / escala;
+            if (bx >= b[0] && by >= b[1] && bx < b[0] + b[2] && by < b[1] + b[3]) {
+                jugarContraCpu();
+                return true;
+            }
+        }
         int bb = Botones.botonRaton(boton);
         if (bb >= 0) {
             Botones.Acceso.pulsar(bot, bb);
@@ -246,6 +254,36 @@ public class ArcadeScreen extends Screen {
         aviso = 120;
     }
 
+    /** Ya eligió jugar contra la CPU (no se le vuelve a hacer esperar en la revancha). */
+    private boolean contraCpu;
+    private int tRival;
+
+    /**
+     * Antes de empezar un juego de dos jugadores sin compañero: pantalla de "esperando a otro jugador" (el que llegue se
+     * une con clic derecho en esta misma máquina) con el botón de jugar contra la CPU. Si ya hay compañero, a jugar.
+     */
+    private void intentarPartida() {
+        if (!invitado && !contraCpu && companero.isEmpty() && ArcadeJuegos.dosJugadores(ArcadeJuegos.IDS[sel])) {
+            estado = Estado.RIVAL;
+            tRival = 0;
+            ModNetwork.CHANNEL.sendToServer(new ArcadeAccionPacket(pos, ArcadeAccionPacket.ESPERAR, ArcadeJuegos.IDS[sel], 0));
+            return;
+        }
+        pedirPartida();
+    }
+
+    private void jugarContraCpu() {
+        contraCpu = true;
+        JuegoGB.sonido(ModSounds.GB_MOVER);
+        pedirPartida();
+    }
+
+    /** Botón "Jugar contra la CPU" (en el panel de los mandos, coordenadas del mueble). */
+    private int[] botonCpu() {
+        int py = ly + Pantalla.H + 6;
+        return new int[]{cw / 2 - 74, py + 10, 148, 20};
+    }
+
     private void pedirPartida() {
         estado = Estado.ESPERA;
         ModNetwork.CHANNEL.sendToServer(new ArcadeAccionPacket(pos, ArcadeAccionPacket.EMPEZAR, ArcadeJuegos.IDS[sel], 0));
@@ -322,7 +360,7 @@ public class ArcadeScreen extends Screen {
                 if (!fijo.isEmpty() && !arrancado) {
                     arrancado = true;
                     if (creditos > 0 || libre) {
-                        pedirPartida();
+                        intentarPartida();
                         break;
                     }
                 }
@@ -343,9 +381,19 @@ public class ArcadeScreen extends Screen {
                 if (fijo.isEmpty()) ultimoSel = sel;
                 if (bot.pulsa(Botones.START) && creditos <= 0 && !libre)
                     ModNetwork.CHANNEL.sendToServer(new ArcadeAccionPacket(pos, ArcadeAccionPacket.FICHA, "", 0));
-                else if (bot.pulsa(Botones.A) || bot.pulsa(Botones.START)) pedirPartida();
+                else if (bot.pulsa(Botones.A) || bot.pulsa(Botones.START)) intentarPartida();
             }
             case ESPERA -> {}
+            case RIVAL -> {
+                tRival++;
+                // llega el compañero: a jugar los dos
+                if (!companero.isEmpty()) pedirPartida();
+                else if (bot.pulsa(Botones.START)) jugarContraCpu();
+                else if (bot.pulsa(Botones.B)) {
+                    if (!fijo.isEmpty()) onClose();
+                    else estado = Estado.MENU;
+                }
+            }
             case JUEGO -> {
                 if (terminado()) {
                     alTerminar();
@@ -433,7 +481,7 @@ public class ArcadeScreen extends Screen {
         }
         if (tFin > 40 && (bot.pulsa(Botones.A) || bot.pulsa(Botones.START))) {
             if (creditos <= 0 && !libre) ModNetwork.CHANNEL.sendToServer(new ArcadeAccionPacket(pos, ArcadeAccionPacket.FICHA, "", 0));
-            else pedirPartida();
+            else intentarPartida();
         } else if (tFin > 40 && bot.pulsa(Botones.B)) {
             // en una máquina de un solo juego no hay menú al que volver: se sale
             if (!fijo.isEmpty()) {
@@ -463,6 +511,10 @@ public class ArcadeScreen extends Screen {
             }
             if (terminado()) fin(p);
             else if (enRed && atasco > 20 && (t / 10) % 2 == 0) p.textoC(I18n.get("consola.miscelanea.esperando_red"), 128, 92, 20);
+            return;
+        }
+        if (estado == Estado.RIVAL) {
+            rival(p);
             return;
         }
         if (invitado) {
@@ -513,6 +565,28 @@ public class ArcadeScreen extends Screen {
             CompoundTag c = tb.getCompound(0);
             p.textoC("♛ " + c.getString("n"), 128, 181, 20);
         }
+    }
+
+    /** "Esperando a otro jugador": dos mandos, uno con un interrogante que parpadea, y cómo unirse. */
+    private void rival(Pantalla p) {
+        p.limpiar(33);
+        for (int y = 0; y < 24; y++) p.rect(0, y, Pantalla.W, 1, y < 22 ? 42 : 45);
+        p.textoC(I18n.get("juego.miscelanea." + ArcadeJuegos.IDS[sel]), 128, 7, 20);
+        p.textoC(I18n.get("consola.miscelanea.esperando_rival") + ".".repeat(tRival / 20 % 4), 128, 44, 7);
+        // 1P listo (rojo) y 2P por llegar (azul, parpadea)
+        for (int k = 0; k < 2; k++) {
+            int x0 = k == 0 ? 72 : 152, col = k == 0 ? 12 : 29;
+            boolean ve = k == 0 || (tRival / 15) % 2 == 0;
+            p.rect(x0, 70, 32, 20, ve ? col : 2);
+            p.rect(x0 + 4, 74, 4, 12, 1);
+            p.rect(x0 + 2, 78, 8, 4, 1);
+            p.rect(x0 + 22, 76, 4, 4, ve ? 20 : 1);
+            p.textoC(k == 0 ? "1P" : "2P?", x0 + 16, 96, ve ? 7 : 4);
+        }
+        p.textoC(I18n.get("consola.miscelanea.esperando_ayuda1"), 128, 124, 6);
+        p.textoC(I18n.get("consola.miscelanea.esperando_ayuda2"), 128, 136, 6);
+        p.rect(0, 166, Pantalla.W, 26, 1);
+        p.textoC(I18n.get("consola.miscelanea.esperando_cpu"), 128, 176, (tRival / 20) % 2 == 0 ? 19 : 39);
     }
 
     /**
@@ -595,6 +669,11 @@ public class ArcadeScreen extends Screen {
         escala = k;
         origenX = ox;
         origenY = oy;
+        {
+            int[] b = botonCpu();
+            double bx = (mx - ox) / k, by = (my - oy) / k;
+            sobreCpu = bx >= b[0] && by >= b[1] && bx < b[0] + b[2] && by < b[1] + b[3];
+        }
         if (juego != null) {
             juego.ratonX = (int) Math.floor((mx - ox) / k - lx);
             juego.ratonY = (int) Math.floor((my - oy) / k - ly);
@@ -660,7 +739,19 @@ public class ArcadeScreen extends Screen {
         } else mandos(g, (cw - 190) / 2 - 0, py, mio, 0xFFE22828, "");
         String cr = libre ? I18n.get("consola.miscelanea.libre") : I18n.get("consola.miscelanea.creditos", creditos);
         g.drawString(font, cr, cw / 2 - font.width(cr) / 2, ch - 14, 0xFFFFE070, false);
+        if (estado == Estado.RIVAL) {
+            int[] b = botonCpu();
+            boolean sobre = sobreCpu;
+            g.fill(b[0] - 2, b[1] - 2, b[0] + b[2] + 2, b[1] + b[3] + 2, 0xFF000000);
+            g.fill(b[0], b[1], b[0] + b[2], b[1] + b[3], sobre ? 0xFF50DCFF : 0xFF2870E2);
+            g.fill(b[0], b[1], b[0] + b[2], b[1] + 2, sobre ? 0xFFC8F4FF : 0xFF7FB0FF);
+            g.fill(b[0], b[1] + b[3] - 2, b[0] + b[2], b[1] + b[3], 0xFF183C80);
+            Component tx = Component.translatable("consola.miscelanea.contra_cpu").withStyle(ChatFormatting.BOLD);
+            g.drawString(font, tx, b[0] + b[2] / 2 - font.width(tx) / 2, b[1] + 6, 0xFFFFFFFF, true);
+        }
     }
+
+    private boolean sobreCpu;
 
     private void mandos(GuiGraphics g, int x0, int py, boolean[] ab, int bola, String etiqueta) {
         int jx = x0 + 48, jy = py + 30;
