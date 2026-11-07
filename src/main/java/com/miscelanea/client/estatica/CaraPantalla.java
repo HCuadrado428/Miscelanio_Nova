@@ -181,7 +181,7 @@ public final class CaraPantalla {
             boolean doble = rb.doble;
             float ancho = doble ? 14F : 12F, alto = doble ? 10.5F : 9F, x0 = doble ? 15F : 14F, y0 = doble ? 28.8F : 28.4F;
             forma[0] = ancho / alto;
-            return new Matrix4f(-ancho * s, 0, 0, 0, 0, -alto * s, alto * 0.21F * s, 0, 0, 0, -0.05F * s, 0, x0 * s, y0 * s, 8.7F * s, 1);
+            return new Matrix4f(-ancho * s, 0, 0, 0, 0, -alto * s, -alto * 0.21F * s, 0, 0, 0, -0.05F * s, 0, x0 * s, y0 * s, 8.8F * s, 1);
         }
         if (st.getBlock() == com.miscelanea.registry.ModBlocks.TRAGAPERRAS.get()) {
             // la ventana de los rodillos (parte de arriba)
