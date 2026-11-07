@@ -63,6 +63,7 @@
 ## Primeros pasos
 
 - Todo el contenido está en **8 pestañas del creativo**: Feria y atracciones, Sala recreativa, Juegos de mesa, Armas y combate, Sala de juegos, Pociones y efectos, Bromas y Varios.
+- **Bloques solo de creativo** (las máquinas, atracciones y aparatos que no tienen receta): en supervivencia son **irrompibles**, ni se pican ni los vuela una explosión. En creativo se quitan normal. La lista es la etiqueta `miscelanea:solo_creativo`.
 - Las teclas propias están en **Opciones → Controles → Miscelánea** y se pueden cambiar todas. Si algo no responde, mira que su tecla no choque con otra.
 - Cada objeto explica en su descripción cómo se usa.
 - Los marcadores de récords y los rankings se guardan en el servidor. Usa `/miscelanea ranking` para verlos.
