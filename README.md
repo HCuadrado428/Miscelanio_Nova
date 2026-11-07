@@ -125,12 +125,15 @@ Máquinas que funcionan con **fichas**. Hay recreativas sencillas, dobles para 2
 - **Juegos:** Tetrominós, Serpiente, Ladrillos, Pong, Pájaro Saltarín, Invasores, Comecocos, Duelo de Bloques, Comando Chatarra, Puños de Barrio, Duelo Final, Pinball Galaxia, Mazmorra 3D, Turbo Costa y Astro Patrulla.
 - Las máquinas de un solo juego empiezan directamente.
 - Si alguien está jugando, la partida se ve en la pantalla **en tiempo real** para los que miran.
+- **Bolera**, la típica de salón recreativo: la plataforma con los diez bolos y su marcador, la bola y los tramos de **pista de bolos** (la misma madera con canaletas negras) para alargar la calle por delante. Receta de la pista: tinte negro, tablones y tinte negro (da 4).
 - El **marcador retro** y el **tablón de récords** guardan las mejores puntuaciones.
+- Las **fichas** se compran en el cajero automático con el saldo del banco.
 
 ## Feria
 
 - **Atracciones** en las que se puede montar: noria, tiovivo, pulpo, coches de choque, vagoneta de la bruja y caja de sustos.
-- **Puestos:** caseta de tiro con escopeta de corcho, pesca de patitos, tómbola, máquina de gancho, tragaperras, gachapón, canastas, boxeo, martillo de fuerza, bolos, dardos, petanca, boliche, torre de bloques y churrería.
+- **Puestos:** caseta de tiro con escopeta de corcho, pesca de patitos, tómbola, máquina de gancho, tragaperras, gachapón, canastas, boxeo, martillo de fuerza, dardos, petanca, torre de bloques y churrería.
+- **Pizarra de récords de la feria:** una pizarra de tiza con marco de madera, banderines y repisa. Varias juntas forman una pizarra grande que enseña más juegos a la vez.
 - **Comida y ambiente:** algodón de azúcar, palomitas, churros y castillo de fuegos artificiales.
 - Los premios son peluches, chapas y cápsulas sorpresa.
 
@@ -144,6 +147,8 @@ Máquinas que funcionan con **fichas**. Hay recreativas sencillas, dobles para 2
 ## Pista de baile
 
 Un juego de ritmo para varios jugadores, con flechas (teclas configurables), notas largas, una cámara que sigue la coreografía y una coreografía propia para cada canción.
+
+- **Canciones del servidor:** Boogie Wonderland, P.Y.T. y Weapon of Choice. La de Weapon of Choice tiene una coreografía inspirada en su videoclip: empieza sentado en el sillón, se levanta con chasquidos, meneo de hombros, el paseo chulesco y patadas, se desliza como por las escaleras mecánicas, vuela con los brazos en cruz y aterriza otra vez en el sillón.
 
 Las canciones con copyright **no están en este repositorio**: se añaden aparte al `.jar` del servidor privado.
 
@@ -206,7 +211,7 @@ Casi todos los efectos tienen poción normal, arrojadiza, persistente y flecha. 
 
 - **Relaciones:** Cupido (atrae a los afectados entre sí) y Enemigo (se hacen daño al acercarse).
 - **Cuerpo:** Gigante, Enano, Helio, Ventilador y Borrachera.
-- **Mente:** Miedo, Espejismo, Tartamudeo y Sed de sangre.
+- **Mente:** Miedo, Espejismo, Tartamudeo y Sed de sangre. El Miedo también llega con la granada de gas (deja una nube de humo verde) y con el dardo, y trae los sustos del Espantapájaros, con su saco de arpillera por cabeza, que también se puede llevar puesto.
 - **Sigilo:** Fantasma *(creativo)*, Sombra, Ecolocalización y Niebla viviente.
 - **Rol** *(creativo)*:
   - Esencia y Veneno de Dream. El veneno mata al instante, con su propia animación.

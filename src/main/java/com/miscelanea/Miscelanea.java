@@ -103,9 +103,6 @@ public class Miscelanea {
             event.accept(ModItems.BOLAS_PETANCA);
             event.accept(ModItems.BOLICHE);
             event.accept(ModItems.METRO);
-            event.accept(ModItems.BOLERA);
-            event.accept(ModItems.PISTA_BOLOS);
-            event.accept(ModItems.BOLA_BOLOS);
             event.accept(ModItems.DIANA_DARDOS);
             event.accept(ModItems.DARDO);
             event.accept(ModItems.TORRE);
@@ -126,6 +123,10 @@ public class Miscelanea {
             event.accept(ModItems.MESA_COCTEL);
             event.accept(ModItems.CARTEL_RECORDS);
             event.accept(ModItems.TABLON_RECORDS);
+            // bolera de salón recreativo
+            event.accept(ModItems.BOLERA);
+            event.accept(ModItems.PISTA_BOLOS);
+            event.accept(ModItems.BOLA_BOLOS);
             event.accept(ModItems.FICHA);
             event.accept(ModItems.CONSOLA);
             for (var c : ModItems.cartuchosJuego()) event.accept(c);
