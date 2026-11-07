@@ -78,18 +78,18 @@ Un smartphone de verdad dentro del juego. Se abre con **clic derecho** o con su 
 | App | Qué hace |
 |---|---|
 | **Chats** | Mensajes privados y de grupo, con fotos y notas de voz (mantén pulsado el micro) |
-| **Teléfono** | Llamadas y videollamadas con Simple Voice Chat, a cualquier distancia |
+| **Teléfono** | Llamadas y videollamadas con Simple Voice Chat, a cualquier distancia. Llamadas de grupo (hasta 4, con el teléfono de la cabecera del chat de grupo), llamada en espera (coges la nueva y la otra espera; tocas la tarjeta para cambiar), número oculto (tecla #31# del teclado o en Ajustes: te ven como «Desconocido»), botones de mudo y altavoz (con el altavoz, los que tengas cerca oyen la llamada) y un tono distinto para cada contacto (en su ficha). En las de grupo se marca en verde quién habla |
 | **Agenda** | Contactos con número propio y si están conectados |
-| **Cámara y galería** | Fotos y selfies en vertical o en horizontal (botón del móvil tumbado o tecla R: el móvil gira en la pantalla). Las fotos apaisadas se ven giradas a pantalla completa. Se guardan en el servidor |
+| **Cámara y galería** | Fotos y selfies en vertical o en horizontal (botón del móvil tumbado o tecla R: el móvil gira en la pantalla). Zoom con la rueda (hasta x4), temporizador de 3 o 10 s, filtros (blanco y negro, sepia, antigua, viva, visión nocturna, 8 bits, Game Boy y térmica), flash de verdad (ilumina el sitio y deslumbra a quien esté delante mirándote; también automático) y vídeos cortos de hasta 10 s con sonido (si hay Simple Voice Chat) que se ven en la galería y se pueden mandar por chat. Las fotos apaisadas se ven giradas a pantalla completa. Todo se guarda en el servidor |
 | **Minegram** | La red social del servidor: publicaciones con pie de foto, me gusta (doble clic), comentarios, seguidores, perfiles y notificaciones |
 | **Ubicación** | Compartir dónde estás en tiempo real durante 15, 30 o 60 minutos |
 | **Mapa y GPS** | Mapa de lo explorado, puntos guardados, amigos que comparten ubicación y una flecha de navegación en el HUD |
 | **Banco** | Saldo, Bizum, enviar objetos e historial (ver abajo) |
 | **Reloj** | Hora y alarma |
 | **Linterna** | Ilumina de verdad con luces invisibles que se quitan solas |
-| **Ajustes** | Tono de llamada y otras opciones |
+| **Ajustes** | Tono de llamada (seis, entre ellos el Gran Vals y una bocina de payaso), ocultar tu número y otras opciones |
 
-El móvil no tiene batería: funciona siempre. En la pantalla de inicio hay una tarjeta con la hora, el día, la luna y el tiempo que hace. Durante una llamada puedes salir a otras apps; la pastilla verde de arriba te devuelve a la llamada.
+El móvil no tiene batería: funciona siempre. Los nombres salen como los ve el juego (si usas Fake Name, con el nombre falso) y, con Customizable Player Models, las caras de los jugadores que tengas cerca son la cabeza de su modelo. En la pantalla de inicio hay una tarjeta con la hora, el día, la luna y el tiempo que hace. Durante una llamada puedes salir a otras apps; la pastilla verde de arriba te devuelve a la llamada.
 
 Los mensajes, fotos y publicaciones se guardan en el servidor. El mapa explorado se guarda en el cliente, en `config/miscelanea_movil_mapa/`.
 
