@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Mazo de Wemmbu: el mazo de la 1.21 en 3D y más grande, con Densidad V, Brecha IV y Ráfaga de viento III de serie.
+ * Mazo de Wemmbu: el mazo de la 1.21 en 3D y más grande, con Densidad V, Brecha IV y Ráfaga de viento II de serie.
  * - Golpe en caída (como el mazo de la 1.21): más daño cuanto más caes, sin daño de caída y con ráfaga que te sube.
  * - En el suelo, mantén clic derecho y suelta: lo lanzas, golpea a todo lo que atraviesa y vuelve solo a tu mano.
  * - En el aire, mantén clic derecho: caes en picado y al tocar el suelo haces un golpe sísmico en área.
@@ -51,7 +51,7 @@ public class MazoItem extends Item implements GeoItem {
             DUENO = "Dueno", DUENO_NOMBRE = "DuenoNombre";
     public static final int MAX_TRUENO = 5, CARGA_LANZAR = 10;
     /** Encantamientos del mazo de la 1.21, de serie y al máximo (en esta versión no existen como encantamientos). */
-    public static final int DENSIDAD = 5, BRECHA = 4, RAFAGA = 3;
+    public static final int DENSIDAD = 5, BRECHA = 4, RAFAGA = 2;
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("animation.mazo_wemmbu.idle");
     private static final RawAnimation CARGADO = RawAnimation.begin().thenLoop("animation.mazo_wemmbu.cargado");
     private static final RawAnimation OCULTO = RawAnimation.begin().thenLoop("animation.mazo_wemmbu.oculto");

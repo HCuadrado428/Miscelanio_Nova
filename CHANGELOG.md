@@ -1,6 +1,7 @@
 # Cambios de Miscelánea
 
 ## 1.0.1 (en curso)
+- **Gambito** (mazo de Wemmbu): Ráfaga de viento II en vez de III (sube menos tras el golpe en caída).
 - **Ecolocalización:** los jugadores ya no parpadean con cada ruido; solo se ven mientras hablan (y el ruido de fondo del micro ya no cuenta). Lo que se ve con las ondas ya no da fogonazos al volver a tocarlo.
 - El **puntero láser** ya cae justo en la mira (antes el punto salía más abajo).
 - La **venda** ya se puede craftear en supervivencia: 1 lana blanca + 2 cuerdas (sin forma) → 3 vendas.
