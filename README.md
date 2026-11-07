@@ -238,7 +238,7 @@ Casi todos los efectos tienen poción normal, arrojadiza, persistente y flecha. 
 - **Relaciones:** Cupido (atrae a los afectados entre sí) y Enemigo (se hacen daño al acercarse).
 - **Cuerpo:** Gigante, Enano, Helio, Ventilador y Borrachera.
 - **Mente:** Miedo, Espejismo, Tartamudeo y Sed de sangre. El Miedo también llega con la granada de gas (deja una nube de humo verde) y con el dardo, y trae los sustos del Espantapájaros, con su saco de arpillera por cabeza, que también se puede llevar puesto.
-- **Sigilo:** Fantasma *(creativo)*, Ecolocalización (con Simple Voice Chat, quien habla cerca se ve mientras habla y tu voz también hace ondas) y Niebla viviente.
+- **Sigilo:** Fantasma *(creativo: eres invisible y solo apareces de golpe, tal cual, por el rabillo del ojo de los demás)*, Ecolocalización (con Simple Voice Chat, quien habla cerca se ve mientras habla y tu voz también hace ondas) y Niebla viviente.
 - **Rol** *(creativo)*:
   - Esencia y Veneno de Dream. El veneno mata al instante, con su propia animación.
   - Anillo de medianoche: mantén clic derecho para ir a The Midnight.

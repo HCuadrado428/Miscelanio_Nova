@@ -9,13 +9,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
@@ -41,14 +38,15 @@ import java.util.Map;
  *   <li>Se calcula el ángulo entre la mirada de la cámara y la dirección al fantasma, y el ángulo al que está el
  *       borde de la pantalla en esa misma dirección (con el FOV real de este fotograma y la proporción de la
  *       ventana). Solo asoma si el ángulo queda entre el 75 % y el 105 % de ese borde: el rabillo del ojo.</li>
- *   <li>Al mirarlo más de frente (o perderlo del todo) se desvanece en ~3 ticks con unas partículas de alma y
- *       ceniza donde estaba; al volver al borde reaparece en silencio (ningún sonido lo delata).</li>
- *   <li>Mientras se ve va medio transparente y pálido (ver {@code LivingEntityRendererMixin}): sin capas (armadura,
- *       objetos, flechas) y con el modelo al 80 % de opacidad por el fundido. Detrás de la cámara nunca se ve.</li>
- *   <li>Uno mismo se ve en tercera persona como un fantasma tenue (30 %), para saber que está activo; en el HUD, el
- *       icono del efecto latiendo abajo a la izquierda. Un espectador lo ve todo como siempre.</li>
+ *   <li>Aparece y desaparece de golpe, sin fundido, sin partículas y sin ningún sonido: al mirarlo de frente (o
+ *       perderlo del todo) ya no está; al volver al borde, está otra vez.</li>
+ *   <li>Cuando se ve, es el jugador tal cual: su piel, su armadura, lo que lleve en la mano y su sombra. Solo se le
+ *       quita el nombre de encima de la cabeza. Detrás de la cámara nunca se ve.</li>
+ *   <li>Uno mismo se ve normal en tercera persona; para saber que está activo tiene el icono del efecto latiendo abajo
+ *       a la izquierda. Un espectador lo ve todo como siempre.</li>
  * </ul>
- * La sombra, el fuego y las partículas de poción las corta {@code EntityRenderDispatcherMixin} / {@code LivingEntityMixin}.
+ * Mientras está escondido no tiene sombra ni fuego ({@code EntityRenderDispatcherMixin}); las partículas de la poción no
+ * salen nunca ({@code LivingEntityMixin}).
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
 public final class FantasmaCliente {
@@ -58,17 +56,9 @@ public final class FantasmaCliente {
 
     /** Fracción del borde de la pantalla entre la que asoma (rabillo del ojo). */
     public static final float BORDE_INTERIOR = 0.75F, BORDE_EXTERIOR = 1.05F;
-    /** Paso del fundido por tick y margen entre dos nubes de partículas del mismo fantasma. */
-    private static final float PASO_FUNDIDO = 1F / 3F;
-    private static final int MARGEN_PARTICULAS = 20;
-    /** Opacidad en el rabillo del ojo y la de uno mismo en tercera persona. */
-    public static final float ALFA_RABILLO = 0.8F, ALFA_PROPIO = 0.3F;
-
     /** Estado de cada fantasma para quien mira (no para uno mismo). */
     public static final class Estado {
-        float alfa, alfaAnt;
         boolean asoma;
-        long ultimasParticulas = -MARGEN_PARTICULAS;
     }
 
     private static final Map<Integer, Estado> FANTASMAS = new HashMap<>();
@@ -80,11 +70,7 @@ public final class FantasmaCliente {
     // ------------------------------------------------------------------ red
     public static void recibir(FantasmaPacket p) {
         if (p.activo) FANTASMAS.computeIfAbsent(p.entidad, k -> new Estado());
-        else {
-            Estado e = FANTASMAS.remove(p.entidad);
-            Minecraft mc = Minecraft.getInstance();
-            if (e != null && e.alfa > 0 && mc.level != null && mc.level.getEntity(p.entidad) instanceof LivingEntity le) particulas(mc.level, le);
-        }
+        else FANTASMAS.remove(p.entidad);
     }
 
     // ------------------------------------------------------------------ consultas (las usan los mixins y los eventos)
@@ -96,27 +82,26 @@ public final class FantasmaCliente {
         return e == mc.player && e instanceof LivingEntity le && le.hasEffect(EfectosRegistro.FANTASMA.get());
     }
 
-    /** Opacidad con que se dibuja ahora (1 = normal, 0 = no se dibuja). */
+    /** 1 = se dibuja normal, 0 = no se dibuja (no hay término medio: aparece y desaparece de golpe). */
     public static float alfa(Entity e, float pt) {
-        Minecraft mc = Minecraft.getInstance();
-        LocalPlayer yo = mc.player;
-        if (yo == null || !esFantasma(e)) return 1F;
-        if (yo.isSpectator()) return 1F;
-        if (e == yo) return ALFA_PROPIO;
-        Estado s = FANTASMAS.get(e.getId());
-        if (s == null) return 1F;
-        return ALFA_RABILLO * Mth.lerp(pt, s.alfaAnt, s.alfa);
+        return oculto(e) ? 0F : 1F;
     }
 
     /** Ni modelo, ni sombra, ni fuego, ni caja: del todo escondido ahora mismo. */
     public static boolean oculto(Entity e) {
-        return alfa(e, 1F) <= 0.01F;
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer yo = mc.player;
+        if (yo == null || e == yo || yo.isSpectator() || !esFantasma(e)) return false;
+        Estado s = FANTASMAS.get(e.getId());
+        return s != null && !s.asoma;
     }
 
-    /** Si se dibuja distinto (translúcido y pálido, sin capas): fantasma visto por otro, o uno mismo en tercera persona. */
+    /**
+     * Antes se dibujaba translúcido y pálido; ahora, cuando se ve, se ve tal cual. Se deja (siempre false) porque lo
+     * consultan los mixins de dibujo.
+     */
     public static boolean dibujoFantasma(Entity e) {
-        Minecraft mc = Minecraft.getInstance();
-        return mc.player != null && !mc.player.isSpectator() && esFantasma(e);
+        return false;
     }
 
     // ------------------------------------------------------------------ tick: dónde cae cada fantasma en la pantalla
@@ -155,16 +140,7 @@ public final class FantasmaCliente {
                 continue;
             }
             if (le == yo) continue;
-            boolean asoma = yo.isSpectator() || enRabillo(cam, le);
-            if (asoma != s.asoma) {
-                s.asoma = asoma;
-                if (!asoma && s.alfa > 0 && reloj - s.ultimasParticulas >= MARGEN_PARTICULAS) {
-                    s.ultimasParticulas = reloj;
-                    particulas(level, le);
-                }
-            }
-            float meta = asoma ? 1F : 0F;
-            s.alfa = meta > s.alfa ? Math.min(meta, s.alfa + PASO_FUNDIDO) : Math.max(meta, s.alfa - PASO_FUNDIDO);
+            s.asoma = yo.isSpectator() || enRabillo(cam, le);
         }
     }
 
@@ -199,22 +175,6 @@ public final class FantasmaCliente {
         return angulo >= borde * BORDE_INTERIOR && angulo <= borde * BORDE_EXTERIOR;
     }
 
-    /** Se desvanece: unas almas y cenizas donde estaba. Solo en este cliente. */
-    private static void particulas(ClientLevel level, LivingEntity le) {
-        RandomSource r = level.getRandom();
-        AABB c = le.getBoundingBox();
-        for (int i = 0; i < 5; i++) {
-            double px = c.minX + r.nextDouble() * (c.maxX - c.minX), py = c.minY + r.nextDouble() * (c.maxY - c.minY),
-                    pz = c.minZ + r.nextDouble() * (c.maxZ - c.minZ);
-            level.addParticle(ParticleTypes.SOUL, px, py, pz, r.nextGaussian() * 0.01, 0.02 + r.nextDouble() * 0.03, r.nextGaussian() * 0.01);
-        }
-        for (int i = 0; i < 6; i++) {
-            double px = c.minX + r.nextDouble() * (c.maxX - c.minX), py = c.minY + r.nextDouble() * (c.maxY - c.minY),
-                    pz = c.minZ + r.nextDouble() * (c.maxZ - c.minZ);
-            level.addParticle(ParticleTypes.ASH, px, py, pz, 0, 0, 0);
-        }
-    }
-
     @SubscribeEvent
     public static void salir(ClientPlayerNetworkEvent.LoggingOut e) {
         FANTASMAS.clear();
@@ -228,10 +188,11 @@ public final class FantasmaCliente {
         if (oculto(e.getEntity())) e.setCanceled(true);
     }
 
-    /** El nombre no se ve nunca (tampoco cuando asoma). */
+    /** El nombre no se ve nunca (tampoco cuando asoma): solo el jugador, sin textos encima. */
     @SubscribeEvent
     public static void nombre(RenderNameTagEvent e) {
-        if (dibujoFantasma(e.getEntity()) && e.getEntity() != Minecraft.getInstance().player) e.setResult(Event.Result.DENY);
+        LocalPlayer yo = Minecraft.getInstance().player;
+        if (yo != null && !yo.isSpectator() && e.getEntity() != yo && esFantasma(e.getEntity())) e.setResult(Event.Result.DENY);
     }
 
     // ------------------------------------------------------------------ HUD: el icono latiendo para el que lo lleva

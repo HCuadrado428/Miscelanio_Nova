@@ -28,8 +28,8 @@ public abstract class EntityRenderDispatcherMixin {
     @Redirect(method = "render(Lnet/minecraft/world/entity/Entity;DDDFFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;isInvisible()Z"), require = 0)
     private boolean miscelanea$fantasmaSombra(Entity e) {
-        // un fantasma no tiene sombra ni cuando asoma (tampoco uno mismo en tercera persona)
-        return e.isInvisible() || FantasmaCliente.dibujoFantasma(e);
+        // un fantasma escondido no tiene sombra; cuando asoma, la normal
+        return e.isInvisible() || FantasmaCliente.oculto(e);
     }
 
     @Redirect(method = "render(Lnet/minecraft/world/entity/Entity;DDDFFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
