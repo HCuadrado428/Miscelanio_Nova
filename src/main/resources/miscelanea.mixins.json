@@ -20,7 +20,9 @@
     "LivingEntityMixin",
     "PostChainAccessor",
     "LevelRendererMixin",
-    "BlockEntityRenderDispatcherMixin"
+    "BlockEntityRenderDispatcherMixin",
+    "KeyMappingAccessor",
+    "KeyMappingMixin"
   ],
   "injectors": {
     "defaultRequire": 1

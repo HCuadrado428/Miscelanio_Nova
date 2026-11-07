@@ -63,6 +63,7 @@
 ## Primeros pasos
 
 - Todo el contenido está en **8 pestañas del creativo**: Feria y atracciones, Sala recreativa, Juegos de mesa, Armas y combate, Sala de juegos, Pociones y efectos, Bromas y Varios.
+- **Teclas con preferencia:** mientras usas un arma o poder del mod, sus teclas solo hacen lo suyo aunque otro mod use la misma tecla (por ejemplo, R para recargar la ballesta no recarga los sombreadores, y V para fijar objetivo con la Llave Espada o el Hacha Leviatán no abre el chat de voz). Las teclas de Minecraft y la rueda del ratón siguen funcionando. Fuera de ese momento, la tecla es de todos.
 - **Bloques solo de creativo** (las máquinas, atracciones y aparatos que no tienen receta): en supervivencia son **irrompibles**, ni se pican ni los vuela una explosión. En creativo se quitan normal. La lista es la etiqueta `miscelanea:solo_creativo`.
 - Las teclas propias están en **Opciones → Controles → Miscelánea** y se pueden cambiar todas. Si algo no responde, mira que su tecla no choque con otra.
 - Cada objeto explica en su descripción cómo se usa.
