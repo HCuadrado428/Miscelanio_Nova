@@ -48,7 +48,9 @@ import java.util.Map;
  * Ecolocalización (Daredevil / el warden) en el cliente de quien la lleva. Todo se ve negro (niebla negra pegada a la
  * cara; el HUD se sigue viendo) y cada sonido que suena cerca (tus pasos, los mobs, los bloques) lanza desde su origen
  * una onda esférica que, al pasar por los bloques y las entidades, los deja un momento dibujados como aristas y
- * siluetas azul-blancas (como el sculk). Agacharse da una palmada (sonar propio) cada 2 s como mucho.
+ * siluetas azul-blancas (como el sculk). Agacharse da una palmada (sonar propio) cada 2 s como mucho. Con Simple Voice
+ * Chat, quien habla cerca se ve mientras habla (su silueta y una onda que sale de su boca a cada frase) y tu propia voz
+ * también lanza ondas.
  * Rendimiento: ondas de 16 bloques, se revelan bloques hasta 13 y solo las caras expuestas (cada bloque se mira una
  * sola vez: cuando el frente de la onda pasa por él), con tope de aristas vivas.
  */
@@ -80,6 +82,23 @@ public final class EcoCliente {
     private static final LinkedHashMap<Long, Bloque> BLOQUES = new LinkedHashMap<>();
     private static final Map<Integer, Ente> ENTES = new HashMap<>();
     private static int reloj, enfriamiento;
+    /** Quién está hablando (voz del voicechat) y cuándo se le oyó por última vez (ms). Lo rellena el hilo de audio. */
+    private static final Map<java.util.UUID, Long> HABLAN = new java.util.concurrent.ConcurrentHashMap<>();
+    private static final Map<java.util.UUID, Integer> ULT_ONDA = new HashMap<>();
+    private static volatile long yoHablo;
+    private static int ultOndaYo;
+    /** Volumen mínimo para que cuente como hablar (no el ruido de fondo del micro). */
+    private static final float UMBRAL_VOZ = 0.012F;
+
+    /** Desde el plugin del voicechat (hilo de audio): alguien habla con este volumen. */
+    public static void habla(java.util.UUID quien, float nivel) {
+        if (quien != null && nivel > UMBRAL_VOZ) HABLAN.put(quien, System.currentTimeMillis());
+    }
+
+    /** Desde el plugin del voicechat (hilo de audio): hablo yo. */
+    public static void hablaYo(float nivel) {
+        if (nivel > UMBRAL_VOZ) yoHablo = System.currentTimeMillis();
+    }
     private static boolean agachadoAntes, estaba;
 
     public static boolean activo() {
@@ -131,14 +150,42 @@ public final class EcoCliente {
             if (o.rAntes < RADIO_REVELA) revelar(mc.level, o, o.rAntes, Math.min(o.r, RADIO_REVELA));
             if (o.r > RADIO_MAX) it.remove();
         }
+        voces(mc);
         BLOQUES.values().removeIf(b -> reloj - b.desde() > DURA_BLOQUE);
         ENTES.values().removeIf(en -> reloj - en.desde() > DURA_ENTE || en.e().isRemoved());
+    }
+
+    /** Los que hablan se ven mientras hablan, y cada medio segundo de voz suelta una onda desde su boca. */
+    private static void voces(Minecraft mc) {
+        long ahora = System.currentTimeMillis();
+        HABLAN.values().removeIf(t -> ahora - t > 4000);
+        for (Map.Entry<java.util.UUID, Long> h : HABLAN.entrySet()) {
+            if (ahora - h.getValue() > 350) continue;          // ya no habla
+            net.minecraft.world.entity.player.Player p = mc.level.getPlayerByUUID(h.getKey());
+            if (p == null || p == mc.player || p.distanceToSqr(mc.player) > 48 * 48) continue;
+            ENTES.put(p.getId(), new Ente(p, reloj));
+            Integer u = ULT_ONDA.get(h.getKey());
+            if (u == null || reloj - u >= 10) {
+                ULT_ONDA.put(h.getKey(), reloj);
+                onda(p.getX(), p.getEyeY(), p.getZ());
+            }
+        }
+        if (ahora - yoHablo < 350 && reloj - ultOndaYo >= 12) {
+            ultOndaYo = reloj;
+            onda(mc.player.getX(), mc.player.getEyeY(), mc.player.getZ());
+        }
+    }
+
+    private static void onda(double x, double y, double z) {
+        if (ONDAS.size() >= MAX_ONDAS) ONDAS.remove(0);
+        ONDAS.add(new Onda(x, y, z));
     }
 
     private static void limpiar() {
         ONDAS.clear();
         BLOQUES.clear();
         ENTES.clear();
+        ULT_ONDA.clear();
         estaba = false;
         agachadoAntes = false;
     }

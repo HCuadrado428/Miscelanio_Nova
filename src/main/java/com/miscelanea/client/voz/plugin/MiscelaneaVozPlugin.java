@@ -38,6 +38,19 @@ public class MiscelaneaVozPlugin implements VoicechatPlugin {
         r.registerEvent(ClientReceiveSoundEvent.EntitySound.class, e -> recibir(e, e.getId()));
         r.registerEvent(ClientReceiveSoundEvent.LocationalSound.class, e -> recibir(e, e.getId()));
         r.registerEvent(ClientReceiveSoundEvent.StaticSound.class, e -> recibir(e, e.getId()));
+        // lo que dices tú (micrófono): con ecolocalización, tu voz también hace ondas
+        r.registerEvent(de.maxhenkel.voicechat.api.events.ClientSoundEvent.class, e -> microfono(e.getRawAudio()));
+    }
+
+    private static void microfono(short[] audio) {
+        if (audio != null && audio.length > 0) com.miscelanea.client.pociones.EcoCliente.hablaYo(nivel(audio));
+    }
+
+    /** Volumen (0..1) de un trozo de voz. */
+    private static float nivel(short[] a) {
+        double s = 0;
+        for (short v : a) s += (double) v * v;
+        return (float) Math.sqrt(s / a.length) / 32768F;
     }
 
     // en métodos aparte para que la clase de cliente solo se cargue si se llega a ejecutar (nunca en el servidor)
@@ -50,6 +63,8 @@ public class MiscelaneaVozPlugin implements VoicechatPlugin {
         if (audio == null || audio.length == 0 || hablante == null) return;
         // el hombre de estática graba (sin procesar) lo que dicen los de alrededor, para imitarlo
         com.miscelanea.client.estatica.ImitarVoz.grabar(hablante, audio);
+        // ecolocalización: quien habla se ve mientras habla
+        com.miscelanea.client.pociones.EcoCliente.habla(hablante, nivel(audio));
         // se modifica en el sitio; setRawAudio por si la implementación copia el array
         if (VozCliente.procesar(hablante, audio)) e.setRawAudio(audio);
     }
