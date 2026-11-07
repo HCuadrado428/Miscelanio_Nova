@@ -973,7 +973,7 @@
   "block.miscelanea.pista_baile": "Dance Floor",
   "baile.miscelanea.ocupada": "Someone is already dancing here",
   "baile.miscelanea.subete": "Stand on the dance floor and click it",
-  "baile.miscelanea.menu_ayuda": "%1$s/%2$s: song · %3$s/%4$s: difficulty · %5$s: dance!",
+  "baile.miscelanea.menu_ayuda": "%1$s/%2$s: choose · %3$s/%4$s: change · %5$s: accept",
   "baile.miscelanea.salir": "Sneak to step off the floor",
   "baile.miscelanea.resultado": "%s danced: %s points (grade %s)",
   "baile.miscelanea.otra_sonando": "Another dance floor or dance cabinet is playing nearby (%s blocks away): wait until it finishes",
@@ -2698,5 +2698,13 @@
   "consola.miscelanea.esperando_ayuda1": "Another player: right-click",
   "consola.miscelanea.esperando_ayuda2": "this machine with a token",
   "consola.miscelanea.esperando_cpu": "START: VS CPU · B: EXIT",
-  "consola.miscelanea.contra_cpu": "Play against the CPU"
+  "consola.miscelanea.contra_cpu": "Play against the CPU",
+  "baile.miscelanea.desplazamiento": "Arrows: %s",
+  "baile.miscelanea.hacia_arriba": "scroll up (targets on top)",
+  "baile.miscelanea.hacia_abajo": "scroll down (targets at the bottom)",
+  "baile.miscelanea.probar_teclas": "Test keys",
+  "baile.miscelanea.probar_titulo": "TEST KEYS",
+  "baile.miscelanea.no_es_flecha": "«%s» is not an arrow",
+  "baile.miscelanea.probar_ayuda": "In yellow: what else that key does (it won't trigger while dancing)",
+  "baile.miscelanea.probar_volver": "%s: back to the menu"
 }

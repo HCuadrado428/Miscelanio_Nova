@@ -157,6 +157,10 @@ Un juego de ritmo para varios jugadores, con flechas (teclas configurables), not
   - Normal: algún contratiempo, saltos en el estribillo (~2 por segundo).
   - Difícil: corcheas casi seguidas, ráfagas rápidas, escaleras, muchos saltos, poco margen y los fallos quitan más vida (~4 por segundo).
   - El menú enseña cuántas flechas tiene la canción y su nivel del 1 al 10.
+- **En el menú**, debajo de las canciones:
+  - **Flechas suben / bajan:** las flechas suben hacia los receptores de arriba (como siempre) o bajan hacia unos receptores abajo. Se guarda para la próxima vez.
+  - **Probar teclas:** las cuatro flechas se encienden al pulsarlas, con su tecla debajo y, en amarillo, qué más hace esa tecla en el juego.
+- **Mientras se usa la pista o la gramola, las teclas solo sirven para bailar:** no se disparan armas, ni se abren menús, ni se activan cosas de otros mods. Solo funcionan el chat (T y /) y las teclas del chat de voz.
 
 - **Canciones del servidor:** Boogie Wonderland, P.Y.T. y Weapon of Choice. La de Weapon of Choice tiene una coreografía inspirada en su videoclip: empieza sentado en el sillón, se levanta con chasquidos, meneo de hombros, el paseo chulesco y patadas, se desliza como por las escaleras mecánicas, vuela con los brazos en cruz y aterriza otra vez en el sillón.
 

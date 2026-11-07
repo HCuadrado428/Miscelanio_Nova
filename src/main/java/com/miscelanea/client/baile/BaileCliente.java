@@ -8,6 +8,7 @@ import com.miscelanea.baile.PistaBaileBlock;
 import com.miscelanea.network.ModNetwork;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.CameraType;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
@@ -39,7 +40,7 @@ import java.util.List;
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
 public final class BaileCliente {
-    static final int NADA = 0, MENU = 1, BAILE = 2, RESULTADO = 3;
+    static final int NADA = 0, MENU = 1, BAILE = 2, RESULTADO = 3, PRUEBA = 4;
     public static final int LATENCIA = 4;
     static final int MANTENIENDO = JuicioBaile.MANTENIENDO, HECHA = JuicioBaile.HECHA, FALLADA = JuicioBaile.FALLADA, PENDIENTE = JuicioBaile.PENDIENTE;
     static final int[] COLOR = {0xFFB070F0, 0xFF5ADCFF, 0xFF69DC67, 0xFFFF5050}, LUZ = {0xFFE0C0FF, 0xFFC0F4FF, 0xFFC0FFC0, 0xFFFFC0C0};
@@ -53,6 +54,12 @@ public final class BaileCliente {
     static boolean[][][] mascaras;
 
     static int modo, sel, dif = 1, menuT;
+    /** Fila del menú: 0 canciones, 1 desplazamiento (arriba / abajo), 2 probar teclas. */
+    static int fila;
+    /** Las flechas bajan desde arriba hacia los receptores de abajo (downscroll) en vez de subir. */
+    static boolean haciaAbajo = leerAjuste();
+    /** Probar teclas: la última tecla pulsada que no es de ninguna flecha. */
+    static String teclaSuelta = "";
     static BlockPos pista;
     static CameraType camaraAntes;
     /** Hacia dónde mira el que baila (yaw de Minecraft): hacia la flecha de arriba de la pista. */
@@ -98,6 +105,35 @@ public final class BaileCliente {
         return segundoCancion();
     }
 
+    private static java.nio.file.Path ajustes() {
+        return net.minecraftforge.fml.loading.FMLPaths.CONFIGDIR.get().resolve("miscelanea_baile.txt");
+    }
+
+    private static boolean leerAjuste() {
+        try {
+            return java.nio.file.Files.readString(ajustes()).contains("abajo=true");
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static void guardarAjuste() {
+        try {
+            java.nio.file.Files.writeString(ajustes(), "abajo=" + haciaAbajo + "\n");
+        } catch (Exception ignored) {
+        }
+    }
+
+    /** Esc o agacharse con la pantalla del baile abierta: bajarse. */
+    static void salirPorTecla() {
+        if (modo == PRUEBA) {
+            modo = MENU;
+            return;
+        }
+        if (pista != null) ModNetwork.CHANNEL.sendToServer(new BailePacket(BailePacket.SALIR, pista, 0, 0, 0));
+        cerrar();
+    }
+
     // ------------------------------------------------------------------ red
     public static void recibir(BailePacket m) {
         Minecraft mc = Minecraft.getInstance();
@@ -116,6 +152,8 @@ public final class BaileCliente {
                 mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
                 CamaraBaile.olvidar();
                 BailePoses.empezar(yo.getId(), null, System.currentTimeMillis());
+                fila = 0;
+                if (!(mc.screen instanceof BaileScreen)) mc.setScreen(new BaileScreen());
             }
             case BailePacket.EMPIEZA -> {
                 CancionesBaile.Cancion c = CancionesBaile.de(m.cancion);
@@ -191,6 +229,7 @@ public final class BaileCliente {
 
     static void cerrar() {
         Minecraft mc = Minecraft.getInstance();
+        if (mc.screen instanceof BaileScreen) mc.setScreen(null);
         if (camaraAntes != null) mc.options.setCameraType(camaraAntes);
         camaraAntes = null;
         modo = NADA;
@@ -221,30 +260,62 @@ public final class BaileCliente {
         return modo != NADA;
     }
 
+    /** Fuera de la pantalla del baile (por ejemplo, con el chat abierto) las teclas no hacen nada en el baile. */
     @SubscribeEvent
-    public static void tecla(InputEvent.Key e) {
+    public static void tecla(InputEvent.Key e) {}
+
+    /** Desde {@link BaileScreen}: una tecla pulsada o soltada mientras se usa la pista. */
+    static void teclaBaile(int key, int scan, boolean abajo) {
         Minecraft mc = Minecraft.getInstance();
         if (modo == NADA || mc.player == null) return;
-        int c = carrilDe(e.getKey(), e.getScanCode(), mc);
-        if (e.getAction() == GLFW.GLFW_RELEASE) {
+        int c = carrilDe(key, scan, mc);
+        if (!abajo) {
             if (c >= 0) {
                 pisando[c] = false;
                 if (modo == BAILE) soltar(c, tiempo());
             }
             return;
         }
-        if (mc.screen != null || e.getAction() != GLFW.GLFW_PRESS) return;
+        boolean saltar = mc.options.keyJump.matches(key, scan) || key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER;
+        if (modo == PRUEBA) {
+            if (c >= 0) {
+                pisando[c] = true;
+                pulsado[c] = System.currentTimeMillis();
+                teclaSuelta = "";
+                mc.player.playSound(net.minecraft.sounds.SoundEvents.NOTE_BLOCK_HAT.get(), 0.6F, 1.2F + 0.2F * c);
+            } else if (saltar) modo = MENU;
+            else teclaSuelta = com.mojang.blaze3d.platform.InputConstants.getKey(key, scan).getDisplayName().getString();
+            return;
+        }
         if (modo == MENU && extra) return;     // el de fondo espera a que el protagonista elija
         if (modo == MENU) {
-            int n = Math.max(1, CancionesBaile.lista().size());
-            if (c == 2) sel = (sel + n - 1) % n;
-            if (c == 1) sel = (sel + 1) % n;
-            if (c == 0) dif = Math.max(0, dif - 1);
-            if (c == 3) dif = Math.min(2, dif + 1);
-            if (c >= 0) mc.player.playSound(net.minecraft.sounds.SoundEvents.NOTE_BLOCK_HAT.get(), 0.6F, 1.6F);
             List<CancionesBaile.Cancion> l = CancionesBaile.lista();
-            if (mc.options.keyJump.getKey().getValue() == e.getKey() && !l.isEmpty())
-                ModNetwork.CHANNEL.sendToServer(new BailePacket(BailePacket.EMPIEZA, pista, 0, 0, dif, l.get(Math.min(sel, l.size() - 1)).id));
+            int n = Math.max(1, l.size());
+            if (fila == 0) {
+                if (c == 2) sel = Math.max(0, sel - 1);
+                if (c == 1) {
+                    if (sel >= n - 1) fila = 1;
+                    else sel++;
+                }
+                if (c == 0) dif = Math.max(0, dif - 1);
+                if (c == 3) dif = Math.min(2, dif + 1);
+                if (saltar && !l.isEmpty())
+                    ModNetwork.CHANNEL.sendToServer(new BailePacket(BailePacket.EMPIEZA, pista, 0, 0, dif, l.get(Math.min(sel, l.size() - 1)).id));
+            } else if (fila == 1) {
+                if (c == 2) fila = 0;
+                if (c == 1) fila = 2;
+                if (c == 0 || c == 3 || saltar) {
+                    haciaAbajo = !haciaAbajo;
+                    guardarAjuste();
+                }
+            } else {
+                if (c == 2) fila = 1;
+                if (saltar) {
+                    modo = PRUEBA;
+                    teclaSuelta = "";
+                }
+            }
+            if (c >= 0) mc.player.playSound(net.minecraft.sounds.SoundEvents.NOTE_BLOCK_HAT.get(), 0.6F, 1.6F);
             return;
         }
         if (modo != BAILE || c < 0) return;
@@ -283,7 +354,9 @@ public final class BaileCliente {
             return;
         }
         menuT++;
-        if (mc.options.keyShift.isDown() || p.position().distanceToSqr(Vec3.atBottomCenterOf(pista)) > (gramola ? 25 : 6)) {
+        // la pantalla del baile vuelve sola al cerrar el chat
+        if (mc.screen == null) mc.setScreen(new BaileScreen());
+        if (p.position().distanceToSqr(Vec3.atBottomCenterOf(pista)) > (gramola ? 25 : 6)) {
             ModNetwork.CHANNEL.sendToServer(new BailePacket(BailePacket.SALIR, pista, 0, 0, 0));
             cerrar();
             return;
@@ -300,7 +373,7 @@ public final class BaileCliente {
         if (modo == BAILE) {
             int t = tiempo();
             // si se ha abierto una pantalla (o la tecla se soltó sin aviso) cuenta como soltar
-            for (int c = 0; c < 4; c++) if (pisando[c] && (mc.screen != null || !teclaAbajo(mc, c))) {
+            for (int c = 0; c < 4; c++) if (pisando[c] && (mc.screen != null && !(mc.screen instanceof BaileScreen) || !teclaAbajo(mc, c))) {
                 pisando[c] = false;
                 soltar(c, t);
             }
@@ -395,7 +468,7 @@ public final class BaileCliente {
         }
         if (modo == MENU) {
             List<CancionesBaile.Cancion> l = CancionesBaile.lista();
-            int filas = Math.min(6, Math.max(1, l.size())), alto = 70 + filas * 18;
+            int filas = Math.min(6, Math.max(1, l.size())), alto = 104 + filas * 18;
             int x0 = W / 2 - 120, y0 = H / 2 - alto / 2 - 10;
             g.fill(x0, y0, x0 + 240, y0 + alto, 0xC0180830);
             g.fill(x0, y0, x0 + 240, y0 + 2, 0xFFEC6CA8);
@@ -406,7 +479,7 @@ public final class BaileCliente {
                 int c = primera + f, y = y0 + 26 + f * 18;
                 boolean s = c == sel;
                 CancionesBaile.Cancion can = l.get(c);
-                if (s) g.fill(x0 + 8, y - 4, x0 + 232, y + 12, 0xFF612895);
+                if (s) g.fill(x0 + 8, y - 4, x0 + 232, y + 12, fila == 0 ? 0xFF612895 : 0xFF3A2058);
                 String t = titulo(can);
                 if (font.width(t) > 160) t = font.plainSubstrByWidth(t, 154) + "…";
                 g.drawString(font, t, x0 + 16, y, s ? 0xFFFFFFFF : 0xFFA090C0);
@@ -425,12 +498,30 @@ public final class BaileCliente {
                 g.drawCenteredString(font, I18n.get("baile.miscelanea.nivel", nf, nivel), W / 2, yd + 5, 0xFFA090C0);
             }
             yd += 6;
+            // ajustes: desplazamiento y probar teclas
+            int ya = yd + 18;
+            String[] filasAj = {I18n.get("baile.miscelanea.desplazamiento", I18n.get(haciaAbajo ? "baile.miscelanea.hacia_abajo" : "baile.miscelanea.hacia_arriba")),
+                    I18n.get("baile.miscelanea.probar_teclas")};
+            for (int i = 0; i < 2; i++) {
+                boolean s2 = fila == i + 1;
+                int yy = ya + i * 14;
+                if (s2) g.fill(x0 + 8, yy - 3, x0 + 232, yy + 10, 0xFF612895);
+                g.drawCenteredString(font, (s2 && i == 0 ? "◄ " : "") + filasAj[i] + (s2 && i == 0 ? " ►" : ""), W / 2, yy, s2 ? 0xFFFFFFFF : 0xFFA090C0);
+            }
+            yd += 30;
             g.drawCenteredString(font, I18n.get("baile.miscelanea.menu_ayuda", com.miscelanea.client.TeclasMod.corto(com.miscelanea.client.TeclasMod.RITMO[2]), com.miscelanea.client.TeclasMod.corto(com.miscelanea.client.TeclasMod.RITMO[1]), com.miscelanea.client.TeclasMod.corto(com.miscelanea.client.TeclasMod.RITMO[0]), com.miscelanea.client.TeclasMod.corto(com.miscelanea.client.TeclasMod.RITMO[3]),
                     mc.options.keyJump.getTranslatedKeyMessage().getString()), W / 2, yd + 16, (menuT / 10) % 2 == 0 ? 0xFFFFE05A : 0xFFC0A040);
             return;
         }
-        // pista de flechas a la derecha de la pantalla (la cámara deja al que baila a la izquierda)
-        int esc = 2, paso = 14 * esc + 6, x0 = W - 4 * paso - 12, objY = 16;
+        if (modo == PRUEBA) {
+            prueba(g, W, H);
+            return;
+        }
+        // pista de flechas a la derecha de la pantalla (la cámara deja al que baila a la izquierda); con "hacia abajo"
+        // los receptores van abajo y las flechas caen desde arriba
+        int esc = 2, paso = 14 * esc + 6, x0 = W - 4 * paso - 12;
+        boolean ab = haciaAbajo;
+        int objY = ab ? H - 16 - 14 * esc : 16, sg = ab ? -1 : 1;
         g.fill(x0 - 6, 0, W, H, 0x68000000);
         g.fill(x0 - 7, 0, x0 - 6, H, 0x40FFFFFF);
         long ahora = System.currentTimeMillis();
@@ -446,15 +537,15 @@ public final class BaileCliente {
             // primero las colas de las flechas que se mantienen (por debajo de las cabezas)
             for (int i = 0; i < notas.length; i++) {
                 CancionesBaile.Nota n = notas[i];
-                int yh = objY + Math.round((n.t - t) * vel);
-                if (yh > H) break;
+                int yh = objY + sg * Math.round((n.t - t) * vel);
+                if (ab ? yh < -30 : yh > H) break;
                 if (!n.mantener() || estado[i] == HECHA) continue;
-                int ye = objY + Math.round((n.fin - t) * vel);
-                if (ye < -30) continue;
+                int ye = objY + sg * Math.round((n.fin - t) * vel);
+                if (ab ? ye > H + 30 : ye < -30) continue;
                 int c = n.carril, cx = x0 + c * paso + 7 * esc;
                 boolean sujeta = estado[i] == MANTENIENDO;
                 if (sujeta) yh = objY;
-                int arriba = yh + 7 * esc, abajo = Math.min(H, ye + 7 * esc);
+                int arriba = ab ? Math.max(0, ye + 7 * esc) : yh + 7 * esc, abajo = ab ? yh + 7 * esc : Math.min(H, ye + 7 * esc);
                 if (abajo <= arriba) continue;
                 if (estado[i] == FALLADA) {
                     // rota: gris, partida en trozos y cayéndose
@@ -472,30 +563,32 @@ public final class BaileCliente {
                 }
                 g.fill(cx - 3 * esc, arriba, cx + 3 * esc, abajo, sujeta ? col : (col & 0x00FFFFFF) | 0xB0000000);
                 g.fill(cx - 3 * esc, arriba, cx - 2 * esc, abajo, 0x60FFFFFF);
-                // remate de la cola
-                g.fill(cx - 5 * esc, abajo - 2 * esc, cx + 5 * esc, abajo, 0xFF101018);
-                g.fill(cx - 4 * esc, abajo - 2 * esc + 1, cx + 4 * esc, abajo - 1, sujeta ? 0xFFFFFFFF : LUZ[c]);
+                // remate de la cola (en el extremo lejano)
+                int rm = ab ? arriba + 2 * esc : abajo;
+                g.fill(cx - 5 * esc, rm - 2 * esc, cx + 5 * esc, rm, 0xFF101018);
+                g.fill(cx - 4 * esc, rm - 2 * esc + 1, cx + 4 * esc, rm - 1, sujeta ? 0xFFFFFFFF : LUZ[c]);
             }
             for (int i = 0; i < notas.length; i++) {
                 CancionesBaile.Nota n = notas[i];
-                int c = n.carril, y = objY + Math.round((n.t - t) * vel);
-                if (y > H) break;
+                int c = n.carril, y = objY + sg * Math.round((n.t - t) * vel);
+                if (ab ? y < -30 : y > H) break;
                 if (estado[i] == MANTENIENDO) {
                     flecha(g, x0 + c * paso, objY, c, 0xFFFFFFFF, LUZ[c], false, esc);
                     continue;
                 }
-                if (estado[i] != PENDIENTE || y < -30) continue;
+                if (estado[i] != PENDIENTE || (ab ? y > H + 30 : y < -30)) continue;
                 flecha(g, x0 + c * paso, y, c, COLOR[c], LUZ[c], false, esc);
             }
         }
         // vida y puntos
         int vida = jb == null ? 70 : jb.vida, puntos = jb == null ? 0 : jb.puntos, combo = jb == null ? 0 : jb.combo;
-        int bx = x0, by = H - 24;
+        int bx = x0, by = ab ? 18 : H - 24;
         g.fill(bx, by, bx + 4 * paso - 6, by + 6, 0xFF000000);
         g.fill(bx + 1, by + 1, bx + 1 + (int) ((4 * paso - 8) * Math.max(0, vida) / 100F), by + 5, vida < 25 ? 0xFFE04040 : 0xFF50D060);
-        g.drawString(font, Integer.toString(puntos), bx, by - 12, 0xFFFFFFFF);
-        if (juicio >= 0 && ahora - juicioT < 500) g.drawCenteredString(font, I18n.get(JUICIOS[juicio]), x0 + 2 * paso - 3, objY + 50, COLOR_JUICIO[juicio]);
-        if (combo >= 5) g.drawCenteredString(font, combo + " COMBO", x0 + 2 * paso - 3, objY + 64, 0xFFFFE05A);
+        g.drawString(font, Integer.toString(puntos), bx, ab ? by + 9 : by - 12, 0xFFFFFFFF);
+        int jy = ab ? objY - 44 : objY + 50;
+        if (juicio >= 0 && ahora - juicioT < 500) g.drawCenteredString(font, I18n.get(JUICIOS[juicio]), x0 + 2 * paso - 3, jy, COLOR_JUICIO[juicio]);
+        if (combo >= 5) g.drawCenteredString(font, combo + " COMBO", x0 + 2 * paso - 3, jy + 14, 0xFFFFE05A);
         if (modo == RESULTADO) {
             String[] n = {"S", "A", "B", "C", "D", "E"};
             int cx = W / 2;
@@ -513,5 +606,39 @@ public final class BaileCliente {
             g.drawCenteredString(font, "COMBO " + maxCombo + "  ·  " + puntos, cx, H / 2 + 38, 0xFFFFE05A);
         }
         g.drawString(font, I18n.get(gramola ? "gramola.miscelanea.salir" : "baile.miscelanea.salir"), 6, H - 12, 0xA0FFFFFF);
+    }
+
+    /** Probar teclas: las cuatro flechas se encienden al pulsarlas; debajo, su tecla y qué más hace esa tecla en el juego. */
+    private static void prueba(GuiGraphics g, int W, int H) {
+        Minecraft mc = Minecraft.getInstance();
+        var font = mc.font;
+        int esc = 3, paso = 14 * esc + 10, x0 = W / 2 - 2 * paso + 5, y0 = H / 2 - 70;
+        g.fill(W / 2 - 150, y0 - 34, W / 2 + 150, y0 + 150, 0xD0180830);
+        g.fill(W / 2 - 150, y0 - 34, W / 2 + 150, y0 - 32, 0xFFEC6CA8);
+        g.drawCenteredString(font, I18n.get("baile.miscelanea.probar_titulo"), W / 2, y0 - 24, 0xFFFFE05A);
+        long ahora = System.currentTimeMillis();
+        for (int c = 0; c < 4; c++) {
+            boolean p = pisando[c] || ahora - pulsado[c] < 150;
+            int x = x0 + c * paso;
+            if (p) flecha(g, x, y0, c, COLOR[c], LUZ[c], false, esc);
+            else flecha(g, x, y0, c, 0xFF8080A0, 0, true, esc);
+            KeyMapping km = com.miscelanea.client.TeclasMod.RITMO[c];
+            String tecla = km.isUnbound() ? "—" : km.getTranslatedKeyMessage().getString();
+            g.drawCenteredString(font, tecla, x + 7 * esc, y0 + 14 * esc + 6, p ? 0xFFFFFFFF : 0xFFA090C0);
+            // ¿qué más usa esa tecla? (mientras se baila no se activa, pero así se sabe)
+            int yy = y0 + 14 * esc + 18;
+            for (KeyMapping o : mc.options.keyMappings) {
+                if (o == km || km.isUnbound() || !o.same(km)) continue;
+                String nom = I18n.get(o.getName());
+                if (font.width(nom) > paso - 4) nom = font.plainSubstrByWidth(nom, paso - 8) + "…";
+                g.drawCenteredString(font, nom, x + 7 * esc, yy, 0xFFFFC040);
+                yy += 10;
+                if (yy > y0 + 120) break;
+            }
+        }
+        if (!teclaSuelta.isEmpty()) g.drawCenteredString(font, I18n.get("baile.miscelanea.no_es_flecha", teclaSuelta), W / 2, y0 + 118, 0xFFFF8080);
+        g.drawCenteredString(font, I18n.get("baile.miscelanea.probar_ayuda"), W / 2, y0 + 132, 0xFFC0B0E0);
+        g.drawCenteredString(font, I18n.get("baile.miscelanea.probar_volver", mc.options.keyJump.getTranslatedKeyMessage().getString()), W / 2, y0 + 142,
+                (menuT / 10) % 2 == 0 ? 0xFFFFE05A : 0xFFC0A040);
     }
 }
