@@ -107,10 +107,68 @@ public final class LinternaLuz {
         for (UUID u : new ArrayList<>(PUESTAS.keySet())) quitar(e.getServer(), u);
         ENCENDIDAS.clear();
         limpiarPendientes(e.getServer(), true);
+        FLASH.clear();
+        ULT_FLASH.clear();
+    }
+
+    // ------------------------------------------------------------------ flash de la cámara
+    /** Luces del flash que hay puestas y en qué tick se quitan. */
+    private static final Map<GlobalPos, Long> FLASH = new HashMap<>();
+    private static final Map<UUID, Long> ULT_FLASH = new HashMap<>();
+
+    /**
+     * Flash de la cámara: luz al máximo un instante delante del jugador (y junto a él) y, a los que estén delante mirándole,
+     * un fogonazo blanco en la pantalla.
+     */
+    static void flash(ServerPlayer p) {
+        if (!MovilServidor.tieneMovil(p)) return;
+        long ahora = p.server.getTickCount();
+        Long ult = ULT_FLASH.get(p.getUUID());
+        if (ult != null && ahora - ult < 10) return;
+        ULT_FLASH.put(p.getUUID(), ahora);
+        ServerLevel l = p.serverLevel();
+        Vec3 ojo = p.getEyePosition(), dir = p.getLookAngle();
+        Registro r = Registro.de(p.server);
+        if (MovilConfig.linternaReal())
+            for (double d : new double[]{0.9, 3.5}) {
+                BlockPos bp = BlockPos.containing(ojo.add(dir.scale(d)));
+                GlobalPos gp = GlobalPos.of(l.dimension(), bp);
+                if (FLASH.containsKey(gp) || !l.isLoaded(bp) || l.isOutsideBuildHeight(bp) || !l.getBlockState(bp).isAir()) continue;
+                l.setBlock(bp, Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, 15), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+                r.anotar(gp);
+                FLASH.put(gp, ahora + 8);
+            }
+        p.level().playSound(null, p.getX(), p.getY(), p.getZ(), MovilRegistro.OBTURADOR.get(), net.minecraft.sounds.SoundSource.PLAYERS, 0.25F, 1.8F);
+        if (!MovilConfig.flashDeslumbra()) return;
+        for (ServerPlayer o : l.players()) {
+            if (o == p) continue;
+            Vec3 a = o.getEyePosition().subtract(ojo);
+            double dist = a.length();
+            if (dist > 20 || dist < 0.1) continue;
+            Vec3 an = a.normalize();
+            double delante = dir.dot(an), mira = o.getLookAngle().dot(an.scale(-1));
+            if (delante < 0.55 || mira < 0.3) continue;
+            if (l.clip(new ClipContext(ojo, o.getEyePosition(), ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, p)).getType() != HitResult.Type.MISS) continue;
+            float fuerza = (float) Math.min(1, (1.2 - dist / 20) * delante * mira * 1.4);
+            if (fuerza > 0.1F) MovilRed.aJugador(o, MovilRed.S_FLASH, b -> b.writeFloat(fuerza));
+        }
+    }
+
+    private static void tickFlash(MinecraftServer s) {
+        if (FLASH.isEmpty()) return;
+        long ahora = s.getTickCount();
+        Registro r = Registro.de(s);
+        for (Iterator<Map.Entry<GlobalPos, Long>> it = FLASH.entrySet().iterator(); it.hasNext(); ) {
+            Map.Entry<GlobalPos, Long> e = it.next();
+            if (ahora < e.getValue()) continue;
+            quitarUna(s, e.getKey(), r);
+            it.remove();
+        }
     }
 
     // ------------------------------------------------------------------ tick
     static void tick(MinecraftServer s) {
+        tickFlash(s);
         if (s.getTickCount() % 4 != 0) return;
         if (s.getTickCount() % 100 == 0) limpiarPendientes(s, false);
         if (ENCENDIDAS.isEmpty()) return;
@@ -211,6 +269,7 @@ public final class LinternaLuz {
         if (r.luces.isEmpty()) return;
         Set<GlobalPos> activas = new HashSet<>();
         if (!todo) for (List<GlobalPos> l : PUESTAS.values()) activas.addAll(l);
+        if (!todo) activas.addAll(FLASH.keySet());
         for (GlobalPos gp : new ArrayList<>(r.luces)) if (!activas.contains(gp)) quitarUna(s, gp, r);
     }
 

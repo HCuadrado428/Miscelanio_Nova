@@ -95,6 +95,16 @@ public final class EcoCliente {
         if (quien != null && nivel > UMBRAL_VOZ) HABLAN.put(quien, System.currentTimeMillis());
     }
 
+    /** ¿Está hablando ahora (se le ha oído hace menos de un tercio de segundo)? Lo usa también el móvil en las llamadas. */
+    public static boolean hablando(java.util.UUID quien) {
+        Long t = quien == null ? null : HABLAN.get(quien);
+        return t != null && System.currentTimeMillis() - t < 350;
+    }
+
+    public static boolean yoHablando() {
+        return System.currentTimeMillis() - yoHablo < 350;
+    }
+
     /** Desde el plugin del voicechat (hilo de audio): hablo yo. */
     public static void hablaYo(float nivel) {
         if (nivel > UMBRAL_VOZ) yoHablo = System.currentTimeMillis();

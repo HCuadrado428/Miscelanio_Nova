@@ -362,6 +362,7 @@ public class MovilScreen extends Screen {
         if (banTitulo == null || !Ui.dentro(x, y, 4, 13, SW - 8, 30)) return false;
         banTitulo = null;
         if (banChat >= 0 && !viendoChat(banChat)) abrir(new VistasChat.Chat(banChat));
+        else if (banChat == -2 && MovilCliente.llEstado != MovilRed.LL_FIN && !(pila.peek() instanceof VistasTelefono.Llamada)) irALlamada();
         return true;
     }
 
@@ -386,13 +387,17 @@ public class MovilScreen extends Screen {
     private boolean volviendoALlamada(double x, double y) {
         if (girado() || MovilCliente.llEstado == MovilRed.LL_FIN || pila.peek() instanceof VistasTelefono.Llamada || y >= Vista.BARRA || Math.abs(x - SW / 2.0) > 20)
             return false;
-        // vuelve a la pantalla de la llamada (si estaba en la pila, bajando hasta ella)
+        irALlamada();
+        MovilCliente.clic();
+        return true;
+    }
+
+    /** Vuelve a la pantalla de la llamada (si estaba en la pila, bajando hasta ella). */
+    private void irALlamada() {
         if (hayLlamadaEnPila()) {
             while (!(pila.peek() instanceof VistasTelefono.Llamada)) pila.pop().cerrada();
             pila.peek().abierta();
         } else abrir(new VistasTelefono.Llamada());
-        MovilCliente.clic();
-        return true;
     }
 
     @Override

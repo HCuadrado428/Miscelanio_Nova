@@ -45,7 +45,10 @@ public final class MovilCliente {
             GLFW.GLFW_KEY_B, com.miscelanea.client.combate.LlaveCliente.CATEGORIA);
 
     // ------------------------------------------------------------------ datos del servidor
-    public record Contacto(UUID id, String nombre, String numero, boolean conectado) {}
+    public record Contacto(UUID id, String nombre, String numero, boolean conectado, int tono) {}
+
+    /** Alguien de la llamada (yo no): estado {@code Llamadas.P_*}. */
+    public record Parte(UUID id, String nombre, int est) {}
 
     public record Msg(long sec, UUID de, String nombreDe, long t, String texto, int adjunto, int voz, int vozMs, byte[] onda) {}
 
@@ -81,7 +84,8 @@ public final class MovilCliente {
         public final List<Msg> msgs = new ArrayList<>();
     }
 
-    public record Foto(int id, long t) {}
+    /** Foto de la galería; con {@code ms > 0} es un vídeo corto. */
+    public record Foto(int id, long t, int ms) {}
 
     public static String miNumero = "---";
     public static boolean silencio, vozServidor, videoServidor, sincronizado;
@@ -92,7 +96,11 @@ public final class MovilCliente {
     public static ChatAbierto chat;
     public static int chatPendiente = -1;
     public static final List<Foto> FOTOS = new ArrayList<>();
-    public static int maxFotos = 40, maxBytesFoto = 30000;
+    public static int maxFotos = 40, maxBytesFoto = 30000, clipMaxSeg = 10, clipMaxBytes = 600000;
+    public static boolean clipsServidor;
+    /** Fogonazo del flash de otro (cuándo y cuánto). */
+    private static long tDeslumbre;
+    private static float deslumbre;
     public static boolean fotosCargadas;
     /** Llamadas perdidas desde la última vez que se abrió el teléfono. */
     public static long registroVisto;
@@ -101,6 +109,18 @@ public final class MovilCliente {
     public static int llEstado = MovilRed.LL_FIN, llMotivo;
     public static UUID llOtro;
     public static String llNombre = "";
+    /** Los demás de la llamada actual. */
+    public static final List<Parte> PARTES = new ArrayList<>();
+    public static boolean llGrupo, llVideo, llOcultoYo, llMute, llAltavoz;
+    /** Segunda llamada: la que entra mientras hablo ({@code LL_ENTRANTE}) o la que dejé en espera ({@code LL_ESPERA}); -1 si no hay. */
+    public static int dosEstado = -1;
+    public static UUID dosId;
+    public static String dosNombre = "";
+    public static boolean dosVideo;
+    /** Ocultar mi número en todas las llamadas (Ajustes; se guarda en este ordenador). */
+    public static boolean ocultarSiempre;
+    private static long ultPitidoEspera;
+    private static boolean prefsCargadas;
     public static boolean llVideoPermitido, miVideo, otroVideo, frontal = true;
     public static long llInicio, llFin;
     public static int vFps = 5, vW = 72, vH = 128, vMax = 9000;
@@ -265,6 +285,11 @@ public final class MovilCliente {
     }
 
     public static void llamar(UUID otro, boolean video) {
+        llamar(otro, video, ocultarSiempre);
+    }
+
+    public static void llamar(UUID otro, boolean video, boolean oculto) {
+        if (otro == null || otro.equals(com.miscelanea.movil.Llamadas.OCULTO)) return;
         if (!vozLocal()) {
             aviso(Component.translatable("movil.miscelanea.necesitas_svc"));
             return;
@@ -272,9 +297,80 @@ public final class MovilCliente {
         MovilRed.alServidor(MovilRed.C_LLAMAR, b -> {
             b.writeUUID(otro);
             b.writeBoolean(video);
+            b.writeBoolean(oculto);
         });
         miVideo = video;
         frontal = true;
+    }
+
+    /** Llamada de grupo a los del chat. */
+    public static void llamarGrupo(int chat, boolean video) {
+        if (!vozLocal()) {
+            aviso(Component.translatable("movil.miscelanea.necesitas_svc"));
+            return;
+        }
+        MovilRed.alServidor(MovilRed.C_LLAMAR_GRUPO, b -> {
+            b.writeVarInt(chat);
+            b.writeBoolean(video);
+        });
+        miVideo = video;
+        frontal = true;
+    }
+
+    /** Nombre para mostrar de alguien (los de número oculto salen como "Desconocido"). */
+    public static String nombreVisible(UUID id, String nombre) {
+        if (id == null || id.equals(com.miscelanea.movil.Llamadas.OCULTO) || nombre == null || nombre.isEmpty())
+            return Component.translatable("movil.miscelanea.desconocido").getString();
+        return nombre;
+    }
+
+    /** Partes de la llamada que están dentro (no sonando). */
+    public static int dentro() {
+        int n = 0;
+        for (Parte p : PARTES) if (p.est() != com.miscelanea.movil.Llamadas.P_SONANDO) n++;
+        return n;
+    }
+
+    public static void silenciar(boolean si) {
+        llMute = si;
+        MovilRed.alServidor(MovilRed.C_SILENCIAR, b -> b.writeBoolean(si));
+    }
+
+    public static void altavoz(boolean si) {
+        llAltavoz = si;
+        MovilRed.alServidor(MovilRed.C_ALTAVOZ, b -> b.writeBoolean(si));
+    }
+
+    public static void tonoContacto(UUID id, int tono) {
+        MovilRed.alServidor(MovilRed.C_TONO_CONTACTO, b -> {
+            b.writeUUID(id);
+            b.writeByte(tono);
+        });
+    }
+
+    // ------------------------------------------------------------------ preferencias de este ordenador
+    private static java.nio.file.Path archivoPrefs() {
+        return Minecraft.getInstance().gameDirectory.toPath().resolve("config").resolve("miscelanea_movil.txt");
+    }
+
+    static void cargarPrefs() {
+        try {
+            java.nio.file.Path f = archivoPrefs();
+            if (!java.nio.file.Files.exists(f)) return;
+            for (String l : java.nio.file.Files.readAllLines(f)) {
+                String[] kv = l.split("=", 2);
+                if (kv.length == 2 && kv[0].trim().equals("ocultar_numero")) ocultarSiempre = Boolean.parseBoolean(kv[1].trim());
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    static void guardarPrefs() {
+        try {
+            java.nio.file.Files.createDirectories(archivoPrefs().getParent());
+            java.nio.file.Files.writeString(archivoPrefs(), "# Preferencias del móvil (Miscelánea) en este ordenador\nocultar_numero=" + ocultarSiempre + "\n");
+        } catch (Exception ignored) {
+        }
     }
 
     /** Aviso corto: dentro del móvil si está abierto; si no, en la barra de acción. */
@@ -305,7 +401,7 @@ public final class MovilCliente {
         boolean mio = mc.player != null && m.de().equals(mc.player.getUUID());
         if (!mio && !viendo) ci.noLeidos++;
         if (!avisar || viendo) return;
-        String texto = m.adjunto() >= 0 ? Component.translatable("movil.miscelanea.foto_adjunta").getString()
+        String texto = m.adjunto() >= 0 ? Component.translatable(m.voz() < 0 && m.vozMs() > 0 ? "movil.miscelanea.video_adjunto" : "movil.miscelanea.foto_adjunta").getString()
                 : m.voz() >= 0 ? Component.translatable("movil.miscelanea.nota_voz", duracion(m.vozMs() / 1000)).getString() : m.texto();
         String titulo = grupo ? m.nombreDe() + " @ " + nombreChat : m.nombreDe();
         if (!silencio) sonido(MovilRegistro.MENSAJE.get(), 0.8F, 1.0F);
@@ -313,34 +409,71 @@ public final class MovilCliente {
         else mc.getToasts().addToast(new MovilToast(Ui.APP_CHATS, titulo, texto));
     }
 
-    static void llamada(int estado, UUID otro, String nombre, boolean video, int motivo) {
+    static void llamada(int estado, int motivo, boolean video, boolean grupo, String nombreGrupo, boolean ocultoYo, List<Parte> partes,
+                        boolean mute, boolean altavoz, int dos, UUID dId, String dNombre, boolean dVideo) {
         Minecraft mc = Minecraft.getInstance();
-        int antes = llEstado;
-        llEstado = estado;
-        llOtro = otro;
-        llNombre = nombre;
+        int antes = llEstado, dosAntes = dosEstado;
+        String nombreAntes = llNombre;
+        UUID otroAntes = llOtro;
+        java.util.Set<UUID> antesPartes = new java.util.HashSet<>();
+        for (Parte p : PARTES) antesPartes.add(p.id());
+        PARTES.clear();
+        PARTES.addAll(partes);
+        llGrupo = grupo;
+        llVideo = video;
+        llOcultoYo = ocultoYo;
+        llMute = mute;
+        llAltavoz = altavoz;
         llMotivo = motivo;
-        if (estado == MovilRed.LL_ENTRANTE) {
+        dosEstado = dos;
+        dosId = dId;
+        dosNombre = nombreVisible(dId, dNombre);
+        dosVideo = dVideo;
+        if (estado != MovilRed.LL_FIN) {
+            llOtro = partes.isEmpty() ? null : partes.get(0).id();
+            llNombre = grupo ? nombreGrupo : partes.isEmpty() ? "" : nombreVisible(partes.get(0).id(), partes.get(0).nombre());
+        }
+        // se ha cambiado de llamada (cogí la que estaba en espera, o volví a la otra)
+        boolean otra = estado != MovilRed.LL_FIN && antes != MovilRed.LL_FIN && otroAntes != null && !java.util.Objects.equals(otroAntes, llOtro)
+                && !(grupo && nombreAntes.equals(llNombre));
+        llEstado = estado;
+        // quitar los vídeos de los que ya no están
+        for (UUID u : antesPartes) if (partes.stream().noneMatch(p -> p.id().equals(u))) FotoCache.quitarVideo(u);
+        if (estado == MovilRed.LL_ENTRANTE && antes != MovilRed.LL_ENTRANTE) {
             miVideo = video && videoServidor;
             frontal = true;
             if (!(mc.screen instanceof MovilScreen))
-                mc.getToasts().addToast(new MovilToast(Ui.APP_LLAMAR, nombre, Component.translatable(video ? "movil.miscelanea.videollamada_entrante_tecla"
+                mc.getToasts().addToast(new MovilToast(Ui.APP_LLAMAR, llNombre, Component.translatable(video ? "movil.miscelanea.videollamada_entrante_tecla"
                         : "movil.miscelanea.llamada_entrante_tecla", ABRIR.getTranslatedKeyMessage()).getString()));
-        } else if (estado == MovilRed.LL_ACTIVA) {
+        } else if (estado == MovilRed.LL_ACTIVA && (antes != MovilRed.LL_ACTIVA || otra)) {
             llInicio = Util.getMillis();
-            otroVideo = false;
+            if (otra) FotoCache.quitarVideos();
             if (!(mc.screen instanceof MovilScreen)) pose(MovilRed.POSE_MIRAR);
-        } else if (estado == MovilRed.LL_FIN) {
+        } else if (estado == MovilRed.LL_FIN && antes != MovilRed.LL_FIN) {
             llFin = Util.getMillis();
-            FotoCache.quitarVideo();
-            otroVideo = false;
-            if (antes != MovilRed.LL_FIN) sonido(MovilRegistro.COLGAR.get(), 0.7F, 1.0F);
+            FotoCache.quitarVideos();
+            sonido(MovilRegistro.COLGAR.get(), 0.7F, 1.0F);
             if (!(mc.screen instanceof MovilScreen)) {
                 pose(MovilRed.POSE_NADA);
                 if (antes == MovilRed.LL_ENTRANTE && motivo == com.miscelanea.movil.Llamadas.FIN_SIN_RESPUESTA)
-                    mc.getToasts().addToast(new MovilToast(Ui.APP_LLAMAR, nombre, Component.translatable("movil.miscelanea.llamada_perdida").getString()));
+                    mc.getToasts().addToast(new MovilToast(Ui.APP_LLAMAR, nombreAntes, Component.translatable("movil.miscelanea.llamada_perdida").getString()));
             }
         }
+        // me entra otra mientras hablo
+        if (dos == MovilRed.LL_ENTRANTE && dosAntes != MovilRed.LL_ENTRANTE) {
+            ultPitidoEspera = 0;
+            if (mc.screen instanceof MovilScreen s) s.banner(Ui.APP_LLAMAR, dosNombre, Component.translatable("movil.miscelanea.llamada_en_espera").getString(), -2);
+            else mc.getToasts().addToast(new MovilToast(Ui.APP_LLAMAR, dosNombre, Component.translatable("movil.miscelanea.llamada_en_espera").getString()));
+        }
+        if (estado != MovilRed.LL_FIN && llGrupo && antes == MovilRed.LL_ACTIVA)
+            for (Parte p : partes)
+                if (!antesPartes.contains(p.id()) && mc.screen instanceof MovilScreen s) s.banner(Ui.APP_LLAMAR, llNombre, Component.translatable("movil.miscelanea.se_une", nombreVisible(p.id(), p.nombre())).getString(), -2);
+    }
+
+    /** El flash de alguien que me apunta con la cámara. */
+    static void deslumbrar(float f) {
+        tDeslumbre = Util.getMillis();
+        deslumbre = Math.max(0.1F, Math.min(1, f));
     }
 
     static void videoParams(boolean permitido, int fps, int w, int h, int max) {
@@ -358,6 +491,10 @@ public final class MovilCliente {
         Minecraft mc = Minecraft.getInstance();
         Player p = mc.player;
         if (p == null) return;
+        if (!prefsCargadas) {
+            prefsCargadas = true;
+            cargarPrefs();
+        }
         while (ABRIR.consumeClick()) {
             if (mc.screen != null) continue;
             ItemStack s = movilDe(p);
@@ -368,6 +505,12 @@ public final class MovilCliente {
         if (llEstado == MovilRed.LL_SALIENTE && ms - ultEspera > 3000) {
             ultEspera = ms;
             sonido(MovilRegistro.ESPERA.get(), 0.55F, 1.0F);
+        }
+        // llamada en espera: dos pitidos cortos cada pocos segundos (solo lo oigo yo)
+        if (dosEstado == MovilRed.LL_ENTRANTE && ms - ultPitidoEspera > 3500) {
+            ultPitidoEspera = ms;
+            sonido(MovilRegistro.CLIC.get(), 0.9F, 1.6F);
+            sonido(MovilRegistro.ESPERA.get(), 0.25F, 1.8F);
         }
         // alarma
         int min = minutoDelDia();
@@ -408,6 +551,13 @@ public final class MovilCliente {
         if (mc.player == null || mc.options.hideGui) return;
         GuiGraphics g = e.getGuiGraphics();
         int w = mc.getWindow().getGuiScaledWidth(), h = mc.getWindow().getGuiScaledHeight();
+        long td = Util.getMillis() - tDeslumbre;
+        if (td < 900 && deslumbre > 0) {
+            // fogonazo: blanco del todo un instante y se va apagando (con una mancha que tarda más)
+            float a = td < 120 ? deslumbre : deslumbre * (1 - (td - 120) / 780F);
+            int al = (int) (Math.max(0, Math.min(1, a)) * 245);
+            g.fill(0, 0, w, h, (al << 24) | 0xFFFFF4);
+        }
         if (linterna && mc.screen == null) {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(com.mojang.blaze3d.platform.GlStateManager.SourceFactor.SRC_ALPHA, com.mojang.blaze3d.platform.GlStateManager.DestFactor.ONE);
@@ -419,7 +569,7 @@ public final class MovilCliente {
             RenderSystem.defaultBlendFunc();
         }
         if (llEstado != MovilRed.LL_FIN && !(mc.screen instanceof MovilScreen)) {
-            String s = llEstado == MovilRed.LL_ACTIVA ? duracion((Util.getMillis() - llInicio) / 1000) + "  " + llNombre
+            String s = llEstado == MovilRed.LL_ACTIVA ? duracion((Util.getMillis() - llInicio) / 1000) + "  " + llNombre + (llMute ? "  [" + Component.translatable("movil.miscelanea.mute_corto").getString() + "]" : "")
                     : Component.translatable(llEstado == MovilRed.LL_ENTRANTE ? "movil.miscelanea.entrante_corto" : "movil.miscelanea.llamando_corto", llNombre).getString();
             int ancho = Ui.ancho(s) + 18, x = w / 2 - ancho / 2;
             Ui.redondo(g, x, 3, ancho, 13, 6, 0xD0101418);
@@ -445,6 +595,9 @@ public final class MovilCliente {
         fotosCargadas = false;
         sincronizado = false;
         llEstado = MovilRed.LL_FIN;
+        PARTES.clear();
+        dosEstado = -1;
+        llMute = llAltavoz = false;
         poseLocal = 0;
         linterna = false;
         FotoCache.limpiar();
@@ -452,6 +605,7 @@ public final class MovilCliente {
         UBI_MIAS.clear();
         LINTERNAS.clear();
         NotasVozCliente.limpiar();
+        ClipCliente.limpiar();
         MinegramCliente.limpiar();
         BancoCliente.limpiar();
         MapaCache.salir();

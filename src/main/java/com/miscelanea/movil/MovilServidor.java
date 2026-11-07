@@ -35,8 +35,29 @@ public final class MovilServidor {
         return p.getInventory().hasAnyMatching(MovilRegistro::esMovil);
     }
 
+    /**
+     * Nombre que se ve en el móvil: el que muestra el juego (si un mod como Fake Name le ha puesto otro, ese), sin
+     * colores ni equipos.
+     */
     static String nombre(ServerPlayer p) {
-        return p.getGameProfile().getName();
+        String n;
+        try {
+            n = net.minecraftforge.event.ForgeEventFactory.getPlayerDisplayName(p, net.minecraft.network.chat.Component.literal(p.getGameProfile().getName())).getString();
+        } catch (RuntimeException e) {
+            n = p.getGameProfile().getName();
+        }
+        n = limpiar(n.replaceAll("§.", ""), 32);
+        return n.isEmpty() ? p.getGameProfile().getName() : n;
+    }
+
+    /** Pone al día el nombre guardado (si se lo ha cambiado con Fake Name, por ejemplo). Devuelve si cambió. */
+    static boolean refrescarNombre(ServerPlayer p) {
+        MovilDatos.Perfil pf = datos(p.server).perfil(p.getUUID(), nombre(p));
+        String n = nombre(p);
+        if (n.equals(pf.nombre)) return false;
+        pf.nombre = n;
+        datos(p.server).setDirty();
+        return true;
     }
 
     static MovilDatos datos(MinecraftServer s) {
@@ -73,6 +94,7 @@ public final class MovilServidor {
         if (e.getEntity() instanceof ServerPlayer p) {
             Llamadas.salir(p);
             NotasVoz.salir(p);
+            Clips.salir(p);
             Ubicaciones.salir(p);
             LinternaLuz.apagar(p);
             POSES.remove(p.getUUID());
@@ -97,6 +119,11 @@ public final class MovilServidor {
     public static void tick(TickEvent.ServerTickEvent e) {
         if (e.phase == TickEvent.Phase.END && e.getServer() != null) {
             Llamadas.tick(e.getServer());
+            if (e.getServer().getTickCount() % 100 == 37) {
+                boolean cambio = false;
+                for (ServerPlayer p : e.getServer().getPlayerList().getPlayers()) cambio |= refrescarNombre(p);
+                if (cambio) for (ServerPlayer p : e.getServer().getPlayerList().getPlayers()) if (tieneMovil(p)) sync(p);
+            }
             Ubicaciones.tick(e.getServer());
             LinternaLuz.tick(e.getServer());
         }
@@ -115,14 +142,22 @@ public final class MovilServidor {
                 case MovilRed.C_FOTOS -> enviarFotos(p);
                 case MovilRed.C_FOTO_PEDIR -> pedirFoto(p, b.readByte(), b.readVarInt());
                 case MovilRed.C_FOTO_BORRAR -> borrarFoto(p, b.readVarInt());
-                case MovilRed.C_LLAMAR -> Llamadas.llamar(p, b.readUUID(), b.readBoolean());
+                case MovilRed.C_LLAMAR -> Llamadas.llamar(p, b.readUUID(), b.readBoolean(), b.readBoolean());
                 case MovilRed.C_LLAMAR_NUMERO -> {
                     String num = b.readUtf(8);
-                    boolean video = b.readBoolean();
+                    boolean video = b.readBoolean(), oculto = b.readBoolean();
                     MovilDatos.Perfil o = datos(p.server).porNumero(num);
                     if (o == null) aviso(p, "movil.miscelanea.aviso.no_existe", num);
-                    else Llamadas.llamar(p, o.id, video);
+                    else Llamadas.llamar(p, o.id, video, oculto);
                 }
+                case MovilRed.C_LLAMAR_GRUPO -> Llamadas.llamarGrupo(p, b.readVarInt(), b.readBoolean());
+                case MovilRed.C_SILENCIAR -> Llamadas.silenciar(p, b.readBoolean());
+                case MovilRed.C_ALTAVOZ -> Llamadas.altavoz(p, b.readBoolean());
+                case MovilRed.C_CAMBIAR_LLAMADA -> Llamadas.cambiar(p);
+                case MovilRed.C_TONO_CONTACTO -> tonoContacto(p, b.readUUID(), b.readByte());
+                case MovilRed.C_CLIP_TROZO -> Clips.trozo(p, b);
+                case MovilRed.C_CLIP_PEDIR -> Clips.pedir(p, b.readByte(), b.readVarInt());
+                case MovilRed.C_FLASH -> LinternaLuz.flash(p);
                 case MovilRed.C_CONTESTAR -> Llamadas.contestar(p, b.readBoolean());
                 case MovilRed.C_COLGAR -> Llamadas.colgar(p);
                 case MovilRed.C_VIDEO -> Llamadas.video(p, b.readByteArray(32000));
@@ -185,7 +220,17 @@ public final class MovilServidor {
     }
 
     // ------------------------------------------------------------------ sync
+    private static void tonoContacto(ServerPlayer p, UUID otro, int tono) {
+        MovilDatos d = datos(p.server);
+        MovilDatos.Perfil yo = d.perfil(p.getUUID(), nombre(p));
+        if (tono < 0 || tono >= MovilRegistro.TONOS) yo.tonos.remove(otro);
+        else if (d.perfiles.containsKey(otro)) yo.tonos.put(otro, tono);
+        d.setDirty();
+        sync(p);
+    }
+
     public static void sync(ServerPlayer p) {
+        refrescarNombre(p);
         MovilDatos d = datos(p.server);
         MovilDatos.Perfil yo = d.perfil(p.getUUID(), nombre(p));
         List<MovilDatos.Chat> chats = d.chatsDe(p.getUUID());
@@ -206,6 +251,7 @@ public final class MovilServidor {
                 b.writeUtf(o.nombre);
                 b.writeUtf(o.numero);
                 b.writeBoolean(p.server.getPlayerList().getPlayer(o.id) != null);
+                b.writeByte(yo.tonos.getOrDefault(o.id, -1));
             }
             b.writeVarInt(chats.size());
             for (MovilDatos.Chat c : chats) {
@@ -222,7 +268,7 @@ public final class MovilServidor {
             b.writeVarInt(yo.llamadas.size());
             for (MovilDatos.Registro r : yo.llamadas) {
                 b.writeUUID(r.otro());
-                b.writeUtf(nombreDe(p.server, r.otro()));
+                b.writeUtf(r.otro().equals(Llamadas.OCULTO) ? "" : nombreDe(p.server, r.otro()));
                 b.writeLong(r.t());
                 b.writeByte(r.tipo());
                 b.writeVarInt(r.dur());
@@ -262,6 +308,7 @@ public final class MovilServidor {
     /** Borra los archivos (foto/nota de voz) de un mensaje que desaparece. */
     static void borrarArchivos(MinecraftServer s, MovilDatos.Mensaje m) {
         if (m.adjunto() >= 0) Fotos.borrar(Fotos.adjunto(s, m.adjunto()));
+        if (m.adjunto() >= 0 && m.voz() < 0 && m.vozMs() > 0) Fotos.borrar(Fotos.clipAdjunto(s, m.adjunto()));
         if (m.voz() >= 0) Fotos.borrar(Fotos.voz(s, m.voz()));
     }
 
@@ -339,17 +386,20 @@ public final class MovilServidor {
         if (ult != null && ahora - ult < 2) return;
         ULT_MENSAJE.put(p.getUUID(), ahora);
         texto = limpiar(texto, MAX_TEXTO);
-        int adj = -1;
+        int adj = -1, clipMs = 0;
         if (fotoId > 0) {
             MovilDatos.Perfil yo = d.perfil(p.getUUID(), nombre(p));
             boolean es = yo.fotos.stream().anyMatch(f -> f.id() == fotoId);
             if (es) {
                 int a = d.sigAdjunto++;
                 if (Fotos.copiar(Fotos.propia(p.server, p.getUUID(), fotoId), Fotos.adjunto(p.server, a))) adj = a;
+                int ms = Clips.msDe(yo, fotoId);
+                // vídeo corto: se copia también el vídeo (si falla, va solo la miniatura)
+                if (adj >= 0 && ms > 0 && Fotos.copiar(Fotos.clipPropio(p.server, p.getUUID(), fotoId), Fotos.clipAdjunto(p.server, a))) clipMs = ms;
             }
         }
         if (texto.isEmpty() && adj < 0) return;
-        difundir(p, c, new MovilDatos.Mensaje(++c.sec, p.getUUID(), System.currentTimeMillis(), texto, adj));
+        difundir(p, c, new MovilDatos.Mensaje(++c.sec, p.getUUID(), System.currentTimeMillis(), texto, adj, -1, clipMs, new byte[0]));
     }
 
     /** Añade el mensaje (ya con su número) al chat, recorta el historial y se lo manda a los miembros conectados. */
@@ -423,15 +473,19 @@ public final class MovilServidor {
         enviarFotos(p);
     }
 
-    private static void enviarFotos(ServerPlayer p) {
+    static void enviarFotos(ServerPlayer p) {
         MovilDatos.Perfil yo = datos(p.server).perfil(p.getUUID(), nombre(p));
         MovilRed.aJugador(p, MovilRed.S_FOTOS, b -> {
             b.writeVarInt(MovilConfig.maxFotos());
             b.writeVarInt(MovilConfig.maxBytesFoto());
+            b.writeBoolean(MovilConfig.clips());
+            b.writeVarInt(MovilConfig.clipSegundos());
+            b.writeVarInt(MovilConfig.clipMaxBytes());
             b.writeVarInt(yo.fotos.size());
             for (int i = yo.fotos.size() - 1; i >= 0; i--) {
                 b.writeVarInt(yo.fotos.get(i).id());
                 b.writeLong(yo.fotos.get(i).t());
+                b.writeVarInt(yo.fotos.get(i).ms());
             }
         });
     }
@@ -468,6 +522,7 @@ public final class MovilServidor {
         MovilDatos.Perfil yo = d.perfil(p.getUUID(), nombre(p));
         if (yo.fotos.removeIf(f -> f.id() == id)) {
             Fotos.borrar(Fotos.propia(p.server, p.getUUID(), id));
+            Fotos.borrar(Fotos.clipPropio(p.server, p.getUUID(), id));
             d.setDirty();
         }
         enviarFotos(p);

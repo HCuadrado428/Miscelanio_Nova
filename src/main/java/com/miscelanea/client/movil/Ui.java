@@ -37,7 +37,8 @@ public final class Ui {
             G_GRUPO = 16, G_FOTO = 17, G_ALARMA = 18, G_DERECHA = 19, G_MENOS = 20, G_BORRAR_TECLA = 21, G_LINTERNA = 22, G_VIDEO_NO = 23,
             G_CORAZON = 24, G_CORAZON_V = 25, G_COMENTARIO = 26, G_MICRO = 27, G_PLAY = 28, G_PAUSA = 29, G_PIN = 30, G_NAVEGAR = 31,
             G_ESMERALDA = 32, G_TRANSFER = 33, G_SEGUIR = 34, G_CENTRAR = 35, G_PERFIL = 36, G_CASA = 37, G_LISTA = 38, G_CAMPANA = 39,
-            G_COFRE = 40;
+            G_COFRE = 40, G_ALTAVOZ = 41, G_MICRO_NO = 42, G_CAMBIAR = 43, G_TEMPORIZADOR = 44, G_FLASH = 45, G_FLASH_NO = 46,
+            G_FILTRO = 47, G_GRABAR = 48, G_ZOOM = 49;
 
     public static Font font() {
         return Minecraft.getInstance().font;
@@ -132,6 +133,7 @@ public final class Ui {
 
     /** Cara del jugador (con sombrero) con las esquinas redondeadas usando el color de fondo. */
     public static void cara(GuiGraphics g, UUID id, int x, int y, int tam, int fondo) {
+        if (tam >= 14 && caraModelo(g, id, x, y, tam, fondo)) return;
         PlayerFaceRenderer.draw(g, piel(id), x, y, tam);
         int c = Math.max(1, tam / 8);
         rect(g, x, y, c, c, fondo);
@@ -139,6 +141,66 @@ public final class Ui {
         rect(g, x, y + tam - c, c, c, fondo);
         rect(g, x + tam - c, y + tam - c, c, c, fondo);
     }
+
+    /**
+     * Con Customizable Player Models: si el jugador está cargado cerca, se dibuja la cabeza de su modelo de verdad (lo que
+     * pinte CPM, con su piel) en vez de la cara de la piel. Devuelve false si no se puede (y se usa la piel).
+     */
+    private static boolean caraModelo(GuiGraphics g, UUID id, int x, int y, int tam, int fondo) {
+        if (id == null || !CPM) return false;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null) return false;
+        net.minecraft.world.entity.player.Player p = mc.level.getPlayerByUUID(id);
+        if (p == null || p.isInvisible() || p.isSpectator() || p.isSleeping()) return false;
+        org.joml.Matrix4f m = g.pose().last().pose();
+        org.joml.Vector4f a = m.transform(new org.joml.Vector4f(x, y, 0, 1)), b = m.transform(new org.joml.Vector4f(x + tam, y + tam, 0, 1));
+        int sx0 = (int) Math.floor(Math.min(a.x(), b.x())), sy0 = (int) Math.floor(Math.min(a.y(), b.y()));
+        int sx1 = (int) Math.ceil(Math.max(a.x(), b.x())), sy1 = (int) Math.ceil(Math.max(a.y(), b.y()));
+        redondo(g, x, y, tam, tam, Math.max(1, tam / 8), 0xFF2A3640);
+        g.enableScissor(sx0, sy0, sx1, sy1);
+        boolean empujado = false;
+        float yb = p.yBodyRot, ybo = p.yBodyRotO, yr = p.getYRot(), yro = p.yRotO, xr = p.getXRot(), xro = p.xRotO, yh = p.yHeadRot, yho = p.yHeadRotO;
+        try {
+            p.yBodyRot = p.yBodyRotO = 180F;
+            p.setYRot(180F);
+            p.yRotO = 180F;
+            p.setXRot(0);
+            p.xRotO = 0;
+            p.yHeadRot = p.yHeadRotO = 180F;
+            float esc = tam / 0.62F;
+            float cabeza = p.getEyeHeight() + 0.12F;
+            g.pose().pushPose();
+            empujado = true;
+            g.pose().translate(x + tam / 2F, y + tam / 2F, 120);
+            g.pose().mulPoseMatrix(new org.joml.Matrix4f().scaling(esc, esc, -esc));
+            g.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees(180F));
+            g.pose().translate(0, -cabeza, 0);
+            com.mojang.blaze3d.platform.Lighting.setupForEntityInInventory();
+            var d = mc.getEntityRenderDispatcher();
+            d.overrideCameraOrientation(com.mojang.math.Axis.XP.rotationDegrees(0).conjugate());
+            d.setRenderShadow(false);
+            RenderSystem.runAsFancy(() -> d.render(p, 0, 0, 0, 0, 1F, g.pose(), g.bufferSource(), 0xF000F0));
+            g.flush();
+            d.setRenderShadow(true);
+            com.mojang.blaze3d.platform.Lighting.setupFor3DItems();
+        } catch (RuntimeException e) {
+            CPM = false;     // si algo falla una vez, no se vuelve a intentar
+        } finally {
+            if (empujado) g.pose().popPose();
+            p.yBodyRot = yb;
+            p.yBodyRotO = ybo;
+            p.setYRot(yr);
+            p.yRotO = yro;
+            p.setXRot(xr);
+            p.xRotO = xro;
+            p.yHeadRot = yh;
+            p.yHeadRotO = yho;
+            g.disableScissor();
+        }
+        return CPM;
+    }
+
+    private static boolean CPM = net.minecraftforge.fml.ModList.get().isLoaded("cpm");
 
     /** Avatar de grupo: círculo de color (según el nombre) con la inicial. */
     public static void avatarGrupo(GuiGraphics g, String nombre, int x, int y, int tam) {

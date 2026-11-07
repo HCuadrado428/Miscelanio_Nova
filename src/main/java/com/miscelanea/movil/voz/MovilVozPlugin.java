@@ -25,8 +25,9 @@ import java.util.UUID;
  * el voicechat si está instalado, y nadie del mod la referencia). Va aparte del plugin de las voces
  * ({@code client/voz/plugin/MiscelaneaVozPlugin}), con su propio id.
  * <ul>
- *   <li>Cada paquete de micro de alguien en llamada se manda también a su pareja como sonido estático (sin posición: se
- *       oye a cualquier distancia o dimensión).</li>
+ *   <li>Cada paquete de micro de alguien en llamada se manda también a los demás de la llamada como sonido estático (sin
+ *       posición: se oye a cualquier distancia o dimensión), salvo si se ha silenciado.</li>
+ *   <li>Si alguno tiene el altavoz puesto, a los que estén a su alrededor les llega también, en su sitio.</li>
  *   <li>La copia normal por proximidad que le llegaría a la pareja se cancela, para no oírlo doble.</li>
  *   <li>Si los dos están ya en el mismo grupo del voicechat no se hace nada (ya se oyen).</li>
  *   <li>Notas de voz: da el códec Opus del voicechat y, en el cliente, copia el micro del jugador mientras graba.</li>
@@ -107,24 +108,44 @@ public class MovilVozPlugin implements VoicechatPlugin {
         return ga != null && gb != null && ga.getId().equals(gb.getId());
     }
 
+    /** Distancia a la que se oye el altavoz de un móvil. */
+    private static final double ALTAVOZ = 8.0;
+
     private static void micro(MicrophonePacketEvent e) {
         VoicechatServerApi a = api;
         VoicechatConnection yo = e.getSenderConnection();
         if (a == null || yo == null) return;
-        UUID otro = MovilVoz.SOCIOS.get(yo.getPlayer().getUuid());
-        if (otro == null) return;
-        VoicechatConnection oc = a.getConnectionOf(otro);
-        if (oc == null || !oc.isInstalled() || mismoGrupo(yo, oc)) return;
-        try {
-            a.sendStaticSoundPacketTo(oc, e.getPacket().toStaticSoundPacket());
-        } catch (Throwable ignored) {
+        UUID mio = yo.getPlayer().getUuid();
+        java.util.Set<UUID> otros = MovilVoz.SOCIOS.get(mio);
+        if (otros == null || otros.isEmpty() || MovilVoz.MUTE.contains(mio)) return;
+        for (UUID otro : otros) {
+            VoicechatConnection oc = a.getConnectionOf(otro);
+            if (oc == null || !oc.isInstalled() || mismoGrupo(yo, oc)) continue;
+            try {
+                a.sendStaticSoundPacketTo(oc, e.getPacket().toStaticSoundPacket());
+                if (MovilVoz.ALTAVOZ.contains(otro)) altavoz(a, e, mio, otros, oc);
+            } catch (Throwable ignored) {
+            }
+        }
+    }
+
+    /** Lo que le llega a quien tiene el altavoz puesto suena también en su sitio, para los que estén cerca. */
+    private static void altavoz(VoicechatServerApi a, MicrophonePacketEvent e, UUID mio, java.util.Set<UUID> llamada, VoicechatConnection oc) {
+        de.maxhenkel.voicechat.api.ServerPlayer p = oc.getPlayer();
+        de.maxhenkel.voicechat.api.Position pos = p.getPosition();
+        var paquete = e.getPacket().toLocationalSoundPacket(a.createPosition(pos.getX(), pos.getY() + 1.0, pos.getZ()));
+        for (de.maxhenkel.voicechat.api.ServerPlayer cerca : a.getPlayersInRange(p.getServerLevel(), pos, ALTAVOZ)) {
+            UUID u = cerca.getUuid();
+            if (u.equals(mio) || u.equals(p.getUuid()) || llamada.contains(u)) continue;
+            VoicechatConnection c = a.getConnectionOf(u);
+            if (c != null && c.isInstalled() && !c.isDisabled()) a.sendLocationalSoundPacketTo(c, paquete);
         }
     }
 
     private static void quitarCopia(PacketEvent<?> e) {
         VoicechatConnection de = e.getSenderConnection(), para = e.getReceiverConnection();
         if (de == null || para == null) return;
-        UUID otro = MovilVoz.SOCIOS.get(de.getPlayer().getUuid());
-        if (otro != null && otro.equals(para.getPlayer().getUuid()) && !mismoGrupo(de, para)) e.cancel();
+        java.util.Set<UUID> otros = MovilVoz.SOCIOS.get(de.getPlayer().getUuid());
+        if (otros != null && otros.contains(para.getPlayer().getUuid()) && !mismoGrupo(de, para)) e.cancel();
     }
 }

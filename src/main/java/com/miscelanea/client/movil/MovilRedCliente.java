@@ -44,9 +44,12 @@ public final class MovilRedCliente {
                 case MovilRed.S_FOTOS -> {
                     maxFotos = b.readVarInt();
                     maxBytesFoto = b.readVarInt();
+                    clipsServidor = b.readBoolean();
+                    clipMaxSeg = b.readVarInt();
+                    clipMaxBytes = b.readVarInt();
                     int n = b.readVarInt();
                     FOTOS.clear();
-                    for (int i = 0; i < n; i++) FOTOS.add(new Foto(b.readVarInt(), b.readLong()));
+                    for (int i = 0; i < n; i++) FOTOS.add(new Foto(b.readVarInt(), b.readLong(), b.readVarInt()));
                     fotosCargadas = true;
                 }
                 case MovilRed.S_FOTO -> {
@@ -54,19 +57,36 @@ public final class MovilRedCliente {
                     FotoCache.recibir(t, id, b.readByteArray());
                 }
                 case MovilRed.S_LLAMADA -> {
-                    int estado = b.readByte();
-                    UUID otro = b.readUUID();
-                    String nombre = b.readUtf();
-                    boolean video = b.readBoolean();
-                    int motivo = b.readByte();
+                    int estado = b.readByte(), motivo = b.readByte();
+                    boolean video = b.readBoolean(), grupo = b.readBoolean();
+                    String nombreGrupo = b.readUtf();
+                    boolean ocultoYo = b.readBoolean();
+                    int n = b.readVarInt();
+                    java.util.List<Parte> partes = new java.util.ArrayList<>();
+                    for (int i = 0; i < n; i++) partes.add(new Parte(b.readUUID(), b.readUtf(), b.readByte()));
+                    boolean mute = b.readBoolean(), altavoz = b.readBoolean();
+                    int dos = -1;
+                    UUID dId = null;
+                    String dNombre = "";
+                    boolean dVideo = false;
+                    if (b.readBoolean()) {
+                        dos = b.readByte();
+                        dId = b.readUUID();
+                        dNombre = b.readUtf();
+                        dVideo = b.readBoolean();
+                    }
                     videoParams(b.readBoolean(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt());
-                    MovilCliente.llamada(estado, otro, nombre, video, motivo);
+                    MovilCliente.llamada(estado, motivo, video, grupo, nombreGrupo, ocultoYo, partes, mute, altavoz, dos, dId, dNombre, dVideo);
                 }
                 case MovilRed.S_VIDEO -> {
-                    byte[] img = b.readByteArray();
-                    otroVideo = img.length > 0;
-                    FotoCache.video(img);
+                    UUID de = b.readUUID();
+                    FotoCache.video(de, b.readByteArray());
                 }
+                case MovilRed.S_CLIP -> {
+                    int t = b.readByte(), id = b.readVarInt();
+                    ClipCliente.recibir(t, id, b.readByteArray());
+                }
+                case MovilRed.S_FLASH -> MovilCliente.deslumbrar(b.readFloat());
                 case MovilRed.S_POSE -> poseRemota(b.readVarInt(), b.readByte());
                 case MovilRed.S_AVISO -> aviso(Component.translatable(b.readUtf(), b.readUtf()));
                 case MovilRed.S_CHAT_ID -> chatPendiente = b.readVarInt();
@@ -112,7 +132,7 @@ public final class MovilRedCliente {
         videoServidor = b.readBoolean();
         CONTACTOS.clear();
         int n = b.readVarInt();
-        for (int i = 0; i < n; i++) CONTACTOS.add(new Contacto(b.readUUID(), b.readUtf(), b.readUtf(), b.readBoolean()));
+        for (int i = 0; i < n; i++) CONTACTOS.add(new Contacto(b.readUUID(), b.readUtf(), b.readUtf(), b.readBoolean(), b.readByte()));
         CONTACTOS.sort((x, y) -> x.conectado() != y.conectado() ? (x.conectado() ? -1 : 1) : x.nombre().compareToIgnoreCase(y.nombre()));
         CHATS.clear();
         n = b.readVarInt();

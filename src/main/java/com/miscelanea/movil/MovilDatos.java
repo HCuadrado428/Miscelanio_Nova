@@ -36,18 +36,26 @@ public class MovilDatos extends SavedData {
         public final List<Registro> llamadas = new ArrayList<>();
         /** chat → último número de mensaje leído. */
         public final Map<Integer, Long> leido = new HashMap<>();
+        /** Tono de llamada para un contacto concreto (si no está, el general). */
+        public final Map<UUID, Integer> tonos = new HashMap<>();
 
         Perfil(UUID id) {
             this.id = id;
         }
     }
 
-    public record FotoMeta(int id, long t) {}
+    /** Foto de la galería; con {@code ms > 0} es un vídeo corto (y la foto es su miniatura). */
+    public record FotoMeta(int id, long t, int ms) {
+        public FotoMeta(int id, long t) {
+            this(id, t, 0);
+        }
+    }
 
     public record Registro(UUID otro, long t, int tipo, int dur, boolean video) {}
 
     /**
-     * Un mensaje: texto, o foto adjunta ({@code adjunto} &ge; 0), o nota de voz ({@code voz} &ge; 0, con su duración en ms y
+     * Un mensaje: texto, o foto adjunta ({@code adjunto} &ge; 0; si además {@code voz} &lt; 0 y {@code vozMs} &gt; 0 es un
+     * vídeo corto de esa duración), o nota de voz ({@code voz} &ge; 0, con su duración en ms y
      * su forma de onda: una barra 0..255 por byte).
      */
     public record Mensaje(long sec, UUID de, long t, String texto, int adjunto, int voz, int vozMs, byte[] onda) {
@@ -175,6 +183,7 @@ public class MovilDatos extends SavedData {
                 CompoundTag x = new CompoundTag();
                 x.putInt("id", f.id());
                 x.putLong("t", f.t());
+                if (f.ms() > 0) x.putInt("ms", f.ms());
                 fs.add(x);
             }
             c.put("fotos", fs);
@@ -192,6 +201,14 @@ public class MovilDatos extends SavedData {
             CompoundTag le = new CompoundTag();
             p.leido.forEach((k, v) -> le.putLong(Integer.toString(k), v));
             c.put("leido", le);
+            ListTag ts = new ListTag();
+            p.tonos.forEach((k, v) -> {
+                CompoundTag x = new CompoundTag();
+                x.putUUID("u", k);
+                x.putByte("t", (byte) (int) v);
+                ts.add(x);
+            });
+            c.put("tonos", ts);
             ps.add(c);
         }
         t.put("perfiles", ps);
@@ -217,6 +234,8 @@ public class MovilDatos extends SavedData {
                 x.putLong("t", m.t());
                 x.putString("x", m.texto());
                 if (m.adjunto() >= 0) x.putInt("a", m.adjunto());
+                // adjunto con vozMs y sin voz: es un vídeo corto (vozMs = su duración)
+                if (m.voz() < 0 && m.vozMs() > 0) x.putInt("vms", m.vozMs());
                 if (m.voz() >= 0) {
                     x.putInt("v", m.voz());
                     x.putInt("vms", m.vozMs());
@@ -249,12 +268,15 @@ public class MovilDatos extends SavedData {
             p.alarma = c.contains("alarma") ? c.getInt("alarma") : -1;
             p.sigFoto = Math.max(1, c.getInt("sigFoto"));
             ListTag fs = c.getList("fotos", Tag.TAG_COMPOUND);
-            for (int j = 0; j < fs.size(); j++) p.fotos.add(new FotoMeta(fs.getCompound(j).getInt("id"), fs.getCompound(j).getLong("t")));
+            for (int j = 0; j < fs.size(); j++) p.fotos.add(new FotoMeta(fs.getCompound(j).getInt("id"), fs.getCompound(j).getLong("t"), fs.getCompound(j).getInt("ms")));
             ListTag ll = c.getList("llamadas", Tag.TAG_COMPOUND);
             for (int j = 0; j < ll.size(); j++) {
                 CompoundTag x = ll.getCompound(j);
                 if (x.hasUUID("o")) p.llamadas.add(new Registro(x.getUUID("o"), x.getLong("t"), x.getByte("k"), x.getInt("d"), x.getBoolean("v")));
             }
+            ListTag ts = c.getList("tonos", Tag.TAG_COMPOUND);
+            for (int j = 0; j < ts.size(); j++)
+                if (ts.getCompound(j).hasUUID("u")) p.tonos.put(ts.getCompound(j).getUUID("u"), (int) ts.getCompound(j).getByte("t"));
             CompoundTag le = c.getCompound("leido");
             for (String k : le.getAllKeys()) {
                 try {

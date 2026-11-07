@@ -36,9 +36,10 @@ public final class MovilRegistro {
             RECETAS.register("movil_tinte", () -> new SimpleCraftingRecipeSerializer<>(MovilTinteReceta::new));
 
     /** Tonos de llamada (Ajustes → Tono). */
-    public static final int TONOS = 3;
+    public static final int TONOS = 6;
     @SuppressWarnings("unchecked")
-    public static final RegistryObject<SoundEvent>[] TONO = new RegistryObject[]{sonido("movil_tono_0"), sonido("movil_tono_1"), sonido("movil_tono_2")};
+    public static final RegistryObject<SoundEvent>[] TONO = new RegistryObject[]{sonido("movil_tono_0"), sonido("movil_tono_1"), sonido("movil_tono_2"),
+            sonido("movil_tono_3"), sonido("movil_tono_4"), sonido("movil_tono_5")};
     public static final RegistryObject<SoundEvent> VIBRAR = sonido("movil_vibrar");
     public static final RegistryObject<SoundEvent> MENSAJE = sonido("movil_mensaje");
     public static final RegistryObject<SoundEvent> OBTURADOR = sonido("movil_obturador");

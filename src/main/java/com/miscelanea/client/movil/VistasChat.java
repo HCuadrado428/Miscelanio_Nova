@@ -86,7 +86,7 @@ final class VistasChat {
         if (m == null) return "";
         var p = Minecraft.getInstance().player;
         String quien = p != null && m.de().equals(p.getUUID()) ? Vista.t("tu") + ": " : grupo ? m.nombreDe() + ": " : "";
-        return quien + (m.adjunto() >= 0 ? Vista.t("foto_adjunta") : m.voz() >= 0 ? Vista.t("nota_voz", MovilCliente.duracion(m.vozMs() / 1000)) : m.texto());
+        return quien + (m.adjunto() >= 0 ? Vista.t(m.voz() < 0 && m.vozMs() > 0 ? "video_adjunto" : "foto_adjunta") : m.voz() >= 0 ? Vista.t("nota_voz", MovilCliente.duracion(m.vozMs() / 1000)) : m.texto());
     }
 
     /** Lista de chats para tocar uno (la usan la app y "enviar foto a..."). */
@@ -319,7 +319,7 @@ final class VistasChat {
             else if (c != null && !grupo) Ui.cara(g, otro(new ArrayList<>(c.miembros.keySet())), 17, BARRA + 3, 14, Ui.CABECERA);
             UUID otroId = c != null && !grupo ? otro(new ArrayList<>(c.miembros.keySet())) : null;
             int ind = VistasMapa.indicador(g, otroId, W - 31, BARRA + 1);
-            Ui.texto(g, Ui.cortar(nombre, W - 66 - ind), 35, BARRA + 2, Ui.TEXTO);
+            Ui.texto(g, Ui.cortar(nombre, W - 66 - ind - (grupo ? 14 : 0)), 35, BARRA + 2, Ui.TEXTO);
             String sub = "";
             if (c != null) {
                 if (grupo) sub = t("miembros", c.miembros.size());
@@ -338,6 +338,10 @@ final class VistasChat {
                 for (UUID u : c.miembros.keySet()) if (MovilCliente.ubiMia(u) != null) compartiendo = true;
                 boolean sp = Ui.dentro(mx, my, W - 31, BARRA, 14, CAB);
                 Ui.glifo(g, Ui.G_PIN, W - 27, BARRA + 6, compartiendo ? Ui.AZUL : sp ? 0xFFFFFFFF : Ui.TEXTO2);
+            }
+            if (grupo && c != null) {
+                // llamada de grupo
+                Ui.glifo(g, Ui.G_TELEFONO, W - 41, BARRA + 6, Ui.dentro(mx, my, W - 45, BARRA, 14, CAB) ? 0xFFFFFFFF : Ui.ACENTO);
             }
             if (grupo) {
                 boolean conf = Util.getMillis() - confirmarSalir < 3000;
@@ -402,7 +406,8 @@ final class VistasChat {
                     Ui.rect(g, fx, ty, fw, fh, 0xFF151B20);
                     Ui.glifo(g, Ui.G_FOTO, fx + fw / 2 - 4, ty + fh / 2 - 4, Ui.TEXTO2);
                 }
-                fotosVisibles.add(new Object[]{msg.adjunto(), fx, ty, fw, fh});
+                if (msg.voz() < 0 && msg.vozMs() > 0) VistasFotos.marcaVideo(g, fx, ty, fw, fh, msg.vozMs());
+                fotosVisibles.add(new Object[]{msg.adjunto(), fx, ty, fw, fh, msg.voz() < 0 ? msg.vozMs() : 0});
                 ty += fh + 2;
             }
             for (FormattedCharSequence s : b.lineas) {
@@ -475,6 +480,12 @@ final class VistasChat {
                     return true;
                 }
             }
+            if (c != null && c.grupo && Ui.dentro(x, y, W - 45, BARRA, 14, CAB)) {
+                MovilCliente.clic();
+                if (VistasTelefono.faltaVoz() == null) MovilCliente.llamarGrupo(id, false);
+                else MovilCliente.aviso(net.minecraft.network.chat.Component.literal(VistasTelefono.faltaVoz()));
+                return true;
+            }
             if (Ui.dentro(x, y, W - 17, BARRA, 17, CAB) && c != null) {
                 if (c.grupo) {
                     if (Util.getMillis() - confirmarSalir < 3000) {
@@ -509,7 +520,7 @@ final class VistasChat {
             for (Object[] f : fotosVisibles)
                 if (Ui.dentro(x, y, (int) f[1], (int) f[2], (int) f[3], (int) f[4]) && y >= Y0 && y < abajo) {
                     MovilCliente.clic();
-                    m.abrir(new VistasFotos.Foto(MovilRed.FOTO_ADJUNTA, (int) f[0]));
+                    m.abrir(new VistasFotos.Foto(MovilRed.FOTO_ADJUNTA, (int) f[0], (int) f[5]));
                     return true;
                 }
             return false;

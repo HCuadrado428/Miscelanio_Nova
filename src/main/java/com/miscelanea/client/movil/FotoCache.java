@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Set;
 
 /** Texturas de las fotos que se han pedido al servidor (como mucho {@link #MAX}; se sueltan las menos usadas) y la del vídeo del otro. */
@@ -42,7 +43,6 @@ public final class FotoCache {
     /** Las que el servidor dijo que no existen y cuándo (se vuelve a probar pasado un rato, por si acaban de subirse). */
     private static final Map<String, Long> FALTAN = new java.util.HashMap<>();
     private static final long ESPERA = 6000, REINTENTO = 15000;
-    private static Tex video;
     private static int pedidasAhora;
 
     private static String clave(int tipo, int id) {
@@ -99,33 +99,51 @@ public final class FotoCache {
         if (t != null) t.soltar();
     }
 
-    // ------------------------------------------------------------------ vídeo del otro
-    static void video(byte[] datos) {
+    // ------------------------------------------------------------------ vídeo de los demás de la llamada
+    private static final Map<UUID, Tex> VIDEOS = new java.util.HashMap<>();
+    private static final Map<UUID, Long> ULT_VIDEO = new java.util.HashMap<>();
+
+    static void video(UUID de, byte[] datos) {
         if (datos.length == 0) {
-            quitarVideo();
+            quitarVideo(de);
             return;
         }
         NativeImage img = MovilCaptura.decodificar(datos);
         if (img == null) return;
-        if (video != null && video.w == img.getWidth() && video.h == img.getHeight() && video.t.getPixels() != null) {
-            NativeImage dst = video.t.getPixels();
-            for (int y = 0; y < img.getHeight(); y++)
-                for (int x = 0; x < img.getWidth(); x++) dst.setPixelRGBA(x, y, img.getPixelRGBA(x, y));
+        ULT_VIDEO.put(de, net.minecraft.Util.getMillis());
+        Tex v = VIDEOS.get(de);
+        if (v != null && v.w == img.getWidth() && v.h == img.getHeight() && v.t.getPixels() != null) {
+            NativeImage dst = v.t.getPixels();
+            dst.copyFrom(img);
             img.close();
-            video.t.upload();
+            v.t.upload();
         } else {
-            quitarVideo();
-            video = new Tex(img, "video");
+            quitarVideo(de);
+            VIDEOS.put(de, new Tex(img, "video_" + Integer.toHexString(de.hashCode())));
         }
     }
 
-    public static Tex video() {
-        return video;
+    /** El vídeo de esa persona (null si no tiene la cámara puesta o lleva rato sin llegar). */
+    public static Tex video(UUID de) {
+        Tex t = VIDEOS.get(de);
+        if (t == null) return null;
+        if (net.minecraft.Util.getMillis() - ULT_VIDEO.getOrDefault(de, 0L) > 4000) {
+            quitarVideo(de);
+            return null;
+        }
+        return t;
     }
 
-    public static void quitarVideo() {
-        if (video != null) video.soltar();
-        video = null;
+    public static void quitarVideo(UUID de) {
+        Tex t = VIDEOS.remove(de);
+        if (t != null) t.soltar();
+        ULT_VIDEO.remove(de);
+    }
+
+    public static void quitarVideos() {
+        for (Tex t : VIDEOS.values()) t.soltar();
+        VIDEOS.clear();
+        ULT_VIDEO.clear();
     }
 
     public static void limpiar() {
@@ -134,7 +152,7 @@ public final class FotoCache {
         PEDIDAS.clear();
         FALTAN.clear();
         pedidasAhora = 0;
-        quitarVideo();
+        quitarVideos();
     }
 
     /** Dibuja t llenando el rectángulo (recorta lo que sobre para no deformar). */

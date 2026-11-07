@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 public final class MovilRed {
     private MovilRed() {}
 
-    private static final String PROTOCOLO = "2";
+    private static final String PROTOCOLO = "3";
     public static final SimpleChannel CANAL = NetworkRegistry.newSimpleChannel(new ResourceLocation(Miscelanea.MOD_ID, "movil"),
             () -> PROTOCOLO, PROTOCOLO::equals, PROTOCOLO::equals);
 
@@ -44,14 +44,18 @@ public final class MovilRed {
             // linterna
             C_LINTERNA = 35,
             // fichas de recreativa en el cajero (cuántas)
-            C_FICHAS = 38;
+            C_FICHAS = 38,
+            // llamadas: de grupo, silenciar, altavoz, cambiar a la que está en espera, tono de un contacto
+            C_LLAMAR_GRUPO = 39, C_SILENCIAR = 40, C_ALTAVOZ = 41, C_CAMBIAR_LLAMADA = 42, C_TONO_CONTACTO = 43,
+            // cámara: vídeos cortos (subir por trozos y pedir) y flash
+            C_CLIP_TROZO = 44, C_CLIP_PEDIR = 45, C_FLASH = 46;
     // ---------------------------------------------------------------- servidor → cliente
     public static final int S_SYNC = 0, S_CHAT = 1, S_MENSAJE = 2, S_FOTOS = 3, S_FOTO = 4, S_LLAMADA = 5, S_VIDEO = 6, S_POSE = 7,
             S_AVISO = 8, S_CHAT_ID = 9, S_VOZ = 10, S_UBI = 11, S_NOTI = 12, S_MG_FEED = 13, S_MG_POST = 14, S_MG_PERFIL = 15,
-            S_MG_NOTIS = 16, S_BANCO = 17, S_LINTERNA = 18;
+            S_MG_NOTIS = 16, S_BANCO = 17, S_LINTERNA = 18, S_CLIP = 19, S_FLASH = 20;
 
     /** Estados de llamada que manda {@link #S_LLAMADA}. */
-    public static final int LL_FIN = 0, LL_SALIENTE = 1, LL_ENTRANTE = 2, LL_ACTIVA = 3;
+    public static final int LL_FIN = 0, LL_SALIENTE = 1, LL_ENTRANTE = 2, LL_ACTIVA = 3, LL_ESPERA = 4;
     /** Poses del jugador con el móvil (para los demás). */
     public static final int POSE_NADA = 0, POSE_MIRAR = 1, POSE_SELFIE = 2;
     /** Tipos de foto que se piden: de tu galería o adjunta a un mensaje. */

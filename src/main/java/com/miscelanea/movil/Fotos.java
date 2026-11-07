@@ -37,6 +37,16 @@ public final class Fotos {
         return raiz(s).resolve("minegram").resolve(id + ".jpg");
     }
 
+    /** Vídeo corto de la galería (su miniatura es la foto con el mismo id). */
+    static Path clipPropio(MinecraftServer s, UUID jugador, int id) {
+        return raiz(s).resolve("fotos").resolve(jugador.toString()).resolve(id + ".mvd");
+    }
+
+    /** Vídeo corto enviado a un chat (su miniatura es el adjunto con el mismo id). */
+    static Path clipAdjunto(MinecraftServer s, int id) {
+        return raiz(s).resolve("adjuntos").resolve(id + ".mvd");
+    }
+
     /** Nota de voz de un chat (Opus en el formato de {@code NotasVoz}). */
     static Path voz(MinecraftServer s, int id) {
         return raiz(s).resolve("voz").resolve(id + ".mvz");

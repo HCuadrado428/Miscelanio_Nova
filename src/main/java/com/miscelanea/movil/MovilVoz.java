@@ -9,8 +9,8 @@ import java.util.function.Predicate;
  * Puente con Simple Voice Chat sin tocar su API (para que el mod cargue sin él). Lo rellena el plugin
  * {@link com.miscelanea.movil.voz.MovilVozPlugin}, que el voicechat descubre solo si está instalado.
  * <p>
- * {@link #SOCIOS}: jugador → con quién está en una llamada activa (en los dos sentidos). El plugin, en el hilo de red del
- * voicechat, reenvía el micro de cada uno al otro como sonido "estático" (se oye igual a cualquier distancia o
+ * {@link #SOCIOS}: jugador → con quiénes está en una llamada activa. El plugin, en el hilo de red del
+ * voicechat, reenvía el micro de cada uno a los demás como sonido "estático" (se oye igual a cualquier distancia o
  * dimensión) y quita la copia de proximidad para que no se oiga doble si están cerca.
  */
 public final class MovilVoz {
@@ -45,7 +45,12 @@ public final class MovilVoz {
         return nuevoCodificador != null && nuevoDecodificador != null;
     }
     static volatile Predicate<UUID> conectado = u -> false;
-    public static final Map<UUID, UUID> SOCIOS = new ConcurrentHashMap<>();
+    /** Jugador → los que le oyen por el móvil (los demás de su llamada actual). */
+    public static final Map<UUID, java.util.Set<UUID>> SOCIOS = new ConcurrentHashMap<>();
+    /** En llamada con el micro silenciado (no se le reenvía a nadie). */
+    public static final java.util.Set<UUID> MUTE = ConcurrentHashMap.newKeySet();
+    /** En llamada con el altavoz puesto: lo que le llega por el móvil lo oyen también los de alrededor. */
+    public static final java.util.Set<UUID> ALTAVOZ = ConcurrentHashMap.newKeySet();
 
     /** El voicechat está funcionando en este servidor. */
     public static boolean disponible() {

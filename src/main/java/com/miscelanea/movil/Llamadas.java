@@ -6,56 +6,130 @@ import net.minecraft.sounds.SoundSource;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
- * Llamadas y videollamadas (en memoria; si se reinicia el servidor se cortan). La voz la lleva Simple Voice Chat a través
- * de {@link MovilVoz#SOCIOS}; el vídeo son imágenes JPEG pequeñas que el servidor reenvía SOLO al otro de la llamada,
- * con límite de imágenes por segundo y de tamaño ({@link MovilConfig}).
+ * Llamadas y videollamadas (en memoria; si se reinicia el servidor se cortan): individuales o de grupo (hasta
+ * {@link #MAX_GRUPO} personas), con llamada en espera, número oculto, silenciar y altavoz.
  * <p>
- * Ancho de banda del vídeo, por defecto (72x128, 5 fps, JPEG calidad ~55): 2-4 KB por imagen → 10-20 KB/s por sentido
- * (el servidor recibe y reenvía lo mismo: ~40 KB/s por videollamada en total). Con el máximo (144x256, 12 fps) puede
- * llegar a ~150 KB/s por sentido.
+ * Cada jugador tiene como mucho dos llamadas: la {@link #ACTUAL} (la que oye, la que está sonando o la que está haciendo) y
+ * la {@link #SEGUNDA}: otra que le está entrando mientras habla (llamada en espera) o la que ha dejado en espera al coger
+ * otra. La voz la lleva Simple Voice Chat a través de {@link MovilVoz#SOCIOS} (solo entre los que tienen esa llamada como
+ * actual); el vídeo son imágenes JPEG pequeñas que el servidor reenvía SOLO a los de la llamada.
  */
 public final class Llamadas {
     private Llamadas() {}
 
     public static final int FIN_COLGADA = 0, FIN_RECHAZADA = 1, FIN_SIN_RESPUESTA = 2, FIN_CORTADA = 3;
+    /** Personas como máximo en una llamada de grupo (contando a quien llama). */
+    public static final int MAX_GRUPO = 4;
+    /** Estado de cada participante en {@link MovilRed#S_LLAMADA}. */
+    public static final int P_SONANDO = 0, P_DENTRO = 1, P_ESPERA = 2;
+    /** UUID que ve quien recibe una llamada con número oculto. */
+    public static final UUID OCULTO = new UUID(0, 0);
 
     static final class Llamada {
-        final UUID a, b;
-        final boolean video;
-        boolean activa;
-        long creada, inicio;
-        long ultA, ultB;
+        final UUID quien;
+        final boolean video, oculto;
+        final int chat;
+        final String nombreGrupo;
+        /** En orden: quien llama primero. */
+        final List<UUID> miembros = new ArrayList<>();
+        final Set<UUID> dentro = new LinkedHashSet<>(), sonando = new LinkedHashSet<>();
+        final Map<UUID, Long> entro = new HashMap<>(), ultVideo = new HashMap<>();
+        final long creada;
+        long inicio = -1;
 
-        Llamada(UUID a, UUID b, boolean video, long ahora) {
-            this.a = a;
-            this.b = b;
+        Llamada(UUID quien, boolean video, boolean oculto, int chat, String nombreGrupo, long ahora) {
+            this.quien = quien;
             this.video = video;
+            this.oculto = oculto;
+            this.chat = chat;
+            this.nombreGrupo = nombreGrupo;
             this.creada = ahora;
         }
 
-        UUID otro(UUID u) {
-            return u.equals(a) ? b : a;
+        boolean activa() {
+            return inicio >= 0;
+        }
+
+        boolean grupo() {
+            return chat >= 0;
+        }
+
+        /** El "otro" para el registro de llamadas de u. */
+        UUID otroPara(UUID u) {
+            if (!u.equals(quien)) return oculto ? OCULTO : quien;
+            for (UUID m : miembros) if (!m.equals(u)) return m;
+            return quien;
         }
     }
 
-    private static final Map<UUID, Llamada> EN = new HashMap<>();
+    private static final Map<UUID, Llamada> ACTUAL = new HashMap<>(), SEGUNDA = new HashMap<>();
+    /** Motivo del último fin para cada uno (para el paquete de fin). */
+    private static final Map<UUID, Integer> MOTIVO = new HashMap<>();
 
     public static boolean ocupado(UUID u) {
-        return EN.containsKey(u);
+        return ACTUAL.containsKey(u);
     }
 
-    private static void estado(ServerPlayer p, int estado, UUID otro, String nombre, boolean video, int motivo) {
+    /** Se le puede llamar: libre, o hablando y sin otra llamada en espera (le entrará como llamada en espera). */
+    private static boolean admite(UUID u) {
+        Llamada a = ACTUAL.get(u);
+        if (a == null) return true;
+        return a.dentro.contains(u) && !SEGUNDA.containsKey(u);
+    }
+
+    // ------------------------------------------------------------------ estado al cliente
+    private static String nombreVisible(MinecraftServer s, Llamada l, UUID u, UUID para) {
+        if (l.oculto && u.equals(l.quien) && !para.equals(l.quien)) return "";
+        return MovilServidor.nombreDe(s, u);
+    }
+
+    private static int estadoDe(Llamada l, UUID u) {
+        if (l.sonando.contains(u)) return MovilRed.LL_ENTRANTE;
+        if (!l.activa()) return MovilRed.LL_SALIENTE;
+        return MovilRed.LL_ACTIVA;
+    }
+
+    /** Manda a u cómo están sus llamadas (o el fin, si ya no tiene ninguna). */
+    private static void enviar(MinecraftServer s, UUID u) {
+        ServerPlayer p = s.getPlayerList().getPlayer(u);
+        if (p == null) return;
+        Llamada l = ACTUAL.get(u), dos = SEGUNDA.get(u);
+        int motivo = MOTIVO.getOrDefault(u, FIN_COLGADA);
         MovilRed.aJugador(p, MovilRed.S_LLAMADA, b -> {
-            b.writeByte(estado);
-            b.writeUUID(otro);
-            b.writeUtf(nombre);
-            b.writeBoolean(video);
+            b.writeByte(l == null ? MovilRed.LL_FIN : estadoDe(l, u));
             b.writeByte(motivo);
+            b.writeBoolean(l != null && l.video);
+            b.writeBoolean(l != null && l.grupo());
+            b.writeUtf(l == null ? "" : l.nombreGrupo);
+            b.writeBoolean(l != null && l.oculto && u.equals(l.quien));
+            List<UUID> otros = new ArrayList<>();
+            if (l != null) for (UUID m : l.miembros) if (!m.equals(u) && (l.dentro.contains(m) || l.sonando.contains(m))) otros.add(m);
+            b.writeVarInt(otros.size());
+            for (UUID m : otros) {
+                boolean ocultar = l.oculto && m.equals(l.quien) && !u.equals(l.quien);
+                b.writeUUID(ocultar ? OCULTO : m);
+                b.writeUtf(nombreVisible(s, l, m, u));
+                b.writeByte(l.sonando.contains(m) ? P_SONANDO : ACTUAL.get(m) == l ? P_DENTRO : P_ESPERA);
+            }
+            b.writeBoolean(MovilVoz.MUTE.contains(u));
+            b.writeBoolean(MovilVoz.ALTAVOZ.contains(u));
+            b.writeBoolean(dos != null);
+            if (dos != null) {
+                boolean entrante = dos.sonando.contains(u);
+                b.writeByte(entrante ? MovilRed.LL_ENTRANTE : MovilRed.LL_ESPERA);
+                UUID cara = entrante ? (dos.oculto ? OCULTO : dos.quien) : dos.otroPara(u);
+                b.writeUUID(cara);
+                b.writeUtf(dos.grupo() ? dos.nombreGrupo : cara.equals(OCULTO) ? "" : MovilServidor.nombreDe(s, cara));
+                b.writeBoolean(dos.video);
+            }
             b.writeBoolean(MovilConfig.video());
             b.writeVarInt(MovilConfig.videoFps());
             b.writeVarInt(MovilConfig.videoAncho());
@@ -64,25 +138,59 @@ public final class Llamadas {
         });
     }
 
-    static void llamar(ServerPlayer yo, UUID otroId, boolean video) {
-        if (otroId.equals(yo.getUUID()) || ocupado(yo.getUUID())) return;
-        MinecraftServer s = yo.server;
-        String nombreOtro = MovilServidor.nombreDe(s, otroId);
+    private static void enviarTodos(MinecraftServer s, Llamada l) {
+        for (UUID m : l.miembros) enviar(s, m);
+    }
+
+    /** Recalcula quién oye a quién (solo los que tienen la llamada como actual y están dentro). */
+    private static void recalcularVoz() {
+        Map<UUID, Set<UUID>> nuevo = new HashMap<>();
+        Set<Llamada> vistas = new HashSet<>(ACTUAL.values());
+        for (Llamada l : vistas) {
+            List<UUID> oyen = new ArrayList<>();
+            for (UUID u : l.dentro) if (ACTUAL.get(u) == l) oyen.add(u);
+            if (oyen.size() < 2) continue;
+            for (UUID u : oyen) {
+                Set<UUID> otros = new HashSet<>(oyen);
+                otros.remove(u);
+                nuevo.put(u, Set.copyOf(otros));
+            }
+        }
+        MovilVoz.SOCIOS.keySet().retainAll(nuevo.keySet());
+        MovilVoz.SOCIOS.putAll(nuevo);
+        // silencio y altavoz solo valen mientras se está en una llamada
+        MovilVoz.MUTE.removeIf(u -> !ACTUAL.containsKey(u));
+        MovilVoz.ALTAVOZ.removeIf(u -> !ACTUAL.containsKey(u));
+    }
+
+    // ------------------------------------------------------------------ llamar
+    private static boolean puedeLlamar(ServerPlayer yo) {
+        if (ocupado(yo.getUUID())) return false;
         if (!MovilVoz.disponible()) {
             MovilServidor.aviso(yo, "movil.miscelanea.aviso.sin_voz_servidor", "");
-            return;
+            return false;
         }
         if (!MovilVoz.conectado(yo.getUUID())) {
             MovilServidor.aviso(yo, "movil.miscelanea.aviso.sin_voz_tu", "");
-            return;
+            return false;
         }
+        return true;
+    }
+
+    static void llamar(ServerPlayer yo, UUID otroId, boolean video, boolean oculto) {
+        if (otroId.equals(yo.getUUID()) || otroId.equals(OCULTO) || !puedeLlamar(yo)) return;
+        MinecraftServer s = yo.server;
+        String nombreOtro = MovilServidor.nombreDe(s, otroId);
         ServerPlayer otro = s.getPlayerList().getPlayer(otroId);
         if (otro == null || !MovilServidor.tieneMovil(otro)) {
             MovilServidor.aviso(yo, "movil.miscelanea.aviso.no_disponible", nombreOtro);
-            registrarAmbos(s, yo.getUUID(), otroId, false, 0, video);
+            MovilDatos d = MovilServidor.datos(s);
+            long ahora = System.currentTimeMillis();
+            d.registrar(yo.getUUID(), new MovilDatos.Registro(otroId, ahora, MovilDatos.R_SIN_RESPUESTA, 0, video));
+            d.registrar(otroId, new MovilDatos.Registro(oculto ? OCULTO : yo.getUUID(), ahora, MovilDatos.R_PERDIDA, 0, video));
             return;
         }
-        if (ocupado(otroId)) {
+        if (!admite(otroId)) {
             MovilServidor.aviso(yo, "movil.miscelanea.aviso.ocupado", nombreOtro);
             return;
         }
@@ -94,12 +202,46 @@ public final class Llamadas {
             MovilServidor.aviso(yo, "movil.miscelanea.aviso.sin_cobertura", nombreOtro);
             return;
         }
-        boolean v = video && MovilConfig.video();
-        Llamada l = new Llamada(yo.getUUID(), otroId, v, s.getTickCount());
-        EN.put(l.a, l);
-        EN.put(l.b, l);
-        estado(yo, MovilRed.LL_SALIENTE, otroId, nombreOtro, v, 0);
-        estado(otro, MovilRed.LL_ENTRANTE, yo.getUUID(), MovilServidor.nombre(yo), v, 0);
+        Llamada l = new Llamada(yo.getUUID(), video && MovilConfig.video(), oculto, -1, "", s.getTickCount());
+        empezar(s, l, List.of(otro));
+    }
+
+    /** Llamada de grupo a los del chat (los que estén conectados, con móvil y voz), hasta {@link #MAX_GRUPO}. */
+    static void llamarGrupo(ServerPlayer yo, int chatId, boolean video) {
+        MovilDatos.Chat c = MovilServidor.chatDeJugador(yo, chatId);
+        if (c == null || !c.grupo || !puedeLlamar(yo)) return;
+        MinecraftServer s = yo.server;
+        List<ServerPlayer> invitados = new ArrayList<>();
+        for (UUID u : c.miembros) {
+            if (u.equals(yo.getUUID()) || invitados.size() >= MAX_GRUPO - 1) continue;
+            ServerPlayer o = s.getPlayerList().getPlayer(u);
+            if (o != null && MovilServidor.tieneMovil(o) && admite(u) && MovilVoz.conectado(u) && cobertura(yo, o)) invitados.add(o);
+        }
+        if (invitados.isEmpty()) {
+            MovilServidor.aviso(yo, "movil.miscelanea.aviso.grupo_nadie", "");
+            return;
+        }
+        Llamada l = new Llamada(yo.getUUID(), video && MovilConfig.video(), false, c.id,
+                MovilServidor.nombreChat(s, c, yo.getUUID()), s.getTickCount());
+        empezar(s, l, invitados);
+    }
+
+    private static void empezar(MinecraftServer s, Llamada l, List<ServerPlayer> invitados) {
+        l.miembros.add(l.quien);
+        l.dentro.add(l.quien);
+        l.entro.put(l.quien, (long) s.getTickCount());
+        ACTUAL.put(l.quien, l);
+        MOTIVO.remove(l.quien);
+        for (ServerPlayer o : invitados) {
+            UUID u = o.getUUID();
+            l.miembros.add(u);
+            l.sonando.add(u);
+            MOTIVO.remove(u);
+            if (ACTUAL.containsKey(u)) SEGUNDA.put(u, l);
+            else ACTUAL.put(u, l);
+        }
+        recalcularVoz();
+        enviarTodos(s, l);
         timbre(s, l);
     }
 
@@ -110,122 +252,247 @@ public final class Llamadas {
         return a.distanceToSqr(b) <= d * d;
     }
 
-    /** El timbre suena en el mundo, donde está quien recibe la llamada (lo oyen también los de alrededor). */
+    /**
+     * El timbre suena en el mundo, donde está quien recibe la llamada (lo oyen también los de alrededor), con el tono que
+     * tenga puesto para quien llama. Si le entra mientras habla (llamada en espera) no suena: el pitido lo pone su móvil.
+     */
     private static void timbre(MinecraftServer s, Llamada l) {
-        ServerPlayer o = s.getPlayerList().getPlayer(l.b);
-        if (o == null) return;
-        MovilDatos.Perfil pf = MovilServidor.datos(s).perfil(l.b, null);
-        if (pf.silencio)
-            o.level().playSound(null, o.getX(), o.getY(), o.getZ(), MovilRegistro.VIBRAR.get(), SoundSource.PLAYERS, 0.5F, 1.0F);
-        else
-            o.level().playSound(null, o.getX(), o.getY(), o.getZ(), MovilRegistro.TONO[Math.floorMod(pf.tono, MovilRegistro.TONOS)].get(),
+        for (UUID u : l.sonando) {
+            if (SEGUNDA.get(u) == l) continue;
+            ServerPlayer o = s.getPlayerList().getPlayer(u);
+            if (o == null) continue;
+            MovilDatos.Perfil pf = MovilServidor.datos(s).perfil(u, null);
+            if (pf.silencio) {
+                o.level().playSound(null, o.getX(), o.getY(), o.getZ(), MovilRegistro.VIBRAR.get(), SoundSource.PLAYERS, 0.5F, 1.0F);
+                continue;
+            }
+            int tono = l.oculto || l.grupo() ? pf.tono : pf.tonos.getOrDefault(l.quien, pf.tono);
+            o.level().playSound(null, o.getX(), o.getY(), o.getZ(), MovilRegistro.TONO[Math.floorMod(tono, MovilRegistro.TONOS)].get(),
                     SoundSource.PLAYERS, 0.9F, 1.0F);
+        }
+    }
+
+    // ------------------------------------------------------------------ contestar, colgar, cambiar
+    /** La llamada que le está sonando a u (la actual o la que le entra en espera). */
+    private static Llamada sonandoA(UUID u) {
+        Llamada a = ACTUAL.get(u);
+        if (a != null && a.sonando.contains(u)) return a;
+        Llamada b = SEGUNDA.get(u);
+        return b != null && b.sonando.contains(u) ? b : null;
     }
 
     static void contestar(ServerPlayer yo, boolean si) {
-        Llamada l = EN.get(yo.getUUID());
-        if (l == null || l.activa || !l.b.equals(yo.getUUID())) return;
-        if (!si) {
-            terminar(yo.server, l, FIN_RECHAZADA);
-            return;
-        }
+        UUID u = yo.getUUID();
+        Llamada l = sonandoA(u);
+        if (l == null) return;
         MinecraftServer s = yo.server;
-        ServerPlayer a = s.getPlayerList().getPlayer(l.a);
-        if (a == null) {
-            terminar(s, l, FIN_CORTADA);
+        if (!si) {
+            rechazar(s, u, l);
             return;
         }
-        l.activa = true;
-        l.inicio = s.getTickCount();
-        MovilVoz.SOCIOS.put(l.a, l.b);
-        MovilVoz.SOCIOS.put(l.b, l.a);
-        estado(a, MovilRed.LL_ACTIVA, l.b, MovilServidor.nombre(yo), l.video, 0);
-        estado(yo, MovilRed.LL_ACTIVA, l.a, MovilServidor.nombre(a), l.video, 0);
+        Llamada antes = null;
+        if (SEGUNDA.get(u) == l) {
+            // llamada en espera: la que tenía pasa a esperar
+            antes = ACTUAL.get(u);
+            ACTUAL.put(u, l);
+            SEGUNDA.put(u, antes);
+        }
+        l.sonando.remove(u);
+        l.dentro.add(u);
+        l.entro.put(u, (long) s.getTickCount());
+        if (!l.activa()) l.inicio = s.getTickCount();
+        recalcularVoz();
+        enviarTodos(s, l);
+        if (antes != null) enviarTodos(s, antes);
+    }
+
+    private static void rechazar(MinecraftServer s, UUID u, Llamada l) {
+        l.sonando.remove(u);
+        MovilServidor.datos(s).registrar(u, new MovilDatos.Registro(l.otroPara(u), System.currentTimeMillis(), MovilDatos.R_ENTRANTE, 0, l.video));
+        MOTIVO.put(u, FIN_RECHAZADA);
+        quitarMapa(u, l);
+        if (!comprobar(s, l, FIN_RECHAZADA)) enviarTodos(s, l);
+        enviar(s, u);
     }
 
     static void colgar(ServerPlayer yo) {
-        Llamada l = EN.get(yo.getUUID());
+        UUID u = yo.getUUID();
+        Llamada l = ACTUAL.get(u);
         if (l == null) return;
-        terminar(yo.server, l, l.activa ? FIN_COLGADA : yo.getUUID().equals(l.b) ? FIN_RECHAZADA : FIN_COLGADA);
+        if (l.sonando.contains(u)) rechazar(yo.server, u, l);
+        else salirDe(yo.server, u, l, FIN_COLGADA);
+    }
+
+    /** Pasa de la llamada actual a la que está en espera (y la actual queda en espera). */
+    static void cambiar(ServerPlayer yo) {
+        UUID u = yo.getUUID();
+        Llamada a = ACTUAL.get(u), b = SEGUNDA.get(u);
+        if (a == null || b == null || !b.dentro.contains(u) || a.sonando.contains(u)) return;
+        ACTUAL.put(u, b);
+        SEGUNDA.put(u, a);
+        recalcularVoz();
+        enviarTodos(yo.server, a);
+        enviarTodos(yo.server, b);
+    }
+
+    static void silenciar(ServerPlayer yo, boolean si) {
+        if (!ACTUAL.containsKey(yo.getUUID())) return;
+        if (si) MovilVoz.MUTE.add(yo.getUUID());
+        else MovilVoz.MUTE.remove(yo.getUUID());
+        enviarTodos(yo.server, ACTUAL.get(yo.getUUID()));
+    }
+
+    static void altavoz(ServerPlayer yo, boolean si) {
+        if (!ACTUAL.containsKey(yo.getUUID())) return;
+        if (si) MovilVoz.ALTAVOZ.add(yo.getUUID());
+        else MovilVoz.ALTAVOZ.remove(yo.getUUID());
+        enviar(yo.server, yo.getUUID());
     }
 
     static void salir(ServerPlayer yo) {
-        Llamada l = EN.get(yo.getUUID());
-        if (l != null) terminar(yo.server, l, l.activa ? FIN_CORTADA : FIN_SIN_RESPUESTA);
+        UUID u = yo.getUUID();
+        for (Llamada l : new Llamada[]{SEGUNDA.get(u), ACTUAL.get(u)}) {
+            if (l == null) continue;
+            if (l.sonando.contains(u)) {
+                l.sonando.remove(u);
+                MovilServidor.datos(yo.server).registrar(u, new MovilDatos.Registro(l.otroPara(u), System.currentTimeMillis(), MovilDatos.R_PERDIDA, 0, l.video));
+                quitarMapa(u, l);
+                if (!comprobar(yo.server, l, FIN_SIN_RESPUESTA)) enviarTodos(yo.server, l);
+            } else salirDe(yo.server, u, l, FIN_CORTADA);
+        }
+        MovilVoz.MUTE.remove(u);
+        MovilVoz.ALTAVOZ.remove(u);
+    }
+
+    /** u deja la llamada l (estaba dentro). */
+    private static void salirDe(MinecraftServer s, UUID u, Llamada l, int motivo) {
+        if (!l.dentro.remove(u)) return;
+        registrarDentro(s, u, l);
+        MOTIVO.put(u, motivo);
+        quitarMapa(u, l);
+        if (!comprobar(s, l, motivo)) enviarTodos(s, l);
+        enviar(s, u);
+        Llamada sigue = ACTUAL.get(u);
+        if (sigue != null && sigue != l) enviarTodos(s, sigue);
+    }
+
+    private static void registrarDentro(MinecraftServer s, UUID u, Llamada l) {
+        MovilDatos d = MovilServidor.datos(s);
+        long ahora = System.currentTimeMillis();
+        if (!l.activa()) {
+            // quien llamaba y nadie lo cogió
+            d.registrar(u, new MovilDatos.Registro(l.otroPara(u), ahora, MovilDatos.R_SIN_RESPUESTA, 0, l.video));
+            return;
+        }
+        int dur = (int) ((s.getTickCount() - l.entro.getOrDefault(u, l.inicio)) / 20);
+        d.registrar(u, new MovilDatos.Registro(l.otroPara(u), ahora, u.equals(l.quien) ? MovilDatos.R_SALIENTE : MovilDatos.R_ENTRANTE, dur, l.video));
+    }
+
+    /** Quita la llamada l de los huecos de u (si era la actual, la de espera pasa a ser la actual). */
+    private static void quitarMapa(UUID u, Llamada l) {
+        if (ACTUAL.get(u) == l) {
+            ACTUAL.remove(u);
+            Llamada b = SEGUNDA.remove(u);
+            if (b != null) ACTUAL.put(u, b);
+        } else if (SEGUNDA.get(u) == l) SEGUNDA.remove(u);
+        recalcularVoz();
+    }
+
+    /** Si ya no queda llamada (menos de dos personas, o nadie dentro), la termina. Devuelve si la terminó. */
+    private static boolean comprobar(MinecraftServer s, Llamada l, int motivo) {
+        boolean viva = !l.dentro.isEmpty() && l.dentro.size() + l.sonando.size() >= 2;
+        if (viva) return false;
+        terminar(s, l, motivo);
+        return true;
     }
 
     private static void terminar(MinecraftServer s, Llamada l, int motivo) {
-        EN.remove(l.a);
-        EN.remove(l.b);
-        MovilVoz.SOCIOS.remove(l.a);
-        MovilVoz.SOCIOS.remove(l.b);
-        int dur = l.activa ? (int) ((s.getTickCount() - l.inicio) / 20) : 0;
         MovilDatos d = MovilServidor.datos(s);
         long ahora = System.currentTimeMillis();
-        if (l.activa) {
-            d.registrar(l.a, new MovilDatos.Registro(l.b, ahora, MovilDatos.R_SALIENTE, dur, l.video));
-            d.registrar(l.b, new MovilDatos.Registro(l.a, ahora, MovilDatos.R_ENTRANTE, dur, l.video));
-        } else if (motivo == FIN_RECHAZADA) {
-            d.registrar(l.a, new MovilDatos.Registro(l.b, ahora, MovilDatos.R_SIN_RESPUESTA, 0, l.video));
-            d.registrar(l.b, new MovilDatos.Registro(l.a, ahora, MovilDatos.R_ENTRANTE, 0, l.video));
-        } else {
-            registrarAmbos(s, l.a, l.b, false, 0, l.video);
+        for (UUID u : new ArrayList<>(l.dentro)) {
+            registrarDentro(s, u, l);
+            MOTIVO.put(u, motivo);
+            quitarMapa(u, l);
         }
-        for (UUID u : new UUID[]{l.a, l.b}) {
+        for (UUID u : new ArrayList<>(l.sonando)) {
+            d.registrar(u, new MovilDatos.Registro(l.otroPara(u), ahora, MovilDatos.R_PERDIDA, 0, l.video));
+            MOTIVO.put(u, FIN_SIN_RESPUESTA);
+            quitarMapa(u, l);
+        }
+        l.dentro.clear();
+        l.sonando.clear();
+        recalcularVoz();
+        for (UUID u : l.miembros) {
+            enviar(s, u);
+            Llamada sigue = ACTUAL.get(u);
+            if (sigue != null) enviarTodos(s, sigue);
             ServerPlayer p = s.getPlayerList().getPlayer(u);
-            if (p != null) {
-                UUID o = l.otro(u);
-                estado(p, MovilRed.LL_FIN, o, MovilServidor.nombreDe(s, o), l.video, motivo);
-                MovilServidor.sync(p);
-            }
+            if (p != null) MovilServidor.sync(p);
         }
-    }
-
-    /** Llamada que no se cogió: perdida para quien la recibe, sin respuesta para quien llama. */
-    private static void registrarAmbos(MinecraftServer s, UUID a, UUID b, boolean activa, int dur, boolean video) {
-        MovilDatos d = MovilServidor.datos(s);
-        long ahora = System.currentTimeMillis();
-        d.registrar(a, new MovilDatos.Registro(b, ahora, MovilDatos.R_SIN_RESPUESTA, 0, video));
-        d.registrar(b, new MovilDatos.Registro(a, ahora, MovilDatos.R_PERDIDA, 0, video));
     }
 
     static void tick(MinecraftServer s) {
-        if (EN.isEmpty()) return;
+        if (ACTUAL.isEmpty()) return;
         long ahora = s.getTickCount();
-        List<Llamada> todas = new ArrayList<>();
-        for (Llamada l : EN.values()) if (!todas.contains(l)) todas.add(l);
+        Set<Llamada> todas = new HashSet<>(ACTUAL.values());
+        todas.addAll(SEGUNDA.values());
         for (Llamada l : todas) {
-            ServerPlayer a = s.getPlayerList().getPlayer(l.a), b = s.getPlayerList().getPlayer(l.b);
-            if (a == null || b == null) {
-                terminar(s, l, l.activa ? FIN_CORTADA : FIN_SIN_RESPUESTA);
-                continue;
-            }
-            if (!l.activa) {
-                if (ahora - l.creada > MovilConfig.timbreTicks()) {
-                    terminar(s, l, FIN_SIN_RESPUESTA);
-                    continue;
+            if (l.dentro.isEmpty() && l.sonando.isEmpty()) continue;
+            // el timbre se acaba: los que no lo cogieron, perdida
+            if (ahora - l.creada > MovilConfig.timbreTicks() && !l.sonando.isEmpty()) {
+                for (UUID u : new ArrayList<>(l.sonando)) {
+                    l.sonando.remove(u);
+                    MovilServidor.datos(s).registrar(u, new MovilDatos.Registro(l.otroPara(u), System.currentTimeMillis(), MovilDatos.R_PERDIDA, 0, l.video));
+                    MOTIVO.put(u, FIN_SIN_RESPUESTA);
+                    quitarMapa(u, l);
+                    enviar(s, u);
                 }
-                if ((ahora - l.creada) % 50 == 0) timbre(s, l);
+                if (comprobar(s, l, FIN_SIN_RESPUESTA)) continue;
+                enviarTodos(s, l);
+            } else if (!l.sonando.isEmpty() && (ahora - l.creada) % 50 == 0) timbre(s, l);
+            if (ahora % 20 != 0) continue;
+            for (UUID u : new ArrayList<>(l.dentro)) {
+                ServerPlayer p = s.getPlayerList().getPlayer(u);
+                boolean mal = p == null || !MovilServidor.tieneMovil(p);
+                if (!mal) {
+                    boolean alguno = false;
+                    for (UUID v : l.dentro) {
+                        if (v.equals(u)) continue;
+                        ServerPlayer q = s.getPlayerList().getPlayer(v);
+                        if (q != null && cobertura(p, q)) alguno = true;
+                    }
+                    for (UUID v : l.sonando) {
+                        ServerPlayer q = s.getPlayerList().getPlayer(v);
+                        if (q != null && cobertura(p, q)) alguno = true;
+                    }
+                    mal = !alguno;
+                }
+                if (mal) {
+                    salirDe(s, u, l, FIN_CORTADA);
+                    if (l.dentro.isEmpty()) break;
+                }
             }
-            if (ahora % 20 == 0 && (!MovilServidor.tieneMovil(a) || !MovilServidor.tieneMovil(b) || !cobertura(a, b)))
-                terminar(s, l, FIN_CORTADA);
         }
     }
 
-    /** Imagen de vídeo de un lado de la llamada → al otro (vacía = cámara apagada). */
+    /** Imagen de vídeo de uno de la llamada → a los demás que la oyen (vacía = cámara apagada). */
     static void video(ServerPlayer yo, byte[] img) {
-        Llamada l = EN.get(yo.getUUID());
-        if (l == null || !l.activa || !MovilConfig.video()) return;
+        UUID u = yo.getUUID();
+        Llamada l = ACTUAL.get(u);
+        if (l == null || !l.activa() || !l.dentro.contains(u) || !MovilConfig.video()) return;
         if (img.length > 0) {
             if (img.length > MovilConfig.videoMaxBytes() || !Fotos.valida(img, MovilConfig.videoMaxBytes())) return;
             long ms = System.currentTimeMillis(), min = (long) (1000.0 / MovilConfig.videoFps() * 0.7);
-            boolean esA = yo.getUUID().equals(l.a);
-            long ult = esA ? l.ultA : l.ultB;
-            if (ms - ult < min) return;
-            if (esA) l.ultA = ms;
-            else l.ultB = ms;
+            if (ms - l.ultVideo.getOrDefault(u, 0L) < min) return;
+            l.ultVideo.put(u, ms);
         }
-        ServerPlayer otro = yo.server.getPlayerList().getPlayer(l.otro(yo.getUUID()));
-        if (otro != null) MovilRed.aJugador(otro, MovilRed.S_VIDEO, b -> b.writeByteArray(img));
+        for (UUID v : l.dentro) {
+            if (v.equals(u) || ACTUAL.get(v) != l) continue;
+            ServerPlayer o = yo.server.getPlayerList().getPlayer(v);
+            if (o != null) MovilRed.aJugador(o, MovilRed.S_VIDEO, b -> {
+                b.writeUUID(u);
+                b.writeByteArray(img);
+            });
+        }
     }
 }

@@ -96,9 +96,31 @@ public final class NotasVozCliente {
         return true;
     }
 
+    /** Empieza a grabar el sonido de un vídeo corto (si hay voicechat; si no, el vídeo va mudo). */
+    static boolean empezarVideo() {
+        if (grabando || !MovilCliente.notasVoz()) return false;
+        if (!empezar(-1)) return false;
+        return true;
+    }
+
+    /** Termina el sonido del vídeo y lo devuelve comprimido (formato de las notas de voz), o null. */
+    static byte[] terminarVideo() {
+        if (!grabando || chatGrabando != -1) return null;
+        grabando = false;
+        MovilVoz.microCliente = null;
+        recoger();
+        cerrarAlc();
+        List<short[]> tramas = new ArrayList<>(TRAMAS);
+        TRAMAS.clear();
+        COLA.clear();
+        if (tramas.size() < 10) return null;
+        return codificar(tramas);
+    }
+
     /** Termina la grabación: enviar = mandarla al chat; si no, se descarta. */
     static void terminar(boolean enviar) {
         if (!grabando) return;
+        if (chatGrabando == -1) enviar = false;
         grabando = false;
         MovilVoz.microCliente = null;
         recoger();
@@ -268,10 +290,10 @@ public final class NotasVozCliente {
         if (grabando) {
             recoger();
             if (alc == 0 && !alcIntentado && ultimoSvc == 0 && Util.getMillis() - tInicio > 250) abrirAlc();
-            if (Util.getMillis() - tInicio >= MovilCliente.vozMaxSeg * 1000L) terminar(true);
+            if (chatGrabando != -1 && Util.getMillis() - tInicio >= MovilCliente.vozMaxSeg * 1000L) terminar(true);
             if (!(Minecraft.getInstance().screen instanceof MovilScreen)) terminar(false);
         }
-        if (sonando >= 0 && (sonido == null || !Minecraft.getInstance().getSoundManager().isActive(sonido))
+        if (sonando != -1 && (sonido == null || !Minecraft.getInstance().getSoundManager().isActive(sonido))
                 && Util.getMillis() - tSonando > 600) {
             sonando = -1;
             sonido = null;
@@ -339,6 +361,20 @@ public final class NotasVozCliente {
         sonido = null;
         sonando = -1;
         quiero = -1;
+    }
+
+    /** Hace sonar el sonido de un vídeo corto (ya descargado); devuelve si ha empezado. */
+    static boolean sonarBlob(byte[] blob) {
+        parar();
+        if (blob == null || blob.length == 0 || !MovilVoz.codecDisponible()) return false;
+        short[] pcm = decodificar(blob);
+        if (pcm == null || pcm.length == 0) return false;
+        sonido = new Sonido(pcm);
+        sonando = -2;
+        msSonando = pcm.length * 1000 / HZ;
+        tSonando = Util.getMillis();
+        Minecraft.getInstance().getSoundManager().play(sonido);
+        return true;
     }
 
     private static void sonar(int id, byte[] blob) {

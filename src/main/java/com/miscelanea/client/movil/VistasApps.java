@@ -290,6 +290,9 @@ final class VistasApps {
             fila(g, y, t("silencio"), mx, my);
             interruptor(g, W - 30, y + 5, MovilCliente.silencio);
             y += 22;
+            fila(g, y, t("ocultar_numero"), mx, my);
+            interruptor(g, W - 30, y + 5, MovilCliente.ocultarSiempre);
+            y += 22;
             Ui.texto(g, t("fondo"), 10, y + 6, Ui.TEXTO);
             y += 18;
             for (int i = 0; i < FONDOS; i++) {
@@ -344,7 +347,13 @@ final class VistasApps {
                 MovilCliente.ajustes();
                 return true;
             }
-            if (y >= 62 && y < 107) {
+            if (y >= 44 && y < 64) {
+                MovilCliente.ocultarSiempre = !MovilCliente.ocultarSiempre;
+                MovilCliente.clic();
+                MovilCliente.guardarPrefs();
+                return true;
+            }
+            if (y >= 84 && y < 129) {
                 for (int i = 0; i < FONDOS; i++)
                     if (x >= 9 + i * 29 && x < 33 + i * 29) {
                         MovilCliente.fondo = i;

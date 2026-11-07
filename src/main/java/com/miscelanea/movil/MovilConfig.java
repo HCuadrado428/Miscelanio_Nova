@@ -11,7 +11,8 @@ public final class MovilConfig {
 
     private static ForgeConfigSpec.IntValue MAX_FOTOS, MAX_BYTES_FOTO, VIDEO_FPS, VIDEO_ANCHO, VIDEO_MAX_BYTES, HISTORIAL, MAX_CHATS,
             DISTANCIA, TIMBRE_S;
-    private static ForgeConfigSpec.BooleanValue SIN_LIMITE, ENTRE_DIMENSIONES, VIDEO;
+    private static ForgeConfigSpec.BooleanValue SIN_LIMITE, ENTRE_DIMENSIONES, VIDEO, CLIPS, FLASH_DESLUMBRA;
+    private static ForgeConfigSpec.IntValue CLIP_SEGUNDOS, CLIP_MAX_BYTES;
     private static ForgeConfigSpec.BooleanValue NOTAS_VOZ, MINEGRAM, UBICACION, BANCO, BANCO_OBJETOS, LINTERNA_REAL;
     private static ForgeConfigSpec.IntValue VOZ_SEGUNDOS, VOZ_MAX_BYTES, MG_MAX_POSTS, MG_MAX_COMENT, MG_MAX_PIE, MG_MAX_COMENTARIOS, UBI_MAX_MIN,
             BANCO_MAX_TRANSFER, BANCO_MAX_CONCEPTO, LINTERNA_NIVEL, LINTERNA_ALCANCE, BANCO_MOVIL_OP, BANCO_MOVIL_DIA, BANCO_CAJERO_DIST, PRECIO_FICHA;
@@ -35,14 +36,15 @@ public final class MovilConfig {
         ENTRE_DIMENSIONES = b.comment("Permitir llamadas entre dimensiones distintas (Nether, End...) cuando no son sin límite.")
                 .define("llamadas_entre_dimensiones", false);
         TIMBRE_S = b.comment("Segundos que suena una llamada antes de quedar como perdida.").defineInRange("timbre_segundos", 30, 5, 120);
-        VIDEO = b.comment("Permitir videollamadas (imágenes pequeñas en JPEG reenviadas por el servidor solo al otro de la llamada).")
+        VIDEO = b.comment("Permitir videollamadas (imágenes pequeñas en JPEG reenviadas por el servidor solo a los de la llamada).")
                 .define("videollamadas", true);
-        VIDEO_FPS = b.comment("Imágenes por segundo del vídeo (cada lado). Con 72x128 y 5 fps son unos 15-20 KB/s por sentido.")
-                .defineInRange("video_fps", 5, 1, 12);
+        VIDEO_FPS = b.comment("Imágenes por segundo del vídeo (cada uno). Con 84x148 y 10 fps son unos 40-50 KB/s por persona y sentido.",
+                        "(Claves nuevas \"_v2\": las de antes, más lentas, se ignoran.)")
+                .defineInRange("video_fps_v2", 10, 1, 20);
         VIDEO_ANCHO = b.comment("Ancho del vídeo en píxeles (el alto es ancho*16/9, en vertical como un móvil).")
-                .defineInRange("video_ancho", 72, 36, 144);
+                .defineInRange("video_ancho_v2", 84, 36, 144);
         VIDEO_MAX_BYTES = b.comment("Tamaño máximo de cada imagen de vídeo (bytes); las más grandes se descartan.")
-                .defineInRange("video_max_bytes", 9000, 1000, 30000);
+                .defineInRange("video_max_bytes_v2", 11000, 1000, 30000);
 
         b.comment("Notas de voz en los chats (necesitan Simple Voice Chat en el cliente y en el servidor; se comprimen en Opus).",
                 "Las notas se guardan EN EL SERVIDOR (miscelanea_movil/voz/) hasta que salen del historial del chat.").push("notas_voz");
@@ -87,6 +89,14 @@ public final class MovilConfig {
         LINTERNA_REAL = b.comment("Luz de verdad (si es false, solo el efecto visual en el cliente).").define("luz_real", true);
         LINTERNA_NIVEL = b.comment("Nivel de luz del haz (1-15).").defineInRange("nivel", 12, 1, 15);
         LINTERNA_ALCANCE = b.comment("Distancia máxima del haz en bloques.").defineInRange("alcance", 10, 2, 24);
+        b.pop();
+
+        b.comment("Cámara: vídeos cortos (imágenes JPEG pequeñas y, con Simple Voice Chat, el sonido del micro) y flash de verdad.",
+                "Los vídeos se guardan EN EL SERVIDOR (miscelanea_movil/fotos/ y adjuntos/, archivos .mvd) y cuentan como fotos de la galería.").push("camara");
+        CLIPS = b.comment("Permitir grabar vídeos cortos.").define("videos_cortos", true);
+        CLIP_SEGUNDOS = b.comment("Duración máxima de cada vídeo (segundos).").defineInRange("video_max_segundos", 10, 3, 30);
+        CLIP_MAX_BYTES = b.comment("Tamaño máximo de cada vídeo en bytes (10 s suelen ser 250-400 KB).").defineInRange("video_max_bytes", 600000, 50000, 1000000);
+        FLASH_DESLUMBRA = b.comment("El flash deslumbra un momento a los que estén delante mirando a la cámara.").define("flash_deslumbra", true);
         b.pop();
         b.pop();
     }
@@ -139,6 +149,10 @@ public final class MovilConfig {
     public static int bancoCajeroDistancia() { return i(BANCO_CAJERO_DIST); }
     public static int precioFicha() { return i(PRECIO_FICHA); }
     public static boolean linternaReal() { return b(LINTERNA_REAL); }
+    public static boolean clips() { return b(CLIPS); }
+    public static int clipSegundos() { return i(CLIP_SEGUNDOS); }
+    public static int clipMaxBytes() { return i(CLIP_MAX_BYTES); }
+    public static boolean flashDeslumbra() { return b(FLASH_DESLUMBRA); }
     public static int linternaNivel() { return i(LINTERNA_NIVEL); }
     public static int linternaAlcance() { return i(LINTERNA_ALCANCE); }
 }

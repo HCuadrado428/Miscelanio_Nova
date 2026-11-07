@@ -44,8 +44,13 @@ public final class MovilCaptura {
 
     public static final int MW = 360, MH = 640, FW = 180, FH = 320;
     private static TextureTarget medio, medioH, foto, fotoH, video;
+    private static TextureTarget previa, previaH, clip;
     private static long pedidoHasta;
     private static boolean hay, hayH, horizontal;
+    /** Zoom digital (1 a 4): recorta el centro de la pantalla antes de copiarlo. */
+    public static float zoom = 1;
+    /** Filtro de la cámara ({@link Filtros}); se aplica a las fotos, los vídeos y la vista previa. */
+    public static int filtro;
 
     /** Pedirlo en cada fotograma mientras se necesite (en vertical). */
     public static void pedir() {
@@ -78,15 +83,20 @@ public final class MovilCaptura {
         if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES || Util.getMillis() > pedidoHasta) return;
         RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
         int sw = main.width, sh = main.height;
+        float z = Math.max(1, Math.min(4, zoom));
         if (horizontal) {
             if (medioH == null) medioH = nuevo(MH, MW);
             int cw = Math.min(sw, sh * 16 / 9), ch = Math.min(sh, cw * 9 / 16);
+            cw = Math.max(16, (int) (cw / z));
+            ch = Math.max(9, (int) (ch / z));
             int x0 = (sw - cw) / 2, y0 = (sh - ch) / 2;
             copiar(main, x0, y0, x0 + cw, y0 + ch, medioH);
             hayH = true;
         } else {
             if (medio == null) medio = nuevo(MW, MH);
             int cw = Math.min(sw, sh * 9 / 16), ch = Math.min(sh, cw * 16 / 9);
+            cw = Math.max(9, (int) (cw / z));
+            ch = Math.max(16, (int) (ch / z));
             int x0 = (sw - cw) / 2, y0 = (sh - ch) / 2;
             copiar(main, x0, y0, x0 + cw, y0 + ch, medio);
             hay = true;
@@ -123,6 +133,7 @@ public final class MovilCaptura {
         copiar(de, 0, 0, de.width, de.height, a);
         Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
         try (NativeImage img = descargar(a)) {
+            Filtros.aplicar(img, filtro);
             for (int q : new int[]{88, 78, 66, 54, 42, 30}) {
                 byte[] b = jpeg(img, q);
                 if (b != null && b.length <= maxBytes) return b;
@@ -150,6 +161,97 @@ public final class MovilCaptura {
             }
         }
         return null;
+    }
+
+    /**
+     * Imagen de un vídeo corto (w x h, en vertical u horizontal según esté la cámara) con el filtro puesto, en JPEG de como
+     * mucho maxBytes; o null.
+     */
+    public static byte[] clip(int w, int h, int maxBytes) {
+        boolean hz = horizontal;
+        TextureTarget de = hz ? medioH : medio;
+        if (!(hz ? hayH : hay) || de == null) return null;
+        int cw = hz ? h : w, chh = hz ? w : h;     // w x h siempre en vertical; girado, al revés
+        if (clip == null || clip.width != cw || clip.height != chh) {
+            if (clip != null) clip.destroyBuffers();
+            clip = nuevo(cw, chh);
+        }
+        TextureTarget mitad = paso(hz);
+        copiar(de, 0, 0, de.width, de.height, mitad);
+        copiar(mitad, 0, 0, mitad.width, mitad.height, clip);
+        Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
+        try (NativeImage img = descargar(clip)) {
+            Filtros.aplicar(img, filtro);
+            for (int q : new int[]{62, 48, 36, 26}) {
+                byte[] b = jpeg(img, q);
+                if (b != null && b.length <= maxBytes) return b;
+            }
+        }
+        return null;
+    }
+
+    /** Diana intermedia de la mitad del tamaño (para reducir en dos pasos y que no salga dentado). */
+    private static TextureTarget paso(boolean hz) {
+        if (hz) {
+            if (fotoH == null) fotoH = nuevo(FH, FW);
+            return fotoH;
+        }
+        if (foto == null) foto = nuevo(FW, FH);
+        return foto;
+    }
+
+    // ------------------------------------------------------------------ vista previa con filtro
+    private static net.minecraft.client.renderer.texture.DynamicTexture texPrevia;
+    private static net.minecraft.resources.ResourceLocation rlPrevia;
+    private static long ultPrevia;
+    private static boolean previaHoriz;
+    public static final int PW = 108, PH = 192;
+
+    /**
+     * Con un filtro puesto, el visor enseña una copia pequeña ya filtrada (en el procesador), unas 12 veces por segundo.
+     * Devuelve la textura, o null si aún no hay.
+     */
+    public static net.minecraft.resources.ResourceLocation previa() {
+        boolean hz = horizontal;
+        TextureTarget de = hz ? medioH : medio;
+        if (!(hz ? hayH : hay) || de == null) return null;
+        long ahora = Util.getMillis();
+        if (rlPrevia != null && previaHoriz == hz && ahora - ultPrevia < 80) return rlPrevia;
+        ultPrevia = ahora;
+        TextureTarget a;
+        if (hz) {
+            if (previaH == null) previaH = nuevo(PH, PW);
+            a = previaH;
+        } else {
+            if (previa == null) previa = nuevo(PW, PH);
+            a = previa;
+        }
+        TextureTarget mitad = paso(hz);
+        copiar(de, 0, 0, de.width, de.height, mitad);
+        copiar(mitad, 0, 0, mitad.width, mitad.height, a);
+        Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
+        NativeImage img = descargar(a);
+        Filtros.aplicar(img, filtro);
+        // del framebuffer viene de abajo arriba: se le da la vuelta
+        int w = img.getWidth(), h = img.getHeight();
+        if (texPrevia == null || previaHoriz != hz || texPrevia.getPixels() == null) {
+            soltarPrevia();
+            texPrevia = new net.minecraft.client.renderer.texture.DynamicTexture(w, h, false);
+            rlPrevia = Minecraft.getInstance().getTextureManager().register("miscelanea_previa", texPrevia);
+            previaHoriz = hz;
+        }
+        NativeImage dst = texPrevia.getPixels();
+        for (int y = 0; y < h; y++)
+            for (int x = 0; x < w; x++) dst.setPixelRGBA(x, y, img.getPixelRGBA(x, h - 1 - y));
+        img.close();
+        texPrevia.upload();
+        return rlPrevia;
+    }
+
+    public static void soltarPrevia() {
+        if (rlPrevia != null) Minecraft.getInstance().getTextureManager().release(rlPrevia);
+        rlPrevia = null;
+        texPrevia = null;
     }
 
     private static NativeImage descargar(RenderTarget t) {

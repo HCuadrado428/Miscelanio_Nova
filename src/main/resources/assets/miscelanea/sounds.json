@@ -2506,5 +2506,23 @@
         "stream": true
       }
     ]
+  },
+  "movil_tono_3": {
+    "sounds": [
+      "miscelanea:movil_tono_3"
+    ],
+    "subtitle": "subtitles.miscelanea.movil_tono"
+  },
+  "movil_tono_4": {
+    "sounds": [
+      "miscelanea:movil_tono_4"
+    ],
+    "subtitle": "subtitles.miscelanea.movil_tono"
+  },
+  "movil_tono_5": {
+    "sounds": [
+      "miscelanea:movil_tono_5"
+    ],
+    "subtitle": "subtitles.miscelanea.movil_tono"
   }
 }
