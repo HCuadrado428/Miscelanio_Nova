@@ -49,8 +49,7 @@ public final class MovilVoz {
     public static final Map<UUID, java.util.Set<UUID>> SOCIOS = new ConcurrentHashMap<>();
     /** En llamada con el micro silenciado (no se le reenvía a nadie). */
     public static final java.util.Set<UUID> MUTE = ConcurrentHashMap.newKeySet();
-    /** En llamada con el altavoz puesto: lo que le llega por el móvil lo oyen también los de alrededor. */
-    public static final java.util.Set<UUID> ALTAVOZ = ConcurrentHashMap.newKeySet();
+
 
     /** El voicechat está funcionando en este servidor. */
     public static boolean disponible() {

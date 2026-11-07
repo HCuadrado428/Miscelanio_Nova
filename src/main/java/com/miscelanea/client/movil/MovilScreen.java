@@ -69,6 +69,8 @@ public class MovilScreen extends Screen {
             MovilRed.alServidor(MovilRed.C_SYNC, null);
             MovilCliente.pose(MovilRed.POSE_MIRAR);
             llVisto = MovilCliente.llEstado;
+            // con una llamada en marcha (o en manos libres), el móvil se abre directamente en ella
+            MovilCliente.manosLibres = false;
             if (MovilCliente.llEstado != MovilRed.LL_FIN) abrir(new VistasTelefono.Llamada(), false);
         }
     }
@@ -156,7 +158,8 @@ public class MovilScreen extends Screen {
         // puedes usar otras apps (la barra verde de arriba vuelve a ella)
         int ll = MovilCliente.llEstado;
         if (ll != llVisto) {
-            if ((ll == MovilRed.LL_ENTRANTE || ll == MovilRed.LL_SALIENTE) && !hayLlamadaEnPila()) abrir(new VistasTelefono.Llamada());
+            if ((ll == MovilRed.LL_ENTRANTE || ll == MovilRed.LL_SALIENTE || llVisto == MovilRed.LL_FIN) && ll != MovilRed.LL_FIN && !hayLlamadaEnPila())
+                abrir(new VistasTelefono.Llamada());
             llVisto = ll;
         }
         if (MovilCliente.chatPendiente >= 0) {

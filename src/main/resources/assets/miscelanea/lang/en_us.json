@@ -2745,5 +2745,7 @@
   "movil.miscelanea.temporizador_s": "Timer: %s s",
   "movil.miscelanea.video_corto_poco": "The video is too short",
   "movil.miscelanea.aviso.video_grande": "The video is too big",
-  "movil.miscelanea.video_adjunto": "Video"
+  "movil.miscelanea.video_adjunto": "Video",
+  "movil.miscelanea.manos_libres": "Hands-free",
+  "movil.miscelanea.manos_libres_volver": "Right-click with the phone or %s: back"
 }

@@ -152,7 +152,6 @@ public final class MovilServidor {
                 }
                 case MovilRed.C_LLAMAR_GRUPO -> Llamadas.llamarGrupo(p, b.readVarInt(), b.readBoolean());
                 case MovilRed.C_SILENCIAR -> Llamadas.silenciar(p, b.readBoolean());
-                case MovilRed.C_ALTAVOZ -> Llamadas.altavoz(p, b.readBoolean());
                 case MovilRed.C_CAMBIAR_LLAMADA -> Llamadas.cambiar(p);
                 case MovilRed.C_TONO_CONTACTO -> tonoContacto(p, b.readUUID(), b.readByte());
                 case MovilRed.C_CLIP_TROZO -> Clips.trozo(p, b);
@@ -231,6 +230,7 @@ public final class MovilServidor {
 
     public static void sync(ServerPlayer p) {
         refrescarNombre(p);
+        Llamadas.reenviar(p);
         MovilDatos d = datos(p.server);
         MovilDatos.Perfil yo = d.perfil(p.getUUID(), nombre(p));
         List<MovilDatos.Chat> chats = d.chatsDe(p.getUUID());

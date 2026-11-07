@@ -64,7 +64,7 @@ public final class MovilRedCliente {
                     int n = b.readVarInt();
                     java.util.List<Parte> partes = new java.util.ArrayList<>();
                     for (int i = 0; i < n; i++) partes.add(new Parte(b.readUUID(), b.readUtf(), b.readByte()));
-                    boolean mute = b.readBoolean(), altavoz = b.readBoolean();
+                    boolean mute = b.readBoolean();
                     int dos = -1;
                     UUID dId = null;
                     String dNombre = "";
@@ -76,7 +76,7 @@ public final class MovilRedCliente {
                         dVideo = b.readBoolean();
                     }
                     videoParams(b.readBoolean(), b.readVarInt(), b.readVarInt(), b.readVarInt(), b.readVarInt());
-                    MovilCliente.llamada(estado, motivo, video, grupo, nombreGrupo, ocultoYo, partes, mute, altavoz, dos, dId, dNombre, dVideo);
+                    MovilCliente.llamada(estado, motivo, video, grupo, nombreGrupo, ocultoYo, partes, mute, dos, dId, dNombre, dVideo);
                 }
                 case MovilRed.S_VIDEO -> {
                     UUID de = b.readUUID();

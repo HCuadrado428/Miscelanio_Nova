@@ -2745,5 +2745,7 @@
   "movil.miscelanea.temporizador_s": "Temporizador: %s s",
   "movil.miscelanea.video_corto_poco": "El vídeo es demasiado corto",
   "movil.miscelanea.aviso.video_grande": "El vídeo ocupa demasiado",
-  "movil.miscelanea.video_adjunto": "Vídeo"
+  "movil.miscelanea.video_adjunto": "Vídeo",
+  "movil.miscelanea.manos_libres": "Manos libres",
+  "movil.miscelanea.manos_libres_volver": "Clic derecho con el móvil o %s: volver"
 }

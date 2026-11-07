@@ -15,7 +15,7 @@ import java.util.UUID;
 
 /**
  * Llamadas y videollamadas (en memoria; si se reinicia el servidor se cortan): individuales o de grupo (hasta
- * {@link #MAX_GRUPO} personas), con llamada en espera, número oculto, silenciar y altavoz.
+ * {@link #MAX_GRUPO} personas), con llamada en espera, número oculto y silenciar (el manos libres es solo del cliente).
  * <p>
  * Cada jugador tiene como mucho dos llamadas: la {@link #ACTUAL} (la que oye, la que está sonando o la que está haciendo) y
  * la {@link #SEGUNDA}: otra que le está entrando mientras habla (llamada en espera) o la que ha dejado en espera al coger
@@ -120,7 +120,6 @@ public final class Llamadas {
                 b.writeByte(l.sonando.contains(m) ? P_SONANDO : ACTUAL.get(m) == l ? P_DENTRO : P_ESPERA);
             }
             b.writeBoolean(MovilVoz.MUTE.contains(u));
-            b.writeBoolean(MovilVoz.ALTAVOZ.contains(u));
             b.writeBoolean(dos != null);
             if (dos != null) {
                 boolean entrante = dos.sonando.contains(u);
@@ -158,9 +157,8 @@ public final class Llamadas {
         }
         MovilVoz.SOCIOS.keySet().retainAll(nuevo.keySet());
         MovilVoz.SOCIOS.putAll(nuevo);
-        // silencio y altavoz solo valen mientras se está en una llamada
+        // el silencio solo vale mientras se está en una llamada
         MovilVoz.MUTE.removeIf(u -> !ACTUAL.containsKey(u));
-        MovilVoz.ALTAVOZ.removeIf(u -> !ACTUAL.containsKey(u));
     }
 
     // ------------------------------------------------------------------ llamar
@@ -342,11 +340,9 @@ public final class Llamadas {
         enviarTodos(yo.server, ACTUAL.get(yo.getUUID()));
     }
 
-    static void altavoz(ServerPlayer yo, boolean si) {
-        if (!ACTUAL.containsKey(yo.getUUID())) return;
-        if (si) MovilVoz.ALTAVOZ.add(yo.getUUID());
-        else MovilVoz.ALTAVOZ.remove(yo.getUUID());
-        enviar(yo.server, yo.getUUID());
+    /** Vuelve a mandar al jugador cómo están sus llamadas (al abrir el móvil), por si su móvil se había perdido algo. */
+    static void reenviar(ServerPlayer p) {
+        if (ACTUAL.containsKey(p.getUUID()) || SEGUNDA.containsKey(p.getUUID())) enviar(p.server, p.getUUID());
     }
 
     static void salir(ServerPlayer yo) {
@@ -361,7 +357,6 @@ public final class Llamadas {
             } else salirDe(yo.server, u, l, FIN_CORTADA);
         }
         MovilVoz.MUTE.remove(u);
-        MovilVoz.ALTAVOZ.remove(u);
     }
 
     /** u deja la llamada l (estaba dentro). */

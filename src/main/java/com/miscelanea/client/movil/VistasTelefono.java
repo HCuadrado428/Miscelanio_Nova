@@ -618,12 +618,12 @@ final class VistasTelefono {
             }
             if (est == MovilRed.LL_FIN) return;
             Ui.boton(g, W / 2, cy, 13, Ui.dentro(mx, my, W / 2 - 13, cy - 13, 26, 26) ? 0xFFD43C3C : Ui.ROJO, Ui.G_COLGAR, 0xFFFFFFFF);
-            // fila de controles: silenciar, altavoz, cámara y girar
+            // fila de controles: silenciar, manos libres, cámara y girar
             int cy2 = cy - 34;
             Ui.rect(g, 0, cy2 - 16, W, H - (cy2 - 16), 0x50000000);
-            boolean[] on = {MovilCliente.llMute, MovilCliente.llAltavoz, MovilCliente.miVideo, !MovilCliente.frontal};
+            boolean[] on = {MovilCliente.llMute, false, MovilCliente.miVideo, !MovilCliente.frontal};
             int[] gl = {MovilCliente.llMute ? Ui.G_MICRO_NO : Ui.G_MICRO, Ui.G_ALTAVOZ, MovilCliente.miVideo ? Ui.G_VIDEO : Ui.G_VIDEO_NO, Ui.G_GIRAR};
-            String[] tx = {t("silenciar"), t("altavoz"), t("camara_corto"), t("girar")};
+            String[] tx = {t("silenciar"), t("manos_libres"), t("camara_corto"), t("girar")};
             for (int i = 0; i < 4; i++) {
                 if (!boton(i, activa)) continue;
                 boolean s = Ui.enCirculo(mx, my, BX[i], cy2, 11);
@@ -691,7 +691,7 @@ final class VistasTelefono {
                 MovilCliente.clic();
                 switch (i) {
                     case 0 -> MovilCliente.silenciar(!MovilCliente.llMute);
-                    case 1 -> MovilCliente.altavoz(!MovilCliente.llAltavoz);
+                    case 1 -> MovilCliente.ponerManosLibres();
                     case 2 -> {
                         MovilCliente.miVideo = !MovilCliente.miVideo;
                         if (!MovilCliente.miVideo) MovilRed.alServidor(MovilRed.C_VIDEO, b -> b.writeByteArray(new byte[0]));

@@ -45,8 +45,8 @@ public final class MovilRed {
             C_LINTERNA = 35,
             // fichas de recreativa en el cajero (cuántas)
             C_FICHAS = 38,
-            // llamadas: de grupo, silenciar, altavoz, cambiar a la que está en espera, tono de un contacto
-            C_LLAMAR_GRUPO = 39, C_SILENCIAR = 40, C_ALTAVOZ = 41, C_CAMBIAR_LLAMADA = 42, C_TONO_CONTACTO = 43,
+            // llamadas: de grupo, silenciar, cambiar a la que está en espera, tono de un contacto (el 41 era el altavoz)
+            C_LLAMAR_GRUPO = 39, C_SILENCIAR = 40, C_CAMBIAR_LLAMADA = 42, C_TONO_CONTACTO = 43,
             // cámara: vídeos cortos (subir por trozos y pedir) y flash
             C_CLIP_TROZO = 44, C_CLIP_PEDIR = 45, C_FLASH = 46;
     // ---------------------------------------------------------------- servidor → cliente

@@ -111,7 +111,13 @@ public final class MovilCliente {
     public static String llNombre = "";
     /** Los demás de la llamada actual. */
     public static final List<Parte> PARTES = new ArrayList<>();
-    public static boolean llGrupo, llVideo, llOcultoYo, llMute, llAltavoz;
+    public static boolean llGrupo, llVideo, llOcultoYo, llMute;
+    /**
+     * Manos libres: el móvil se guarda y la llamada sigue (puedes moverte y jugar). En videollamada se manda lo que ves
+     * (la cámara de atrás). Se vuelve a la llamada abriendo el móvil (clic derecho con él o su tecla).
+     */
+    public static boolean manosLibres;
+    private static long ultFrameManos;
     /** Segunda llamada: la que entra mientras hablo ({@code LL_ENTRANTE}) o la que dejé en espera ({@code LL_ESPERA}); -1 si no hay. */
     public static int dosEstado = -1;
     public static UUID dosId;
@@ -271,6 +277,12 @@ public final class MovilCliente {
 
     /** Al cerrar la pantalla: si sigue la llamada, se sigue sujetando el móvil. */
     static void cerrado() {
+        if (manosLibres && llEstado != MovilRed.LL_FIN) {
+            // con las manos libres: sin el móvil en la mano, y el vídeo sigue (lo manda el tick)
+            pose(MovilRed.POSE_NADA);
+            return;
+        }
+        manosLibres = false;
         pose(llEstado == MovilRed.LL_ACTIVA ? MovilRed.POSE_MIRAR : MovilRed.POSE_NADA);
         if (llEstado == MovilRed.LL_ACTIVA && miVideo) MovilRed.alServidor(MovilRed.C_VIDEO, b -> b.writeByteArray(new byte[0]));
     }
@@ -336,9 +348,12 @@ public final class MovilCliente {
         MovilRed.alServidor(MovilRed.C_SILENCIAR, b -> b.writeBoolean(si));
     }
 
-    public static void altavoz(boolean si) {
-        llAltavoz = si;
-        MovilRed.alServidor(MovilRed.C_ALTAVOZ, b -> b.writeBoolean(si));
+    /** Pone el manos libres: se cierra el móvil y la llamada sigue mientras juegas. */
+    public static void ponerManosLibres() {
+        if (llEstado == MovilRed.LL_FIN) return;
+        manosLibres = true;
+        frontal = false;
+        Minecraft.getInstance().setScreen(null);
     }
 
     public static void tonoContacto(UUID id, int tono) {
@@ -410,7 +425,7 @@ public final class MovilCliente {
     }
 
     static void llamada(int estado, int motivo, boolean video, boolean grupo, String nombreGrupo, boolean ocultoYo, List<Parte> partes,
-                        boolean mute, boolean altavoz, int dos, UUID dId, String dNombre, boolean dVideo) {
+                        boolean mute, int dos, UUID dId, String dNombre, boolean dVideo) {
         Minecraft mc = Minecraft.getInstance();
         int antes = llEstado, dosAntes = dosEstado;
         String nombreAntes = llNombre;
@@ -423,7 +438,6 @@ public final class MovilCliente {
         llVideo = video;
         llOcultoYo = ocultoYo;
         llMute = mute;
-        llAltavoz = altavoz;
         llMotivo = motivo;
         dosEstado = dos;
         dosId = dId;
@@ -448,7 +462,7 @@ public final class MovilCliente {
         } else if (estado == MovilRed.LL_ACTIVA && (antes != MovilRed.LL_ACTIVA || otra)) {
             llInicio = Util.getMillis();
             if (otra) FotoCache.quitarVideos();
-            if (!(mc.screen instanceof MovilScreen)) pose(MovilRed.POSE_MIRAR);
+            if (!(mc.screen instanceof MovilScreen) && !manosLibres) pose(MovilRed.POSE_MIRAR);
         } else if (estado == MovilRed.LL_FIN && antes != MovilRed.LL_FIN) {
             llFin = Util.getMillis();
             FotoCache.quitarVideos();
@@ -502,6 +516,16 @@ public final class MovilCliente {
             else abrir(MovilItem.color(s));
         }
         long ms = Util.getMillis();
+        if (manosLibres && (llEstado == MovilRed.LL_FIN || movilDe(p).isEmpty())) manosLibres = false;
+        // manos libres en videollamada: se manda lo que ves
+        if (manosLibres && !(mc.screen instanceof MovilScreen) && llEstado == MovilRed.LL_ACTIVA && miVideo && llVideoPermitido) {
+            MovilCaptura.pedir(false);
+            if (MovilCaptura.lista() && ms - ultFrameManos >= 1000 / Math.max(1, vFps)) {
+                ultFrameManos = ms;
+                byte[] f = MovilCaptura.video(vW, vH, vMax);
+                if (f != null) MovilRed.alServidor(MovilRed.C_VIDEO, b -> b.writeByteArray(f));
+            }
+        }
         if (llEstado == MovilRed.LL_SALIENTE && ms - ultEspera > 3000) {
             ultEspera = ms;
             sonido(MovilRegistro.ESPERA.get(), 0.55F, 1.0F);
@@ -568,6 +592,10 @@ public final class MovilCliente {
             g.flush();
             RenderSystem.defaultBlendFunc();
         }
+        if (manosLibres && llEstado != MovilRed.LL_FIN && !(mc.screen instanceof MovilScreen)) {
+            tarjetaManosLibres(g, w);
+            return;
+        }
         if (llEstado != MovilRed.LL_FIN && !(mc.screen instanceof MovilScreen)) {
             String s = llEstado == MovilRed.LL_ACTIVA ? duracion((Util.getMillis() - llInicio) / 1000) + "  " + llNombre + (llMute ? "  [" + Component.translatable("movil.miscelanea.mute_corto").getString() + "]" : "")
                     : Component.translatable(llEstado == MovilRed.LL_ENTRANTE ? "movil.miscelanea.entrante_corto" : "movil.miscelanea.llamando_corto", llNombre).getString();
@@ -577,6 +605,31 @@ public final class MovilCliente {
             Ui.circulo(g, x + 7, 9, 3, parpadeo ? 0xFF7FF0B0 : Ui.ACENTO);
             Ui.texto(g, s, x + 13, 6, 0xFFFFFFFF);
         }
+    }
+
+    /** Arriba a la derecha, mientras hablas con las manos libres: con quién, cuánto llevas y su vídeo si lo tiene. */
+    private static void tarjetaManosLibres(GuiGraphics g, int w) {
+        FotoCache.Tex v = llEstado == MovilRed.LL_ACTIVA && llOtro != null && !(llGrupo || PARTES.size() > 1) ? FotoCache.video(llOtro) : null;
+        int cw = 96, vh = v != null ? 64 : 0, ch = 30 + vh;
+        int x = w - cw - 4, y = 4;
+        Ui.redondo(g, x, y, cw, ch, 5, 0xD0101418);
+        if (v != null) FotoCache.cubrir(g, v, x + cw / 2 - 18, y + 3, 36, 64);
+        int ty = y + 3 + vh;
+        boolean grupo = llGrupo || PARTES.size() > 1;
+        if (v == null) {
+            if (grupo) Ui.avatarGrupo(g, llNombre, x + 4, ty + 2, 16);
+            else VistasTelefono.caraLlamada(g, llOtro, x + 4, ty + 2, 16, 0xD0101418);
+        }
+        int tx = v == null ? x + 24 : x + 5;
+        String estado = llEstado == MovilRed.LL_ACTIVA ? duracion((Util.getMillis() - llInicio) / 1000)
+                : Component.translatable(llEstado == MovilRed.LL_ENTRANTE ? "movil.miscelanea.entrante_corto" : "movil.miscelanea.llamando_corto", "").getString().trim();
+        Ui.texto(g, Ui.cortar(llNombre, x + cw - 4 - tx), tx, ty + 1, 0xFFFFFFFF);
+        boolean habla = com.miscelanea.client.pociones.EcoCliente.hablando(llOtro);
+        Ui.circulo(g, tx + 2, ty + 14, 2, habla ? 0xFF7FF0B0 : Ui.ACENTO);
+        Ui.mini(g, estado + (llMute ? "  " + Component.translatable("movil.miscelanea.mute_corto").getString() : "")
+                + (miVideo && llVideoPermitido ? "  REC" : ""), tx + 7, ty + 12, llMute ? Ui.ROJO : 0xFFB9F5D2);
+        String vuelta = Component.translatable("movil.miscelanea.manos_libres_volver", ABRIR.getTranslatedKeyMessage()).getString();
+        Ui.mini(g, Ui.cortar(vuelta, (cw - 8) * 2), x + 5, ty + 20, 0xFF8FA3B3);
     }
 
     public static String duracion(long s) {
@@ -597,7 +650,7 @@ public final class MovilCliente {
         llEstado = MovilRed.LL_FIN;
         PARTES.clear();
         dosEstado = -1;
-        llMute = llAltavoz = false;
+        llMute = manosLibres = false;
         poseLocal = 0;
         linterna = false;
         FotoCache.limpiar();
