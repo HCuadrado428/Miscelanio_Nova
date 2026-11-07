@@ -48,9 +48,9 @@ import java.util.Map;
  * Ecolocalización (Daredevil / el warden) en el cliente de quien la lleva. Todo se ve negro (niebla negra pegada a la
  * cara; el HUD se sigue viendo) y cada sonido que suena cerca (tus pasos, los mobs, los bloques) lanza desde su origen
  * una onda esférica que, al pasar por los bloques y las entidades, los deja un momento dibujados como aristas y
- * siluetas azul-blancas (como el sculk). Agacharse da una palmada (sonar propio) cada 2 s como mucho. Con Simple Voice
- * Chat, quien habla cerca se ve mientras habla (su silueta y una onda que sale de su boca a cada frase) y tu propia voz
- * también lanza ondas.
+ * siluetas azul-blancas (como el sculk). Agacharse da una palmada (sonar propio) cada 2 s como mucho. Los demás
+ * jugadores NO salen con las ondas: con Simple Voice Chat se ven solo mientras hablan (su silueta, fija mientras
+ * hablan y que se apaga poco a poco al callarse, y una onda que sale de su boca) y tu propia voz también lanza ondas.
  * Rendimiento: ondas de 16 bloques, se revelan bloques hasta 13 y solo las caras expuestas (cada bloque se mira una
  * sola vez: cuando el frente de la onda pasa por él), con tope de aristas vivas.
  */
@@ -76,7 +76,22 @@ public final class EcoCliente {
 
     private record Bloque(AABB caja, int desde) {}
 
-    private record Ente(Entity e, int desde) {}
+    /** Entidad que se ve: desde cuándo (para que se vaya apagando) y cuándo empezó a verse (para encenderse suave). */
+    private record Ente(Entity e, int desde, int aparecio) {}
+
+    /** La deja vista: si ya se veía, sigue encendida sin volver a dar el fogonazo (así no parpadea). */
+    private static void ver(Entity en) {
+        Ente antes = ENTES.get(en.getId());
+        boolean seVeia = antes != null && reloj - antes.desde() < DURA_ENTE - 4;
+        ENTES.put(en.getId(), new Ente(en, reloj, seVeia ? antes.aparecio() : reloj));
+    }
+
+    /** Opacidad de una entidad vista: se enciende en 3 ticks y se apaga poco a poco. */
+    private static float alfa(Ente en, float pt) {
+        float sube = Mth.clamp((reloj - en.aparecio() + pt) / 3F, 0F, 1F);
+        float baja = Mth.clamp(1F - (reloj - en.desde() + pt) / DURA_ENTE, 0F, 1F);
+        return Math.min(sube, baja);
+    }
 
     private static final List<Onda> ONDAS = new ArrayList<>();
     private static final LinkedHashMap<Long, Bloque> BLOQUES = new LinkedHashMap<>();
@@ -88,7 +103,7 @@ public final class EcoCliente {
     private static volatile long yoHablo;
     private static int ultOndaYo;
     /** Volumen mínimo para que cuente como hablar (no el ruido de fondo del micro). */
-    private static final float UMBRAL_VOZ = 0.012F;
+    private static final float UMBRAL_VOZ = 0.03F;   // por debajo es ruido de fondo del micro, no voz
 
     /** Desde el plugin del voicechat (hilo de audio): alguien habla con este volumen. */
     public static void habla(java.util.UUID quien, float nivel) {
@@ -173,7 +188,7 @@ public final class EcoCliente {
             if (ahora - h.getValue() > 350) continue;          // ya no habla
             net.minecraft.world.entity.player.Player p = mc.level.getPlayerByUUID(h.getKey());
             if (p == null || p == mc.player || p.distanceToSqr(mc.player) > 48 * 48) continue;
-            ENTES.put(p.getId(), new Ente(p, reloj));
+            ver(p);
             Integer u = ULT_ONDA.get(h.getKey());
             if (u == null || reloj - u >= 10) {
                 ULT_ONDA.put(h.getKey(), reloj);
@@ -239,7 +254,9 @@ public final class EcoCliente {
         for (Entity en : l.getEntities(mc.player, zona)) {
             Vec3 c = en.position().add(0, en.getBbHeight() * 0.5, 0);
             double d = c.distanceTo(new Vec3(o.x, o.y, o.z));
-            if (d > r0 && d <= r1) ENTES.put(en.getId(), new Ente(en, reloj));
+            // los jugadores solo se ven cuando hablan (si no, cada paso o ruido los haría parpadear)
+            if (en instanceof net.minecraft.world.entity.player.Player) continue;
+            if (d > r0 && d <= r1) ver(en);
         }
     }
 
@@ -310,8 +327,7 @@ public final class EcoCliente {
             }
             for (Ente en : ENTES.values()) {
                 Entity ent = en.e();
-                float edad = reloj - en.desde() + pt;
-                float a = Mth.clamp(1F - edad / DURA_ENTE, 0F, 1F);
+                float a = alfa(en, pt);
                 AABB caja = ent.getBoundingBox();
                 LevelRenderer.renderLineBox(ps, vc, caja, 0.8F, 0.95F, 1F, a);
             }
@@ -332,8 +348,7 @@ public final class EcoCliente {
                     for (Ente en : ENTES.values()) {
                         Entity ent = en.e();
                         if (ent.isRemoved() || ent == mc.player) continue;
-                        float edad = reloj - en.desde() + pt;
-                        float a = Mth.clamp(1F - edad / DURA_ENTE, 0F, 1F) * 0.8F;
+                        float a = alfa(en, pt) * 0.8F;
                         MultiBufferSource solido = rt -> new Solido(bs.getBuffer(RenderType.entityTranslucentEmissive(BLANCO)), CR, CG, CB, a);
                         double x = Mth.lerp(pt, ent.xOld, ent.getX()), y = Mth.lerp(pt, ent.yOld, ent.getY()), z = Mth.lerp(pt, ent.zOld, ent.getZ());
                         float yaw = Mth.lerp(pt, ent.yRotO, ent.getYRot());
