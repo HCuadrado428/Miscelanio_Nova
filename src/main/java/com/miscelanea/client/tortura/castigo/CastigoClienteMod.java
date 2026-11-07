@@ -34,8 +34,8 @@ public final class CastigoClienteMod {
     public static void renderers(EntityRenderersEvent.RegisterRenderers e) {
         e.registerEntityRenderer(TorturaRegistro.JAULA.get(), JaulaRenderer::new);
         e.registerEntityRenderer(TorturaRegistro.CEPO_ASIENTO.get(), NoopRenderer::new);
-        e.registerEntityRenderer(TorturaRegistro.TOMATE_LANZADO.get(), ThrownItemRenderer::new);
-        e.registerEntityRenderer(TorturaRegistro.HUEVO_LANZADO.get(), ThrownItemRenderer::new);
+        e.registerEntityRenderer(TorturaRegistro.TOMATE_LANZADO.get(), PodridoRenderer::new);
+        e.registerEntityRenderer(TorturaRegistro.HUEVO_LANZADO.get(), PodridoRenderer::new);
         e.registerEntityRenderer(TorturaRegistro.BOLA_PRESO_ENT.get(), BolaRenderer::new);
     }
 

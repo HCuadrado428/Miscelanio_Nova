@@ -79,7 +79,8 @@ public final class TrampaHud {
 
     private static void grilletes(Minecraft mc, GuiGraphics g, int w, int h) {
         Component c = Component.translatable("hud.miscelanea.grilletes");
-        int y = h - 72;
+        // por encima de la línea de avisos de vanilla (antes se pisaban los dos textos)
+        int y = h - 92;
         int tw = mc.font.width(c);
         g.fill(w / 2 - tw / 2 - 6, y - 3, w / 2 + tw / 2 + 6, y + 11, 0x90000000);
         g.fill(w / 2 - tw / 2 - 6, y + 11, w / 2 + tw / 2 + 6, y + 12, 0xFF8A2020);

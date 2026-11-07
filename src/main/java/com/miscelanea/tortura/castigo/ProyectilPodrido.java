@@ -176,6 +176,14 @@ public class ProyectilPodrido extends ThrowableItemProjectile {
             super.handleEntityEvent(id);
             return;
         }
+        boolean cara = net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()
+                && com.miscelanea.client.tortura.castigo.SalpicadurasPantalla.enMiCara(getX(), getY(), getZ(), huevo());
+        // reventado en mi cara: la mancha va en la pantalla; aquí solo unas gotitas que caen (lejos de la cámara)
+        if (cara) {
+            for (int i = 0; i < 4; i++) level().addParticle(new DustParticleOptions(huevo() ? new Vector3f(0.98F, 0.78F, 0.16F) : new Vector3f(0.72F, 0.08F, 0.05F), 1.0F),
+                    getX() + (random.nextDouble() - 0.5) * 0.8, getY() - 0.9, getZ() + (random.nextDouble() - 0.5) * 0.8, 0, -0.05, 0);
+            return;
+        }
         ItemStack st = getItemRaw();
         ItemParticleOption trozos = new ItemParticleOption(ParticleTypes.ITEM, st.isEmpty() ? new ItemStack(getDefaultItem()) : st);
         boolean h = huevo();

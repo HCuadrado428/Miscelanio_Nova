@@ -153,11 +153,11 @@ public final class Escarnio {
     static void lluvia(ServerLevel sl, LivingEntity t, @Nullable Entity tirador) {
         Component titulo = Component.translatable("msg.miscelanea.lluvia.titulo").withStyle(ChatFormatting.RED, ChatFormatting.BOLD);
         Component sub = Component.translatable("msg.miscelanea.lluvia.sub", t.getDisplayName()).withStyle(ChatFormatting.GOLD);
+        // sin letrero gigante en medio de la pantalla: una línea en el chat para los de alrededor
+        Component linea = titulo.copy().append(Component.literal(" ")).append(sub);
         for (ServerPlayer p : sl.players()) {
             if (p.distanceToSqr(t) > 40 * 40) continue;
-            p.connection.send(new ClientboundSetTitlesAnimationPacket(4, 30, 12));
-            p.connection.send(new ClientboundSetTitleTextPacket(titulo));
-            p.connection.send(new ClientboundSetSubtitleTextPacket(sub));
+            p.sendSystemMessage(linea);
         }
         sl.playSound(null, t.getX(), t.getY() + 3, t.getZ(), TorturaRegistro.LLUVIA_TOMATES.get(), SoundSource.PLAYERS, 1.2F, 1F);
         for (int i = 0; i < LLUVIA_N; i++) {
