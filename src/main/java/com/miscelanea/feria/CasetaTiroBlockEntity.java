@@ -112,8 +112,9 @@ public class CasetaTiroBlockEntity extends BlockEntity {
         inicio = ahora;
         puntos = 0;
         java.util.Arrays.fill(caido, -10000);
+        // la caseta presta una escopeta (marcada como prestada: se recoge sola al acabar la partida)
         if (!p.getInventory().hasAnyMatching(s2 -> s2.is(ModItems.ESCOPETA_CORCHO.get())))
-            p.getInventory().add(new ItemStack(ModItems.ESCOPETA_CORCHO.get()));
+            p.getInventory().add(EscopetaCorchoItem.prestada());
         p.displayClientMessage(Component.translatable("miscelanea.tiro.empieza"), true);
         level.playSound(null, worldPosition, ModSounds.FE_ARRANCA.get(), SoundSource.BLOCKS, 0.6F, 1.4F);
         cambio();
@@ -155,6 +156,7 @@ public class CasetaTiroBlockEntity extends BlockEntity {
         Player p = l.getPlayerByUUID(be.jugador);
         be.jugador = null;
         if (be.puntos > be.record) be.record = be.puntos;
+        if (p != null) EscopetaCorchoItem.devolver(p);
         if (p != null) {
             p.displayClientMessage(Component.translatable("miscelanea.tiro.fin", be.puntos), false);
             if (p instanceof net.minecraft.server.level.ServerPlayer sp) com.miscelanea.arcade.ArcadeRecords.registrar(sp, "tiro", be.puntos);

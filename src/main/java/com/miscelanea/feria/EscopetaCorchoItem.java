@@ -13,8 +13,41 @@ import net.minecraft.world.phys.Vec3;
 
 /** Escopeta de corcho de feria: clic derecho dispara un tapón (inofensivo) hacia donde miras. */
 public class EscopetaCorchoItem extends Item {
+    private static final String PRESTADA = "MiscelaneaPrestada";
+
     public EscopetaCorchoItem(Properties p) {
         super(p);
+    }
+
+    /** La escopeta que presta la caseta de tiro (no se puede tirar y desaparece al acabar la partida). */
+    public static ItemStack prestada() {
+        ItemStack s = new ItemStack(com.miscelanea.registry.ModItems.ESCOPETA_CORCHO.get());
+        s.getOrCreateTag().putBoolean(PRESTADA, true);
+        return s;
+    }
+
+    public static boolean esPrestada(ItemStack s) {
+        return s.hasTag() && s.getTag().getBoolean(PRESTADA);
+    }
+
+    /** Recoge las escopetas prestadas del inventario (al acabar la partida). */
+    public static void devolver(Player p) {
+        var inv = p.getInventory();
+        for (int i = 0; i < inv.getContainerSize(); i++) if (esPrestada(inv.getItem(i))) inv.setItem(i, ItemStack.EMPTY);
+        if (esPrestada(p.containerMenu.getCarried())) p.containerMenu.setCarried(ItemStack.EMPTY);
+    }
+
+    @Override
+    public void inventoryTick(ItemStack st, Level l, net.minecraft.world.entity.Entity e, int slot, boolean enMano) {
+        // por si la partida se cortó (te fuiste, se rompió la caseta, saliste del servidor): sin partida, fuera
+        if (l.isClientSide || !esPrestada(st) || !(e instanceof Player p) || l.getGameTime() % 20 != 0) return;
+        if (CasetaTiroBlockEntity.buscar(l, p) == null) st.setCount(0);
+    }
+
+    @Override
+    public boolean onDroppedByPlayer(ItemStack st, Player p) {
+        // la prestada no se puede tirar ni dar (se queda en la caseta)
+        return !esPrestada(st);
     }
 
     @Override
