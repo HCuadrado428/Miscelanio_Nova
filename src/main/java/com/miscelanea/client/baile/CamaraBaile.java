@@ -161,6 +161,8 @@ public final class CamaraBaile {
 
     /** Qué parte de la distancia queda libre de bloques (1 = nada en medio). */
     static double libre(BlockGetter level, Entity ent, Vec3 foco, Vec3 dir, double dist) {
+        // en el videoclip de la gramola el mundo no se ve: la cámara va por el decorado
+        if (com.miscelanea.client.baile.videoclip.VideoclipCliente.activo()) return 1;
         Vec3 desde = foco.add(dir.scale(0.3)), hasta = foco.add(dir.scale(dist + 0.3));
         BlockHitResult hit = level.clip(new ClipContext(desde, hasta, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, ent));
         if (hit.getType() == HitResult.Type.MISS) return 1;

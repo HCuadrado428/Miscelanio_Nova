@@ -74,9 +74,13 @@ public final class ModBlocks {
     public static final RegistryObject<Block> PISTA_BAILE = BLOCKS.register("pista_baile",
             () -> new com.miscelanea.baile.PistaBaileBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE).strength(1.5F)
                     .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 8)));
+    /** Gramola de videoclip (usa el mismo bloque-entidad que la pista de baile). */
+    public static final RegistryObject<Block> GRAMOLA = BLOCKS.register("gramola",
+            () -> new com.miscelanea.baile.GramolaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE).strength(2.0F)
+                    .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 11)));
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.baile.PistaBaileBlockEntity>> PISTA_BAILE_BE = BLOCK_ENTITIES.register("pista_baile",
-            () -> BlockEntityType.Builder.of(com.miscelanea.baile.PistaBaileBlockEntity::new, PISTA_BAILE.get()).build(null));
+            () -> BlockEntityType.Builder.of(com.miscelanea.baile.PistaBaileBlockEntity::new, PISTA_BAILE.get(), GRAMOLA.get()).build(null));
     public static final RegistryObject<Block> NORIA = BLOCKS.register("noria",
             () -> new com.miscelanea.feria.AtraccionBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(3.0F)
                     .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 10), com.miscelanea.feria.AtraccionBlock.NORIA));

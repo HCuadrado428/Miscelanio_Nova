@@ -59,6 +59,8 @@ public final class BaileCliente {
     static float frente;
     static CancionesBaile.Cancion cancion;
     static long inicio;
+    /** Gramola (videoclip) en vez de pista; y si soy un bailarín de fondo (la canción la elige el protagonista). */
+    static boolean gramola, extra;
     /** Juicio de las flechas de la canción en marcha. */
     static JuicioBaile jb;
     static int juicio = -1;
@@ -87,6 +89,15 @@ public final class BaileCliente {
         return (System.currentTimeMillis() - inicio) / 1000F - LATENCIA / 60F;
     }
 
+    /** Para el videoclip: canción en marcha en una gramola (o null) y el segundo que suena. */
+    public static CancionesBaile.Cancion cancionGramola() {
+        return gramola ? cancionEnMarcha() : null;
+    }
+
+    public static float segundo() {
+        return segundoCancion();
+    }
+
     // ------------------------------------------------------------------ red
     public static void recibir(BailePacket m) {
         Minecraft mc = Minecraft.getInstance();
@@ -98,6 +109,8 @@ public final class BaileCliente {
                 modo = MENU;
                 menuT = 0;
                 BlockState st = mc.level == null ? null : mc.level.getBlockState(pista);
+                gramola = st != null && st.getBlock() instanceof com.miscelanea.baile.GramolaBlock;
+                extra = gramola && m.a == 1;
                 frente = st != null && st.hasProperty(PistaBaileBlock.FACING) ? st.getValue(PistaBaileBlock.FACING).toYRot() : yo.getYRot();
                 if (camaraAntes == null) camaraAntes = mc.options.getCameraType();
                 mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
@@ -111,8 +124,10 @@ public final class BaileCliente {
                         yo.displayClientMessage(Component.translatable("baile.miscelanea.sin_cancion", m.cancion).withStyle(ChatFormatting.RED), true);
                     return;
                 }
-                ponerMusica(m.pos, c);
-                if (m.entidad == yo.getId() && modo != NADA) {
+                // en la gramola llega un aviso por cada bailarín: la música se pone solo una vez
+                MusicaPista ya = MUSICA.get(m.pos);
+                if (ya == null || !ya.cancionId().equals(c.id) || ya.edadTics() > 10 || ya.isStopped()) ponerMusica(m.pos, c);
+                if (m.entidad == yo.getId() && modo != NADA && m.pos.equals(pista)) {
                     dif = Math.max(0, Math.min(2, m.b));
                     empezarCancion(c);
                 } else BailePoses.empezar(m.entidad, c, System.currentTimeMillis());
@@ -120,7 +135,8 @@ public final class BaileCliente {
             case BailePacket.PASO -> BailePoses.paso(m.entidad, m.a, m.b);
             case BailePacket.PARA -> {
                 BailePoses.parar(m.entidad);
-                quitarMusica(m.pos);
+                // b = 1: solo se va un bailarín de fondo de la gramola (la música sigue)
+                if (m.b != 1) quitarMusica(m.pos);
                 if (m.entidad == yo.getId()) cerrar();
             }
             default -> {}
@@ -168,6 +184,7 @@ public final class BaileCliente {
         inicio = System.currentTimeMillis();
         modo = BAILE;
         CamaraBaile.olvidar();
+        if (gramola) com.miscelanea.client.baile.videoclip.VideoclipCliente.empezar(pista, frente, c);
         LocalPlayer yo = Minecraft.getInstance().player;
         if (yo != null) BailePoses.empezar(yo.getId(), c, inicio + LATENCIA * 1000L / 60);
     }
@@ -179,6 +196,8 @@ public final class BaileCliente {
         modo = NADA;
         pista = null;
         cancion = null;
+        gramola = extra = false;
+        com.miscelanea.client.baile.videoclip.VideoclipCliente.parar();
         CamaraBaile.olvidar();
         java.util.Arrays.fill(pisando, false);
         if (mc.player != null) BailePoses.parar(mc.player.getId());
@@ -215,6 +234,7 @@ public final class BaileCliente {
             return;
         }
         if (mc.screen != null || e.getAction() != GLFW.GLFW_PRESS) return;
+        if (modo == MENU && extra) return;     // el de fondo espera a que el protagonista elija
         if (modo == MENU) {
             int n = Math.max(1, CancionesBaile.lista().size());
             if (c == 2) sel = (sel + n - 1) % n;
@@ -263,7 +283,7 @@ public final class BaileCliente {
             return;
         }
         menuT++;
-        if (mc.options.keyShift.isDown() || p.position().distanceToSqr(Vec3.atBottomCenterOf(pista)) > 6) {
+        if (mc.options.keyShift.isDown() || p.position().distanceToSqr(Vec3.atBottomCenterOf(pista)) > (gramola ? 25 : 6)) {
             ModNetwork.CHANNEL.sendToServer(new BailePacket(BailePacket.SALIR, pista, 0, 0, 0));
             cerrar();
             return;
@@ -294,6 +314,7 @@ public final class BaileCliente {
         } else if (modo == RESULTADO && System.currentTimeMillis() - finT > 5000) {
             modo = MENU;
             cancion = null;
+            com.miscelanea.client.baile.videoclip.VideoclipCliente.parar();
             CamaraBaile.olvidar();
             BailePoses.empezar(p.getId(), null, System.currentTimeMillis());
         }
@@ -363,13 +384,22 @@ public final class BaileCliente {
         GuiGraphics g = e.getGuiGraphics();
         int W = g.guiWidth(), H = g.guiHeight();
         var font = mc.font;
+        if (modo == MENU && extra) {
+            int x0 = W / 2 - 120, y0 = H / 2 - 30;
+            g.fill(x0, y0, x0 + 240, y0 + 52, 0xC0180830);
+            g.fill(x0, y0, x0 + 240, y0 + 2, 0xFFEC6CA8);
+            g.drawCenteredString(font, I18n.get("gramola.miscelanea.titulo"), W / 2, y0 + 10, 0xFFFFE05A);
+            g.drawCenteredString(font, I18n.get("gramola.miscelanea.esperando"), W / 2, y0 + 28, (menuT / 10) % 2 == 0 ? 0xFFFFFFFF : 0xFFA090C0);
+            g.drawString(font, I18n.get(gramola ? "gramola.miscelanea.salir" : "baile.miscelanea.salir"), 6, H - 12, 0xA0FFFFFF);
+            return;
+        }
         if (modo == MENU) {
             List<CancionesBaile.Cancion> l = CancionesBaile.lista();
             int filas = Math.min(6, Math.max(1, l.size())), alto = 64 + filas * 18;
             int x0 = W / 2 - 120, y0 = H / 2 - alto / 2 - 10;
             g.fill(x0, y0, x0 + 240, y0 + alto, 0xC0180830);
             g.fill(x0, y0, x0 + 240, y0 + 2, 0xFFEC6CA8);
-            g.drawCenteredString(font, I18n.get("paso.miscelanea.titulo"), W / 2, y0 + 8, 0xFFFFE05A);
+            g.drawCenteredString(font, I18n.get(gramola ? "gramola.miscelanea.titulo" : "paso.miscelanea.titulo"), W / 2, y0 + 8, 0xFFFFE05A);
             if (l.isEmpty()) g.drawCenteredString(font, I18n.get("baile.miscelanea.sin_canciones"), W / 2, y0 + 30, 0xFFFF8080);
             int primera = Math.max(0, Math.min(sel - filas / 2, l.size() - filas));
             for (int f = 0; f < filas && primera + f < l.size(); f++) {
@@ -474,6 +504,6 @@ public final class BaileCliente {
             if (mantTotal > 0) g.drawCenteredString(font, I18n.get("baile.miscelanea.mantenidas", mant, mantTotal), cx, H / 2 + 26, 0xFFE0E0E0);
             g.drawCenteredString(font, "COMBO " + maxCombo + "  ·  " + puntos, cx, H / 2 + 38, 0xFFFFE05A);
         }
-        g.drawString(font, I18n.get("baile.miscelanea.salir"), 6, H - 12, 0xA0FFFFFF);
+        g.drawString(font, I18n.get(gramola ? "gramola.miscelanea.salir" : "baile.miscelanea.salir"), 6, H - 12, 0xA0FFFFFF);
     }
 }

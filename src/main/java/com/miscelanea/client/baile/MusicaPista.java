@@ -55,6 +55,10 @@ public class MusicaPista extends AbstractTickableSoundInstance {
         if (mc.player.distanceToSqr(x, y, z) > 64 * 64) stop();
     }
 
+    String cancionId() {
+        return cancion;
+    }
+
     /** Tics que lleva sonando (deja de contar cuando el motor de sonido la suelta). */
     int edadTics() {
         return edad;

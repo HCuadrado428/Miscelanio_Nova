@@ -18,7 +18,9 @@
     "GuiMixin",
     "EntityRenderDispatcherMixin",
     "LivingEntityMixin",
-    "PostChainAccessor"
+    "PostChainAccessor",
+    "LevelRendererMixin",
+    "BlockEntityRenderDispatcherMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -270,6 +270,8 @@ public final class ModItems {
             () -> new com.miscelanea.petanca.PetancaItem(new Item.Properties().stacksTo(1), com.miscelanea.petanca.PetancaItem.BOLICHE));
     public static final RegistryObject<Item> METRO = ITEMS.register("metro",
             () -> new com.miscelanea.petanca.PetancaItem(new Item.Properties().stacksTo(1), com.miscelanea.petanca.PetancaItem.METRO));
+    public static final RegistryObject<Item> GRAMOLA = ITEMS.register("gramola",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.GRAMOLA.get(), new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> PISTA_BAILE = ITEMS.register("pista_baile",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PISTA_BAILE.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> BILLAR = ITEMS.register("billar",

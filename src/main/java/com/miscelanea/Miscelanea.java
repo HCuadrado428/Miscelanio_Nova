@@ -110,6 +110,7 @@ public class Miscelanea {
             event.accept(ModItems.POSTE_TIROLINA);
             event.accept(ModItems.CABLE_TIROLINA);
             event.accept(ModItems.PISTA_BAILE);
+            event.accept(ModItems.GRAMOLA);
             event.accept(ModItems.PIZARRA_FERIA);
             for (int i = 0; i < com.miscelanea.feria.ChapaItem.DIBUJOS.length; i++) event.accept(com.miscelanea.feria.ChapaItem.de(i));
         }

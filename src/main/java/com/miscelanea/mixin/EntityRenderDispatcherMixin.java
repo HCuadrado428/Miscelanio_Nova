@@ -10,6 +10,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.LevelReader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
@@ -47,5 +49,19 @@ public abstract class EntityRenderDispatcherMixin {
         } catch (RuntimeException ex) {
             return radio;
         }
+    }
+
+    /** Videoclip de la gramola: solo se ve a los que bailan en ella (ver VideoclipCliente). */
+    @Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true, require = 0)
+    private void miscelanea$videoclipOcultar(Entity e, net.minecraft.client.renderer.culling.Frustum f, double x, double y, double z,
+                                             CallbackInfoReturnable<Boolean> cir) {
+        if (com.miscelanea.client.baile.videoclip.VideoclipCliente.ocultar(e)) cir.setReturnValue(false);
+    }
+
+    /** ... y con la luz del decorado, no la del sitio de verdad. */
+    @Inject(method = "getPackedLightCoords", at = @At("HEAD"), cancellable = true, require = 0)
+    private void miscelanea$videoclipLuz(Entity e, float pt, CallbackInfoReturnable<Integer> cir) {
+        int l = com.miscelanea.client.baile.videoclip.VideoclipCliente.luzEntidad(e);
+        if (l >= 0) cir.setReturnValue(l);
     }
 }

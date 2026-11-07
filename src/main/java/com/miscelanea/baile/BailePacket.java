@@ -56,8 +56,27 @@ public class BailePacket {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.miscelanea.client.baile.BaileCliente.recibir(this));
             return;
         }
-        if (p.distanceToSqr(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5) > 36) return;
-        if (!(p.level().getBlockEntity(pos) instanceof PistaBaileBlockEntity be) || !p.getUUID().equals(be.bailarin)) return;
+        if (p.distanceToSqr(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5) > 49) return;
+        if (!(p.level().getBlockEntity(pos) instanceof PistaBaileBlockEntity be) || !be.participa(p)) return;
+        if (!p.getUUID().equals(be.bailarin)) {
+            // bailarín de fondo de una gramola: sus pasos, sus puntos y salirse (la canción la elige el protagonista)
+            switch (tipo) {
+                case PASO -> ModNetwork.CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> p), new BailePacket(PASO, pos, p.getId(), a & 7, b & 7));
+                case FIN -> {
+                    int max = be.maxPuntosExtra(), puntos = Math.min(a, max);
+                    if (max > 0 && puntos > 0) {
+                        int nota = Math.max(0, Math.min(5, b));
+                        com.miscelanea.ranking.Ranking.mejor(p, com.miscelanea.ranking.Ranking.categoriaPista(be.ultima(), be.ultimaDif()), puntos);
+                        p.serverLevel().players().stream().filter(o -> o.distanceToSqr(p) < 32 * 32).forEach(o ->
+                                o.displayClientMessage(Component.translatable("baile.miscelanea.resultado", p.getDisplayName(), puntos,
+                                        "SABCDE".substring(nota, nota + 1)).withStyle(ChatFormatting.LIGHT_PURPLE), false));
+                    }
+                }
+                case SALIR -> be.salirExtra(p.getUUID());
+                default -> {}
+            }
+            return;
+        }
         switch (tipo) {
             case EMPIEZA -> be.empezar(p, cancion, b);
             case PASO -> ModNetwork.CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> p), new BailePacket(PASO, pos, p.getId(), a & 7, b & 7));

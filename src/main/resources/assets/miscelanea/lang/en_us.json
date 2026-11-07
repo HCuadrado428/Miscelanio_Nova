@@ -2689,5 +2689,13 @@
   "movil.miscelanea.cajero_fichas": "Buy %s tokens (%s)",
   "movil.miscelanea.cajero_fichas_ok": "Tokens bought: %s",
   "movil.miscelanea.fichas_concepto": "%s arcade tokens",
-  "block.miscelanea.pista_bolos": "Bowling Lane"
+  "block.miscelanea.pista_bolos": "Bowling Lane",
+  "block.miscelanea.gramola": "Music Video Jukebox",
+  "gramola.miscelanea.titulo": "JUKEBOX · MUSIC VIDEO",
+  "gramola.miscelanea.esperando": "Waiting for the lead dancer to pick a song...",
+  "gramola.miscelanea.salir": "Sneak to stop dancing",
+  "gramola.miscelanea.sin_sitio": "No room in front of the jukebox: leave two blocks clear",
+  "gramola.miscelanea.espera": "The song has already started: join before the next one",
+  "gramola.miscelanea.llena": "Five people are already dancing at this jukebox",
+  "gramola.miscelanea.se_une": "%s joins as a backup dancer"
 }

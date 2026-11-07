@@ -34,6 +34,7 @@ public class PistaBaileRenderer implements BlockEntityRenderer<PistaBaileBlockEn
             long ahora = System.currentTimeMillis();
             BailePoses.sincronizar(p.getId(), c, c == null ? ahora : ahora - Math.max(0, be.getLevel().getGameTime() - be.inicio) * 50);
         }
+        if (be.gramola()) return;     // la gramola no tiene flechas en el suelo
         long[] u = BailePoses.ultimo(p.getId());
         Direction f = be.getBlockState().getValue(PistaBaileBlock.FACING);
         ps.pushPose();
