@@ -336,7 +336,7 @@ public final class MovilServidor {
         if (c == null) return;
         long ahora = p.server.getTickCount();
         Long ult = ULT_MENSAJE.get(p.getUUID());
-        if (ult != null && ahora - ult < 4) return;
+        if (ult != null && ahora - ult < 2) return;
         ULT_MENSAJE.put(p.getUUID(), ahora);
         texto = limpiar(texto, MAX_TEXTO);
         int adj = -1;

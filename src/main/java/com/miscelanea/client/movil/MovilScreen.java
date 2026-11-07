@@ -18,7 +18,9 @@ import java.util.Deque;
 
 /**
  * La pantalla del móvil: el aparato (carcasa teñida con el color del objeto, bisel y cámara frontal), la barra de estado
- * (hora del juego, cobertura y batería), la barra de inicio y una pila de {@link Vista vistas} (las apps).
+ * (hora del juego y cobertura), la barra de inicio y una pila de {@link Vista vistas} (las apps). Si la vista de arriba
+ * es horizontal ({@link Vista#horizontal()}: la cámara girada, una foto apaisada) el móvil entero gira 90 grados y la
+ * vista se dibuja en una pantalla de {@link #SH}x{@link #SW}.
  * <p>
  * Se dibuja a escala entera de píxel (la de la interfaz, o menos si no cabe) para que el pixel art salga nítido.
  * Navegación: clic en los botones; arrastrar para desplazar listas; deslizar hacia arriba desde la barra de inicio o
@@ -43,6 +45,12 @@ public class MovilScreen extends Screen {
     private long banT;
     // cámara frontal (selfie)
     private CameraType camaraAntes;
+    /** Giro del móvil (0 = vertical, 1 = horizontal) y dónde empieza la pantalla dentro del móvil (sin escalar). */
+    private float giro;
+    private long tGiro;
+    private float pantX = SX, pantY = SY;
+    /** Último estado de llamada visto (para abrir la pantalla de llamada solo cuando empieza una). */
+    private int llVisto = MovilRed.LL_FIN;
 
     public MovilScreen() {
         super(Component.translatable("movil.miscelanea.titulo"));
@@ -60,6 +68,7 @@ public class MovilScreen extends Screen {
             abrir(new VistasApps.Inicio(), false);
             MovilRed.alServidor(MovilRed.C_SYNC, null);
             MovilCliente.pose(MovilRed.POSE_MIRAR);
+            llVisto = MovilCliente.llEstado;
             if (MovilCliente.llEstado != MovilRed.LL_FIN) abrir(new VistasTelefono.Llamada(), false);
         }
     }
@@ -143,8 +152,13 @@ public class MovilScreen extends Screen {
     public void tick() {
         Vista v = pila.peek();
         if (v == null) return;
+        // la pantalla de llamada se abre cuando empieza una (entrante o saliente); si te sales de ella durante la llamada
+        // puedes usar otras apps (la barra verde de arriba vuelve a ella)
         int ll = MovilCliente.llEstado;
-        if (ll != MovilRed.LL_FIN && !hayLlamadaEnPila()) abrir(new VistasTelefono.Llamada());
+        if (ll != llVisto) {
+            if ((ll == MovilRed.LL_ENTRANTE || ll == MovilRed.LL_SALIENTE) && !hayLlamadaEnPila()) abrir(new VistasTelefono.Llamada());
+            llVisto = ll;
+        }
         if (MovilCliente.chatPendiente >= 0) {
             int id = MovilCliente.chatPendiente;
             MovilCliente.chatPendiente = -1;
@@ -188,9 +202,30 @@ public class MovilScreen extends Screen {
     /** Recorte en coordenadas locales de la pantalla del móvil. */
     void recortar(GuiGraphics g, int x0, int y0, int x1, int y1) {
         float sy = subida();
-        int gx0 = Mth.floor(ox + (SX + x0) * esc), gy0 = Mth.floor(oy + sy + (SY + y0) * esc);
-        int gx1 = Mth.ceil(ox + (SX + x1) * esc), gy1 = Mth.ceil(oy + sy + (SY + y1) * esc);
+        int gx0 = Mth.floor(ox + (pantX + x0) * esc), gy0 = Mth.floor(oy + sy + (pantY + y0) * esc);
+        int gx1 = Mth.ceil(ox + (pantX + x1) * esc), gy1 = Mth.ceil(oy + sy + (pantY + y1) * esc);
         g.enableScissor(gx0, gy0, gx1, gy1);
+    }
+
+    /** ¿Está el móvil girado del todo (pantalla horizontal)? */
+    boolean girado() {
+        return giro >= 1;
+    }
+
+    /** Avanza el giro hacia lo que pide la vista de arriba (unos 220 ms). */
+    private void girar(Vista v) {
+        long ahora = Util.getMillis();
+        float dt = tGiro == 0 ? 0 : (ahora - tGiro) / 220F;
+        tGiro = ahora;
+        float obj = v.horizontal() ? 1 : 0;
+        giro = obj > giro ? Math.min(obj, giro + dt) : Math.max(obj, giro - dt);
+        if (giro >= 1) {
+            pantX = W / 2F - SH / 2F;
+            pantY = H / 2F - SW / 2F;
+        } else {
+            pantX = SX;
+            pantY = SY;
+        }
     }
 
     @Override
@@ -198,20 +233,58 @@ public class MovilScreen extends Screen {
         Vista v = pila.peek();
         if (v == null) return;
         frontal(v.quiereFrontal());
+        girar(v);
         float sy = subida();
-        int lx = (int) Math.floor((mx - ox) / esc - SX), ly = (int) Math.floor((my - oy - sy) / esc - SY);
+        int lx = (int) Math.floor((mx - ox) / esc - pantX), ly = (int) Math.floor((my - oy - sy) / esc - pantY);
         // sombra suave detrás del móvil
         g.fillGradient(0, 0, width, height, 0x00000000, 0x30000000);
 
         g.pose().pushPose();
         g.pose().translate(ox, oy + sy, 0);
         g.pose().scale(esc, esc, 1);
+        // la carcasa (girada si toca)
+        float ang = -90F * suave(giro);
+        g.pose().pushPose();
+        if (ang != 0) {
+            g.pose().translate(W / 2F, H / 2F, 0);
+            g.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees(ang));
+            g.pose().translate(-W / 2F, -H / 2F, 0);
+        }
         int c = MovilCliente.colorAbierto;
         RenderSystem.enableBlend();
         g.setColor(((c >> 16) & 0xFF) / 255F, ((c >> 8) & 0xFF) / 255F, (c & 0xFF) / 255F, 1);
         g.blit(CARCASA, 0, 0, 0, 0, W, H, 256, 256);
         g.setColor(1, 1, 1, 1);
+        if (giro > 0 && giro < 1) Ui.rect(g, SX, SY, SW, SH, 0xFF000000);     // girando: pantalla en negro
+        g.pose().popPose();
 
+        if (giro <= 0) contenidoVertical(g, v, lx, ly, pt);
+        else if (giro >= 1) {
+            // horizontal: la vista dibuja en una pantalla de SH x SW, sin barras del sistema
+            recortar(g, 0, 0, SH, SW);
+            g.pose().pushPose();
+            g.pose().translate(pantX, pantY, 0);
+            v.dibujar(g, lx, ly, pt);
+            g.pose().popPose();
+            g.disableScissor();
+            saliente = null;
+        }
+
+        g.pose().translate(0, 0, 300);
+        if (ang != 0) {
+            g.pose().translate(W / 2F, H / 2F, 0);
+            g.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees(ang));
+            g.pose().translate(-W / 2F, -H / 2F, 0);
+        }
+        g.blit(MARCO, 0, 0, 0, 0, W, H, 256, 256);
+        g.pose().popPose();
+    }
+
+    private static float suave(float k) {
+        return k * k * (3 - 2 * k);
+    }
+
+    private void contenidoVertical(GuiGraphics g, Vista v, int lx, int ly, float pt) {
         recortar(g, 0, 0, SW, SH);
         g.pose().pushPose();
         g.pose().translate(SX, SY, 0);
@@ -223,12 +296,14 @@ public class MovilScreen extends Screen {
             float desp = animAtras ? k * SW : (1 - k) * SW;
             g.pose().pushPose();
             g.pose().translate((int) (animAtras ? -(1 - k) * SW * 0.3F : -k * SW * 0.3F), 0, 0);
-            abajo.dibujar(g, -999, -999, pt);
+            if (!abajo.horizontal()) abajo.dibujar(g, -999, -999, pt);
+            else Ui.rect(g, 0, 0, SW, SH, 0xFF000000);
             g.pose().popPose();
             g.pose().pushPose();
             g.pose().translate((int) desp, 0, 100);
             Ui.rect(g, -2, 0, 2, SH, 0x40000000);
-            encima.dibujar(g, animAtras ? -999 : lx - (int) desp, ly, pt);
+            if (!encima.horizontal()) encima.dibujar(g, animAtras ? -999 : lx - (int) desp, ly, pt);
+            else Ui.rect(g, 0, 0, SW, SH, 0xFF000000);
             g.pose().popPose();
         } else {
             saliente = null;
@@ -242,10 +317,6 @@ public class MovilScreen extends Screen {
         Ui.redondo(g, SW / 2 - 18, SH - 5, 36, 2, 1, ci);
         g.pose().popPose();
         g.disableScissor();
-
-        g.pose().translate(0, 0, 300);
-        g.blit(MARCO, 0, 0, 0, 0, W, H, 256, 256);
-        g.pose().popPose();
     }
 
     private void barraEstado(GuiGraphics g, Vista v) {
@@ -253,21 +324,23 @@ public class MovilScreen extends Screen {
         if (fb != 0) Ui.rect(g, 0, 0, SW, Vista.BARRA, fb);
         int col = v.barraOscura() ? 0xFF101418 : 0xFFFFFFFF;
         Ui.texto(g, MovilCliente.hora(), 6, 2, col);
-        // batería
-        int bat = MovilCliente.bateria(), bx = SW - 18;
-        Ui.rect(g, bx, 3, 12, 6, col);
-        Ui.rect(g, bx + 1, 4, 10, 4, v.barraOscura() ? 0xFFF2F2F2 : 0xFF000000);
-        Ui.rect(g, bx + 12, 5, 1, 2, col);
-        int lleno = Math.max(1, bat * 10 / 100);
-        Ui.rect(g, bx + 1, 4, lleno, 4, bat <= 20 ? Ui.ROJO : col);
-        String pc = bat + "%";
-        Ui.mini(g, pc, bx - 2 - Ui.anchoMini(pc), 4, col);
-        // cobertura
-        int sx = bx - 6 - Ui.anchoMini(pc) - 10;
+        // cobertura (4 barras) y wifi
+        int sx = SW - 9;
         for (int i = 0; i < 4; i++) Ui.rect(g, sx + i * 2, 8 - i * 2 + 1, 1, i * 2 + 1, col);
-        if (MovilCliente.silencio) Ui.glifo(g, Ui.G_SILENCIO, sx - 11, 1, col);
-        if (MovilCliente.llEstado == MovilRed.LL_ACTIVA && !(v instanceof VistasTelefono.Llamada))
-            Ui.redondo(g, 38, 2, 24, 8, 4, Ui.ACENTO);
+        int wx = sx - 10;
+        Ui.rect(g, wx, 3, 7, 1, col);
+        Ui.rect(g, wx + 1, 5, 5, 1, col);
+        Ui.rect(g, wx + 2, 7, 3, 1, col);
+        Ui.rect(g, wx + 3, 9, 1, 1, col);
+        if (MovilCliente.silencio) Ui.glifo(g, Ui.G_SILENCIO, wx - 11, 1, col);
+        // durante una llamada fuera de su pantalla: pastilla verde con el tiempo (tocarla vuelve a la llamada)
+        if (MovilCliente.llEstado != MovilRed.LL_FIN && !(v instanceof VistasTelefono.Llamada)) {
+            String t = MovilCliente.llEstado == MovilRed.LL_ACTIVA ? MovilCliente.duracion((Util.getMillis() - MovilCliente.llInicio) / 1000) : "...";
+            int pw = Math.max(24, Ui.anchoMini(t) + 12);
+            Ui.redondo(g, SW / 2 - pw / 2, 2, pw, 8, 4, Ui.ACENTO);
+            Ui.mini(g, t, SW / 2 - pw / 2 + 8, 4, 0xFF0B2A1A);
+            Ui.circulo(g, SW / 2 - pw / 2 + 4, 6, 1, 0xFF0B2A1A);
+        }
     }
 
     private void bannerDibujar(GuiGraphics g, int mx, int my) {
@@ -294,21 +367,43 @@ public class MovilScreen extends Screen {
 
     // ------------------------------------------------------------------ entrada
     private double lx(double mx) {
-        return (mx - ox) / esc - SX;
+        return (mx - ox) / esc - pantX;
     }
 
     private double ly(double my) {
-        return (my - oy - subida()) / esc - SY;
+        return (my - oy - subida()) / esc - pantY;
+    }
+
+    /** Ancho y alto de la pantalla tal y como está (girada o no). */
+    private int pw() {
+        return girado() ? SH : SW;
+    }
+
+    private int ph() {
+        return girado() ? SW : SH;
+    }
+
+    private boolean volviendoALlamada(double x, double y) {
+        if (girado() || MovilCliente.llEstado == MovilRed.LL_FIN || pila.peek() instanceof VistasTelefono.Llamada || y >= Vista.BARRA || Math.abs(x - SW / 2.0) > 20)
+            return false;
+        // vuelve a la pantalla de la llamada (si estaba en la pila, bajando hasta ella)
+        if (hayLlamadaEnPila()) {
+            while (!(pila.peek() instanceof VistasTelefono.Llamada)) pila.pop().cerrada();
+            pila.peek().abierta();
+        } else abrir(new VistasTelefono.Llamada());
+        MovilCliente.clic();
+        return true;
     }
 
     @Override
     public boolean mouseClicked(double mx, double my, int b) {
         double x = lx(mx), y = ly(my);
+        if (giro > 0 && giro < 1) return true;     // girando
         if (b != 0) {
-            if (b == 1 && Ui.dentro(x, y, 0, 0, SW, SH)) atras();
+            if (b == 1 && Ui.dentro(x, y, 0, 0, pw(), ph())) atras();
             return true;
         }
-        pulsado = Ui.dentro(x, y, 0, 0, SW, SH);
+        pulsado = Ui.dentro(x, y, 0, 0, pw(), ph());
         arrastrado = false;
         capturado = pulsado && pila.peek() != null && pila.peek().pulsar(x, y);
         pulX = x;
@@ -321,7 +416,7 @@ public class MovilScreen extends Screen {
         if (!pulsado || b != 0 || capturado) return true;
         double x = lx(mx), y = ly(my);
         if (Math.abs(x - pulX) + Math.abs(y - pulY) > 4) arrastrado = true;
-        if (arrastrado && pila.peek() != null && pulY < SH - 12 && pulX > 10) pila.peek().arrastrar(x, y, dx / esc, dy / esc);
+        if (arrastrado && pila.peek() != null && (girado() || pulY < SH - 12 && pulX > 10)) pila.peek().arrastrar(x, y, dx / esc, dy / esc);
         return true;
     }
 
@@ -337,16 +432,21 @@ public class MovilScreen extends Screen {
             v.soltar(x, y);
             return true;
         }
-        if (pulY >= SH - 12 && (y - pulY < -24 || !arrastrado)) {
-            if (pila.size() > 1) MovilCliente.clic();
-            inicio();
+        if (!girado()) {
+            if (pulY >= SH - 12 && (y - pulY < -24 || !arrastrado)) {
+                if (pila.size() > 1) MovilCliente.clic();
+                inicio();
+                return true;
+            }
+            if (pulX <= 10 && x - pulX > 34) {
+                atras();
+                return true;
+            }
+            if (!arrastrado && volviendoALlamada(x, y)) return true;
+            if (!arrastrado && !clicBanner(x, y)) v.clic(x, y);
             return true;
         }
-        if (pulX <= 10 && x - pulX > 34) {
-            atras();
-            return true;
-        }
-        if (!arrastrado && !clicBanner(x, y)) v.clic(x, y);
+        if (!arrastrado) v.clic(x, y);
         return true;
     }
 

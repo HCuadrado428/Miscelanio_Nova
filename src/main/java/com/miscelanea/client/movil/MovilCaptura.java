@@ -34,26 +34,37 @@ import java.nio.IntBuffer;
 
 /**
  * Cámara del móvil. Cuando hace falta (visor abierto o videollamada con cámara), justo después de dibujar el mundo y
- * antes de la mano y el HUD ({@code AFTER_PARTICLES}), copia en la GPU una franja vertical 9:16 del centro de la pantalla
- * a una textura de 360x640 ({@code medio}). De ahí salen el visor, la foto (180x320) y las imágenes de vídeo (72x128 por
- * defecto), que se comprimen en JPEG con STB (viene con Minecraft).
+ * antes de la mano y el HUD ({@code AFTER_PARTICLES}), copia en la GPU el centro de la pantalla a una textura: en
+ * vertical una franja 9:16 (360x640) y con el móvil girado una 16:9 (640x360). De ahí salen el visor, la foto (180x320
+ * o 320x180) y las imágenes de vídeo (72x128 por defecto, siempre en vertical), que se comprimen en JPEG con STB.
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
 public final class MovilCaptura {
     private MovilCaptura() {}
 
     public static final int MW = 360, MH = 640, FW = 180, FH = 320;
-    private static TextureTarget medio, foto, video;
+    private static TextureTarget medio, medioH, foto, fotoH, video;
     private static long pedidoHasta;
-    private static boolean hay;
+    private static boolean hay, hayH, horizontal;
 
-    /** Pedirlo en cada fotograma mientras se necesite. */
+    /** Pedirlo en cada fotograma mientras se necesite (en vertical). */
     public static void pedir() {
+        pedir(false);
+    }
+
+    /** Pedirlo en cada fotograma mientras se necesite; horizontal = con el móvil girado (16:9). */
+    public static void pedir(boolean horiz) {
+        if (horiz != horizontal) {
+            // al girar, el visor no enseña la imagen vieja de la otra forma
+            if (horiz) hayH = false;
+            else hay = false;
+        }
+        horizontal = horiz;
         pedidoHasta = Util.getMillis() + 300;
     }
 
     public static boolean lista() {
-        return hay && medio != null && Util.getMillis() <= pedidoHasta;
+        return (horizontal ? hayH && medioH != null : hay && medio != null) && Util.getMillis() <= pedidoHasta;
     }
 
     private static TextureTarget nuevo(int w, int h) {
@@ -66,13 +77,21 @@ public final class MovilCaptura {
     public static void nivel(RenderLevelStageEvent e) {
         if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES || Util.getMillis() > pedidoHasta) return;
         RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
-        if (medio == null) medio = nuevo(MW, MH);
         int sw = main.width, sh = main.height;
-        int cw = Math.min(sw, sh * 9 / 16), ch = Math.min(sh, cw * 16 / 9);
-        int x0 = (sw - cw) / 2, y0 = (sh - ch) / 2;
-        copiar(main, x0, y0, x0 + cw, y0 + ch, medio);
+        if (horizontal) {
+            if (medioH == null) medioH = nuevo(MH, MW);
+            int cw = Math.min(sw, sh * 16 / 9), ch = Math.min(sh, cw * 9 / 16);
+            int x0 = (sw - cw) / 2, y0 = (sh - ch) / 2;
+            copiar(main, x0, y0, x0 + cw, y0 + ch, medioH);
+            hayH = true;
+        } else {
+            if (medio == null) medio = nuevo(MW, MH);
+            int cw = Math.min(sw, sh * 9 / 16), ch = Math.min(sh, cw * 16 / 9);
+            int x0 = (sw - cw) / 2, y0 = (sh - ch) / 2;
+            copiar(main, x0, y0, x0 + cw, y0 + ch, medio);
+            hay = true;
+        }
         main.bindWrite(false);
-        hay = true;
     }
 
     private static void copiar(RenderTarget de, int x0, int y0, int x1, int y1, RenderTarget a) {
@@ -84,16 +103,26 @@ public final class MovilCaptura {
 
     /** Textura GL del visor (al revés en vertical, como todas las de framebuffer). */
     public static int texturaVisor() {
-        return medio == null ? -1 : medio.getColorTextureId();
+        TextureTarget t = horizontal ? medioH : medio;
+        return t == null ? -1 : t.getColorTextureId();
     }
 
-    /** Foto de 180x320 en JPEG de como mucho maxBytes (baja la calidad si hace falta), o null. */
+    /** Foto de 180x320 (o 320x180 en horizontal) en JPEG de como mucho maxBytes (baja la calidad si hace falta), o null. */
     public static byte[] foto(int maxBytes) {
-        if (!hay || medio == null) return null;
-        if (foto == null) foto = nuevo(FW, FH);
-        copiar(medio, 0, 0, MW, MH, foto);
+        boolean h = horizontal;
+        TextureTarget de = h ? medioH : medio;
+        if (!(h ? hayH : hay) || de == null) return null;
+        TextureTarget a;
+        if (h) {
+            if (fotoH == null) fotoH = nuevo(FH, FW);
+            a = fotoH;
+        } else {
+            if (foto == null) foto = nuevo(FW, FH);
+            a = foto;
+        }
+        copiar(de, 0, 0, de.width, de.height, a);
         Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
-        try (NativeImage img = descargar(foto)) {
+        try (NativeImage img = descargar(a)) {
             for (int q : new int[]{88, 78, 66, 54, 42, 30}) {
                 byte[] b = jpeg(img, q);
                 if (b != null && b.length <= maxBytes) return b;
@@ -104,7 +133,7 @@ public final class MovilCaptura {
 
     /** Imagen de vídeo w x h en JPEG, o null. */
     public static byte[] video(int w, int h, int maxBytes) {
-        if (!hay || medio == null) return null;
+        if (horizontal || !hay || medio == null) return null;
         if (video == null || video.width != w || video.height != h) {
             if (video != null) video.destroyBuffers();
             video = nuevo(w, h);
@@ -213,7 +242,7 @@ public final class MovilCaptura {
 
     /** El visor llenando (recortando) un rectángulo de proporción w:h. */
     public static void dibujarVisor(GuiGraphics g, int x, int y, int w, int h) {
-        float ar = (float) w / h, src = (float) MW / MH;
+        float ar = (float) w / h, src = horizontal ? (float) MH / MW : (float) MW / MH;
         float u0 = 0, u1 = 1, v0 = 0, v1 = 1;
         if (ar > src) {
             float k = src / ar;

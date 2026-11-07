@@ -37,7 +37,11 @@ public final class FotoCache {
     }
 
     private static final LinkedHashMap<String, Tex> MAPA = new LinkedHashMap<>(64, 0.75F, true);
-    private static final Set<String> PEDIDAS = new HashSet<>(), FALTAN = new HashSet<>();
+    /** Pedidas y cuándo (si el servidor no contesta en unos segundos se vuelven a pedir: antes se quedaban "cargando"). */
+    private static final Map<String, Long> PEDIDAS = new java.util.HashMap<>();
+    /** Las que el servidor dijo que no existen y cuándo (se vuelve a probar pasado un rato, por si acaban de subirse). */
+    private static final Map<String, Long> FALTAN = new java.util.HashMap<>();
+    private static final long ESPERA = 6000, REINTENTO = 15000;
     private static Tex video;
     private static int pedidasAhora;
 
@@ -49,8 +53,18 @@ public final class FotoCache {
     public static Tex get(int tipo, int id) {
         String k = clave(tipo, id);
         Tex t = MAPA.get(k);
-        if (t != null || FALTAN.contains(k) || PEDIDAS.contains(k) || pedidasAhora >= 6) return t;
-        PEDIDAS.add(k);
+        if (t != null) return t;
+        long ahora = net.minecraft.Util.getMillis();
+        // las que llevan mucho sin respuesta dejan sitio
+        if (!PEDIDAS.isEmpty()) {
+            PEDIDAS.values().removeIf(c -> ahora - c > ESPERA);
+            pedidasAhora = PEDIDAS.size();
+        }
+        Long f = FALTAN.get(k);
+        if (f != null && ahora - f < REINTENTO) return null;
+        if (PEDIDAS.containsKey(k) || pedidasAhora >= 6) return null;
+        FALTAN.remove(k);
+        PEDIDAS.put(k, ahora);
         pedidasAhora++;
         MovilRed.alServidor(MovilRed.C_FOTO_PEDIR, b -> {
             b.writeByte(tipo);
@@ -60,15 +74,15 @@ public final class FotoCache {
     }
 
     public static boolean falta(int tipo, int id) {
-        return FALTAN.contains(clave(tipo, id));
+        return FALTAN.containsKey(clave(tipo, id));
     }
 
     static void recibir(int tipo, int id, byte[] datos) {
         String k = clave(tipo, id);
-        if (PEDIDAS.remove(k)) pedidasAhora = Math.max(0, pedidasAhora - 1);
+        if (PEDIDAS.remove(k) != null) pedidasAhora = Math.max(0, pedidasAhora - 1);
         NativeImage img = MovilCaptura.decodificar(datos);
         if (img == null) {
-            FALTAN.add(k);
+            FALTAN.put(k, net.minecraft.Util.getMillis());
             return;
         }
         Tex viejo = MAPA.put(k, new Tex(img, tipo + "_" + id));

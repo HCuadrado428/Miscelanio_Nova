@@ -40,7 +40,7 @@ final class VistasApps {
         }
 
         private static int ry(int i) {
-            return 56 + (i / 3) * 42;
+            return 62 + (i / 3) * 40;
         }
 
         private static int dx(int i) {
@@ -52,14 +52,63 @@ final class VistasApps {
         @Override
         void dibujar(GuiGraphics g, int mx, int my, float pt) {
             g.blit(fondoTex(MovilCliente.fondo), 0, 0, 0, 0, W, H, W, H);
-            // reloj y fecha
-            Ui.grande(g, MovilCliente.hora(), W / 2, 22, 2, 0xFFFFFFFF);
-            var l = Minecraft.getInstance().level;
-            String fecha = t("dia", MovilCliente.dia()) + " · " + t(l == null ? "luna0" : "luna" + l.getMoonPhase());
-            g.drawCenteredString(Ui.font(), fecha, W / 2, 42, 0xFFE8E8F0);
+            widget(g);
             for (int i = 0; i < REJILLA.length; i++) app(g, REJILLA[i], rx(i), ry(i), mx, my, true);
             Ui.redondo(g, 6, DY - 5, W - 12, 34, 10, 0x50FFFFFF);
             for (int i = 0; i < DOCK.length; i++) app(g, DOCK[i], dx(i) + 4, DY, mx, my, false);
+        }
+
+        /** Tarjeta de arriba: hora grande, día, fase de la luna y el tiempo que hace (sol, luna, lluvia o tormenta). */
+        private void widget(GuiGraphics g) {
+            var l = Minecraft.getInstance().level;
+            int y = BARRA + 4;
+            Ui.redondo(g, 6, y, W - 12, 40, 8, 0x60000000);
+            Ui.redondo(g, 6, y, W - 12, 1, 0, 0x30FFFFFF);
+            String h = MovilCliente.hora();
+            g.pose().pushPose();
+            g.pose().translate(13, y + 5, 0);
+            g.pose().scale(2, 2, 1);
+            g.drawString(Ui.font(), h, 0, 0, 0xFFFFFFFF, false);
+            g.pose().popPose();
+            String fecha = t("dia", MovilCliente.dia()) + " · " + t(l == null ? "luna0" : "luna" + l.getMoonPhase());
+            Ui.texto(g, Ui.cortar(fecha, W - 26), 13, y + 26, 0xFFD8DEE6);
+            tiempo(g, l, W - 31, y + 6);
+        }
+
+        /** Icono del tiempo de 16x16 en pixel art. */
+        private static void tiempo(GuiGraphics g, net.minecraft.world.level.Level l, int x, int y) {
+            boolean noche = l != null && Math.floorMod(l.getDayTime(), 24000L) >= 12500;
+            boolean lluvia = l != null && l.isRaining(), tormenta = l != null && l.isThundering();
+            if (!lluvia) {
+                if (noche) {
+                    // media luna: el círculo grande menos uno desplazado
+                    for (int py = 0; py < 16; py++)
+                        for (int px = 0; px < 16; px++) {
+                            double d1 = Math.hypot(px + 0.5 - 8, py + 0.5 - 8), d2 = Math.hypot(px + 0.5 - 11, py + 0.5 - 6);
+                            if (d1 <= 6 && d2 > 5) Ui.rect(g, x + px, y + py, 1, 1, d1 > 5 ? 0xFFD8D2B0 : 0xFFF2EFD8);
+                        }
+                    Ui.rect(g, x + 2, y + 2, 1, 1, 0xFFFFFFFF);
+                    Ui.rect(g, x + 14, y + 13, 1, 1, 0xFFFFFFFF);
+                } else {
+                    for (int i = 0; i < 8; i++) {
+                        double a = i * Math.PI / 4;
+                        Ui.rect(g, x + 8 + (int) Math.round(Math.cos(a) * 7) - (i % 2 == 0 ? 1 : 0), y + 8 + (int) Math.round(Math.sin(a) * 7), i % 2 == 0 ? 2 : 1, 1, 0xFFFFD050);
+                    }
+                    Ui.circulo(g, x + 8, y + 8, 4, 0xFFFFC23A);
+                    Ui.rect(g, x + 6, y + 6, 2, 1, 0xFFFFEFA0);
+                }
+                return;
+            }
+            // nube
+            Ui.circulo(g, x + 6, y + 7, 4, 0xFFC8D0DA);
+            Ui.circulo(g, x + 10, y + 6, 5, 0xFFDCE2EA);
+            Ui.redondo(g, x + 2, y + 7, 13, 5, 2, 0xFFC8D0DA);
+            if (tormenta) {
+                Ui.rect(g, x + 8, y + 12, 2, 1, 0xFFFFE040);
+                Ui.rect(g, x + 7, y + 13, 2, 1, 0xFFFFE040);
+                Ui.rect(g, x + 8, y + 14, 2, 1, 0xFFFFE040);
+                Ui.rect(g, x + 7, y + 15, 1, 1, 0xFFFFE040);
+            } else for (int i = 0; i < 3; i++) Ui.rect(g, x + 4 + i * 4, y + 13 + (i % 2), 1, 2, 0xFF7FB8FF);
         }
 
         private void app(GuiGraphics g, int app, int cx, int y, int mx, int my, boolean etiqueta) {

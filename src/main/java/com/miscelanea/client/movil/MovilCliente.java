@@ -226,14 +226,6 @@ public final class MovilCliente {
         return l == null ? 1 : (int) ((l.getDayTime() + 6000L) / 24000L) + 1;
     }
 
-    /** Batería de mentira: se gasta a lo largo del día y "se carga" de noche. */
-    public static int bateria() {
-        var l = Minecraft.getInstance().level;
-        if (l == null) return 100;
-        long t = Math.floorMod(l.getDayTime(), 24000L);
-        return t < 13000 ? 100 - (int) (t * 72 / 13000) : 28 + (int) ((t - 13000) * 72 / 11000);
-    }
-
     // ------------------------------------------------------------------ abrir / pose
     public static void abrir(int color) {
         Minecraft mc = Minecraft.getInstance();

@@ -171,7 +171,8 @@ final class VistasChat {
         /** El micro está pulsado (grabando una nota de voz). */
         private boolean microPulsado;
 
-        private record Burbuja(List<FormattedCharSequence> lineas, int w, int h, boolean mia, boolean nombre) {}
+        /** fw/fh: tamaño de la foto adjunta (apaisada o vertical; hasta que llega, el de una vertical). */
+        private record Burbuja(List<FormattedCharSequence> lineas, int w, int h, boolean mia, boolean nombre, int fw, int fh) {}
 
         Chat(int id) {
             this.id = id;
@@ -221,7 +222,18 @@ final class VistasChat {
         private static final int ENTRADA = 18, MAXW = 92, VOZ_W = 96, BARRAS = 40;
 
         private Burbuja burbuja(MovilCliente.Msg msg, boolean grupo) {
-            return cache.computeIfAbsent(msg, k -> {
+            Burbuja hecha = cache.get(msg);
+            if (hecha != null) return hecha;
+            FotoCache.Tex ft = msg.adjunto() >= 0 ? FotoCache.get(MovilRed.FOTO_ADJUNTA, msg.adjunto()) : null;
+            Burbuja nb = hacer(msg, grupo, ft);
+            // con foto, se guarda cuando ya se sabe su forma (si no, se vuelve a medir al llegar)
+            if (msg.adjunto() < 0 || ft != null) cache.put(msg, nb);
+            return nb;
+        }
+
+        private Burbuja hacer(MovilCliente.Msg msg, boolean grupo, FotoCache.Tex ft) {
+            {
+                MovilCliente.Msg k = msg;
                 var p = Minecraft.getInstance().player;
                 boolean mia = p != null && k.de().equals(p.getUUID());
                 boolean nombre = grupo && !mia;
@@ -229,12 +241,14 @@ final class VistasChat {
                 int w = 0;
                 for (FormattedCharSequence s : l) w = Math.max(w, Ui.font().width(s));
                 if (nombre) w = Math.max(w, Math.min(MAXW, Ui.ancho(k.nombreDe())));
-                if (k.adjunto() >= 0) w = Math.max(w, 54);
+                boolean apaisada = ft != null && ft.w > ft.h;
+                int fw = apaisada ? MAXW : 54, fh = apaisada ? 52 : 96;
+                if (k.adjunto() >= 0) w = Math.max(w, fw);
                 if (k.voz() >= 0) w = Math.max(w, VOZ_W);
                 w = Math.max(w, Ui.anchoMini("00:00") + 4) + 8;
-                int h = 4 + l.size() * 9 + 7 + (nombre ? 10 : 0) + (k.adjunto() >= 0 ? 98 : 0) + (k.voz() >= 0 ? 18 : 0);
-                return new Burbuja(l, w, h, mia, nombre);
-            });
+                int h = 4 + l.size() * 9 + 7 + (nombre ? 10 : 0) + (k.adjunto() >= 0 ? fh + 2 : 0) + (k.voz() >= 0 ? 18 : 0);
+                return new Burbuja(l, w, h, mia, nombre, w - 8, fh);
+            }
         }
 
         @Override
@@ -382,14 +396,14 @@ final class VistasChat {
             }
             if (msg.adjunto() >= 0) {
                 FotoCache.Tex t = FotoCache.get(MovilRed.FOTO_ADJUNTA, msg.adjunto());
-                int fx = x + 4, fw = b.w - 8;
-                if (t != null) FotoCache.cubrir(g, t, fx, ty, fw, 96);
+                int fx = x + 4, fw = b.fw(), fh = b.fh();
+                if (t != null) FotoCache.cubrir(g, t, fx, ty, fw, fh);
                 else {
-                    Ui.rect(g, fx, ty, fw, 96, 0xFF151B20);
-                    Ui.glifo(g, Ui.G_FOTO, fx + fw / 2 - 4, ty + 44, Ui.TEXTO2);
+                    Ui.rect(g, fx, ty, fw, fh, 0xFF151B20);
+                    Ui.glifo(g, Ui.G_FOTO, fx + fw / 2 - 4, ty + fh / 2 - 4, Ui.TEXTO2);
                 }
-                fotosVisibles.add(new Object[]{msg.adjunto(), fx, ty, fw, 96});
-                ty += 98;
+                fotosVisibles.add(new Object[]{msg.adjunto(), fx, ty, fw, fh});
+                ty += fh + 2;
             }
             for (FormattedCharSequence s : b.lineas) {
                 g.drawString(Ui.font(), s, x + 4, ty, Ui.TEXTO, false);
@@ -399,9 +413,13 @@ final class VistasChat {
             Ui.mini(g, h, x + b.w - 4 - Ui.anchoMini(h), y + b.h - 7, 0x99FFFFFF);
         }
 
+        private long ultEnvio;
+
         private void enviar() {
             String s = campo.s.toString().trim();
-            if (s.isEmpty()) return;
+            // el servidor no admite dos mensajes en menos de 100 ms: así no se pierde ninguno
+            if (s.isEmpty() || Util.getMillis() - ultEnvio < 150) return;
+            ultEnvio = Util.getMillis();
             MovilRed.alServidor(MovilRed.C_MENSAJE, b -> {
                 b.writeVarInt(id);
                 b.writeUtf(s);

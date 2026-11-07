@@ -10,6 +10,8 @@ import net.minecraft.util.Mth;
  */
 abstract class Vista {
     static final int W = MovilScreen.SW, H = MovilScreen.SH, BARRA = 11, CAB = 20, ABAJO = 8;
+    /** Pantalla con el móvil girado (vistas horizontales). */
+    static final int HW = MovilScreen.SH, HH = MovilScreen.SW;
     MovilScreen m;
     /** Desplazamiento vertical de la lista (0 = arriba) y su máximo. */
     double scroll, scrollMax;
@@ -57,6 +59,11 @@ abstract class Vista {
     void abierta() {}
 
     void cerrada() {}
+
+    /** Quiere el móvil girado (pantalla de {@link #HW}x{@link #HH}, sin barra de estado ni de inicio). */
+    boolean horizontal() {
+        return false;
+    }
 
     /** Quiere la cámara del juego en tercera persona de frente (selfie). */
     boolean quiereFrontal() {

@@ -78,7 +78,7 @@ Un smartphone de verdad dentro del juego. Se abre con **clic derecho** o con su 
 | **Chats** | Mensajes privados y de grupo, con fotos y notas de voz (mantén pulsado el micro) |
 | **Teléfono** | Llamadas y videollamadas con Simple Voice Chat, a cualquier distancia |
 | **Agenda** | Contactos con número propio y si están conectados |
-| **Cámara y galería** | Fotos y selfies que se guardan en el servidor |
+| **Cámara y galería** | Fotos y selfies en vertical o en horizontal (botón del móvil tumbado o tecla R: el móvil gira en la pantalla). Las fotos apaisadas se ven giradas a pantalla completa. Se guardan en el servidor |
 | **Minegram** | La red social del servidor: publicaciones con pie de foto, me gusta (doble clic), comentarios, seguidores, perfiles y notificaciones |
 | **Ubicación** | Compartir dónde estás en tiempo real durante 15, 30 o 60 minutos |
 | **Mapa y GPS** | Mapa de lo explorado, puntos guardados, amigos que comparten ubicación y una flecha de navegación en el HUD |
@@ -86,6 +86,8 @@ Un smartphone de verdad dentro del juego. Se abre con **clic derecho** o con su 
 | **Reloj** | Hora y alarma |
 | **Linterna** | Ilumina de verdad con luces invisibles que se quitan solas |
 | **Ajustes** | Tono de llamada y otras opciones |
+
+El móvil no tiene batería: funciona siempre. En la pantalla de inicio hay una tarjeta con la hora, el día, la luna y el tiempo que hace. Durante una llamada puedes salir a otras apps; la pastilla verde de arriba te devuelve a la llamada.
 
 Los mensajes, fotos y publicaciones se guardan en el servidor. El mapa explorado se guarda en el cliente, en `config/miscelanea_movil_mapa/`.
 
