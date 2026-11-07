@@ -1,6 +1,7 @@
 # Cambios de Miscelánea
 
 ## 1.0.1 (en curso)
+- El **puntero láser** ya cae justo en la mira (antes el punto salía más abajo).
 - La **venda** ya se puede craftear en supervivencia: 1 lana blanca + 2 cuerdas (sin forma) → 3 vendas.
 
 ## 1.0.0
