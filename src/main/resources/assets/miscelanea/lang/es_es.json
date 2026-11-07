@@ -2688,5 +2688,6 @@
   "movil.miscelanea.cajero_ficha": "Comprar %s ficha (%s)",
   "movil.miscelanea.cajero_fichas": "Comprar %s fichas (%s)",
   "movil.miscelanea.cajero_fichas_ok": "Fichas compradas: %s",
-  "movil.miscelanea.fichas_concepto": "%s fichas de recreativa"
+  "movil.miscelanea.fichas_concepto": "%s fichas de recreativa",
+  "block.miscelanea.pista_bolos": "Pista de bolos"
 }

@@ -138,6 +138,9 @@ public final class ModBlocks {
     public static final RegistryObject<BlockEntityType<com.miscelanea.feria.MaquinaAltaBlockEntity>> MAQUINA_ALTA_BE = BLOCK_ENTITIES.register("maquina_alta",
             () -> BlockEntityType.Builder.of(com.miscelanea.feria.MaquinaAltaBlockEntity::new, MAQUINA_GANCHO.get(), TRAGAPERRAS.get(), GACHAPON.get(),
                     MAQUINA_CANASTA.get(), MAQUINA_BOXEO.get(), MARTILLO_FUERZA.get()).build(null));
+    public static final RegistryObject<Block> PISTA_BOLOS = BLOCKS.register("pista_bolos",
+            () -> new com.miscelanea.bolos.PistaBolosBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.0F)
+                    .sound(SoundType.WOOD).noOcclusion()));
     public static final RegistryObject<Block> BOLERA = BLOCKS.register("bolera",
             () -> new com.miscelanea.bolos.BoleraBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.5F)
                     .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 6)));

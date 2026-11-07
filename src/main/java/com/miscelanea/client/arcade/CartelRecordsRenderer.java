@@ -56,7 +56,7 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
         float nx = f.getStepX(), nz = f.getStepZ();
         // plano del dibujo: justo delante de la cara del modelo (cartel retro: 14,2 px; pizarra: panel de tiza a 13,8 px)
         boolean feria = be.getBlockState().getBlock() instanceof CartelRecordsBlock cb0 && cb0.estilo == CartelRecordsBlock.FERIA;
-        float fondo = feria ? 0.5F - 13.8F / 16F + 0.004F : 0.37F;
+        float fondo = feria ? 14F / 16F - 0.5F - 0.004F : 0.37F;
         float cx = 0.5F + izq.getStepX() * 0.5F - nx * fondo, cy = 1F, cz = 0.5F + izq.getStepZ() * 0.5F - nz * fondo;
         ps.pushPose();
         Matrix4f m = new Matrix4f(der.getStepX() * S, 0, der.getStepZ() * S, 0, 0, -S, 0, 0, nx * S, 0, nz * S, 0, cx, cy, cz, 1);

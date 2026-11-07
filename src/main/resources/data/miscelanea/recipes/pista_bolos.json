@@ -1,0 +1,19 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "building",
+ "pattern": [
+  "DPD"
+ ],
+ "key": {
+  "D": {
+   "item": "minecraft:black_dye"
+  },
+  "P": {
+   "tag": "minecraft:planks"
+  }
+ },
+ "result": {
+  "item": "miscelanea:pista_bolos",
+  "count": 4
+ }
+}

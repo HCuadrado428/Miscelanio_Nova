@@ -104,6 +104,7 @@ public class Miscelanea {
             event.accept(ModItems.BOLICHE);
             event.accept(ModItems.METRO);
             event.accept(ModItems.BOLERA);
+            event.accept(ModItems.PISTA_BOLOS);
             event.accept(ModItems.BOLA_BOLOS);
             event.accept(ModItems.DIANA_DARDOS);
             event.accept(ModItems.DARDO);

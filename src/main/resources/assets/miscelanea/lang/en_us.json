@@ -2688,5 +2688,6 @@
   "movil.miscelanea.cajero_ficha": "Buy %s token (%s)",
   "movil.miscelanea.cajero_fichas": "Buy %s tokens (%s)",
   "movil.miscelanea.cajero_fichas_ok": "Tokens bought: %s",
-  "movil.miscelanea.fichas_concepto": "%s arcade tokens"
+  "movil.miscelanea.fichas_concepto": "%s arcade tokens",
+  "block.miscelanea.pista_bolos": "Bowling Lane"
 }

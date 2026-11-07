@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/pista_bolos"
+  },
+  "facing=east": {
+   "model": "miscelanea:block/pista_bolos",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/pista_bolos",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/pista_bolos",
+   "y": 270
+  }
+ }
+}
