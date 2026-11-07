@@ -1,0 +1,29 @@
+{
+  "boogie_wonderland": {
+    "sounds": [
+      {
+        "name": "miscelanea_canciones:boogie_wonderland",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "pyt": {
+    "sounds": [
+      {
+        "name": "miscelanea_canciones:pyt",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  },
+  "weapon_of_choice": {
+    "sounds": [
+      {
+        "name": "miscelanea_canciones:weapon_of_choice",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.arcade_ficha"
+  }
+}

@@ -150,7 +150,17 @@ Un juego de ritmo para varios jugadores, con flechas (teclas configurables), not
 
 - **Canciones del servidor:** Boogie Wonderland, P.Y.T. y Weapon of Choice. La de Weapon of Choice tiene una coreografía inspirada en su videoclip: empieza sentado en el sillón, se levanta con chasquidos, meneo de hombros, el paseo chulesco y patadas, se desliza como por las escaleras mecánicas, vuela con los brazos en cruz y aterriza otra vez en el sillón.
 
-Las canciones con copyright **no están en este repositorio**: se añaden aparte al `.jar` del servidor privado.
+Las canciones van dentro del mod (`assets/miscelanea_canciones`). El repositorio es **privado** porque son música con derechos: no se debe hacer público mientras estén aquí.
+
+## Gramola de videoclip
+
+Como la pista de baile, pero se baila el videoclip entero. Pones la gramola, haces clic, eliges canción y, al empezar, un fogonazo blanco transforma todo lo que ves en el decorado de la canción. El mundo de verdad no cambia: el decorado solo existe en la pantalla de los que bailan.
+
+- **Weapon of Choice:** el vestíbulo de un hotel elegante, con suelo de mármol, alfombra roja, columnas, galería, escaleras mecánicas, ascensores y lámparas de araña. Con el paseo chulesco avanzas por el vestíbulo, en el vuelo planeas entre las lámparas y al final aterrizas en el sillón.
+- **Boogie Wonderland** (y cualquier canción sin decorado propio): una discoteca de los setenta, con pista de baldosas que se encienden al ritmo, bola de espejos, focos, neones y un sol de rayos detrás del escenario.
+- **Con más gente:** quien pone la gramola es el protagonista. Los demás pueden unirse con clic derecho entre canción y canción (hasta 5 en total) y bailan detrás en formación, cada uno con sus flechas y su puntuación. Nadie se pisa ni se atraviesa, porque cada uno tiene su sitio.
+- **Dos gramolas cerca:** igual que con las pistas, si ya suena una canción cerca no empieza otra, así que no se mezclan decorados ni músicas.
+- Hace falta espacio libre delante de la gramola (dos bloques). Agáchate para dejar de bailar.
 
 ---
 
@@ -313,7 +323,7 @@ El `.jar` sale en `build/libs/`. Para probar el cliente: `./gradlew runClient`.
 
 Notas para quien contribuya:
 
-- Las texturas, modelos y sonidos se generan con scripts de Python. Las canciones con copyright no se suben al repositorio (están en `.gitignore`).
+- Las texturas, modelos y sonidos se generan con scripts de Python. Las canciones con copyright están en `assets/miscelanea_canciones`; por eso el repositorio es privado.
 - Cada `push` a `main` compila en GitHub Actions y publica el `.jar` en Releases como `build-N`.
 
 ---
