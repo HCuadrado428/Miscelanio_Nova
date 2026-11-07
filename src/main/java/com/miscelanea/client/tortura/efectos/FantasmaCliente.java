@@ -92,8 +92,9 @@ public final class FantasmaCliente {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer yo = mc.player;
         if (yo == null || e == yo || yo.isSpectator() || !esFantasma(e)) return false;
-        Estado s = FANTASMAS.get(e.getId());
-        return s != null && !s.asoma;
+        if (!FANTASMAS.containsKey(e.getId()) || !(e instanceof LivingEntity le)) return false;
+        // se mira en cada fotograma (no en cada tick): aparece y desaparece en el mismo instante en que entra o sale del borde
+        return !enRabillo(mc.gameRenderer.getMainCamera(), le);
     }
 
     /**
@@ -132,7 +133,6 @@ public final class FantasmaCliente {
         for (Iterator<Map.Entry<Integer, Estado>> it = FANTASMAS.entrySet().iterator(); it.hasNext(); ) {
             Map.Entry<Integer, Estado> en = it.next();
             Estado s = en.getValue();
-            s.alfaAnt = s.alfa;
             Entity ent = level.getEntity(en.getKey());
             if (!(ent instanceof LivingEntity le) || !le.isAlive()) {
                 // entidad que ya no está (descargada, muerta): se olvida a los pocos segundos
