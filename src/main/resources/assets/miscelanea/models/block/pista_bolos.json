@@ -1,9 +1,9 @@
 {
  "parent": "block/block",
  "textures": {
-  "p": "miscelanea:block/feria/madera_pista",
+  "p": "miscelanea:block/feria/pista_bolos",
   "n": "miscelanea:block/feria/negro",
-  "particle": "miscelanea:block/feria/madera_pista"
+  "particle": "miscelanea:block/feria/pista_bolos"
  },
  "elements": [
   {
