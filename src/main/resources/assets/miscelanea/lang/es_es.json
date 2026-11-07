@@ -2692,5 +2692,6 @@
   "gramola.miscelanea.sin_sitio": "No hay sitio delante de la gramola: deja dos bloques libres",
   "gramola.miscelanea.espera": "Ya ha empezado la canción: únete antes de la siguiente",
   "gramola.miscelanea.llena": "Ya hay cinco bailando en esta gramola",
-  "gramola.miscelanea.se_une": "%s se une como bailarín de fondo"
+  "gramola.miscelanea.se_une": "%s se une como bailarín de fondo",
+  "baile.miscelanea.nivel": "%s flechas · nivel %s de 10"
 }

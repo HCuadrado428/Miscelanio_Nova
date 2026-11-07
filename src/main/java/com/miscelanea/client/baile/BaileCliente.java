@@ -176,7 +176,7 @@ public final class BaileCliente {
 
     static void empezarCancion(CancionesBaile.Cancion c) {
         cancion = c;
-        jb = new JuicioBaile(c.notas[dif], (carril, mostrar, paso) -> {
+        jb = new JuicioBaile(c.notas[dif], dif, (carril, mostrar, paso) -> {
             mostrar(mostrar);
             if (paso >= 0) enviarPaso(carril, paso);
         });
@@ -395,7 +395,7 @@ public final class BaileCliente {
         }
         if (modo == MENU) {
             List<CancionesBaile.Cancion> l = CancionesBaile.lista();
-            int filas = Math.min(6, Math.max(1, l.size())), alto = 64 + filas * 18;
+            int filas = Math.min(6, Math.max(1, l.size())), alto = 70 + filas * 18;
             int x0 = W / 2 - 120, y0 = H / 2 - alto / 2 - 10;
             g.fill(x0, y0, x0 + 240, y0 + alto, 0xC0180830);
             g.fill(x0, y0, x0 + 240, y0 + 2, 0xFFEC6CA8);
@@ -416,7 +416,15 @@ public final class BaileCliente {
             if (primera + filas < l.size()) g.drawCenteredString(font, "▼", x0 + 228, y0 + 26 + filas * 18 - 4, 0xFFA090C0);
             String[] d = {"paso.miscelanea.facil", "paso.miscelanea.normal", "paso.miscelanea.dificil"};
             int yd = y0 + 30 + filas * 18;
-            g.drawCenteredString(font, "◄ " + I18n.get(d[dif]) + " ►", W / 2, yd, 0xFF69DC67);
+            g.drawCenteredString(font, "◄ " + I18n.get(d[dif]) + " ►", W / 2, yd - 6, new int[]{0xFF69DC67, 0xFFFFD050, 0xFFFF6A50}[dif]);
+            if (!l.isEmpty()) {
+                // cuántas flechas y el nivel (1-10, por flechas por segundo), para que se vea lo que cambia
+                CancionesBaile.Cancion cs = l.get(Math.min(sel, l.size() - 1));
+                int nf = cs.notas[dif].length;
+                int nivel = Math.max(1, Math.min(10, Math.round(nf / Math.max(1F, cs.duracion) * 2.2F)));
+                g.drawCenteredString(font, I18n.get("baile.miscelanea.nivel", nf, nivel), W / 2, yd + 5, 0xFFA090C0);
+            }
+            yd += 6;
             g.drawCenteredString(font, I18n.get("baile.miscelanea.menu_ayuda", com.miscelanea.client.TeclasMod.corto(com.miscelanea.client.TeclasMod.RITMO[2]), com.miscelanea.client.TeclasMod.corto(com.miscelanea.client.TeclasMod.RITMO[1]), com.miscelanea.client.TeclasMod.corto(com.miscelanea.client.TeclasMod.RITMO[0]), com.miscelanea.client.TeclasMod.corto(com.miscelanea.client.TeclasMod.RITMO[3]),
                     mc.options.keyJump.getTranslatedKeyMessage().getString()), W / 2, yd + 16, (menuT / 10) % 2 == 0 ? 0xFFFFE05A : 0xFFC0A040);
             return;

@@ -150,6 +150,12 @@ Máquinas que funcionan con **fichas**. Hay recreativas sencillas, dobles para 2
 
 Un juego de ritmo para varios jugadores, con flechas (teclas configurables), notas largas, una cámara que sigue la coreografía y una coreografía propia para cada canción.
 
+- **Tres dificultades que se notan:**
+  - Fácil: solo en los tiempos, sin saltos, mucho margen (~1 flecha por segundo).
+  - Normal: algún contratiempo, saltos en el estribillo (~2 por segundo).
+  - Difícil: corcheas casi seguidas, ráfagas rápidas, escaleras, muchos saltos, poco margen y los fallos quitan más vida (~4 por segundo).
+  - El menú enseña cuántas flechas tiene la canción y su nivel del 1 al 10.
+
 - **Canciones del servidor:** Boogie Wonderland, P.Y.T. y Weapon of Choice. La de Weapon of Choice tiene una coreografía inspirada en su videoclip: empieza sentado en el sillón, se levanta con chasquidos, meneo de hombros, el paseo chulesco y patadas, se desliza como por las escaleras mecánicas, vuela con los brazos en cruz y aterriza otra vez en el sillón.
 
 Las canciones van dentro del mod (`assets/miscelanea_canciones`). El repositorio es **privado** porque son música con derechos: no se debe hacer público mientras estén aquí.

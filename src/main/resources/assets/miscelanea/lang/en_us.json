@@ -2692,5 +2692,6 @@
   "gramola.miscelanea.sin_sitio": "No room in front of the jukebox: leave two blocks clear",
   "gramola.miscelanea.espera": "The song has already started: join before the next one",
   "gramola.miscelanea.llena": "Five people are already dancing at this jukebox",
-  "gramola.miscelanea.se_une": "%s joins as a backup dancer"
+  "gramola.miscelanea.se_une": "%s joins as a backup dancer",
+  "baile.miscelanea.nivel": "%s arrows · level %s of 10"
 }

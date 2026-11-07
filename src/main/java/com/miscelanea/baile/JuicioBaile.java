@@ -11,6 +11,9 @@ package com.miscelanea.baile;
  *   <li>Una flecha sin pisar {@link #VENTANA} pasos después de su momento es un fallo.</li>
  *   <li>Puntos: perfecto 300 + 2·combo, genial 200 + combo, bien 100; vida +2 / +1 / 0 y −6 por fallo (empieza en 70).</li>
  * </ul>
+ * (Eso es en normal.) La dificultad también cambia las reglas, no solo las flechas: en fácil hay más margen para acertar
+ * (13 pasos, perfecto a ≤4) y los fallos quitan poca vida (−4, empiezas con 80); en difícil el margen es corto (8 pasos,
+ * perfecto a ≤2), los fallos quitan −9, un "bien" ya resta 1 y empiezas con 60.
  */
 public final class JuicioBaile {
     public static final int VENTANA = 10;
@@ -28,8 +31,21 @@ public final class JuicioBaile {
     public final int[] estado, tRoto;
     public int puntos, combo, maxCombo, vida = 70, perf, geni, bien, fall, mant, mantTotal;
     private final Oyente oyente;
+    /** Reglas de la dificultad: margen para pisar, perfecto y genial (pasos), vida que quita un fallo y un "bien". */
+    private final int ventana, rPerfecto, rGenial, castigo, castigoBien;
 
     public JuicioBaile(CancionesBaile.Nota[] notas, Oyente oyente) {
+        this(notas, 1, oyente);
+    }
+
+    public JuicioBaile(CancionesBaile.Nota[] notas, int dificultad, Oyente oyente) {
+        int d = Math.max(0, Math.min(2, dificultad));
+        ventana = new int[]{13, VENTANA, 8}[d];
+        rPerfecto = new int[]{4, 3, 2}[d];
+        rGenial = new int[]{8, 6, 4}[d];
+        castigo = new int[]{4, 6, 9}[d];
+        castigoBien = d == 2 ? 1 : 0;
+        vida = new int[]{80, 70, 60}[d];
         this.notas = notas == null ? new CancionesBaile.Nota[0] : notas;
         this.oyente = oyente;
         estado = new int[this.notas.length];
@@ -45,7 +61,7 @@ public final class JuicioBaile {
     public void pulsar(int c, int t) {
         int mejor = -1, md = 99;
         for (int i = 0; i < notas.length; i++) {
-            if (notas[i].t - t > VENTANA) break;
+            if (notas[i].t - t > ventana) break;
             if (estado[i] != PENDIENTE || notas[i].carril != c) continue;
             int d = Math.abs(notas[i].t - t);
             if (d < md) {
@@ -53,8 +69,8 @@ public final class JuicioBaile {
                 mejor = i;
             }
         }
-        if (mejor >= 0 && md <= VENTANA) {
-            int j = md <= 3 ? 0 : md <= 6 ? 1 : 2;
+        if (mejor >= 0 && md <= ventana) {
+            int j = md <= rPerfecto ? 0 : md <= rGenial ? 1 : 2;
             estado[mejor] = notas[mejor].mantener() ? MANTENIENDO : HECHA;
             juzgar(j);
             avisar(c, j, j);
@@ -66,9 +82,9 @@ public final class JuicioBaile {
         for (int i = 0; i < notas.length; i++) {
             if (estado[i] != MANTENIENDO || notas[i].carril != c) continue;
             int falta = notas[i].fin - t;
-            if (falta <= VENTANA) {
+            if (falta <= ventana) {
                 // soltada a tiempo: cuanto más cerca del final de la cola, mejor
-                int j = falta <= 3 ? 0 : falta <= 6 ? 1 : 2;
+                int j = falta <= rPerfecto ? 0 : falta <= rGenial ? 1 : 2;
                 estado[i] = HECHA;
                 mant++;
                 juzgar(j);
@@ -88,7 +104,7 @@ public final class JuicioBaile {
         for (int i = 0; i < notas.length; i++) {
             CancionesBaile.Nota n = notas[i];
             if (n.t > t) break;
-            if (estado[i] == PENDIENTE && t - n.t > VENTANA) {
+            if (estado[i] == PENDIENTE && t - n.t > ventana) {
                 estado[i] = FALLADA;
                 tRoto[i] = n.t;
                 juzgar(3);
@@ -117,10 +133,11 @@ public final class JuicioBaile {
             case 2 -> {
                 bien++;
                 puntos += 100;
+                vida -= castigoBien;
             }
             default -> {
                 fall++;
-                vida -= 6;
+                vida -= castigo;
             }
         }
         combo = j < 3 ? combo + 1 : 0;
