@@ -56,11 +56,16 @@ public final class Laser {
 
     /** Dirección del rayo: la mirada más un temblor pequeño de la mano (igual en servidor y clientes). */
     public static Vec3 direccion(LivingEntity e, float pt) {
+        return direccion(e, pt, e.getViewXRot(pt), e.getViewYRot(pt));
+    }
+
+    /** La dirección (xRot, yRot en grados) con el temblor de la mano de esa entidad. */
+    public static Vec3 direccion(LivingEntity e, float pt, float xRot, float yRot) {
         double t = e.level().getGameTime() + pt;
         int id = e.getId();
         float jx = (float) (0.11 * (Math.sin(t * 0.53 + id) + 0.6 * Math.sin(t * 1.37 + id * 2.1) + 0.3 * Math.sin(t * 3.1 + id * 0.7)));
         float jy = (float) (0.11 * (Math.sin(t * 0.47 + id * 1.3) + 0.6 * Math.sin(t * 1.61 + id * 0.4) + 0.3 * Math.sin(t * 2.9 + id * 1.9)));
-        return Vec3.directionFromRotation(e.getViewXRot(pt) + jx, e.getViewYRot(pt) + jy);
+        return Vec3.directionFromRotation(xRot + jx, yRot + jy);
     }
 
     /** Dónde acaba el rayo. */
@@ -71,9 +76,12 @@ public final class Laser {
     }
 
     public static Impacto rayo(LivingEntity e, float pt) {
+        return rayo(e, e.getEyePosition(pt), direccion(e, pt));
+    }
+
+    /** El rayo desde un punto y en una dirección dados (el cliente lo lanza desde su cámara para que caiga en la mira). */
+    public static Impacto rayo(LivingEntity e, Vec3 ojo, Vec3 dir) {
         Level l = e.level();
-        Vec3 ojo = e.getEyePosition(pt);
-        Vec3 dir = direccion(e, pt);
         Vec3 fin = ojo.add(dir.scale(alcance()));
         BlockHitResult bh = l.clip(new ClipContext(ojo, fin, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, e));
         Vec3 normal = null;

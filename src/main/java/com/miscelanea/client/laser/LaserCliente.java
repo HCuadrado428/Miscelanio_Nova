@@ -79,6 +79,18 @@ public final class LaserCliente {
 
     // ------------------------------------------------------------------ rayo
 
+    /**
+     * El rayo de un jugador tal como se dibuja aquí. El mío sale de la cámara y en la dirección de la cámara (con el
+     * temblor de la mano), para que el punto caiga justo en la mira aunque la cámara no esté en los ojos (cámaras de
+     * otros mods, temblor por heridas, mods que cambian la altura de los ojos...). El de los demás, desde sus ojos.
+     */
+    static Laser.Impacto rayo(Player p, float pt, Camera cam) {
+        Minecraft mc = Minecraft.getInstance();
+        if (p == mc.player && mc.getCameraEntity() == p && mc.options.getCameraType() != net.minecraft.client.CameraType.THIRD_PERSON_FRONT)
+            return Laser.rayo(p, cam.getPosition(), Laser.direccion(p, pt, cam.getXRot(), cam.getYRot()));
+        return Laser.rayo(p, pt);
+    }
+
     /** De dónde sale el rayo que se dibuja: la punta del puntero (en primera persona, la del puntero de la pantalla). */
     static Vec3 origen(Player p, float pt) {
         Minecraft mc = Minecraft.getInstance();
@@ -115,7 +127,7 @@ public final class LaserCliente {
         for (Player p : mc.level.players()) {
             if (!Laser.apuntando(p) || p.distanceToSqr(c) > 160 * 160) continue;
             if (vc == null) vc = buf.getBuffer(RenderType.lightning());
-            Laser.Impacto im = Laser.rayo(p, pt);
+            Laser.Impacto im = rayo(p, pt, cam);
             int rgb = Laser.rgb(p.getUseItem());
             Vec3 a = origen(p, pt).subtract(c);
             Vec3 b = im.punto().subtract(c);
