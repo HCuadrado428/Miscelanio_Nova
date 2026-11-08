@@ -1,0 +1,153 @@
+name: Probar en el juego
+
+# Después de cada build: arranca un servidor dedicado con el mod (¿carga sin petar?) y el juego de verdad sin pantalla
+# (Xvfb + gráficos por software) con MC-Runtime-Test, que crea un mundo; dentro, PruebaCI recorre el móvil sacando
+# capturas. Todo lo que sale (capturas, registros, informes de crash) se sube como artefacto.
+
+on:
+  workflow_run:
+    workflows: [Compilar JAR]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      build:
+        description: Número de build a probar (vacío = la última)
+        required: false
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  MC: 1.20.1
+  FORGE: 47.3.0
+
+jobs:
+  preparar:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    outputs:
+      build: ${{ steps.n.outputs.build }}
+    steps:
+      - id: n
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          B="${{ github.event.inputs.build }}"
+          if [ -z "$B" ]; then B="${{ github.event.workflow_run.run_number }}"; fi
+          if [ -z "$B" ]; then B=$(gh release list -R "$GITHUB_REPOSITORY" -L 1 --json tagName -q '.[0].tagName' | sed 's/build-//'); fi
+          echo "build=$B" >> "$GITHUB_OUTPUT"
+          echo "Build a probar: $B"
+      - name: Bajar el jar y las dependencias
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p mods opcionales
+          gh release download "build-${{ steps.n.outputs.build }}" -R "$GITHUB_REPOSITORY" -D mods -p '*.jar'
+          bajar() {  # bajar <slug> <carpeta>: la última versión para Forge 1.20.1 en Modrinth
+            url=$(curl -sf "https://api.modrinth.com/v2/project/$1/version?loaders=%5B%22forge%22%5D&game_versions=%5B%22${MC}%22%5D" \
+                  | jq -r '[.[] | select(.version_type=="release")][0].files | (map(select(.primary))[0] // .[0]).url')
+            if [ -n "$url" ] && [ "$url" != "null" ]; then curl -sfL -o "$2/$1.jar" "$url" && echo "$1: $url"; else echo "::warning::No encuentro $1 en Modrinth"; fi
+          }
+          bajar geckolib mods
+          bajar playeranimator mods
+          bajar simple-voice-chat opcionales
+          bajar customizable-player-models opcionales || bajar cpm opcionales || true
+          ls -la mods opcionales
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mods
+          path: |
+            mods
+            opcionales
+
+  servidor:
+    needs: preparar
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: actions/download-artifact@v4
+        with:
+          name: mods
+      - name: Instalar Forge (servidor)
+        run: |
+          curl -sfL -o instalador.jar "https://maven.minecraftforge.net/net/minecraftforge/forge/${MC}-${FORGE}/forge-${MC}-${FORGE}-installer.jar"
+          java -jar instalador.jar --installServer srv > instalar.log 2>&1 || (tail -40 instalar.log; exit 1)
+          cd srv
+          echo eula=true > eula.txt
+          printf 'online-mode=false\nlevel-type=minecraft\\:flat\nspawn-npcs=false\nview-distance=4\nsimulation-distance=4\n' > server.properties
+          mkdir -p mods && cp ../mods/*.jar ../opcionales/*.jar mods/ 2>/dev/null || true
+          ls mods
+      - name: Arrancar y parar el servidor
+        run: |
+          cd srv
+          mkfifo entrada
+          (tail -f entrada | timeout 600 ./run.sh nogui > servidor.log 2>&1; echo "salida $?" > salida.txt) &
+          exec 3>entrada
+          for i in $(seq 1 540); do
+            if grep -q 'Done (' servidor.log; then echo "Arrancado en ${i}s"; break; fi
+            if [ -f salida.txt ]; then echo "El servidor se ha parado solo"; break; fi
+            sleep 1
+          done
+          sleep 15                     # unos ticks con el mundo cargado
+          echo stop >&3
+          for i in $(seq 1 90); do [ -f salida.txt ] && break; sleep 1; done
+          cat salida.txt || true
+          echo "----- líneas de Miscelánea y errores -----"
+          grep -n -i -E 'miscelanea|exception|error' servidor.log | grep -v -i 'Error loading class' | head -80 || true
+          if ! grep -q 'Done (' servidor.log; then echo "::error::El servidor no llegó a arrancar"; tail -80 servidor.log; exit 1; fi
+          if ls crash-reports/*.txt >/dev/null 2>&1; then echo "::error::Hay informe de crash"; cat crash-reports/*.txt | head -120; exit 1; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: servidor
+          path: |
+            srv/servidor.log
+            srv/logs/
+            srv/crash-reports/
+
+  cliente:
+    needs: preparar
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: actions/download-artifact@v4
+        with:
+          name: mods
+      - name: Poner los mods
+        run: |
+          mkdir -p run/mods
+          cp mods/*.jar opcionales/*.jar run/mods/ 2>/dev/null || true
+          ls run/mods
+      - name: Abrir el juego y probar el móvil
+        uses: headlesshq/mc-runtime-test@5.0.0
+        with:
+          mc: ${{ env.MC }}
+          modloader: forge
+          regex: .*forge.*
+          mc-runtime-test: forge
+          java: 17
+          headlessmc-command: --jvm "-Djava.awt.headless=true -Dmiscelanea.prueba=true -Xmx3G"
+      - name: Resumen
+        if: always()
+        run: |
+          cat run/prueba_miscelanea.txt 2>/dev/null || echo "No hay resumen (la prueba no llegó al final)"
+          ls run/screenshots 2>/dev/null || true
+          grep -n -E 'PruebaCI|miscelanea.*(ERROR|Exception)' run/logs/latest.log 2>/dev/null | head -60 || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cliente
+          path: |
+            run/screenshots/
+            run/prueba_miscelanea.txt
+            run/logs/
+            run/crash-reports/

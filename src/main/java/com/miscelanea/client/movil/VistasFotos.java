@@ -459,6 +459,10 @@ final class VistasFotos {
                 cambiarModo();
                 return true;
             }
+            if (key == GLFW.GLFW_KEY_L) {
+                cambiarFlash();
+                return true;
+            }
             if (key == GLFW.GLFW_KEY_EQUAL || key == GLFW.GLFW_KEY_KP_ADD) {
                 rueda(1);
                 return true;
