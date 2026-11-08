@@ -108,8 +108,10 @@ public final class LaserCliente {
         }
         float yb = Mth.lerp(pt, p.yBodyRotO, p.yBodyRot) * Mth.DEG_TO_RAD;
         Vec3 pos = p.getPosition(pt);
-        Vec3 hombro = pos.add(-Math.cos(yb) * TP_LADO * i, p.isCrouching() ? TP_ALTO_AGACHADO : TP_ALTO, -Math.sin(yb) * TP_LADO * i);
-        return hombro.add(p.getViewVector(pt).scale(TP_LARGO));
+        // con Pehkui (o las pociones de Gigante y Enano) el jugador cambia de tamaño: la mano está a esa escala
+        double k = Math.max(0.05, p.getBbWidth() / 0.6);
+        Vec3 hombro = pos.add(-Math.cos(yb) * TP_LADO * i * k, (p.isCrouching() ? TP_ALTO_AGACHADO : TP_ALTO) * k, -Math.sin(yb) * TP_LADO * i * k);
+        return hombro.add(p.getViewVector(pt).scale(TP_LARGO * k));
     }
 
     @SubscribeEvent
