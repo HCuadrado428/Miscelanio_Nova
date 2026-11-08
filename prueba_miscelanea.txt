@@ -1,0 +1,40 @@
+Prueba del móvil (Miscelánea)
+OK    preparar
+OK    00_mundo
+OK    01_inicio
+OK    02_camara
+OK    03_filtro_1
+OK    03_filtro_2
+OK    03_filtro_3
+OK    03_filtro_4
+OK    03_filtro_5
+OK    03_filtro_6
+OK    03_filtro_7
+OK    03_filtro_8
+OK    03_foto_gameboy
+OK    04_zoom
+OK    05_horizontal
+OK    vuelve_vertical
+OK    06_foto
+OK    espera_foto
+OK    07_temporizador
+OK    espera_temporizador
+OK    temporizador_fuera
+OK    08_flash
+OK    espera_flash
+OK    09_grabando
+OK    para_video
+OK    10_galeria
+  galería: 5 (la última es un vídeo de 4375 ms)
+OK    11_visor
+OK    12_llamada_grupo
+OK    13_llamada
+OK    14_entrante
+OK    15_manos_libres
+OK    16_teclado
+OK    17_ajustes
+  pociones: red_mushroom=gigante brown_mushroom=enano echo_shard=ecolocalizacion ink_sac=niebla_viviente amethyst_shard=espejismo feather=helio snowball=ventilador wheat=borrachera cocoa_beans=tartamudeo
+OK    pociones
+  cara propia (la de su modelo) guardada: sí
+OK    cerrar
+TODO BIEN
