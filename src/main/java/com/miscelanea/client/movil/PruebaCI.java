@@ -486,7 +486,8 @@ public final class PruebaCI {
                             puestos++;
                             // con partida, como en una sala de verdad (un tablero recién puesto no dibuja nada)
                             if (l.getBlockEntity(donde) instanceof com.miscelanea.juegos.TableroBlockEntity tb) tb.reiniciar(0);
-                            if (l.getBlockEntity(donde) instanceof com.miscelanea.bolos.BoleraBlockEntity bo) bo.nueva(sp);
+                            if (l.getBlockEntity(donde) instanceof com.miscelanea.bolos.BoleraBlockEntity)
+                                l.getBlockState(donde).use(l, sp, net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(donde), net.minecraft.core.Direction.UP, donde, false));
                         }
                     } catch (Throwable t) {
                         RESUMEN.add("  rendimiento: no se pudo poner " + it + ": " + t);
