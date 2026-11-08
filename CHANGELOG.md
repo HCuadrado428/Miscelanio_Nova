@@ -12,6 +12,7 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
 - **version-2**: la 2.0.0 (lo gordo). Recoge lo de main por el camino y se une al final.
 
 ## 1.2.0 (en curso)
+- **Equilibrio de armaduras:** entre armadura, dureza, encantamientos de protección y efectos (Resistencia, el perk Guardián de Tombstone…) ya no se puede quitar más del 75 % de un golpe: cada golpe hace al menos un 25 %. Con armaduras de Ice and Fire o encantamientos subidos con el libro de impregnación de Tombstone ya no se es inmortal. Se ajusta en la config del servidor (sección `equilibrio`: `reduccion_maxima`, `tambien_mobs`, `activo`).
 - **Jeringuilla de sedante** (pestaña Tortura): el suavis se seca en el horno, ahumador u hoguera, y con una jeringuilla, dos de suavis seco y una botella de agua se hace la jeringuilla de sedante. Clic derecho a alguien: se marea y tiene un forcejeo como el del mordisco de Dream (A / D) para no dormirse, más difícil si se le pincha por la espalda. Si no lo aguanta (o es un mob), se queda dormido en el suelo 30 s (config `sedante_segundos`); un golpe fuerte le despierta. Agachado y al aire te lo pinchas tú (siesta). Devuelve la jeringuilla vacía. Jeringuillas: pepita de hierro, panel de cristal y lingote de hierro en columna → 3.
 
 ## 1.1.2

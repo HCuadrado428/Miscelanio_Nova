@@ -318,6 +318,38 @@ public final class PruebaCI {
                 if (sp != null) com.miscelanea.sedante.Sedante.despertar(sp);
             });
         });
+        // equilibrio de armaduras: netherita con Protección IV y Resistencia IV, golpe de 10 → al menos 2,5 (25 %)
+        sin("equilibrio", 5, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                sp.setGameMode(GameType.SURVIVAL);
+                net.minecraft.world.item.Item[] ar = {net.minecraft.world.item.Items.NETHERITE_BOOTS, net.minecraft.world.item.Items.NETHERITE_LEGGINGS,
+                        net.minecraft.world.item.Items.NETHERITE_CHESTPLATE, net.minecraft.world.item.Items.NETHERITE_HELMET};
+                net.minecraft.world.entity.EquipmentSlot[] sl = {net.minecraft.world.entity.EquipmentSlot.FEET, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                        net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.HEAD};
+                for (int i = 0; i < 4; i++) {
+                    ItemStack st = new ItemStack(ar[i]);
+                    st.enchant(net.minecraft.world.item.enchantment.Enchantments.ALL_DAMAGE_PROTECTION, 4);
+                    sp.setItemSlot(sl[i], st);
+                }
+                sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.DAMAGE_RESISTANCE, 100, 3));
+                sp.setHealth(20);
+                var z = net.minecraft.world.entity.EntityType.ZOMBIE.create(sp.serverLevel());
+                z.moveTo(sp.getX(), sp.getY() + 40, sp.getZ());
+                sp.invulnerableTime = 0;
+                sp.hurt(sp.damageSources().mobAttack(z), 10);
+                float perdida = 20 - sp.getHealth();
+                RESUMEN.add(String.format("  equilibrio: golpe de 10 con netherita P-IV y Resistencia IV quita %.2f (mínimo 2,50)", perdida));
+                if (perdida < 2.49F) RESUMEN.add("  FALLO: el tope de reducción no funciona");
+                for (var x : sl) sp.setItemSlot(x, ItemStack.EMPTY);
+                sp.removeAllEffects();
+                sp.setHealth(20);
+                sp.setGameMode(GameType.CREATIVE);
+            });
+        });
         sin("cerrar", 10, () -> {
             mc.setScreen(null);
             RESUMEN.add("  cara propia (la de su modelo) guardada: " + (CarasCliente.tiene(mc.player.getUUID()) ? "sí" : "NO"));
