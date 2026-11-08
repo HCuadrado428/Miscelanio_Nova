@@ -71,8 +71,16 @@ public final class Purgatorio {
         if (en(l)) {
             // por debajo del suelo: se aparece en otra parte (cayendo desde arriba)
             if (p.getY() < -24) {
-                BlockPos b = sitio(p, PurgatorioGenerador.SUELO + 18);
+                // si se ha caído nada más llegar (el suelo aún no le había llegado al cliente), vuelve al mismo sitio;
+                // si no, aparece en otra parte cayendo del techo
+                ServerLevel l2 = (ServerLevel) l;
+                long ahora = l2.getGameTime();
+                boolean recien = ahora - persistente(p).getLong(TAG + "_t") < 400;
+                BlockPos b = recien ? new BlockPos(p.getBlockX(), PurgatorioGenerador.SUELO, p.getBlockZ()) : sitio(p, PurgatorioGenerador.SUELO + 18);
+                preparar(l2, b);
+                persistente(p).putLong(TAG + "_t", ahora);
                 p.teleportTo(b.getX() + 0.5, b.getY(), b.getZ() + 0.5);
+                p.setDeltaMovement(0, 0, 0);
                 p.fallDistance = 0;
             }
             return;
@@ -96,6 +104,8 @@ public final class Purgatorio {
         persistente(p).put(TAG, vuelta);
         if (p.isPassenger()) p.stopRiding();
         BlockPos b = sitio(p, PurgatorioGenerador.SUELO);
+        preparar(dest, b);
+        persistente(p).putLong(TAG + "_t", dest.getGameTime());
         p.fallDistance = 0;
         p.setDeltaMovement(0, 0, 0);
         p.teleportTo(dest, b.getX() + 0.5, b.getY(), b.getZ() + 0.5, p.getYRot(), 0);
@@ -132,6 +142,13 @@ public final class Purgatorio {
         p.teleportTo(dest, b.getX() + 0.5, b.getY(), b.getZ() + 0.5, p.getYRot(), p.getXRot());
         dest.playSound(null, b, SoundEvents.BEACON_ACTIVATE, SoundSource.AMBIENT, 1F, 1.4F);
         p.displayClientMessage(Component.translatable("purgatorio.miscelanea.salida"), true);
+    }
+
+    /** Genera ya los chunks de alrededor del sitio (son muy baratos), para que el suelo esté al llegar. */
+    public static void preparar(ServerLevel l, BlockPos b) {
+        int cx = b.getX() >> 4, cz = b.getZ() >> 4;
+        for (int x = -1; x <= 1; x++)
+            for (int z = -1; z <= 1; z++) l.getChunk(cx + x, cz + z);
     }
 
     /** Un sitio al azar en una calle del Purgatorio (el cruce de un chunk siempre está libre). */

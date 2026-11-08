@@ -382,6 +382,8 @@ public final class PruebaCI {
             ServerPlayer sp = srv.getPlayerList().getPlayer(id);
             var l = srv.getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
             if (sp == null || l == null) return;
+            com.miscelanea.purgatorio.Purgatorio.preparar(l, b);
+            sp.getPersistentData().getCompound(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG).putLong("miscelanea_purgatorio_t", l.getGameTime());
             sp.teleportTo(l, b.getX() + 0.5, b.getY(), b.getZ() + 0.5, yaw, pitch);
         });
     }
