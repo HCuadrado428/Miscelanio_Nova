@@ -138,7 +138,11 @@ public final class EcoCliente {
         SoundInstance s = e.getSound();
         Minecraft mc = Minecraft.getInstance();
         if (s == null || s.isRelative() || mc.player == null) return;
-        double x = s.getX(), y = s.getY(), z = s.getZ();
+        oir(mc, s.getX(), s.getY(), s.getZ());
+    }
+
+    /** Un ruido en (x, y, z): si está cerca, una onda (si ya sale otra del mismo sitio, no). */
+    private static void oir(Minecraft mc, double x, double y, double z) {
         if (mc.player.distanceToSqr(x, y, z) > (RADIO_MAX + 6) * (RADIO_MAX + 6)) return;
         // varios sonidos a la vez en el mismo sitio (un paso y su bloque): una sola onda
         for (Onda o : ONDAS)
@@ -355,6 +359,7 @@ public final class EcoCliente {
                         rd.render(ent, x - cam.x, y - cam.y, z - cam.z, yaw, pt, ps, solido, 0xF000F0);
                     }
                 } catch (RuntimeException ex) {
+                    if (pruebaFallos++ == 0) Miscelanea.LOGGER.warn("[Eco] fallo al dibujar las siluetas", ex);
                     ENTES.clear();
                 } finally {
                     rd.setRenderShadow(true);
@@ -447,6 +452,26 @@ public final class EcoCliente {
         public void unsetDefaultColor() {
             d.unsetDefaultColor();
         }
+    }
+
+    // ------------------------------------------------------------------ para la prueba del CI (sin sonido no hay ondas)
+    public static int pruebaFallos;
+
+    public static void pruebaRuido(double x, double y, double z) {
+        Minecraft mc = Minecraft.getInstance();
+        if (activo()) oir(mc, x, y, z);
+    }
+
+    public static String pruebaEstado() {
+        return "ondas " + ONDAS.size() + ", bloques " + BLOQUES.size() + ", entidades " + ENTES.size() + ", fallos al dibujar " + pruebaFallos;
+    }
+
+    public static int pruebaEntes() {
+        return ENTES.size();
+    }
+
+    public static boolean pruebaVacio() {
+        return ONDAS.isEmpty() && BLOQUES.isEmpty() && ENTES.isEmpty();
     }
 
     // ------------------------------------------------------------------ HUD: una viñeta azulada y el aviso de la palmada
