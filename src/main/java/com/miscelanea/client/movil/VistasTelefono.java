@@ -595,11 +595,11 @@ final class VistasTelefono {
             caraLlamada(g, MovilCliente.dosId, 7, y + 4, 16, 0xF2252D36);
             Ui.mini(g, Ui.cortarMini(MovilCliente.dosNombre, W - 76), 27, y + 4, 0xFFFFFFFF);
             if (d == MovilRed.LL_ENTRANTE) {
-                Ui.mini(g, t("llamada_en_espera"), 27, y + 13, 0xFFB9F5D2);
+                Ui.mini(g, Ui.cortarMini(t("llamada_en_espera"), W - 76), 27, y + 13, 0xFFB9F5D2);
                 Ui.boton(g, W - 38, y + 12, 8, Ui.dentro(mx, my, W - 46, y + 4, 16, 16) ? 0xFFD43C3C : Ui.ROJO, Ui.G_COLGAR, 0xFFFFFFFF);
                 Ui.boton(g, W - 17, y + 12, 8, Ui.dentro(mx, my, W - 25, y + 4, 16, 16) ? 0xFF2FBF73 : Ui.ACENTO, Ui.G_TELEFONO, 0xFFFFFFFF);
             } else {
-                Ui.mini(g, t("en_espera_tocar"), 27, y + 13, Ui.AMARILLO);
+                Ui.mini(g, Ui.cortarMini(t("en_espera_tocar"), W - 56), 27, y + 13, Ui.AMARILLO);
                 Ui.boton(g, W - 17, y + 12, 8, Ui.dentro(mx, my, W - 25, y + 4, 16, 16) ? 0xFF3A86D6 : Ui.AZUL, Ui.G_CAMBIAR, 0xFFFFFFFF);
             }
         }

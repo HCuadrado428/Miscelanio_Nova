@@ -2717,7 +2717,7 @@
   "movil.miscelanea.numero_oculto": "Hidden number",
   "movil.miscelanea.personas": "%s people",
   "movil.miscelanea.en_espera": "On hold",
-  "movil.miscelanea.en_espera_tocar": "On hold · tap to switch",
+  "movil.miscelanea.en_espera_tocar": "On hold · tap",
   "movil.miscelanea.silenciar": "Mute",
   "movil.miscelanea.altavoz": "Speaker",
   "movil.miscelanea.camara_corto": "Camera",
@@ -2748,5 +2748,6 @@
   "movil.miscelanea.video_adjunto": "Video",
   "movil.miscelanea.manos_libres": "Hands-free",
   "movil.miscelanea.manos_libres_volver": "Right-click phone: back",
-  "movil.miscelanea.manos_libres_corto": "H.free"
+  "movil.miscelanea.manos_libres_corto": "H.free",
+  "movil.miscelanea.tono_corto": "Ringtone"
 }

@@ -282,7 +282,7 @@ final class VistasApps {
             recortar(g, Y0, H - ABAJO);
             int y = Y0 + 4 - (int) scroll;
             // tono
-            fila(g, y, t("tono"), mx, my);
+            fila(g, y, t("tono_corto"), mx, my);
             String nt = t("tono" + MovilCliente.tono);
             Ui.texto(g, nt, W - 14 - Ui.ancho(nt), y + 6, Ui.AZUL);
             Ui.glifo(g, Ui.G_DERECHA, W - 12, y + 6, Ui.TEXTO2);

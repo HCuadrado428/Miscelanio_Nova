@@ -2717,7 +2717,7 @@
   "movil.miscelanea.numero_oculto": "Número oculto",
   "movil.miscelanea.personas": "%s personas",
   "movil.miscelanea.en_espera": "En espera",
-  "movil.miscelanea.en_espera_tocar": "En espera · toca para cambiar",
+  "movil.miscelanea.en_espera_tocar": "En espera · toca",
   "movil.miscelanea.silenciar": "Mudo",
   "movil.miscelanea.altavoz": "Altavoz",
   "movil.miscelanea.camara_corto": "Cámara",
@@ -2748,5 +2748,6 @@
   "movil.miscelanea.video_adjunto": "Vídeo",
   "movil.miscelanea.manos_libres": "Manos libres",
   "movil.miscelanea.manos_libres_volver": "Clic der. al móvil: volver",
-  "movil.miscelanea.manos_libres_corto": "M.libres"
+  "movil.miscelanea.manos_libres_corto": "M.libres",
+  "movil.miscelanea.tono_corto": "Tono"
 }
