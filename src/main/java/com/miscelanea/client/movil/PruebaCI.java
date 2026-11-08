@@ -347,10 +347,141 @@ public final class PruebaCI {
         });
         paso("61_mesa_llena", 20, () -> {});
         sin("encantos_fin", 5, () -> mc.setScreen(null));
+        rendimiento();
         sin("cerrar", 10, () -> {
             mc.setScreen(null);
             RESUMEN.add("  cara propia (la de su modelo) guardada: " + (CarasCliente.tiene(mc.player.getUUID()) ? "sí" : "NO"));
         });
+    }
+
+    // ------------------------------------------------------------------ rendimiento de la sala recreativa
+    private static long PERFIL_T0;
+    private static Object GRABACION;
+    private static int PERFIL_F0;
+    private static final java.util.List<String> PERFIL = new java.util.ArrayList<>();
+
+    private static void medir(String fase) {
+        long t = System.currentTimeMillis();
+        if (PERFIL_T0 != 0) {
+            double s = (t - PERFIL_T0) / 1000.0;
+            RESUMEN.add(String.format("  rendimiento %s: %.1f fps", fase, (fotogramas - PERFIL_F0) / Math.max(0.01, s)));
+        }
+        PERFIL.add(fase + "=" + t);
+        PERFIL_T0 = t;
+        PERFIL_F0 = fotogramas;
+    }
+
+    /** Una sala recreativa llena (máquinas, juegos de mesa, bolera…) y luego jugando a dos recreativas; se mide cada fase. */
+    private static void rendimiento() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("perfil_vacio", 200, () -> {
+            mc.setScreen(null);
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            mc.player.setXRot(15);
+            medir("inicio");
+            try {
+                var r = new jdk.jfr.Recording();
+                r.enable("jdk.ExecutionSample").withPeriod(java.time.Duration.ofMillis(10));
+                r.start();
+                GRABACION = r;
+            } catch (Throwable t) {
+                RESUMEN.add("  rendimiento: sin perfil (JFR): " + t);
+            }
+        });
+        sin("perfil_sala", 20, () -> {
+            medir("sin_sala");
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                var l = sp.serverLevel();
+                var mira = sp.getDirection();
+                var lado = mira.getClockWise();
+                var o = sp.blockPosition().relative(mira, 3);
+                for (var b : net.minecraft.core.BlockPos.betweenClosed(o.relative(lado, -12).below(), o.relative(lado, 12).relative(mira, 18).above(4)))
+                    l.setBlock(b, b.getY() < o.getY() ? net.minecraft.world.level.block.Blocks.SMOOTH_STONE.defaultBlockState() : net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+                java.util.List<net.minecraft.world.item.Item> cosas = new java.util.ArrayList<>(java.util.List.of(
+                        com.miscelanea.registry.ModItems.RECREATIVA.get(), com.miscelanea.registry.ModItems.RECREATIVA_DOBLE.get(),
+                        com.miscelanea.registry.ModItems.CABINA_CARRERAS.get(), com.miscelanea.registry.ModItems.RECREATIVA_PISTOLA.get(),
+                        com.miscelanea.registry.ModItems.MESA_COCTEL.get(), com.miscelanea.registry.ModItems.CARTEL_RECORDS.get(),
+                        com.miscelanea.registry.ModItems.TABLON_RECORDS.get(), com.miscelanea.registry.ModItems.TABLERO.get(),
+                        com.miscelanea.registry.ModItems.IMPERIO.get(), com.miscelanea.registry.ModItems.PARCHIS.get(),
+                        com.miscelanea.registry.ModItems.OCA.get(), com.miscelanea.registry.ModItems.CUATRO.get(),
+                        com.miscelanea.registry.ModItems.FLOTA.get(), com.miscelanea.registry.ModItems.DOMINO.get(),
+                        com.miscelanea.registry.ModItems.MESA_CARTAS.get(), com.miscelanea.registry.ModItems.BILLAR.get(),
+                        com.miscelanea.registry.ModItems.FUTBOLIN.get(), com.miscelanea.registry.ModItems.AIRHOCKEY.get(),
+                        com.miscelanea.registry.ModItems.BOLERA.get(), com.miscelanea.registry.ModItems.PISTA_BOLOS.get()));
+                for (var r : com.miscelanea.registry.ModItems.recreativasJuego()) cosas.add(r.get());
+                int k = 0, puestos = 0;
+                for (var it : cosas) {
+                    int fila = k / 8, col = k % 8;
+                    k++;
+                    var donde = o.relative(mira, 3 + fila * 5).relative(lado, -10 + col * 3);
+                    try {
+                        sp.teleportTo(donde.relative(mira.getOpposite(), 2).getX() + 0.5, donde.getY(), donde.relative(mira.getOpposite(), 2).getZ() + 0.5);
+                        sp.setYRot(mira.toYRot());
+                        var st = new ItemStack(it);
+                        var hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(donde.below()), net.minecraft.core.Direction.UP, donde.below(), false);
+                        var ctx = new net.minecraft.world.item.context.BlockPlaceContext(l, sp, net.minecraft.world.InteractionHand.MAIN_HAND, st, hit);
+                        if (it instanceof net.minecraft.world.item.BlockItem bi && bi.place(ctx).consumesAction()) puestos++;
+                    } catch (Throwable t) {
+                        RESUMEN.add("  rendimiento: no se pudo poner " + it + ": " + t);
+                    }
+                }
+                sp.teleportTo(o.relative(mira.getOpposite(), 3).getX() + 0.5, o.getY(), o.relative(mira.getOpposite(), 3).getZ() + 0.5);
+                sp.setYRot(mira.toYRot());
+                sp.setXRot(18);
+                RESUMEN.add("  rendimiento: sala con " + puestos + " de " + cosas.size() + " cosas");
+            });
+        });
+        sin("perfil_mirar", 300, () -> medir("colocar"));
+        sin("perfil_jugar", 5, () -> {
+            medir("sala");
+            // a jugar en la primera recreativa (sin menú: se arranca la mazmorra directamente)
+            var b = mc.level.getBlockEntity(mc.player.blockPosition()) ;
+            net.minecraft.core.BlockPos maquina = null;
+            for (var q : net.minecraft.core.BlockPos.betweenClosed(mc.player.blockPosition().offset(-14, -1, -14), mc.player.blockPosition().offset(14, 2, 14)))
+                if (mc.level.getBlockEntity(q) instanceof com.miscelanea.arcade.RecreativaBlockEntity
+                        && (maquina == null || q.distSqr(mc.player.blockPosition()) < maquina.distSqr(mc.player.blockPosition()))) maquina = q.immutable();
+            if (maquina == null) throw new IllegalStateException("no hay recreativa");
+            var pant = new com.miscelanea.client.arcade.ArcadeScreen(maquina, 99, true, false, false, "");
+            mc.setScreen(pant);
+            try {
+                var m = com.miscelanea.client.arcade.ArcadeScreen.class.getDeclaredMethod("empezar", String.class, long.class, int.class);
+                m.setAccessible(true);
+                m.invoke(pant, "mazmorra", 7L, 1);
+            } catch (Exception ex) {
+                throw new IllegalStateException("no se pudo empezar la partida: " + ex);
+            }
+        });
+        paso("70_perfil_mazmorra", 300, () -> {});
+        sin("perfil_turbo", 5, () -> {
+            medir("mazmorra");
+            try {
+                var m = com.miscelanea.client.arcade.ArcadeScreen.class.getDeclaredMethod("empezar", String.class, long.class, int.class);
+                m.setAccessible(true);
+                m.invoke(mc.screen, "turbo", 7L, 1);
+            } catch (Exception ex) {
+                throw new IllegalStateException("no se pudo empezar la partida: " + ex);
+            }
+        });
+        paso("71_perfil_turbo", 300, () -> {});
+        sin("perfil_fin", 5, () -> {
+            medir("turbo");
+            mc.setScreen(null);
+            try {
+                Files.write(new File(mc.gameDirectory, "perfil_fases.txt").toPath(), PERFIL);
+                if (GRABACION instanceof jdk.jfr.Recording r) {
+                    r.stop();
+                    r.dump(new File(mc.gameDirectory, "perfil.jfr").toPath());
+                    r.close();
+                }
+            } catch (Throwable t) {
+                RESUMEN.add("  rendimiento: no se pudo guardar el perfil: " + t);
+            }
+        });
+        paso("72_perfil_sala", 5, () -> {});
     }
 
     @SubscribeEvent
