@@ -212,9 +212,109 @@ public final class PruebaCI {
             }
             RESUMEN.add(sb.toString());
         });
+        montana();
         sin("cerrar", 10, () -> {
             mc.setScreen(null);
             RESUMEN.add("  cara propia (la de su modelo) guardada: " + (CarasCliente.tiene(mc.player.getUUID()) ? "sí" : "NO"));
+        });
+    }
+
+    // ------------------------------------------------------------------ montaña rusa (2.0.0)
+    private static net.minecraft.core.BlockPos montanaO;
+    private static final java.util.Set<String> MONTANA_VISTO = new java.util.LinkedHashSet<>();
+
+    /**
+     * Circuito cerrado: estación, cadena que sube 6, bajada de 6, rizo, vuelta en U, recta de vuelta con freno y un
+     * zigzag que vuelve a la estación. El jugador va montado y se sacan capturas cada poco (en tercera y primera persona).
+     */
+    private static void montana() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("montana_construir", 30, () -> {
+            mc.setScreen(null);
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                var l = sp.serverLevel();
+                var o = sp.blockPosition().offset(6, 0, 4);
+                montanaO = o;
+                // despejar el sitio
+                for (var b : net.minecraft.core.BlockPos.betweenClosed(o.offset(-3, 0, -26), o.offset(5, 8, 4)))
+                    l.setBlock(b, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+                var N = net.minecraft.core.Direction.NORTH;
+                var E = net.minecraft.core.Direction.EAST;
+                var S = net.minecraft.core.Direction.SOUTH;
+                var W = net.minecraft.core.Direction.WEST;
+                var R = com.miscelanea.montana.ViaMontanaBlock.Forma.RECTA;
+                var SU = com.miscelanea.montana.ViaMontanaBlock.Forma.SUBIDA;
+                var BA = com.miscelanea.montana.ViaMontanaBlock.Forma.BAJADA;
+                var CD = com.miscelanea.montana.ViaMontanaBlock.Forma.CURVA_DER;
+                var CI = com.miscelanea.montana.ViaMontanaBlock.Forma.CURVA_IZQ;
+                var V = com.miscelanea.registry.ModBlocks.VIA_MONTANA.get();
+                var C = com.miscelanea.registry.ModBlocks.VIA_MONTANA_CADENA.get();
+                java.util.function.BiConsumer<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState> pon = (b, st) -> l.setBlock(o.offset(b), st, 3);
+                java.util.function.Function<net.minecraft.world.level.block.Block, net.minecraft.world.level.block.state.BlockState> d = net.minecraft.world.level.block.Block::defaultBlockState;
+                var FAC = com.miscelanea.montana.ViaMontanaBlock.FACING;
+                var FOR = com.miscelanea.montana.ViaMontanaBlock.FORMA;
+                pon.accept(new net.minecraft.core.BlockPos(0, 0, 0), d.apply(com.miscelanea.registry.ModBlocks.VIA_MONTANA_ESTACION.get()).setValue(FAC, N));
+                pon.accept(new net.minecraft.core.BlockPos(0, 0, -1), d.apply(V).setValue(FAC, N));
+                for (int k = 0; k < 6; k++) pon.accept(new net.minecraft.core.BlockPos(0, k, -2 - k), d.apply(C).setValue(FAC, N).setValue(FOR, SU));
+                pon.accept(new net.minecraft.core.BlockPos(0, 6, -8), d.apply(V).setValue(FAC, N));
+                for (int k = 0; k < 6; k++) pon.accept(new net.minecraft.core.BlockPos(0, 5 - k, -9 - k), d.apply(V).setValue(FAC, N).setValue(FOR, BA));
+                pon.accept(new net.minecraft.core.BlockPos(0, 0, -15), d.apply(V).setValue(FAC, N));
+                pon.accept(new net.minecraft.core.BlockPos(0, 0, -16), d.apply(com.miscelanea.registry.ModBlocks.RIZO.get()).setValue(com.miscelanea.montana.RizoBlock.FACING, N));
+                pon.accept(new net.minecraft.core.BlockPos(1, 0, -21), d.apply(V).setValue(FAC, N));
+                pon.accept(new net.minecraft.core.BlockPos(1, 0, -22), d.apply(V).setValue(FAC, N).setValue(FOR, CD));
+                pon.accept(new net.minecraft.core.BlockPos(2, 0, -22), d.apply(V).setValue(FAC, E).setValue(FOR, CD));
+                for (int z = -21; z <= 1; z++)
+                    pon.accept(new net.minecraft.core.BlockPos(2, 0, z), d.apply(z == -3 || z == -2 ? com.miscelanea.registry.ModBlocks.VIA_MONTANA_FRENO.get() : V).setValue(FAC, S));
+                pon.accept(new net.minecraft.core.BlockPos(2, 0, 2), d.apply(V).setValue(FAC, S).setValue(FOR, CD));
+                pon.accept(new net.minecraft.core.BlockPos(1, 0, 2), d.apply(V).setValue(FAC, W).setValue(FOR, CD));
+                pon.accept(new net.minecraft.core.BlockPos(1, 0, 1), d.apply(V).setValue(FAC, N).setValue(FOR, CI));
+                pon.accept(new net.minecraft.core.BlockPos(0, 0, 1), d.apply(V).setValue(FAC, W).setValue(FOR, CD));
+                // el tren en la estación, con el jugador dentro
+                var t = new com.miscelanea.montana.TrenMontana(com.miscelanea.registry.ModEntities.TREN_MONTANA.get(), l);
+                t.colocar(o, 0.5, 3);
+                l.addFreshEntity(t);
+                sp.teleportTo(o.getX() + 0.5, o.getY() + 0.5, o.getZ() + 0.5);
+                sp.startRiding(t, true);
+                sp.setXRot(20);
+            });
+        });
+        sin("montana_circuito", 1, () -> {
+            // ¿el circuito está cerrado? se recorre de trozo en trozo desde la estación
+            var l = mc.getSingleplayerServer().overworld();
+            var p0 = com.miscelanea.montana.Via.en(l, montanaO);
+            if (p0 == null) throw new IllegalStateException("no hay estación");
+            var p = p0;
+            StringBuilder sb = new StringBuilder("  montaña: ");
+            int n = 0;
+            do {
+                sb.append(p.clase().name().charAt(0));
+                p = com.miscelanea.montana.Via.siguiente(l, p);
+                n++;
+            } while (p != null && !p.pos().equals(p0.pos()) && n < 200);
+            sb.append(" (").append(n).append(" trozos, ").append(p == null ? "ABIERTO" : "cerrado").append(')');
+            RESUMEN.add(sb.toString());
+            if (p == null) throw new IllegalStateException("el circuito no se cierra");
+        });
+        for (int i = 0; i < 16; i++) {
+            int ii = i;
+            paso(String.format("%02d_montana_%02d", 30 + i / 10, i), 22, () -> {
+                var tren = mc.player.getVehicle() instanceof com.miscelanea.montana.TrenMontana tt ? tt : null;
+                if (tren == null) throw new IllegalStateException("no va montado en el tren");
+                mc.options.setCameraType(ii % 3 == 2 ? net.minecraft.client.CameraType.FIRST_PERSON : net.minecraft.client.CameraType.THIRD_PERSON_BACK);
+                var s = tren.sitio();
+                String q = s == null ? "?" : s.pieza().clase().name() + (s.pieza().tipo() == com.miscelanea.montana.ViaMontanaBlock.Tipo.NORMAL ? "" : "/" + s.pieza().tipo());
+                MONTANA_VISTO.add(q);
+                RESUMEN.add(String.format("  tren %02d: %s y=%.1f v=%.2f", ii, q, tren.getY() - montanaO.getY(), tren.velocidad()));
+            });
+        }
+        sin("montana_fin", 5, () -> {
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            RESUMEN.add("  montaña, trozos por los que ha pasado: " + MONTANA_VISTO);
+            if (!MONTANA_VISTO.contains("RIZO") && MONTANA_VISTO.stream().noneMatch(x -> x.startsWith("CURVA"))) RESUMEN.add("  AVISO: el tren no llegó al rizo");
         });
     }
 
