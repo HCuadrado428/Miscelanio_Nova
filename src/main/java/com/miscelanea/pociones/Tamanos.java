@@ -65,8 +65,12 @@ public final class Tamanos {
     /** Cada tick (los dos lados): si la escala cambió, caja nueva; y los modificadores de atributos. */
     public static void tick(LivingEntity v) {
         int pasos = pasos(v);
+        // lo normal (sin gigante ni enano, y sin restos de haberlo sido): nada que hacer. Antes miraba los cinco atributos
+        // de cada criatura en cada tic, también en el cliente
+        boolean marcada = v.getPersistentData().contains(CLAVE_ESCALA);
+        if (pasos == 0 && !marcada) return;
         float s = escala(pasos);
-        float antes = v.getPersistentData().contains(CLAVE_ESCALA) ? v.getPersistentData().getFloat(CLAVE_ESCALA) : 1F;
+        float antes = marcada ? v.getPersistentData().getFloat(CLAVE_ESCALA) : 1F;
         if (antes != s) {
             v.getPersistentData().putFloat(CLAVE_ESCALA, s);
             v.refreshDimensions();
@@ -77,6 +81,8 @@ public final class Tamanos {
         modificador(v, ForgeMod.BLOCK_REACH.get(), ALC_BLOQUE, gig ? s - 1 : -0.3, gig || ena);
         modificador(v, ForgeMod.ENTITY_REACH.get(), ALC_ENTIDAD, gig ? s - 1 : -0.3, gig || ena);
         modificador(v, ForgeMod.STEP_HEIGHT_ADDITION.get(), ESCALON, 1.4 * (s - 1), gig, AttributeModifier.Operation.ADDITION);
+        // ya ha vuelto a su tamaño y sin modificadores: se quita la marca (y los tics siguientes salen por el atajo de arriba)
+        if (pasos == 0) v.getPersistentData().remove(CLAVE_ESCALA);
     }
 
     private static void modificador(LivingEntity v, Attribute at, UUID id, double valor, boolean activo) {

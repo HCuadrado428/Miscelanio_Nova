@@ -71,7 +71,7 @@ public final class ArcadeCliente {
         }
         if (!Trama.decodificar(datos, r.pantalla)) return;
         if (r.tex == null) r.tex = new PantallaTextura("remota_" + pos.asLong(), true);
-        r.tex.subir(r.pantalla);
+        r.tex.marcar(r.pantalla);
         r.ultimo = System.currentTimeMillis();
         if (mc.screen instanceof ArcadeScreen s && s.pos.equals(pos)) s.frameRemoto(r);
     }
@@ -93,7 +93,7 @@ public final class ArcadeCliente {
         r.pantalla.textos.clear();
         for (Object[] t : p.textos) r.pantalla.textos.add(t.clone());
         if (r.tex == null) r.tex = new PantallaTextura("remota_" + pos.asLong(), true);
-        r.tex.subir(r.pantalla);
+        r.tex.marcar(r.pantalla);
         r.ultimo = System.currentTimeMillis();
     }
 
@@ -150,6 +150,6 @@ public final class ArcadeCliente {
         }
         if ((t / 15) % 2 == 0) l.textoC(I18n.get("consola.miscelanea.inserta_ficha"), 128, 176, 19);
         if (demoTex == null) demoTex = new PantallaTextura("demo", true);
-        demoTex.subir(l);
+        demoTex.marcar(l);
     }
 }

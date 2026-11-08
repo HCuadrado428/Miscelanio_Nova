@@ -30,6 +30,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 /**
  * Cliente del puntero láser: la pose (brazo estirado apuntando), el rayo y su punto (de todos los jugadores que apuntan,
@@ -79,16 +80,53 @@ public final class LaserCliente {
 
     // ------------------------------------------------------------------ rayo
 
+    /** Matrices del último fotograma dibujado (proyección y vista, relativas a la cámara) y la cámara de entonces. */
+    private static final Matrix4f PROY = new Matrix4f(), VISTA = new Matrix4f(), INV = new Matrix4f();
+    private static Vec3 camaraPos = Vec3.ZERO;
+    private static boolean hayMatrices;
+    /** Solo para la prueba automática: dibujar el punto sin el rayo (para medir dónde cae en la captura). */
+    public static boolean pruebaSinRayo;
+    /** Solo para la prueba: dónde ha caído mi punto en el último fotograma (null si no apuntaba o no daba en nada). */
+    public static volatile Vec3 pruebaMiPunto;
+
     /**
-     * El rayo de un jugador tal como se dibuja aquí. El mío sale de la cámara y en la dirección de la cámara (con el
-     * temblor de la mano), para que el punto caiga justo en la mira aunque la cámara no esté en los ojos (cámaras de
-     * otros mods, temblor por heridas, mods que cambian la altura de los ojos...). El de los demás, desde sus ojos.
+     * El rayo de un jugador tal como se dibuja aquí. El mío, en primera persona, sale de la cámara y pasa por el CENTRO
+     * DE LA PANTALLA tal como se ha dibujado este fotograma (deshaciendo la proyección y la vista de verdad): así cae en
+     * la mira con cualquier FOV, proporción de ventana, cambio de tamaño, cámara de otros mods o balanceo al andar.
+     * (Antes se lanzaba con el giro de la cámara, que no tiene en cuenta lo que otros mods o el balanceo meten en las
+     * matrices de dibujo: con ellos el punto se iba a un lado de la mira.) El
+     * de los demás (y el mío en tercera persona), desde sus ojos y hacia donde miran: lo mismo que calcula el servidor
+     * y los demás clientes, así que el punto está donde mira el que lo lleva para todos.
      */
     static Laser.Impacto rayo(Player p, float pt, Camera cam) {
         Minecraft mc = Minecraft.getInstance();
-        if (p == mc.player && mc.getCameraEntity() == p && mc.options.getCameraType() != net.minecraft.client.CameraType.THIRD_PERSON_FRONT)
-            return Laser.rayo(p, cam.getPosition(), Laser.direccion(p, pt, cam.getXRot(), cam.getYRot()));
+        if (p == mc.player && mc.getCameraEntity() == p && mc.options.getCameraType().isFirstPerson() && hayMatrices) {
+            Vec3 cerca = desproyectar(0, 0, -1), lejos = desproyectar(0, 0, 0);
+            Vec3 d = lejos.subtract(cerca);
+            if (d.lengthSqr() > 1e-8) {
+                d = d.normalize();
+                float xRot = (float) Math.toDegrees(Math.asin(Mth.clamp(-d.y, -1, 1)));
+                float yRot = (float) Math.toDegrees(Mth.atan2(-d.x, d.z));
+                return Laser.rayo(p, cam.getPosition().add(cerca), Laser.direccion(p, pt, xRot, yRot));
+            }
+        }
         return Laser.rayo(p, pt);
+    }
+
+    /** Punto (relativo a la cámara) que cae en (x, y, z) de la pantalla en coordenadas normalizadas (-1..1). */
+    private static Vec3 desproyectar(double x, double y, double z) {
+        Vector4f v = INV.transform(new Vector4f((float) x, (float) y, (float) z, 1F));
+        if (Math.abs(v.w) < 1e-9) return Vec3.ZERO;
+        return new Vec3(v.x / v.w, v.y / v.w, v.z / v.w);
+    }
+
+    /** Dónde cae en la pantalla (en píxeles de ancho x alto) un punto del mundo en el último fotograma, o null si está detrás. */
+    public static double[] aPantalla(Vec3 mundo, int ancho, int alto) {
+        if (!hayMatrices) return null;
+        Vec3 r = mundo.subtract(camaraPos);
+        Vector4f v = new Matrix4f(PROY).mul(VISTA).transform(new Vector4f((float) r.x, (float) r.y, (float) r.z, 1F));
+        if (v.w <= 1e-6) return null;
+        return new double[]{(v.x / v.w + 1) * 0.5 * ancho, (1 - v.y / v.w) * 0.5 * alto};
     }
 
     /** De dónde sale el rayo que se dibuja: la punta del puntero (en primera persona, la del puntero de la pantalla). */
@@ -96,15 +134,16 @@ public final class LaserCliente {
         Minecraft mc = Minecraft.getInstance();
         HumanoidArm brazo = p.getUsedItemHand() == InteractionHand.MAIN_HAND ? p.getMainArm() : p.getMainArm().getOpposite();
         int i = brazo == HumanoidArm.RIGHT ? 1 : -1;
-        if (p == mc.getCameraEntity() && mc.options.getCameraType().isFirstPerson()) {
-            Camera cam = mc.gameRenderer.getMainCamera();
-            Vector3f look = cam.getLookVector(), up = cam.getUpVector(), left = cam.getLeftVector();
-            // la mano se dibuja con FOV 70 fijo: se corrige para que la punta caiga en el mismo sitio de la pantalla
-            double k = Math.tan(Math.toRadians(mc.options.fov().get() * 0.5)) / Math.tan(Math.toRadians(35));
-            double x = i * PP_X * k, y = PP_Y * k, z = PP_Z;
-            return cam.getPosition().add(-left.x() * x + up.x() * y + look.x() * z,
-                    -left.y() * x + up.y() * y + look.y() * z,
-                    -left.z() * x + up.z() * y + look.z() * z);
+        if (p == mc.getCameraEntity() && mc.options.getCameraType().isFirstPerson() && hayMatrices) {
+            // la mano se dibuja con su propia proyección (FOV 70 fijo): se mira en qué punto de la pantalla queda la
+            // punta y se busca el punto del mundo que cae en ese mismo píxel, a la misma profundidad
+            var w = mc.getWindow();
+            float aspecto = (float) w.getWidth() / Math.max(1, w.getHeight());
+            Matrix4f mano = new Matrix4f().setPerspective((float) Math.toRadians(70), aspecto, 0.05F, 100F);
+            Vector4f s = mano.transform(new Vector4f(i * PP_X, PP_Y, -PP_Z, 1F));
+            Vector4f zc = new Matrix4f(PROY).transform(new Vector4f(0, 0, -PP_Z, 1F));
+            if (s.w > 1e-6 && Math.abs(zc.w) > 1e-6)
+                return camaraPos.add(desproyectar(s.x / s.w, s.y / s.w, zc.z / zc.w));
         }
         float yb = Mth.lerp(pt, p.yBodyRotO, p.yBodyRot) * Mth.DEG_TO_RAD;
         Vec3 pos = p.getPosition(pt);
@@ -122,14 +161,25 @@ public final class LaserCliente {
         float pt = e.getPartialTick();
         Camera cam = e.getCamera();
         Vec3 c = cam.getPosition();
+        Matrix4f m = e.getPoseStack().last().pose();
+        // las matrices con las que se está dibujando de verdad este fotograma (con el balanceo, el FOV dinámico, la
+        // proporción de la ventana y lo que hayan puesto otros mods): con ellas se busca el centro de la pantalla
+        PROY.set(e.getProjectionMatrix());
+        // lo que se dibuja aquí pasa además por la matriz de vista de RenderSystem (normalmente la identidad, pero hay
+        // mods que giran o balancean la vista ahí y no en la cámara)
+        VISTA.set(RenderSystem.getModelViewMatrix()).mul(m);
+        INV.set(PROY).mul(VISTA).invert();
+        camaraPos = c;
+        hayMatrices = true;
         MultiBufferSource.BufferSource buf = mc.renderBuffers().bufferSource();
         VertexConsumer vc = null;
-        Matrix4f m = e.getPoseStack().last().pose();
         double t = mc.level.getGameTime() + pt;
+        Vec3 miPunto = null;
         for (Player p : mc.level.players()) {
             if (!Laser.apuntando(p) || p.distanceToSqr(c) > 160 * 160) continue;
             if (vc == null) vc = buf.getBuffer(RenderType.lightning());
             Laser.Impacto im = rayo(p, pt, cam);
+            if (p == mc.player && im.toca()) miPunto = im.punto();
             int rgb = Laser.rgb(p.getUseItem());
             Vec3 a = origen(p, pt).subtract(c);
             Vec3 b = im.punto().subtract(c);
@@ -137,8 +187,10 @@ public final class LaserCliente {
             Vec3 haciaCam = b.lengthSqr() < 1e-6 ? Vec3.ZERO : b.normalize().scale(-0.03);
             Vec3 bFin = im.toca() ? b.add(haciaCam) : b;
             float fl = 0.85F + 0.15F * (float) Math.sin(t * 2.3 + p.getId());
-            cinta(vc, m, a, bFin, 0.05F, rgb, 0.16F * fl);
-            cinta(vc, m, a, bFin, 0.011F, mezcla(rgb, 0xFFFFFF, 0.55F), 0.95F);
+            if (!pruebaSinRayo) {
+                cinta(vc, m, a, bFin, 0.05F, rgb, 0.16F * fl);
+                cinta(vc, m, a, bFin, 0.011F, mezcla(rgb, 0xFFFFFF, 0.55F), 0.95F);
+            }
             if (im.toca()) {
                 Vec3 q = b.add(haciaCam);
                 float r = 0.055F + 0.008F * (float) Math.sin(t * 3.7 + p.getId());
@@ -147,6 +199,7 @@ public final class LaserCliente {
                 punto(vc, m, cam, q, r, mezcla(rgb, 0xFFFFFF, 0.75F), 1.0F);
             }
         }
+        pruebaMiPunto = miPunto;
         if (vc != null) buf.endBatch(RenderType.lightning());
     }
 
@@ -167,7 +220,15 @@ public final class LaserCliente {
 
     /** Punto redondo y difuminado (abanico de triángulos) encarado a la cámara. */
     private static void punto(VertexConsumer vc, Matrix4f m, Camera cam, Vec3 q, float radio, int rgb, float alfa) {
-        Vector3f up = cam.getUpVector(), left = cam.getLeftVector();
+        // encarado con la vista con la que se dibuja (la de la cámara puede no estar al día si otro mod la ha girado)
+        Vector3f up = new Vector3f(VISTA.m01(), VISTA.m11(), VISTA.m21()), left = new Vector3f(-VISTA.m00(), -VISTA.m10(), -VISTA.m20());
+        if (up.lengthSquared() < 1e-6F || left.lengthSquared() < 1e-6F) {
+            up = cam.getUpVector();
+            left = cam.getLeftVector();
+        } else {
+            up.normalize();
+            left.normalize();
+        }
         float r = (rgb >> 16 & 255) / 255F, g = (rgb >> 8 & 255) / 255F, b = (rgb & 255) / 255F;
         int n = 14;
         for (int k = 0; k < n; k++) {
@@ -232,17 +293,12 @@ public final class LaserCliente {
         float a = Mth.lerp(pt, destelloAntes, destello);
         if (a <= 0.005F) return;
         Minecraft mc = Minecraft.getInstance();
-        Camera cam = mc.gameRenderer.getMainCamera();
-        // dónde cae en la pantalla el que te apunta
-        Vec3 v = destelloFuente.subtract(cam.getPosition());
-        Vector3f look = cam.getLookVector(), up = cam.getUpVector(), left = cam.getLeftVector();
-        double z = v.x * look.x() + v.y * look.y() + v.z * look.z();
+        // dónde cae en la pantalla el que te apunta (con las matrices con las que se ha dibujado el mundo)
         float sx = w / 2F, sy = h / 2F;
-        if (z > 0.1) {
-            double tanH = Math.tan(Math.toRadians(mc.options.fov().get() * 0.5));
-            double x = -(v.x * left.x() + v.y * left.y() + v.z * left.z()) / z, y = (v.x * up.x() + v.y * up.y() + v.z * up.z()) / z;
-            sx = (float) Mth.clamp(w / 2.0 + x / tanH * h / 2.0, 0, w);
-            sy = (float) Mth.clamp(h / 2.0 - y / tanH * h / 2.0, 0, h);
+        double[] sp = aPantalla(destelloFuente, w, h);
+        if (sp != null) {
+            sx = (float) Mth.clamp(sp[0], 0, w);
+            sy = (float) Mth.clamp(sp[1], 0, h);
         }
         float r = (destelloColor >> 16 & 255) / 255F, gr = (destelloColor >> 8 & 255) / 255F, b = (destelloColor & 255) / 255F;
         // velo del color del láser por toda la pantalla

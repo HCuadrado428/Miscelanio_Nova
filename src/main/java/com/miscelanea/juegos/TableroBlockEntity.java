@@ -107,12 +107,25 @@ public class TableroBlockEntity extends BlockEntity {
     private Damas vistaD;
     private Reversi vistaR;
     private List<Integer> vistaLegales;
+    /** Casilla del rey en jaque en la vista (-1 si no hay jaque; -2 sin calcular): el renderer lo pedía en cada fotograma. */
+    private int vistaJaque = -2;
+
+    /** Casilla del rey que está en jaque (ajedrez, partida en curso) o -1; se calcula una vez por jugada. */
+    public int reyEnJaque() {
+        vista();
+        if (vistaJaque == -2) {
+            Ajedrez a = vistaA;
+            vistaJaque = a != null && a.enJaque(a.blancas) ? a.rey(a.blancas) : -1;
+        }
+        return resultado == 0 ? vistaJaque : -1;
+    }
 
     private void vista() {
         if (vistaDe == estado && vistaJuego == juego()) return;
         vistaDe = estado;
         vistaJuego = juego();
         vistaLegales = null;
+        vistaJaque = -2;
         vistaA = vistaJuego == 0 ? partidaAjedrez() : null;
         vistaD = vistaJuego == 1 ? partidaDamas() : null;
         vistaR = vistaJuego == 2 ? partidaReversi() : null;
