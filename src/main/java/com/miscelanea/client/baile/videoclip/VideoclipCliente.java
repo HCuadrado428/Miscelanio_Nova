@@ -58,6 +58,11 @@ import java.util.Map;
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
 public final class VideoclipCliente {
+    /** Búferes propios para las luces del decorado (uno para cada tipo de dibujo). */
+    private static final MultiBufferSource.BufferSource LUCES = MultiBufferSource.immediateWithBuffers(
+            java.util.Map.of(TiposVideoclip.BRILLO, new BufferBuilder(1 << 16), TiposVideoclip.OPACO, new BufferBuilder(1 << 15)),
+            new BufferBuilder(256));
+
     private static final Logger LOG = com.mojang.logging.LogUtils.getLogger();
     private static final RenderType[] CAPAS = {RenderType.solid(), RenderType.cutoutMipped(), RenderType.cutout()};
 
@@ -94,6 +99,12 @@ public final class VideoclipCliente {
         Direction f = st.hasProperty(com.miscelanea.baile.PistaBaileBlock.FACING) ? st.getValue(com.miscelanea.baile.PistaBaileBlock.FACING)
                 : Direction.fromYRot(frenteYaw);
         ancla = com.miscelanea.baile.PistaBaileBlockEntity.hueco(g, f, 0);
+        // el suelo del decorado va donde de verdad tiene los pies el que baila (si el suelo delante de la gramola está
+        // más bajo o más alto, o hay alfombras o losas, el decorado se quedaba a otra altura y la cámara se metía
+        // debajo del suelo)
+        if (mc.player != null && Math.abs(mc.player.getX() - ancla.x) < 6 && Math.abs(mc.player.getZ() - ancla.z) < 6
+                && Math.abs(mc.player.getY() - ancla.y) < 4)
+            ancla = new Vec3(ancla.x, mc.player.getY(), ancla.z);
         cancion = c;
         Decorado d = decoradoDe(c);
         try {
@@ -260,16 +271,19 @@ public final class VideoclipCliente {
             }
             bs.endBatch();
         }
-        // luces del decorado
+        // luces del decorado. Van a un juego de búferes propio, uno por tipo: con el de Minecraft los dos tipos comparten
+        // el mismo búfer y, al pedir el segundo, lo que se escribía como luz suave acababa pintado como color macizo
+        // (los rayos y focos salían como planos amarillos opacos sin shaders)
+        MultiBufferSource.BufferSource luces = LUCES;
         ps.pushPose();
         colocar(ps, cam);
         Matrix4f m = ps.last().pose();
-        deco.luces(m, bs.getBuffer(TiposVideoclip.BRILLO), bs.getBuffer(TiposVideoclip.OPACO), t);
+        deco.luces(m, luces.getBuffer(TiposVideoclip.BRILLO), luces.getBuffer(TiposVideoclip.OPACO), t);
         ps.popPose();
         // un foco suave en el suelo debajo de cada uno que baila
         ps.pushPose();
         Matrix4f mm = ps.last().pose();
-        var vc = bs.getBuffer(TiposVideoclip.BRILLO);
+        var vc = luces.getBuffer(TiposVideoclip.BRILLO);
         for (Player p : bailan) {
             Vec3 pos = p.getPosition(pt).subtract(cam);
             float suelo = (float) (ancla.y - cam.y) + 0.035F;
@@ -279,8 +293,8 @@ public final class VideoclipCliente {
             }
         }
         ps.popPose();
-        bs.endBatch(TiposVideoclip.OPACO);
-        bs.endBatch(TiposVideoclip.BRILLO);
+        luces.endBatch(TiposVideoclip.OPACO);
+        luces.endBatch(TiposVideoclip.BRILLO);
     }
 
     // ------------------------------------------------------------------ niebla, contorno y fogonazo

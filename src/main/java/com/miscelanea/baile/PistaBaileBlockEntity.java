@@ -143,7 +143,7 @@ public class PistaBaileBlockEntity extends BlockEntity {
         if (jefe != null) jefe.displayClientMessage(Component.translatable("gramola.miscelanea.se_une", sp.getDisplayName()).withStyle(ChatFormatting.LIGHT_PURPLE), true);
     }
 
-    void usar(ServerPlayer sp) {
+    public void usar(ServerPlayer sp) {
         if (gramola()) {
             usarGramola(sp);
             return;
