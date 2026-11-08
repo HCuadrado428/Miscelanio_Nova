@@ -355,8 +355,15 @@ final class VistasFotos {
                 return;
             }
             if (ahora - ultImagen < 1000 / CLIP_FPS) return;
-            // si se ha retrasado mucho, se cuenta desde ahora (no se meten imágenes de golpe)
-            ultImagen = ahora - ultImagen > 2000 / CLIP_FPS ? ahora : ultImagen + 1000 / CLIP_FPS;
+            ultImagen = ahora;
+            // si el juego va a pocos fotogramas, se repite la última imagen para que el vídeo dure lo que de verdad
+            // ha durado (y no se descuadre con el sonido)
+            int toca = (int) ((ahora - tGrab) * CLIP_FPS / 1000);
+            while (!imagenes.isEmpty() && imagenes.size() < toca) {
+                byte[] ult = imagenes.get(imagenes.size() - 1);
+                imagenes.add(ult);
+                bytesGrab += ult.length;
+            }
             byte[] f = MovilCaptura.clip(CLIP_W, CLIP_H, CLIP_MAX_IMAGEN);
             if (f == null) {
                 // la primera aún no está: repetir la última para no descuadrar con el sonido
