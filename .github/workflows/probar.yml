@@ -95,8 +95,9 @@ jobs:
           done
           sleep 15                     # unos ticks con el mundo cargado
           echo stop >&3
-          for i in $(seq 1 90); do [ -f salida.txt ] && break; sleep 1; done
-          cat salida.txt || true
+          for i in $(seq 1 90); do grep -q 'All dimensions are saved' servidor.log && break; sleep 1; done
+          grep -q 'All dimensions are saved' servidor.log && echo "Parado bien" || echo "::warning::El servidor no terminó de pararse"
+          if grep -E '(ERROR|FATAL).*' servidor.log | grep -i -q 'miscelanea'; then echo "::error::Errores de Miscelánea en el servidor"; grep -E '(ERROR|FATAL)' servidor.log | grep -i miscelanea; exit 1; fi
           echo "----- líneas de Miscelánea y errores -----"
           grep -n -i -E 'miscelanea|exception|error' servidor.log | grep -v -i 'Error loading class' | head -80 || true
           if ! grep -q 'Done (' servidor.log; then echo "::error::El servidor no llegó a arrancar"; tail -80 servidor.log; exit 1; fi
