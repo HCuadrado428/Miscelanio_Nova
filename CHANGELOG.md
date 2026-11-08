@@ -6,7 +6,7 @@ Cómo van los números de versión:
 - **x.0.0**: cambios o añadidos grandes.
 
 Ramas del repositorio (cada una compila su propio jar al subir algo):
-- **main**: lo publicado, lo que se juega.
+- **main**: la versión que se juega (ahora la 1.1.0, en curso). No se sube de número hasta que lo diga el dueño del mod.
 - **arreglos**: la siguiente 1.x.y (solo arreglos). Se une a main en cuanto está probada, y de main pasa a las otras dos.
 - **novedades**: la siguiente 1.x.0 (cosas pequeñas). Se une a main cuando se publica.
 - **version-2**: la 2.0.0 (lo gordo). Recoge lo de main por el camino y se une al final.
@@ -14,7 +14,8 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
 ## 1.2.0 (en curso)
 - **Jeringuilla de sedante** (pestaña Tortura): el suavis se seca en el horno, ahumador u hoguera, y con una jeringuilla, dos de suavis seco y una botella de agua se hace la jeringuilla de sedante. Clic derecho a alguien: se marea y tiene un forcejeo como el del mordisco de Dream (A / D) para no dormirse, más difícil si se le pincha por la espalda. Si no lo aguanta (o es un mob), se queda dormido en el suelo 30 s (config `sedante_segundos`); un golpe fuerte le despierta. Agachado y al aire te lo pinchas tú (siesta). Devuelve la jeringuilla vacía. Jeringuillas: pepita de hierro, panel de cristal y lingote de hierro en columna → 3.
 
-## 1.1.3
+## 1.1.0 (en curso: aún no se publica; todo lo nuevo de la 1.1 va aquí)
+- **Pociones en supervivencia:** Gigante (seta roja), Enano (seta marrón), Ecolocalización (fragmento de eco), Niebla viviente (tinta de calamar), Espejismo (fragmento de amatista), Helio (pluma), Ventilador (bola de nieve), Borrachera (trigo) y Tartamudeo (granos de cacao), sobre poción rara; la redstone las alarga. Sed de sangre y Fantasma siguen en creativo.
 - **Encantamientos nuevos, al estilo Enchancement:**
   - Fuera casi todos los vanilla: Protecciones, Espinas, Filo, Golpeo, Perdición, Empuje, Aspecto ígneo, Barrido, Eficiencia, Irrompibilidad, Reparación, Poder, Retroceso, Fuego, Infinidad, los de la caña, del tridente y de la ballesta, Caída de pluma, Agilidad acuática, Paso helado, Velocidad del alma y Sigilo rápido. Se quedan Toque de seda, Fortuna, Botín, Respiración, Afinidad acuática y las maldiciones.
   - 24 encantamientos nuevos sin niveles (siempre a tope): Percepción y Ojo de búho (casco); Adrenalina, Espinazo y Vitalidad (peto); Ráfaga y Deslizar (pantalones); Rebote, Pegajoso y Zancada (botas); Berserker, Escarcha y Vampiro (espada); Hendidura y Tala (hacha); Presteza (herramientas); Veta (pico); Excavar (pala); Cosecha (azada); Certero y Recuperación (arco); Metralla (ballesta); Tormenta (tridente) y Arpón (caña).
@@ -25,16 +26,9 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
   - En el yunque ya no se ponen encantamientos; los aldeanos ya no venden libros ni cosas encantadas.
   - Todo se ajusta en la config del servidor, sección `encantamientos`; con `activo = false` vuelve a ser vanilla.
 - **Equilibrio de armaduras:** entre armadura, dureza, encantamientos y efectos (Resistencia, el perk Guardián de Tombstone…) no se puede quitar más del 75 % de un golpe. Con armaduras de Ice and Fire ya no se es inmortal. Config: sección `equilibrio`.
-
-## 1.1.2
 - **Anillo de medianoche:** decía que The Midnight no estaba instalado aunque lo estuviera. Buscaba la dimensión `midnight:midnight`, pero en The Midnight 0.6.x se llama `midnight:the_midnight`; ahora encuentra cualquiera de las dos (aunque la config antigua tenga el nombre viejo).
-
-## 1.1.1
 - **Gramola:** el decorado del videoclip se pone a la altura de los pies de quien baila. Si el suelo delante de la gramola estaba más alto o más bajo (o había alfombras o losas), el decorado se quedaba a otra altura y la cámara se metía por debajo del suelo.
 - **Gramola (videoclip):** sin shaders, los rayos, focos y halos del decorado salían como planos de color macizo tapando la pantalla (las luces suaves se pintaban con el búfer del color opaco). Ahora cada tipo de luz tiene su búfer y se ven translúcidas.
-
-## 1.1.0
-- **Pociones en supervivencia:** Gigante (seta roja), Enano (seta marrón), Ecolocalización (fragmento de eco), Niebla viviente (tinta de calamar), Espejismo (fragmento de amatista), Helio (pluma), Ventilador (bola de nieve), Borrachera (trigo) y Tartamudeo (granos de cacao), sobre poción rara; la redstone las alarga. Sed de sangre y Fantasma siguen en creativo.
 
 ## 1.0.1
 - **Caras en el móvil con Customizable Player Models:** cada jugador manda una foto de la cabeza de su modelo (de frente y sin el móvil) y el servidor la reparte: se ve en contactos, chats y llamadas aunque esté lejos o desconectado, y ya no sale agarrando el móvil.
