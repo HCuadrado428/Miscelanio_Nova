@@ -46,7 +46,13 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
         Direction f = be.getBlockState().getValue(CartelRecordsBlock.FACING);
         BlockPos pos = be.getBlockPos();
         int w = 1, h = 1;
-        Object[] g = CartelRecordsBlock.grupo(be.getLevel(), pos, f);
+        // buscar el grupo recorre todos sus bloques, y lo hacía cada cartel del grupo en cada fotograma: ahora cada 5 tics
+        long tic = be.getLevel().getGameTime();
+        if (tic - be.grupoTic >= 5 || tic < be.grupoTic) {
+            be.grupoCache = CartelRecordsBlock.grupo(be.getLevel(), pos, f);
+            be.grupoTic = tic;
+        }
+        Object[] g = be.grupoCache;
         if (g != null) {
             if (!g[0].equals(pos)) return;      // lo dibuja la esquina del grupo
             w = (int) g[1];
@@ -62,13 +68,31 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
         Matrix4f m = new Matrix4f(der.getStepX() * S, 0, der.getStepZ() * S, 0, 0, -S, 0, 0, nx * S, 0, nz * S, 0, cx, cy, cz, 1);
         ps.last().pose().mul(m);
         int estilo = be.getBlockState().getBlock() instanceof CartelRecordsBlock cb ? cb.estilo : CartelRecordsBlock.ARCADE;
-        if (estilo == CartelRecordsBlock.FERIA) pizarra(ps, buf, w * 64, h * 64, w, h, luz, nx, nz);
-        else if (estilo == CartelRecordsBlock.TABLON) tablon(ps, buf, w * 64, h * 64, w, h, be.categoria, luz);
-        else retro(ps, buf, w * 64, h * 64, w, h);
+        var cam = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+        cerca = cam.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) < 20 * 20;
+        // dos pasadas: primero todos los fondos y luego todos los textos. Antes se alternaban rectángulo y texto, y cada
+        // cambio de uno a otro cerraba el lote (una llamada de dibujo más): el tablón hacía unas cuarenta
+        for (pasada = 0; pasada < 2; pasada++) {
+            if (estilo == CartelRecordsBlock.FERIA) pizarra(ps, buf, w * 64, h * 64, w, h, luz, nx, nz);
+            else if (estilo == CartelRecordsBlock.TABLON) tablon(ps, buf, w * 64, h * 64, w, h, be.categoria, luz);
+            else retro(ps, buf, w * 64, h * 64, w, h);
+        }
+        pasada = 0;
         ps.popPose();
     }
 
-    private static void quad(VertexConsumer vc, Matrix4f m, float x0, float y0, float x1, float y1, float z, int argb) {
+    /** Pasada de dibujo: 0 = fondos (rectángulos), 1 = textos. */
+    private static int pasada;
+    /** Cerca del cartel: con los detalles menudos (motas del corcho). */
+    private static boolean cerca;
+
+    private static void quad(MultiBufferSource buf, Matrix4f m, float x0, float y0, float x1, float y1, float z, int argb) {
+        if (pasada != 0) return;
+        quadSiempre(buf, m, x0, y0, x1, y1, z, argb);
+    }
+
+    private static void quadSiempre(MultiBufferSource buf, Matrix4f m, float x0, float y0, float x1, float y1, float z, int argb) {
+        VertexConsumer vc = buf.getBuffer(RenderType.textBackground());
         int a = argb >>> 24, r = (argb >> 16) & 255, g = (argb >> 8) & 255, b = argb & 255;
         z *= CAPAS;
         vc.vertex(m, x0, y0, z).color(r, g, b, a).uv2(LUZ).endVertex();
@@ -84,19 +108,18 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
         Font font = Minecraft.getInstance().font;
         long ms = System.currentTimeMillis();
         Matrix4f m = ps.last().pose();
-        VertexConsumer vc = buf.getBuffer(RenderType.textBackground());
         // carcasa de plástico gris oscuro y pantalla negra con esquinas redondeadas
-        quad(buf.getBuffer(RenderType.textBackground()), m, 0, 0, W, H, 0, 0xFF2A2A30);
-        quad(buf.getBuffer(RenderType.textBackground()), m, 1, 1, W - 1, 2, 0.05F, 0xFF4A4A54);
-        quad(buf.getBuffer(RenderType.textBackground()), m, 1, 1, 2, H - 1, 0.05F, 0xFF4A4A54);
-        quad(buf.getBuffer(RenderType.textBackground()), m, 1, H - 2, W - 1, H - 1, 0.05F, 0xFF18181C);
-        quad(buf.getBuffer(RenderType.textBackground()), m, W - 2, 1, W - 1, H - 1, 0.05F, 0xFF18181C);
-        quad(buf.getBuffer(RenderType.textBackground()), m, 5, 4, W - 5, H - 4, 0.1F, 0xFF04060A);
-        quad(buf.getBuffer(RenderType.textBackground()), m, 4, 5, W - 4, H - 5, 0.1F, 0xFF04060A);
+        quad(buf, m, 0, 0, W, H, 0, 0xFF2A2A30);
+        quad(buf, m, 1, 1, W - 1, 2, 0.05F, 0xFF4A4A54);
+        quad(buf, m, 1, 1, 2, H - 1, 0.05F, 0xFF4A4A54);
+        quad(buf, m, 1, H - 2, W - 1, H - 1, 0.05F, 0xFF18181C);
+        quad(buf, m, W - 2, 1, W - 1, H - 1, 0.05F, 0xFF18181C);
+        quad(buf, m, 5, 4, W - 5, H - 4, 0.1F, 0xFF04060A);
+        quad(buf, m, 4, 5, W - 4, H - 5, 0.1F, 0xFF04060A);
         // líneas de barrido y un brillo que baja
-        for (float y = 5; y < H - 5; y += 2) quad(buf.getBuffer(RenderType.textBackground()), m, 5, y, W - 5, y + 0.6F, 0.12F, 0x14FFFFFF);
+        for (float y = 5; y < H - 5; y += 2) quad(buf, m, 5, y, W - 5, y + 0.6F, 0.12F, 0x14FFFFFF);
         float barrido = (ms / 30F) % (H + 20) - 10;
-        quad(buf.getBuffer(RenderType.textBackground()), m, 5, Math.max(5, barrido), W - 5, Math.min(H - 5, barrido + 6), 0.13F, 0x0C9FFFC8);
+        quad(buf, m, 5, Math.max(5, barrido), W - 5, Math.min(H - 5, barrido + 6), 0.13F, 0x0C9FFFC8);
         int pagina = (int) (ms / 8000);
         boolean ruido = ms % 8000 < 220;
         int y0 = 8;
@@ -124,11 +147,12 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
             }
         if (pie > 0 && (ms / 600) % 2 == 0)
             texto(ps, buf, font, I18n.get("cartel.miscelanea.moneda"), W / 2F, H - 15, 1F, 0xFFFFFFFF, true);
-        if (ruido) {
+        if (ruido && pasada == 1) {
+            // el ruido va encima de los textos: en la segunda pasada
             java.util.Random r = new java.util.Random(ms / 40);
             for (int k = 0; k < 60; k++) {
                 float x = 5 + r.nextFloat() * (W - 12), y = 5 + r.nextFloat() * (H - 12);
-                quad(buf.getBuffer(RenderType.textBackground()), m, x, y, x + 1 + r.nextFloat() * 6, y + 1, 0.5F, r.nextBoolean() ? 0xA0FFFFFF : 0xA0404060);
+                quadSiempre(buf, m, x, y, x + 1 + r.nextFloat() * 6, y + 1, 0.5F, r.nextBoolean() ? 0xA0FFFFFF : 0xA0404060);
             }
         }
     }
@@ -136,10 +160,9 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
     private void panelRetro(PoseStack ps, MultiBufferSource buf, Font font, float x, float y, float pw, float ph, String id, long ms) {
         float kk = Math.min(pw / 70F, ph / 58F) * 0.85F;
         Matrix4f m = ps.last().pose();
-        VertexConsumer vc = buf.getBuffer(RenderType.textBackground());
         String nombre = I18n.get("juego.miscelanea." + id).toUpperCase();
         texto(ps, buf, font, nombre, x + pw / 2, y + 1, kk, 0xFF3BE6FF, true);
-        for (float dx = 2; dx < pw - 2; dx += 3 * kk) quad(buf.getBuffer(RenderType.textBackground()), m, x + dx, y + 10 * kk, x + dx + 1.5F * kk, y + 10.6F * kk, 0.2F, 0xFF3B7BFF);
+        for (float dx = 2; dx < pw - 2; dx += 3 * kk) quad(buf, m, x + dx, y + 10 * kk, x + dx + 1.5F * kk, y + 10.6F * kk, 0.2F, 0xFF3B7BFF);
         ListTag tb = ArcadeCliente.tabla(id);
         float yy = y + 13 * kk, linea = 9.5F * kk;
         int max = Math.max(1, Math.min(10, (int) ((y + ph - yy - 2) / linea)));
@@ -176,9 +199,10 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
         // un poco de luz siempre, para que la tiza se lea de noche
         int luz = net.minecraft.client.renderer.LightTexture.pack(Math.max(5, net.minecraft.client.renderer.LightTexture.block(luzSitio)),
                 net.minecraft.client.renderer.LightTexture.sky(luzSitio));
-        VertexConsumer vc = buf.getBuffer(RenderType.entityCutoutNoCull(PizarraTextura.de(w, h)));
         var nm = ps.last().normal();
         float z = 0;
+        if (pasada == 0) {
+        VertexConsumer vc = buf.getBuffer(RenderType.entityCutoutNoCull(PizarraTextura.de(w, h)));
         vc.vertex(m, 0, 0, z).color(255, 255, 255, 255).uv(0, 0).overlayCoords(net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY)
                 .uv2(luz).normal(nm, nx, 0, nz).endVertex();
         vc.vertex(m, 0, H, z).color(255, 255, 255, 255).uv(0, 1).overlayCoords(net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY)
@@ -187,6 +211,7 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
                 .uv2(luz).normal(nm, nx, 0, nz).endVertex();
         vc.vertex(m, W, 0, z).color(255, 255, 255, 255).uv(1, 0).overlayCoords(net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY)
                 .uv2(luz).normal(nm, nx, 0, nz).endVertex();
+        }
         // zona donde se escribe (en unidades de 1/64 de bloque: 1 píxel de la textura = 2)
         float arriba = 2 * (PizarraTextura.MARCO + PizarraTextura.GUIRNALDA) + 1, abajo = H - 2 * (PizarraTextura.MARCO + PizarraTextura.REPISA) - 4;
         float izq = 2 * PizarraTextura.MARCO + 3, der = W - 2 * PizarraTextura.MARCO - 3;
@@ -250,6 +275,7 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
     static final int TINTA = 0xFF262636;
 
     private static void q(MultiBufferSource buf, Matrix4f m, float x0, float y0, float x1, float y1, float z, int argb, int luz) {
+        if (pasada != 0) return;
         int a = argb >>> 24, r = (argb >> 16) & 255, g = (argb >> 8) & 255, b = argb & 255;
         VertexConsumer vc = buf.getBuffer(RenderType.textBackground());
         z *= CAPAS;
@@ -269,6 +295,7 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
     }
 
     private static void textoL(PoseStack ps, MultiBufferSource buf, Font font, String s, float x, float y, float k, float z, int col, int luz) {
+        if (pasada != 1) return;
         ps.pushPose();
         ps.translate(x, y, z * CAPAS);
         ps.scale(k, k, 1);
@@ -313,7 +340,8 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
         q(buf, m, F, F, W - F, H - F, 0.05F, 0xFFBF8B55, luz);
         java.util.Random r = new java.util.Random(W * 7919L + H);
         int[] motas = {0xFF9E6B3A, 0xFFD6A672, 0xFF8A5A2E, 0xFFCC9A64, 0xFFA87444};
-        int nm = (int) ((W - 2 * F) * (H - 2 * F) / 12);
+        // (las motas, cientos de rectángulos diminutos, solo de cerca: de lejos ni se distinguen)
+        int nm = cerca && pasada == 0 ? (int) ((W - 2 * F) * (H - 2 * F) / 12) : 0;
         for (int k = 0; k < nm; k++) {
             float x = F + r.nextFloat() * (W - 2 * F - 1.6F), y = F + r.nextFloat() * (H - 2 * F - 1.6F), sz = 0.5F + r.nextFloat() * 1.1F;
             q(buf, m, x, y, x + sz, y + sz * (0.6F + r.nextFloat() * 0.6F), 0.07F, motas[r.nextInt(motas.length)], luz);
@@ -412,6 +440,7 @@ public class CartelRecordsRenderer implements BlockEntityRenderer<CartelRecordsB
     }
 
     private static void textoIzq(PoseStack ps, MultiBufferSource buf, Font font, String s, float x, float y, float k, int col) {
+        if (pasada != 1) return;
         ps.pushPose();
         ps.translate(x, y, 0.4F * CAPAS);
         ps.scale(k, k, 1);

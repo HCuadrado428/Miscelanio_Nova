@@ -655,10 +655,12 @@ public class ArcadeScreen extends Screen {
         if (ultimo == 0) ultimo = ahora;
         acum = Math.min(acum + (ahora - ultimo), 150);
         ultimo = ahora;
+        boolean nuevo = false;
         while (acum >= 1000.0 / 60.0) {
             acum -= 1000.0 / 60.0;
             paso();
             Botones.Acceso.paso(bot);
+            nuevo = true;
         }
         renderBackground(g);
         double gs = Minecraft.getInstance().getWindow().getGuiScale();
@@ -681,15 +683,25 @@ public class ArcadeScreen extends Screen {
         g.pose().pushPose();
         g.pose().translate(ox, oy, 0);
         g.pose().scale(k, k, 1);
-        mueble(g);
+        // todos los rectángulos y textos del mueble en un solo lote (antes cada g.fill era una llamada de dibujo aparte:
+        // unas 350 por fotograma con los círculos de los botones y las líneas de barrido)
+        g.drawManaged(() -> mueble(g));
         g.pose().pushPose();
         g.pose().translate(lx, ly, 0);
-        pantalla();
-        if (tex == null) tex = new PantallaTextura("local");
-        tex.subir(pant);
-        tex.dibujar(g, pant);
-        for (int y = 0; y < Pantalla.H; y += 2) g.fill(0, y, Pantalla.W, y + 1, 0x12000000);
-        g.fill(6, 5, 90, 7, 0x18FFFFFF);
+        // la imagen del juego solo cambia con un paso nuevo (60 por segundo): no se redibuja ni se sube en cada fotograma
+        if (tex == null) {
+            tex = new PantallaTextura("local");
+            nuevo = true;
+        }
+        if (nuevo) {
+            pantalla();
+            tex.subir(pant);
+        }
+        g.drawManaged(() -> {
+            tex.dibujar(g, pant);
+            for (int y = 0; y < Pantalla.H; y += 2) g.fill(0, y, Pantalla.W, y + 1, 0x12000000);
+            g.fill(6, 5, 90, 7, 0x18FFFFFF);
+        });
         g.pose().popPose();
         g.pose().popPose();
         String ayuda = com.miscelanea.client.TeclasMod.ayudaConsola("consola.miscelanea.controles_arcade2");

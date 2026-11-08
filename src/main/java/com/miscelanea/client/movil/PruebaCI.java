@@ -8,6 +8,7 @@ import net.minecraft.client.Screenshot;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -42,9 +43,40 @@ public final class PruebaCI {
     /** Fotogramas dibujados: con gráficos por software (y más con shaders) puede haber muy pocos por tick. */
     private static int fotogramas, fotogramasPaso;
 
+    /** Tiempo de procesador (ns) de los fotogramas, de los bloques-entidad y de la pantalla abierta, para el perfil. */
+    private static long nsFotograma, nsBloques, nsPantalla, t0Fotograma, t0Bloques, t0Pantalla;
+
     @SubscribeEvent
     public static void fotograma(TickEvent.RenderTickEvent e) {
-        if (ACTIVA && e.phase == TickEvent.Phase.END) fotogramas++;
+        if (!ACTIVA) return;
+        if (e.phase == TickEvent.Phase.START) t0Fotograma = System.nanoTime();
+        else {
+            fotogramas++;
+            if (t0Fotograma != 0) nsFotograma += System.nanoTime() - t0Fotograma;
+        }
+    }
+
+    @SubscribeEvent
+    public static void etapa(net.minecraftforge.client.event.RenderLevelStageEvent e) {
+        if (!ACTIVA) return;
+        if (e.getStage() == net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_ENTITIES) t0Bloques = System.nanoTime();
+        else if (e.getStage() == net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES && t0Bloques != 0) {
+            nsBloques += System.nanoTime() - t0Bloques;
+            t0Bloques = 0;
+        }
+    }
+
+    @SubscribeEvent
+    public static void pantallaAntes(net.minecraftforge.client.event.ScreenEvent.Render.Pre e) {
+        if (ACTIVA) t0Pantalla = System.nanoTime();
+    }
+
+    @SubscribeEvent
+    public static void pantallaDespues(net.minecraftforge.client.event.ScreenEvent.Render.Post e) {
+        if (ACTIVA && t0Pantalla != 0) {
+            nsPantalla += System.nanoTime() - t0Pantalla;
+            t0Pantalla = 0;
+        }
     }
     private static boolean terminada;
     private static net.minecraft.core.BlockPos ENCANTOS_MESA = net.minecraft.core.BlockPos.ZERO;
@@ -432,10 +464,426 @@ public final class PruebaCI {
         });
         paso("61_mesa_llena", 20, () -> {});
         sin("encantos_fin", 5, () -> mc.setScreen(null));
+        rendimiento();
+        laser();
         sin("cerrar", 10, () -> {
             mc.setScreen(null);
             RESUMEN.add("  cara propia (la de su modelo) guardada: " + (CarasCliente.tiene(mc.player.getUUID()) ? "sí" : "NO"));
         });
+    }
+
+    // ------------------------------------------------------------------ rendimiento de la sala recreativa
+    private static long PERFIL_T0;
+    private static Object GRABACION;
+    private static int PERFIL_F0;
+    private static final long[] PERFIL_NS = new long[3];
+    /** Máquinas donde "juega otro" durante el perfil, y su pantalla de mentira. */
+    private static final java.util.List<net.minecraft.core.BlockPos> JUGANDO = new java.util.ArrayList<>();
+    private static final com.miscelanea.client.arcade.Pantalla FALSA = new com.miscelanea.client.arcade.Pantalla();
+    private static int tFalsa;
+    private static boolean buscarMaquinas;
+
+    /** Una imagen de partida que cambia (fondo, cosas que se mueven y unos textos), como la que retransmite un jugador. */
+    private static void retransmitir() {
+        Minecraft mc = Minecraft.getInstance();
+        if (!buscarMaquinas || mc.level == null || mc.player == null) return;
+        if (++tFalsa % 2 != 0) return;
+        if (JUGANDO.size() < 5 && tFalsa % 20 == 0) {
+            JUGANDO.clear();
+            for (var q : net.minecraft.core.BlockPos.betweenClosed(mc.player.blockPosition().offset(-24, -2, -24), mc.player.blockPosition().offset(24, 3, 24)))
+                if (JUGANDO.size() < 5 && mc.level.getBlockEntity(q) instanceof com.miscelanea.arcade.RecreativaBlockEntity) JUGANDO.add(q.immutable());
+        }
+        if (JUGANDO.isEmpty()) return;
+        var p = FALSA;
+        p.font = Minecraft.getInstance().font;
+        p.empezar();
+        for (int y = 0; y < com.miscelanea.client.arcade.Pantalla.H; y++) p.rect(0, y, com.miscelanea.client.arcade.Pantalla.W, 1, 33 + (y + tFalsa) / 24 % 4);
+        for (int k = 0; k < 12; k++) p.rect((k * 37 + tFalsa * 3) % 256, 40 + k * 11, 12, 8, 11 + k % 20);
+        p.texto("1P " + tFalsa * 10, 6, 4, 7);
+        p.textoD("HI 99999", 250, 4, 19);
+        p.textoC("NIVEL " + (tFalsa / 100 + 1), 128, 176, 20);
+        for (var q : JUGANDO) com.miscelanea.client.arcade.ArcadeCliente.local(q, p);
+    }
+    private static final java.util.List<String> PERFIL = new java.util.ArrayList<>();
+
+    private static void medir(String fase) {
+        long t = System.currentTimeMillis();
+        if (PERFIL_T0 != 0) {
+            double s = (t - PERFIL_T0) / 1000.0;
+            int n = Math.max(1, fotogramas - PERFIL_F0);
+            // ms de procesador por fotograma: todo el fotograma, los bloques-entidad (renderers del mundo) y la pantalla abierta
+            RESUMEN.add(String.format(java.util.Locale.ROOT, "  rendimiento %s: %.1f fps · %.1f ms/fotograma · bloques-entidad %.2f ms · pantalla %.2f ms (%d fotogramas)",
+                    fase, (fotogramas - PERFIL_F0) / Math.max(0.01, s), (nsFotograma - PERFIL_NS[0]) / 1e6 / n,
+                    (nsBloques - PERFIL_NS[1]) / 1e6 / n, (nsPantalla - PERFIL_NS[2]) / 1e6 / n, fotogramas - PERFIL_F0));
+        }
+        PERFIL.add(fase + "=" + t);
+        PERFIL_T0 = t;
+        PERFIL_F0 = fotogramas;
+        PERFIL_NS[0] = nsFotograma;
+        PERFIL_NS[1] = nsBloques;
+        PERFIL_NS[2] = nsPantalla;
+    }
+
+    /**
+     * Resumen del perfil en el propio informe: por fase, qué métodos de Miscelánea están en la pila del hilo de dibujo
+     * (contando el tiempo en Java y el que pasa en OpenGL), en % de las muestras de esa fase.
+     */
+    private static void resumirPerfil(java.nio.file.Path jfr) {
+        try {
+            java.util.List<String[]> fases = new java.util.ArrayList<>();
+            for (String l : PERFIL) fases.add(l.split("="));
+            java.util.Map<String, java.util.Map<String, Integer>> por = new java.util.LinkedHashMap<>();
+            java.util.Map<String, Integer> total = new java.util.HashMap<>(), nativo = new java.util.HashMap<>();
+            for (var e : jdk.jfr.consumer.RecordingFile.readAllEvents(jfr)) {
+                String tipo = e.getEventType().getName();
+                if (!tipo.equals("jdk.ExecutionSample") && !tipo.equals("jdk.NativeMethodSample")) continue;
+                var hilo = e.getThread("sampledThread");
+                if (hilo == null || !"Render thread".equals(hilo.getJavaName()) || e.getStackTrace() == null) continue;
+                long t = e.getStartTime().toEpochMilli();
+                String fase = null;
+                for (int i = 0; i + 1 < fases.size(); i++)
+                    if (t >= Long.parseLong(fases.get(i)[1]) && t < Long.parseLong(fases.get(i + 1)[1])) fase = fases.get(i + 1)[0];
+                if (fase == null) continue;
+                total.merge(fase, 1, Integer::sum);
+                if (tipo.equals("jdk.NativeMethodSample")) nativo.merge(fase, 1, Integer::sum);
+                var m = por.computeIfAbsent(fase, k -> new java.util.HashMap<>());
+                java.util.Set<String> vistos = new java.util.HashSet<>();
+                for (var fr : e.getStackTrace().getFrames()) {
+                    if (fr.getMethod() == null || fr.getMethod().getType() == null) continue;
+                    String clase = fr.getMethod().getType().getName();
+                    if (!clase.startsWith("com.miscelanea.") || clase.contains("PruebaCI") || clase.contains("$$Lambda")) continue;
+                    String n = clase.substring(clase.lastIndexOf('.') + 1) + "." + fr.getMethod().getName();
+                    if (vistos.add(n)) m.merge(n, 1, Integer::sum);
+                }
+            }
+            for (var f : por.entrySet()) {
+                int n = total.getOrDefault(f.getKey(), 1);
+                StringBuilder b = new StringBuilder(String.format(java.util.Locale.ROOT, "  perfil %s (%d muestras, %d%% en nativo):",
+                        f.getKey(), n, 100 * nativo.getOrDefault(f.getKey(), 0) / n));
+                f.getValue().entrySet().stream().filter(x -> !x.getKey().startsWith("__") && !x.getKey().endsWith(".invoke"))
+                        .sorted((a, c) -> c.getValue() - a.getValue()).limit(12)
+                        .forEach(x -> b.append(String.format(java.util.Locale.ROOT, " %s %.1f%%", x.getKey(), 100.0 * x.getValue() / n)));
+                RESUMEN.add(b.toString());
+            }
+        } catch (Throwable t) {
+            RESUMEN.add("  rendimiento: no se pudo resumir el perfil: " + t);
+        }
+    }
+
+    /** Una sala recreativa llena (máquinas, juegos de mesa, bolera…) y luego jugando a dos recreativas; se mide cada fase. */
+    private static void rendimiento() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("perfil_vacio", 200, () -> {
+            mc.setScreen(null);
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            mc.player.setXRot(15);
+            medir("inicio");
+            try {
+                var r = new jdk.jfr.Recording();
+                r.enable("jdk.ExecutionSample").withPeriod(java.time.Duration.ofMillis(10));
+                // también el tiempo dentro de código nativo (las llamadas de OpenGL), con la pila Java que lo pidió
+                r.enable("jdk.NativeMethodSample").withPeriod(java.time.Duration.ofMillis(10));
+                r.start();
+                GRABACION = r;
+            } catch (Throwable t) {
+                RESUMEN.add("  rendimiento: sin perfil (JFR): " + t);
+            }
+        });
+        sin("perfil_sala", 20, () -> {
+            medir("sin_sala");
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                var l = sp.serverLevel();
+                var mira = sp.getDirection();
+                var lado = mira.getClockWise();
+                var o = sp.blockPosition().relative(mira, 3);
+                for (var b : net.minecraft.core.BlockPos.betweenClosed(o.relative(lado, -12).below(), o.relative(lado, 12).relative(mira, 18).above(4)))
+                    l.setBlock(b, b.getY() < o.getY() ? net.minecraft.world.level.block.Blocks.SMOOTH_STONE.defaultBlockState() : net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+                java.util.List<net.minecraft.world.item.Item> cosas = new java.util.ArrayList<>(java.util.List.of(
+                        com.miscelanea.registry.ModItems.RECREATIVA.get(), com.miscelanea.registry.ModItems.RECREATIVA_DOBLE.get(),
+                        com.miscelanea.registry.ModItems.CABINA_CARRERAS.get(), com.miscelanea.registry.ModItems.RECREATIVA_PISTOLA.get(),
+                        com.miscelanea.registry.ModItems.MESA_COCTEL.get(), com.miscelanea.registry.ModItems.CARTEL_RECORDS.get(),
+                        com.miscelanea.registry.ModItems.TABLON_RECORDS.get(), com.miscelanea.registry.ModItems.TABLERO.get(),
+                        com.miscelanea.registry.ModItems.IMPERIO.get(), com.miscelanea.registry.ModItems.PARCHIS.get(),
+                        com.miscelanea.registry.ModItems.OCA.get(), com.miscelanea.registry.ModItems.CUATRO.get(),
+                        com.miscelanea.registry.ModItems.FLOTA.get(), com.miscelanea.registry.ModItems.DOMINO.get(),
+                        com.miscelanea.registry.ModItems.MESA_CARTAS.get(), com.miscelanea.registry.ModItems.BILLAR.get(),
+                        com.miscelanea.registry.ModItems.FUTBOLIN.get(), com.miscelanea.registry.ModItems.AIRHOCKEY.get(),
+                        com.miscelanea.registry.ModItems.BOLERA.get(), com.miscelanea.registry.ModItems.PISTA_BOLOS.get()));
+                for (var r : com.miscelanea.registry.ModItems.recreativasJuego()) cosas.add(r.get());
+                int k = 0, puestos = 0;
+                for (var it : cosas) {
+                    int fila = k / 8, col = k % 8;
+                    k++;
+                    var donde = o.relative(mira, 3 + fila * 5).relative(lado, -10 + col * 3);
+                    try {
+                        sp.teleportTo(donde.relative(mira.getOpposite(), 2).getX() + 0.5, donde.getY(), donde.relative(mira.getOpposite(), 2).getZ() + 0.5);
+                        sp.setYRot(mira.toYRot());
+                        var st = new ItemStack(it);
+                        var hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(donde.below()), net.minecraft.core.Direction.UP, donde.below(), false);
+                        var ctx = new net.minecraft.world.item.context.BlockPlaceContext(l, sp, net.minecraft.world.InteractionHand.MAIN_HAND, st, hit);
+                        if (it instanceof net.minecraft.world.item.BlockItem bi && bi.place(ctx).consumesAction()) {
+                            puestos++;
+                            // con partida, como en una sala de verdad (un tablero recién puesto no dibuja nada)
+                            if (l.getBlockEntity(donde) instanceof com.miscelanea.juegos.TableroBlockEntity tb) tb.reiniciar(0);
+                            if (l.getBlockEntity(donde) instanceof com.miscelanea.bolos.BoleraBlockEntity)
+                                l.getBlockState(donde).use(l, sp, net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(donde), net.minecraft.core.Direction.UP, donde, false));
+                        }
+                    } catch (Throwable t) {
+                        RESUMEN.add("  rendimiento: no se pudo poner " + it + ": " + t);
+                    }
+                }
+                sp.teleportTo(o.relative(mira.getOpposite(), 3).getX() + 0.5, o.getY(), o.relative(mira.getOpposite(), 3).getZ() + 0.5);
+                sp.setYRot(mira.toYRot());
+                sp.setXRot(18);
+                RESUMEN.add("  rendimiento: sala con " + puestos + " de " + cosas.size() + " cosas");
+            });
+        });
+        sin("perfil_mirar", 300, () -> {
+            medir("colocar");
+            // otros jugadores jugando en cinco máquinas: su pantalla llega 10 veces por segundo, como la retransmisión
+            // (se buscan poco a poco: las máquinas recién puestas tardan en llegar al cliente)
+            JUGANDO.clear();
+            buscarMaquinas = true;
+        });
+        sin("perfil_jugar", 5, () -> {
+            medir("sala");
+            RESUMEN.add("  rendimiento: " + JUGANDO.size() + " máquinas con partida retransmitida");
+            // a jugar en la primera recreativa (sin menú: se arranca la mazmorra directamente)
+            var b = mc.level.getBlockEntity(mc.player.blockPosition()) ;
+            net.minecraft.core.BlockPos maquina = null;
+            for (var q : net.minecraft.core.BlockPos.betweenClosed(mc.player.blockPosition().offset(-14, -1, -14), mc.player.blockPosition().offset(14, 2, 14)))
+                if (mc.level.getBlockEntity(q) instanceof com.miscelanea.arcade.RecreativaBlockEntity
+                        && (maquina == null || q.distSqr(mc.player.blockPosition()) < maquina.distSqr(mc.player.blockPosition()))) maquina = q.immutable();
+            if (maquina == null) throw new IllegalStateException("no hay recreativa");
+            var pant = new com.miscelanea.client.arcade.ArcadeScreen(maquina, 99, true, false, false, "");
+            mc.setScreen(pant);
+            try {
+                var m = com.miscelanea.client.arcade.ArcadeScreen.class.getDeclaredMethod("empezar", String.class, long.class, int.class);
+                m.setAccessible(true);
+                m.invoke(pant, "mazmorra", 7L, 1);
+            } catch (Exception ex) {
+                throw new IllegalStateException("no se pudo empezar la partida: " + ex);
+            }
+        });
+        paso("70_perfil_mazmorra", 300, () -> {});
+        sin("perfil_turbo", 5, () -> {
+            medir("mazmorra");
+            try {
+                var m = com.miscelanea.client.arcade.ArcadeScreen.class.getDeclaredMethod("empezar", String.class, long.class, int.class);
+                m.setAccessible(true);
+                m.invoke(mc.screen, "turbo", 7L, 1);
+            } catch (Exception ex) {
+                throw new IllegalStateException("no se pudo empezar la partida: " + ex);
+            }
+        });
+        paso("71_perfil_turbo", 300, () -> {});
+        sin("perfil_fin", 5, () -> {
+            medir("turbo");
+            buscarMaquinas = false;
+            JUGANDO.clear();
+            mc.setScreen(null);
+            try {
+                Files.write(new File(mc.gameDirectory, "perfil_fases.txt").toPath(), PERFIL);
+                if (GRABACION instanceof jdk.jfr.Recording r) {
+                    r.stop();
+                    r.dump(new File(mc.gameDirectory, "perfil.jfr").toPath());
+                    r.close();
+                    resumirPerfil(new File(mc.gameDirectory, "perfil.jfr").toPath());
+                }
+            } catch (Throwable t) {
+                RESUMEN.add("  rendimiento: no se pudo guardar el perfil: " + t);
+            }
+        });
+        paso("72_perfil_sala", 5, () -> {});
+    }
+
+    // ------------------------------------------------------------------ puntero láser: el punto en la mira
+    private static boolean mantenerUso;
+    private static net.minecraft.world.entity.decoration.ArmorStand camaraFuera;
+    private static int fovAntes = 70;
+
+    /**
+     * Pared negra delante, el puntero encendido (clic derecho mantenido) y se mide en la imagen dónde cae el punto: en
+     * primera persona tiene que estar en el centro (la mira), también de gigante y con otro FOV; visto desde fuera, donde
+     * mira el jugador. Para medir se quita el rayo y el HUD (y la mano) y se busca el rojo en la captura.
+     */
+    private static void laser() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("laser_poner", 30, () -> {
+            mc.setScreen(null);
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                var l = sp.serverLevel();
+                var mira = net.minecraft.core.Direction.fromYRot(sp.getYRot());
+                var lado = mira.getClockWise();
+                var o = sp.blockPosition();
+                var aire = net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
+                for (var b : net.minecraft.core.BlockPos.betweenClosed(o.relative(lado, -8).relative(mira, -3).below(), o.relative(lado, 8).relative(mira, 11).above(16)))
+                    l.setBlock(b, b.getY() < o.getY() ? net.minecraft.world.level.block.Blocks.SMOOTH_STONE.defaultBlockState() : aire, 2);
+                for (int dx = -8; dx <= 8; dx++)
+                    for (int dy = -1; dy <= 16; dy++)
+                        l.setBlock(o.relative(mira, 10).relative(lado, dx).above(dy), net.minecraft.world.level.block.Blocks.BLACK_CONCRETE.defaultBlockState(), 2);
+                // fuera los objetos tirados (los libros de la mesa de antes son rojizos y confunden la medida)
+                l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(o).inflate(24)).forEach(net.minecraft.world.entity.Entity::discard);
+                sp.setGameMode(GameType.SURVIVAL);
+                sp.removeAllEffects();
+                sp.getInventory().setItem(0, new ItemStack(com.miscelanea.laser.LaserRegistro.PUNTERO.get()));
+                sp.getInventory().selected = 0;
+                sp.connection.teleport(o.getX() + 0.5, o.getY(), o.getZ() + 0.5, mira.toYRot(), 0F);
+            });
+        });
+        sin("laser_encender", 30, () -> {
+            mc.options.hideGui = false;
+            mc.player.getInventory().selected = 0;
+            mantenerUso = true;
+            mc.options.keyUse.setDown(true);
+        });
+        paso("80_laser_primera", 10, () -> {
+            if (!com.miscelanea.laser.Laser.apuntando(mc.player)) throw new IllegalStateException("el puntero no se ha encendido");
+        });
+        medirLaser("laser_primera", false, true);
+        sin("laser_fov", 10, () -> {
+            fovAntes = mc.options.fov().get();
+            mc.options.fov().set(105);
+        });
+        paso("81_laser_fov105", 10, () -> {});
+        medirLaser("laser_fov105", false, true);
+        sin("laser_gigante", 60, () -> {
+            mc.options.fov().set(fovAntes);
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp != null) sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(com.miscelanea.pociones.PocionesRegistro.GIGANTE.get(), 4000, 1));
+            });
+        });
+        paso("82_laser_gigante", 10, () -> RESUMEN.add(String.format("  láser: de gigante, ojos a %.2f bloques del suelo", mc.player.getEyeHeight())));
+        medirLaser("laser_gigante", false, true);
+        sin("laser_normal", 60, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp != null) sp.removeAllEffects();
+            });
+        });
+        // como lo ve otro: una cámara a un lado que mira a la pared (el punto se calcula desde los ojos del jugador)
+        sin("laser_fuera_poner", 20, () -> {
+            var mira = mc.player.pick(64, 1.0F, false).getLocation();
+            Vec3 ojo = mc.player.getEyePosition();
+            Vec3 fwd = mc.player.getViewVector(1.0F);
+            Vec3 derecha = new Vec3(-fwd.z, 0, fwd.x).normalize();
+            Vec3 pos = ojo.add(derecha.scale(4)).add(fwd.scale(1)).add(0, 0.6, 0);
+            Vec3 d = mira.subtract(pos);
+            float yRot = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
+            float xRot = (float) Math.toDegrees(-Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
+            camaraFuera = new net.minecraft.world.entity.decoration.ArmorStand(mc.level, pos.x, pos.y, pos.z);
+            camaraFuera.moveTo(pos.x, pos.y - camaraFuera.getEyeHeight(), pos.z, yRot, xRot);
+            camaraFuera.setYHeadRot(yRot);
+            mc.setCameraEntity(camaraFuera);
+        });
+        paso("83_laser_desde_fuera", 10, () -> {});
+        medirLaser("laser_desde_fuera", true, true);
+        sin("laser_fuera_quitar", 10, () -> mc.setCameraEntity(mc.player));
+        paso("84_laser_tercera", 30, () -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK));
+        sin("laser_fin", 10, () -> {
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            mantenerUso = false;
+            mc.options.keyUse.setDown(false);
+            com.miscelanea.client.laser.LaserCliente.pruebaSinRayo = false;
+            mc.options.hideGui = false;
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp != null) sp.setGameMode(GameType.CREATIVE);
+            });
+        });
+    }
+
+    /** Dos pasos: quitar el rayo y el HUD y, ya dibujado así, medir. */
+    private static void medirLaser(String nombre, boolean desdeFuera, boolean obligatorio) {
+        Minecraft mc = Minecraft.getInstance();
+        sin(nombre + "_quitar_hud", 12, () -> {
+            mc.options.hideGui = true;
+            com.miscelanea.client.laser.LaserCliente.pruebaSinRayo = true;
+        });
+        sin(nombre + "_medir", 1, () -> {
+            try {
+                analizarLaser(nombre, desdeFuera, obligatorio);
+            } finally {
+                mc.options.hideGui = false;
+                com.miscelanea.client.laser.LaserCliente.pruebaSinRayo = false;
+            }
+        });
+    }
+
+    private static void analizarLaser(String nombre, boolean desdeFuera, boolean obligatorio) {
+        Minecraft mc = Minecraft.getInstance();
+        var rt = mc.getMainRenderTarget();
+        int W = rt.width, H = rt.height;
+        Vec3 punto = com.miscelanea.client.laser.LaserCliente.pruebaMiPunto;
+        Vec3 mira = mc.player.pick(64, 1.0F, false).getLocation();
+        Vec3 deOtros = com.miscelanea.laser.Laser.rayo(mc.player, 1.0F).punto();
+        // dónde tiene que salir: en primera persona, en el centro (la mira); desde fuera, donde mira el jugador
+        double ex = W / 2.0, ey = H / 2.0;
+        if (desdeFuera) {
+            double[] s = com.miscelanea.client.laser.LaserCliente.aPantalla(mira, W, H);
+            if (s == null) throw new IllegalStateException("la pared no está delante de la cámara de fuera");
+            ex = s[0];
+            ey = s[1];
+        }
+        // se busca cerca de donde tiene que estar (si se va lejos no se encuentra y también falla): así no confunden
+        // otras cosas rojas del fondo
+        double v = 0.15 * H;
+        double sx = 0, sy = 0, sw = 0;
+        int n = 0;
+        try (com.mojang.blaze3d.platform.NativeImage img = Screenshot.takeScreenshot(rt)) {
+            for (int y = (int) Math.max(0, ey - v); y < Math.min(H, ey + v); y++)
+                for (int x = (int) Math.max(0, ex - v); x < Math.min(W, ex + v); x++) {
+                    int c = img.getPixelRGBA(x, y);
+                    int r = c & 255, g = c >> 8 & 255, b = c >> 16 & 255;
+                    int rojo = r - Math.max(g, b);
+                    if (r >= 80 && rojo >= 40 && g * 10 < r * 6 && b * 10 < r * 6) {
+                        sx += x * (double) rojo;
+                        sy += y * (double) rojo;
+                        sw += rojo;
+                        n++;
+                    }
+                }
+            File dir = new File(mc.gameDirectory, "screenshots");
+            dir.mkdirs();
+            img.writeToFile(new File(dir, nombre + ".png"));
+        } catch (java.io.IOException ex2) {
+            RESUMEN.add("  láser " + nombre + ": no se pudo guardar la imagen: " + ex2);
+        }
+        String calc = "sin punto";
+        if (punto != null) {
+            double[] s = com.miscelanea.client.laser.LaserCliente.aPantalla(punto, W, H);
+            calc = (s == null ? "detrás" : String.format("(%+.1f, %+.1f) px", s[0] - ex, s[1] - ey))
+                    + String.format(", a %.3f bloques de donde mira y a %.3f del que ven los demás", punto.distanceTo(mira), punto.distanceTo(deOtros));
+        }
+        double tol = Math.max(4, 0.025 * H);
+        String linea;
+        boolean bien;
+        if (n < 6) {
+            linea = String.format("no se ve el punto (%d píxeles rojos)", n);
+            bien = false;
+        } else {
+            double dx = sx / sw - ex, dy = sy / sw - ey;
+            bien = Math.hypot(dx, dy) <= tol;
+            linea = String.format("el punto sale a (%+.1f, %+.1f) px de %s (%d píxeles rojos, imagen %dx%d)", dx, dy, desdeFuera ? "donde mira" : "la mira", n, W, H);
+        }
+        RESUMEN.add("  láser " + nombre + ": " + linea + " · calculado " + calc + (bien ? "" : " · MAL"));
+        if (obligatorio && !bien) throw new IllegalStateException("el punto del láser no cae donde debe (" + nombre + ")");
     }
 
     @SubscribeEvent
@@ -443,9 +891,12 @@ public final class PruebaCI {
         if (!ACTIVA || e.phase != TickEvent.Phase.END || terminada) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
+        // el puntero láser: el clic derecho mantenido
+        if (mantenerUso) mc.options.keyUse.setDown(true);
         // que MC-Runtime-Test no dé la prueba por acabada mientras sigue esto
         if (mc.player.tickCount > 60) mc.player.tickCount = 60;
         if (++ticksEnMundo < 40) return;
+        retransmitir();
         if (paso < 0) {
             preparar();
             paso = 0;

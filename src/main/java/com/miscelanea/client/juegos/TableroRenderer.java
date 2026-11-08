@@ -55,10 +55,9 @@ public class TableroRenderer implements BlockEntityRenderer<TableroBlockEntity> 
         boolean jaque = false;
         int rey = -1;
         if (aj) {
-            Ajedrez a = be.verAjedrez();
-            t = a.t;
-            jaque = be.resultado == 0 && a.enJaque(a.blancas);
-            if (jaque) rey = a.rey(a.blancas);
+            t = be.verAjedrez().t;
+            rey = be.reyEnJaque();
+            jaque = rey >= 0;
         } else t = be.piezas();
         boolean rev = be.reversi();
         com.miscelanea.juegos.Reversi rv = rev ? be.verReversi() : null;
