@@ -207,7 +207,9 @@ public final class Reglas {
     private static void quitarEncantados(List<VillagerTrades.ItemListing> l) {
         List<VillagerTrades.ItemListing> fuera = new ArrayList<>();
         for (VillagerTrades.ItemListing t : l)
-            if (t instanceof VillagerTrades.EnchantBookForEmeralds || t instanceof VillagerTrades.EnchantedItemForEmeralds) fuera.add(t);
+            // son clases privadas de VillagerTrades: se reconocen por el nombre (en Forge 1.20 las clases no se ofuscan)
+            String n = t.getClass().getSimpleName();
+            if (n.equals("EnchantBookForEmeralds") || n.equals("EnchantedItemForEmeralds")) fuera.add(t);
         l.removeAll(fuera);
     }
 }
