@@ -369,6 +369,8 @@ public final class EcoCliente {
     }
 
     private static final ConShaders sh = new ConShaders();
+    /** De dónde salió la profundidad con shaders (para la prueba del CI). */
+    private static String fuenteProfundidad = "-";
 
     /** Copia la profundidad del mundo (sin tocar el framebuffer que tenga puesto el pack). */
     private static boolean copiarProfundidad(Minecraft mc) {
@@ -379,8 +381,22 @@ public final class EcoCliente {
             if (sh.copia == null) sh.copia = new com.mojang.blaze3d.pipeline.TextureTarget(main.width, main.height, true, Minecraft.ON_OSX);
             else if (sh.copia.width != main.width || sh.copia.height != main.height) sh.copia.resize(main.width, main.height, Minecraft.ON_OSX);
             while (org.lwjgl.opengl.GL11.glGetError() != 0) {}
+            // el pack dibuja el mundo en su propio framebuffer (el que está puesto ahora): su profundidad es la buena;
+            // la del principal está vacía. Si no se puede copiar (otro formato), la del principal
+            if (pinta != 0 && pinta != main.frameBufferId) {
+                org.lwjgl.opengl.GL30.glBindFramebuffer(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER, pinta);
+                org.lwjgl.opengl.GL30.glBindFramebuffer(org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER, sh.copia.frameBufferId);
+                org.lwjgl.opengl.GL30.glBlitFramebuffer(0, 0, main.width, main.height, 0, 0, main.width, main.height,
+                        org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT, org.lwjgl.opengl.GL11.GL_NEAREST);
+                if (org.lwjgl.opengl.GL11.glGetError() == 0) {
+                    fuenteProfundidad = "la del pack";
+                    return true;
+                }
+            }
             sh.copia.copyDepthFrom(main);
-            return org.lwjgl.opengl.GL11.glGetError() == 0;
+            boolean bien = org.lwjgl.opengl.GL11.glGetError() == 0;
+            fuenteProfundidad = bien ? "la principal" : "ninguna";
+            return bien;
         } catch (RuntimeException ex) {
             return false;
         } finally {
@@ -619,7 +635,7 @@ public final class EcoCliente {
     }
 
     public static String pruebaEstado() {
-        return "ondas " + ONDAS.size() + ", bloques " + BLOQUES.size() + ", entidades " + ENTES.size() + ", fallos al dibujar " + pruebaFallos;
+        return "ondas " + ONDAS.size() + ", bloques " + BLOQUES.size() + ", entidades " + ENTES.size() + ", fallos al dibujar " + pruebaFallos + ", profundidad con shaders: " + fuenteProfundidad;
     }
 
     public static int pruebaEntes() {
