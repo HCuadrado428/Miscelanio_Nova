@@ -419,6 +419,11 @@ public final class PruebaCI {
             irA(new net.minecraft.core.BlockPos(b.getX(), b.getY(), b.getZ() - 3), 180, 0);
         });
         sin("purgatorio_fuera", 5, () -> {
+            var sp = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
+            var b = com.miscelanea.purgatorio.Purgatorio.buscarSalida();
+            var lp = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
+            RESUMEN.add("  purgatorio (servidor): jugador en " + (sp == null ? "?" : sp.level().dimension().location() + " " + sp.blockPosition().toShortString())
+                    + ", bloque de la puerta: " + (lp == null ? "?" : lp.getBlockState(new net.minecraft.core.BlockPos(b.getX(), b.getY(), b.getZ() - 3))));
             boolean fuera = !com.miscelanea.purgatorio.Purgatorio.en(mc.level);
             RESUMEN.add("  purgatorio: zona del origen " + com.miscelanea.purgatorio.PurgatorioGenerador.zona(0, 0)
                     + ", salida en " + com.miscelanea.purgatorio.Purgatorio.buscarSalida() + ", ha salido por la puerta: " + (fuera ? "sí" : "NO"));

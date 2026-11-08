@@ -150,6 +150,7 @@ public final class Purgatorio {
         p.teleportTo(dest, b.getX() + 0.5, b.getY(), b.getZ() + 0.5, p.getYRot(), p.getXRot());
         dest.playSound(null, b, SoundEvents.BEACON_ACTIVATE, SoundSource.AMBIENT, 1F, 1.4F);
         p.displayClientMessage(Component.translatable("purgatorio.miscelanea.salida"), true);
+        Miscelanea.LOGGER.info("Purgatorio: sale {} a {} {}", p.getGameProfile().getName(), dest.dimension().location(), b);
     }
 
     /** Genera ya los chunks de alrededor del sitio (son muy baratos), para que el suelo esté al llegar. */
