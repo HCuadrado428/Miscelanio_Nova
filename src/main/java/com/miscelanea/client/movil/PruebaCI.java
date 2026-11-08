@@ -196,6 +196,22 @@ public final class PruebaCI {
             abrirVista(new VistasTelefono.Telefono());
         });
         paso("17_ajustes", 20, () -> abrirVista(new VistasApps.Ajustes()));
+        sin("pociones", 1, () -> {
+            // el soporte para pociones: rara + ingrediente
+            var rara = net.minecraft.world.item.alchemy.PotionUtils.setPotion(new ItemStack(net.minecraft.world.item.Items.POTION), net.minecraft.world.item.alchemy.Potions.AWKWARD);
+            net.minecraft.world.item.Item[] ing = {net.minecraft.world.item.Items.RED_MUSHROOM, net.minecraft.world.item.Items.BROWN_MUSHROOM,
+                    net.minecraft.world.item.Items.ECHO_SHARD, net.minecraft.world.item.Items.INK_SAC, net.minecraft.world.item.Items.AMETHYST_SHARD,
+                    net.minecraft.world.item.Items.FEATHER, net.minecraft.world.item.Items.SNOWBALL, net.minecraft.world.item.Items.WHEAT,
+                    net.minecraft.world.item.Items.COCOA_BEANS};
+            StringBuilder sb = new StringBuilder("  pociones:");
+            for (var i : ing) {
+                ItemStack r = net.minecraftforge.common.brewing.BrewingRecipeRegistry.getOutput(rara, new ItemStack(i));
+                String n = r.isEmpty() ? "NADA" : net.minecraft.world.item.alchemy.PotionUtils.getPotion(r).getName("");
+                sb.append(' ').append(net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(i).getPath()).append('=').append(n);
+                if (r.isEmpty()) throw new IllegalStateException("la poción rara + " + i + " no da nada");
+            }
+            RESUMEN.add(sb.toString());
+        });
         sin("cerrar", 10, () -> {
             mc.setScreen(null);
             RESUMEN.add("  cara propia (la de su modelo) guardada: " + (CarasCliente.tiene(mc.player.getUUID()) ? "sí" : "NO"));

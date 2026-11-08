@@ -248,6 +248,23 @@ Casi todos los efectos tienen poción normal, arrojadiza, persistente y flecha. 
 
 ---
 
+**Se pueden hacer en el soporte para pociones** (sobre una poción rara; la redstone las alarga; la pólvora y el aliento de dragón, como siempre):
+
+| Ingrediente | Poción |
+| --- | --- |
+| Seta roja | Gigante |
+| Seta marrón (o Gigante + ojo de araña fermentado) | Enano |
+| Fragmento de eco | Ecolocalización |
+| Tinta de calamar | Niebla viviente |
+| Fragmento de amatista | Espejismo |
+| Pluma | Helio |
+| Bola de nieve | Ventilador |
+| Trigo | Borrachera |
+| Granos de cacao | Tartamudeo |
+| Pétalos rosas (Cupido) y Cupido + ojo de araña fermentado (Enemigo) | Cupido / Enemigo |
+
+Sed de sangre y Fantasma siguen siendo solo de creativo.
+
 ## Bromas
 
 Inofensivas pero molestas. Mejor acordarlas con el grupo antes de usarlas.

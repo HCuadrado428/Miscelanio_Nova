@@ -46,6 +46,30 @@ public final class ModPotions {
         add(STRONG_CUPIDO.get(), Items.FERMENTED_SPIDER_EYE, STRONG_ENEMIGO.get());
         add(ENEMIGO.get(), Items.REDSTONE, LONG_ENEMIGO.get());
         add(ENEMIGO.get(), Items.GLOWSTONE_DUST, STRONG_ENEMIGO.get());
+
+        // ---- pociones de Miscelánea que se pueden hacer en supervivencia (redstone alarga en todas)
+        // la seta roja te hace grande (como en Mario) y la marrón, o corromper la de gigante, pequeño
+        larga(Potions.AWKWARD, Items.RED_MUSHROOM, com.miscelanea.pociones.PocionesRegistro.P_GIGANTE.get(), com.miscelanea.pociones.PocionesRegistro.P_GIGANTE_LARGA.get());
+        larga(Potions.AWKWARD, Items.BROWN_MUSHROOM, com.miscelanea.pociones.PocionesRegistro.P_ENANO.get(), com.miscelanea.pociones.PocionesRegistro.P_ENANO_LARGA.get());
+        add(com.miscelanea.pociones.PocionesRegistro.P_GIGANTE.get(), Items.FERMENTED_SPIDER_EYE, com.miscelanea.pociones.PocionesRegistro.P_ENANO.get());
+        add(com.miscelanea.pociones.PocionesRegistro.P_GIGANTE_LARGA.get(), Items.FERMENTED_SPIDER_EYE, com.miscelanea.pociones.PocionesRegistro.P_ENANO_LARGA.get());
+        // eco: fragmento de eco (de las ciudades antiguas); niebla: tinta de calamar; espejismo: fragmento de amatista
+        larga(Potions.AWKWARD, Items.ECHO_SHARD, com.miscelanea.pociones.PocionesRegistro.P_ECO.get(), com.miscelanea.pociones.PocionesRegistro.P_ECO_LARGA.get());
+        larga(Potions.AWKWARD, Items.INK_SAC, com.miscelanea.pociones.PocionesRegistro.P_NIEBLA.get(), com.miscelanea.pociones.PocionesRegistro.P_NIEBLA_LARGA.get());
+        larga(Potions.AWKWARD, Items.AMETHYST_SHARD, com.miscelanea.pociones.PocionesRegistro.P_ESPEJISMO.get(), com.miscelanea.pociones.PocionesRegistro.P_ESPEJISMO_LARGA.get());
+        // las de la voz: pluma (helio, ligera como el aire), bola de nieve (ventilador), trigo (borrachera: cerveza)
+        // y granos de cacao (tartamudeo: demasiado café)
+        larga(Potions.AWKWARD, Items.FEATHER, com.miscelanea.voz.VozRegistro.POCION_HELIO.get(), com.miscelanea.voz.VozRegistro.POCION_HELIO_LARGA.get());
+        larga(Potions.AWKWARD, Items.SNOWBALL, com.miscelanea.voz.VozRegistro.POCION_VENTILADOR.get(), com.miscelanea.voz.VozRegistro.POCION_VENTILADOR_LARGA.get());
+        larga(Potions.AWKWARD, Items.WHEAT, com.miscelanea.voz.VozRegistro.POCION_BORRACHERA.get(), com.miscelanea.voz.VozRegistro.POCION_BORRACHERA_LARGA.get());
+        larga(Potions.AWKWARD, Items.COCOA_BEANS, com.miscelanea.voz.VozRegistro.POCION_TARTAMUDEO.get(), com.miscelanea.voz.VozRegistro.POCION_TARTAMUDEO_LARGA.get());
+        // Sed de sangre y Fantasma siguen siendo solo de creativo (demasiado fuertes para supervivencia)
+    }
+
+    /** Base + ingrediente = poción, y esa poción + redstone = la larga. */
+    private static void larga(Potion base, net.minecraft.world.item.Item ingrediente, Potion corta, Potion larga) {
+        add(base, ingrediente, corta);
+        add(corta, Items.REDSTONE, larga);
     }
 
     private static void add(Potion from, net.minecraft.world.item.Item ingredient, Potion to) {
