@@ -28,8 +28,10 @@ public final class MontanaEventos {
     public static void bajar(EntityMountEvent e) {
         if (forzar || !e.isDismounting() || !(e.getEntityBeingMounted() instanceof TrenMontana t) || t.isRemoved()) return;
         if (!(e.getEntityMounting() instanceof Player p) || !p.isAlive()) return;
+        // solo decide el servidor: si el cliente también lo cancelara, se quedaría montado cuando el servidor ya le ha bajado
+        if (p.level().isClientSide) return;
         if (t.puedeBajar()) return;
         e.setCanceled(true);
-        if (!p.level().isClientSide) p.displayClientMessage(Component.translatable("montana.miscelanea.barra"), true);
+        p.displayClientMessage(Component.translatable("montana.miscelanea.barra"), true);
     }
 }
