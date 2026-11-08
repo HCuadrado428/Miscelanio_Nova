@@ -11,7 +11,7 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
 - **novedades**: la siguiente 1.x.0 (cosas pequeñas). Se une a main cuando se publica.
 - **version-2**: la 2.0.0 (lo gordo). Recoge lo de main por el camino y se une al final.
 
-## 1.1.2 (en curso)
+## 1.1.2
 - **Anillo de medianoche:** decía que The Midnight no estaba instalado aunque lo estuviera. Buscaba la dimensión `midnight:midnight`, pero en The Midnight 0.6.x se llama `midnight:the_midnight`; ahora encuentra cualquiera de las dos (aunque la config antigua tenga el nombre viejo).
 
 ## 1.1.1
