@@ -279,7 +279,8 @@ public final class PruebaCI {
                 var cerdo = net.minecraft.world.entity.EntityType.PIG.create(sp.serverLevel());
                 var mira = sp.getLookAngle().multiply(1, 0, 1).normalize().scale(2.5);
                 cerdo.moveTo(sp.getX() + mira.x, sp.getY(), sp.getZ() + mira.z, 0, 0);
-                sp.serverLevel().addFreshEntity(cerdo);
+                boolean puesto = sp.serverLevel().addFreshEntity(cerdo);
+                RESUMEN.add("  sedante: cerdo puesto " + puesto + " en " + cerdo.blockPosition().toShortString() + " (jugador en " + sp.blockPosition().toShortString() + ")");
                 com.miscelanea.sedante.Sedante.pinchar(cerdo, sp, false);
                 SEDANTE_CERDO = cerdo.getUUID();
             });
@@ -291,7 +292,7 @@ public final class PruebaCI {
                 if (SEDANTE_OK) return;
                 var c = mc.getSingleplayerServer().overworld().getEntity(SEDANTE_CERDO);
                 SEDANTE_OK = c instanceof net.minecraft.world.entity.LivingEntity le && com.miscelanea.tortura.Lazo.estado(le) == com.miscelanea.tortura.Lazo.DERRIBADO;
-                if (kk == 7) RESUMEN.add("  sedante: cerdo " + (c == null ? "no existe" : c.isAlive() ? "vivo" : "muerto") + " en " + (c == null ? "-" : c.blockPosition().toShortString()));
+                if (kk == 0 || kk == 7) RESUMEN.add("  sedante: cerdo " + (c == null ? "no existe" : c.isAlive() ? "vivo" : "muerto") + " en " + (c == null ? "-" : c.blockPosition().toShortString()));
             });
         }
         paso("50_sedante_cerdo", 10, () -> {
