@@ -105,10 +105,15 @@ public final class MovilCaptura {
     }
 
     private static void copiar(RenderTarget de, int x0, int y0, int x1, int y1, RenderTarget a) {
+        // la copia respeta el recorte (scissor): dentro de la pantalla del móvil está puesto y la copia salía negra
+        // (la vista previa con filtro y los vídeos cortos)
+        boolean recorte = GL11.glIsEnabled(GL11.GL_SCISSOR_TEST);
+        if (recorte) GL11.glDisable(GL11.GL_SCISSOR_TEST);
         GlStateManager._glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, de.frameBufferId);
         GlStateManager._glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, a.frameBufferId);
         GlStateManager._glBlitFrameBuffer(x0, y0, x1, y1, 0, 0, a.width, a.height, GL11.GL_COLOR_BUFFER_BIT, GL11.GL_LINEAR);
         GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
+        if (recorte) GL11.glEnable(GL11.GL_SCISSOR_TEST);
     }
 
     /** Textura GL del visor (al revés en vertical, como todas las de framebuffer). */

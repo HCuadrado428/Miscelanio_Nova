@@ -110,13 +110,22 @@ public final class PruebaCI {
                 sp.serverLevel().setWeatherParameters(6000, 0, false, false);
             });
         });
-        paso("00_mundo", 10, () -> {});
+        paso("00_mundo", 10, () -> {
+            // sin el tutorial ni los avisos de arriba a la derecha, que tapan cosas
+            mc.getTutorial().setStep(net.minecraft.client.tutorial.TutorialSteps.NONE);
+            mc.getToasts().clear();
+            mc.gui.getChat().clearMessages(false);
+        });
         paso("01_inicio", 30, () -> MovilCliente.abrir(0));
         paso("02_camara", 50, () -> abrirVista(new VistasFotos.Camara()));
         for (int f = 1; f < Filtros.N; f++) {
             int ff = f;
             paso("03_filtro_" + f, 12, () -> MovilCaptura.filtro = ff);
         }
+        paso("03_foto_gameboy", 30, () -> {
+            MovilCaptura.filtro = 7;
+            tecla(GLFW.GLFW_KEY_SPACE);
+        });
         paso("04_zoom", 20, () -> {
             MovilCaptura.filtro = 0;
             MovilCaptura.zoom = 2.5F;
@@ -143,10 +152,14 @@ public final class PruebaCI {
             tecla(GLFW.GLFW_KEY_L);
         });
         paso("09_grabando", 60, () -> {
+            MovilCaptura.filtro = 2;   // sepia: el filtro también va en el vídeo
             tecla(GLFW.GLFW_KEY_V);
             tecla(GLFW.GLFW_KEY_SPACE);
         });
-        sin("para_video", 60, () -> tecla(GLFW.GLFW_KEY_SPACE));
+        sin("para_video", 60, () -> {
+            tecla(GLFW.GLFW_KEY_SPACE);
+            MovilCaptura.filtro = 0;
+        });
         paso("10_galeria", 40, () -> {
             movil().atras();
             abrirVista(new VistasFotos.Galeria(null));
@@ -168,6 +181,7 @@ public final class PruebaCI {
             llamadaFalsa(MovilRed.LL_ACTIVA, false, 1, -1);
             MovilCliente.manosLibres = true;
             mc.setScreen(null);
+            mc.getToasts().clear();
         });
         paso("16_teclado", 20, () -> {
             sinLlamada();

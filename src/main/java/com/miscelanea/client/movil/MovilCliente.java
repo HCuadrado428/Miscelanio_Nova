@@ -593,7 +593,7 @@ public final class MovilCliente {
             RenderSystem.defaultBlendFunc();
         }
         if (manosLibres && llEstado != MovilRed.LL_FIN && !(mc.screen instanceof MovilScreen)) {
-            tarjetaManosLibres(g, w);
+            tarjetaManosLibres(g, w, h);
             return;
         }
         if (llEstado != MovilRed.LL_FIN && !(mc.screen instanceof MovilScreen)) {
@@ -608,10 +608,11 @@ public final class MovilCliente {
     }
 
     /** Arriba a la derecha, mientras hablas con las manos libres: con quién, cuánto llevas y su vídeo si lo tiene. */
-    private static void tarjetaManosLibres(GuiGraphics g, int w) {
+    private static void tarjetaManosLibres(GuiGraphics g, int w, int gh) {
         FotoCache.Tex v = llEstado == MovilRed.LL_ACTIVA && llOtro != null && !(llGrupo || PARTES.size() > 1) ? FotoCache.video(llOtro) : null;
         int cw = 96, vh = v != null ? 64 : 0, ch = 30 + vh;
-        int x = w - cw - 4, y = 4;
+        // a la derecha, más abajo que los avisos (toasts) y los iconos de efectos, que van arriba a la derecha
+        int x = w - cw - 4, y = Math.max(56, gh / 4);
         Ui.redondo(g, x, y, cw, ch, 5, 0xD0101418);
         if (v != null) FotoCache.cubrir(g, v, x + cw / 2 - 18, y + 3, 36, 64);
         int ty = y + 3 + vh;
