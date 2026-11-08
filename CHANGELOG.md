@@ -11,6 +11,18 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
 - **novedades**: la siguiente 1.x.0 (cosas pequeñas). Se une a main cuando se publica.
 - **version-2**: la 2.0.0 (lo gordo). Recoge lo de main por el camino y se une al final.
 
+## 1.1.3 (en curso)
+- **Encantamientos nuevos, al estilo Enchancement:**
+  - Fuera casi todos los vanilla: Protecciones, Espinas, Filo, Golpeo, Perdición, Empuje, Aspecto ígneo, Barrido, Eficiencia, Irrompibilidad, Reparación, Poder, Retroceso, Fuego, Infinidad, los de la caña, del tridente y de la ballesta, Caída de pluma, Agilidad acuática, Paso helado, Velocidad del alma y Sigilo rápido. Se quedan Toque de seda, Fortuna, Botín, Respiración, Afinidad acuática y las maldiciones.
+  - 24 encantamientos nuevos sin niveles (siempre a tope): Percepción y Ojo de búho (casco); Adrenalina, Espinazo y Vitalidad (peto); Ráfaga y Deslizar (pantalones); Rebote, Pegajoso y Zancada (botas); Berserker, Escarcha y Vampiro (espada); Hendidura y Tala (hacha); Presteza (herramientas); Veta (pico); Excavar (pala); Cosecha (azada); Certero y Recuperación (arco); Metralla (ballesta); Tormenta (tridente) y Arpón (caña).
+  - Como mucho 2 encantamientos en armas y herramientas y 4 en cada pieza de armadura (las maldiciones no cuentan). Ningún nivel por encima del normal.
+  - **Mesa de encantar de elegir:** sin azar. Con el objeto en la mano, clic derecho a la mesa: salen los encantamientos de los libros que haya en estanterías cinceladas alrededor (donde irían las estanterías). Cuesta niveles y lapislázuli (más cuantos más tenga ya); el libro no se gasta.
+  - **Sin durabilidad:** nada se gasta ni se rompe (la etiqueta `miscelanea:con_durabilidad` lo devuelve a los objetos que queráis).
+  - **Lo que ya teníais:** al llevarlo en el inventario se quita lo prohibido y lo que pase del límite, y se devuelve la experiencia (20 puntos por nivel). Los libros encantados que se queden vacíos (los del botín, por ejemplo) se convierten en un libro de un encantamiento nuevo al azar.
+  - En el yunque ya no se ponen encantamientos; los aldeanos ya no venden libros ni cosas encantadas.
+  - Todo se ajusta en la config del servidor, sección `encantamientos`; con `activo = false` vuelve a ser vanilla.
+- **Equilibrio de armaduras:** entre armadura, dureza, encantamientos y efectos (Resistencia, el perk Guardián de Tombstone…) no se puede quitar más del 75 % de un golpe. Con armaduras de Ice and Fire ya no se es inmortal. Config: sección `equilibrio`.
+
 ## 1.1.2
 - **Anillo de medianoche:** decía que The Midnight no estaba instalado aunque lo estuviera. Buscaba la dimensión `midnight:midnight`, pero en The Midnight 0.6.x se llama `midnight:the_midnight`; ahora encuentra cualquiera de las dos (aunque la config antigua tenga el nombre viejo).
 
