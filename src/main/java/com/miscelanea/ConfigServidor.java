@@ -193,7 +193,7 @@ public final class ConfigServidor {
         MORDISCO_UMBRAL = b.comment("Daño de un solo golpe que, recibido por quien muerde, le obliga a soltar a su presa.")
                 .defineInRange("mordisco_umbral_soltar", 3.0, 0.0, 1000.0);
         ANILLO_DIMENSION = b.comment("Dimensión a la que lleva el anillo de medianoche (la de «The Midnight» de Cryptic Mushroom).")
-                .define("anillo_dimension", "midnight:midnight");
+                .define("anillo_dimension", "midnight:the_midnight");
         ANILLO_ENFRIAMIENTO_S = b.comment("Segundos de espera del anillo de medianoche después de viajar.")
                 .defineInRange("anillo_enfriamiento_segundos", 10, 0, 3600);
         b.pop();

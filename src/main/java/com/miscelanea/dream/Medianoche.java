@@ -46,10 +46,32 @@ public final class Medianoche {
         return rl == null ? null : ResourceKey.create(Registries.DIMENSION, rl);
     }
 
-    /** ¿Está ya en la Medianoche? (para la descripción y el cliente: compara con el valor de la config). */
+    /** Nombres que ha tenido la dimensión de The Midnight (en la 0.6.x es midnight:the_midnight). */
+    private static final String[] CONOCIDAS = {"midnight:the_midnight", "midnight:midnight"};
+
+    /**
+     * La dimensión de la Medianoche que hay de verdad en este servidor: la de la config si existe; si no (la config
+     * antigua decía midnight:midnight, que no existe), cualquiera de los nombres conocidos de The Midnight.
+     */
+    @Nullable
+    static ServerLevel nivelMedianoche(net.minecraft.server.MinecraftServer srv) {
+        ResourceKey<Level> k = dimension();
+        ServerLevel l = k == null ? null : srv.getLevel(k);
+        if (l != null) return l;
+        for (String n : CONOCIDAS) {
+            l = srv.getLevel(ResourceKey.create(Registries.DIMENSION, new ResourceLocation(n)));
+            if (l != null) return l;
+        }
+        return null;
+    }
+
+    /** ¿Está ya en la Medianoche? (para la descripción y el cliente: la de la config o un nombre conocido). */
     public static boolean enMedianoche(Level l) {
         ResourceKey<Level> k = dimension();
-        return k != null && l.dimension() == k;
+        if (k != null && l.dimension() == k) return true;
+        String d = l.dimension().location().toString();
+        for (String n : CONOCIDAS) if (n.equals(d)) return true;
+        return false;
     }
 
     /** El anillo ha terminado de cargar: viaja (en el siguiente tick, fuera del tick del propio jugador). */
@@ -60,8 +82,7 @@ public final class Medianoche {
     }
 
     private static void hacerViaje(ServerPlayer p) {
-        ResourceKey<Level> clave = dimension();
-        ServerLevel medianoche = clave == null ? null : p.server.getLevel(clave);
+        ServerLevel medianoche = nivelMedianoche(p.server);
         if (medianoche == null) {
             p.displayClientMessage(Component.translatable("miscelanea.anillo.no_instalado"), true);
             fallo(p);
