@@ -38,7 +38,8 @@ public final class PruebaCI {
 
     private static final List<Paso> PASOS = new ArrayList<>();
     private static final List<String> RESUMEN = new ArrayList<>();
-    private static int paso = -1, espera, ticksEnMundo, fallos;
+    private static int paso = -1, espera, ticksEnMundo, fallos, hastaMax;
+    private static java.util.function.BooleanSupplier hasta;
     /** Fotogramas dibujados: con gráficos por software (y más con shaders) puede haber muy pocos por tick. */
     private static int fotogramas, fotogramasPaso;
 
@@ -494,7 +495,6 @@ public final class PruebaCI {
                     return;
                 }
                 for (var pa : java.util.List.copyOf(t.getPassengers())) com.miscelanea.montana.MontanaEventos.bajarSiOSi(pa);
-                t.colocar(montanaO.offset(0, 0, -15), 0.2, 2);
                 for (int k = 0; k < 2; k++) {
                     var a = net.minecraft.world.entity.EntityType.VILLAGER.create(l);
                     if (a == null) continue;
@@ -504,12 +504,25 @@ public final class PruebaCI {
                     l.addFreshEntity(a);
                     a.startRiding(t, true);
                 }
-                t.lanzar(0.75);
                 sp.teleportTo(montanaO.getX() + 8.5, montanaO.getY() + 2, montanaO.getZ() - 17.5);
                 sp.setYRot(90);
                 sp.setYHeadRot(90);
                 sp.setXRot(0);
             });
+        });
+        // espera (como mucho 30 s) a que el tren, que sigue dando vueltas, entre en el rizo
+        sin("montana_rizo_espera", 0, () -> {
+            hastaMax = 600;
+            hasta = () -> {
+                for (var en : mc.level.entitiesForRendering())
+                    if (en instanceof com.miscelanea.montana.TrenMontana t && !t.getPassengers().isEmpty()) {
+                        var s = t.sitio();
+                        if (s != null && s.pieza().clase() == com.miscelanea.montana.Via.Clase.RIZO) return true;
+                    }
+                mc.player.setYRot(90);
+                mc.player.setXRot(-4);
+                return false;
+            };
         });
         for (int i = 0; i < 12; i++) {
             int ii = i;
@@ -719,6 +732,18 @@ public final class PruebaCI {
         if (espera > 0) {
             espera--;
             return;
+        }
+        // un paso puede pedir esperar a que pase algo (con un tope)
+        if (hasta != null) {
+            boolean listo;
+            try {
+                listo = hasta.getAsBoolean();
+            } catch (RuntimeException ex) {
+                listo = false;
+            }
+            if (!listo && --hastaMax > 0) return;
+            if (!listo) RESUMEN.add("  AVISO: se ha cansado de esperar");
+            hasta = null;
         }
         // cada paso necesita al menos 4 fotogramas dibujados (la cámara copia la imagen al dibujar)
         if (fotogramas - fotogramasPaso < 4) return;
