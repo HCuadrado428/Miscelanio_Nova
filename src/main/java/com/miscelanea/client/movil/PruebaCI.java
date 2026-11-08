@@ -59,6 +59,8 @@ public final class PruebaCI {
     @SubscribeEvent
     public static void etapa(net.minecraftforge.client.event.RenderLevelStageEvent e) {
         if (!ACTIVA) return;
+        if (e.getStage() == net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS)
+            nieblaFin = com.mojang.blaze3d.systems.RenderSystem.getShaderFogEnd();
         if (e.getStage() == net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_ENTITIES) t0Bloques = System.nanoTime();
         else if (e.getStage() == net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES && t0Bloques != 0) {
             nsBloques += System.nanoTime() - t0Bloques;
@@ -381,6 +383,7 @@ public final class PruebaCI {
         sin("encantos_fin", 5, () -> mc.setScreen(null));
         rendimiento();
         laser();
+        eco();
         sin("cerrar", 10, () -> {
             mc.setScreen(null);
             RESUMEN.add("  cara propia (la de su modelo) guardada: " + (CarasCliente.tiene(mc.player.getUUID()) ? "sí" : "NO"));
@@ -724,6 +727,203 @@ public final class PruebaCI {
         });
     }
 
+    // ------------------------------------------------------------------ ecolocalización
+    private static volatile float nieblaFin = -1;
+    private static UUID ecoHabla;
+    private static net.minecraft.client.player.RemotePlayer ecoJugador;
+    private static volatile UUID ecoZombi;
+    private static boolean ecoAndando;
+    private static int ecoPasos0, ecoPasosOtros0;
+    private static final int ECO_ID = -428_001;
+
+    /**
+     * La poción de ecolocalización: niebla negra, un zombi con nombre, casco y espada encantados (brillo) que "hace
+     * ruido" (en el CI no hay sonido: las ondas se lanzan a mano donde sonaría) y un jugador de mentira que habla por el
+     * voicechat (se le llama a lo que llama el plugin al recibir su audio). Se mira por código que la niebla se cierre,
+     * que se vean las siluetas sin errores al dibujarlas, que el ruido de fondo del micro no haga ondas y que el cielo
+     * (sol) no se vea; al quitarla, que todo vuelva a la normalidad.
+     */
+    private static void eco() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("eco_poner", 30, () -> {
+            mc.setScreen(null);
+            mc.options.hideGui = false;
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                var l = sp.serverLevel();
+                var mira = net.minecraft.core.Direction.fromYRot(sp.getYRot());
+                var lado = mira.getClockWise();
+                var o = sp.blockPosition();
+                var aire = net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
+                for (var b : net.minecraft.core.BlockPos.betweenClosed(o.relative(lado, -7).relative(mira, -3).below(), o.relative(lado, 7).relative(mira, 11).above(8)))
+                    l.setBlock(b, b.getY() < o.getY() ? net.minecraft.world.level.block.Blocks.SMOOTH_STONE.defaultBlockState() : aire, 2);
+                for (int dy = 0; dy < 3; dy++) {
+                    l.setBlock(o.relative(mira, 7).relative(lado, -3).above(dy), net.minecraft.world.level.block.Blocks.STONE_BRICKS.defaultBlockState(), 2);
+                    l.setBlock(o.relative(mira, 6).relative(lado, 3).above(dy), net.minecraft.world.level.block.Blocks.OAK_LOG.defaultBlockState(), 2);
+                }
+                l.setBlock(o.relative(mira, 3).relative(lado, 1), net.minecraft.world.level.block.Blocks.CHEST.defaultBlockState(), 2);
+                l.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, new net.minecraft.world.phys.AABB(o).inflate(16),
+                        en -> !(en instanceof net.minecraft.world.entity.player.Player)).forEach(net.minecraft.world.entity.Entity::discard);
+                var z = new net.minecraft.world.entity.monster.Zombie(l);
+                var zp = net.minecraft.world.phys.Vec3.atBottomCenterOf(o.relative(mira, 4).relative(lado, -1));
+                z.moveTo(zp.x, zp.y, zp.z, mira.getOpposite().toYRot(), 0F);
+                z.setYHeadRot(mira.getOpposite().toYRot());
+                z.setNoAi(true);
+                z.setPersistenceRequired();
+                z.setCustomName(net.minecraft.network.chat.Component.literal("Ruidoso"));
+                z.setCustomNameVisible(true);
+                ItemStack casco = new ItemStack(net.minecraft.world.item.Items.DIAMOND_HELMET);
+                casco.enchant(net.minecraft.world.item.enchantment.Enchantments.ALL_DAMAGE_PROTECTION, 1);
+                ItemStack espada = new ItemStack(net.minecraft.world.item.Items.DIAMOND_SWORD);
+                espada.enchant(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS, 1);
+                z.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, casco);
+                z.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, espada);
+                l.addFreshEntity(z);
+                ecoZombi = z.getUUID();
+                sp.connection.teleport(o.getX() + 0.5, o.getY(), o.getZ() + 0.5, mira.toYRot(), 12F);
+                sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(com.miscelanea.pociones.PocionesRegistro.ECOLOCALIZACION.get(), 20 * 120, 0));
+            });
+        });
+        sin("eco_hablador", 10, () -> {
+            // un jugador de mentira (solo en este cliente) delante, a la derecha, que habla por el voicechat
+            var mira = net.minecraft.core.Direction.fromYRot(mc.player.getYRot());
+            var lado = mira.getClockWise();
+            var pos = net.minecraft.world.phys.Vec3.atBottomCenterOf(mc.player.blockPosition().relative(mira, 5).relative(lado, 2));
+            var perfil = new com.mojang.authlib.GameProfile(UUID.nameUUIDFromBytes("Hablador".getBytes()), "Hablador");
+            ecoJugador = new net.minecraft.client.player.RemotePlayer(mc.level, perfil);
+            ecoJugador.setId(ECO_ID);
+            ecoJugador.moveTo(pos.x, pos.y, pos.z, mira.getOpposite().toYRot(), 0F);
+            ecoJugador.setYHeadRot(mira.getOpposite().toYRot());
+            ecoJugador.yBodyRot = mira.getOpposite().toYRot();
+            mc.level.addPlayer(ECO_ID, ecoJugador);
+            ecoHabla = perfil.getId();
+            com.miscelanea.client.pociones.EcoCliente.pruebaFallos = 0;
+        });
+        sin("eco_ruido", 6, () -> {
+            if (!com.miscelanea.client.pociones.EcoCliente.activo()) throw new IllegalStateException("no tiene la ecolocalización");
+            ecoRuidos(mc);
+        });
+        paso("90_eco_activo", 6, () -> ecoRuidos(mc));
+        sin("eco_medir", 1, () -> {
+            String est = com.miscelanea.client.pociones.EcoCliente.pruebaEstado();
+            String img = ecoImagen("eco_activo");
+            RESUMEN.add(String.format("  eco activo: niebla hasta %.2f bloques · %s · %s · hablo (solo ruido del micro): %s", nieblaFin, est, img,
+                    com.miscelanea.client.pociones.EcoCliente.yoHablando() ? "sí" : "no"));
+            if (nieblaFin > 1F) throw new IllegalStateException("la niebla negra no se cierra con el efecto");
+            if (com.miscelanea.client.pociones.EcoCliente.pruebaFallos > 0) throw new IllegalStateException("fallos al dibujar las siluetas: " + com.miscelanea.client.pociones.EcoCliente.pruebaFallos);
+            if (com.miscelanea.client.pociones.EcoCliente.pruebaEntes() < 2) throw new IllegalStateException("no se ven el zombi y el que habla");
+            if (!MovilCaptura.shaders() && ecoOscuros < 0.5) throw new IllegalStateException("con el efecto no está todo a oscuras");
+            if (com.miscelanea.client.pociones.EcoCliente.yoHablando()) throw new IllegalStateException("el ruido de fondo del micro cuenta como hablar");
+        });
+        paso("91_eco_tercera", 8, () -> {
+            mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK);
+            ecoRuidos(mc);
+        });
+        sin("eco_mirar_cielo", 6, () -> {
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            mc.player.setXRot(-89F);
+            mc.player.xRotO = -89F;
+        });
+        paso("92_eco_cielo", 4, () -> {});
+        sin("eco_medir_cielo", 1, () -> {
+            String img = ecoImagen("eco_cielo");
+            RESUMEN.add("  eco mirando arriba (a mediodía): " + img);
+            if (ecoClaros > 40) {
+                // con shaders el cielo lo pinta el pack: solo aviso
+                if (MovilCaptura.shaders()) RESUMEN.add("  AVISO eco: con shaders se ve el sol a ciegas");
+                else throw new IllegalStateException("se ve el sol a ciegas");
+            }
+        });
+        // andar: mis pasos y los del que habla (que se mueve) tienen que hacer ondas
+        sin("eco_andar", 1, () -> {
+            mc.player.setXRot(12F);
+            mc.player.xRotO = 12F;
+            ecoPasos0 = com.miscelanea.client.pociones.EcoCliente.pruebaPasosMios;
+            ecoPasosOtros0 = com.miscelanea.client.pociones.EcoCliente.pruebaPasosOtros;
+            ecoAndando = true;
+        });
+        paso("94_eco_andando", 24, () -> {});
+        sin("eco_medir_pasos", 1, () -> {
+            ecoAndando = false;
+            mc.options.keyUp.setDown(false);
+            int mios = com.miscelanea.client.pociones.EcoCliente.pruebaPasosMios - ecoPasos0;
+            int otros = com.miscelanea.client.pociones.EcoCliente.pruebaPasosOtros - ecoPasosOtros0;
+            RESUMEN.add("  eco andando: ondas de mis pasos " + mios + ", de los pasos del otro " + otros + " · " + com.miscelanea.client.pociones.EcoCliente.pruebaEstado());
+            if (mios < 2) throw new IllegalStateException("mis pasos no hacen ondas");
+            if (otros < 2) throw new IllegalStateException("los pasos de otro jugador no hacen ondas");
+        });
+        sin("eco_quitar", 30, () -> {
+            ecoHabla = null;
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp != null) sp.removeEffect(com.miscelanea.pociones.PocionesRegistro.ECOLOCALIZACION.get());
+            });
+        });
+        paso("93_eco_quitado", 6, () -> {});
+        sin("eco_comprobar", 1, () -> {
+            String img = ecoImagen("eco_quitado");
+            String est = com.miscelanea.client.pociones.EcoCliente.pruebaEstado();
+            RESUMEN.add(String.format("  eco quitado: niebla hasta %.1f bloques · %s · %s", nieblaFin, est, img));
+            if (com.miscelanea.client.pociones.EcoCliente.activo()) throw new IllegalStateException("el efecto no se ha quitado");
+            if (nieblaFin < 8F) throw new IllegalStateException("la niebla negra se queda puesta al quitar el efecto");
+            if (!com.miscelanea.client.pociones.EcoCliente.pruebaVacio()) throw new IllegalStateException("quedan ondas o siluetas al quitar el efecto");
+            if (ecoOscuros > 0.9) throw new IllegalStateException("la pantalla sigue negra al quitar el efecto");
+        });
+        sin("eco_fin", 5, () -> {
+            if (ecoJugador != null) mc.level.removeEntity(ECO_ID, net.minecraft.world.entity.Entity.RemovalReason.DISCARDED);
+            ecoJugador = null;
+            var srv = mc.getSingleplayerServer();
+            UUID zid = ecoZombi;
+            srv.execute(() -> {
+                for (var l : srv.getAllLevels()) {
+                    var z = zid == null ? null : l.getEntity(zid);
+                    if (z != null) z.discard();
+                }
+            });
+        });
+    }
+
+    /** Lo que haría ruido: el zombi (gruñido), mis pasos y el que habla (ya hace sus ondas al hablar). */
+    private static void ecoRuidos(Minecraft mc) {
+        UUID zid = ecoZombi;
+        for (var en : mc.level.entitiesForRendering())
+            if (en.getUUID().equals(zid)) com.miscelanea.client.pociones.EcoCliente.pruebaRuido(en.getX(), en.getEyeY(), en.getZ());
+        com.miscelanea.client.pociones.EcoCliente.pruebaRuido(mc.player.getX(), mc.player.getY(), mc.player.getZ());
+    }
+
+    private static double ecoOscuros;
+    private static int ecoClaros;
+
+    /** De la imagen de ahora: qué parte es casi negra, cuántos píxeles azulados (ondas y siluetas) y cuántos muy claros. */
+    private static String ecoImagen(String nombre) {
+        Minecraft mc = Minecraft.getInstance();
+        var rt = mc.getMainRenderTarget();
+        int oscuros = 0, azules = 0, claros = 0, total = 0;
+        long suma = 0;
+        try (com.mojang.blaze3d.platform.NativeImage img = Screenshot.takeScreenshot(rt)) {
+            for (int y = 0; y < img.getHeight(); y += 2)
+                for (int x = 0; x < img.getWidth(); x += 2) {
+                    int c = img.getPixelRGBA(x, y);
+                    int r = c & 255, g = c >> 8 & 255, b = c >> 16 & 255;
+                    int lum = (r * 3 + g * 6 + b) / 10;
+                    total++;
+                    suma += lum;
+                    if (lum < 16) oscuros++;
+                    if (b > 110 && b > r + 30 && g > r) azules++;
+                    if (lum > 235) claros++;
+                }
+        }
+        ecoOscuros = oscuros / (double) Math.max(1, total);
+        ecoClaros = claros;
+        return String.format("imagen: %.0f%% negra, luz media %d, %d px azulados, %d px muy claros", ecoOscuros * 100, suma / Math.max(1, total), azules, claros);
+    }
+
     /** Dos pasos: quitar el rayo y el HUD y, ya dibujado así, medir. */
     private static void medirLaser(String nombre, boolean desdeFuera, boolean obligatorio) {
         Minecraft mc = Minecraft.getInstance();
@@ -808,6 +1008,20 @@ public final class PruebaCI {
         if (mc.player == null || mc.level == null) return;
         // el puntero láser: el clic derecho mantenido
         if (mantenerUso) mc.options.keyUse.setDown(true);
+        // ecolocalización: el jugador de mentira "habla" (como si llegara su audio del voicechat) y mi micro solo da ruido de fondo
+        if (ecoAndando) {
+            mc.options.keyUp.setDown(true);
+            // el otro anda hacia atrás (alejándose), como si llegaran sus paquetes de movimiento
+            if (ecoJugador != null) {
+                var m = net.minecraft.core.Direction.fromYRot(mc.player.getYRot());
+                ecoJugador.setPos(ecoJugador.getX() + m.getStepX() * 0.2, ecoJugador.getY(), ecoJugador.getZ() + m.getStepZ() * 0.2);
+                ecoJugador.setOnGround(true);
+            }
+        }
+        if (ecoHabla != null) {
+            com.miscelanea.client.pociones.EcoCliente.habla(ecoHabla, 0.3F);
+            com.miscelanea.client.pociones.EcoCliente.hablaYo(0.01F);
+        }
         // que MC-Runtime-Test no dé la prueba por acabada mientras sigue esto
         if (mc.player.tickCount > 60) mc.player.tickCount = 60;
         if (++ticksEnMundo < 40) return;

@@ -5,6 +5,7 @@ import com.miscelanea.pociones.PalmadaPacket;
 import com.miscelanea.pociones.PocionesRed;
 import com.miscelanea.pociones.PocionesRegistro;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -59,6 +60,8 @@ public final class EcoCliente {
     private EcoCliente() {}
 
     private static final ResourceLocation BLANCO = new ResourceLocation(Miscelanea.MOD_ID, "textures/pociones/blanco.png");
+    /** Para las capas de las siluetas que no se dibujan. */
+    private static final VertexConsumer NADA = new Nada();
     private static final float VEL = 0.55F, RADIO_MAX = 16F, RADIO_REVELA = 13F;
     private static final int DURA_BLOQUE = 30, DURA_ENTE = 32, MAX_BLOQUES = 4500, MAX_ONDAS = 20, ENFRIAMIENTO = 40;
     private static final float CR = 0.55F, CG = 0.86F, CB = 1.0F;
@@ -125,6 +128,8 @@ public final class EcoCliente {
         if (nivel > UMBRAL_VOZ) yoHablo = System.currentTimeMillis();
     }
     private static boolean agachadoAntes, estaba;
+    /** El nivel donde están las ondas y lo visto (no se usa para nada más; se suelta al salir). */
+    private static ClientLevel nivel;
 
     public static boolean activo() {
         LocalPlayer p = Minecraft.getInstance().player;
@@ -138,13 +143,20 @@ public final class EcoCliente {
         SoundInstance s = e.getSound();
         Minecraft mc = Minecraft.getInstance();
         if (s == null || s.isRelative() || mc.player == null) return;
-        double x = s.getX(), y = s.getY(), z = s.getZ();
-        if (mc.player.distanceToSqr(x, y, z) > (RADIO_MAX + 6) * (RADIO_MAX + 6)) return;
+        // los pasos ya hacen su onda en pasos() (si no, saldrían dos)
+        if (s.getLocation().getPath().endsWith(".step")) return;
+        oir(mc, s.getX(), s.getY(), s.getZ());
+    }
+
+    /** Un ruido en (x, y, z): si está cerca, una onda (si ya sale otra del mismo sitio, no). */
+    private static boolean oir(Minecraft mc, double x, double y, double z) {
+        if (mc.player.distanceToSqr(x, y, z) > (RADIO_MAX + 6) * (RADIO_MAX + 6)) return false;
         // varios sonidos a la vez en el mismo sitio (un paso y su bloque): una sola onda
         for (Onda o : ONDAS)
-            if (o.r < VEL * 3 && Math.abs(o.x - x) + Math.abs(o.y - y) + Math.abs(o.z - z) < 0.8) return;
+            if (o.r < VEL * 3 && Math.abs(o.x - x) + Math.abs(o.y - y) + Math.abs(o.z - z) < 0.8) return false;
         if (ONDAS.size() >= MAX_ONDAS) ONDAS.remove(0);
         ONDAS.add(new Onda(x, y, z));
+        return true;
     }
 
     // ------------------------------------------------------------------ tick: avanzan las ondas y revelan lo que tocan
@@ -152,6 +164,15 @@ public final class EcoCliente {
     public static void tick(TickEvent.ClientTickEvent e) {
         if (e.phase != TickEvent.Phase.END) return;
         Minecraft mc = Minecraft.getInstance();
+        long ahoraMs = System.currentTimeMillis();
+        HABLAN.values().removeIf(t -> ahoraMs - t > 4000);
+        // al salir del mundo, cambiar de dimensión o reaparecer: lo de antes era de otro mundo (entidades de otro nivel,
+        // con ids que en el nuevo son de otras; bloques y ondas en sitios que aquí no son). Fuera, y sin quedarse con
+        // el nivel viejo en memoria
+        if (mc.level != nivel) {
+            if (estaba) limpiar();
+            nivel = mc.level;
+        }
         if (mc.level == null || mc.player == null) return;
         if (!activo()) {
             if (estaba) limpiar();
@@ -176,6 +197,7 @@ public final class EcoCliente {
             if (o.r > RADIO_MAX) it.remove();
         }
         voces(mc);
+        pasos(mc);
         BLOQUES.values().removeIf(b -> reloj - b.desde() > DURA_BLOQUE);
         ENTES.values().removeIf(en -> reloj - en.desde() > DURA_ENTE || en.e().isRemoved());
     }
@@ -183,7 +205,6 @@ public final class EcoCliente {
     /** Los que hablan se ven mientras hablan, y cada medio segundo de voz suelta una onda desde su boca. */
     private static void voces(Minecraft mc) {
         long ahora = System.currentTimeMillis();
-        HABLAN.values().removeIf(t -> ahora - t > 4000);
         for (Map.Entry<java.util.UUID, Long> h : HABLAN.entrySet()) {
             if (ahora - h.getValue() > 350) continue;          // ya no habla
             net.minecraft.world.entity.player.Player p = mc.level.getPlayerByUUID(h.getKey());
@@ -201,6 +222,54 @@ public final class EcoCliente {
         }
     }
 
+    /** Lo andado desde el último paso y dónde estaba en el tic anterior, por entidad. */
+    private static final class Andar {
+        double x, z, hecho;
+        int visto;
+    }
+
+    private static final Map<Integer, Andar> ANDAR = new HashMap<>();
+    /** Bloques andados por paso (vanilla: un paso cada ~1,67 bloques al andar). */
+    private static final double PASO = 1.6;
+    /** Ondas de pasos lanzadas (para la prueba del CI): las mías y las de los demás. */
+    public static int pruebaPasosMios, pruebaPasosOtros;
+
+    /**
+     * Los pasos hacen ondas: los tuyos, los de los demás jugadores y los de los mobs. Antes solo salían del sonido del
+     * paso (PlaySoundEvent) y en la práctica no se veían: no dependía de nada del mod (si el sonido no llega a
+     * sonar, con el motor de sonido sin cargar, con mods de pasos que cambian los sonidos...). Ahora se miran aquí,
+     * por lo andado por el suelo (como vanilla: agachado o volando no suenan), y el sonido del paso ya no hace onda
+     * para no repetirla. Los jugadores siguen sin verse como silueta por andar: solo la onda.
+     */
+    private static void pasos(Minecraft mc) {
+        LocalPlayer yo = mc.player;
+        AABB zona = yo.getBoundingBox().inflate(RADIO_MAX + 6);
+        for (Entity en : mc.level.getEntities((Entity) null, zona, x -> x instanceof net.minecraft.world.entity.LivingEntity)) {
+            Andar a = ANDAR.get(en.getId());
+            if (a == null) {
+                a = new Andar();
+                a.x = en.getX();
+                a.z = en.getZ();
+                ANDAR.put(en.getId(), a);
+            }
+            double dx = en.getX() - a.x, dz = en.getZ() - a.z;
+            a.x = en.getX();
+            a.z = en.getZ();
+            a.visto = reloj;
+            double d = Math.sqrt(dx * dx + dz * dz);
+            boolean callado = en.isSilent() || en.isPassenger() || en.isInWater() || !en.onGround() || en.isSpectator()
+                    || (en instanceof net.minecraft.world.entity.player.Player p && (p.isDiscrete() || p.getAbilities().flying));
+            if (d > 2 || callado) continue;      // teletransporte, o pasos que no suenan
+            a.hecho += d;
+            if (a.hecho < PASO) continue;
+            a.hecho -= PASO;
+            if (!oir(mc, en.getX(), en.getY() + 0.05, en.getZ())) continue;
+            if (en == yo) pruebaPasosMios++;
+            else pruebaPasosOtros++;
+        }
+        ANDAR.values().removeIf(a -> reloj - a.visto > 40);
+    }
+
     private static void onda(double x, double y, double z) {
         if (ONDAS.size() >= MAX_ONDAS) ONDAS.remove(0);
         ONDAS.add(new Onda(x, y, z));
@@ -211,6 +280,7 @@ public final class EcoCliente {
         BLOQUES.clear();
         ENTES.clear();
         ULT_ONDA.clear();
+        ANDAR.clear();
         estaba = false;
         agachadoAntes = false;
     }
@@ -283,6 +353,20 @@ public final class EcoCliente {
         BLOQUES.put(clave, new Bloque(forma.bounds().move(m.immutable()), reloj));
     }
 
+    /**
+     * A ciegas no hay nombres: el de los jugadores se dibuja sin niebla (se ve a través de todo) y delataba dónde está
+     * cada uno aunque no hablara; y en la silueta salía como un borrón.
+     */
+    @SubscribeEvent
+    public static void nombre(net.minecraftforge.client.event.RenderNameTagEvent e) {
+        if (activo()) e.setResult(net.minecraftforge.eventbus.api.Event.Result.DENY);
+    }
+
+    /** El cielo (sol, luna y estrellas no tienen niebla) no se ve, como con ceguera. Lo pregunta LevelRendererMixin. */
+    public static boolean tapaCielo() {
+        return activo();
+    }
+
     // ------------------------------------------------------------------ todo negro
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void niebla(ViewportEvent.RenderFog e) {
@@ -304,13 +388,77 @@ public final class EcoCliente {
     @SubscribeEvent
     public static void dibujar(RenderLevelStageEvent e) {
         if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS || !activo()) return;
-        if (ONDAS.isEmpty() && BLOQUES.isEmpty() && ENTES.isEmpty()) return;
+        // con shaders, Oculus vuelve a lanzar esta etapa al dibujar el mapa de sombras: ahí no (ondas y siluetas
+        // salían como sombras y se dibujaba todo dos veces)
+        if (pasadaSombras()) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
-        float pt = e.getPartialTick();
-        Vec3 cam = e.getCamera().getPosition();
-        PoseStack ps = e.getPoseStack();
-        MultiBufferSource.BufferSource bs = mc.renderBuffers().bufferSource();
+        if (com.miscelanea.client.movil.MovilCaptura.shaders()) {
+            // con shaders el pack no hace caso de la niebla (el mundo se veía gris a lo lejos) y pinta las líneas y
+            // las siluetas con sus programas (las ondas no salían y las siluetas, rotas): se apunta lo de la cámara y
+            // se dibuja todo al acabar el nivel, ya sin el pack (ver trasNivel)
+            sh.pendiente = true;
+            sh.pt = e.getPartialTick();
+            sh.cam = e.getCamera().getPosition();
+            sh.proj = new Matrix4f(e.getProjectionMatrix());
+            sh.vista = new Matrix4f(e.getPoseStack().last().pose());
+            sh.normal = new Matrix3f(e.getPoseStack().last().normal());
+            return;
+        }
+        if (ONDAS.isEmpty() && BLOQUES.isEmpty() && ENTES.isEmpty()) return;
+        pintar(mc, e.getPoseStack(), e.getCamera().getPosition(), e.getPartialTick(), mc.renderBuffers().bufferSource());
+    }
+
+    /** Lo apuntado en mitad del nivel con shaders, para dibujar al acabar. */
+    private static final class ConShaders {
+        boolean pendiente;
+        float pt;
+        Vec3 cam;
+        Matrix4f proj, vista;
+        Matrix3f normal;
+        MultiBufferSource.BufferSource bs;
+    }
+
+    private static final ConShaders sh = new ConShaders();
+
+    /**
+     * Desde GameRendererMixin, con el nivel ya compuesto por el pack de shaders: todo negro (así no depende de si el
+     * pack respeta la niebla) y encima las ondas, aristas y siluetas con los programas normales.
+     */
+    public static void trasNivel() {
+        if (!sh.pendiente) return;
+        sh.pendiente = false;
+        Minecraft mc = Minecraft.getInstance();
+        if (!activo() || mc.level == null) return;
+        com.mojang.blaze3d.pipeline.RenderTarget main = mc.getMainRenderTarget();
+        main.bindWrite(true);
+        RenderSystem.clearColor(0F, 0F, 0F, 1F);
+        RenderSystem.clear(org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT, Minecraft.ON_OSX);
+        if (ONDAS.isEmpty() && BLOQUES.isEmpty() && ENTES.isEmpty()) return;
+        // la profundidad del mundo no se puede aprovechar (el pack la tiene aparte): se ven a través de las paredes
+        RenderSystem.clear(org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
+        Matrix4f projAntes = RenderSystem.getProjectionMatrix();
+        com.mojang.blaze3d.vertex.VertexSorting ordenAntes = RenderSystem.getVertexSorting();
+        PoseStack mv = RenderSystem.getModelViewStack();
+        mv.pushPose();
+        mv.setIdentity();
+        RenderSystem.applyModelViewMatrix();
+        RenderSystem.setProjectionMatrix(sh.proj, com.mojang.blaze3d.vertex.VertexSorting.DISTANCE_TO_ORIGIN);
+        RenderSystem.enableDepthTest();
+        try {
+            PoseStack ps = new PoseStack();
+            ps.last().pose().set(sh.vista);
+            ps.last().normal().set(sh.normal);
+            if (sh.bs == null) sh.bs = MultiBufferSource.immediate(new com.mojang.blaze3d.vertex.BufferBuilder(1 << 16));
+            pintar(mc, ps, sh.cam, sh.pt, sh.bs);
+        } finally {
+            RenderSystem.setProjectionMatrix(projAntes, ordenAntes);
+            mv.popPose();
+            RenderSystem.applyModelViewMatrix();
+        }
+    }
+
+    private static void pintar(Minecraft mc, PoseStack ps, Vec3 cam, float pt, MultiBufferSource.BufferSource bs) {
         float nieblaIni = RenderSystem.getShaderFogStart(), nieblaFin = RenderSystem.getShaderFogEnd();
         RenderSystem.setShaderFogStart(1.0E6F);
         RenderSystem.setShaderFogEnd(1.0E6F + 1F);
@@ -328,7 +476,9 @@ public final class EcoCliente {
             for (Ente en : ENTES.values()) {
                 Entity ent = en.e();
                 float a = alfa(en, pt);
-                AABB caja = ent.getBoundingBox();
+                // donde se dibuja la silueta (interpolada): si no, la caja va un tick por delante de la entidad
+                AABB caja = ent.getBoundingBox().move(Mth.lerp(pt, ent.xOld, ent.getX()) - ent.getX(),
+                        Mth.lerp(pt, ent.yOld, ent.getY()) - ent.getY(), Mth.lerp(pt, ent.zOld, ent.getZ()) - ent.getZ());
                 LevelRenderer.renderLineBox(ps, vc, caja, 0.8F, 0.95F, 1F, a);
             }
             Matrix4f m4 = ps.last().pose();
@@ -343,22 +493,28 @@ public final class EcoCliente {
             // siluetas: la entidad entera, en un solo color brillante sobre una textura blanca
             if (!ENTES.isEmpty()) {
                 EntityRenderDispatcher rd = mc.getEntityRenderDispatcher();
+                RenderType silueta = RenderType.entityTranslucentEmissive(BLANCO);
                 rd.setRenderShadow(false);
                 try {
                     for (Ente en : ENTES.values()) {
                         Entity ent = en.e();
-                        if (ent.isRemoved() || ent == mc.player) continue;
+                        if (ent.isRemoved() || ent == mc.player || ent.level() != mc.level) continue;
                         float a = alfa(en, pt) * 0.8F;
-                        MultiBufferSource solido = rt -> new Solido(bs.getBuffer(RenderType.entityTranslucentEmissive(BLANCO)), CR, CG, CB, a);
+                        // solo las capas con el formato de las entidades: las demás (el brillo de lo encantado, la
+                        // correa, el texto del nombre, las cajas de F3+B) tienen otro formato y, metidas en este búfer,
+                        // dejaban el vértice a medias y tiraban una excepción en cada fotograma: se borraban TODAS las
+                        // siluetas (y el que habla parpadeaba, siempre a medio encender)
+                        Solido sol = new Solido(bs.getBuffer(silueta), CR, CG, CB, a);
+                        MultiBufferSource solido = rt -> rt.format() == DefaultVertexFormat.NEW_ENTITY ? sol : NADA;
                         double x = Mth.lerp(pt, ent.xOld, ent.getX()), y = Mth.lerp(pt, ent.yOld, ent.getY()), z = Mth.lerp(pt, ent.zOld, ent.getZ());
                         float yaw = Mth.lerp(pt, ent.yRotO, ent.getYRot());
                         rd.render(ent, x - cam.x, y - cam.y, z - cam.z, yaw, pt, ps, solido, 0xF000F0);
                     }
                 } catch (RuntimeException ex) {
-                    ENTES.clear();
+                    if (pruebaFallos++ == 0) Miscelanea.LOGGER.warn("[Eco] fallo al dibujar las siluetas", ex);
                 } finally {
                     rd.setRenderShadow(true);
-                    bs.endBatch();
+                    bs.endBatch(silueta);
                 }
             }
         } finally {
@@ -393,6 +549,39 @@ public final class EcoCliente {
             vc.vertex(m4, x0, y0, z0).color(CR, CG, CB, a).normal(m3, nx, ny, nz).endVertex();
             vc.vertex(m4, x1, y1, z1).color(CR, CG, CB, a).normal(m3, nx, ny, nz).endVertex();
         }
+    }
+
+    private static java.lang.reflect.Method irisSombras;
+    private static Object irisApi;
+    private static boolean sinIris;
+
+    /** ¿Está Oculus/Iris dibujando las sombras ahora? Por reflexión: no hace falta tenerlo instalado. */
+    private static boolean pasadaSombras() {
+        if (sinIris) return false;
+        try {
+            if (irisSombras == null) {
+                Class<?> c = Class.forName("net.irisshaders.iris.api.v0.IrisApi");
+                irisApi = c.getMethod("getInstance").invoke(null);
+                irisSombras = c.getMethod("isRenderingShadowPass");
+            }
+            return (Boolean) irisSombras.invoke(irisApi);
+        } catch (Throwable t) {
+            sinIris = true;
+            return false;
+        }
+    }
+
+    /** Un consumidor que no dibuja nada. */
+    private static final class Nada implements VertexConsumer {
+        @Override public VertexConsumer vertex(double x, double y, double z) { return this; }
+        @Override public VertexConsumer color(int r, int g, int b, int a) { return this; }
+        @Override public VertexConsumer uv(float u, float v) { return this; }
+        @Override public VertexConsumer overlayCoords(int u, int v) { return this; }
+        @Override public VertexConsumer uv2(int u, int v) { return this; }
+        @Override public VertexConsumer normal(float x, float y, float z) { return this; }
+        @Override public void endVertex() {}
+        @Override public void defaultColor(int r, int g, int b, int a) {}
+        @Override public void unsetDefaultColor() {}
     }
 
     /** Envoltorio que pinta todo de un color fijo (sobre la textura blanca: silueta maciza) con su alfa. */
@@ -447,6 +636,26 @@ public final class EcoCliente {
         public void unsetDefaultColor() {
             d.unsetDefaultColor();
         }
+    }
+
+    // ------------------------------------------------------------------ para la prueba del CI (sin sonido no hay ondas)
+    public static int pruebaFallos;
+
+    public static void pruebaRuido(double x, double y, double z) {
+        Minecraft mc = Minecraft.getInstance();
+        if (activo()) oir(mc, x, y, z);
+    }
+
+    public static String pruebaEstado() {
+        return "ondas " + ONDAS.size() + ", bloques " + BLOQUES.size() + ", entidades " + ENTES.size() + ", fallos al dibujar " + pruebaFallos;
+    }
+
+    public static int pruebaEntes() {
+        return ENTES.size();
+    }
+
+    public static boolean pruebaVacio() {
+        return ONDAS.isEmpty() && BLOQUES.isEmpty() && ENTES.isEmpty();
     }
 
     // ------------------------------------------------------------------ HUD: una viñeta azulada y el aviso de la palmada
