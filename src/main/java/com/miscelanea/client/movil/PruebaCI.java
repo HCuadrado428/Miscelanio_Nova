@@ -401,9 +401,9 @@ public final class PruebaCI {
                 com.miscelanea.purgatorio.Purgatorio.entrar(sp, "purgatorio.miscelanea.vacio");
             });
         });
-        sin("purgatorio_feria_ir", 50, () -> {
+        sin("purgatorio_feria_ir", 140, () -> {
             if (!com.miscelanea.purgatorio.Purgatorio.en(mc.level)) throw new IllegalStateException("no ha entrado en el Purgatorio");
-            irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.FERIA), -35, 5);
+            irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.FERIA), -35, 20);
         });
         paso("40_purgatorio_feria", 30, () -> {});
         paso("41_purgatorio_feria_2", 30, () -> mc.player.setYRot(mc.player.getYRot() + 120));

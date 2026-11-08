@@ -80,9 +80,9 @@ public final class PurgatorioCliente {
                 e.setGreen(0.10F);
                 e.setBlue(0.085F);
             } else {
-                e.setRed(0.035F);
-                e.setGreen(0.025F);
-                e.setBlue(0.05F);
+                e.setRed(0.07F);
+                e.setGreen(0.05F);
+                e.setBlue(0.10F);
             }
         }
     }

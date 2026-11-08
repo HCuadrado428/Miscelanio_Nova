@@ -140,8 +140,8 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 l.pon(x, f - 2, z, d(Blocks.STONE));
             }
         // la farola de la esquina (una de cada cuatro, fundida)
-        farola(l, 6, 6, h(cx, cz, 2) % 4 != 0);
-        if (h(cx, cz, 9) % 3 == 0) farola(l, 9, 9, h(cx, cz, 10) % 3 != 0);
+        farola(l, 6, 6, h(cx, cz, 2) % 6 != 0);
+        if (h(cx, cz, 9) % 2 == 0) farola(l, 9, 9, h(cx, cz, 10) % 4 != 0);
         // cuatro parcelas
         int[][] q = {{0, 0}, {9, 0}, {0, 9}, {9, 9}};
         for (int k = 0; k < 4; k++) {
