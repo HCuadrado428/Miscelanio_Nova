@@ -335,16 +335,102 @@ public final class EcoCliente {
     @SubscribeEvent
     public static void dibujar(RenderLevelStageEvent e) {
         if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS || !activo()) return;
-        if (ONDAS.isEmpty() && BLOQUES.isEmpty() && ENTES.isEmpty()) return;
         // con shaders, Oculus vuelve a lanzar esta etapa al dibujar el mapa de sombras: ahí no (ondas y siluetas
         // salían como sombras y se dibujaba todo dos veces)
         if (pasadaSombras()) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
-        float pt = e.getPartialTick();
-        Vec3 cam = e.getCamera().getPosition();
-        PoseStack ps = e.getPoseStack();
-        MultiBufferSource.BufferSource bs = mc.renderBuffers().bufferSource();
+        if (com.miscelanea.client.movil.MovilCaptura.shaders()) {
+            // con shaders el pack no hace caso de la niebla (el mundo se veía gris a lo lejos) y pinta las líneas y
+            // las siluetas con sus programas (las ondas no salían y las siluetas, rotas): se apunta lo de la cámara y
+            // la profundidad del mundo de ahora y se dibuja todo al acabar el nivel, ya sin el pack (ver trasNivel)
+            sh.pendiente = true;
+            sh.pt = e.getPartialTick();
+            sh.cam = e.getCamera().getPosition();
+            sh.proj = new Matrix4f(e.getProjectionMatrix());
+            sh.vista = new Matrix4f(e.getPoseStack().last().pose());
+            sh.normal = new Matrix3f(e.getPoseStack().last().normal());
+            sh.profundidad = !(ONDAS.isEmpty() && BLOQUES.isEmpty() && ENTES.isEmpty()) && copiarProfundidad(mc);
+            return;
+        }
+        if (ONDAS.isEmpty() && BLOQUES.isEmpty() && ENTES.isEmpty()) return;
+        pintar(mc, e.getPoseStack(), e.getCamera().getPosition(), e.getPartialTick(), mc.renderBuffers().bufferSource());
+    }
+
+    /** Lo apuntado en mitad del nivel con shaders, para dibujar al acabar. */
+    private static final class ConShaders {
+        boolean pendiente, profundidad;
+        float pt;
+        Vec3 cam;
+        Matrix4f proj, vista;
+        Matrix3f normal;
+        com.mojang.blaze3d.pipeline.TextureTarget copia;
+        MultiBufferSource.BufferSource bs;
+    }
+
+    private static final ConShaders sh = new ConShaders();
+
+    /** Copia la profundidad del mundo (sin tocar el framebuffer que tenga puesto el pack). */
+    private static boolean copiarProfundidad(Minecraft mc) {
+        com.mojang.blaze3d.pipeline.RenderTarget main = mc.getMainRenderTarget();
+        int lee = org.lwjgl.opengl.GL11.glGetInteger(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER_BINDING);
+        int pinta = org.lwjgl.opengl.GL11.glGetInteger(org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER_BINDING);
+        try {
+            if (sh.copia == null) sh.copia = new com.mojang.blaze3d.pipeline.TextureTarget(main.width, main.height, true, Minecraft.ON_OSX);
+            else if (sh.copia.width != main.width || sh.copia.height != main.height) sh.copia.resize(main.width, main.height, Minecraft.ON_OSX);
+            while (org.lwjgl.opengl.GL11.glGetError() != 0) {}
+            sh.copia.copyDepthFrom(main);
+            return org.lwjgl.opengl.GL11.glGetError() == 0;
+        } catch (RuntimeException ex) {
+            return false;
+        } finally {
+            org.lwjgl.opengl.GL30.glBindFramebuffer(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER, lee);
+            org.lwjgl.opengl.GL30.glBindFramebuffer(org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER, pinta);
+        }
+    }
+
+    /**
+     * Desde GameRendererMixin, con el nivel ya compuesto por el pack de shaders: todo negro (así no depende de si el
+     * pack respeta la niebla) y encima las ondas, aristas y siluetas con los programas normales, contra la profundidad
+     * del mundo que se copió (si no se pudo copiar, se ven a través de las paredes).
+     */
+    public static void trasNivel() {
+        if (!sh.pendiente) return;
+        sh.pendiente = false;
+        Minecraft mc = Minecraft.getInstance();
+        if (!activo() || mc.level == null) return;
+        com.mojang.blaze3d.pipeline.RenderTarget main = mc.getMainRenderTarget();
+        main.bindWrite(true);
+        RenderSystem.clearColor(0F, 0F, 0F, 1F);
+        RenderSystem.clear(org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT, Minecraft.ON_OSX);
+        if (ONDAS.isEmpty() && BLOQUES.isEmpty() && ENTES.isEmpty()) return;
+        boolean prof = sh.profundidad && sh.copia != null && sh.copia.width == main.width && sh.copia.height == main.height;
+        if (prof) {
+            main.copyDepthFrom(sh.copia);
+            main.bindWrite(true);
+        } else RenderSystem.clear(org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
+        Matrix4f projAntes = RenderSystem.getProjectionMatrix();
+        com.mojang.blaze3d.vertex.VertexSorting ordenAntes = RenderSystem.getVertexSorting();
+        PoseStack mv = RenderSystem.getModelViewStack();
+        mv.pushPose();
+        mv.setIdentity();
+        RenderSystem.applyModelViewMatrix();
+        RenderSystem.setProjectionMatrix(sh.proj, com.mojang.blaze3d.vertex.VertexSorting.DISTANCE_TO_ORIGIN);
+        RenderSystem.enableDepthTest();
+        try {
+            PoseStack ps = new PoseStack();
+            ps.last().pose().set(sh.vista);
+            ps.last().normal().set(sh.normal);
+            if (sh.bs == null) sh.bs = MultiBufferSource.immediate(new com.mojang.blaze3d.vertex.BufferBuilder(1 << 16));
+            pintar(mc, ps, sh.cam, sh.pt, sh.bs);
+        } finally {
+            RenderSystem.setProjectionMatrix(projAntes, ordenAntes);
+            mv.popPose();
+            RenderSystem.applyModelViewMatrix();
+        }
+    }
+
+    private static void pintar(Minecraft mc, PoseStack ps, Vec3 cam, float pt, MultiBufferSource.BufferSource bs) {
         float nieblaIni = RenderSystem.getShaderFogStart(), nieblaFin = RenderSystem.getShaderFogEnd();
         RenderSystem.setShaderFogStart(1.0E6F);
         RenderSystem.setShaderFogEnd(1.0E6F + 1F);
