@@ -420,16 +420,26 @@ public class PurgatorioGenerador extends ChunkGenerator {
             l.pon(xp - 2, f + 2, zf, Blocks.WALL_TORCH.defaultBlockState().setValue(net.minecraft.world.level.block.WallTorchBlock.FACING, mira));
             if (h(cx, cz, 110 + k) % 3 != 0)
                 l.pon(xp + 2, f + 2, zf, Blocks.WALL_TORCH.defaultBlockState().setValue(net.minecraft.world.level.block.WallTorchBlock.FACING, mira));
-            // dentro: la cama (almohada blanca y colcha roja), la mesilla y su lámpara
+            // y otra en la pared que da al otro pasillo (el de x = 7..8), con su aplique
+            int xq = x0 == 0 ? x1 : x0, zq = z0 + 3, xf = xq + (x0 == 0 ? 1 : -1);
+            Direction mira2 = x0 == 0 ? Direction.EAST : Direction.WEST;
+            BlockState pu2 = Blocks.DARK_OAK_DOOR.defaultBlockState().setValue(net.minecraft.world.level.block.DoorBlock.FACING, mira2.getOpposite());
+            l.pon(xq, f, zq, pu2);
+            l.pon(xq, f + 1, zq, pu2.setValue(net.minecraft.world.level.block.DoorBlock.HALF, net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER));
+            if (h(cx, cz, 130 + k) % 2 == 0)
+                l.pon(xf, f + 2, zq + 2, Blocks.WALL_TORCH.defaultBlockState().setValue(net.minecraft.world.level.block.WallTorchBlock.FACING, mira2));
+            // dentro: la cama (almohada blanca y colcha roja) en el lado de fuera, la mesilla y su lámpara
             int zc = z0 == 0 ? z0 + 1 : z1 - 1, dz = z0 == 0 ? 1 : -1;
-            for (int x = x0 + 1; x <= x0 + 2; x++) {
+            int xa = x0 == 0 ? x0 + 1 : x1 - 1, sx = x0 == 0 ? 1 : -1;
+            for (int x = xa; x != xa + 2 * sx; x += sx) {
                 l.pon(x, f, zc, d(Blocks.WHITE_WOOL));
                 l.pon(x, f, zc + dz, d(Blocks.RED_WOOL));
                 l.pon(x, f, zc + 2 * dz, d(Blocks.RED_WOOL));
             }
-            l.pon(x0 + 3, f, zc, d(Blocks.SPRUCE_PLANKS));
-            l.pon(x0 + 3, f + 1, zc, Blocks.LANTERN.defaultBlockState());
-            if (h(cx, cz, 120 + k) % 2 == 0) l.pon(x0 + 5, f, zc, Blocks.SPRUCE_STAIRS.defaultBlockState().setValue(StairBlock.FACING, Direction.WEST));
+            l.pon(xa + 2 * sx, f, zc, d(Blocks.SPRUCE_PLANKS));
+            l.pon(xa + 2 * sx, f + 1, zc, Blocks.LANTERN.defaultBlockState());
+            if (h(cx, cz, 120 + k) % 2 == 0)
+                l.pon(xa + 4 * sx, f, zc, Blocks.SPRUCE_STAIRS.defaultBlockState().setValue(StairBlock.FACING, x0 == 0 ? Direction.WEST : Direction.EAST));
         }
         // paredes hacia las zonas que no son hotel (el pasillo sigue: es la puerta)
         for (Direction dd : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST}) {

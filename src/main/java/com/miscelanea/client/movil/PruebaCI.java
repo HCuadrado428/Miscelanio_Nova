@@ -679,11 +679,20 @@ public final class PruebaCI {
                 com.miscelanea.purgatorio.Purgatorio.preparar(l, ag);
                 // como si llevara un rato allí (si no, al caerse nada más llegar se le devuelve al mismo sitio)
                 sp.getPersistentData().getCompound(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG).putLong("miscelanea_purgatorio_t", l.getGameTime() - 2000);
-                sp.teleportTo(l, ag.getX() + 0.5, ag.getY() + 1, ag.getZ() + 0.5, 0, 60);
+                sp.teleportTo(l, ag.getX() + 0.5, ag.getY(), ag.getZ() - 3.5, 0, 40);
             });
         });
-        paso("4d_purgatorio_agujero", 10, () -> mc.player.setXRot(70));
-        sin("purgatorio_agujero_caer", 140, () -> {});
+        paso("4d_purgatorio_agujero", 30, () -> mc.player.setXRot(40));
+        sin("purgatorio_agujero_caer", 140, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            var ag = com.miscelanea.purgatorio.Purgatorio.buscarAgujero();
+            if (ag == null) return;
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp != null) sp.teleportTo(ag.getX() + 0.5, ag.getY() + 0.5, ag.getZ() + 0.5);
+            });
+        });
         sin("purgatorio_agujero_fuera", 5, () -> {
             boolean fuera = !com.miscelanea.purgatorio.Purgatorio.en(mc.level);
             RESUMEN.add("  purgatorio: ha salido por el agujero: " + (fuera ? "sí" : "NO") + " (y=" + (int) mc.player.getY() + ")");
