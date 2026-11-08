@@ -132,7 +132,8 @@ jobs:
     # con shaders es una prueba de más: si falla no tumba el resto
     continue-on-error: ${{ matrix.shaders }}
     env:
-      RAMA: ${{ matrix.shaders && 'prueba-shaders' || 'prueba' }}
+      # capturas de main en prueba / prueba-shaders; de las otras ramas, en prueba-<rama> / prueba-<rama>-shaders
+      RAMA: ${{ format('prueba{0}{1}', (github.event.workflow_run.head_branch || github.ref_name) == 'main' && '' || format('-{0}', github.event.workflow_run.head_branch || github.ref_name), matrix.shaders && '-shaders' || '') }}
     steps:
       - uses: actions/setup-java@v4
         with:

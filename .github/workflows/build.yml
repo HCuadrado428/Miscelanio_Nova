@@ -2,7 +2,8 @@ name: Compilar JAR
 
 on:
   push:
-    branches: [main]
+    # main = lo publicado; arreglos = 1.x.(y+1); novedades = 1.(x+1).0; version-2 = 2.0.0
+    branches: [main, arreglos, novedades, version-2]
   workflow_dispatch:
 
 permissions:
@@ -46,5 +47,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
-          name: Miscelánea build ${{ github.run_number }}
+          name: Miscelánea build ${{ github.run_number }} (${{ github.ref_name }})
+          target_commitish: ${{ github.sha }}
+          prerelease: ${{ github.ref_name != 'main' }}
+          make_latest: ${{ github.ref_name == 'main' }}
           files: build/libs/*.jar
