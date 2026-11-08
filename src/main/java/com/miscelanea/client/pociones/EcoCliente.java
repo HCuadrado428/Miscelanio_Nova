@@ -143,17 +143,20 @@ public final class EcoCliente {
         SoundInstance s = e.getSound();
         Minecraft mc = Minecraft.getInstance();
         if (s == null || s.isRelative() || mc.player == null) return;
+        // los pasos ya hacen su onda en pasos() (si no, saldrían dos)
+        if (s.getLocation().getPath().endsWith(".step")) return;
         oir(mc, s.getX(), s.getY(), s.getZ());
     }
 
     /** Un ruido en (x, y, z): si está cerca, una onda (si ya sale otra del mismo sitio, no). */
-    private static void oir(Minecraft mc, double x, double y, double z) {
-        if (mc.player.distanceToSqr(x, y, z) > (RADIO_MAX + 6) * (RADIO_MAX + 6)) return;
+    private static boolean oir(Minecraft mc, double x, double y, double z) {
+        if (mc.player.distanceToSqr(x, y, z) > (RADIO_MAX + 6) * (RADIO_MAX + 6)) return false;
         // varios sonidos a la vez en el mismo sitio (un paso y su bloque): una sola onda
         for (Onda o : ONDAS)
-            if (o.r < VEL * 3 && Math.abs(o.x - x) + Math.abs(o.y - y) + Math.abs(o.z - z) < 0.8) return;
+            if (o.r < VEL * 3 && Math.abs(o.x - x) + Math.abs(o.y - y) + Math.abs(o.z - z) < 0.8) return false;
         if (ONDAS.size() >= MAX_ONDAS) ONDAS.remove(0);
         ONDAS.add(new Onda(x, y, z));
+        return true;
     }
 
     // ------------------------------------------------------------------ tick: avanzan las ondas y revelan lo que tocan
@@ -194,6 +197,7 @@ public final class EcoCliente {
             if (o.r > RADIO_MAX) it.remove();
         }
         voces(mc);
+        pasos(mc);
         BLOQUES.values().removeIf(b -> reloj - b.desde() > DURA_BLOQUE);
         ENTES.values().removeIf(en -> reloj - en.desde() > DURA_ENTE || en.e().isRemoved());
     }
@@ -218,6 +222,54 @@ public final class EcoCliente {
         }
     }
 
+    /** Lo andado desde el último paso y dónde estaba en el tic anterior, por entidad. */
+    private static final class Andar {
+        double x, z, hecho;
+        int visto;
+    }
+
+    private static final Map<Integer, Andar> ANDAR = new HashMap<>();
+    /** Bloques andados por paso (vanilla: un paso cada ~1,67 bloques al andar). */
+    private static final double PASO = 1.6;
+    /** Ondas de pasos lanzadas (para la prueba del CI): las mías y las de los demás. */
+    public static int pruebaPasosMios, pruebaPasosOtros;
+
+    /**
+     * Los pasos hacen ondas: los tuyos, los de los demás jugadores y los de los mobs. Antes solo salían del sonido del
+     * paso (PlaySoundEvent) y en la práctica no se veían: no dependía de nada del mod (si el sonido no llega a
+     * sonar, con el motor de sonido sin cargar, con mods de pasos que cambian los sonidos...). Ahora se miran aquí,
+     * por lo andado por el suelo (como vanilla: agachado o volando no suenan), y el sonido del paso ya no hace onda
+     * para no repetirla. Los jugadores siguen sin verse como silueta por andar: solo la onda.
+     */
+    private static void pasos(Minecraft mc) {
+        LocalPlayer yo = mc.player;
+        AABB zona = yo.getBoundingBox().inflate(RADIO_MAX + 6);
+        for (Entity en : mc.level.getEntities((Entity) null, zona, x -> x instanceof net.minecraft.world.entity.LivingEntity)) {
+            Andar a = ANDAR.get(en.getId());
+            if (a == null) {
+                a = new Andar();
+                a.x = en.getX();
+                a.z = en.getZ();
+                ANDAR.put(en.getId(), a);
+            }
+            double dx = en.getX() - a.x, dz = en.getZ() - a.z;
+            a.x = en.getX();
+            a.z = en.getZ();
+            a.visto = reloj;
+            double d = Math.sqrt(dx * dx + dz * dz);
+            boolean callado = en.isSilent() || en.isPassenger() || en.isInWater() || !en.onGround() || en.isSpectator()
+                    || (en instanceof net.minecraft.world.entity.player.Player p && (p.isDiscrete() || p.getAbilities().flying));
+            if (d > 2 || callado) continue;      // teletransporte, o pasos que no suenan
+            a.hecho += d;
+            if (a.hecho < PASO) continue;
+            a.hecho -= PASO;
+            if (!oir(mc, en.getX(), en.getY() + 0.05, en.getZ())) continue;
+            if (en == yo) pruebaPasosMios++;
+            else pruebaPasosOtros++;
+        }
+        ANDAR.values().removeIf(a -> reloj - a.visto > 40);
+    }
+
     private static void onda(double x, double y, double z) {
         if (ONDAS.size() >= MAX_ONDAS) ONDAS.remove(0);
         ONDAS.add(new Onda(x, y, z));
@@ -228,6 +280,7 @@ public final class EcoCliente {
         BLOQUES.clear();
         ENTES.clear();
         ULT_ONDA.clear();
+        ANDAR.clear();
         estaba = false;
         agachadoAntes = false;
     }
@@ -343,14 +396,13 @@ public final class EcoCliente {
         if (com.miscelanea.client.movil.MovilCaptura.shaders()) {
             // con shaders el pack no hace caso de la niebla (el mundo se veía gris a lo lejos) y pinta las líneas y
             // las siluetas con sus programas (las ondas no salían y las siluetas, rotas): se apunta lo de la cámara y
-            // la profundidad del mundo de ahora y se dibuja todo al acabar el nivel, ya sin el pack (ver trasNivel)
+            // se dibuja todo al acabar el nivel, ya sin el pack (ver trasNivel)
             sh.pendiente = true;
             sh.pt = e.getPartialTick();
             sh.cam = e.getCamera().getPosition();
             sh.proj = new Matrix4f(e.getProjectionMatrix());
             sh.vista = new Matrix4f(e.getPoseStack().last().pose());
             sh.normal = new Matrix3f(e.getPoseStack().last().normal());
-            sh.profundidad = !(ONDAS.isEmpty() && BLOQUES.isEmpty() && ENTES.isEmpty()) && copiarProfundidad(mc);
             return;
         }
         if (ONDAS.isEmpty() && BLOQUES.isEmpty() && ENTES.isEmpty()) return;
@@ -359,56 +411,19 @@ public final class EcoCliente {
 
     /** Lo apuntado en mitad del nivel con shaders, para dibujar al acabar. */
     private static final class ConShaders {
-        boolean pendiente, profundidad;
+        boolean pendiente;
         float pt;
         Vec3 cam;
         Matrix4f proj, vista;
         Matrix3f normal;
-        com.mojang.blaze3d.pipeline.TextureTarget copia;
         MultiBufferSource.BufferSource bs;
     }
 
     private static final ConShaders sh = new ConShaders();
-    /** De dónde salió la profundidad con shaders (para la prueba del CI). */
-    private static String fuenteProfundidad = "-";
-
-    /** Copia la profundidad del mundo (sin tocar el framebuffer que tenga puesto el pack). */
-    private static boolean copiarProfundidad(Minecraft mc) {
-        com.mojang.blaze3d.pipeline.RenderTarget main = mc.getMainRenderTarget();
-        int lee = org.lwjgl.opengl.GL11.glGetInteger(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER_BINDING);
-        int pinta = org.lwjgl.opengl.GL11.glGetInteger(org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER_BINDING);
-        try {
-            if (sh.copia == null) sh.copia = new com.mojang.blaze3d.pipeline.TextureTarget(main.width, main.height, true, Minecraft.ON_OSX);
-            else if (sh.copia.width != main.width || sh.copia.height != main.height) sh.copia.resize(main.width, main.height, Minecraft.ON_OSX);
-            while (org.lwjgl.opengl.GL11.glGetError() != 0) {}
-            // el pack dibuja el mundo en su propio framebuffer (el que está puesto ahora): su profundidad es la buena;
-            // la del principal está vacía. Si no se puede copiar (otro formato), la del principal
-            if (pinta != 0 && pinta != main.frameBufferId) {
-                org.lwjgl.opengl.GL30.glBindFramebuffer(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER, pinta);
-                org.lwjgl.opengl.GL30.glBindFramebuffer(org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER, sh.copia.frameBufferId);
-                org.lwjgl.opengl.GL30.glBlitFramebuffer(0, 0, main.width, main.height, 0, 0, main.width, main.height,
-                        org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT, org.lwjgl.opengl.GL11.GL_NEAREST);
-                if (org.lwjgl.opengl.GL11.glGetError() == 0) {
-                    fuenteProfundidad = "la del pack";
-                    return true;
-                }
-            }
-            sh.copia.copyDepthFrom(main);
-            boolean bien = org.lwjgl.opengl.GL11.glGetError() == 0;
-            fuenteProfundidad = bien ? "la principal" : "ninguna";
-            return bien;
-        } catch (RuntimeException ex) {
-            return false;
-        } finally {
-            org.lwjgl.opengl.GL30.glBindFramebuffer(org.lwjgl.opengl.GL30.GL_READ_FRAMEBUFFER, lee);
-            org.lwjgl.opengl.GL30.glBindFramebuffer(org.lwjgl.opengl.GL30.GL_DRAW_FRAMEBUFFER, pinta);
-        }
-    }
 
     /**
      * Desde GameRendererMixin, con el nivel ya compuesto por el pack de shaders: todo negro (así no depende de si el
-     * pack respeta la niebla) y encima las ondas, aristas y siluetas con los programas normales, contra la profundidad
-     * del mundo que se copió (si no se pudo copiar, se ven a través de las paredes).
+     * pack respeta la niebla) y encima las ondas, aristas y siluetas con los programas normales.
      */
     public static void trasNivel() {
         if (!sh.pendiente) return;
@@ -420,11 +435,8 @@ public final class EcoCliente {
         RenderSystem.clearColor(0F, 0F, 0F, 1F);
         RenderSystem.clear(org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT, Minecraft.ON_OSX);
         if (ONDAS.isEmpty() && BLOQUES.isEmpty() && ENTES.isEmpty()) return;
-        boolean prof = sh.profundidad && sh.copia != null && sh.copia.width == main.width && sh.copia.height == main.height;
-        if (prof) {
-            main.copyDepthFrom(sh.copia);
-            main.bindWrite(true);
-        } else RenderSystem.clear(org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
+        // la profundidad del mundo no se puede aprovechar (el pack la tiene aparte): se ven a través de las paredes
+        RenderSystem.clear(org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
         Matrix4f projAntes = RenderSystem.getProjectionMatrix();
         com.mojang.blaze3d.vertex.VertexSorting ordenAntes = RenderSystem.getVertexSorting();
         PoseStack mv = RenderSystem.getModelViewStack();
@@ -635,7 +647,7 @@ public final class EcoCliente {
     }
 
     public static String pruebaEstado() {
-        return "ondas " + ONDAS.size() + ", bloques " + BLOQUES.size() + ", entidades " + ENTES.size() + ", fallos al dibujar " + pruebaFallos + ", profundidad con shaders: " + fuenteProfundidad;
+        return "ondas " + ONDAS.size() + ", bloques " + BLOQUES.size() + ", entidades " + ENTES.size() + ", fallos al dibujar " + pruebaFallos;
     }
 
     public static int pruebaEntes() {

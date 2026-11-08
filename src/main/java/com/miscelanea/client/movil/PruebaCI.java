@@ -732,6 +732,8 @@ public final class PruebaCI {
     private static UUID ecoHabla;
     private static net.minecraft.client.player.RemotePlayer ecoJugador;
     private static volatile UUID ecoZombi;
+    private static boolean ecoAndando;
+    private static int ecoPasos0, ecoPasosOtros0;
     private static final int ECO_ID = -428_001;
 
     /**
@@ -836,9 +838,25 @@ public final class PruebaCI {
                 else throw new IllegalStateException("se ve el sol a ciegas");
             }
         });
-        sin("eco_quitar", 30, () -> {
+        // andar: mis pasos y los del que habla (que se mueve) tienen que hacer ondas
+        sin("eco_andar", 1, () -> {
             mc.player.setXRot(12F);
             mc.player.xRotO = 12F;
+            ecoPasos0 = com.miscelanea.client.pociones.EcoCliente.pruebaPasosMios;
+            ecoPasosOtros0 = com.miscelanea.client.pociones.EcoCliente.pruebaPasosOtros;
+            ecoAndando = true;
+        });
+        paso("94_eco_andando", 24, () -> {});
+        sin("eco_medir_pasos", 1, () -> {
+            ecoAndando = false;
+            mc.options.keyUp.setDown(false);
+            int mios = com.miscelanea.client.pociones.EcoCliente.pruebaPasosMios - ecoPasos0;
+            int otros = com.miscelanea.client.pociones.EcoCliente.pruebaPasosOtros - ecoPasosOtros0;
+            RESUMEN.add("  eco andando: ondas de mis pasos " + mios + ", de los pasos del otro " + otros + " · " + com.miscelanea.client.pociones.EcoCliente.pruebaEstado());
+            if (mios < 2) throw new IllegalStateException("mis pasos no hacen ondas");
+            if (otros < 2) throw new IllegalStateException("los pasos de otro jugador no hacen ondas");
+        });
+        sin("eco_quitar", 30, () -> {
             ecoHabla = null;
             var srv = mc.getSingleplayerServer();
             UUID id = mc.player.getUUID();
@@ -991,6 +1009,15 @@ public final class PruebaCI {
         // el puntero láser: el clic derecho mantenido
         if (mantenerUso) mc.options.keyUse.setDown(true);
         // ecolocalización: el jugador de mentira "habla" (como si llegara su audio del voicechat) y mi micro solo da ruido de fondo
+        if (ecoAndando) {
+            mc.options.keyUp.setDown(true);
+            // el otro anda hacia atrás (alejándose), como si llegaran sus paquetes de movimiento
+            if (ecoJugador != null) {
+                var m = net.minecraft.core.Direction.fromYRot(mc.player.getYRot());
+                ecoJugador.setPos(ecoJugador.getX() + m.getStepX() * 0.2, ecoJugador.getY(), ecoJugador.getZ() + m.getStepZ() * 0.2);
+                ecoJugador.setOnGround(true);
+            }
+        }
         if (ecoHabla != null) {
             com.miscelanea.client.pociones.EcoCliente.habla(ecoHabla, 0.3F);
             com.miscelanea.client.pociones.EcoCliente.hablaYo(0.01F);
