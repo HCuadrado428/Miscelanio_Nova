@@ -665,6 +665,11 @@ public final class PruebaCI {
         paso("44_purgatorio_salida", 30, () -> {});
         sin("purgatorio_cruzar", 60, () -> {
             var b = com.miscelanea.purgatorio.Purgatorio.buscarSalida();
+            // que no ande ningún habitante cerca (si le pilla, le recoloca y no llega a la puerta)
+            var lp = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
+            if (lp != null) mc.getSingleplayerServer().execute(() -> {
+                for (var g : lp.getEntitiesOfClass(com.miscelanea.purgatorio.Purgado.class, new net.minecraft.world.phys.AABB(b).inflate(96))) g.discard();
+            });
             irA(new net.minecraft.core.BlockPos(b.getX(), b.getY(), b.getZ() - 3), 180, 0);
         });
         sin("purgatorio_fuera", 5, () -> {
