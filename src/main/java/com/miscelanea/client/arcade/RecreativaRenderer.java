@@ -66,7 +66,10 @@ public class RecreativaRenderer implements BlockEntityRenderer<RecreativaBlockEn
         double d2 = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition()
                 .distanceToSqr(be.getBlockPos().getX() + 0.5, be.getBlockPos().getY() + 1.5, be.getBlockPos().getZ() + 0.5);
         // la imagen se convierte y se sube aquí, solo si la máquina se dibuja (y de lejos, como mucho 3 veces por segundo)
-        if (tex != null) tex.actualizar(d2 > 24 * 24 ? 330 : 0);
+        // (también la propia máquina mientras se juega en ella en primera persona: la tapa la pantalla de juego)
+        Minecraft mc = Minecraft.getInstance();
+        boolean tapada = mc.screen instanceof ArcadeScreen pj && pj.pos.equals(be.getBlockPos()) && mc.options.getCameraType().isFirstPerson();
+        if (tex != null) tex.actualizar(d2 > 24 * 24 || tapada ? 330 : 0);
         ps.pushPose();
         ps.translate(0.5, 0, 0.5);
         ps.mulPose(Axis.YP.rotationDegrees(180 - f.toYRot()));

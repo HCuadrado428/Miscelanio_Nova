@@ -74,19 +74,28 @@ public class PantallaTextura {
         if (img == null) return;
         byte[] b = p.buf;
         if (haySubido && java.util.Arrays.equals(b, subido)) return;
-        System.arraycopy(b, 0, subido, 0, subido.length);
-        haySubido = true;
-        if (!crt) {
-            for (int y = 0; y < Pantalla.H; y++)
-                for (int x = 0; x < Pantalla.W; x++) img.setPixelRGBA(x, y, ABGR[b[y * Pantalla.W + x] & 63]);
-        } else {
-            for (int y = 0; y < Pantalla.H; y++)
-                for (int x = 0; x < Pantalla.W; x++) {
-                    int i = y * Pantalla.W + x;
-                    img.setPixelRGBA(x, y, CRT[crtClave[i] + (b[i] & 63)]);
-                }
+        // solo los píxeles que han cambiado desde la última subida, y a la tarjeta solo las filas que los tienen
+        int y0 = Pantalla.H, y1 = -1;
+        for (int y = 0; y < Pantalla.H; y++) {
+            int fila = y * Pantalla.W;
+            boolean cambia = false;
+            for (int x = 0; x < Pantalla.W; x++) {
+                int i = fila + x;
+                byte v = b[i];
+                if (haySubido && v == subido[i]) continue;
+                subido[i] = v;
+                cambia = true;
+                img.setPixelRGBA(x, y, crt ? CRT[crtClave[i] + (v & 63)] : ABGR[v & 63]);
+            }
+            if (cambia) {
+                if (y < y0) y0 = y;
+                y1 = y;
+            }
         }
-        tex.upload();
+        haySubido = true;
+        if (y1 < y0) return;
+        tex.bind();
+        img.upload(0, 0, y0, 0, y0, Pantalla.W, y1 - y0 + 1, false, false);
     }
 
     private static void tablaCrt() {
