@@ -201,11 +201,6 @@ public class TrenMontana extends Entity {
         if (e instanceof LivingEntity le) le.setYBodyRot(yaw);
     }
 
-    @Override
-    public void positionRider(Entity e) {
-        positionRider(e, Entity::setPos);
-    }
-
     /** El cambio de giro del tren en este tick (lo aplica el cliente a la cámara de quien va montado). */
     public float giroTick() {
         float y = getYRot(), d = Mth.wrapDegrees(y - yawAntes);
