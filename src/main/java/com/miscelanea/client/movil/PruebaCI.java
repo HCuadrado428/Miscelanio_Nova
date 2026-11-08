@@ -394,11 +394,19 @@ public final class PruebaCI {
     private static final java.util.List<net.minecraft.core.BlockPos> JUGANDO = new java.util.ArrayList<>();
     private static final com.miscelanea.client.arcade.Pantalla FALSA = new com.miscelanea.client.arcade.Pantalla();
     private static int tFalsa;
+    private static boolean buscarMaquinas;
 
     /** Una imagen de partida que cambia (fondo, cosas que se mueven y unos textos), como la que retransmite un jugador. */
     private static void retransmitir() {
-        if (JUGANDO.isEmpty() || Minecraft.getInstance().level == null) return;
+        Minecraft mc = Minecraft.getInstance();
+        if (!buscarMaquinas || mc.level == null || mc.player == null) return;
         if (++tFalsa % 2 != 0) return;
+        if (JUGANDO.size() < 5 && tFalsa % 20 == 0) {
+            JUGANDO.clear();
+            for (var q : net.minecraft.core.BlockPos.betweenClosed(mc.player.blockPosition().offset(-24, -2, -24), mc.player.blockPosition().offset(24, 3, 24)))
+                if (JUGANDO.size() < 5 && mc.level.getBlockEntity(q) instanceof com.miscelanea.arcade.RecreativaBlockEntity) JUGANDO.add(q.immutable());
+        }
+        if (JUGANDO.isEmpty()) return;
         var p = FALSA;
         p.font = Minecraft.getInstance().font;
         p.empezar();
@@ -429,6 +437,52 @@ public final class PruebaCI {
         PERFIL_NS[2] = nsPantalla;
     }
 
+    /**
+     * Resumen del perfil en el propio informe: por fase, qué métodos de Miscelánea están en la pila del hilo de dibujo
+     * (contando el tiempo en Java y el que pasa en OpenGL), en % de las muestras de esa fase.
+     */
+    private static void resumirPerfil(java.nio.file.Path jfr) {
+        try {
+            java.util.List<String[]> fases = new java.util.ArrayList<>();
+            for (String l : PERFIL) fases.add(l.split("="));
+            java.util.Map<String, java.util.Map<String, Integer>> por = new java.util.LinkedHashMap<>();
+            java.util.Map<String, Integer> total = new java.util.HashMap<>(), nativo = new java.util.HashMap<>();
+            for (var e : jdk.jfr.consumer.RecordingFile.readAllEvents(jfr)) {
+                String tipo = e.getEventType().getName();
+                if (!tipo.equals("jdk.ExecutionSample") && !tipo.equals("jdk.NativeMethodSample")) continue;
+                var hilo = e.getThread("sampledThread");
+                if (hilo == null || !"Render thread".equals(hilo.getJavaName()) || e.getStackTrace() == null) continue;
+                long t = e.getStartTime().toEpochMilli();
+                String fase = null;
+                for (int i = 0; i + 1 < fases.size(); i++)
+                    if (t >= Long.parseLong(fases.get(i)[1]) && t < Long.parseLong(fases.get(i + 1)[1])) fase = fases.get(i + 1)[0];
+                if (fase == null) continue;
+                total.merge(fase, 1, Integer::sum);
+                if (tipo.equals("jdk.NativeMethodSample")) nativo.merge(fase, 1, Integer::sum);
+                var m = por.computeIfAbsent(fase, k -> new java.util.HashMap<>());
+                java.util.Set<String> vistos = new java.util.HashSet<>();
+                for (var fr : e.getStackTrace().getFrames()) {
+                    if (fr.getMethod() == null || fr.getMethod().getType() == null) continue;
+                    String clase = fr.getMethod().getType().getName();
+                    if (!clase.startsWith("com.miscelanea.") || clase.contains("PruebaCI") || clase.contains("$$Lambda")) continue;
+                    String n = clase.substring(clase.lastIndexOf('.') + 1) + "." + fr.getMethod().getName();
+                    if (vistos.add(n)) m.merge(n, 1, Integer::sum);
+                }
+            }
+            for (var f : por.entrySet()) {
+                int n = total.getOrDefault(f.getKey(), 1);
+                StringBuilder b = new StringBuilder(String.format(java.util.Locale.ROOT, "  perfil %s (%d muestras, %d%% en nativo):",
+                        f.getKey(), n, 100 * nativo.getOrDefault(f.getKey(), 0) / n));
+                f.getValue().entrySet().stream().filter(x -> !x.getKey().startsWith("__") && !x.getKey().endsWith(".invoke"))
+                        .sorted((a, c) -> c.getValue() - a.getValue()).limit(12)
+                        .forEach(x -> b.append(String.format(java.util.Locale.ROOT, " %s %.1f%%", x.getKey(), 100.0 * x.getValue() / n)));
+                RESUMEN.add(b.toString());
+            }
+        } catch (Throwable t) {
+            RESUMEN.add("  rendimiento: no se pudo resumir el perfil: " + t);
+        }
+    }
+
     /** Una sala recreativa llena (máquinas, juegos de mesa, bolera…) y luego jugando a dos recreativas; se mide cada fase. */
     private static void rendimiento() {
         Minecraft mc = Minecraft.getInstance();
@@ -440,6 +494,8 @@ public final class PruebaCI {
             try {
                 var r = new jdk.jfr.Recording();
                 r.enable("jdk.ExecutionSample").withPeriod(java.time.Duration.ofMillis(10));
+                // también el tiempo dentro de código nativo (las llamadas de OpenGL), con la pila Java que lo pidió
+                r.enable("jdk.NativeMethodSample").withPeriod(java.time.Duration.ofMillis(10));
                 r.start();
                 GRABACION = r;
             } catch (Throwable t) {
@@ -502,14 +558,13 @@ public final class PruebaCI {
         sin("perfil_mirar", 300, () -> {
             medir("colocar");
             // otros jugadores jugando en cinco máquinas: su pantalla llega 10 veces por segundo, como la retransmisión
+            // (se buscan poco a poco: las máquinas recién puestas tardan en llegar al cliente)
             JUGANDO.clear();
-            for (var q : net.minecraft.core.BlockPos.betweenClosed(mc.player.blockPosition().offset(-14, -1, -2), mc.player.blockPosition().offset(14, 2, 24)))
-                if (JUGANDO.size() < 5 && mc.level.getBlockEntity(q) instanceof com.miscelanea.arcade.RecreativaBlockEntity
-                        && !(mc.level.getBlockEntity(q.below()) instanceof com.miscelanea.arcade.RecreativaBlockEntity)) JUGANDO.add(q.immutable());
-            RESUMEN.add("  rendimiento: " + JUGANDO.size() + " máquinas con partida retransmitida");
+            buscarMaquinas = true;
         });
         sin("perfil_jugar", 5, () -> {
             medir("sala");
+            RESUMEN.add("  rendimiento: " + JUGANDO.size() + " máquinas con partida retransmitida");
             // a jugar en la primera recreativa (sin menú: se arranca la mazmorra directamente)
             var b = mc.level.getBlockEntity(mc.player.blockPosition()) ;
             net.minecraft.core.BlockPos maquina = null;
@@ -541,6 +596,7 @@ public final class PruebaCI {
         paso("71_perfil_turbo", 300, () -> {});
         sin("perfil_fin", 5, () -> {
             medir("turbo");
+            buscarMaquinas = false;
             JUGANDO.clear();
             mc.setScreen(null);
             try {
@@ -549,6 +605,7 @@ public final class PruebaCI {
                     r.stop();
                     r.dump(new File(mc.gameDirectory, "perfil.jfr").toPath());
                     r.close();
+                    resumirPerfil(new File(mc.gameDirectory, "perfil.jfr").toPath());
                 }
             } catch (Throwable t) {
                 RESUMEN.add("  rendimiento: no se pudo guardar el perfil: " + t);
