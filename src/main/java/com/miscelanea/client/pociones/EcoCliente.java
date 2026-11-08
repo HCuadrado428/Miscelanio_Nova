@@ -5,6 +5,7 @@ import com.miscelanea.pociones.PalmadaPacket;
 import com.miscelanea.pociones.PocionesRed;
 import com.miscelanea.pociones.PocionesRegistro;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
@@ -59,6 +60,8 @@ public final class EcoCliente {
     private EcoCliente() {}
 
     private static final ResourceLocation BLANCO = new ResourceLocation(Miscelanea.MOD_ID, "textures/pociones/blanco.png");
+    /** Para las capas de las siluetas que no se dibujan. */
+    private static final VertexConsumer NADA = new Nada();
     private static final float VEL = 0.55F, RADIO_MAX = 16F, RADIO_REVELA = 13F;
     private static final int DURA_BLOQUE = 30, DURA_ENTE = 32, MAX_BLOQUES = 4500, MAX_ONDAS = 20, ENFRIAMIENTO = 40;
     private static final float CR = 0.55F, CG = 0.86F, CB = 1.0F;
@@ -125,6 +128,8 @@ public final class EcoCliente {
         if (nivel > UMBRAL_VOZ) yoHablo = System.currentTimeMillis();
     }
     private static boolean agachadoAntes, estaba;
+    /** El nivel donde están las ondas y lo visto (no se usa para nada más; se suelta al salir). */
+    private static ClientLevel nivel;
 
     public static boolean activo() {
         LocalPlayer p = Minecraft.getInstance().player;
@@ -156,6 +161,15 @@ public final class EcoCliente {
     public static void tick(TickEvent.ClientTickEvent e) {
         if (e.phase != TickEvent.Phase.END) return;
         Minecraft mc = Minecraft.getInstance();
+        long ahoraMs = System.currentTimeMillis();
+        HABLAN.values().removeIf(t -> ahoraMs - t > 4000);
+        // al salir del mundo, cambiar de dimensión o reaparecer: lo de antes era de otro mundo (entidades de otro nivel,
+        // con ids que en el nuevo son de otras; bloques y ondas en sitios que aquí no son). Fuera, y sin quedarse con
+        // el nivel viejo en memoria
+        if (mc.level != nivel) {
+            if (estaba) limpiar();
+            nivel = mc.level;
+        }
         if (mc.level == null || mc.player == null) return;
         if (!activo()) {
             if (estaba) limpiar();
@@ -187,7 +201,6 @@ public final class EcoCliente {
     /** Los que hablan se ven mientras hablan, y cada medio segundo de voz suelta una onda desde su boca. */
     private static void voces(Minecraft mc) {
         long ahora = System.currentTimeMillis();
-        HABLAN.values().removeIf(t -> ahora - t > 4000);
         for (Map.Entry<java.util.UUID, Long> h : HABLAN.entrySet()) {
             if (ahora - h.getValue() > 350) continue;          // ya no habla
             net.minecraft.world.entity.player.Player p = mc.level.getPlayerByUUID(h.getKey());
@@ -287,6 +300,20 @@ public final class EcoCliente {
         BLOQUES.put(clave, new Bloque(forma.bounds().move(m.immutable()), reloj));
     }
 
+    /**
+     * A ciegas no hay nombres: el de los jugadores se dibuja sin niebla (se ve a través de todo) y delataba dónde está
+     * cada uno aunque no hablara; y en la silueta salía como un borrón.
+     */
+    @SubscribeEvent
+    public static void nombre(net.minecraftforge.client.event.RenderNameTagEvent e) {
+        if (activo()) e.setResult(net.minecraftforge.eventbus.api.Event.Result.DENY);
+    }
+
+    /** El cielo (sol, luna y estrellas no tienen niebla) no se ve, como con ceguera. Lo pregunta LevelRendererMixin. */
+    public static boolean tapaCielo() {
+        return activo();
+    }
+
     // ------------------------------------------------------------------ todo negro
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void niebla(ViewportEvent.RenderFog e) {
@@ -309,6 +336,9 @@ public final class EcoCliente {
     public static void dibujar(RenderLevelStageEvent e) {
         if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS || !activo()) return;
         if (ONDAS.isEmpty() && BLOQUES.isEmpty() && ENTES.isEmpty()) return;
+        // con shaders, Oculus vuelve a lanzar esta etapa al dibujar el mapa de sombras: ahí no (ondas y siluetas
+        // salían como sombras y se dibujaba todo dos veces)
+        if (pasadaSombras()) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
         float pt = e.getPartialTick();
@@ -332,7 +362,9 @@ public final class EcoCliente {
             for (Ente en : ENTES.values()) {
                 Entity ent = en.e();
                 float a = alfa(en, pt);
-                AABB caja = ent.getBoundingBox();
+                // donde se dibuja la silueta (interpolada): si no, la caja va un tick por delante de la entidad
+                AABB caja = ent.getBoundingBox().move(Mth.lerp(pt, ent.xOld, ent.getX()) - ent.getX(),
+                        Mth.lerp(pt, ent.yOld, ent.getY()) - ent.getY(), Mth.lerp(pt, ent.zOld, ent.getZ()) - ent.getZ());
                 LevelRenderer.renderLineBox(ps, vc, caja, 0.8F, 0.95F, 1F, a);
             }
             Matrix4f m4 = ps.last().pose();
@@ -347,23 +379,28 @@ public final class EcoCliente {
             // siluetas: la entidad entera, en un solo color brillante sobre una textura blanca
             if (!ENTES.isEmpty()) {
                 EntityRenderDispatcher rd = mc.getEntityRenderDispatcher();
+                RenderType silueta = RenderType.entityTranslucentEmissive(BLANCO);
                 rd.setRenderShadow(false);
                 try {
                     for (Ente en : ENTES.values()) {
                         Entity ent = en.e();
-                        if (ent.isRemoved() || ent == mc.player) continue;
+                        if (ent.isRemoved() || ent == mc.player || ent.level() != mc.level) continue;
                         float a = alfa(en, pt) * 0.8F;
-                        MultiBufferSource solido = rt -> new Solido(bs.getBuffer(RenderType.entityTranslucentEmissive(BLANCO)), CR, CG, CB, a);
+                        // solo las capas con el formato de las entidades: las demás (el brillo de lo encantado, la
+                        // correa, el texto del nombre, las cajas de F3+B) tienen otro formato y, metidas en este búfer,
+                        // dejaban el vértice a medias y tiraban una excepción en cada fotograma: se borraban TODAS las
+                        // siluetas (y el que habla parpadeaba, siempre a medio encender)
+                        Solido sol = new Solido(bs.getBuffer(silueta), CR, CG, CB, a);
+                        MultiBufferSource solido = rt -> rt.format() == DefaultVertexFormat.NEW_ENTITY ? sol : NADA;
                         double x = Mth.lerp(pt, ent.xOld, ent.getX()), y = Mth.lerp(pt, ent.yOld, ent.getY()), z = Mth.lerp(pt, ent.zOld, ent.getZ());
                         float yaw = Mth.lerp(pt, ent.yRotO, ent.getYRot());
                         rd.render(ent, x - cam.x, y - cam.y, z - cam.z, yaw, pt, ps, solido, 0xF000F0);
                     }
                 } catch (RuntimeException ex) {
                     if (pruebaFallos++ == 0) Miscelanea.LOGGER.warn("[Eco] fallo al dibujar las siluetas", ex);
-                    ENTES.clear();
                 } finally {
                     rd.setRenderShadow(true);
-                    bs.endBatch();
+                    bs.endBatch(silueta);
                 }
             }
         } finally {
@@ -398,6 +435,39 @@ public final class EcoCliente {
             vc.vertex(m4, x0, y0, z0).color(CR, CG, CB, a).normal(m3, nx, ny, nz).endVertex();
             vc.vertex(m4, x1, y1, z1).color(CR, CG, CB, a).normal(m3, nx, ny, nz).endVertex();
         }
+    }
+
+    private static java.lang.reflect.Method irisSombras;
+    private static Object irisApi;
+    private static boolean sinIris;
+
+    /** ¿Está Oculus/Iris dibujando las sombras ahora? Por reflexión: no hace falta tenerlo instalado. */
+    private static boolean pasadaSombras() {
+        if (sinIris) return false;
+        try {
+            if (irisSombras == null) {
+                Class<?> c = Class.forName("net.irisshaders.iris.api.v0.IrisApi");
+                irisApi = c.getMethod("getInstance").invoke(null);
+                irisSombras = c.getMethod("isRenderingShadowPass");
+            }
+            return (Boolean) irisSombras.invoke(irisApi);
+        } catch (Throwable t) {
+            sinIris = true;
+            return false;
+        }
+    }
+
+    /** Un consumidor que no dibuja nada. */
+    private static final class Nada implements VertexConsumer {
+        @Override public VertexConsumer vertex(double x, double y, double z) { return this; }
+        @Override public VertexConsumer color(int r, int g, int b, int a) { return this; }
+        @Override public VertexConsumer uv(float u, float v) { return this; }
+        @Override public VertexConsumer overlayCoords(int u, int v) { return this; }
+        @Override public VertexConsumer uv2(int u, int v) { return this; }
+        @Override public VertexConsumer normal(float x, float y, float z) { return this; }
+        @Override public void endVertex() {}
+        @Override public void defaultColor(int r, int g, int b, int a) {}
+        @Override public void unsetDefaultColor() {}
     }
 
     /** Envoltorio que pinta todo de un color fijo (sobre la textura blanca: silueta maciza) con su alfa. */

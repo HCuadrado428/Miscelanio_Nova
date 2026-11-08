@@ -814,6 +814,7 @@ public final class PruebaCI {
             if (nieblaFin > 1F) throw new IllegalStateException("la niebla negra no se cierra con el efecto");
             if (com.miscelanea.client.pociones.EcoCliente.pruebaFallos > 0) throw new IllegalStateException("fallos al dibujar las siluetas: " + com.miscelanea.client.pociones.EcoCliente.pruebaFallos);
             if (com.miscelanea.client.pociones.EcoCliente.pruebaEntes() < 2) throw new IllegalStateException("no se ven el zombi y el que habla");
+            if (!MovilCaptura.shaders() && ecoOscuros < 0.5) throw new IllegalStateException("con el efecto no está todo a oscuras");
             if (com.miscelanea.client.pociones.EcoCliente.yoHablando()) throw new IllegalStateException("el ruido de fondo del micro cuenta como hablar");
         });
         paso("91_eco_tercera", 8, () -> {
@@ -829,7 +830,11 @@ public final class PruebaCI {
         sin("eco_medir_cielo", 1, () -> {
             String img = ecoImagen("eco_cielo");
             RESUMEN.add("  eco mirando arriba (a mediodía): " + img);
-            if (ecoClaros > 40) RESUMEN.add("  AVISO eco: se ve el sol a ciegas");
+            if (ecoClaros > 40) {
+                // con shaders el cielo lo pinta el pack: solo aviso
+                if (MovilCaptura.shaders()) RESUMEN.add("  AVISO eco: con shaders se ve el sol a ciegas");
+                else throw new IllegalStateException("se ve el sol a ciegas");
+            }
         });
         sin("eco_quitar", 30, () -> {
             mc.player.setXRot(12F);
