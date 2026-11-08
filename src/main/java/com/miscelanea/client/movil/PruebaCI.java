@@ -48,6 +48,7 @@ public final class PruebaCI {
     }
     private static boolean terminada;
     private static UUID SEDANTE_CERDO = new UUID(0, 0);
+    private static boolean SEDANTE_OK;
     private static volatile net.minecraft.core.BlockPos gramola;
 
     private static void paso(String nombre, int espera, Runnable accion) {
@@ -283,13 +284,19 @@ public final class PruebaCI {
                 SEDANTE_CERDO = cerdo.getUUID();
             });
         });
-        sin("sedante_espera", 150, () -> {});
+        // el servidor integrado va lento en la prueba: se mira varias veces (hasta ~20 s)
+        for (int k = 0; k < 8; k++) {
+            int kk = k;
+            sin("sedante_espera_" + k, 50, () -> {
+                if (SEDANTE_OK) return;
+                var c = mc.getSingleplayerServer().overworld().getEntity(SEDANTE_CERDO);
+                SEDANTE_OK = c instanceof net.minecraft.world.entity.LivingEntity le && com.miscelanea.tortura.Lazo.estado(le) == com.miscelanea.tortura.Lazo.DERRIBADO;
+                if (kk == 7) RESUMEN.add("  sedante: cerdo " + (c == null ? "no existe" : c.isAlive() ? "vivo" : "muerto") + " en " + (c == null ? "-" : c.blockPosition().toShortString()));
+            });
+        }
         paso("50_sedante_cerdo", 10, () -> {
-            var srv = mc.getSingleplayerServer();
-            var c = srv.overworld().getEntity(SEDANTE_CERDO);
-            boolean dormido = c instanceof net.minecraft.world.entity.LivingEntity le && com.miscelanea.tortura.Lazo.estado(le) == com.miscelanea.tortura.Lazo.DERRIBADO;
-            RESUMEN.add("  sedante: el cerdo se ha dormido: " + (dormido ? "sí" : "NO"));
-            if (!dormido) throw new IllegalStateException("el cerdo no se ha dormido");
+            RESUMEN.add("  sedante: el cerdo se ha dormido: " + (SEDANTE_OK ? "sí" : "NO"));
+            if (!SEDANTE_OK) throw new IllegalStateException("el cerdo no se ha dormido");
         });
         sin("sedante_yo", 40, () -> {
             var srv = mc.getSingleplayerServer();
@@ -299,7 +306,10 @@ public final class PruebaCI {
                 if (sp != null) com.miscelanea.sedante.Sedante.pinchar(sp, sp, false);
             });
         });
-        paso("51_sedante_dormido", 10, () -> RESUMEN.add("  sedante: me he dormido: " + (com.miscelanea.tortura.Lazo.estado(mc.player) == com.miscelanea.tortura.Lazo.DERRIBADO ? "sí" : "NO")));
+        paso("51_sedante_dormido", 10, () -> {
+            var sp = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
+            RESUMEN.add("  sedante: me he dormido: " + (sp != null && com.miscelanea.sedante.Sedante.dormido(sp) ? "sí" : "NO"));
+        });
         sin("sedante_despertar", 5, () -> {
             var srv = mc.getSingleplayerServer();
             UUID id = mc.player.getUUID();
