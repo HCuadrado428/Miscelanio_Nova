@@ -47,6 +47,7 @@ public final class PruebaCI {
         if (ACTIVA && e.phase == TickEvent.Phase.END) fotogramas++;
     }
     private static boolean terminada;
+    private static volatile net.minecraft.core.BlockPos gramola;
 
     private static void paso(String nombre, int espera, Runnable accion) {
         PASOS.add(new Paso(nombre, espera, accion, true));
@@ -196,6 +197,59 @@ public final class PruebaCI {
             abrirVista(new VistasTelefono.Telefono());
         });
         paso("17_ajustes", 20, () -> abrirVista(new VistasApps.Ajustes()));
+        // ---- gramola: el videoclip y la cámara de cine
+        sin("gramola_poner", 20, () -> {
+            mc.setScreen(null);
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                var lv = sp.serverLevel();
+                net.minecraft.core.Direction f = sp.getDirection();
+                net.minecraft.core.BlockPos g = sp.blockPosition().relative(f, 4);
+                gramola = g;
+                // suelo despejado alrededor
+                // suelo plano y despejado alrededor, con un escalón de bajada justo delante de la gramola (para ver
+                // que el decorado se pone a la altura de los pies)
+                for (int dx = -6; dx <= 6; dx++)
+                    for (int dz = -6; dz <= 6; dz++) {
+                        for (int dy = 0; dy <= 4; dy++) lv.setBlockAndUpdate(g.offset(dx, dy, dz), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+                        lv.setBlockAndUpdate(g.offset(dx, -1, dz), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+                    }
+                for (int dx = -2; dx <= 2; dx++)
+                    for (int k = 1; k <= 4; k++) lv.setBlockAndUpdate(g.relative(f.getOpposite(), k).relative(f.getClockWise(), dx).below(),
+                            net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+                for (int dx = -2; dx <= 2; dx++)
+                    for (int k = 1; k <= 4; k++) lv.setBlockAndUpdate(g.relative(f.getOpposite(), k).relative(f.getClockWise(), dx).below(2),
+                            net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+                lv.setBlockAndUpdate(g, com.miscelanea.registry.ModBlocks.GRAMOLA.get().defaultBlockState()
+                        .setValue(com.miscelanea.baile.PistaBaileBlock.FACING, f.getOpposite()));
+            });
+        });
+        paso("20_gramola_menu", 30, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp.serverLevel().getBlockEntity(gramola) instanceof com.miscelanea.baile.PistaBaileBlockEntity be) be.usar(sp);
+            });
+        });
+        paso("21_videoclip_hotel_inicio", 40, () -> com.miscelanea.client.baile.BaileCliente.pruebaEmpezar("weapon_of_choice"));
+        paso("22_videoclip_hotel_8s", 120, () -> {
+            if (!com.miscelanea.client.baile.BaileCliente.bailando()) throw new IllegalStateException("no ha empezado a bailar");
+        });
+        paso("23_videoclip_hotel_20s", 240, () -> {});
+        paso("24_tras_salir", 40, com.miscelanea.client.baile.BaileCliente::pruebaSalir);
+        sin("gramola_otra", 30, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp.serverLevel().getBlockEntity(gramola) instanceof com.miscelanea.baile.PistaBaileBlockEntity pb) pb.usar(sp);
+            });
+        });
+        paso("25_videoclip_disco", 160, () -> com.miscelanea.client.baile.BaileCliente.pruebaEmpezar("___otra"));
+        paso("26_tras_salir_disco", 40, com.miscelanea.client.baile.BaileCliente::pruebaSalir);
         sin("pociones", 1, () -> {
             // el soporte para pociones: rara + ingrediente
             var rara = net.minecraft.world.item.alchemy.PotionUtils.setPotion(new ItemStack(net.minecraft.world.item.Items.POTION), net.minecraft.world.item.alchemy.Potions.AWKWARD);

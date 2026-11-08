@@ -125,6 +125,23 @@ public final class BaileCliente {
     }
 
     /** Esc o agacharse con la pantalla del baile abierta: bajarse. */
+    /** Para la prueba automática: empieza esa canción (por su id, o la primera si no está) como si se eligiera en el menú. */
+    public static void pruebaEmpezar(String id) {
+        List<CancionesBaile.Cancion> l = CancionesBaile.lista();
+        if (pista == null || l.isEmpty()) throw new IllegalStateException("no hay menú de baile abierto");
+        CancionesBaile.Cancion c = l.stream().filter(x -> x.id.endsWith(id)).findFirst()
+                .orElse(l.stream().filter(x -> !x.id.endsWith("weapon_of_choice")).findFirst().orElse(l.get(0)));
+        ModNetwork.CHANNEL.sendToServer(new BailePacket(BailePacket.EMPIEZA, pista, 0, 0, 1, c.id));
+    }
+
+    public static boolean bailando() {
+        return modo == BAILE;
+    }
+
+    public static void pruebaSalir() {
+        salirPorTecla();
+    }
+
     static void salirPorTecla() {
         if (modo == PRUEBA) {
             modo = MENU;

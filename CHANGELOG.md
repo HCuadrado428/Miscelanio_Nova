@@ -12,6 +12,11 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
 - **version-2**: la 2.0.0 (lo gordo). Recoge lo de main por el camino y se une al final.
 
 ## 2.0.0 (en curso)
+- **Montaña rusa** (pestaña Feria): vía (recta, curvas, subida y bajada: agáchate y clic con la mano vacía para cambiar la forma), vía de cadena (sube el tren), estación (para y sale sola a los 5 s con gente, o con redstone), vía de freno y rizo de 4 bloques de alto. El tren va de 2 a 4 vagones de dos plazas (agáchate y clic con otro tren para añadir uno); cae por las cuestas con su peso, se inclina en las curvas y la cámara da la vuelta entera en el rizo. La barra de seguridad no deja bajarse en marcha. Pensado para ordenadores flojos: las vías son bloques normales y el tren es una sola entidad.
+
+## 1.1.1
+- **Gramola:** el decorado del videoclip se pone a la altura de los pies de quien baila. Si el suelo delante de la gramola estaba más alto o más bajo (o había alfombras o losas), el decorado se quedaba a otra altura y la cámara se metía por debajo del suelo.
+- **Gramola (videoclip):** sin shaders, los rayos, focos y halos del decorado salían como planos de color macizo tapando la pantalla (las luces suaves se pintaban con el búfer del color opaco). Ahora cada tipo de luz tiene su búfer y se ven translúcidas.
 
 ## 1.1.0
 - **Pociones en supervivencia:** Gigante (seta roja), Enano (seta marrón), Ecolocalización (fragmento de eco), Niebla viviente (tinta de calamar), Espejismo (fragmento de amatista), Helio (pluma), Ventilador (bola de nieve), Borrachera (trigo) y Tartamudeo (granos de cacao), sobre poción rara; la redstone las alarga. Sed de sangre y Fantasma siguen en creativo.
