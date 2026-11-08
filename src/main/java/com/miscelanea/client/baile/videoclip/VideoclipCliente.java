@@ -94,6 +94,12 @@ public final class VideoclipCliente {
         Direction f = st.hasProperty(com.miscelanea.baile.PistaBaileBlock.FACING) ? st.getValue(com.miscelanea.baile.PistaBaileBlock.FACING)
                 : Direction.fromYRot(frenteYaw);
         ancla = com.miscelanea.baile.PistaBaileBlockEntity.hueco(g, f, 0);
+        // el suelo del decorado va donde de verdad tiene los pies el que baila (si el suelo delante de la gramola está
+        // más bajo o más alto, o hay alfombras o losas, el decorado se quedaba a otra altura y la cámara se metía
+        // debajo del suelo)
+        if (mc.player != null && Math.abs(mc.player.getX() - ancla.x) < 6 && Math.abs(mc.player.getZ() - ancla.z) < 6
+                && Math.abs(mc.player.getY() - ancla.y) < 4)
+            ancla = new Vec3(ancla.x, mc.player.getY(), ancla.z);
         cancion = c;
         Decorado d = decoradoDe(c);
         try {

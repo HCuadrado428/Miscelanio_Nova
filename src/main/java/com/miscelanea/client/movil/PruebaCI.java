@@ -209,9 +209,19 @@ public final class PruebaCI {
                 net.minecraft.core.BlockPos g = sp.blockPosition().relative(f, 4);
                 gramola = g;
                 // suelo despejado alrededor
-                for (int dx = -5; dx <= 5; dx++)
-                    for (int dz = -5; dz <= 5; dz++)
+                // suelo plano y despejado alrededor, con un escalón de bajada justo delante de la gramola (para ver
+                // que el decorado se pone a la altura de los pies)
+                for (int dx = -6; dx <= 6; dx++)
+                    for (int dz = -6; dz <= 6; dz++) {
                         for (int dy = 0; dy <= 4; dy++) lv.setBlockAndUpdate(g.offset(dx, dy, dz), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+                        lv.setBlockAndUpdate(g.offset(dx, -1, dz), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+                    }
+                for (int dx = -2; dx <= 2; dx++)
+                    for (int k = 1; k <= 4; k++) lv.setBlockAndUpdate(g.relative(f.getOpposite(), k).relative(f.getClockWise(), dx).below(),
+                            net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+                for (int dx = -2; dx <= 2; dx++)
+                    for (int k = 1; k <= 4; k++) lv.setBlockAndUpdate(g.relative(f.getOpposite(), k).relative(f.getClockWise(), dx).below(2),
+                            net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
                 lv.setBlockAndUpdate(g, com.miscelanea.registry.ModBlocks.GRAMOLA.get().defaultBlockState()
                         .setValue(com.miscelanea.baile.PistaBaileBlock.FACING, f.getOpposite()));
             });
