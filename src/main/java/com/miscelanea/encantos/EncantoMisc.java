@@ -1,7 +1,6 @@
 package com.miscelanea.encantos;
 
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 
@@ -37,11 +36,6 @@ public class EncantoMisc extends Enchantment {
 
     @Override
     public boolean isDiscoverable() {
-        return false;
-    }
-
-    @Override
-    public boolean canApplyAtEnchantingTable(ItemStack st) {
         return false;
     }
 

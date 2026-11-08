@@ -2804,5 +2804,12 @@
   "miscelanea.mesa.sin_libros": "No books. Put enchanted books in chiseled bookshelves around the table (where bookshelves would go, with air in between): their enchantments will show up here.",
   "miscelanea.mesa.nada": "None of the books around fit this item (or it's already full).",
   "miscelanea.mesa.sin_niveles": "You need %s levels",
-  "miscelanea.mesa.sin_lapis": "You need %s lapis lazuli"
+  "miscelanea.mesa.sin_lapis": "You need %s lapis lazuli",
+  "enchantment.minecraft.silk_touch.desc": "Blocks drop themselves.",
+  "enchantment.minecraft.fortune.desc": "More ores and crops when broken.",
+  "enchantment.minecraft.looting.desc": "Mobs drop more loot.",
+  "enchantment.minecraft.respiration.desc": "Breathe longer underwater.",
+  "enchantment.minecraft.aqua_affinity.desc": "Normal mining speed underwater.",
+  "enchantment.minecraft.binding_curse.desc": "Can't be removed.",
+  "enchantment.minecraft.vanishing_curse.desc": "Disappears on death."
 }

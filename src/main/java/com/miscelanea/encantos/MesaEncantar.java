@@ -89,7 +89,7 @@ public final class MesaEncantar {
         boolean lleno = n >= Reglas.limite(st);
         for (Map.Entry<Enchantment, Integer> en : libros(l, mesa).entrySet()) {
             Enchantment e = en.getKey();
-            if (!Reglas.permitido(e) || Reglas.especial(e) || ya.containsKey(e) || !e.canEnchant(st)) continue;
+            if (!Reglas.permitido(e) || Reglas.especial(e) || ya.containsKey(e) || !(e.category.canEnchant(st.getItem()) || e.canEnchant(st))) continue;
             if (!EnchantmentHelper.isEnchantmentCompatible(ya.keySet(), e)) continue;
             if (lleno && !e.isCurse()) continue;
             int niveles = Math.max(2, 5 + 5 * n - (en.getValue() >= 2 ? 2 : 0));

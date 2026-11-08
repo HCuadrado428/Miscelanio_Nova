@@ -2804,5 +2804,12 @@
   "miscelanea.mesa.sin_libros": "No hay libros. Pon libros encantados en estanterías cinceladas alrededor de la mesa (donde irían las estanterías, con aire entre medias): sus encantamientos saldrán aquí.",
   "miscelanea.mesa.nada": "Ninguno de los libros de alrededor le vale a este objeto (o ya está lleno).",
   "miscelanea.mesa.sin_niveles": "Te hacen falta %s niveles",
-  "miscelanea.mesa.sin_lapis": "Te hace falta %s de lapislázuli"
+  "miscelanea.mesa.sin_lapis": "Te hace falta %s de lapislázuli",
+  "enchantment.minecraft.silk_touch.desc": "Los bloques caen tal cual.",
+  "enchantment.minecraft.fortune.desc": "Más minerales y cosechas al romper.",
+  "enchantment.minecraft.looting.desc": "Los mobs sueltan más cosas.",
+  "enchantment.minecraft.respiration.desc": "Aguantas más bajo el agua.",
+  "enchantment.minecraft.aqua_affinity.desc": "Picas a la velocidad normal bajo el agua.",
+  "enchantment.minecraft.binding_curse.desc": "No te lo puedes quitar.",
+  "enchantment.minecraft.vanishing_curse.desc": "Desaparece al morir."
 }
