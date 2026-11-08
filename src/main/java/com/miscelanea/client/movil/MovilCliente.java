@@ -267,6 +267,7 @@ public final class MovilCliente {
     }
 
     public static int poseDe(AbstractClientPlayer p) {
+        if (Ui.dibujandoCara) return MovilRed.POSE_NADA;
         if (p == Minecraft.getInstance().player) return poseLocal;
         return POSES.getOrDefault(p.getId(), MovilRed.POSE_NADA);
     }
@@ -660,6 +661,7 @@ public final class MovilCliente {
         LINTERNAS.clear();
         NotasVozCliente.limpiar();
         ClipCliente.limpiar();
+        CarasCliente.limpiar();
         MinegramCliente.limpiar();
         BancoCliente.limpiar();
         MapaCache.salir();

@@ -133,6 +133,7 @@ public final class Ui {
 
     /** Cara del jugador (con sombrero) con las esquinas redondeadas usando el color de fondo. */
     public static void cara(GuiGraphics g, UUID id, int x, int y, int tam, int fondo) {
+        if (CPM && id != null && CarasCliente.dibujar(g, id, x, y, tam)) return;
         if (tam >= 14 && caraModelo(g, id, x, y, tam, fondo)) return;
         PlayerFaceRenderer.draw(g, piel(id), x, y, tam);
         int c = Math.max(1, tam / 8);
@@ -158,8 +159,26 @@ public final class Ui {
         int sx1 = (int) Math.ceil(Math.max(a.x(), b.x())), sy1 = (int) Math.ceil(Math.max(a.y(), b.y()));
         redondo(g, x, y, tam, tam, Math.max(1, tam / 8), 0xFF2A3640);
         g.enableScissor(sx0, sy0, sx1, sy1);
-        boolean empujado = false;
+        try {
+            if (!cabeza(g, p, x, y, tam, 120)) CPM = false;     // si algo falla una vez, no se vuelve a intentar
+        } finally {
+            g.disableScissor();
+        }
+        return CPM;
+    }
+
+    /** Mientras se dibuja una cabeza para el móvil: sin la pose de sujetar el móvil ni el móvil en la mano. */
+    static boolean dibujandoCara;
+
+    /**
+     * Dibuja la cabeza del modelo del jugador (con lo que pinte CPM) de frente, centrada en el cuadrado (x, y, tam).
+     * No recorta: lo que sobresalga (hombros, pelo) se sale del cuadrado. Devuelve false si ha fallado.
+     */
+    static boolean cabeza(GuiGraphics g, net.minecraft.world.entity.player.Player p, float x, float y, float tam, float z) {
+        Minecraft mc = Minecraft.getInstance();
+        boolean empujado = false, ok = true;
         float yb = p.yBodyRot, ybo = p.yBodyRotO, yr = p.getYRot(), yro = p.yRotO, xr = p.getXRot(), xro = p.xRotO, yh = p.yHeadRot, yho = p.yHeadRotO;
+        dibujandoCara = true;
         try {
             p.yBodyRot = p.yBodyRotO = 180F;
             p.setYRot(180F);
@@ -168,13 +187,13 @@ public final class Ui {
             p.xRotO = 0;
             p.yHeadRot = p.yHeadRotO = 180F;
             float esc = tam / 0.62F;
-            float cabeza = p.getEyeHeight() + 0.12F;
+            float alto = p.getEyeHeight() + 0.12F;
             g.pose().pushPose();
             empujado = true;
-            g.pose().translate(x + tam / 2F, y + tam / 2F, 120);
+            g.pose().translate(x + tam / 2F, y + tam / 2F, z);
             g.pose().mulPoseMatrix(new org.joml.Matrix4f().scaling(esc, esc, -esc));
             g.pose().mulPose(com.mojang.math.Axis.ZP.rotationDegrees(180F));
-            g.pose().translate(0, -cabeza, 0);
+            g.pose().translate(0, -alto, 0);
             com.mojang.blaze3d.platform.Lighting.setupForEntityInInventory();
             var d = mc.getEntityRenderDispatcher();
             d.overrideCameraOrientation(com.mojang.math.Axis.XP.rotationDegrees(0).conjugate());
@@ -184,8 +203,9 @@ public final class Ui {
             d.setRenderShadow(true);
             com.mojang.blaze3d.platform.Lighting.setupFor3DItems();
         } catch (RuntimeException e) {
-            CPM = false;     // si algo falla una vez, no se vuelve a intentar
+            ok = false;
         } finally {
+            dibujandoCara = false;
             if (empujado) g.pose().popPose();
             p.yBodyRot = yb;
             p.yBodyRotO = ybo;
@@ -195,12 +215,16 @@ public final class Ui {
             p.xRotO = xro;
             p.yHeadRot = yh;
             p.yHeadRotO = yho;
-            g.disableScissor();
         }
+        return ok;
+    }
+
+    static boolean cpm() {
         return CPM;
     }
 
-    private static boolean CPM = net.minecraftforge.fml.ModList.get().isLoaded("cpm");
+    /** Con CPM (o en la prueba automática, para probar el camino aunque no esté). */
+    private static boolean CPM = net.minecraftforge.fml.ModList.get().isLoaded("cpm") || Boolean.getBoolean("miscelanea.prueba");
 
     /** Avatar de grupo: círculo de color (según el nombre) con la inicial. */
     public static void avatarGrupo(GuiGraphics g, String nombre, int x, int y, int tam) {

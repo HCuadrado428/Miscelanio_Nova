@@ -87,6 +87,10 @@ public final class MovilRedCliente {
                     ClipCliente.recibir(t, id, b.readByteArray());
                 }
                 case MovilRed.S_FLASH -> MovilCliente.deslumbrar(b.readFloat());
+                case MovilRed.S_CARA -> {
+                    UUID id = b.readUUID();
+                    CarasCliente.recibir(id, b.readByteArray());
+                }
                 case MovilRed.S_POSE -> poseRemota(b.readVarInt(), b.readByte());
                 case MovilRed.S_AVISO -> aviso(Component.translatable(b.readUtf(), b.readUtf()));
                 case MovilRed.S_CHAT_ID -> chatPendiente = b.readVarInt();

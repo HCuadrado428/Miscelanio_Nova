@@ -1,6 +1,7 @@
 # Cambios de Miscelánea
 
 ## 1.0.1 (en curso)
+- **Caras en el móvil con Customizable Player Models:** cada jugador manda una foto de la cabeza de su modelo (de frente y sin el móvil) y el servidor la reparte: se ve en contactos, chats y llamadas aunque esté lejos o desconectado, y ya no sale agarrando el móvil.
 - **Cámara y videollamada con shaders (Oculus):** la imagen salía negra o congelada; ahora se copia cuando el pack de shaders ya ha pintado el mundo (y con el móvil abierto no sale la mano en la foto).
 - **Cámara del móvil:** la vista previa con filtro y los vídeos cortos salían negros; arreglado. Los vídeos duran lo que de verdad duran aunque el juego vaya a pocos fps.
 - **Móvil:** la letra pequeña ya tiene letras (antes solo números): se ven los nombres en las llamadas de grupo, las etiquetas de los botones y los avisos pequeños.

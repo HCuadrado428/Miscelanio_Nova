@@ -86,6 +86,7 @@ public final class MovilServidor {
         if (e.getEntity() instanceof ServerPlayer p) {
             datos(p.server).perfil(p.getUUID(), nombre(p));
             sync(p);
+            Caras.alEntrar(p);
         }
     }
 
@@ -157,6 +158,7 @@ public final class MovilServidor {
                 case MovilRed.C_CLIP_TROZO -> Clips.trozo(p, b);
                 case MovilRed.C_CLIP_PEDIR -> Clips.pedir(p, b.readByte(), b.readVarInt());
                 case MovilRed.C_FLASH -> LinternaLuz.flash(p);
+                case MovilRed.C_CARA -> Caras.recibir(p, b.readByteArray(Caras.MAX + 16));
                 case MovilRed.C_CONTESTAR -> Llamadas.contestar(p, b.readBoolean());
                 case MovilRed.C_COLGAR -> Llamadas.colgar(p);
                 case MovilRed.C_VIDEO -> Llamadas.video(p, b.readByteArray(32000));

@@ -196,7 +196,10 @@ public final class PruebaCI {
             abrirVista(new VistasTelefono.Telefono());
         });
         paso("17_ajustes", 20, () -> abrirVista(new VistasApps.Ajustes()));
-        sin("cerrar", 10, () -> mc.setScreen(null));
+        sin("cerrar", 10, () -> {
+            mc.setScreen(null);
+            RESUMEN.add("  cara propia (la de su modelo) guardada: " + (CarasCliente.tiene(mc.player.getUUID()) ? "sí" : "NO"));
+        });
     }
 
     @SubscribeEvent

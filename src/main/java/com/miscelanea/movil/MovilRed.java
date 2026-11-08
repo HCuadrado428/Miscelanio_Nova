@@ -48,11 +48,13 @@ public final class MovilRed {
             // llamadas: de grupo, silenciar, cambiar a la que está en espera, tono de un contacto (el 41 era el altavoz)
             C_LLAMAR_GRUPO = 39, C_SILENCIAR = 40, C_CAMBIAR_LLAMADA = 42, C_TONO_CONTACTO = 43,
             // cámara: vídeos cortos (subir por trozos y pedir) y flash
-            C_CLIP_TROZO = 44, C_CLIP_PEDIR = 45, C_FLASH = 46;
+            C_CLIP_TROZO = 44, C_CLIP_PEDIR = 45, C_FLASH = 46,
+            // la cara (cabeza del modelo de CPM) que cada uno manda de sí mismo
+            C_CARA = 47;
     // ---------------------------------------------------------------- servidor → cliente
     public static final int S_SYNC = 0, S_CHAT = 1, S_MENSAJE = 2, S_FOTOS = 3, S_FOTO = 4, S_LLAMADA = 5, S_VIDEO = 6, S_POSE = 7,
             S_AVISO = 8, S_CHAT_ID = 9, S_VOZ = 10, S_UBI = 11, S_NOTI = 12, S_MG_FEED = 13, S_MG_POST = 14, S_MG_PERFIL = 15,
-            S_MG_NOTIS = 16, S_BANCO = 17, S_LINTERNA = 18, S_CLIP = 19, S_FLASH = 20;
+            S_MG_NOTIS = 16, S_BANCO = 17, S_LINTERNA = 18, S_CLIP = 19, S_FLASH = 20, S_CARA = 21;
 
     /** Estados de llamada que manda {@link #S_LLAMADA}. */
     public static final int LL_FIN = 0, LL_SALIENTE = 1, LL_ENTRANTE = 2, LL_ACTIVA = 3, LL_ESPERA = 4;

@@ -35,6 +35,7 @@ public class AnimMovil implements IAnimation {
 
     @Override
     public boolean isActive() {
+        if (Ui.dibujandoCara) return false;     // la cara del móvil, sin el brazo delante
         return peso > 0 || pesoO > 0 || MovilCliente.poseDe(p) != MovilRed.POSE_NADA;
     }
 
