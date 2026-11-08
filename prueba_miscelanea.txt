@@ -1,0 +1,98 @@
+Prueba del móvil (Miscelánea)
+OK    preparar
+OK    00_mundo
+OK    01_inicio
+OK    02_camara
+OK    03_filtro_1
+OK    03_filtro_2
+OK    03_filtro_3
+OK    03_filtro_4
+OK    03_filtro_5
+OK    03_filtro_6
+OK    03_filtro_7
+OK    03_filtro_8
+OK    03_foto_gameboy
+OK    04_zoom
+OK    05_horizontal
+OK    vuelve_vertical
+OK    06_foto
+OK    espera_foto
+OK    07_temporizador
+OK    espera_temporizador
+OK    temporizador_fuera
+OK    08_flash
+OK    espera_flash
+OK    09_grabando
+OK    para_video
+OK    10_galeria
+  galería: 5 (la última es un vídeo de 3000 ms)
+OK    11_visor
+OK    12_llamada_grupo
+OK    13_llamada
+OK    14_entrante
+OK    15_manos_libres
+OK    16_teclado
+OK    17_ajustes
+OK    gramola_poner
+OK    20_gramola_menu
+OK    21_videoclip_hotel_inicio
+OK    22_videoclip_hotel_8s
+OK    23_videoclip_hotel_20s
+OK    24_tras_salir
+OK    gramola_otra
+OK    25_videoclip_disco
+OK    26_tras_salir_disco
+  pociones: red_mushroom=gigante brown_mushroom=enano echo_shard=ecolocalizacion ink_sac=niebla_viviente amethyst_shard=espejismo feather=helio snowball=ventilador wheat=borrachera cocoa_beans=tartamudeo
+OK    pociones
+OK    encantos_limpiar
+  encantos: espada {net.minecraft.world.item.enchantment.LootBonusEnchantment@426e767e=3} · peto {} · libro {com.miscelanea.encantos.EncantoMisc@4eb73cc8=1} · xp +560 · espada con durabilidad: false
+OK    encantos_mesa
+OK    60_mesa_encantar
+OK    encantos_elegir
+  mesa: la espada tiene [miscelanea.vampiro, miscelanea.berserker]
+OK    61_mesa_llena
+OK    encantos_fin
+OK    perfil_vacio
+  rendimiento sin_sala: 0.8 fps
+OK    perfil_sala
+  rendimiento: sala con 35 de 35 cosas
+  rendimiento colocar: 0.7 fps
+OK    perfil_mirar
+  rendimiento sala: 1.1 fps
+OK    perfil_jugar
+OK    70_perfil_mazmorra
+  rendimiento mazmorra: 1.3 fps
+OK    perfil_turbo
+OK    71_perfil_turbo
+  rendimiento turbo: 1.4 fps
+OK    perfil_fin
+OK    72_perfil_sala
+OK    laser_poner
+OK    laser_encender
+OK    80_laser_primera
+OK    laser_primera_quitar_hud
+  láser laser_primera: el punto sale a (-0.6, -0.2) px de la mira (251 píxeles rojos, imagen 854x480) · calculado (+0.6, -0.8) px, a 0.028 bloques de donde mira y a 0.030 del que ven los demás
+OK    laser_primera_medir
+OK    laser_fov
+OK    81_laser_fov105
+OK    laser_fov105_quitar_hud
+  láser laser_fov105: el punto sale a (-0.4, -0.2) px de la mira (67 píxeles rojos, imagen 854x480) · calculado (+0.2, +0.2) px, a 0.015 bloques de donde mira y a 0.038 del que ven los demás
+OK    laser_fov105_medir
+OK    laser_gigante
+  láser: de gigante, ojos a 4.86 bloques del suelo
+OK    82_laser_gigante
+OK    laser_gigante_quitar_hud
+  láser laser_gigante: el punto sale a (+0.2, -0.3) px de la mira (185 píxeles rojos, imagen 854x480) · calculado (+0.1, +0.2) px, a 0.007 bloques de donde mira y a 0.024 del que ven los demás
+OK    laser_gigante_medir
+OK    laser_normal
+OK    laser_fuera_poner
+OK    83_laser_desde_fuera
+OK    laser_desde_fuera_quitar_hud
+  láser laser_desde_fuera: el punto sale a (-3.0, -0.7) px de donde mira (143 píxeles rojos, imagen 854x480) · calculado (+0.6, -0.5) px, a 0.024 bloques de donde mira y a 0.019 del que ven los demás
+OK    laser_desde_fuera_medir
+OK    laser_fuera_quitar
+OK    84_laser_tercera
+OK    laser_fin
+  cara propia (la de su modelo) guardada: sí
+OK    cerrar
+TODO BIEN
