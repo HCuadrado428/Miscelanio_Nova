@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "VVV",
+    "V V",
+    "VVV"
+  ],
+  "key": {
+    "V": {
+      "item": "miscelanea:via_montana"
+    }
+  },
+  "result": {
+    "item": "miscelanea:rizo_montana",
+    "count": 1
+  }
+}

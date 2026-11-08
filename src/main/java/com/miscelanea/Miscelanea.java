@@ -110,6 +110,12 @@ public class Miscelanea {
             event.accept(ModItems.POSTE_TIROLINA);
             event.accept(ModItems.CABLE_TIROLINA);
             event.accept(ModItems.PIZARRA_FERIA);
+            event.accept(ModItems.VIA_MONTANA);
+            event.accept(ModItems.VIA_MONTANA_CADENA);
+            event.accept(ModItems.VIA_MONTANA_ESTACION);
+            event.accept(ModItems.VIA_MONTANA_FRENO);
+            event.accept(ModItems.RIZO_MONTANA);
+            event.accept(ModItems.TREN_MONTANA);
             for (int i = 0; i < com.miscelanea.feria.ChapaItem.DIBUJOS.length; i++) event.accept(com.miscelanea.feria.ChapaItem.de(i));
         }
         // ---- Sala recreativa

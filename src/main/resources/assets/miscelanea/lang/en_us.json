@@ -2749,5 +2749,18 @@
   "movil.miscelanea.manos_libres": "Hands-free",
   "movil.miscelanea.manos_libres_volver": "Right-click phone: back",
   "movil.miscelanea.manos_libres_corto": "H.free",
-  "movil.miscelanea.tono_corto": "Ringtone"
+  "movil.miscelanea.tono_corto": "Ringtone",
+  "block.miscelanea.via_montana": "Roller Coaster Track",
+  "block.miscelanea.via_montana_cadena": "Chain Lift Track",
+  "block.miscelanea.via_montana_estacion": "Roller Coaster Station",
+  "block.miscelanea.via_montana_freno": "Brake Track",
+  "block.miscelanea.rizo_montana": "Roller Coaster Loop",
+  "item.miscelanea.tren_montana": "Roller Coaster Train",
+  "entity.miscelanea.tren_montana": "Roller Coaster Train",
+  "montana.miscelanea.forma.recta": "Straight",
+  "montana.miscelanea.forma.curva_izq": "Left turn",
+  "montana.miscelanea.forma.curva_der": "Right turn",
+  "montana.miscelanea.forma.subida": "Up slope",
+  "montana.miscelanea.forma.bajada": "Down slope",
+  "montana.miscelanea.barra": "The safety bar won't open until the train stops"
 }

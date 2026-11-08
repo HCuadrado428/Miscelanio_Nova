@@ -2749,5 +2749,18 @@
   "movil.miscelanea.manos_libres": "Manos libres",
   "movil.miscelanea.manos_libres_volver": "Clic der. al móvil: volver",
   "movil.miscelanea.manos_libres_corto": "M.libres",
-  "movil.miscelanea.tono_corto": "Tono"
+  "movil.miscelanea.tono_corto": "Tono",
+  "block.miscelanea.via_montana": "Vía de montaña rusa",
+  "block.miscelanea.via_montana_cadena": "Vía de cadena",
+  "block.miscelanea.via_montana_estacion": "Estación de montaña rusa",
+  "block.miscelanea.via_montana_freno": "Vía de freno",
+  "block.miscelanea.rizo_montana": "Rizo de montaña rusa",
+  "item.miscelanea.tren_montana": "Tren de montaña rusa",
+  "entity.miscelanea.tren_montana": "Tren de montaña rusa",
+  "montana.miscelanea.forma.recta": "Recta",
+  "montana.miscelanea.forma.curva_izq": "Curva a la izquierda",
+  "montana.miscelanea.forma.curva_der": "Curva a la derecha",
+  "montana.miscelanea.forma.subida": "Subida",
+  "montana.miscelanea.forma.bajada": "Bajada",
+  "montana.miscelanea.barra": "La barra de seguridad no se abre hasta que el tren pare"
 }

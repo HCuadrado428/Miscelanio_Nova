@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/rizo_montana"
+  },
+  "facing=east": {
+   "model": "miscelanea:block/rizo_montana",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/rizo_montana",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/rizo_montana",
+   "y": 270
+  }
+ }
+}

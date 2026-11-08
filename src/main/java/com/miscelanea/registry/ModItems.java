@@ -278,6 +278,13 @@ public final class ModItems {
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.BILLAR.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> FUTBOLIN = ITEMS.register("futbolin",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.FUTBOLIN.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    // ---- Montaña rusa
+    public static final RegistryObject<Item> VIA_MONTANA = ITEMS.register("via_montana", () -> new net.minecraft.world.item.BlockItem(ModBlocks.VIA_MONTANA.get(), new Item.Properties()));
+    public static final RegistryObject<Item> VIA_MONTANA_CADENA = ITEMS.register("via_montana_cadena", () -> new net.minecraft.world.item.BlockItem(ModBlocks.VIA_MONTANA_CADENA.get(), new Item.Properties()));
+    public static final RegistryObject<Item> VIA_MONTANA_ESTACION = ITEMS.register("via_montana_estacion", () -> new net.minecraft.world.item.BlockItem(ModBlocks.VIA_MONTANA_ESTACION.get(), new Item.Properties()));
+    public static final RegistryObject<Item> VIA_MONTANA_FRENO = ITEMS.register("via_montana_freno", () -> new net.minecraft.world.item.BlockItem(ModBlocks.VIA_MONTANA_FRENO.get(), new Item.Properties()));
+    public static final RegistryObject<Item> RIZO_MONTANA = ITEMS.register("rizo_montana", () -> new net.minecraft.world.item.BlockItem(ModBlocks.RIZO.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> TREN_MONTANA = ITEMS.register("tren_montana", () -> new com.miscelanea.montana.TrenMontanaItem(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> PIZARRA_FERIA = ITEMS.register("pizarra_feria",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PIZARRA_FERIA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> TABLON_RECORDS = ITEMS.register("tablon_records",

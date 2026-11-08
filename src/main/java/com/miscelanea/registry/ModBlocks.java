@@ -81,6 +81,23 @@ public final class ModBlocks {
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.baile.PistaBaileBlockEntity>> PISTA_BAILE_BE = BLOCK_ENTITIES.register("pista_baile",
             () -> BlockEntityType.Builder.of(com.miscelanea.baile.PistaBaileBlockEntity::new, PISTA_BAILE.get(), GRAMOLA.get()).build(null));
+    // ---- Montaña rusa (2.0.0): vías de bloque normales (sin bloque-entidad) y el rizo, que dibuja su vuelta
+    private static BlockBehaviour.Properties via() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(1.5F).sound(SoundType.METAL).noOcclusion();
+    }
+    public static final RegistryObject<Block> VIA_MONTANA = BLOCKS.register("via_montana",
+            () -> new com.miscelanea.montana.ViaMontanaBlock(via(), com.miscelanea.montana.ViaMontanaBlock.Tipo.NORMAL));
+    public static final RegistryObject<Block> VIA_MONTANA_CADENA = BLOCKS.register("via_montana_cadena",
+            () -> new com.miscelanea.montana.ViaMontanaBlock(via(), com.miscelanea.montana.ViaMontanaBlock.Tipo.CADENA));
+    public static final RegistryObject<Block> VIA_MONTANA_ESTACION = BLOCKS.register("via_montana_estacion",
+            () -> new com.miscelanea.montana.ViaMontanaBlock(via(), com.miscelanea.montana.ViaMontanaBlock.Tipo.ESTACION));
+    public static final RegistryObject<Block> VIA_MONTANA_FRENO = BLOCKS.register("via_montana_freno",
+            () -> new com.miscelanea.montana.ViaMontanaBlock(via(), com.miscelanea.montana.ViaMontanaBlock.Tipo.FRENO));
+    public static final RegistryObject<Block> RIZO = BLOCKS.register("rizo_montana",
+            () -> new com.miscelanea.montana.RizoBlock(via()));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.montana.RizoBlock.RizoBlockEntity>> RIZO_BE = BLOCK_ENTITIES.register("rizo_montana",
+            () -> BlockEntityType.Builder.of(com.miscelanea.montana.RizoBlock.RizoBlockEntity::new, RIZO.get()).build(null));
     public static final RegistryObject<Block> NORIA = BLOCKS.register("noria",
             () -> new com.miscelanea.feria.AtraccionBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(3.0F)
                     .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 10), com.miscelanea.feria.AtraccionBlock.NORIA));

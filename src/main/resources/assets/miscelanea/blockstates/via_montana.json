@@ -1,0 +1,154 @@
+{
+ "variants": {
+  "facing=north,forma=recta,powered=false": {
+   "model": "miscelanea:block/via_montana_recta"
+  },
+  "facing=north,forma=recta,powered=true": {
+   "model": "miscelanea:block/via_montana_recta"
+  },
+  "facing=east,forma=recta,powered=false": {
+   "model": "miscelanea:block/via_montana_recta",
+   "y": 90
+  },
+  "facing=east,forma=recta,powered=true": {
+   "model": "miscelanea:block/via_montana_recta",
+   "y": 90
+  },
+  "facing=south,forma=recta,powered=false": {
+   "model": "miscelanea:block/via_montana_recta",
+   "y": 180
+  },
+  "facing=south,forma=recta,powered=true": {
+   "model": "miscelanea:block/via_montana_recta",
+   "y": 180
+  },
+  "facing=west,forma=recta,powered=false": {
+   "model": "miscelanea:block/via_montana_recta",
+   "y": 270
+  },
+  "facing=west,forma=recta,powered=true": {
+   "model": "miscelanea:block/via_montana_recta",
+   "y": 270
+  },
+  "facing=north,forma=curva_izq,powered=false": {
+   "model": "miscelanea:block/via_montana_curva_izq"
+  },
+  "facing=north,forma=curva_izq,powered=true": {
+   "model": "miscelanea:block/via_montana_curva_izq"
+  },
+  "facing=east,forma=curva_izq,powered=false": {
+   "model": "miscelanea:block/via_montana_curva_izq",
+   "y": 90
+  },
+  "facing=east,forma=curva_izq,powered=true": {
+   "model": "miscelanea:block/via_montana_curva_izq",
+   "y": 90
+  },
+  "facing=south,forma=curva_izq,powered=false": {
+   "model": "miscelanea:block/via_montana_curva_izq",
+   "y": 180
+  },
+  "facing=south,forma=curva_izq,powered=true": {
+   "model": "miscelanea:block/via_montana_curva_izq",
+   "y": 180
+  },
+  "facing=west,forma=curva_izq,powered=false": {
+   "model": "miscelanea:block/via_montana_curva_izq",
+   "y": 270
+  },
+  "facing=west,forma=curva_izq,powered=true": {
+   "model": "miscelanea:block/via_montana_curva_izq",
+   "y": 270
+  },
+  "facing=north,forma=curva_der,powered=false": {
+   "model": "miscelanea:block/via_montana_curva_der"
+  },
+  "facing=north,forma=curva_der,powered=true": {
+   "model": "miscelanea:block/via_montana_curva_der"
+  },
+  "facing=east,forma=curva_der,powered=false": {
+   "model": "miscelanea:block/via_montana_curva_der",
+   "y": 90
+  },
+  "facing=east,forma=curva_der,powered=true": {
+   "model": "miscelanea:block/via_montana_curva_der",
+   "y": 90
+  },
+  "facing=south,forma=curva_der,powered=false": {
+   "model": "miscelanea:block/via_montana_curva_der",
+   "y": 180
+  },
+  "facing=south,forma=curva_der,powered=true": {
+   "model": "miscelanea:block/via_montana_curva_der",
+   "y": 180
+  },
+  "facing=west,forma=curva_der,powered=false": {
+   "model": "miscelanea:block/via_montana_curva_der",
+   "y": 270
+  },
+  "facing=west,forma=curva_der,powered=true": {
+   "model": "miscelanea:block/via_montana_curva_der",
+   "y": 270
+  },
+  "facing=north,forma=subida,powered=false": {
+   "model": "miscelanea:block/via_montana_subida"
+  },
+  "facing=north,forma=subida,powered=true": {
+   "model": "miscelanea:block/via_montana_subida"
+  },
+  "facing=east,forma=subida,powered=false": {
+   "model": "miscelanea:block/via_montana_subida",
+   "y": 90
+  },
+  "facing=east,forma=subida,powered=true": {
+   "model": "miscelanea:block/via_montana_subida",
+   "y": 90
+  },
+  "facing=south,forma=subida,powered=false": {
+   "model": "miscelanea:block/via_montana_subida",
+   "y": 180
+  },
+  "facing=south,forma=subida,powered=true": {
+   "model": "miscelanea:block/via_montana_subida",
+   "y": 180
+  },
+  "facing=west,forma=subida,powered=false": {
+   "model": "miscelanea:block/via_montana_subida",
+   "y": 270
+  },
+  "facing=west,forma=subida,powered=true": {
+   "model": "miscelanea:block/via_montana_subida",
+   "y": 270
+  },
+  "facing=north,forma=bajada,powered=false": {
+   "model": "miscelanea:block/via_montana_bajada"
+  },
+  "facing=north,forma=bajada,powered=true": {
+   "model": "miscelanea:block/via_montana_bajada"
+  },
+  "facing=east,forma=bajada,powered=false": {
+   "model": "miscelanea:block/via_montana_bajada",
+   "y": 90
+  },
+  "facing=east,forma=bajada,powered=true": {
+   "model": "miscelanea:block/via_montana_bajada",
+   "y": 90
+  },
+  "facing=south,forma=bajada,powered=false": {
+   "model": "miscelanea:block/via_montana_bajada",
+   "y": 180
+  },
+  "facing=south,forma=bajada,powered=true": {
+   "model": "miscelanea:block/via_montana_bajada",
+   "y": 180
+  },
+  "facing=west,forma=bajada,powered=false": {
+   "model": "miscelanea:block/via_montana_bajada",
+   "y": 270
+  },
+  "facing=west,forma=bajada,powered=true": {
+   "model": "miscelanea:block/via_montana_bajada",
+   "y": 270
+  }
+ }
+}
