@@ -23,7 +23,7 @@ public final class PurgatorioCliente {
     private PurgatorioCliente() {}
 
     /** Hasta dónde se ve (bloques) en cada zona: al aire libre, un poco más que dentro. */
-    static float niebla(PurgatorioGenerador.Zona z) {
+    static float distancia(PurgatorioGenerador.Zona z) {
         return switch (z) {
             case FERIA -> 34;
             case SALA -> 24;
@@ -82,7 +82,7 @@ public final class PurgatorioCliente {
         @SubscribeEvent
         public static void niebla(ViewportEvent.RenderFog e) {
             if (!aqui()) return;
-            float lejos = Math.min(e.getFarPlaneDistance(), niebla(zona()));
+            float lejos = Math.min(e.getFarPlaneDistance(), distancia(zona()));
             e.setNearPlaneDistance(e.getMode() == FogRenderer.FogMode.FOG_SKY ? 0 : lejos * 0.15F);
             e.setFarPlaneDistance(lejos);
             e.setFogShape(FogShape.SPHERE);
