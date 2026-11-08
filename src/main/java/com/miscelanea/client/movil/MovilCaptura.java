@@ -67,10 +67,24 @@ public final class MovilCaptura {
         }
         horizontal = horiz;
         pedidoHasta = Util.getMillis() + 300;
+        fotogramaPedido = fotograma;
+    }
+
+    /** Fotogramas dibujados y en cuál se pidió por última vez (si el juego va a pocos fps, 300 ms no llegan). */
+    private static int fotograma, fotogramaPedido = -100;
+
+    @SubscribeEvent
+    public static void contar(net.minecraftforge.event.TickEvent.RenderTickEvent e) {
+        if (e.phase == net.minecraftforge.event.TickEvent.Phase.START) fotograma++;
+    }
+
+    /** ¿Se ha pedido hace poco (en tiempo o en fotogramas)? */
+    private static boolean pedido() {
+        return Util.getMillis() <= pedidoHasta || fotograma - fotogramaPedido <= 2;
     }
 
     public static boolean lista() {
-        return (horizontal ? hayH && medioH != null : hay && medio != null) && Util.getMillis() <= pedidoHasta;
+        return (horizontal ? hayH && medioH != null : hay && medio != null) && pedido();
     }
 
     private static TextureTarget nuevo(int w, int h) {
@@ -84,7 +98,7 @@ public final class MovilCaptura {
     private static boolean shaders;
     private static java.lang.reflect.Method irisEnUso;
     private static Object irisApi;
-    private static boolean sinIris;
+    private static boolean sinIris, avisadoShaders;
 
     /** ¿Hay un pack de shaders puesto (Oculus/Iris)? Se mira una vez por segundo, por reflexión (no hace falta tenerlo). */
     public static boolean shaders() {
@@ -108,18 +122,24 @@ public final class MovilCaptura {
 
     /** Desde {@code GameRendererMixin}: el nivel ya está dibujado del todo (con shaders, ya compuesto). */
     public static void trasNivel() {
-        if (Util.getMillis() <= pedidoHasta && shaders()) capturar();
+        if (pedido() && shaders()) {
+            if (!avisadoShaders) {
+                avisadoShaders = true;
+                Miscelanea.LOGGER.info("[Móvil] Cámara con shaders: se copia la imagen tras componer el pack");
+            }
+            capturar();
+        }
     }
 
     /** Con shaders y el móvil abierto, la mano no se dibuja: si no, saldría en las fotos (se copia después de ella). */
     @SubscribeEvent
     public static void mano(net.minecraftforge.client.event.RenderHandEvent e) {
-        if (Util.getMillis() <= pedidoHasta && shaders() && Minecraft.getInstance().screen instanceof MovilScreen) e.setCanceled(true);
+        if (pedido() && shaders() && Minecraft.getInstance().screen instanceof MovilScreen) e.setCanceled(true);
     }
 
     @SubscribeEvent
     public static void nivel(RenderLevelStageEvent e) {
-        if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES || Util.getMillis() > pedidoHasta || shaders()) return;
+        if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES || !pedido() || shaders()) return;
         capturar();
     }
 
