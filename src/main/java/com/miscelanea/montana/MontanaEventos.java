@@ -12,9 +12,21 @@ import net.minecraftforge.fml.common.Mod;
 public final class MontanaEventos {
     private MontanaEventos() {}
 
+    private static boolean forzar;
+
+    /** Le baja aunque el tren vaya en marcha (para llevárselo a otra parte, p. ej. al Purgatorio). */
+    public static void bajarSiOSi(net.minecraft.world.entity.Entity e) {
+        forzar = true;
+        try {
+            e.stopRiding();
+        } finally {
+            forzar = false;
+        }
+    }
+
     @SubscribeEvent
     public static void bajar(EntityMountEvent e) {
-        if (!e.isDismounting() || !(e.getEntityBeingMounted() instanceof TrenMontana t) || t.isRemoved()) return;
+        if (forzar || !e.isDismounting() || !(e.getEntityBeingMounted() instanceof TrenMontana t) || t.isRemoved()) return;
         if (!(e.getEntityMounting() instanceof Player p) || !p.isAlive()) return;
         if (t.puedeBajar()) return;
         e.setCanceled(true);

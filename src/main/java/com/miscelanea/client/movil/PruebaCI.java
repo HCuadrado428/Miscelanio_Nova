@@ -460,7 +460,7 @@ public final class PruebaCI {
                 ServerPlayer sp = srv.getPlayerList().getPlayer(id);
                 if (sp == null) return;
                 var l = sp.serverLevel();
-                if (sp.isPassenger()) sp.stopRiding();
+                if (sp.isPassenger()) com.miscelanea.montana.MontanaEventos.bajarSiOSi(sp);
                 int n = 0;
                 for (var b : net.minecraft.core.BlockPos.betweenClosed(montanaO.offset(-1, -1, -24), montanaO.offset(3, 8, 3)))
                     if (l.getBlockState(b).is(com.miscelanea.registry.ModBlocks.PILAR_MONTANA.get())) n++;
@@ -491,7 +491,7 @@ public final class PruebaCI {
                     RESUMEN.add("  FALLO: no se encuentra el tren para el rizo");
                     return;
                 }
-                t.ejectPassengers();
+                for (var pa : java.util.List.copyOf(t.getPassengers())) com.miscelanea.montana.MontanaEventos.bajarSiOSi(pa);
                 t.colocar(montanaO.offset(0, 0, -14), 0.1, 2);
                 for (int k = 0; k < 2; k++) {
                     var a = net.minecraft.world.entity.EntityType.VILLAGER.create(l);
@@ -502,23 +502,24 @@ public final class PruebaCI {
                     l.addFreshEntity(a);
                     a.startRiding(t, true);
                 }
-                t.lanzar(0.55);
+                t.lanzar(0.75);
                 sp.teleportTo(montanaO.getX() + 8.5, montanaO.getY() + 2, montanaO.getZ() - 17.5);
                 sp.setYRot(90);
                 sp.setYHeadRot(90);
                 sp.setXRot(0);
             });
         });
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 12; i++) {
             int ii = i;
-            paso("33_montana_rizo_" + i, 3, () -> {
+            paso(String.format("33_montana_rizo_%02d", i), 2, () -> {
                 mc.player.setYRot(90);
                 mc.player.setXRot(-4);
                 if (ii == 0) return;
                 for (var en : mc.level.entitiesForRendering())
                     if (en instanceof com.miscelanea.montana.TrenMontana t) {
                         var s = t.sitio();
-                        RESUMEN.add(String.format("  rizo %d: %s y=%.1f v=%.2f, %d montados", ii, s == null ? "?" : s.pieza().clase().name(),
+                        RESUMEN.add(String.format("  rizo %d: %s %s y=%.1f v=%.2f, %d montados", ii, s == null ? "?" : s.pieza().clase().name(),
+                                s == null ? "" : s.pieza().pos().subtract(montanaO).toShortString(),
                                 t.getY() - montanaO.getY(), t.velocidad(), t.getPassengers().size()));
                         if (s != null) MONTANA_VISTO.add(s.pieza().clase().name());
                     }
@@ -551,7 +552,7 @@ public final class PruebaCI {
             srv.execute(() -> {
                 ServerPlayer sp = srv.getPlayerList().getPlayer(id);
                 if (sp == null) return;
-                if (sp.isPassenger()) sp.stopRiding();
+                if (sp.isPassenger()) com.miscelanea.montana.MontanaEventos.bajarSiOSi(sp);
                 sp.getInventory().setItem(0, ItemStack.EMPTY);
                 if (srv.getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION) == null) RESUMEN.add("  FALLO: no existe la dimensión del Purgatorio");
                 com.miscelanea.purgatorio.Purgatorio.entrar(sp, "purgatorio.miscelanea.vacio");
@@ -647,7 +648,8 @@ public final class PruebaCI {
             var sp = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
             var b = com.miscelanea.purgatorio.Purgatorio.buscarSalida();
             var lp = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
-            RESUMEN.add("  purgatorio (servidor): jugador en " + (sp == null ? "?" : sp.level().dimension().location() + " " + sp.blockPosition().toShortString())
+            RESUMEN.add("  purgatorio (servidor): jugador en " + (sp == null ? "?" : sp.level().dimension().location() + " " + sp.blockPosition().toShortString()
+                    + (sp.isPassenger() ? " MONTADO EN " + sp.getVehicle() : ""))
                     + ", bloque de la puerta: " + (lp == null ? "?" : lp.getBlockState(new net.minecraft.core.BlockPos(b.getX(), b.getY(), b.getZ() - 3))));
             boolean fuera = !com.miscelanea.purgatorio.Purgatorio.en(mc.level);
             RESUMEN.add("  purgatorio: zona del origen " + com.miscelanea.purgatorio.PurgatorioGenerador.zona(0, 0)

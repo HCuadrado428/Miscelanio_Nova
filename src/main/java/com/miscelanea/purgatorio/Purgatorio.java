@@ -111,7 +111,7 @@ public final class Purgatorio {
             vuelta.putDouble("Z", p.getZ());
         }
         persistente(p).put(TAG, vuelta);
-        if (p.isPassenger()) p.stopRiding();
+        if (p.isPassenger()) com.miscelanea.montana.MontanaEventos.bajarSiOSi(p);
         BlockPos b = sitio(p, PurgatorioGenerador.SUELO);
         preparar(dest, b);
         persistente(p).putLong(TAG + "_t", dest.getGameTime());
