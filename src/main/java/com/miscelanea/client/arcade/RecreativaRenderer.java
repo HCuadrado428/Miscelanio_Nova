@@ -26,6 +26,8 @@ import java.util.function.BiFunction;
  */
 public class RecreativaRenderer implements BlockEntityRenderer<RecreativaBlockEntity> {
     private static final int LUZ = 0xF000F0;
+    /** Distancia (bloques) hasta la que se dibujan los textos de la pantalla. */
+    private static final double TEXTOS = 14;
 
     /**
      * Gancho del cliente para otros sistemas (p. ej. el hombre estático metido en una máquina): si no es null y para esta
@@ -61,6 +63,10 @@ public class RecreativaRenderer implements BlockEntityRenderer<RecreativaBlockEn
             tex = ArcadeCliente.demoTex;
             if (tex == null) return;
         }
+        double d2 = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition()
+                .distanceToSqr(be.getBlockPos().getX() + 0.5, be.getBlockPos().getY() + 1.5, be.getBlockPos().getZ() + 0.5);
+        // la imagen se convierte y se sube aquí, solo si la máquina se dibuja (y de lejos, como mucho 3 veces por segundo)
+        if (tex != null) tex.actualizar(d2 > 24 * 24 ? 330 : 0);
         ps.pushPose();
         ps.translate(0.5, 0, 0.5);
         ps.mulPose(Axis.YP.rotationDegrees(180 - f.toYRot()));
@@ -88,7 +94,10 @@ public class RecreativaRenderer implements BlockEntityRenderer<RecreativaBlockEn
         vc.vertex(pm, 0, Pantalla.H, 0).color(255, 255, 255, 255).uv(0, 1).uv2(LUZ).endVertex();
         vc.vertex(pm, Pantalla.W, Pantalla.H, 0).color(255, 255, 255, 255).uv(1, 1).uv2(LUZ).endVertex();
         vc.vertex(pm, Pantalla.W, 0, 0).color(255, 255, 255, 255).uv(1, 0).uv2(LUZ).endVertex();
-        if (lcd == null) {
+        // los textos de la pantalla (récords de la demostración, marcadores…) solo de cerca: a más de 14 bloques miden
+        // menos de un par de píxeles y eran cientos de letras por máquina en cada fotograma. Sin ellos, además, todas las
+        // máquinas con la demostración se dibujan en un solo lote (antes cada una alternaba imagen y letras)
+        if (lcd == null || lcd.textos.isEmpty() || d2 > TEXTOS * TEXTOS) {
             ps.popPose();
             return;
         }

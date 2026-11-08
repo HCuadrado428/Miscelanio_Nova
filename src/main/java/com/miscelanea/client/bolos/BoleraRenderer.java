@@ -62,11 +62,18 @@ public class BoleraRenderer implements BlockEntityRenderer<BoleraBlockEntity> {
         FeriaPiezas.caja(ps, vc, "negro", 0, 0.75, 0.56, 1.0, 1.5, 0.06, luz);
         FeriaPiezas.caja(ps, vc, "lona_roja", 0, 1.32, 0.42, 1.0, 0.36, 0.06, luz);
         for (int k = 0; k < 6; k++) FeriaPiezas.bombilla(ps, vc, -0.42 + k * 0.168, 1.12, 0.38, 0.05F, 0xFFF2C0);
-        // marcador
+        // marcador (las letras solo a menos de 32 bloques: más lejos no se leen y la bolera se ve desde 96)
+        boolean letras = net.minecraft.client.Minecraft.getInstance().gameRenderer.getMainCamera().getPosition()
+                .distanceToSqr(be.getBlockPos().getX() + 0.5, be.getBlockPos().getY() + 1.5, be.getBlockPos().getZ() + 0.5) < 32 * 32;
         ps.pushPose();
         ps.translate(0, 1.85, 0.4);
         // no más ancho que el bloque: con dos calles juntas los marcadores no se pisan
         FeriaPiezas.caja(ps, vc, "negro", 0, 0, 0.03, 0.98, 0.5, 0.04, luz);
+        if (!letras) {
+            ps.popPose();
+            ps.popPose();
+            return;
+        }
         ps.mulPose(Axis.YP.rotationDegrees(180));
         ps.scale(0.0085F, -0.0085F, 0.0085F);
         String[] fr = Marcador.frames(be.tiradas);
