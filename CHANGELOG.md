@@ -11,7 +11,7 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
 - **novedades**: la siguiente 1.x.0 (cosas pequeñas). Se une a main cuando se publica.
 - **version-2**: la 2.0.0 (lo gordo). Recoge lo de main por el camino y se une al final.
 
-## 1.1.3 (en curso)
+## 1.1.3
 - **Encantamientos nuevos, al estilo Enchancement:**
   - Fuera casi todos los vanilla: Protecciones, Espinas, Filo, Golpeo, Perdición, Empuje, Aspecto ígneo, Barrido, Eficiencia, Irrompibilidad, Reparación, Poder, Retroceso, Fuego, Infinidad, los de la caña, del tridente y de la ballesta, Caída de pluma, Agilidad acuática, Paso helado, Velocidad del alma y Sigilo rápido. Se quedan Toque de seda, Fortuna, Botín, Respiración, Afinidad acuática y las maldiciones.
   - 24 encantamientos nuevos sin niveles (siempre a tope): Percepción y Ojo de búho (casco); Adrenalina, Espinazo y Vitalidad (peto); Ráfaga y Deslizar (pantalones); Rebote, Pegajoso y Zancada (botas); Berserker, Escarcha y Vampiro (espada); Hendidura y Tala (hacha); Presteza (herramientas); Veta (pico); Excavar (pala); Cosecha (azada); Certero y Recuperación (arco); Metralla (ballesta); Tormenta (tridente) y Arpón (caña).
