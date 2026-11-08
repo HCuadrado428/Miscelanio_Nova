@@ -30,6 +30,7 @@ public class Miscelanea {
         ModEffects.EFFECTS.register(modBus);
         ModPotions.POTIONS.register(modBus);
         ModItems.ITEMS.register(modBus);
+        com.miscelanea.purgatorio.PurgatorioGenerador.GENERADORES.register(modBus);
         ModEntities.ENTITIES.register(modBus);
         ModSounds.SOUNDS.register(modBus);
         ModEnchantments.ENCHANTMENTS.register(modBus);

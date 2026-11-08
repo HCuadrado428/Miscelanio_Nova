@@ -81,6 +81,13 @@ public final class ModBlocks {
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.baile.PistaBaileBlockEntity>> PISTA_BAILE_BE = BLOCK_ENTITIES.register("pista_baile",
             () -> BlockEntityType.Builder.of(com.miscelanea.baile.PistaBaileBlockEntity::new, PISTA_BAILE.get(), GRAMOLA.get()).build(null));
+    // ---- El Purgatorio (2.0.0): la puerta de salida y su cartel (no se pueden romper)
+    public static final RegistryObject<Block> PUERTA_SALIDA = BLOCKS.register("puerta_salida",
+            () -> new com.miscelanea.purgatorio.PuertaSalidaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN)
+                    .strength(-1.0F, 3600000.0F).noLootTable().noOcclusion().noCollission().lightLevel(st -> 6)));
+    public static final RegistryObject<Block> CARTEL_SALIDA = BLOCKS.register("cartel_salida",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(-1.0F, 3600000.0F)
+                    .noLootTable().sound(SoundType.GLASS).lightLevel(st -> 12)));
     // ---- Montaña rusa (2.0.0): vías de bloque normales (sin bloque-entidad) y el rizo, que dibuja su vuelta
     private static BlockBehaviour.Properties via() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(1.5F).sound(SoundType.METAL).noOcclusion();

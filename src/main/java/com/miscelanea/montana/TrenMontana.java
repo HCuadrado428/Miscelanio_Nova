@@ -194,8 +194,9 @@ public class TrenMontana extends Entity {
         if (s == null) return;
         Vec3 tg = s.pieza().tangente(s.t()), up = s.pieza().arriba(s.t());
         Vec3 lado = tg.cross(up).normalize().scale(i % 2 == 0 ? -0.27 : 0.27);
-        Vec3 asiento = s.punto().add(up.scale(0.42)).add(lado).subtract(tg.scale(0.12));
-        f.accept(e, asiento.x, asiento.y + e.getMyRidingOffset() + 0.2, asiento.z);
+        // sentado DENTRO del vagón (las piernas quedan tapadas por los lados), no encima
+        Vec3 asiento = s.punto().add(up.scale(0.3 + e.getMyRidingOffset())).add(lado).subtract(tg.scale(0.12));
+        f.accept(e, asiento.x, asiento.y, asiento.z);
         // los que van montados giran con el vagón en las curvas
         float yaw = (float) (Mth.atan2(-tg.x, tg.z) * Mth.RAD_TO_DEG);
         if (e instanceof LivingEntity le) le.setYBodyRot(yaw);

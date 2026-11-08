@@ -2762,5 +2762,10 @@
   "montana.miscelanea.forma.curva_der": "Right turn",
   "montana.miscelanea.forma.subida": "Up slope",
   "montana.miscelanea.forma.bajada": "Down slope",
-  "montana.miscelanea.barra": "The safety bar won't open until the train stops"
+  "montana.miscelanea.barra": "The safety bar won't open until the train stops",
+  "block.miscelanea.puerta_salida": "Exit",
+  "block.miscelanea.cartel_salida": "Exit Sign",
+  "purgatorio.miscelanea.noclip": "You clipped through the wall… and you're not where you were.",
+  "purgatorio.miscelanea.vacio": "You fell off the map. This is where purged errors end up.",
+  "purgatorio.miscelanea.salida": "You're back. Nobody noticed you were gone."
 }

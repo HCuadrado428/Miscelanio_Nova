@@ -2762,5 +2762,10 @@
   "montana.miscelanea.forma.curva_der": "Curva a la derecha",
   "montana.miscelanea.forma.subida": "Subida",
   "montana.miscelanea.forma.bajada": "Bajada",
-  "montana.miscelanea.barra": "La barra de seguridad no se abre hasta que el tren pare"
+  "montana.miscelanea.barra": "La barra de seguridad no se abre hasta que el tren pare",
+  "block.miscelanea.puerta_salida": "Salida",
+  "block.miscelanea.cartel_salida": "Cartel de salida",
+  "purgatorio.miscelanea.noclip": "Te has colado por la pared… y ya no estás donde estabas.",
+  "purgatorio.miscelanea.vacio": "Te has caído del mapa. Aquí acaban los errores purgados.",
+  "purgatorio.miscelanea.salida": "Has vuelto. Nadie se ha dado cuenta de que no estabas."
 }

@@ -267,6 +267,7 @@ public final class PruebaCI {
             RESUMEN.add(sb.toString());
         });
         montana();
+        purgatorio();
         sin("cerrar", 10, () -> {
             mc.setScreen(null);
             RESUMEN.add("  cara propia (la de su modelo) guardada: " + (CarasCliente.tiene(mc.player.getUUID()) ? "sí" : "NO"));
@@ -369,6 +370,57 @@ public final class PruebaCI {
             mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
             RESUMEN.add("  montaña, trozos por los que ha pasado: " + MONTANA_VISTO);
             if (!MONTANA_VISTO.contains("RIZO") && MONTANA_VISTO.stream().noneMatch(x -> x.startsWith("CURVA"))) RESUMEN.add("  AVISO: el tren no llegó al rizo");
+        });
+    }
+
+    // ------------------------------------------------------------------ El Purgatorio (2.0.0)
+    private static void irA(net.minecraft.core.BlockPos b, float yaw, float pitch) {
+        Minecraft mc = Minecraft.getInstance();
+        var srv = mc.getSingleplayerServer();
+        UUID id = mc.player.getUUID();
+        srv.execute(() -> {
+            ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+            var l = srv.getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
+            if (sp == null || l == null) return;
+            sp.teleportTo(l, b.getX() + 0.5, b.getY(), b.getZ() + 0.5, yaw, pitch);
+        });
+    }
+
+    private static void purgatorio() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("purgatorio_entrar", 60, () -> {
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                if (sp.isPassenger()) sp.stopRiding();
+                sp.getInventory().setItem(0, ItemStack.EMPTY);
+                if (srv.getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION) == null) RESUMEN.add("  FALLO: no existe la dimensión del Purgatorio");
+                com.miscelanea.purgatorio.Purgatorio.entrar(sp, "purgatorio.miscelanea.vacio");
+            });
+        });
+        sin("purgatorio_feria_ir", 50, () -> {
+            if (!com.miscelanea.purgatorio.Purgatorio.en(mc.level)) throw new IllegalStateException("no ha entrado en el Purgatorio");
+            irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.FERIA), -35, 5);
+        });
+        paso("40_purgatorio_feria", 30, () -> {});
+        paso("41_purgatorio_feria_2", 30, () -> mc.player.setYRot(mc.player.getYRot() + 120));
+        sin("purgatorio_sala_ir", 50, () -> irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.SALA), 10, 5));
+        paso("42_purgatorio_sala", 30, () -> {});
+        paso("43_purgatorio_sala_2", 30, () -> mc.player.setYRot(mc.player.getYRot() + 140));
+        sin("purgatorio_salida_ir", 50, () -> irA(com.miscelanea.purgatorio.Purgatorio.buscarSalida(), 180, 0));
+        paso("44_purgatorio_salida", 30, () -> {});
+        sin("purgatorio_cruzar", 60, () -> {
+            var b = com.miscelanea.purgatorio.Purgatorio.buscarSalida();
+            irA(new net.minecraft.core.BlockPos(b.getX(), b.getY(), b.getZ() - 3), 180, 0);
+        });
+        sin("purgatorio_fuera", 5, () -> {
+            boolean fuera = !com.miscelanea.purgatorio.Purgatorio.en(mc.level);
+            RESUMEN.add("  purgatorio: zona del origen " + com.miscelanea.purgatorio.PurgatorioGenerador.zona(0, 0)
+                    + ", salida en " + com.miscelanea.purgatorio.Purgatorio.buscarSalida() + ", ha salido por la puerta: " + (fuera ? "sí" : "NO"));
+            if (!fuera) throw new IllegalStateException("la puerta de salida no le ha sacado");
         });
     }
 
