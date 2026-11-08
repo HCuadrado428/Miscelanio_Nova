@@ -46,7 +46,7 @@ jobs:
           gh release download "build-${{ steps.n.outputs.build }}" -R "$GITHUB_REPOSITORY" -D mods -p '*.jar'
           bajar() {  # bajar <slug> <carpeta>: la última versión para Forge 1.20.1 en Modrinth
             url=$(curl -sf "https://api.modrinth.com/v2/project/$1/version?loaders=%5B%22forge%22%5D&game_versions=%5B%22${MC}%22%5D" \
-                  | jq -r '[.[] | select(.version_type=="release")][0].files | (map(select(.primary))[0] // .[0]).url')
+                  | jq -r '(([.[] | select(.version_type=="release")] + .)[0].files // []) | ((map(select(.primary))[0] // .[0]).url // "null")' || true)
             if [ -n "$url" ] && [ "$url" != "null" ]; then curl -sfL -o "$2/$1.jar" "$url" && echo "$1: $url"; else echo "::warning::No encuentro $1 en Modrinth"; fi
           }
           bajar geckolib mods
