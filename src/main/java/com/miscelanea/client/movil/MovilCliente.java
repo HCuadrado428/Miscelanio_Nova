@@ -610,7 +610,7 @@ public final class MovilCliente {
     /** Arriba a la derecha, mientras hablas con las manos libres: con quién, cuánto llevas y su vídeo si lo tiene. */
     private static void tarjetaManosLibres(GuiGraphics g, int w, int gh) {
         FotoCache.Tex v = llEstado == MovilRed.LL_ACTIVA && llOtro != null && !(llGrupo || PARTES.size() > 1) ? FotoCache.video(llOtro) : null;
-        int cw = 96, vh = v != null ? 64 : 0, ch = 30 + vh;
+        int cw = 120, vh = v != null ? 64 : 0, ch = 30 + vh;
         // a la derecha, más abajo que los avisos (toasts) y los iconos de efectos, que van arriba a la derecha
         int x = w - cw - 4, y = Math.max(56, gh / 4);
         Ui.redondo(g, x, y, cw, ch, 5, 0xD0101418);
@@ -630,7 +630,7 @@ public final class MovilCliente {
         Ui.mini(g, estado + (llMute ? "  " + Component.translatable("movil.miscelanea.mute_corto").getString() : "")
                 + (miVideo && llVideoPermitido ? "  REC" : ""), tx + 7, ty + 12, llMute ? Ui.ROJO : 0xFFB9F5D2);
         String vuelta = Component.translatable("movil.miscelanea.manos_libres_volver", ABRIR.getTranslatedKeyMessage()).getString();
-        Ui.mini(g, Ui.cortar(vuelta, (cw - 8) * 2), x + 5, ty + 20, 0xFF8FA3B3);
+        Ui.mini(g, Ui.cortarMini(vuelta, cw - 8), x + 5, ty + 20, 0xFF8FA3B3);
     }
 
     public static String duracion(long s) {

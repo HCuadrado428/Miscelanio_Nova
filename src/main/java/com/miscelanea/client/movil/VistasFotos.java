@@ -187,12 +187,12 @@ final class VistasFotos {
                 Ui.rect(g, 0, 0, vw, 16, 0x70000000);
                 Ui.glifo(g, Ui.G_ATRAS, 5, 4, Ui.dentro(mx, my, 0, 0, 18, 16) ? 0xFFFFFFFF : 0xFFD0D0D0);
                 Ui.centrado(g, titulo, vw / 2 + 20, 4, Ui.AMARILLO);
-                Ui.mini(g, n, vw - 6 - Ui.anchoMini(n), 6, 0xFFFFFFFF);
+                if (!grabando) Ui.mini(g, n, vw - 6 - Ui.anchoMini(n), 6, 0xFFFFFFFF);
                 ty = 4;
             } else {
                 Ui.rect(g, 0, 0, w, BARRA + 34, 0x90000000);
                 Ui.centrado(g, titulo, w / 2, BARRA + 4, Ui.AMARILLO);
-                Ui.mini(g, n, 22, BARRA + 6, 0xFFFFFFFF);
+                if (!grabando) Ui.mini(g, n, 22, BARRA + 6, 0xFFFFFFFF);
                 Ui.glifo(g, Ui.G_ATRAS, 5, BARRA + 4, Ui.dentro(mx, my, 0, BARRA, 18, 16) ? 0xFFFFFFFF : 0xFFD0D0D0);
                 Ui.rect(g, 0, h - 58, w, 58, 0xA0000000);
                 ty = BARRA + 4;

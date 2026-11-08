@@ -127,6 +127,7 @@ jobs:
           mkdir -p run/mods
           cp mods/*.jar opcionales/*.jar run/mods/ 2>/dev/null || true
           ls run/mods
+          printf 'lang:es_es\n' > run/options.txt     # en castellano, como lo juegan
       - name: Abrir el juego y probar el móvil
         uses: headlesshq/mc-runtime-test@5.0.0
         with:

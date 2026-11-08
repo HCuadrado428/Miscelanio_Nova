@@ -2747,5 +2747,6 @@
   "movil.miscelanea.aviso.video_grande": "El vídeo ocupa demasiado",
   "movil.miscelanea.video_adjunto": "Vídeo",
   "movil.miscelanea.manos_libres": "Manos libres",
-  "movil.miscelanea.manos_libres_volver": "Clic derecho con el móvil o %s: volver"
+  "movil.miscelanea.manos_libres_volver": "Clic der. al móvil: volver",
+  "movil.miscelanea.manos_libres_corto": "M.libres"
 }

@@ -119,7 +119,7 @@ final class VistasTelefono {
                 int cx = tx(9), cy = ty(y0, 9);
                 boolean on = oculto || MovilCliente.ocultarSiempre, s = Ui.enCirculo(mx, my, cx, cy, 12);
                 Ui.circulo(g, cx, cy, 12, on ? Ui.AZUL : s ? 0xFF323C46 : 0xFF222A32);
-                Ui.mini(g, "#31#", cx - 8, cy - 3, on ? 0xFFFFFFFF : Ui.TEXTO2);
+                Ui.mini(g, "#31#", cx - 7, cy - 2, on ? 0xFFFFFFFF : Ui.TEXTO2);
                 if (on) Ui.centrado(g, t("numero_oculto"), W / 2, y0 + 33, Ui.AZUL);
             }
             for (int i = 0; i < TECLAS.length; i++) {
@@ -574,7 +574,7 @@ final class VistasTelefono {
             if (pe == com.miscelanea.movil.Llamadas.P_DENTRO && com.miscelanea.client.pociones.EcoCliente.hablando(id)) borde(g, x, y, TW, TH, 0xFF2FBF73);
             if (pe != com.miscelanea.movil.Llamadas.P_DENTRO) Ui.rect(g, x, y, TW, TH, 0x70000000);
             Ui.rect(g, x, y + TH - 12, TW, 12, 0x90000000);
-            Ui.mini(g, Ui.cortar(nombre, (TW - 6) * 2), x + 3, y + TH - 9, 0xFFFFFFFF);
+            Ui.mini(g, Ui.cortarMini(nombre, TW - 6), x + 3, y + TH - 9, 0xFFFFFFFF);
             if (pe == com.miscelanea.movil.Llamadas.P_SONANDO) Ui.mini(g, t("llamando") + puntos(), x + 3, y + 3, 0xFFB9F5D2);
             else if (pe == com.miscelanea.movil.Llamadas.P_ESPERA) Ui.mini(g, t("en_espera"), x + 3, y + 3, Ui.AMARILLO);
         }
@@ -593,7 +593,7 @@ final class VistasTelefono {
             int y = BARRA + 1;
             Ui.redondo(g, 4, y, W - 8, 24, 5, 0xF2252D36);
             caraLlamada(g, MovilCliente.dosId, 7, y + 4, 16, 0xF2252D36);
-            Ui.mini(g, Ui.cortar(MovilCliente.dosNombre, 100), 27, y + 4, 0xFFFFFFFF);
+            Ui.mini(g, Ui.cortarMini(MovilCliente.dosNombre, W - 76), 27, y + 4, 0xFFFFFFFF);
             if (d == MovilRed.LL_ENTRANTE) {
                 Ui.mini(g, t("llamada_en_espera"), 27, y + 13, 0xFFB9F5D2);
                 Ui.boton(g, W - 38, y + 12, 8, Ui.dentro(mx, my, W - 46, y + 4, 16, 16) ? 0xFFD43C3C : Ui.ROJO, Ui.G_COLGAR, 0xFFFFFFFF);
@@ -623,12 +623,12 @@ final class VistasTelefono {
             Ui.rect(g, 0, cy2 - 16, W, H - (cy2 - 16), 0x50000000);
             boolean[] on = {MovilCliente.llMute, false, MovilCliente.miVideo, !MovilCliente.frontal};
             int[] gl = {MovilCliente.llMute ? Ui.G_MICRO_NO : Ui.G_MICRO, Ui.G_ALTAVOZ, MovilCliente.miVideo ? Ui.G_VIDEO : Ui.G_VIDEO_NO, Ui.G_GIRAR};
-            String[] tx = {t("silenciar"), t("manos_libres"), t("camara_corto"), t("girar")};
+            String[] tx = {t("silenciar"), t("manos_libres_corto"), t("camara_corto"), t("girar")};
             for (int i = 0; i < 4; i++) {
                 if (!boton(i, activa)) continue;
                 boolean s = Ui.enCirculo(mx, my, BX[i], cy2, 11);
                 Ui.boton(g, BX[i], cy2, 11, on[i] ? 0xFFFFFFFF : s ? 0xC0404A54 : 0x80303A44, gl[i], on[i] ? 0xFF101418 : 0xFFFFFFFF);
-                Ui.mini(g, tx[i], BX[i] - Ui.ancho(tx[i]) / 4, cy2 + 13, 0xFFCCD5DD);
+                Ui.mini(g, tx[i], BX[i] - Ui.anchoMini(tx[i]) / 2, cy2 + 13, 0xFFCCD5DD);
             }
         }
 

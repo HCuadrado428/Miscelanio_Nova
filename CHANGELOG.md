@@ -2,6 +2,7 @@
 
 ## 1.0.1 (en curso)
 - **Cámara del móvil:** la vista previa con filtro y los vídeos cortos salían negros; arreglado. Los vídeos duran lo que de verdad duran aunque el juego vaya a pocos fps.
+- **Móvil:** la letra pequeña ya tiene letras (antes solo números): se ven los nombres en las llamadas de grupo, las etiquetas de los botones y los avisos pequeños.
 - **Manos libres:** la tarjeta de la llamada va a la derecha, más abajo, para que no la tapen los avisos ni los efectos.
 - **Gambito** (mazo de Wemmbu): Ráfaga de viento II en vez de III (sube menos tras el golpe en caída).
 - **Ecolocalización:** los jugadores ya no parpadean con cada ruido; solo se ven mientras hablan (y el ruido de fondo del micro ya no cuenta). Lo que se ve con las ondas ya no da fogonazos al volver a tocarlo.

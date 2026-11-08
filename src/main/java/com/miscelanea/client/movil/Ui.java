@@ -272,12 +272,28 @@ public final class Ui {
         centrado(g, s, cx, cy - 4, 0xFFFFFFFF);
     }
 
-    // ------------------------------------------------------------------ fuente mini 3x5 (horas, porcentajes)
-    private static final String MINI = "0123456789:/%-.";
+    // ------------------------------------------------------------------ fuente mini 3x5 (horas, porcentajes y textos cortos)
+    private static final String MINI = "0123456789:/%-." + "ABCDEFGHIJKLMNOPQRSTUVWXYZ#+!?·,'()Ñx";
     private static final String[] MINI_G = {
             "111101101101111", "010110010010111", "111001111100111", "111001111001111", "101101111001001",
             "111100111001111", "111100111101111", "111001010010010", "111101111101111", "111101111001111",
-            "000010000010000", "001001010100100", "101001010100101", "000000111000000", "000000000000010"};
+            "000010000010000", "001001010100100", "101001010100101", "000000111000000", "000000000000010",
+            "010101111101101", "110101110101110", "011100100100011", "110101101101110", "111100110100111", "111100110100100", "011100101101011", "101101111101101", "111010010010111", "001001001101010", "101101110101101", "100100100100111", "101111111101101", "110101101101101", "010101101101010", "110101110100100", "010101101110011", "110101110101101", "011100010001110", "111010010010010", "101101101101111", "101101101101010", "101101111111101", "101101010101101", "101101010010010", "111001010100111", "101111101111101", "000010111010000", "010010010000010", "110001010000010", "000000010000000", "000000000010100", "010010000000000", "001010010010001", "100010010010100", "111000110101101", "000101010101000"};
+
+    /** Las letras van en mayúsculas y sin tildes (la ñ sí); la x minúscula es la del zoom (x2.5). */
+    private static char mini(char c) {
+        if (c == 'x' || c == 'Ñ') return c;
+        if (c == 'ñ') return 'Ñ';
+        String n = java.text.Normalizer.normalize(String.valueOf(c), java.text.Normalizer.Form.NFD);
+        return Character.toUpperCase(n.isEmpty() ? c : n.charAt(0));
+    }
+
+    /** Corta un texto en letra mini para que quepa en ese ancho (con ".." al final). */
+    public static String cortarMini(String s, int ancho) {
+        if (anchoMini(s) <= ancho) return s;
+        int n = Math.max(0, (ancho + 1) / 4 - 2);
+        return s.substring(0, Math.min(n, s.length())) + "..";
+    }
 
     public static int anchoMini(String s) {
         return Math.max(0, s.length() * 4 - 1);
@@ -285,7 +301,7 @@ public final class Ui {
 
     public static void mini(GuiGraphics g, String s, int x, int y, int c) {
         for (int i = 0; i < s.length(); i++) {
-            int k = MINI.indexOf(s.charAt(i));
+            int k = MINI.indexOf(mini(s.charAt(i)));
             if (k < 0) continue;
             String m = MINI_G[k];
             for (int py = 0; py < 5; py++)

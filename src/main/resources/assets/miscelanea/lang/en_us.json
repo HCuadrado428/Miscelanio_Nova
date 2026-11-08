@@ -2747,5 +2747,6 @@
   "movil.miscelanea.aviso.video_grande": "The video is too big",
   "movil.miscelanea.video_adjunto": "Video",
   "movil.miscelanea.manos_libres": "Hands-free",
-  "movil.miscelanea.manos_libres_volver": "Right-click with the phone or %s: back"
+  "movil.miscelanea.manos_libres_volver": "Right-click phone: back",
+  "movil.miscelanea.manos_libres_corto": "H.free"
 }
