@@ -22,7 +22,8 @@
     "LevelRendererMixin",
     "BlockEntityRenderDispatcherMixin",
     "KeyMappingAccessor",
-    "KeyMappingMixin"
+    "KeyMappingMixin",
+    "GameRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

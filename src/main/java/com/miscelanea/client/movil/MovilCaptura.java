@@ -34,7 +34,8 @@ import java.nio.IntBuffer;
 
 /**
  * Cámara del móvil. Cuando hace falta (visor abierto o videollamada con cámara), justo después de dibujar el mundo y
- * antes de la mano y el HUD ({@code AFTER_PARTICLES}), copia en la GPU el centro de la pantalla a una textura: en
+ * antes de la mano y el HUD ({@code AFTER_PARTICLES}; con shaders, al acabar de dibujar el nivel, ver
+ * {@link #trasNivel()}), copia en la GPU el centro de la pantalla a una textura: en
  * vertical una franja 9:16 (360x640) y con el móvil girado una 16:9 (640x360). De ahí salen el visor, la foto (180x320
  * o 320x180) y las imágenes de vídeo (72x128 por defecto, siempre en vertical), que se comprimen en JPEG con STB.
  */
@@ -78,9 +79,51 @@ public final class MovilCaptura {
         return t;
     }
 
+    // ------------------------------------------------------------------ shaders
+    private static long ultMiraShaders;
+    private static boolean shaders;
+    private static java.lang.reflect.Method irisEnUso;
+    private static Object irisApi;
+    private static boolean sinIris;
+
+    /** ¿Hay un pack de shaders puesto (Oculus/Iris)? Se mira una vez por segundo, por reflexión (no hace falta tenerlo). */
+    public static boolean shaders() {
+        long ahora = Util.getMillis();
+        if (ahora - ultMiraShaders < 1000) return shaders;
+        ultMiraShaders = ahora;
+        if (sinIris) return shaders = false;
+        try {
+            if (irisEnUso == null) {
+                Class<?> c = Class.forName("net.irisshaders.iris.api.v0.IrisApi");
+                irisApi = c.getMethod("getInstance").invoke(null);
+                irisEnUso = c.getMethod("isShaderPackInUse");
+            }
+            shaders = (Boolean) irisEnUso.invoke(irisApi);
+        } catch (Throwable t) {
+            sinIris = true;
+            shaders = false;
+        }
+        return shaders;
+    }
+
+    /** Desde {@code GameRendererMixin}: el nivel ya está dibujado del todo (con shaders, ya compuesto). */
+    public static void trasNivel() {
+        if (Util.getMillis() <= pedidoHasta && shaders()) capturar();
+    }
+
+    /** Con shaders y el móvil abierto, la mano no se dibuja: si no, saldría en las fotos (se copia después de ella). */
+    @SubscribeEvent
+    public static void mano(net.minecraftforge.client.event.RenderHandEvent e) {
+        if (Util.getMillis() <= pedidoHasta && shaders() && Minecraft.getInstance().screen instanceof MovilScreen) e.setCanceled(true);
+    }
+
     @SubscribeEvent
     public static void nivel(RenderLevelStageEvent e) {
-        if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES || Util.getMillis() > pedidoHasta) return;
+        if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES || Util.getMillis() > pedidoHasta || shaders()) return;
+        capturar();
+    }
+
+    private static void capturar() {
         RenderTarget main = Minecraft.getInstance().getMainRenderTarget();
         int sw = main.width, sh = main.height;
         float z = Math.max(1, Math.min(4, zoom));

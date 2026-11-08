@@ -39,6 +39,13 @@ public final class PruebaCI {
     private static final List<Paso> PASOS = new ArrayList<>();
     private static final List<String> RESUMEN = new ArrayList<>();
     private static int paso = -1, espera, ticksEnMundo, fallos;
+    /** Fotogramas dibujados: con gráficos por software (y más con shaders) puede haber muy pocos por tick. */
+    private static int fotogramas, fotogramasPaso;
+
+    @SubscribeEvent
+    public static void fotograma(TickEvent.RenderTickEvent e) {
+        if (ACTIVA && e.phase == TickEvent.Phase.END) fotogramas++;
+    }
     private static boolean terminada;
 
     private static void paso(String nombre, int espera, Runnable accion) {
@@ -210,6 +217,8 @@ public final class PruebaCI {
             espera--;
             return;
         }
+        // cada paso necesita al menos 4 fotogramas dibujados (la cámara copia la imagen al dibujar)
+        if (fotogramas - fotogramasPaso < 4) return;
         // el paso anterior ya ha tenido su tiempo: su captura
         if (paso > 0) {
             Paso antes = PASOS.get(paso - 1);
@@ -229,6 +238,7 @@ public final class PruebaCI {
             Miscelanea.LOGGER.error("[PruebaCI] falló el paso {}", p.nombre(), t);
         }
         espera = p.espera();
+        fotogramasPaso = fotogramas;
     }
 
     private static void capturar(String nombre) {

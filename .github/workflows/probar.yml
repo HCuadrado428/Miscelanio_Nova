@@ -53,13 +53,23 @@ jobs:
           bajar playeranimator mods
           bajar simple-voice-chat opcionales
           bajar customizable-player-models opcionales || bajar cpm opcionales || true
-          ls -la mods opcionales
+          # para la prueba con shaders: Embeddium + Oculus y un pack ligero
+          mkdir -p shaders shaderpacks
+          bajar embeddium shaders
+          bajar oculus shaders
+          for p in miniature-shader vanilla-plus-shader complementary-reimagined; do
+            url=$(curl -sf "https://api.modrinth.com/v2/project/$p/version" | jq -r '.[0].files[0].url // "null"' || true)
+            if [ -n "$url" ] && [ "$url" != "null" ]; then curl -sfL -o "shaderpacks/$p.zip" "$url" && echo "pack: $p $url" && break; fi
+          done
+          ls -la mods opcionales shaders shaderpacks
       - uses: actions/upload-artifact@v4
         with:
           name: mods
           path: |
             mods
             opcionales
+            shaders
+            shaderpacks
 
   servidor:
     needs: preparar
@@ -114,7 +124,15 @@ jobs:
   cliente:
     needs: preparar
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        shaders: [false, true]
+    # con shaders es una prueba de más: si falla no tumba el resto
+    continue-on-error: ${{ matrix.shaders }}
+    env:
+      RAMA: ${{ matrix.shaders && 'prueba-shaders' || 'prueba' }}
     steps:
       - uses: actions/setup-java@v4
         with:
@@ -129,6 +147,13 @@ jobs:
           cp mods/*.jar opcionales/*.jar run/mods/ 2>/dev/null || true
           ls run/mods
           printf 'lang:es_es\n' > run/options.txt     # en castellano, como lo juegan
+          if [ "${{ matrix.shaders }}" = "true" ]; then
+            cp shaders/*.jar run/mods/
+            mkdir -p run/shaderpacks run/config && cp shaderpacks/*.zip run/shaderpacks/
+            PACK=$(ls shaderpacks | head -1)
+            printf 'enableShaders=true\nshaderPack=%s\n' "$PACK" > run/config/oculus.properties
+            cat run/config/oculus.properties
+          fi
       - name: Abrir el juego y probar el móvil
         uses: headlesshq/mc-runtime-test@5.0.0
         with:
@@ -144,7 +169,7 @@ jobs:
           cat run/prueba_miscelanea.txt 2>/dev/null || echo "No hay resumen (la prueba no llegó al final)"
           ls run/screenshots 2>/dev/null || true
           grep -n -E 'PruebaCI|miscelanea.*(ERROR|Exception)' run/logs/latest.log 2>/dev/null | head -60 || true
-      - name: Guardar capturas y registros en la rama "prueba"
+      - name: Guardar capturas y registros en una rama (prueba / prueba-shaders)
         if: always()
         run: |
           mkdir -p /tmp/sal && cp -r run/screenshots /tmp/sal/ 2>/dev/null || true
@@ -152,14 +177,14 @@ jobs:
           cp run/logs/latest.log /tmp/sal/ 2>/dev/null || true
           cp -r run/crash-reports /tmp/sal/ 2>/dev/null || true
           echo "build ${{ needs.preparar.outputs.build }}" > /tmp/sal/build.txt
-          cd /tmp/sal && git init -q && git checkout -q -b prueba
+          cd /tmp/sal && git init -q && git checkout -q -b "$RAMA"
           git config user.name "github-actions" && git config user.email "github-actions@users.noreply.github.com"
           git add -A && git commit -qm "Prueba de la build ${{ needs.preparar.outputs.build }}"
-          git push -qf "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" prueba
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${GITHUB_REPOSITORY}.git" "$RAMA"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cliente
+          name: cliente-${{ env.RAMA }}
           path: |
             run/screenshots/
             run/prueba_miscelanea.txt
