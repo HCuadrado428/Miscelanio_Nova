@@ -17,6 +17,9 @@ import net.minecraft.world.phys.AABB;
 public class CartelRecordsBlockEntity extends BlockEntity {
     public static final String POR_DEFECTO = "global/podios";
     public String categoria = POR_DEFECTO;
+    /** Solo cliente: el grupo de carteles al que pertenece (lo recalcula el renderer cada pocos tics, no en cada fotograma). */
+    public Object[] grupoCache;
+    public long grupoTic = -1000;
 
     public CartelRecordsBlockEntity(BlockPos p, BlockState s) {
         super(ModBlocks.CARTEL_RECORDS_BE.get(), p, s);
