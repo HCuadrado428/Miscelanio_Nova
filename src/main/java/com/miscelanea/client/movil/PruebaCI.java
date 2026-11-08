@@ -626,7 +626,9 @@ public final class PruebaCI {
             ex = s[0];
             ey = s[1];
         }
-        double v = (desdeFuera ? 0.15 : 0.42) * H;
+        // se busca cerca de donde tiene que estar (si se va lejos no se encuentra y también falla): así no confunden
+        // otras cosas rojas del fondo
+        double v = 0.15 * H;
         double sx = 0, sy = 0, sw = 0;
         int n = 0;
         try (com.mojang.blaze3d.platform.NativeImage img = Screenshot.takeScreenshot(rt)) {
