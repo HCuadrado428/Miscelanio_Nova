@@ -377,7 +377,7 @@ public final class PruebaCI {
                 var o = sp.blockPosition().offset(6, 0, 4);
                 montanaO = o;
                 // despejar el sitio
-                for (var b : net.minecraft.core.BlockPos.betweenClosed(o.offset(-3, 0, -26), o.offset(11, 10, 4)))
+                for (var b : net.minecraft.core.BlockPos.betweenClosed(o.offset(-3, 0, -26), o.offset(13, 18, 4)))
                     l.setBlock(b, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
                 var N = net.minecraft.core.Direction.NORTH;
                 var E = net.minecraft.core.Direction.EAST;
@@ -504,10 +504,14 @@ public final class PruebaCI {
                     l.addFreshEntity(a);
                     a.startRiding(t, true);
                 }
-                sp.teleportTo(montanaO.getX() + 8.5, montanaO.getY() + 2, montanaO.getZ() - 17.5);
+                // volando un poco por encima, para que no tape nada (árboles, pilares)
+                sp.getAbilities().mayfly = true;
+                sp.getAbilities().flying = true;
+                sp.onUpdateAbilities();
+                sp.teleportTo(montanaO.getX() + 9.5, montanaO.getY() + 5, montanaO.getZ() - 18);
                 sp.setYRot(90);
                 sp.setYHeadRot(90);
-                sp.setXRot(0);
+                sp.setXRot(14);
             });
         });
         // espera (como mucho 30 s) a que el tren, que sigue dando vueltas, entre en el rizo
@@ -520,7 +524,7 @@ public final class PruebaCI {
                         if (s != null && s.pieza().clase() == com.miscelanea.montana.Via.Clase.RIZO) return true;
                     }
                 mc.player.setYRot(90);
-                mc.player.setXRot(-4);
+                mc.player.setXRot(14);
                 return false;
             };
         });
@@ -528,7 +532,7 @@ public final class PruebaCI {
             int ii = i;
             paso(String.format("33_montana_rizo_%02d", i), 2, () -> {
                 mc.player.setYRot(90);
-                mc.player.setXRot(-4);
+                mc.player.setXRot(14);
                 if (ii == 0) return;
                 for (var en : mc.level.entitiesForRendering())
                     if (en instanceof com.miscelanea.montana.TrenMontana t) {
@@ -540,7 +544,18 @@ public final class PruebaCI {
                     }
             });
         }
-        sin("montana_rizo_fin", 2, () -> RESUMEN.add("  montaña, trozos (con el rizo): " + MONTANA_VISTO));
+        sin("montana_rizo_fin", 2, () -> {
+            RESUMEN.add("  montaña, trozos (con el rizo): " + MONTANA_VISTO);
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                sp.getAbilities().flying = false;
+                sp.getAbilities().mayfly = sp.isCreative();
+                sp.onUpdateAbilities();
+            });
+        });
     }
 
     // ------------------------------------------------------------------ El Purgatorio (2.0.0)
