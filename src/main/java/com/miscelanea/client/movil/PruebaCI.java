@@ -452,6 +452,79 @@ public final class PruebaCI {
             RESUMEN.add("  montaña, trozos por los que ha pasado: " + MONTANA_VISTO);
             if (!MONTANA_VISTO.contains("RIZO") && MONTANA_VISTO.stream().noneMatch(x -> x.startsWith("CURVA"))) RESUMEN.add("  AVISO: el tren no llegó al rizo");
         });
+        // pilares: se baja del tren y mira la subida desde un lado
+        sin("montana_pilares_ir", 20, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                var l = sp.serverLevel();
+                if (sp.isPassenger()) sp.stopRiding();
+                int n = 0;
+                for (var b : net.minecraft.core.BlockPos.betweenClosed(montanaO.offset(-1, -1, -24), montanaO.offset(3, 8, 3)))
+                    if (l.getBlockState(b).is(com.miscelanea.registry.ModBlocks.PILAR_MONTANA.get())) n++;
+                RESUMEN.add("  montaña: " + n + " bloques de pilar debajo de la vía");
+                if (n == 0) RESUMEN.add("  AVISO: no ha salido ningún pilar");
+                sp.teleportTo(montanaO.getX() + 9.5, montanaO.getY() + 3, montanaO.getZ() - 6.5);
+                sp.setYRot(90);
+                sp.setYHeadRot(90);
+                sp.setXRot(8);
+            });
+        });
+        paso("32_montana_pilares", 30, () -> {
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            mc.player.setYRot(90);
+            mc.player.setXRot(8);
+        });
+        // el rizo visto desde fuera, con dos aldeanos montados (deben ir boca abajo arriba del todo)
+        sin("montana_rizo_ir", 10, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                var l = sp.serverLevel();
+                com.miscelanea.montana.TrenMontana t = null;
+                for (var en : l.getEntitiesOfClass(com.miscelanea.montana.TrenMontana.class, new net.minecraft.world.phys.AABB(montanaO).inflate(40))) t = en;
+                if (t == null) {
+                    RESUMEN.add("  FALLO: no se encuentra el tren para el rizo");
+                    return;
+                }
+                t.ejectPassengers();
+                t.colocar(montanaO.offset(0, 0, -14), 0.1, 2);
+                for (int k = 0; k < 2; k++) {
+                    var a = net.minecraft.world.entity.EntityType.VILLAGER.create(l);
+                    if (a == null) continue;
+                    a.moveTo(t.getX(), t.getY(), t.getZ());
+                    a.setNoAi(true);
+                    a.setSilent(true);
+                    l.addFreshEntity(a);
+                    a.startRiding(t, true);
+                }
+                t.lanzar(0.55);
+                sp.teleportTo(montanaO.getX() + 8.5, montanaO.getY() + 2, montanaO.getZ() - 17.5);
+                sp.setYRot(90);
+                sp.setYHeadRot(90);
+                sp.setXRot(0);
+            });
+        });
+        for (int i = 0; i < 8; i++) {
+            int ii = i;
+            paso("33_montana_rizo_" + i, 3, () -> {
+                mc.player.setYRot(90);
+                mc.player.setXRot(-4);
+                if (ii == 0) return;
+                for (var en : mc.level.entitiesForRendering())
+                    if (en instanceof com.miscelanea.montana.TrenMontana t) {
+                        var s = t.sitio();
+                        RESUMEN.add(String.format("  rizo %d: %s y=%.1f v=%.2f, %d montados", ii, s == null ? "?" : s.pieza().clase().name(),
+                                t.getY() - montanaO.getY(), t.velocidad(), t.getPassengers().size()));
+                        if (s != null) MONTANA_VISTO.add(s.pieza().clase().name());
+                    }
+            });
+        }
+        sin("montana_rizo_fin", 2, () -> RESUMEN.add("  montaña, trozos (con el rizo): " + MONTANA_VISTO));
     }
 
     // ------------------------------------------------------------------ El Purgatorio (2.0.0)
@@ -493,6 +566,34 @@ public final class PruebaCI {
         sin("purgatorio_sala_ir", 50, () -> irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.SALA), 10, 5));
         paso("42_purgatorio_sala", 30, () -> {});
         paso("43_purgatorio_sala_2", 30, () -> mc.player.setYRot(mc.player.getYRot() + 140));
+        sin("purgatorio_recreativa_ir", 50, () -> irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.RECREATIVA), 0, 8));
+        paso("45_purgatorio_recreativa", 40, () -> {});
+        paso("46_purgatorio_recreativa_2", 30, () -> {
+            mc.player.setYRot(-45);
+            mc.player.setXRot(12);
+            // máquinas de alrededor: fundidas, vivas, y si las vivas tienen su bloque-entidad
+            var b = com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.RECREATIVA);
+            var lp = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
+            int fund = 0, vivas = 0, conBe = 0;
+            if (lp != null)
+                for (var q : net.minecraft.core.BlockPos.betweenClosed(b.offset(-24, 0, -24), b.offset(24, 0, 24))) {
+                    var st = lp.getBlockState(q);
+                    if (st.getBlock() instanceof com.miscelanea.purgatorio.RecreativaApagadaBlock) fund++;
+                    else if (st.getBlock() instanceof com.miscelanea.arcade.RecreativaBlock) {
+                        vivas++;
+                        if (lp.getChunkAt(q).getBlockEntity(q, net.minecraft.world.level.chunk.LevelChunk.EntityCreationType.CHECK) != null) conBe++;
+                    }
+                }
+            RESUMEN.add("  purgatorio, recreativa: " + fund + " fundidas, " + vivas + " vivas (" + conBe + " con bloque-entidad), ambiente: "
+                    + com.miscelanea.client.purgatorio.PurgatorioCliente.Ambiente.sonando());
+            if (vivas > 0 && conBe < vivas) RESUMEN.add("  AVISO: hay recreativas vivas sin bloque-entidad");
+        });
+        sin("purgatorio_sin_textura_ir", 50, () -> irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.SIN_TEXTURA), 30, 6));
+        paso("47_purgatorio_sin_textura", 40, () -> {});
+        paso("48_purgatorio_sin_textura_2", 30, () -> {
+            mc.player.setYRot(mc.player.getYRot() + 150);
+            RESUMEN.add("  purgatorio, sin texturas: ambiente " + com.miscelanea.client.purgatorio.PurgatorioCliente.Ambiente.sonando());
+        });
         sin("purgatorio_salida_ir", 50, () -> irA(com.miscelanea.purgatorio.Purgatorio.buscarSalida(), 180, 0));
         paso("44_purgatorio_salida", 30, () -> {});
         sin("purgatorio_cruzar", 60, () -> {

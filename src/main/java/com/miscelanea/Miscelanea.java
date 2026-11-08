@@ -245,6 +245,8 @@ public class Miscelanea {
         if (event.getTabKey() == ModTabs.VARIOS.getKey()) {
             event.accept(ModItems.ASPIRAFANTASMAS);
             event.accept(ModItems.MOCHILA);
+            event.accept(ModItems.SIN_TEXTURA);
+            event.accept(ModItems.MOQUETA_RECREATIVA);
             event.accept(com.miscelanea.movil.MovilRegistro.MOVIL);
             event.accept(com.miscelanea.movil.MovilRegistro.CAJERO_ITEM);
             event.accept(ModItems.OCARINA);

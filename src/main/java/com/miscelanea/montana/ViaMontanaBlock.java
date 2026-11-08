@@ -98,6 +98,13 @@ public class ViaMontanaBlock extends HorizontalDirectionalBlock {
         return InteractionResult.CONSUME;
     }
 
+    /** En el aire, le sale su pilar hasta el suelo. */
+    @Override
+    public void onPlace(BlockState s, Level l, BlockPos p, BlockState antes, boolean mov) {
+        super.onPlace(s, l, p, antes, mov);
+        if (!antes.is(s.getBlock())) PilarBlock.levantar(l, p);
+    }
+
     @Override
     public void neighborChanged(BlockState s, Level l, BlockPos p, Block b, BlockPos from, boolean mov) {
         if (tipo != Tipo.ESTACION || l.isClientSide) return;

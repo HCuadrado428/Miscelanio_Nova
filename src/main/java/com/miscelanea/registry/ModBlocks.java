@@ -88,6 +88,17 @@ public final class ModBlocks {
     public static final RegistryObject<Block> CARTEL_SALIDA = BLOCKS.register("cartel_salida",
             () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(-1.0F, 3600000.0F)
                     .noLootTable().sound(SoundType.GLASS).lightLevel(st -> 12)));
+    /** La textura que falta (cuadros rosa y negro): se ve igual a oscuras, como en el juego cuando falla algo. Solo sale allí. */
+    public static final RegistryObject<Block> SIN_TEXTURA = BLOCKS.register("sin_textura",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_MAGENTA).strength(1.5F, 6.0F)
+                    .sound(SoundType.STONE).emissiveRendering((s, l, p) -> true)));
+    /** Moqueta de salón recreativo de los noventa (la de los dibujitos de neón). Solo sale allí. */
+    public static final RegistryObject<Block> MOQUETA_RECREATIVA = BLOCKS.register("moqueta_recreativa",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(0.8F).sound(SoundType.WOOL)));
+    /** Recreativa fundida de la Recreativa Infinita (sin bloque-entidad: no se enciende ni suelta nada). */
+    public static final RegistryObject<Block> RECREATIVA_APAGADA = BLOCKS.register("recreativa_apagada",
+            () -> new com.miscelanea.purgatorio.RecreativaApagadaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE)
+                    .strength(2.0F).sound(SoundType.WOOD).noOcclusion().noLootTable()));
     // ---- Montaña rusa (2.0.0): vías de bloque normales (sin bloque-entidad) y el rizo, que dibuja su vuelta
     private static BlockBehaviour.Properties via() {
         return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(1.5F).sound(SoundType.METAL).noOcclusion();
@@ -105,6 +116,10 @@ public final class ModBlocks {
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.montana.RizoBlock.RizoBlockEntity>> RIZO_BE = BLOCK_ENTITIES.register("rizo_montana",
             () -> BlockEntityType.Builder.of(com.miscelanea.montana.RizoBlock.RizoBlockEntity::new, RIZO.get()).build(null));
+    /** Pilar de acero que sale solo debajo de la vía en el aire (no se fabrica ni suelta nada). */
+    public static final RegistryObject<Block> PILAR_MONTANA = BLOCKS.register("pilar_montana",
+            () -> new com.miscelanea.montana.PilarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F)
+                    .sound(SoundType.METAL).noOcclusion().noLootTable()));
     public static final RegistryObject<Block> NORIA = BLOCKS.register("noria",
             () -> new com.miscelanea.feria.AtraccionBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(3.0F)
                     .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 10), com.miscelanea.feria.AtraccionBlock.NORIA));

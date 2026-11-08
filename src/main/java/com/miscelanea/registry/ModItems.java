@@ -284,6 +284,9 @@ public final class ModItems {
     public static final RegistryObject<Item> VIA_MONTANA_ESTACION = ITEMS.register("via_montana_estacion", () -> new net.minecraft.world.item.BlockItem(ModBlocks.VIA_MONTANA_ESTACION.get(), new Item.Properties()));
     public static final RegistryObject<Item> VIA_MONTANA_FRENO = ITEMS.register("via_montana_freno", () -> new net.minecraft.world.item.BlockItem(ModBlocks.VIA_MONTANA_FRENO.get(), new Item.Properties()));
     public static final RegistryObject<Item> RIZO_MONTANA = ITEMS.register("rizo_montana", () -> new net.minecraft.world.item.BlockItem(ModBlocks.RIZO.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    // El Purgatorio: bloques que solo se encuentran allí (no se fabrican)
+    public static final RegistryObject<Item> SIN_TEXTURA = ITEMS.register("sin_textura", () -> new net.minecraft.world.item.BlockItem(ModBlocks.SIN_TEXTURA.get(), new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> MOQUETA_RECREATIVA = ITEMS.register("moqueta_recreativa", () -> new net.minecraft.world.item.BlockItem(ModBlocks.MOQUETA_RECREATIVA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> TREN_MONTANA = ITEMS.register("tren_montana", () -> new com.miscelanea.montana.TrenMontanaItem(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> PIZARRA_FERIA = ITEMS.register("pizarra_feria",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PIZARRA_FERIA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));

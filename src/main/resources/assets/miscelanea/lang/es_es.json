@@ -2829,5 +2829,9 @@
   "enchantment.minecraft.respiration.desc": "Aguantas más bajo el agua.",
   "enchantment.minecraft.aqua_affinity.desc": "Picas a la velocidad normal bajo el agua.",
   "enchantment.minecraft.binding_curse.desc": "No te lo puedes quitar.",
-  "enchantment.minecraft.vanishing_curse.desc": "Desaparece al morir."
+  "enchantment.minecraft.vanishing_curse.desc": "Desaparece al morir.",
+  "block.miscelanea.sin_textura": "Bloque sin textura",
+  "block.miscelanea.moqueta_recreativa": "Moqueta de recreativa",
+  "block.miscelanea.recreativa_apagada": "Recreativa fundida",
+  "block.miscelanea.pilar_montana": "Pilar de montaña rusa"
 }

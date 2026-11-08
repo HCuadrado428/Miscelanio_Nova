@@ -2829,5 +2829,9 @@
   "enchantment.minecraft.respiration.desc": "Breathe longer underwater.",
   "enchantment.minecraft.aqua_affinity.desc": "Normal mining speed underwater.",
   "enchantment.minecraft.binding_curse.desc": "Can't be removed.",
-  "enchantment.minecraft.vanishing_curse.desc": "Disappears on death."
+  "enchantment.minecraft.vanishing_curse.desc": "Disappears on death.",
+  "block.miscelanea.sin_textura": "Missing Texture Block",
+  "block.miscelanea.moqueta_recreativa": "Arcade Carpet",
+  "block.miscelanea.recreativa_apagada": "Dead Arcade Cabinet",
+  "block.miscelanea.pilar_montana": "Roller Coaster Support"
 }

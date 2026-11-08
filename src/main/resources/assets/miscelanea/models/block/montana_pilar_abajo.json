@@ -1,0 +1,138 @@
+{
+ "parent": "block/block",
+ "textures": {
+  "tubo": "miscelanea:block/montana_pilar",
+  "placa": "miscelanea:block/montana_pilar_placa",
+  "zapata": "miscelanea:block/montana_pilar_zapata",
+  "particle": "miscelanea:block/montana_pilar"
+ },
+ "elements": [
+  {
+   "from": [
+    5,
+    3,
+    5
+   ],
+   "to": [
+    11,
+    16,
+    11
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      0,
+      0,
+      6,
+      13
+     ],
+     "texture": "#tubo"
+    },
+    "south": {
+     "uv": [
+      0,
+      0,
+      6,
+      13
+     ],
+     "texture": "#tubo"
+    },
+    "west": {
+     "uv": [
+      0,
+      0,
+      6,
+      13
+     ],
+     "texture": "#tubo"
+    },
+    "east": {
+     "uv": [
+      0,
+      0,
+      6,
+      13
+     ],
+     "texture": "#tubo"
+    },
+    "down": {
+     "uv": [
+      5,
+      5,
+      11,
+      11
+     ],
+     "texture": "#placa"
+    }
+   }
+  },
+  {
+   "from": [
+    2,
+    0,
+    2
+   ],
+   "to": [
+    14,
+    3,
+    14
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      2,
+      13,
+      14,
+      16
+     ],
+     "texture": "#zapata"
+    },
+    "south": {
+     "uv": [
+      2,
+      13,
+      14,
+      16
+     ],
+     "texture": "#zapata"
+    },
+    "west": {
+     "uv": [
+      2,
+      13,
+      14,
+      16
+     ],
+     "texture": "#zapata"
+    },
+    "east": {
+     "uv": [
+      2,
+      13,
+      14,
+      16
+     ],
+     "texture": "#zapata"
+    },
+    "up": {
+     "uv": [
+      2,
+      2,
+      14,
+      14
+     ],
+     "texture": "#zapata"
+    },
+    "down": {
+     "uv": [
+      2,
+      2,
+      14,
+      14
+     ],
+     "texture": "#zapata"
+    }
+   }
+  }
+ ]
+}

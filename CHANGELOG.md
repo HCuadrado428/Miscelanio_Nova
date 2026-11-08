@@ -13,6 +13,15 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
 
 ## 2.0.0 (en curso)
 - **Montaña rusa** (pestaña Feria): vía (recta, curvas, subida y bajada: agáchate y clic con la mano vacía para cambiar la forma), vía de cadena (sube el tren), estación (para y sale sola a los 5 s con gente, o con redstone), vía de freno y rizo de 4 bloques de alto. El tren va de 2 a 4 vagones de dos plazas (agáchate y clic con otro tren para añadir uno); cae por las cuestas con su peso, se inclina en las curvas y la cámara da la vuelta entera en el rizo. La barra de seguridad no deja bajarse en marcha. Pensado para ordenadores flojos: las vías son bloques normales y el tren es una sola entidad.
+  - Pilares: debajo de la vía que va por el aire sale sola una columna de acero hasta el suelo (una sí y otra no, con su placa y su zapata). Si quitas la vía, su pilar se cae.
+  - Los pasajeros se ven girados con el vagón: inclinados en las curvas y las cuestas, y boca abajo en lo alto del rizo.
+- **El Purgatorio**: adonde van los errores purgados. Se llega colándose por una pared (a veces, al asfixiarte dentro de un bloque) o cayéndose del mapa, y se vuelve justo a donde estabas por una puerta con el cartel verde de SALIDA (más o menos una cada 60 chunks). Sin cielo y con niebla corta; cada zona tiene su ambiente sonoro en bucle (zumbido de fluorescente, viento con un organillo desafinado a lo lejos, pitidos de máquinas, audio roto). Zonas:
+  - **Feria Cerrada**: de noche, casetas con la lona echada, farolas (alguna fundida), un tiovivo desmontado y papeles por el suelo.
+  - **Sala de Espera**: baldosas, fluorescentes, filas de sillas y tabiques. Nadie te va a llamar.
+  - **Recreativa Infinita**: moqueta de neón de los noventa y filas de máquinas que no se acaban. Casi todas están fundidas (con la pantalla quemada), pero una de cada seis sigue funcionando y se puede jugar.
+  - **Mundo sin Texturas**: todo es la textura que falta (cuadros rosa y negro, que se ven igual a oscuras): árboles a los que solo les cargó el tronco, casas a medio cargar con el tejado flotando, bloques sueltos en el aire y algún jugador en pose de T.
+  - Solo de allí: el **bloque sin textura** y la **moqueta de recreativa** se pueden picar y llevar a casa.
+  - Ligero: cada chunk son unos cientos de bloques puestos sin ruido, siempre igual; casi nada tiene bloque-entidad.
 
 ## 1.1.0 (en curso: aún no se publica; todo lo nuevo de la 1.1 va aquí)
 - **Pociones en supervivencia:** Gigante (seta roja), Enano (seta marrón), Ecolocalización (fragmento de eco), Niebla viviente (tinta de calamar), Espejismo (fragmento de amatista), Helio (pluma), Ventilador (bola de nieve), Borrachera (trigo) y Tartamudeo (granos de cacao), sobre poción rara; la redstone las alarga. Sed de sangre y Fantasma siguen en creativo.

@@ -2524,5 +2524,37 @@
       "miscelanea:movil_tono_5"
     ],
     "subtitle": "subtitles.miscelanea.movil_tono"
+  },
+  "purgatorio_feria": {
+    "sounds": [
+      {
+        "name": "miscelanea:purgatorio/feria",
+        "stream": true
+      }
+    ]
+  },
+  "purgatorio_sala": {
+    "sounds": [
+      {
+        "name": "miscelanea:purgatorio/sala",
+        "stream": true
+      }
+    ]
+  },
+  "purgatorio_recreativa": {
+    "sounds": [
+      {
+        "name": "miscelanea:purgatorio/recreativa",
+        "stream": true
+      }
+    ]
+  },
+  "purgatorio_sin_textura": {
+    "sounds": [
+      {
+        "name": "miscelanea:purgatorio/sin_textura",
+        "stream": true
+      }
+    ]
   }
 }

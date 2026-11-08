@@ -1,0 +1,16 @@
+{
+ "variants": {
+  "abajo=false,arriba=false": {
+   "model": "miscelanea:block/montana_pilar"
+  },
+  "abajo=true,arriba=false": {
+   "model": "miscelanea:block/montana_pilar_abajo"
+  },
+  "abajo=false,arriba=true": {
+   "model": "miscelanea:block/montana_pilar_arriba"
+  },
+  "abajo=true,arriba=true": {
+   "model": "miscelanea:block/montana_pilar_arriba_abajo"
+  }
+ }
+}

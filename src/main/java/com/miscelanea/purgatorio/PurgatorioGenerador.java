@@ -52,7 +52,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
     /** Zonas: cada región de REGION x REGION chunks es de una (la del origen siempre es la feria). */
     public static final int REGION = 5;
 
-    public enum Zona {FERIA, SALA}
+    public enum Zona {FERIA, SALA, RECREATIVA, SIN_TEXTURA}
 
     public PurgatorioGenerador(BiomeSource b) {
         super(b);
@@ -75,7 +75,8 @@ public class PurgatorioGenerador extends ChunkGenerator {
     public static Zona zona(int cx, int cz) {
         int rx = Math.floorDiv(cx, REGION), rz = Math.floorDiv(cz, REGION);
         if (rx == 0 && rz == 0) return Zona.FERIA;
-        return h(rx, rz, 1) % 100 < 55 ? Zona.FERIA : Zona.SALA;
+        long k = h(rx, rz, 1) % 100;
+        return k < 38 ? Zona.FERIA : k < 62 ? Zona.SALA : k < 84 ? Zona.RECREATIVA : Zona.SIN_TEXTURA;
     }
 
     /** ¿Hay una puerta de salida en este chunk? (más o menos una de cada 60). */
@@ -119,8 +120,12 @@ public class PurgatorioGenerador extends ChunkGenerator {
         Lienzo l = new Lienzo(c);
         int cx = c.getPos().x, cz = c.getPos().z;
         Zona z = zona(cx, cz);
-        if (z == Zona.FERIA) feria(l, cx, cz);
-        else sala(l, cx, cz);
+        switch (z) {
+            case FERIA -> feria(l, cx, cz);
+            case SALA -> sala(l, cx, cz);
+            case RECREATIVA -> recreativa(l, cx, cz);
+            default -> sinTextura(l, cx, cz);
+        }
         if (salida(cx, cz)) puertaSalida(l, z);
         return CompletableFuture.completedFuture(c);
     }
@@ -272,7 +277,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
         Direction[] lados = {Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
         for (Direction dd : lados) {
             int nx = cx + dd.getStepX(), nz = cz + dd.getStepZ();
-            boolean feria = zona(nx, nz) == Zona.FERIA;
+            boolean feria = zona(nx, nz) != Zona.SALA;
             // cada borde se decide una vez para los dos chunks que lo comparten
             int bx = Math.min(cx, nx) * 2 + (dd.getAxis() == Direction.Axis.X ? 1 : 0), bz = Math.min(cz, nz);
             boolean pared = feria || h(bx, bz, 5) % 3 == 0;
@@ -290,11 +295,167 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 for (int y = 0; y < 4; y++) l.pon(x, f + y, z, d(Blocks.QUARTZ_PILLAR));
     }
 
+    // ------------------------------------------------------------------ Recreativa Infinita
+    /** Juegos de las máquinas que aún funcionan (las de un jugador, que caben en un bloque de ancho). */
+    private static final String[] JUEGOS_VIVOS = {"astro", "tetrominos", "serpiente", "ladrillos", "pong", "pajaro", "invasores", "mazmorra", "pinball"};
+
+    /**
+     * Un salón recreativo de los noventa que no se acaba: moqueta de neón, techo negro con luces moradas y filas de
+     * máquinas espalda con espalda. Casi todas están fundidas (un bloque normal: no cuesta nada); una de cada seis
+     * funciona de verdad y se puede jugar (esas sí llevan su bloque-entidad, por eso son pocas).
+     */
+    private static void recreativa(Lienzo l, int cx, int cz) {
+        int f = SUELO, techo = SUELO + 5;
+        BlockState moqueta = com.miscelanea.registry.ModBlocks.MOQUETA_RECREATIVA.get().defaultBlockState();
+        for (int x = 0; x < 16; x++)
+            for (int z = 0; z < 16; z++) {
+                l.pon(x, f - 1, z, moqueta);
+                l.pon(x, f - 2, z, d(Blocks.STONE));
+                boolean pasillo = x == 7 || x == 8 || z == 7 || z == 8;
+                boolean luz = pasillo && (x == 7 || z == 7) && ((x + z) % 4 == 2) && h(cx * 16 + x, cz * 16 + z, 3) % 7 != 0;
+                l.pon(x, techo, z, d(luz ? ((x + z) % 8 == 2 ? Blocks.PEARLESCENT_FROGLIGHT : Blocks.VERDANT_FROGLIGHT) : Blocks.BLACK_CONCRETE));
+            }
+        int[][] q = {{0, 0}, {9, 0}, {0, 9}, {9, 9}};
+        for (int k = 0; k < 4; k++) {
+            int qx = q[k][0], qz = q[k][1];
+            if (salida(cx, cz) && k == 0) continue;
+            long t = h(cx, cz, 50 + k) % 10;
+            if (t < 7) {
+                // dos filas espalda con espalda: una mira al norte y la otra al sur
+                for (int x = qx + 1; x <= qx + 5; x++) {
+                    maquina(l, x, qz + 2, Direction.NORTH, h(cx * 16 + x, cz * 16 + qz, 60));
+                    maquina(l, x, qz + 3, Direction.SOUTH, h(cx * 16 + x, cz * 16 + qz, 61));
+                }
+            } else if (t < 9) {
+                // en columna: una mira al oeste y la otra al este
+                for (int z = qz + 1; z <= qz + 5; z++) {
+                    maquina(l, qx + 2, z, Direction.WEST, h(cx * 16 + qx, cz * 16 + z, 62));
+                    maquina(l, qx + 3, z, Direction.EAST, h(cx * 16 + qx, cz * 16 + z, 63));
+                }
+            } else {
+                // un rincón de descanso: sofá de escay rojo y una papelera
+                for (int x = qx + 1; x <= qx + 4; x++)
+                    l.pon(x, f, qz + 1, Blocks.RED_TERRACOTTA.defaultBlockState());
+                for (int x = qx + 1; x <= qx + 4; x++)
+                    l.pon(x, f, qz + 2, Blocks.SMOOTH_STONE_SLAB.defaultBlockState());
+                l.pon(qx + 5, f, qz + 2, d(Blocks.CAULDRON));
+            }
+        }
+        // paredes negras hacia las zonas que no son recreativa (con su hueco para pasar)
+        for (Direction dd : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST}) {
+            if (zona(cx + dd.getStepX(), cz + dd.getStepZ()) == Zona.RECREATIVA) continue;
+            for (int i = 0; i < 16; i++) {
+                if (i == 7 || i == 8) continue;
+                int x = dd == Direction.WEST ? 0 : dd == Direction.EAST ? 15 : i;
+                int z = dd == Direction.NORTH ? 0 : dd == Direction.SOUTH ? 15 : i;
+                for (int y = 0; y < 5; y++) l.pon(x, f + y, z, d(y == 2 && i % 3 == 0 ? Blocks.PURPLE_STAINED_GLASS : Blocks.BLACK_CONCRETE));
+            }
+        }
+    }
+
+    /** Una máquina en (x, z): fundida casi siempre, viva una de cada seis, y de vez en cuando falta (un hueco). */
+    private static void maquina(Lienzo l, int x, int z, Direction mira, long r) {
+        if (r % 12 == 0) return;
+        int f = SUELO;
+        if (r % 6 == 1) {
+            String j = JUEGOS_VIVOS[(int) ((r >> 8) % JUEGOS_VIVOS.length)];
+            var ro = com.miscelanea.registry.ModBlocks.RECREATIVAS_JUEGO.get(j);
+            if (ro != null) {
+                Block b = ro.get();
+                BlockState s = b.defaultBlockState().setValue(com.miscelanea.arcade.RecreativaBlock.FACING, mira);
+                l.pon(x, f, z, s);
+                l.pon(x, f + 1, z, s.setValue(com.miscelanea.arcade.RecreativaBlock.HALF, net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER));
+                if (b instanceof net.minecraft.world.level.block.EntityBlock eb) {
+                    BlockPos p = new BlockPos(l.c.getPos().getMinBlockX() + x, f, l.c.getPos().getMinBlockZ() + z);
+                    var be = eb.newBlockEntity(p, s);
+                    if (be != null) l.c.setBlockEntity(be);
+                }
+                return;
+            }
+        }
+        BlockState s = com.miscelanea.registry.ModBlocks.RECREATIVA_APAGADA.get().defaultBlockState()
+                .setValue(RecreativaApagadaBlock.FACING, mira)
+                .setValue(RecreativaApagadaBlock.MUEBLE, (int) ((r >> 12) % RecreativaApagadaBlock.MUEBLES.length));
+        l.pon(x, f, z, s);
+        l.pon(x, f + 1, z, s.setValue(RecreativaApagadaBlock.HALF, net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER));
+    }
+
+    // ------------------------------------------------------------------ Mundo sin Texturas
+    /**
+     * Donde acaba lo que no cargó: el suelo y casi todo son la textura que falta (cuadros rosa y negro, que se ven igual a
+     * oscuras). Hay árboles a los que solo les cargó el tronco, casas a medio cargar con trozos de tejado flotando y
+     * bloques sueltos en el aire. Al aire libre y sin techo.
+     */
+    private static void sinTextura(Lienzo l, int cx, int cz) {
+        int f = SUELO;
+        BlockState st = com.miscelanea.registry.ModBlocks.SIN_TEXTURA.get().defaultBlockState();
+        for (int x = 0; x < 16; x++)
+            for (int z = 0; z < 16; z++) {
+                // alguna baldosa sí que cargó (hierba)
+                l.pon(x, f - 1, z, h(cx * 16 + x, cz * 16 + z, 70) % 23 == 0 ? d(Blocks.GRASS_BLOCK) : st);
+                l.pon(x, f - 2, z, d(Blocks.STONE));
+            }
+        int[][] q = {{0, 0}, {9, 0}, {0, 9}, {9, 9}};
+        for (int k = 0; k < 4; k++) {
+            int qx = q[k][0], qz = q[k][1];
+            if (salida(cx, cz) && k == 0) continue;
+            long r = h(cx, cz, 80 + k);
+            int t = (int) (r % 10);
+            if (t < 3) {
+                // árbol: el tronco cargó, las hojas no
+                int ax = qx + 3, az = qz + 3, alto = 4 + (int) ((r >> 8) % 2);
+                for (int y = 0; y < alto; y++) l.pon(ax, f + y, az, d(Blocks.OAK_LOG));
+                for (int x = -2; x <= 2; x++)
+                    for (int z = -2; z <= 2; z++)
+                        for (int y = alto - 1; y <= alto; y++)
+                            if (Math.abs(x) + Math.abs(z) < 4 && !(x == 0 && z == 0 && y < alto)) l.pon(ax + x, f + y, az + z, st);
+                l.pon(ax, f + alto + 1, az, st);
+            } else if (t < 5) {
+                // casa a medio cargar: paredes de piedra con huecos sin textura y el tejado flotando encima
+                for (int x = qx + 1; x <= qx + 5; x++)
+                    for (int z = qz + 1; z <= qz + 5; z++) {
+                        boolean borde = x == qx + 1 || x == qx + 5 || z == qz + 1 || z == qz + 5;
+                        if (!borde) continue;
+                        boolean puerta = x == qx + 3 && (z == qz + 5 || z == qz + 1);
+                        for (int y = 0; y < 3; y++) {
+                            if (puerta && y < 2) continue;
+                            long s = h(cx * 16 + x, cz * 16 + z, 90 + y);
+                            if (s % 7 == 0) continue;                  // le faltan bloques
+                            l.pon(x, f + y, z, s % 3 == 0 ? st : d(Blocks.COBBLESTONE));
+                        }
+                    }
+                for (int x = qx; x <= qx + 6; x++)
+                    for (int z = qz; z <= qz + 6; z++)
+                        if (h(cx * 16 + x, cz * 16 + z, 95) % 3 != 0) l.pon(x, f + 5 + (int) (h(x, z, 96) % 2), z, (x + z) % 4 == 0 ? st : d(Blocks.OAK_PLANKS));
+            } else if (t < 7) {
+                // bloques sueltos en el aire, como si se hubieran quedado sin colocar
+                int n = 3 + (int) ((r >> 4) % 4);
+                for (int i = 0; i < n; i++) {
+                    long s = h((int) r, i, 97);
+                    l.pon(qx + (int) (s % 7), f + 2 + (int) ((s >> 8) % 7), qz + (int) ((s >> 16) % 7), st);
+                }
+            } else if (t == 7) {
+                // un "jugador" que no cargó: dos bloques en pie, la pose de la T
+                int ax = qx + 3, az = qz + 3;
+                l.pon(ax, f, az, st);
+                l.pon(ax, f + 1, az, st);
+                l.pon(ax - 1, f + 1, az, st);
+                l.pon(ax + 1, f + 1, az, st);
+                l.pon(ax, f + 2, az, st);
+            }
+        }
+    }
+
     // ------------------------------------------------------------------ salida
     /** Un marco de puerta suelto con el cartel verde de SALIDA encima: al cruzarlo se vuelve. */
     private static void puertaSalida(Lienzo l, Zona z) {
         int f = SUELO;
-        BlockState marco = d(z == Zona.FERIA ? Blocks.WHITE_CONCRETE : Blocks.QUARTZ_PILLAR);
+        BlockState marco = d(switch (z) {
+            case FERIA -> Blocks.WHITE_CONCRETE;
+            case SALA -> Blocks.QUARTZ_PILLAR;
+            case RECREATIVA -> Blocks.BLACK_CONCRETE;
+            default -> com.miscelanea.registry.ModBlocks.SIN_TEXTURA.get();
+        });
         int zz = 3;
         for (int y = 0; y < 4; y++) {
             l.pon(1, f + y, zz, marco);

@@ -72,6 +72,47 @@ public final class MontanaCliente {
         }
     }
 
+    // ------------------------------------------------------------------ pasajeros (vistos desde fuera)
+    /**
+     * Los que van montados se dibujan girados igual que su vagón: inclinados en las curvas y las cuestas y boca abajo en
+     * lo alto del rizo. Se gira la pose entera alrededor de los pies (que ya están en el asiento); es una matriz por
+     * pasajero. Va con la prioridad más baja para que nadie cancele el dibujo después de abrir la pose.
+     */
+    private static final java.util.Set<net.minecraft.world.entity.LivingEntity> GIRADOS = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST)
+    public static void antesPasajero(net.minecraftforge.client.event.RenderLivingEvent.Pre<?, ?> e) {
+        var le = e.getEntity();
+        if (!(le.getVehicle() instanceof TrenMontana t)) return;
+        int i = t.getPassengers().indexOf(le);
+        if (i < 0) return;
+        float pt = e.getPartialTick();
+        Via.Sitio s = t.sitioVagon(i / 2, t.velocidad() * (pt - 1));
+        if (s == null) return;
+        Vec3[] b = TrenMontanaRenderer.base(s);
+        Vec3 tg = b[0], up = b[1];
+        Vec3 izq = up.cross(tg);
+        // hacia dónde mira el cuerpo tal y como lo va a dibujar Minecraft (solo con su giro horizontal)
+        float yaw = Mth.rotLerp(pt, le.yBodyRotO, le.yBodyRot) * Mth.DEG_TO_RAD;
+        Vec3 fa = new Vec3(-Mth.sin(yaw), 0, Mth.cos(yaw));
+        Vec3 ya = new Vec3(0, 1, 0);
+        Vec3 ia = ya.cross(fa);
+        org.joml.Matrix3f B = new org.joml.Matrix3f((float) izq.x, (float) izq.y, (float) izq.z, (float) up.x, (float) up.y, (float) up.z, (float) tg.x, (float) tg.y, (float) tg.z);
+        org.joml.Matrix3f A = new org.joml.Matrix3f((float) ia.x, (float) ia.y, (float) ia.z, (float) ya.x, (float) ya.y, (float) ya.z, (float) fa.x, (float) fa.y, (float) fa.z);
+        org.joml.Matrix3f R = B.mul(A.transpose());
+        // casi derecho (en la estación o en una recta): no se toca nada
+        if (R.m11() > 0.9995F) return;
+        org.joml.Quaternionf q = new org.joml.Quaternionf().setFromNormalized(R);
+        e.getPoseStack().pushPose();
+        e.getPoseStack().mulPose(q);
+        GIRADOS.add(le);
+    }
+
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST, receiveCanceled = true)
+    public static void despuesPasajero(net.minecraftforge.client.event.RenderLivingEvent.Post<?, ?> e) {
+        if (GIRADOS.remove(e.getEntity())) e.getPoseStack().popPose();
+    }
+
     // ------------------------------------------------------------------ cámara
     @Nullable
     static TrenMontana montado(LocalPlayer p) {

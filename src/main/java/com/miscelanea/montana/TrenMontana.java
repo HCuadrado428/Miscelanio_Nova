@@ -72,6 +72,11 @@ public class TrenMontana extends Entity {
         }
     }
 
+    /** Le da una velocidad (bloques por tic, hacia delante si es positiva). Para las pruebas y los comandos. */
+    public void lanzar(double v) {
+        entityData.set(V, (float) Mth.clamp(v, -MAX, MAX));
+    }
+
     public int vagones() {
         return entityData.get(VAGONES);
     }

@@ -240,6 +240,11 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> GB_FIN = register("gb_fin");
     public static final RegistryObject<SoundEvent> GB_INICIO = register("gb_inicio");
     public static final RegistryObject<SoundEvent> GB_MUSICA = register("gb_musica");
+    // El Purgatorio (2.0.0): un ambiente en bucle por zona
+    public static final RegistryObject<SoundEvent> PURGATORIO_FERIA = register("purgatorio_feria");
+    public static final RegistryObject<SoundEvent> PURGATORIO_SALA = register("purgatorio_sala");
+    public static final RegistryObject<SoundEvent> PURGATORIO_RECREATIVA = register("purgatorio_recreativa");
+    public static final RegistryObject<SoundEvent> PURGATORIO_SIN_TEXTURA = register("purgatorio_sin_textura");
 
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name,
