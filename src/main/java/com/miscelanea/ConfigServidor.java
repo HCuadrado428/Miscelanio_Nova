@@ -35,6 +35,10 @@ public final class ConfigServidor {
     private static final ForgeConfigSpec.BooleanValue MORDISCO_ACTIVADO, MORDISCO_JUGADORES;
     private static final ForgeConfigSpec.IntValue MORDISCO_LENTITUD_MAX, MORDISCO_LENTITUD_S, MORDISCO_NAUSEA_S,
             MORDISCO_DESANGRADO_NIVEL, MORDISCO_DESANGRADO_S, MORDISCO_DEBILIDAD_S, VENENO_ENFRIAMIENTO_S, ANILLO_ENFRIAMIENTO_S;
+    private static final ForgeConfigSpec.BooleanValue EQUILIBRIO_ACTIVO, EQUILIBRIO_MOBS, ENCANTOS_ACTIVO, ENCANTOS_SIN_DURABILIDAD;
+    private static final ForgeConfigSpec.DoubleValue EQUILIBRIO_TOPE;
+    private static final ForgeConfigSpec.IntValue ENCANTOS_LIM_ARMAS, ENCANTOS_LIM_ARMADURA, ENCANTOS_XP;
+    private static final ForgeConfigSpec.ConfigValue<java.util.List<? extends String>> ENCANTOS_PROHIBIDOS;
     private static final ForgeConfigSpec.DoubleValue MORDISCO_DANO, MORDISCO_UMBRAL, DESANGRADO_DANO;
     private static final ForgeConfigSpec.ConfigValue<String> ANILLO_DIMENSION;
     // ---- glitch (muestra de glitch)
@@ -196,6 +200,26 @@ public final class ConfigServidor {
                 .define("anillo_dimension", "midnight:the_midnight");
         ANILLO_ENFRIAMIENTO_S = b.comment("Segundos de espera del anillo de medianoche después de viajar.")
                 .defineInRange("anillo_enfriamiento_segundos", 10, 0, 3600);
+        b.pop();
+
+        b.comment("Equilibrio de armaduras: tope a cuánto daño se puede quitar entre armadura, dureza, encantamientos y efectos",
+                "(para que con armaduras de Ice and Fire o encantamientos subidos de Tombstone no se vuelva uno inmortal).").push("equilibrio");
+        EQUILIBRIO_ACTIVO = b.comment("Activar el tope.").define("activo", true);
+        EQUILIBRIO_TOPE = b.comment("Lo que se puede quitar como mucho (0.75 = 75 %: cada golpe hace al menos el 25 %).",
+                        "En vanilla, netherita completa con Protección IV en todo quita en torno al 80-90 %.")
+                .defineInRange("reduccion_maxima", 0.75, 0.0, 1.0);
+        EQUILIBRIO_MOBS = b.comment("Aplicarlo también a los mobs (si no, solo a los jugadores).").define("tambien_mobs", false);
+        b.pop();
+
+        b.comment("Encantamientos al estilo Enchancement: casi todos los vanilla quitados, encantamientos nuevos sin niveles, límite",
+                "por objeto, sin durabilidad y mesa de encantar de elegir (con libros en estanterías cinceladas).").push("encantamientos");
+        ENCANTOS_ACTIVO = b.comment("Activar las reglas nuevas (si se apaga, todo vuelve a ser vanilla).").define("activo", true);
+        ENCANTOS_SIN_DURABILIDAD = b.comment("Que nada se gaste (salvo lo de la etiqueta miscelanea:con_durabilidad).").define("sin_durabilidad", true);
+        ENCANTOS_LIM_ARMAS = b.comment("Encantamientos como mucho en armas y herramientas (las maldiciones no cuentan).").defineInRange("limite_armas", 2, 1, 10);
+        ENCANTOS_LIM_ARMADURA = b.comment("Encantamientos como mucho en cada pieza de armadura.").defineInRange("limite_armadura", 4, 1, 10);
+        ENCANTOS_XP = b.comment("Puntos de experiencia que se devuelven por cada nivel de encantamiento quitado.").defineInRange("xp_por_nivel", 20, 0, 1000);
+        ENCANTOS_PROHIBIDOS = b.comment("Encantamientos de otros mods que también se quitan (p. ej. \"tombstone:magic_siphon\").")
+                .defineList("prohibidos_extra", java.util.List.of(), o -> o instanceof String);
         b.pop();
 
         b.comment("El glitch: la muestra de glitch (solo de creativo) que, al soltarse o romperse, corrompe una esfera de bloques.").push("glitch");
@@ -471,6 +495,18 @@ public final class ConfigServidor {
     public static float mordiscoDano() { return (float) d(MORDISCO_DANO); }
     public static float mordiscoUmbral() { return (float) d(MORDISCO_UMBRAL); }
     public static String anilloDimension() { return s(ANILLO_DIMENSION); }
+    public static boolean equilibrioActivo() { return b(EQUILIBRIO_ACTIVO); }
+    public static boolean equilibrioMobs() { return b(EQUILIBRIO_MOBS); }
+    public static double equilibrioReduccionMaxima() { return d(EQUILIBRIO_TOPE); }
+    public static boolean encantosActivo() { return b(ENCANTOS_ACTIVO); }
+    public static boolean encantosSinDurabilidad() { return b(ENCANTOS_SIN_DURABILIDAD); }
+    public static int encantosLimiteArmas() { return i(ENCANTOS_LIM_ARMAS); }
+    public static int encantosLimiteArmadura() { return i(ENCANTOS_LIM_ARMADURA); }
+    public static int encantosXpPorNivel() { return i(ENCANTOS_XP); }
+    @SuppressWarnings("unchecked")
+    public static java.util.List<String> encantosProhibidosExtra() {
+        try { return (java.util.List<String>) ENCANTOS_PROHIBIDOS.get(); } catch (Exception e) { return java.util.List.of(); }
+    }
     public static int anilloEnfriamientoTicks() { return i(ANILLO_ENFRIAMIENTO_S) * 20; }
 
     // ------------------------------------------------------------------ glitch
