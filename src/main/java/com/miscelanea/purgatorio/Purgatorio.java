@@ -69,6 +69,7 @@ public final class Purgatorio {
         if (e.phase != TickEvent.Phase.END || !(e.player instanceof ServerPlayer p) || p.isSpectator()) return;
         Level l = p.level();
         if (en(l)) {
+            Habitantes.tick(p);
             // la puerta de salida también se mira aquí (si el jugador no se mueve, el bloque no se entera)
             if (p.tickCount % 5 == 0) {
                 var puerta = com.miscelanea.registry.ModBlocks.PUERTA_SALIDA.get();
@@ -151,6 +152,18 @@ public final class Purgatorio {
         dest.playSound(null, b, SoundEvents.BEACON_ACTIVATE, SoundSource.AMBIENT, 1F, 1.4F);
         p.displayClientMessage(Component.translatable("purgatorio.miscelanea.salida"), true);
         Miscelanea.LOGGER.info("Purgatorio: sale {} a {} {}", p.getGameProfile().getName(), dest.dimension().location(), b);
+    }
+
+    /** Lo lleva a otra parte del Purgatorio (cuando le pilla un habitante). */
+    public static void recolocar(ServerPlayer p) {
+        ServerLevel l = nivel(p);
+        if (l == null || !en(p.level())) return;
+        BlockPos b = sitio(p, PurgatorioGenerador.SUELO);
+        preparar(l, b);
+        persistente(p).putLong(TAG + "_t", l.getGameTime());
+        p.fallDistance = 0;
+        p.setDeltaMovement(0, 0, 0);
+        p.teleportTo(l, b.getX() + 0.5, b.getY(), b.getZ() + 0.5, p.getYRot(), 0);
     }
 
     /** Genera ya los chunks de alrededor del sitio (son muy baratos), para que el suelo esté al llegar. */

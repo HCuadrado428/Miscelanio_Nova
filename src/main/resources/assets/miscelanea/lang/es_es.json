@@ -2833,5 +2833,9 @@
   "block.miscelanea.sin_textura": "Bloque sin textura",
   "block.miscelanea.moqueta_recreativa": "Moqueta de recreativa",
   "block.miscelanea.recreativa_apagada": "Recreativa fundida",
-  "block.miscelanea.pilar_montana": "Pilar de montaña rusa"
+  "block.miscelanea.pilar_montana": "Pilar de montaña rusa",
+  "entity.miscelanea.purgado": "Purgado",
+  "subtitles.miscelanea.purgado_oye": "Algo te ha oído",
+  "subtitles.miscelanea.purgado_purga": "Te han purgado",
+  "purgatorio.miscelanea.purgado": "Te ha encontrado. Ya no estás donde estabas."
 }

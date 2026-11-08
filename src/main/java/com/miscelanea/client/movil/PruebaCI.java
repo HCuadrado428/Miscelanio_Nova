@@ -563,6 +563,49 @@ public final class PruebaCI {
         });
         paso("40_purgatorio_feria", 30, () -> {});
         paso("41_purgatorio_feria_2", 30, () -> mc.player.setYRot(mc.player.getYRot() + 120));
+        // un habitante: se le "habla" (como si fuera el chat de voz) y viene a tientas hasta pillarle
+        sin("purgatorio_habitante", 20, () -> {
+            var b = com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.FERIA);
+            irA(b, 0, 6);
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
+                if (l == null) return;
+                for (var g : l.getEntitiesOfClass(com.miscelanea.purgatorio.Purgado.class, new net.minecraft.world.phys.AABB(b).inflate(80))) g.discard();
+                var g = com.miscelanea.purgatorio.Habitantes.aparecer(l, b.offset(0, 0, 9), com.miscelanea.purgatorio.Purgado.Variante.HEROBRINE);
+                RESUMEN.add("  purgatorio, habitante: " + (g == null ? "NO ha salido" : "sale en " + g.blockPosition().toShortString()));
+                var g2 = com.miscelanea.purgatorio.Habitantes.aparecer(l, b.offset(-2, 0, 11), com.miscelanea.purgatorio.Purgado.Variante.SIN_TEXTURA);
+                var g3 = com.miscelanea.purgatorio.Habitantes.aparecer(l, b.offset(1, 0, 13), com.miscelanea.purgatorio.Purgado.Variante.RELLENO);
+                if (g2 != null) g2.setYRot(180);
+                if (g3 != null) g3.setYRot(200);
+            });
+        });
+        paso("49_purgatorio_habitantes", 20, () -> {
+            mc.player.setYRot(0);
+            mc.player.setXRot(6);
+        });
+        for (int i = 0; i < 4; i++) {
+            int ii = i;
+            paso("49_purgatorio_habitante_" + i, 12, () -> {
+                mc.player.setYRot(0);
+                mc.player.setXRot(6);
+                com.miscelanea.purgatorio.Habitantes.habla(mc.player.getUUID());
+                var l = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
+                if (l == null) return;
+                var b = com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.FERIA);
+                StringBuilder sb = new StringBuilder("  habitantes " + ii + ":");
+                for (var g : l.getEntitiesOfClass(com.miscelanea.purgatorio.Purgado.class, new net.minecraft.world.phys.AABB(b).inflate(40)))
+                    sb.append(String.format(" %s a %.1f%s", g.variante(), Math.sqrt(g.distanceToSqr(b.getX() + 0.5, b.getY(), b.getZ() + 0.5)), g.cazando() ? " (cazando)" : ""));
+                RESUMEN.add(sb.toString());
+            });
+        }
+        sin("purgatorio_habitante_fin", 60, () -> com.miscelanea.purgatorio.Habitantes.habla(mc.player.getUUID()));
+        sin("purgatorio_habitante_mira", 2, () -> {
+            var b = com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.FERIA);
+            double d = Math.sqrt(mc.player.distanceToSqr(b.getX() + 0.5, b.getY(), b.getZ() + 0.5));
+            RESUMEN.add(String.format("  purgatorio, habitante: el jugador está a %.0f bloques de donde estaba (%s)", d, d > 20 ? "le ha pillado y le ha recolocado" : "NO le ha pillado"));
+            if (d <= 20) RESUMEN.add("  AVISO: el habitante no ha pillado al jugador");
+        });
         sin("purgatorio_sala_ir", 50, () -> irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.SALA), 10, 5));
         paso("42_purgatorio_sala", 30, () -> {});
         paso("43_purgatorio_sala_2", 30, () -> mc.player.setYRot(mc.player.getYRot() + 140));

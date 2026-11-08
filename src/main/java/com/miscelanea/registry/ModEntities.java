@@ -21,6 +21,10 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<com.miscelanea.feria.AsientoFeria>> CABINA_NORIA = ENTITIES.register("cabina_noria",
             () -> EntityType.Builder.<com.miscelanea.feria.AsientoFeria>of(com.miscelanea.feria.AsientoFeria::new, MobCategory.MISC)
                     .sized(1.9F, 2.6F).clientTrackingRange(12).updateInterval(1).noSummon().build("cabina_noria"));
+    /** Habitante del Purgatorio: no ve, pero te oye (también por el chat de voz). */
+    public static final RegistryObject<EntityType<com.miscelanea.purgatorio.Purgado>> PURGADO = ENTITIES.register("purgado",
+            () -> EntityType.Builder.<com.miscelanea.purgatorio.Purgado>of(com.miscelanea.purgatorio.Purgado::new, MobCategory.MISC)
+                    .sized(0.6F, 1.95F).clientTrackingRange(6).build("purgado"));
     public static final RegistryObject<EntityType<com.miscelanea.montana.TrenMontana>> TREN_MONTANA = ENTITIES.register("tren_montana",
             () -> EntityType.Builder.<com.miscelanea.montana.TrenMontana>of(com.miscelanea.montana.TrenMontana::new, MobCategory.MISC)
                     .sized(1.2F, 0.9F).clientTrackingRange(10).updateInterval(1).noSummon().build("tren_montana"));

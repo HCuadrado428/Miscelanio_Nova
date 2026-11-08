@@ -2556,5 +2556,17 @@
         "stream": true
       }
     ]
+  },
+  "purgado_oye": {
+    "sounds": [
+      "miscelanea:purgatorio/purgado_oye"
+    ],
+    "subtitle": "subtitles.miscelanea.purgado_oye"
+  },
+  "purgado_purga": {
+    "sounds": [
+      "miscelanea:purgatorio/purgado_purga"
+    ],
+    "subtitle": "subtitles.miscelanea.purgado_purga"
   }
 }

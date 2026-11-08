@@ -2833,5 +2833,9 @@
   "block.miscelanea.sin_textura": "Missing Texture Block",
   "block.miscelanea.moqueta_recreativa": "Arcade Carpet",
   "block.miscelanea.recreativa_apagada": "Dead Arcade Cabinet",
-  "block.miscelanea.pilar_montana": "Roller Coaster Support"
+  "block.miscelanea.pilar_montana": "Roller Coaster Support",
+  "entity.miscelanea.purgado": "Purged One",
+  "subtitles.miscelanea.purgado_oye": "Something heard you",
+  "subtitles.miscelanea.purgado_purga": "You got purged",
+  "purgatorio.miscelanea.purgado": "It found you. You are no longer where you were."
 }

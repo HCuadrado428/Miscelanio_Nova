@@ -110,6 +110,8 @@ public class MovilVozPlugin implements VoicechatPlugin {
     private static void micro(MicrophonePacketEvent e) {
         VoicechatServerApi a = api;
         VoicechatConnection yo = e.getSenderConnection();
+        // los habitantes del Purgatorio oyen a quien habla
+        if (yo != null) com.miscelanea.purgatorio.Habitantes.habla(yo.getPlayer().getUuid());
         if (a == null || yo == null) return;
         UUID mio = yo.getPlayer().getUuid();
         java.util.Set<UUID> otros = MovilVoz.SOCIOS.get(mio);

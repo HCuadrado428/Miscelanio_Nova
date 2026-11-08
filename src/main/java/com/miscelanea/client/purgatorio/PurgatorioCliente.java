@@ -64,6 +64,11 @@ public final class PurgatorioCliente {
         public static void efectos(RegisterDimensionSpecialEffectsEvent e) {
             e.register(new ResourceLocation(Miscelanea.MOD_ID, "purgatorio"), new Efectos());
         }
+
+        @SubscribeEvent
+        public static void renderers(net.minecraftforge.client.event.EntityRenderersEvent.RegisterRenderers e) {
+            e.registerEntityRenderer(com.miscelanea.registry.ModEntities.PURGADO.get(), PurgadoRenderer::new);
+        }
     }
 
     @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
