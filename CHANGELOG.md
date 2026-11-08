@@ -26,6 +26,7 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
 - **Anillo de medianoche:** decía que The Midnight no estaba instalado aunque lo estuviera. Buscaba la dimensión `midnight:midnight`, pero en The Midnight 0.6.x se llama `midnight:the_midnight`; ahora encuentra cualquiera de las dos (aunque la config antigua tenga el nombre viejo).
 - **Gramola:** el decorado del videoclip se pone a la altura de los pies de quien baila. Si el suelo delante de la gramola estaba más alto o más bajo (o había alfombras o losas), el decorado se quedaba a otra altura y la cámara se metía por debajo del suelo.
 - **Gramola (videoclip):** sin shaders, los rayos, focos y halos del decorado salían como planos de color macizo tapando la pantalla (las luces suaves se pintaban con el búfer del color opaco). Ahora cada tipo de luz tiene su búfer y se ven translúcidas.
+- **Puntero láser:** el punto se iba a un lado de la mira (a veces bastante a la derecha y un poco arriba). Ahora el rayo propio pasa por el centro de la pantalla tal como se dibuja cada fotograma (con el FOV dinámico, la proporción de la ventana, el tamaño del jugador, el balanceo y las cámaras de otros mods), y los demás jugadores ven el punto donde mira el que lo lleva. La punta del rayo sigue a la mano con cualquier FOV.
 
 ## 1.0.1
 - **Caras en el móvil con Customizable Player Models:** cada jugador manda una foto de la cabeza de su modelo (de frente y sin el móvil) y el servidor la reparte: se ve en contactos, chats y llamadas aunque esté lejos o desconectado, y ya no sale agarrando el móvil.

@@ -8,6 +8,7 @@ import net.minecraft.client.Screenshot;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -348,6 +349,7 @@ public final class PruebaCI {
         paso("61_mesa_llena", 20, () -> {});
         sin("encantos_fin", 5, () -> mc.setScreen(null));
         rendimiento();
+        laser();
         sin("cerrar", 10, () -> {
             mc.setScreen(null);
             RESUMEN.add("  cara propia (la de su modelo) guardada: " + (CarasCliente.tiene(mc.player.getUUID()) ? "sí" : "NO"));
@@ -484,11 +486,200 @@ public final class PruebaCI {
         paso("72_perfil_sala", 5, () -> {});
     }
 
+    // ------------------------------------------------------------------ puntero láser: el punto en la mira
+    private static boolean mantenerUso;
+    private static net.minecraft.world.entity.decoration.ArmorStand camaraFuera;
+    private static int fovAntes = 70;
+
+    /**
+     * Pared negra delante, el puntero encendido (clic derecho mantenido) y se mide en la imagen dónde cae el punto: en
+     * primera persona tiene que estar en el centro (la mira), también de gigante y con otro FOV; visto desde fuera, donde
+     * mira el jugador. Para medir se quita el rayo y el HUD (y la mano) y se busca el rojo en la captura.
+     */
+    private static void laser() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("laser_poner", 30, () -> {
+            mc.setScreen(null);
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                var l = sp.serverLevel();
+                var mira = net.minecraft.core.Direction.fromYRot(sp.getYRot());
+                var lado = mira.getClockWise();
+                var o = sp.blockPosition();
+                var aire = net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
+                for (var b : net.minecraft.core.BlockPos.betweenClosed(o.relative(lado, -8).relative(mira, -3).below(), o.relative(lado, 8).relative(mira, 11).above(16)))
+                    l.setBlock(b, b.getY() < o.getY() ? net.minecraft.world.level.block.Blocks.SMOOTH_STONE.defaultBlockState() : aire, 2);
+                for (int dx = -8; dx <= 8; dx++)
+                    for (int dy = -1; dy <= 16; dy++)
+                        l.setBlock(o.relative(mira, 10).relative(lado, dx).above(dy), net.minecraft.world.level.block.Blocks.BLACK_CONCRETE.defaultBlockState(), 2);
+                sp.setGameMode(GameType.SURVIVAL);
+                sp.removeAllEffects();
+                sp.getInventory().setItem(0, new ItemStack(com.miscelanea.laser.LaserRegistro.PUNTERO.get()));
+                sp.getInventory().selected = 0;
+                sp.connection.teleport(o.getX() + 0.5, o.getY(), o.getZ() + 0.5, mira.toYRot(), 0F);
+            });
+        });
+        sin("laser_encender", 30, () -> {
+            mc.options.hideGui = false;
+            mc.player.getInventory().selected = 0;
+            mantenerUso = true;
+            mc.options.keyUse.setDown(true);
+        });
+        paso("80_laser_primera", 10, () -> {
+            if (!com.miscelanea.laser.Laser.apuntando(mc.player)) throw new IllegalStateException("el puntero no se ha encendido");
+        });
+        medirLaser("laser_primera_antes", true, false, false);
+        medirLaser("laser_primera", false, false, true);
+        sin("laser_fov", 10, () -> {
+            fovAntes = mc.options.fov().get();
+            mc.options.fov().set(105);
+        });
+        paso("81_laser_fov105", 10, () -> {});
+        medirLaser("laser_fov105_antes", true, false, false);
+        medirLaser("laser_fov105", false, false, true);
+        sin("laser_gigante", 60, () -> {
+            mc.options.fov().set(fovAntes);
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp != null) sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(com.miscelanea.pociones.PocionesRegistro.GIGANTE.get(), 4000, 1));
+            });
+        });
+        paso("82_laser_gigante", 10, () -> RESUMEN.add(String.format("  láser: de gigante, ojos a %.2f bloques del suelo", mc.player.getEyeHeight())));
+        medirLaser("laser_gigante_antes", true, false, false);
+        medirLaser("laser_gigante", false, false, true);
+        sin("laser_normal", 60, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp != null) sp.removeAllEffects();
+            });
+        });
+        // como lo ve otro: una cámara a un lado que mira a la pared (el punto se calcula desde los ojos del jugador)
+        sin("laser_fuera_poner", 20, () -> {
+            var mira = mc.player.pick(64, 1.0F, false).getLocation();
+            Vec3 ojo = mc.player.getEyePosition();
+            Vec3 fwd = mc.player.getViewVector(1.0F);
+            Vec3 derecha = new Vec3(-fwd.z, 0, fwd.x).normalize();
+            Vec3 pos = ojo.add(derecha.scale(4)).add(fwd.scale(1)).add(0, 0.6, 0);
+            Vec3 d = mira.subtract(pos);
+            float yRot = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
+            float xRot = (float) Math.toDegrees(-Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
+            camaraFuera = new net.minecraft.world.entity.decoration.ArmorStand(mc.level, pos.x, pos.y, pos.z);
+            camaraFuera.moveTo(pos.x, pos.y - camaraFuera.getEyeHeight(), pos.z, yRot, xRot);
+            camaraFuera.setYHeadRot(yRot);
+            mc.setCameraEntity(camaraFuera);
+        });
+        paso("83_laser_desde_fuera", 10, () -> {});
+        medirLaser("laser_desde_fuera", false, true, true);
+        sin("laser_fuera_quitar", 10, () -> mc.setCameraEntity(mc.player));
+        paso("84_laser_tercera", 30, () -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK));
+        sin("laser_fin", 10, () -> {
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            mantenerUso = false;
+            mc.options.keyUse.setDown(false);
+            com.miscelanea.client.laser.LaserCliente.pruebaSinRayo = false;
+            com.miscelanea.client.laser.LaserCliente.pruebaModoAntiguo = false;
+            mc.options.hideGui = false;
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp != null) sp.setGameMode(GameType.CREATIVE);
+            });
+        });
+    }
+
+    /** Dos pasos: quitar rayo y HUD (y la manera antigua de calcularlo si {@code antiguo}) y, ya dibujado, medir. */
+    private static void medirLaser(String nombre, boolean antiguo, boolean desdeFuera, boolean obligatorio) {
+        Minecraft mc = Minecraft.getInstance();
+        sin(nombre + "_quitar_hud", 12, () -> {
+            mc.options.hideGui = true;
+            com.miscelanea.client.laser.LaserCliente.pruebaSinRayo = true;
+            com.miscelanea.client.laser.LaserCliente.pruebaModoAntiguo = antiguo;
+        });
+        sin(nombre + "_medir", 1, () -> {
+            try {
+                analizarLaser(nombre, desdeFuera, obligatorio);
+            } finally {
+                mc.options.hideGui = false;
+                com.miscelanea.client.laser.LaserCliente.pruebaSinRayo = false;
+                com.miscelanea.client.laser.LaserCliente.pruebaModoAntiguo = false;
+            }
+        });
+    }
+
+    private static void analizarLaser(String nombre, boolean desdeFuera, boolean obligatorio) {
+        Minecraft mc = Minecraft.getInstance();
+        var rt = mc.getMainRenderTarget();
+        int W = rt.width, H = rt.height;
+        Vec3 punto = com.miscelanea.client.laser.LaserCliente.pruebaMiPunto;
+        Vec3 mira = mc.player.pick(64, 1.0F, false).getLocation();
+        Vec3 deOtros = com.miscelanea.laser.Laser.rayo(mc.player, 1.0F).punto();
+        // dónde tiene que salir: en primera persona, en el centro (la mira); desde fuera, donde mira el jugador
+        double ex = W / 2.0, ey = H / 2.0;
+        if (desdeFuera) {
+            double[] s = com.miscelanea.client.laser.LaserCliente.aPantalla(mira, W, H);
+            if (s == null) throw new IllegalStateException("la pared no está delante de la cámara de fuera");
+            ex = s[0];
+            ey = s[1];
+        }
+        double v = (desdeFuera ? 0.15 : 0.42) * H;
+        double sx = 0, sy = 0, sw = 0;
+        int n = 0;
+        try (com.mojang.blaze3d.platform.NativeImage img = Screenshot.takeScreenshot(rt)) {
+            for (int y = (int) Math.max(0, ey - v); y < Math.min(H, ey + v); y++)
+                for (int x = (int) Math.max(0, ex - v); x < Math.min(W, ex + v); x++) {
+                    int c = img.getPixelRGBA(x, y);
+                    int r = c & 255, g = c >> 8 & 255, b = c >> 16 & 255;
+                    int rojo = r - Math.max(g, b);
+                    if (r >= 80 && rojo >= 40) {
+                        sx += x * (double) rojo;
+                        sy += y * (double) rojo;
+                        sw += rojo;
+                        n++;
+                    }
+                }
+            File dir = new File(mc.gameDirectory, "screenshots");
+            dir.mkdirs();
+            img.writeToFile(new File(dir, nombre + ".png"));
+        } catch (java.io.IOException ex2) {
+            RESUMEN.add("  láser " + nombre + ": no se pudo guardar la imagen: " + ex2);
+        }
+        String calc = "sin punto";
+        if (punto != null) {
+            double[] s = com.miscelanea.client.laser.LaserCliente.aPantalla(punto, W, H);
+            calc = (s == null ? "detrás" : String.format("(%+.1f, %+.1f) px", s[0] - ex, s[1] - ey))
+                    + String.format(", a %.3f bloques de donde mira y a %.3f del que ven los demás", punto.distanceTo(mira), punto.distanceTo(deOtros));
+        }
+        double tol = Math.max(4, 0.025 * H);
+        String linea;
+        boolean bien;
+        if (n < 6) {
+            linea = String.format("no se ve el punto (%d píxeles rojos)", n);
+            bien = false;
+        } else {
+            double dx = sx / sw - ex, dy = sy / sw - ey;
+            bien = Math.hypot(dx, dy) <= tol;
+            linea = String.format("el punto sale a (%+.1f, %+.1f) px de %s (%d píxeles rojos, imagen %dx%d)", dx, dy, desdeFuera ? "donde mira" : "la mira", n, W, H);
+        }
+        RESUMEN.add("  láser " + nombre + ": " + linea + " · calculado " + calc + (bien ? "" : " · MAL"));
+        if (obligatorio && !bien) throw new IllegalStateException("el punto del láser no cae donde debe (" + nombre + ")");
+    }
+
     @SubscribeEvent
     public static void tick(TickEvent.ClientTickEvent e) {
         if (!ACTIVA || e.phase != TickEvent.Phase.END || terminada) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null) return;
+        // el puntero láser: el clic derecho mantenido
+        if (mantenerUso) mc.options.keyUse.setDown(true);
         // que MC-Runtime-Test no dé la prueba por acabada mientras sigue esto
         if (mc.player.tickCount > 60) mc.player.tickCount = 60;
         if (++ticksEnMundo < 40) return;
