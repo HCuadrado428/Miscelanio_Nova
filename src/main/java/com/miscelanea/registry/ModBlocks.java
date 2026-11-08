@@ -95,6 +95,9 @@ public final class ModBlocks {
     /** Moqueta de salón recreativo de los noventa (la de los dibujitos de neón). Solo sale allí. */
     public static final RegistryObject<Block> MOQUETA_RECREATIVA = BLOCKS.register("moqueta_recreativa",
             () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(0.8F).sound(SoundType.WOOL)));
+    /** Moqueta de hexágonos del Hotel del Videoclip. Solo sale allí. */
+    public static final RegistryObject<Block> MOQUETA_HOTEL = BLOCKS.register("moqueta_hotel",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(0.8F).sound(SoundType.WOOL)));
     /** Recreativa fundida de la Recreativa Infinita (sin bloque-entidad: no se enciende ni suelta nada). */
     public static final RegistryObject<Block> RECREATIVA_APAGADA = BLOCKS.register("recreativa_apagada",
             () -> new com.miscelanea.purgatorio.RecreativaApagadaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE)

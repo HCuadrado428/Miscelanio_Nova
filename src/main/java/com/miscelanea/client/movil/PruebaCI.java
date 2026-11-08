@@ -632,6 +632,14 @@ public final class PruebaCI {
                     + com.miscelanea.client.purgatorio.PurgatorioCliente.Ambiente.sonando());
             if (vivas > 0 && conBe < vivas) RESUMEN.add("  AVISO: hay recreativas vivas sin bloque-entidad");
         });
+        sin("purgatorio_hotel_ir", 50, () -> irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.HOTEL), 0, 5));
+        paso("4a_purgatorio_hotel", 40, () -> {});
+        paso("4b_purgatorio_hotel_2", 30, () -> {
+            mc.player.setYRot(90);
+            RESUMEN.add("  purgatorio, hotel: ambiente " + com.miscelanea.client.purgatorio.PurgatorioCliente.Ambiente.sonando());
+        });
+        sin("purgatorio_hotel_cuarto", 30, () -> irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.HOTEL).offset(4, 0, 4), 45, 25));
+        paso("4c_purgatorio_hotel_cuarto", 30, () -> {});
         sin("purgatorio_sin_textura_ir", 50, () -> irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.SIN_TEXTURA), 30, 6));
         paso("47_purgatorio_sin_textura", 40, () -> {});
         paso("48_purgatorio_sin_textura_2", 30, () -> {
@@ -655,6 +663,31 @@ public final class PruebaCI {
             RESUMEN.add("  purgatorio: zona del origen " + com.miscelanea.purgatorio.PurgatorioGenerador.zona(0, 0)
                     + ", salida en " + com.miscelanea.purgatorio.Purgatorio.buscarSalida() + ", ha salido por la puerta: " + (fuera ? "sí" : "NO"));
             if (!fuera) throw new IllegalStateException("la puerta de salida no le ha sacado");
+        });
+        // otra salida: el agujero del Mundo sin Texturas (se cae fuera del Purgatorio)
+        sin("purgatorio_agujero", 60, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            var ag = com.miscelanea.purgatorio.Purgatorio.buscarAgujero();
+            RESUMEN.add("  purgatorio: agujero del Mundo sin Texturas en " + ag);
+            if (ag == null) return;
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                var l = srv.getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
+                if (sp == null || l == null) return;
+                com.miscelanea.purgatorio.Purgatorio.entrar(sp, null);
+                com.miscelanea.purgatorio.Purgatorio.preparar(l, ag);
+                // como si llevara un rato allí (si no, al caerse nada más llegar se le devuelve al mismo sitio)
+                sp.getPersistentData().getCompound(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG).putLong("miscelanea_purgatorio_t", l.getGameTime() - 2000);
+                sp.teleportTo(l, ag.getX() + 0.5, ag.getY() + 1, ag.getZ() + 0.5, 0, 60);
+            });
+        });
+        paso("4d_purgatorio_agujero", 10, () -> mc.player.setXRot(70));
+        sin("purgatorio_agujero_caer", 140, () -> {});
+        sin("purgatorio_agujero_fuera", 5, () -> {
+            boolean fuera = !com.miscelanea.purgatorio.Purgatorio.en(mc.level);
+            RESUMEN.add("  purgatorio: ha salido por el agujero: " + (fuera ? "sí" : "NO") + " (y=" + (int) mc.player.getY() + ")");
+            if (!fuera) RESUMEN.add("  AVISO: el agujero no le ha sacado");
         });
     }
 

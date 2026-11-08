@@ -85,6 +85,11 @@ public final class Purgatorio {
                 ServerLevel l2 = (ServerLevel) l;
                 long ahora = l2.getGameTime();
                 boolean recien = ahora - persistente(p).getLong(TAG + "_t") < 400;
+                // por los agujeros del Mundo sin Texturas se cae fuera del Purgatorio: de vuelta a casa
+                if (!recien && PurgatorioGenerador.zona(p.getBlockX() >> 4, p.getBlockZ() >> 4) == PurgatorioGenerador.Zona.SIN_TEXTURA) {
+                    salir(p);
+                    return;
+                }
                 BlockPos b = recien ? new BlockPos(p.getBlockX(), PurgatorioGenerador.SUELO, p.getBlockZ()) : sitio(p, PurgatorioGenerador.SUELO + 18);
                 preparar(l2, b);
                 persistente(p).putLong(TAG + "_t", ahora);
@@ -188,6 +193,20 @@ public final class Purgatorio {
                     if (Math.max(Math.abs(cx), Math.abs(cz)) == r && PurgatorioGenerador.zona(cx, cz) == z && !PurgatorioGenerador.salida(cx, cz))
                         return new BlockPos(cx * 16 + 8, PurgatorioGenerador.SUELO, cz * 16 + 8);
         return new BlockPos(8, PurgatorioGenerador.SUELO, 8);
+    }
+
+    /** Para la prueba: el agujero del Mundo sin Texturas más cercano al origen (su centro, a la altura del suelo). */
+    public static BlockPos buscarAgujero() {
+        int[][] q = {{0, 0}, {9, 0}, {0, 9}, {9, 9}};
+        for (int r = 0; r < 60; r++)
+            for (int cx = -r; cx <= r; cx++)
+                for (int cz = -r; cz <= r; cz++) {
+                    if (Math.max(Math.abs(cx), Math.abs(cz)) != r || PurgatorioGenerador.zona(cx, cz) != PurgatorioGenerador.Zona.SIN_TEXTURA) continue;
+                    for (int k = 0; k < 4; k++)
+                        if (!(k == 0 && PurgatorioGenerador.salida(cx, cz)) && PurgatorioGenerador.h(cx, cz, 80 + k) % 10 == 8)
+                            return new BlockPos(cx * 16 + q[k][0] + 3, PurgatorioGenerador.SUELO, cz * 16 + q[k][1] + 3);
+                }
+        return null;
     }
 
     /** Para la prueba: el chunk con puerta de salida más cercano al origen. */

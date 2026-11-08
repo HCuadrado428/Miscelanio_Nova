@@ -20,6 +20,7 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
   - **Sala de Espera**: baldosas, fluorescentes, filas de sillas y tabiques. Nadie te va a llamar.
   - **Recreativa Infinita**: moqueta de neón de los noventa y filas de máquinas que no se acaban. Casi todas están fundidas (con la pantalla quemada), pero una de cada seis sigue funcionando y se puede jugar.
   - **Mundo sin Texturas**: todo es la textura que falta (cuadros rosa y negro, que se ven igual a oscuras): árboles a los que solo les cargó el tronco, casas a medio cargar con el tejado flotando, bloques sueltos en el aire y algún jugador en pose de T.
+  - **Habitantes** (los purgados): no ven, pero oyen. Si hablas por el chat de voz te oyen desde lejos, si corres desde menos y andando solo de cerca; agachado no te oyen. Cuando oyen algo van hacia allí a tientas, con los brazos por delante, y si te pillan te vuelven a purgar: te quedas a oscuras un momento y apareces en otra parte del Purgatorio. No hacen daño ni se les puede hacer (si les pegas, se descolocan). Hay tres: uno con la cara de siempre y los ojos en blanco (por fin se sabe adónde fue Herobrine después de tantos «Removed Herobrine»), uno al que no le cargó la textura y un muñeco de relleno gris. Como mucho dos cerca de cada jugador, y no piensan nada mientras no oyen nada.
   - Solo de allí: el **bloque sin textura** y la **moqueta de recreativa** se pueden picar y llevar a casa.
   - Ligero: cada chunk son unos cientos de bloques puestos sin ruido, siempre igual; casi nada tiene bloque-entidad.
 

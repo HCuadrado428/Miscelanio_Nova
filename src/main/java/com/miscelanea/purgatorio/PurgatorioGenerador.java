@@ -52,7 +52,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
     /** Zonas: cada región de REGION x REGION chunks es de una (la del origen siempre es la feria). */
     public static final int REGION = 5;
 
-    public enum Zona {FERIA, SALA, RECREATIVA, SIN_TEXTURA}
+    public enum Zona {FERIA, SALA, RECREATIVA, HOTEL, SIN_TEXTURA}
 
     public PurgatorioGenerador(BiomeSource b) {
         super(b);
@@ -76,7 +76,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
         int rx = Math.floorDiv(cx, REGION), rz = Math.floorDiv(cz, REGION);
         if (rx == 0 && rz == 0) return Zona.FERIA;
         long k = h(rx, rz, 1) % 100;
-        return k < 38 ? Zona.FERIA : k < 62 ? Zona.SALA : k < 84 ? Zona.RECREATIVA : Zona.SIN_TEXTURA;
+        return k < 32 ? Zona.FERIA : k < 52 ? Zona.SALA : k < 70 ? Zona.RECREATIVA : k < 86 ? Zona.HOTEL : Zona.SIN_TEXTURA;
     }
 
     /** ¿Hay una puerta de salida en este chunk? (más o menos una de cada 60). */
@@ -124,6 +124,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
             case FERIA -> feria(l, cx, cz);
             case SALA -> sala(l, cx, cz);
             case RECREATIVA -> recreativa(l, cx, cz);
+            case HOTEL -> hotel(l, cx, cz);
             default -> sinTextura(l, cx, cz);
         }
         if (salida(cx, cz)) puertaSalida(l, z);
@@ -380,6 +381,68 @@ public class PurgatorioGenerador extends ChunkGenerator {
         l.pon(x, f + 1, z, s.setValue(RecreativaApagadaBlock.HALF, net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER));
     }
 
+    // ------------------------------------------------------------------ Hotel del Videoclip
+    /**
+     * Los pasillos de un hotel que no se acaba (el del videoclip): moqueta de hexágonos, paredes color crema con zócalo de
+     * madera, luz cálida en el techo y puertas cerradas a los dos lados. Detrás de cada puerta, una habitación pequeña y
+     * siempre igual: la cama hecha, la mesilla con su lámpara y nadie.
+     */
+    private static void hotel(Lienzo l, int cx, int cz) {
+        int f = SUELO, techo = SUELO + 4;
+        BlockState moqueta = com.miscelanea.registry.ModBlocks.MOQUETA_HOTEL.get().defaultBlockState();
+        for (int x = 0; x < 16; x++)
+            for (int z = 0; z < 16; z++) {
+                boolean pasillo = x == 7 || x == 8 || z == 7 || z == 8;
+                l.pon(x, f - 1, z, pasillo ? moqueta : d(Blocks.SPRUCE_PLANKS));
+                l.pon(x, f - 2, z, d(Blocks.STONE));
+                boolean luz = pasillo && (x == 7 || z == 7) && (x + z) % 5 == 2 && h(cx * 16 + x, cz * 16 + z, 3) % 9 != 0;
+                l.pon(x, techo, z, d(luz ? Blocks.OCHRE_FROGLIGHT : Blocks.SMOOTH_SANDSTONE));
+            }
+        int[][] q = {{0, 0}, {9, 0}, {0, 9}, {9, 9}};
+        for (int k = 0; k < 4; k++) {
+            int x0 = q[k][0], z0 = q[k][1], x1 = x0 + 6, z1 = z0 + 6;
+            if (salida(cx, cz) && k == 0) continue;
+            // paredes de la habitación: zócalo de madera y crema encima
+            for (int x = x0; x <= x1; x++)
+                for (int z = z0; z <= z1; z++) {
+                    if (x != x0 && x != x1 && z != z0 && z != z1) continue;
+                    for (int y = 0; y < 4; y++) l.pon(x, f + y, z, d(y == 0 ? Blocks.DARK_OAK_PLANKS : Blocks.SMOOTH_SANDSTONE));
+                }
+            // la puerta, en la pared que da al pasillo largo (el de z = 7..8)
+            int zp = z0 == 0 ? z1 : z0, xp = x0 + 3;
+            Direction mira = z0 == 0 ? Direction.SOUTH : Direction.NORTH;
+            BlockState pu = Blocks.DARK_OAK_DOOR.defaultBlockState().setValue(net.minecraft.world.level.block.DoorBlock.FACING, mira.getOpposite());
+            l.pon(xp, f, zp, pu);
+            l.pon(xp, f + 1, zp, pu.setValue(net.minecraft.world.level.block.DoorBlock.HALF, net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER));
+            // un aplique a cada lado de la puerta, en el pasillo
+            int zf = zp + (z0 == 0 ? 1 : -1);
+            l.pon(xp - 2, f + 2, zp, d(Blocks.SMOOTH_SANDSTONE));
+            l.pon(xp - 2, f + 2, zf, Blocks.WALL_TORCH.defaultBlockState().setValue(net.minecraft.world.level.block.WallTorchBlock.FACING, mira));
+            if (h(cx, cz, 110 + k) % 3 != 0)
+                l.pon(xp + 2, f + 2, zf, Blocks.WALL_TORCH.defaultBlockState().setValue(net.minecraft.world.level.block.WallTorchBlock.FACING, mira));
+            // dentro: la cama (almohada blanca y colcha roja), la mesilla y su lámpara
+            int zc = z0 == 0 ? z0 + 1 : z1 - 1, dz = z0 == 0 ? 1 : -1;
+            for (int x = x0 + 1; x <= x0 + 2; x++) {
+                l.pon(x, f, zc, d(Blocks.WHITE_WOOL));
+                l.pon(x, f, zc + dz, d(Blocks.RED_WOOL));
+                l.pon(x, f, zc + 2 * dz, d(Blocks.RED_WOOL));
+            }
+            l.pon(x0 + 3, f, zc, d(Blocks.SPRUCE_PLANKS));
+            l.pon(x0 + 3, f + 1, zc, Blocks.LANTERN.defaultBlockState());
+            if (h(cx, cz, 120 + k) % 2 == 0) l.pon(x0 + 5, f, zc, Blocks.SPRUCE_STAIRS.defaultBlockState().setValue(StairBlock.FACING, Direction.WEST));
+        }
+        // paredes hacia las zonas que no son hotel (el pasillo sigue: es la puerta)
+        for (Direction dd : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST}) {
+            if (zona(cx + dd.getStepX(), cz + dd.getStepZ()) == Zona.HOTEL) continue;
+            for (int i = 0; i < 16; i++) {
+                if (i == 7 || i == 8) continue;
+                int x = dd == Direction.WEST ? 0 : dd == Direction.EAST ? 15 : i;
+                int z = dd == Direction.NORTH ? 0 : dd == Direction.SOUTH ? 15 : i;
+                for (int y = 0; y < 4; y++) l.pon(x, f + y, z, d(y == 0 ? Blocks.DARK_OAK_PLANKS : Blocks.SMOOTH_SANDSTONE));
+            }
+        }
+    }
+
     // ------------------------------------------------------------------ Mundo sin Texturas
     /**
      * Donde acaba lo que no cargó: el suelo y casi todo son la textura que falta (cuadros rosa y negro, que se ven igual a
@@ -434,6 +497,15 @@ public class PurgatorioGenerador extends ChunkGenerator {
                     long s = h((int) r, i, 97);
                     l.pon(qx + (int) (s % 7), f + 2 + (int) ((s >> 8) % 7), qz + (int) ((s >> 16) % 7), st);
                 }
+            } else if (t == 8) {
+                // un agujero en el mundo: por ahí se cae fuera del Purgatorio (de vuelta a casa)
+                for (int x = qx + 2; x <= qx + 4; x++)
+                    for (int z = qz + 2; z <= qz + 4; z++) {
+                        boolean centro = x == qx + 3 || z == qz + 3;
+                        if (!centro && (x + z) % 2 == 0) continue;     // con los bordes mordidos
+                        l.pon(x, f - 1, z, d(Blocks.AIR));
+                        l.pon(x, f - 2, z, d(Blocks.AIR));
+                    }
             } else if (t == 7) {
                 // un "jugador" que no cargó: dos bloques en pie, la pose de la T
                 int ax = qx + 3, az = qz + 3;
@@ -454,6 +526,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
             case FERIA -> Blocks.WHITE_CONCRETE;
             case SALA -> Blocks.QUARTZ_PILLAR;
             case RECREATIVA -> Blocks.BLACK_CONCRETE;
+            case HOTEL -> Blocks.DARK_OAK_PLANKS;
             default -> com.miscelanea.registry.ModBlocks.SIN_TEXTURA.get();
         });
         int zz = 3;

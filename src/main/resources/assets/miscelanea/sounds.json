@@ -2568,5 +2568,13 @@
       "miscelanea:purgatorio/purgado_purga"
     ],
     "subtitle": "subtitles.miscelanea.purgado_purga"
+  },
+  "purgatorio_hotel": {
+    "sounds": [
+      {
+        "name": "miscelanea:purgatorio/hotel",
+        "stream": true
+      }
+    ]
   }
 }

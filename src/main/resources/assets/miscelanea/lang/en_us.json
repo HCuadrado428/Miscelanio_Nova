@@ -2837,5 +2837,6 @@
   "entity.miscelanea.purgado": "Purged One",
   "subtitles.miscelanea.purgado_oye": "Something heard you",
   "subtitles.miscelanea.purgado_purga": "You got purged",
-  "purgatorio.miscelanea.purgado": "It found you. You are no longer where you were."
+  "purgatorio.miscelanea.purgado": "It found you. You are no longer where you were.",
+  "block.miscelanea.moqueta_hotel": "Hotel Carpet"
 }

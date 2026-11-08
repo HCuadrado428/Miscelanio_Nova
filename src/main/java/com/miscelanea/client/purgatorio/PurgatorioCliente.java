@@ -28,6 +28,7 @@ public final class PurgatorioCliente {
             case FERIA -> 34;
             case SALA -> 24;
             case RECREATIVA -> 22;
+            case HOTEL -> 20;
             case SIN_TEXTURA -> 30;
         };
     }
@@ -38,6 +39,7 @@ public final class PurgatorioCliente {
             case FERIA -> new float[]{0.07F, 0.05F, 0.10F};
             case SALA -> new float[]{0.10F, 0.10F, 0.085F};
             case RECREATIVA -> new float[]{0.05F, 0.02F, 0.09F};
+            case HOTEL -> new float[]{0.09F, 0.06F, 0.035F};
             case SIN_TEXTURA -> new float[]{0.0F, 0.0F, 0.0F};
         };
     }
@@ -118,6 +120,7 @@ public final class PurgatorioCliente {
                 case FERIA -> com.miscelanea.registry.ModSounds.PURGATORIO_FERIA.get();
                 case SALA -> com.miscelanea.registry.ModSounds.PURGATORIO_SALA.get();
                 case RECREATIVA -> com.miscelanea.registry.ModSounds.PURGATORIO_RECREATIVA.get();
+                case HOTEL -> com.miscelanea.registry.ModSounds.PURGATORIO_HOTEL.get();
                 case SIN_TEXTURA -> com.miscelanea.registry.ModSounds.PURGATORIO_SIN_TEXTURA.get();
             };
         }
