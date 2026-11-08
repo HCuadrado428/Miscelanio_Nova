@@ -2749,5 +2749,16 @@
   "movil.miscelanea.manos_libres": "Hands-free",
   "movil.miscelanea.manos_libres_volver": "Right-click phone: back",
   "movil.miscelanea.manos_libres_corto": "H.free",
-  "movil.miscelanea.tono_corto": "Ringtone"
+  "movil.miscelanea.tono_corto": "Ringtone",
+  "item.miscelanea.jeringuilla": "Syringe",
+  "item.miscelanea.suavis_seco": "Dried Suavis",
+  "item.miscelanea.jeringuilla_sedante": "Sedative Syringe",
+  "item.miscelanea.jeringuilla_sedante.desc": "Right-click someone to inject them. Sneak + use in the air: inject yourself.",
+  "effect.miscelanea.sedado": "Sedated",
+  "qte.miscelanea.sedante": "Fight the sleep!",
+  "miscelanea.sedante.pinchado": "Someone injected you… your eyelids feel heavy",
+  "miscelanea.sedante.resiste": "You shake off the drowsiness",
+  "miscelanea.sedante.dormido": "You pass out",
+  "miscelanea.sedante.despiertas": "You wake up with a jolt!",
+  "hud.miscelanea.sedante.dormido": "Asleep · you wake up in %s s"
 }

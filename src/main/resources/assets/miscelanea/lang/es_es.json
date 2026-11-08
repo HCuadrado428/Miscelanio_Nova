@@ -2749,5 +2749,16 @@
   "movil.miscelanea.manos_libres": "Manos libres",
   "movil.miscelanea.manos_libres_volver": "Clic der. al móvil: volver",
   "movil.miscelanea.manos_libres_corto": "M.libres",
-  "movil.miscelanea.tono_corto": "Tono"
+  "movil.miscelanea.tono_corto": "Tono",
+  "item.miscelanea.jeringuilla": "Jeringuilla",
+  "item.miscelanea.suavis_seco": "Suavis seco",
+  "item.miscelanea.jeringuilla_sedante": "Jeringuilla de sedante",
+  "item.miscelanea.jeringuilla_sedante.desc": "Clic derecho a alguien para pincharle. Agachado al aire: te lo pinchas tú.",
+  "effect.miscelanea.sedado": "Sedado",
+  "qte.miscelanea.sedante": "¡Lucha contra el sueño!",
+  "miscelanea.sedante.pinchado": "Te han pinchado algo… te pesan los párpados",
+  "miscelanea.sedante.resiste": "Te sacudes el sueño de encima",
+  "miscelanea.sedante.dormido": "Te quedas frito",
+  "miscelanea.sedante.despiertas": "¡Te despiertas de golpe!",
+  "hud.miscelanea.sedante.dormido": "Dormido · te despiertas en %s s"
 }

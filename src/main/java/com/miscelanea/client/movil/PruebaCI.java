@@ -47,6 +47,7 @@ public final class PruebaCI {
         if (ACTIVA && e.phase == TickEvent.Phase.END) fotogramas++;
     }
     private static boolean terminada;
+    private static UUID SEDANTE_CERDO = new UUID(0, 0);
     private static volatile net.minecraft.core.BlockPos gramola;
 
     private static void paso(String nombre, int espera, Runnable accion) {
@@ -265,6 +266,47 @@ public final class PruebaCI {
                 if (r.isEmpty()) throw new IllegalStateException("la poción rara + " + i + " no da nada");
             }
             RESUMEN.add(sb.toString());
+        });
+        // sedante de suavis: un cerdo pinchado se duerme; luego se lo pincha uno mismo
+        sin("sedante_cerdo", 5, () -> {
+            mc.setScreen(null);
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                var cerdo = net.minecraft.world.entity.EntityType.PIG.create(sp.serverLevel());
+                var mira = sp.getLookAngle().multiply(1, 0, 1).normalize().scale(2.5);
+                cerdo.moveTo(sp.getX() + mira.x, sp.getY(), sp.getZ() + mira.z, 0, 0);
+                sp.serverLevel().addFreshEntity(cerdo);
+                com.miscelanea.sedante.Sedante.pinchar(cerdo, sp, false);
+                SEDANTE_CERDO = cerdo.getUUID();
+            });
+        });
+        sin("sedante_espera", 150, () -> {});
+        paso("50_sedante_cerdo", 10, () -> {
+            var srv = mc.getSingleplayerServer();
+            var c = srv.overworld().getEntity(SEDANTE_CERDO);
+            boolean dormido = c instanceof net.minecraft.world.entity.LivingEntity le && com.miscelanea.tortura.Lazo.estado(le) == com.miscelanea.tortura.Lazo.DERRIBADO;
+            RESUMEN.add("  sedante: el cerdo se ha dormido: " + (dormido ? "sí" : "NO"));
+            if (!dormido) throw new IllegalStateException("el cerdo no se ha dormido");
+        });
+        sin("sedante_yo", 40, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp != null) com.miscelanea.sedante.Sedante.pinchar(sp, sp, false);
+            });
+        });
+        paso("51_sedante_dormido", 10, () -> RESUMEN.add("  sedante: me he dormido: " + (com.miscelanea.tortura.Lazo.estado(mc.player) == com.miscelanea.tortura.Lazo.DERRIBADO ? "sí" : "NO")));
+        sin("sedante_despertar", 5, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp != null) com.miscelanea.sedante.Sedante.despertar(sp);
+            });
         });
         sin("cerrar", 10, () -> {
             mc.setScreen(null);

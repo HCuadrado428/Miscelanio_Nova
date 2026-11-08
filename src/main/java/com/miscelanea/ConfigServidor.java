@@ -34,7 +34,7 @@ public final class ConfigServidor {
     // ---- Dream (mordisco venenoso y anillo de medianoche)
     private static final ForgeConfigSpec.BooleanValue MORDISCO_ACTIVADO, MORDISCO_JUGADORES;
     private static final ForgeConfigSpec.IntValue MORDISCO_LENTITUD_MAX, MORDISCO_LENTITUD_S, MORDISCO_NAUSEA_S,
-            MORDISCO_DESANGRADO_NIVEL, MORDISCO_DESANGRADO_S, MORDISCO_DEBILIDAD_S, VENENO_ENFRIAMIENTO_S, ANILLO_ENFRIAMIENTO_S;
+            MORDISCO_DESANGRADO_NIVEL, MORDISCO_DESANGRADO_S, MORDISCO_DEBILIDAD_S, VENENO_ENFRIAMIENTO_S, ANILLO_ENFRIAMIENTO_S, SEDANTE_S;
     private static final ForgeConfigSpec.DoubleValue MORDISCO_DANO, MORDISCO_UMBRAL, DESANGRADO_DANO;
     private static final ForgeConfigSpec.ConfigValue<String> ANILLO_DIMENSION;
     // ---- glitch (muestra de glitch)
@@ -196,6 +196,8 @@ public final class ConfigServidor {
                 .define("anillo_dimension", "midnight:the_midnight");
         ANILLO_ENFRIAMIENTO_S = b.comment("Segundos de espera del anillo de medianoche después de viajar.")
                 .defineInRange("anillo_enfriamiento_segundos", 10, 0, 3600);
+        SEDANTE_S = b.comment("Segundos que se queda dormido quien no aguanta el sedante de suavis.")
+                .defineInRange("sedante_segundos", 30, 3, 600);
         b.pop();
 
         b.comment("El glitch: la muestra de glitch (solo de creativo) que, al soltarse o romperse, corrompe una esfera de bloques.").push("glitch");
@@ -471,6 +473,7 @@ public final class ConfigServidor {
     public static float mordiscoDano() { return (float) d(MORDISCO_DANO); }
     public static float mordiscoUmbral() { return (float) d(MORDISCO_UMBRAL); }
     public static String anilloDimension() { return s(ANILLO_DIMENSION); }
+    public static int sedanteTicks() { return i(SEDANTE_S) * 20; }
     public static int anilloEnfriamientoTicks() { return i(ANILLO_ENFRIAMIENTO_S) * 20; }
 
     // ------------------------------------------------------------------ glitch

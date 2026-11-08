@@ -278,6 +278,11 @@ public final class ModItems {
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.BILLAR.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> FUTBOLIN = ITEMS.register("futbolin",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.FUTBOLIN.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    // ---- Sedante de suavis
+    public static final RegistryObject<Item> JERINGUILLA = ITEMS.register("jeringuilla", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> SUAVIS_SECO = ITEMS.register("suavis_seco", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> JERINGUILLA_SEDANTE = ITEMS.register("jeringuilla_sedante",
+            () -> new com.miscelanea.sedante.JeringaSedanteItem(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> PIZARRA_FERIA = ITEMS.register("pizarra_feria",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PIZARRA_FERIA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> TABLON_RECORDS = ITEMS.register("tablon_records",

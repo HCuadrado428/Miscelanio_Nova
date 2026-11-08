@@ -178,6 +178,9 @@ public class Miscelanea {
             event.accept(com.miscelanea.tortura.TorturaRegistro.LLAVE_TRAMPA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.CAJA_JIGSAW_ITEM);
             event.accept(com.miscelanea.tortura.TorturaRegistro.GRILLETES);
+            event.accept(ModItems.JERINGUILLA);
+            event.accept(ModItems.SUAVIS_SECO);
+            event.accept(ModItems.JERINGUILLA_SEDANTE);
             event.accept(com.miscelanea.tortura.TorturaRegistro.CADENA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.GANZUA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.LAZO);
