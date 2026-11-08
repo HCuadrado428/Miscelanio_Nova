@@ -42,9 +42,40 @@ public final class PruebaCI {
     /** Fotogramas dibujados: con gráficos por software (y más con shaders) puede haber muy pocos por tick. */
     private static int fotogramas, fotogramasPaso;
 
+    /** Tiempo de procesador (ns) de los fotogramas, de los bloques-entidad y de la pantalla abierta, para el perfil. */
+    private static long nsFotograma, nsBloques, nsPantalla, t0Fotograma, t0Bloques, t0Pantalla;
+
     @SubscribeEvent
     public static void fotograma(TickEvent.RenderTickEvent e) {
-        if (ACTIVA && e.phase == TickEvent.Phase.END) fotogramas++;
+        if (!ACTIVA) return;
+        if (e.phase == TickEvent.Phase.START) t0Fotograma = System.nanoTime();
+        else {
+            fotogramas++;
+            if (t0Fotograma != 0) nsFotograma += System.nanoTime() - t0Fotograma;
+        }
+    }
+
+    @SubscribeEvent
+    public static void etapa(net.minecraftforge.client.event.RenderLevelStageEvent e) {
+        if (!ACTIVA) return;
+        if (e.getStage() == net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_ENTITIES) t0Bloques = System.nanoTime();
+        else if (e.getStage() == net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_BLOCK_ENTITIES && t0Bloques != 0) {
+            nsBloques += System.nanoTime() - t0Bloques;
+            t0Bloques = 0;
+        }
+    }
+
+    @SubscribeEvent
+    public static void pantallaAntes(net.minecraftforge.client.event.ScreenEvent.Render.Pre e) {
+        if (ACTIVA) t0Pantalla = System.nanoTime();
+    }
+
+    @SubscribeEvent
+    public static void pantallaDespues(net.minecraftforge.client.event.ScreenEvent.Render.Post e) {
+        if (ACTIVA && t0Pantalla != 0) {
+            nsPantalla += System.nanoTime() - t0Pantalla;
+            t0Pantalla = 0;
+        }
     }
     private static boolean terminada;
     private static net.minecraft.core.BlockPos ENCANTOS_MESA = net.minecraft.core.BlockPos.ZERO;
@@ -358,17 +389,44 @@ public final class PruebaCI {
     private static long PERFIL_T0;
     private static Object GRABACION;
     private static int PERFIL_F0;
+    private static final long[] PERFIL_NS = new long[3];
+    /** Máquinas donde "juega otro" durante el perfil, y su pantalla de mentira. */
+    private static final java.util.List<net.minecraft.core.BlockPos> JUGANDO = new java.util.ArrayList<>();
+    private static final com.miscelanea.client.arcade.Pantalla FALSA = new com.miscelanea.client.arcade.Pantalla();
+    private static int tFalsa;
+
+    /** Una imagen de partida que cambia (fondo, cosas que se mueven y unos textos), como la que retransmite un jugador. */
+    private static void retransmitir() {
+        if (JUGANDO.isEmpty() || Minecraft.getInstance().level == null) return;
+        if (++tFalsa % 2 != 0) return;
+        var p = FALSA;
+        p.font = Minecraft.getInstance().font;
+        p.empezar();
+        for (int y = 0; y < com.miscelanea.client.arcade.Pantalla.H; y++) p.rect(0, y, com.miscelanea.client.arcade.Pantalla.W, 1, 33 + (y + tFalsa) / 24 % 4);
+        for (int k = 0; k < 12; k++) p.rect((k * 37 + tFalsa * 3) % 256, 40 + k * 11, 12, 8, 11 + k % 20);
+        p.texto("1P " + tFalsa * 10, 6, 4, 7);
+        p.textoD("HI 99999", 250, 4, 19);
+        p.textoC("NIVEL " + (tFalsa / 100 + 1), 128, 176, 20);
+        for (var q : JUGANDO) com.miscelanea.client.arcade.ArcadeCliente.local(q, p);
+    }
     private static final java.util.List<String> PERFIL = new java.util.ArrayList<>();
 
     private static void medir(String fase) {
         long t = System.currentTimeMillis();
         if (PERFIL_T0 != 0) {
             double s = (t - PERFIL_T0) / 1000.0;
-            RESUMEN.add(String.format("  rendimiento %s: %.1f fps", fase, (fotogramas - PERFIL_F0) / Math.max(0.01, s)));
+            int n = Math.max(1, fotogramas - PERFIL_F0);
+            // ms de procesador por fotograma: todo el fotograma, los bloques-entidad (renderers del mundo) y la pantalla abierta
+            RESUMEN.add(String.format(java.util.Locale.ROOT, "  rendimiento %s: %.1f fps · %.1f ms/fotograma · bloques-entidad %.2f ms · pantalla %.2f ms (%d fotogramas)",
+                    fase, (fotogramas - PERFIL_F0) / Math.max(0.01, s), (nsFotograma - PERFIL_NS[0]) / 1e6 / n,
+                    (nsBloques - PERFIL_NS[1]) / 1e6 / n, (nsPantalla - PERFIL_NS[2]) / 1e6 / n, fotogramas - PERFIL_F0));
         }
         PERFIL.add(fase + "=" + t);
         PERFIL_T0 = t;
         PERFIL_F0 = fotogramas;
+        PERFIL_NS[0] = nsFotograma;
+        PERFIL_NS[1] = nsBloques;
+        PERFIL_NS[2] = nsPantalla;
     }
 
     /** Una sala recreativa llena (máquinas, juegos de mesa, bolera…) y luego jugando a dos recreativas; se mide cada fase. */
@@ -424,7 +482,12 @@ public final class PruebaCI {
                         var st = new ItemStack(it);
                         var hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(donde.below()), net.minecraft.core.Direction.UP, donde.below(), false);
                         var ctx = new net.minecraft.world.item.context.BlockPlaceContext(l, sp, net.minecraft.world.InteractionHand.MAIN_HAND, st, hit);
-                        if (it instanceof net.minecraft.world.item.BlockItem bi && bi.place(ctx).consumesAction()) puestos++;
+                        if (it instanceof net.minecraft.world.item.BlockItem bi && bi.place(ctx).consumesAction()) {
+                            puestos++;
+                            // con partida, como en una sala de verdad (un tablero recién puesto no dibuja nada)
+                            if (l.getBlockEntity(donde) instanceof com.miscelanea.juegos.TableroBlockEntity tb) tb.reiniciar(0);
+                            if (l.getBlockEntity(donde) instanceof com.miscelanea.bolos.BoleraBlockEntity bo) bo.nueva(sp);
+                        }
                     } catch (Throwable t) {
                         RESUMEN.add("  rendimiento: no se pudo poner " + it + ": " + t);
                     }
@@ -435,7 +498,15 @@ public final class PruebaCI {
                 RESUMEN.add("  rendimiento: sala con " + puestos + " de " + cosas.size() + " cosas");
             });
         });
-        sin("perfil_mirar", 300, () -> medir("colocar"));
+        sin("perfil_mirar", 300, () -> {
+            medir("colocar");
+            // otros jugadores jugando en cinco máquinas: su pantalla llega 10 veces por segundo, como la retransmisión
+            JUGANDO.clear();
+            for (var q : net.minecraft.core.BlockPos.betweenClosed(mc.player.blockPosition().offset(-14, -1, -2), mc.player.blockPosition().offset(14, 2, 24)))
+                if (JUGANDO.size() < 5 && mc.level.getBlockEntity(q) instanceof com.miscelanea.arcade.RecreativaBlockEntity
+                        && !(mc.level.getBlockEntity(q.below()) instanceof com.miscelanea.arcade.RecreativaBlockEntity)) JUGANDO.add(q.immutable());
+            RESUMEN.add("  rendimiento: " + JUGANDO.size() + " máquinas con partida retransmitida");
+        });
         sin("perfil_jugar", 5, () -> {
             medir("sala");
             // a jugar en la primera recreativa (sin menú: se arranca la mazmorra directamente)
@@ -469,6 +540,7 @@ public final class PruebaCI {
         paso("71_perfil_turbo", 300, () -> {});
         sin("perfil_fin", 5, () -> {
             medir("turbo");
+            JUGANDO.clear();
             mc.setScreen(null);
             try {
                 Files.write(new File(mc.gameDirectory, "perfil_fases.txt").toPath(), PERFIL);
@@ -492,6 +564,7 @@ public final class PruebaCI {
         // que MC-Runtime-Test no dé la prueba por acabada mientras sigue esto
         if (mc.player.tickCount > 60) mc.player.tickCount = 60;
         if (++ticksEnMundo < 40) return;
+        retransmitir();
         if (paso < 0) {
             preparar();
             paso = 0;
