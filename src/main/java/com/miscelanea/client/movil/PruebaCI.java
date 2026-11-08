@@ -376,7 +376,7 @@ public final class PruebaCI {
                 var o = sp.blockPosition().offset(6, 0, 4);
                 montanaO = o;
                 // despejar el sitio
-                for (var b : net.minecraft.core.BlockPos.betweenClosed(o.offset(-3, 0, -26), o.offset(5, 8, 4)))
+                for (var b : net.minecraft.core.BlockPos.betweenClosed(o.offset(-3, 0, -26), o.offset(11, 10, 4)))
                     l.setBlock(b, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
                 var N = net.minecraft.core.Direction.NORTH;
                 var E = net.minecraft.core.Direction.EAST;
@@ -486,13 +486,15 @@ public final class PruebaCI {
                 if (sp == null) return;
                 var l = sp.serverLevel();
                 com.miscelanea.montana.TrenMontana t = null;
-                for (var en : l.getEntitiesOfClass(com.miscelanea.montana.TrenMontana.class, new net.minecraft.world.phys.AABB(montanaO).inflate(40))) t = en;
+                var trenes = l.getEntitiesOfClass(com.miscelanea.montana.TrenMontana.class, new net.minecraft.world.phys.AABB(montanaO).inflate(40));
+                for (var en : trenes) t = en;
+                RESUMEN.add("  rizo: " + trenes.size() + " tren(es) cerca; jugador en " + sp.level().dimension().location());
                 if (t == null) {
                     RESUMEN.add("  FALLO: no se encuentra el tren para el rizo");
                     return;
                 }
                 for (var pa : java.util.List.copyOf(t.getPassengers())) com.miscelanea.montana.MontanaEventos.bajarSiOSi(pa);
-                t.colocar(montanaO.offset(0, 0, -14), 0.1, 2);
+                t.colocar(montanaO.offset(0, 0, -15), 0.2, 2);
                 for (int k = 0; k < 2; k++) {
                     var a = net.minecraft.world.entity.EntityType.VILLAGER.create(l);
                     if (a == null) continue;
