@@ -69,6 +69,14 @@ public final class Purgatorio {
         if (e.phase != TickEvent.Phase.END || !(e.player instanceof ServerPlayer p) || p.isSpectator()) return;
         Level l = p.level();
         if (en(l)) {
+            // la puerta de salida también se mira aquí (si el jugador no se mueve, el bloque no se entera)
+            if (p.tickCount % 5 == 0) {
+                var puerta = com.miscelanea.registry.ModBlocks.PUERTA_SALIDA.get();
+                if (l.getBlockState(p.blockPosition()).is(puerta) || l.getBlockState(BlockPos.containing(p.getEyePosition())).is(puerta)) {
+                    salir(p);
+                    return;
+                }
+            }
             // por debajo del suelo: se aparece en otra parte (cayendo desde arriba)
             if (p.getY() < -24) {
                 // si se ha caído nada más llegar (el suelo aún no le había llegado al cliente), vuelve al mismo sitio;
