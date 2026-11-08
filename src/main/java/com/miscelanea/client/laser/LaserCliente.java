@@ -85,21 +85,21 @@ public final class LaserCliente {
     private static Vec3 camaraPos = Vec3.ZERO;
     private static boolean hayMatrices;
     /** Solo para la prueba automática: dibujar el punto sin el rayo (para medir dónde cae en la captura). */
-    public static boolean pruebaSinRayo, pruebaModoAntiguo;
+    public static boolean pruebaSinRayo;
     /** Solo para la prueba: dónde ha caído mi punto en el último fotograma (null si no apuntaba o no daba en nada). */
     public static volatile Vec3 pruebaMiPunto;
 
     /**
      * El rayo de un jugador tal como se dibuja aquí. El mío, en primera persona, sale de la cámara y pasa por el CENTRO
      * DE LA PANTALLA tal como se ha dibujado este fotograma (deshaciendo la proyección y la vista de verdad): así cae en
-     * la mira con cualquier FOV, proporción de ventana, cambio de tamaño, cámara de otros mods o balanceo al andar. El
+     * la mira con cualquier FOV, proporción de ventana, cambio de tamaño, cámara de otros mods o balanceo al andar.
+     * (Antes se lanzaba con el giro de la cámara, que no tiene en cuenta lo que otros mods o el balanceo meten en las
+     * matrices de dibujo: con ellos el punto se iba a un lado de la mira.) El
      * de los demás (y el mío en tercera persona), desde sus ojos y hacia donde miran: lo mismo que calcula el servidor
      * y los demás clientes, así que el punto está donde mira el que lo lleva para todos.
      */
     static Laser.Impacto rayo(Player p, float pt, Camera cam) {
         Minecraft mc = Minecraft.getInstance();
-        if (pruebaModoAntiguo && p == mc.player && mc.getCameraEntity() == p && mc.options.getCameraType() != net.minecraft.client.CameraType.THIRD_PERSON_FRONT)
-            return Laser.rayo(p, cam.getPosition(), Laser.direccion(p, pt, cam.getXRot(), cam.getYRot()));
         if (p == mc.player && mc.getCameraEntity() == p && mc.options.getCameraType().isFirstPerson() && hayMatrices) {
             Vec3 cerca = desproyectar(0, 0, -1), lejos = desproyectar(0, 0, 0);
             Vec3 d = lejos.subtract(cerca);
@@ -165,7 +165,9 @@ public final class LaserCliente {
         // las matrices con las que se está dibujando de verdad este fotograma (con el balanceo, el FOV dinámico, la
         // proporción de la ventana y lo que hayan puesto otros mods): con ellas se busca el centro de la pantalla
         PROY.set(e.getProjectionMatrix());
-        VISTA.set(m);
+        // lo que se dibuja aquí pasa además por la matriz de vista de RenderSystem (normalmente la identidad, pero hay
+        // mods que giran o balancean la vista ahí y no en la cámara)
+        VISTA.set(RenderSystem.getModelViewMatrix()).mul(m);
         INV.set(PROY).mul(VISTA).invert();
         camaraPos = c;
         hayMatrices = true;

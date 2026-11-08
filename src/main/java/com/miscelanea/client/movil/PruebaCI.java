@@ -516,6 +516,8 @@ public final class PruebaCI {
                 for (int dx = -8; dx <= 8; dx++)
                     for (int dy = -1; dy <= 16; dy++)
                         l.setBlock(o.relative(mira, 10).relative(lado, dx).above(dy), net.minecraft.world.level.block.Blocks.BLACK_CONCRETE.defaultBlockState(), 2);
+                // fuera los objetos tirados (los libros de la mesa de antes son rojizos y confunden la medida)
+                l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(o).inflate(24)).forEach(net.minecraft.world.entity.Entity::discard);
                 sp.setGameMode(GameType.SURVIVAL);
                 sp.removeAllEffects();
                 sp.getInventory().setItem(0, new ItemStack(com.miscelanea.laser.LaserRegistro.PUNTERO.get()));
@@ -532,15 +534,13 @@ public final class PruebaCI {
         paso("80_laser_primera", 10, () -> {
             if (!com.miscelanea.laser.Laser.apuntando(mc.player)) throw new IllegalStateException("el puntero no se ha encendido");
         });
-        medirLaser("laser_primera_antes", true, false, false);
-        medirLaser("laser_primera", false, false, true);
+        medirLaser("laser_primera", false, true);
         sin("laser_fov", 10, () -> {
             fovAntes = mc.options.fov().get();
             mc.options.fov().set(105);
         });
         paso("81_laser_fov105", 10, () -> {});
-        medirLaser("laser_fov105_antes", true, false, false);
-        medirLaser("laser_fov105", false, false, true);
+        medirLaser("laser_fov105", false, true);
         sin("laser_gigante", 60, () -> {
             mc.options.fov().set(fovAntes);
             var srv = mc.getSingleplayerServer();
@@ -551,8 +551,7 @@ public final class PruebaCI {
             });
         });
         paso("82_laser_gigante", 10, () -> RESUMEN.add(String.format("  láser: de gigante, ojos a %.2f bloques del suelo", mc.player.getEyeHeight())));
-        medirLaser("laser_gigante_antes", true, false, false);
-        medirLaser("laser_gigante", false, false, true);
+        medirLaser("laser_gigante", false, true);
         sin("laser_normal", 60, () -> {
             var srv = mc.getSingleplayerServer();
             UUID id = mc.player.getUUID();
@@ -577,7 +576,7 @@ public final class PruebaCI {
             mc.setCameraEntity(camaraFuera);
         });
         paso("83_laser_desde_fuera", 10, () -> {});
-        medirLaser("laser_desde_fuera", false, true, true);
+        medirLaser("laser_desde_fuera", true, true);
         sin("laser_fuera_quitar", 10, () -> mc.setCameraEntity(mc.player));
         paso("84_laser_tercera", 30, () -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK));
         sin("laser_fin", 10, () -> {
@@ -585,7 +584,6 @@ public final class PruebaCI {
             mantenerUso = false;
             mc.options.keyUse.setDown(false);
             com.miscelanea.client.laser.LaserCliente.pruebaSinRayo = false;
-            com.miscelanea.client.laser.LaserCliente.pruebaModoAntiguo = false;
             mc.options.hideGui = false;
             var srv = mc.getSingleplayerServer();
             UUID id = mc.player.getUUID();
@@ -596,13 +594,12 @@ public final class PruebaCI {
         });
     }
 
-    /** Dos pasos: quitar rayo y HUD (y la manera antigua de calcularlo si {@code antiguo}) y, ya dibujado, medir. */
-    private static void medirLaser(String nombre, boolean antiguo, boolean desdeFuera, boolean obligatorio) {
+    /** Dos pasos: quitar el rayo y el HUD y, ya dibujado así, medir. */
+    private static void medirLaser(String nombre, boolean desdeFuera, boolean obligatorio) {
         Minecraft mc = Minecraft.getInstance();
         sin(nombre + "_quitar_hud", 12, () -> {
             mc.options.hideGui = true;
             com.miscelanea.client.laser.LaserCliente.pruebaSinRayo = true;
-            com.miscelanea.client.laser.LaserCliente.pruebaModoAntiguo = antiguo;
         });
         sin(nombre + "_medir", 1, () -> {
             try {
@@ -610,7 +607,6 @@ public final class PruebaCI {
             } finally {
                 mc.options.hideGui = false;
                 com.miscelanea.client.laser.LaserCliente.pruebaSinRayo = false;
-                com.miscelanea.client.laser.LaserCliente.pruebaModoAntiguo = false;
             }
         });
     }
@@ -639,7 +635,7 @@ public final class PruebaCI {
                     int c = img.getPixelRGBA(x, y);
                     int r = c & 255, g = c >> 8 & 255, b = c >> 16 & 255;
                     int rojo = r - Math.max(g, b);
-                    if (r >= 80 && rojo >= 40) {
+                    if (r >= 80 && rojo >= 40 && g * 10 < r * 6 && b * 10 < r * 6) {
                         sx += x * (double) rojo;
                         sy += y * (double) rojo;
                         sw += rojo;
