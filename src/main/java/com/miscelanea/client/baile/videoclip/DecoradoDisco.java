@@ -167,9 +167,11 @@ final class DecoradoDisco extends Decorado {
         // ---- sol de rayos detrás del escenario
         float cz = -pared, cy = 4.2F, giroSol = reloj * 0.12F;
         for (int k = 0; k < 16; k++) {
-            float a0 = giroSol + k * Mth.TWO_PI / 16, a1 = a0 + Mth.TWO_PI / 32, L = 11;
+            // sin shaders la luz suma mucho sobre las paredes naranjas: rayos más cortos y más suaves (si no, salían
+            // como planos amarillos macizos tapando media pantalla)
+            float a0 = giroSol + k * Mth.TWO_PI / 16, a1 = a0 + Mth.TWO_PI / 32, L = 7.5F;
             int col = (k & 1) == 0 ? 0xFF8020 : 0xFFD040;
-            float al = 0.22F + 0.18F * golpe;
+            float al = 0.08F + 0.07F * golpe;
             v(brillo, m, 0, cy, cz, col, al);
             v(brillo, m, 0, cy, cz, col, al);
             v(brillo, m, Mth.cos(a0) * L, cy + Mth.sin(a0) * L, cz, col, al * 0.3F);
