@@ -689,6 +689,7 @@ public final class PruebaCI {
     private static volatile net.minecraft.core.BlockPos piO;
     private static volatile net.minecraft.core.Direction piMira, piLado;
     private static volatile UUID piHusk;
+    private static volatile boolean piVigilaBrillo;
     private static final java.util.Map<String, Object> PI = new java.util.concurrent.ConcurrentHashMap<>();
     private static net.minecraftforge.common.util.FakePlayer piForastero;
 
@@ -897,7 +898,12 @@ public final class PruebaCI {
         });
         // ---- bengala de noche
         paso("105_bengala_sale", 12, piTiro());
-        sin("pistola_bengala_sube", 70, () -> piApuntar(piPunto(7, 0, 0.5)));
+        sin("pistola_bengala_sube", 70, () -> {
+            piApuntar(piPunto(7, 0, 0.5));
+            // el brillo de Señalero se renueva cada segundo: se mira en cada tick del servidor si el husk ha brillado
+            PI.remove("husk_brillo");
+            piVigilaBrillo = true;
+        });
         sin("pistola_bengala_ver", 4, () -> piSrv(sp -> {
             var l = sp.serverLevel();
             var bs = l.getEntitiesOfClass(com.miscelanea.armasfuego.pistola.BengalaEntity.class, new net.minecraft.world.phys.AABB(piO).inflate(40));
@@ -905,10 +911,14 @@ public final class PruebaCI {
             for (var b : net.minecraft.core.BlockPos.betweenClosed(piO.offset(-24, -2, -24), piO.offset(24, 24, 24)))
                 if (l.getBlockState(b).is(net.minecraft.world.level.block.Blocks.LIGHT)) luces++;
             var h = piHusk(sp);
+            piVigilaBrillo = false;
+            boolean brilla = h != null && (h.hasEffect(net.minecraft.world.effect.MobEffects.GLOWING) || PI.containsKey("husk_brillo"));
+            String donde = h == null ? " (no está el husk)" : bs.isEmpty() ? "" : String.format(" (a %.1f bloques en horizontal de la bengala)",
+                    Math.hypot(h.getX() - bs.get(0).getX(), h.getZ() - bs.get(0).getZ()));
             PI.put("bengala", bs.size() + " bengala(s)" + (bs.isEmpty() ? "" : String.format(" a %.1f bloques de altura", bs.get(0).getY() - piO.getY()))
                     + ", " + luces + " bloque(s) de luz, " + com.miscelanea.armasfuego.pistola.LucesTemporales.cuantas(sp.server) + " apuntadas, husk brilla: "
-                    + (h != null && h.hasEffect(net.minecraft.world.effect.MobEffects.GLOWING)));
-            PI.put("bengala_ok", !bs.isEmpty() && luces >= 1 && h != null && h.hasEffect(net.minecraft.world.effect.MobEffects.GLOWING)
+                    + brilla + (brilla ? "" : donde));
+            PI.put("bengala_ok", !bs.isEmpty() && luces >= 1 && brilla
                     && l.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, net.minecraft.core.BlockPos.containing(piPunto(7, 0, 0.5))) >= 8);
         }));
         paso("106_bengala_noche", 10, () -> piComprobar("bengala: sube, ilumina (bloques de luz) y con Señalero el husk brilla",
@@ -1135,6 +1145,9 @@ public final class PruebaCI {
     /** Lo que ha salido mal en una comprobación hecha en el hilo del servidor (se mira en el paso siguiente). */
     private static volatile String rifleFallo;
     private static boolean rifleSalto;
+    /** Se vigila en cada tick si va colgado de la tirolina; la captura 149_colgado se saca a los pocos ticks de colgarse. */
+    private static boolean rifleVigilaColgado, rifleColgadoVisto;
+    private static int rifleColgadoTicks, rifleColgadoFotograma;
     private static int rifleFotosAntes, rifleCuerdasAntes;
 
     /** Algo en el hilo del servidor con el jugador. */
@@ -1175,6 +1188,12 @@ public final class PruebaCI {
                     listos.add(t);
                     it.remove();
                 }
+            }
+        }
+        if (piVigilaBrillo && piHusk != null) {
+            for (var lv : e.getServer().getAllLevels()) {
+                var h = lv.getEntity(piHusk);
+                if (h instanceof net.minecraft.world.entity.LivingEntity le && le.hasEffect(net.minecraft.world.effect.MobEffects.GLOWING)) PI.put("husk_brillo", true);
             }
         }
         for (Object[] t : listos) {
@@ -1448,19 +1467,22 @@ public final class PruebaCI {
                     rifleFallo = "la tirolina no se guarda bien con el mundo";
             });
         });
-        // saltar debajo de la cuerda: se agarra
+        // saltar debajo de la cuerda: se agarra. La bajada dura unos 2 s y con shaders cada paso tarda varios segundos
+        // (4 fotogramas a 2-4 fps), así que se vigila en cada tick si va colgado y la captura se saca en cuanto lo está
         sin("rifle_salta", 12, () -> {
             rifleComprobar();
+            rifleColgadoVisto = false;
+            rifleColgadoTicks = 0;
+            rifleVigilaColgado = true;
             rifleSalto = true;
         });
-        // se suelta el salto y se da tiempo a que llegue del servidor que va colgado (con shaders va a 2-4 fps)
         sin("rifle_salta_soltar", 8, () -> {
             rifleSalto = false;
             mc.options.keyJump.setDown(false);
         });
-        // si con los pocos fotogramas de los shaders el primer salto no ha cogido la cuerda, se vuelve a saltar
+        // si el primer salto no ha cogido la cuerda (pocos fotogramas con shaders), se vuelve a saltar
         sin("rifle_salta2", 12, () -> {
-            if (!(mc.player.getVehicle() instanceof com.miscelanea.armasfuego.rifle.GanchoTirolina)) {
+            if (!rifleColgadoVisto && !(mc.player.getVehicle() instanceof com.miscelanea.armasfuego.rifle.GanchoTirolina)) {
                 RESUMEN.add("  rifle: el primer salto no ha cogido la cuerda; se salta otra vez");
                 rifleSalto = true;
             }
@@ -1469,8 +1491,10 @@ public final class PruebaCI {
             rifleSalto = false;
             mc.options.keyJump.setDown(false);
         });
-        paso("149_colgado", 3, () -> {
-            if (!(mc.player.getVehicle() instanceof com.miscelanea.armasfuego.rifle.GanchoTirolina))
+        sin("rifle_colgado", 3, () -> {
+            rifleVigilaColgado = false;
+            RESUMEN.add("  rifle: colgado de la tirolina " + rifleColgadoTicks + " ticks (captura 149_colgado " + (rifleColgadoVisto ? "sacada colgando" : "sin sacar") + ")");
+            if (!rifleColgadoVisto && !(mc.player.getVehicle() instanceof com.miscelanea.armasfuego.rifle.GanchoTirolina))
                 throw new IllegalStateException("saltando debajo de la cuerda no se ha colgado");
         });
         paso("150_bajando", 6, () -> {});
@@ -1622,16 +1646,24 @@ public final class PruebaCI {
                     {"chests/simple_dungeon", "-"}};
             java.util.Set<String> armas = java.util.Set.of("revolver", "rifle", "escopeta_presion");
             StringBuilder sb = new StringBuilder(), mal = new StringBuilder();
-            int total = 150;
+            // se tira cada tabla muchas veces con su semilla, tal cual se abre un cofre (con los modificadores de Forge).
+            // Sin ORIGIN: así el mapa del tesoro de los barcos no se pone a buscar estructuras (eso bloqueaba el servidor
+            // decenas de segundos y la comprobación se quedaba sin datos)
+            int total = 300;
+            long semilla = 0x4D15CL;
             for (String[] t : tablas) {
-                var tabla = srv.getLootData().getLootTable(new net.minecraft.resources.ResourceLocation("minecraft", t[0]));
+                var id = new net.minecraft.resources.ResourceLocation("minecraft", t[0]);
+                var tabla = srv.getLootData().getLootTable(id);
+                if (tabla == net.minecraft.world.level.storage.loot.LootTable.EMPTY) {
+                    mal.append("no existe la tabla ").append(t[0]).append("; ");
+                    continue;
+                }
                 int n = 0, enc = 0, ox = 0, mun = 0;
                 for (int i = 0; i < total; i++) {
                     var params = new net.minecraft.world.level.storage.loot.LootParams.Builder(l)
-                            .withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.ORIGIN, sp.position())
-                            .create(net.minecraft.world.level.storage.loot.parameters.LootContextParamSets.CHEST);
+                            .create(net.minecraft.world.level.storage.loot.parameters.LootContextParamSets.EMPTY);
                     boolean salio = false;
-                    for (ItemStack it : tabla.getRandomItems(params)) {
+                    for (ItemStack it : tabla.getRandomItems(params, semilla++)) {
                         var k = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(it.getItem());
                         if (k == null || !k.getNamespace().equals(Miscelanea.MOD_ID)) continue;
                         if (armas.contains(k.getPath())) {
@@ -1643,10 +1675,14 @@ public final class PruebaCI {
                         } else if (salio) mun++;
                     }
                 }
-                sb.append(String.format("%s %d/%d (encantadas %d, oxidadas %d)", t[0].replace("chests/", ""), n, total, enc, ox)).append(" · ");
-                if (!t[1].equals("-") && n == 0) mal.append("no sale en ").append(t[0]).append("; ");
-                if (!t[1].equals("-") && n > total * 0.45) mal.append("sale demasiado en ").append(t[0]).append("; ");
-                if (!t[1].equals("-") && n > 0 && mun == 0) mal.append("sale sin munición en ").append(t[0]).append("; ");
+                double p = com.miscelanea.armasfuego.BotinArmas.probabilidad(id);
+                sb.append(String.format(java.util.Locale.ROOT, "%s %d/%d (%.0f %%, config %.0f %%; encantadas %d, oxidadas %d)",
+                        t[0].replace("chests/", ""), n, total, 100.0 * n / total, 100 * p, enc, ox)).append(" · ");
+                if (t[1].equals("-")) continue;
+                double f = (double) n / total;
+                if (n == 0) mal.append("no sale en ").append(t[0]).append("; ");
+                else if (f < p * 0.4 || f > p * 1.8 + 0.03) mal.append(String.format(java.util.Locale.ROOT, "en %s sale el %.0f %% y debería ~%.0f %%; ", t[0], 100 * f, 100 * p));
+                if (n > 0 && mun == 0) mal.append("sale sin munición en ").append(t[0]).append("; ");
             }
             // y ya no hay receta que las fabrique (la munición sí)
             int recMunicion = 0;
@@ -2457,6 +2493,15 @@ public final class PruebaCI {
         // escopeta de presión: agachado (aspirar)
         if (escAgachado) mc.options.keyShift.setDown(true);
         if (rifleSalto) mc.options.keyJump.setDown(true);
+        if (rifleVigilaColgado && mc.player.getVehicle() instanceof com.miscelanea.armasfuego.rifle.GanchoTirolina) {
+            if (rifleColgadoTicks++ == 0) rifleColgadoFotograma = fotogramas;
+            if (!rifleColgadoVisto && rifleColgadoTicks >= 6 && fotogramas - rifleColgadoFotograma >= 2) {
+                rifleColgadoVisto = true;
+                rifleSalto = false;
+                mc.options.keyJump.setDown(false);
+                capturar("149_colgado");
+            }
+        }
         // ecolocalización: el jugador de mentira "habla" (como si llegara su audio del voicechat) y mi micro solo da ruido de fondo
         if (ecoAndando) {
             mc.options.keyUp.setDown(true);
