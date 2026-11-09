@@ -1,0 +1,1508 @@
+{
+ "multipart": [
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "0"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_0_0_0"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "2"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_0_0_1"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "4"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_0_0_2"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "6"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_0_0_3"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "1"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_1_0_0"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "3"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_1_0_1"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "5"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_1_0_2"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "7"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_1_0_3"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "0"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_0_0_0"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "2"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_0_0_1"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "4"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_0_0_2"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "6"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_0_0_3"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "1"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_1_0_0"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "3"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_1_0_1"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "5"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_1_0_2"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "7"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_1_0_3"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "0"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_0_0_0"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "2"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_0_0_1"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "4"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_0_0_2"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "6"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_0_0_3"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "1"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_1_0_0"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "3"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_1_0_1"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "5"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_1_0_2"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "7"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_1_0_3"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "0"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_0_0_0"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "2"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_0_0_1"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "4"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_0_0_2"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "6"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_0_0_3"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "1"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_1_0_0"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "3"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_1_0_1"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "5"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_1_0_2"
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "7"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_1_0_3"
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "0"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_0_0_0",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "2"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_0_0_1",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "4"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_0_0_2",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "6"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_0_0_3",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "1"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_1_0_0",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "3"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_1_0_1",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "5"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_1_0_2",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "7"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_1_0_3",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "0"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_0_0_0",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "2"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_0_0_1",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "4"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_0_0_2",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "6"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_0_0_3",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "1"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_1_0_0",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "3"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_1_0_1",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "5"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_1_0_2",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "7"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_1_0_3",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "0"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_0_0_0",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "2"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_0_0_1",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "4"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_0_0_2",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "6"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_0_0_3",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "1"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_1_0_0",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "3"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_1_0_1",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "5"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_1_0_2",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "7"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_1_0_3",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "0"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_0_0_0",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "2"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_0_0_1",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "4"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_0_0_2",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "6"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_0_0_3",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "1"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_1_0_0",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "3"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_1_0_1",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "5"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_1_0_2",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "7"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_1_0_3",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "0"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_0_0_0",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "2"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_0_0_1",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "4"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_0_0_2",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "6"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_0_0_3",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "1"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_1_0_0",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "3"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_1_0_1",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "5"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_1_0_2",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "7"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_1_0_3",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "0"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_0_0_0",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "2"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_0_0_1",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "4"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_0_0_2",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "6"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_0_0_3",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "1"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_1_0_0",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "3"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_1_0_1",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "5"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_1_0_2",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "7"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_1_0_3",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "0"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_0_0_0",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "2"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_0_0_1",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "4"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_0_0_2",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "6"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_0_0_3",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "1"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_1_0_0",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "3"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_1_0_1",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "5"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_1_0_2",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "7"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_1_0_3",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "0"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_0_0_0",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "2"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_0_0_1",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "4"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_0_0_2",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "6"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_0_0_3",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "1"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_1_0_0",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "3"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_1_0_1",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "5"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_1_0_2",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "7"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_1_0_3",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "0"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_0_0_0",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "2"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_0_0_1",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "4"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_0_0_2",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "6"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_0_0_3",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "1"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_1_0_0",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "3"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_1_0_1",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "5"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_1_0_2",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "0",
+    "faros": "false",
+    "parte": "7"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_1_0_3",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "0"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_0_0_0",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "2"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_0_0_1",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "4"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_0_0_2",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "6"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_0_0_3",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "1"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_1_0_0",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "3"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_1_0_1",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "5"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_1_0_2",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "0",
+    "faros": "true",
+    "parte": "7"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_turismo_faros_1_0_3",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "0"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_0_0_0",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "2"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_0_0_1",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "4"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_0_0_2",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "6"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_0_0_3",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "1"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_1_0_0",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "3"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_1_0_1",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "5"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_1_0_2",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "1",
+    "faros": "false",
+    "parte": "7"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_1_0_3",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "0"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_0_0_0",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "2"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_0_0_1",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "4"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_0_0_2",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "6"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_0_0_3",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "1"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_1_0_0",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "3"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_1_0_1",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "5"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_1_0_2",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "modelo": "1",
+    "faros": "true",
+    "parte": "7"
+   },
+   "apply": {
+    "model": "miscelanea:block/liminal/coche_furgoneta_faros_1_0_3",
+    "y": 90
+   }
+  }
+ ]
+}

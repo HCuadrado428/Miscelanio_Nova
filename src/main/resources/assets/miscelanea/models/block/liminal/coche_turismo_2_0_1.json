@@ -1,0 +1,74 @@
+{
+ "parent": "minecraft:block/block",
+ "textures": {
+  "t": "miscelanea:block/liminal/coche_turismo",
+  "particle": "miscelanea:block/liminal/coche_turismo"
+ },
+ "elements": [
+  {
+   "from": [
+    0,
+    14,
+    4.5
+   ],
+   "to": [
+    1.4,
+    16.2,
+    7
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      1.5625,
+      10.5938,
+      1.75,
+      10.7188
+     ],
+     "texture": "#t",
+     "tintindex": 0
+    },
+    "south": {
+     "uv": [
+      1.75,
+      10.5938,
+      1.9375,
+      10.7188
+     ],
+     "texture": "#t",
+     "tintindex": 0
+    },
+    "east": {
+     "uv": [
+      1.9375,
+      10.5938,
+      2.25,
+      10.7188
+     ],
+     "texture": "#t",
+     "tintindex": 0
+    },
+    "up": {
+     "uv": [
+      2.25,
+      10.5938,
+      2.4375,
+      10.75
+     ],
+     "texture": "#t",
+     "tintindex": 0
+    },
+    "down": {
+     "uv": [
+      2.4375,
+      10.5938,
+      2.625,
+      10.75
+     ],
+     "texture": "#t",
+     "tintindex": 0
+    }
+   }
+  }
+ ],
+ "render_type": "minecraft:cutout"
+}

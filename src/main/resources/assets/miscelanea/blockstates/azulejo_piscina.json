@@ -1,7 +1,28 @@
 {
  "variants": {
-  "": {
-   "model": "miscelanea:block/azulejo_piscina"
-  }
+  "": [
+   {
+    "model": "miscelanea:block/azulejo_piscina",
+    "weight": 40
+   },
+   {
+    "model": "miscelanea:block/liminal/azulejo_piscina_rajado",
+    "weight": 1
+   },
+   {
+    "model": "miscelanea:block/liminal/azulejo_piscina_rajado",
+    "weight": 1,
+    "y": 90
+   },
+   {
+    "model": "miscelanea:block/liminal/azulejo_piscina_cal",
+    "weight": 3
+   },
+   {
+    "model": "miscelanea:block/liminal/azulejo_piscina_cal",
+    "weight": 2,
+    "y": 180
+   }
+  ]
  }
 }

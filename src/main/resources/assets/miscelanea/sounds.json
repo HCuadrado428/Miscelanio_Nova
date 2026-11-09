@@ -2617,5 +2617,12 @@
         "stream": true
       }
     ]
+  },
+  "purgatorio_zumbido": {
+    "subtitle": "subtitulo.miscelanea.purgatorio_zumbido",
+    "sounds": [
+      {"name": "miscelanea:purgatorio/zumbido_1", "attenuation_distance": 10},
+      {"name": "miscelanea:purgatorio/zumbido_2", "attenuation_distance": 10}
+    ]
   }
 }

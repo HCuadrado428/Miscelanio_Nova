@@ -1,0 +1,60 @@
+{
+ "parent": "minecraft:block/block",
+ "textures": {
+  "t": "miscelanea:block/liminal/coche_furgoneta_faros",
+  "particle": "miscelanea:block/liminal/coche_furgoneta_faros"
+ },
+ "elements": [
+  {
+   "from": [
+    0,
+    15,
+    15
+   ],
+   "to": [
+    1.4,
+    17.2,
+    16
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      1.5,
+      13.6875,
+      1.6875,
+      13.8125
+     ],
+     "texture": "#t"
+    },
+    "east": {
+     "uv": [
+      1.6875,
+      13.6875,
+      1.8125,
+      13.8125
+     ],
+     "texture": "#t"
+    },
+    "up": {
+     "uv": [
+      1.8125,
+      13.6875,
+      2.0,
+      13.75
+     ],
+     "texture": "#t"
+    },
+    "down": {
+     "uv": [
+      2.0,
+      13.6875,
+      2.1875,
+      13.75
+     ],
+     "texture": "#t"
+    }
+   }
+  }
+ ],
+ "render_type": "minecraft:cutout"
+}

@@ -1,0 +1,60 @@
+{
+ "parent": "minecraft:block/block",
+ "textures": {
+  "t": "miscelanea:block/liminal/coche_furgoneta",
+  "particle": "miscelanea:block/liminal/coche_furgoneta"
+ },
+ "elements": [
+  {
+   "from": [
+    0,
+    3.6,
+    15.6
+   ],
+   "to": [
+    4,
+    6.6,
+    16
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      7.625,
+      6.375,
+      8.125,
+      6.5625
+     ],
+     "texture": "#t"
+    },
+    "east": {
+     "uv": [
+      8.125,
+      6.375,
+      8.1875,
+      6.5625
+     ],
+     "texture": "#t"
+    },
+    "up": {
+     "uv": [
+      8.1875,
+      6.375,
+      8.6875,
+      6.4062
+     ],
+     "texture": "#t"
+    },
+    "down": {
+     "uv": [
+      8.6875,
+      6.375,
+      9.1875,
+      6.4062
+     ],
+     "texture": "#t"
+    }
+   }
+  }
+ ],
+ "render_type": "minecraft:cutout"
+}

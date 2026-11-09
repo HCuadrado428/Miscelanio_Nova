@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/liminal/senal_mojado"
+  },
+  "facing=south": {
+   "model": "miscelanea:block/liminal/senal_mojado",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/liminal/senal_mojado",
+   "y": 270
+  },
+  "facing=east": {
+   "model": "miscelanea:block/liminal/senal_mojado",
+   "y": 90
+  }
+ }
+}

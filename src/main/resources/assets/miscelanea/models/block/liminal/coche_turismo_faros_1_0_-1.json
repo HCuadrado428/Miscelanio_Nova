@@ -1,0 +1,60 @@
+{
+ "parent": "minecraft:block/block",
+ "textures": {
+  "t": "miscelanea:block/liminal/coche_turismo_faros",
+  "particle": "miscelanea:block/liminal/coche_turismo_faros"
+ },
+ "elements": [
+  {
+   "from": [
+    0,
+    3.6,
+    15.6
+   ],
+   "to": [
+    4,
+    6.6,
+    16
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      13.5625,
+      4.8125,
+      14.0625,
+      5.0
+     ],
+     "texture": "#t"
+    },
+    "east": {
+     "uv": [
+      14.0625,
+      4.8125,
+      14.125,
+      5.0
+     ],
+     "texture": "#t"
+    },
+    "up": {
+     "uv": [
+      14.125,
+      4.8125,
+      14.625,
+      4.8438
+     ],
+     "texture": "#t"
+    },
+    "down": {
+     "uv": [
+      14.625,
+      4.8125,
+      15.125,
+      4.8438
+     ],
+     "texture": "#t"
+    }
+   }
+  }
+ ],
+ "render_type": "minecraft:cutout"
+}

@@ -1,7 +1,43 @@
 {
  "variants": {
-  "": {
-   "model": "miscelanea:block/suelo_aparcamiento"
-  }
+  "": [
+   {
+    "model": "miscelanea:block/suelo_aparcamiento",
+    "weight": 24
+   },
+   {
+    "model": "miscelanea:block/suelo_aparcamiento",
+    "weight": 24,
+    "y": 90
+   },
+   {
+    "model": "miscelanea:block/suelo_aparcamiento",
+    "weight": 24,
+    "y": 180
+   },
+   {
+    "model": "miscelanea:block/suelo_aparcamiento",
+    "weight": 24,
+    "y": 270
+   },
+   {
+    "model": "miscelanea:block/liminal/suelo_aparcamiento_aceite",
+    "weight": 4
+   },
+   {
+    "model": "miscelanea:block/liminal/suelo_aparcamiento_aceite",
+    "weight": 3,
+    "y": 90
+   },
+   {
+    "model": "miscelanea:block/liminal/suelo_aparcamiento_goma",
+    "weight": 5
+   },
+   {
+    "model": "miscelanea:block/liminal/suelo_aparcamiento_goma",
+    "weight": 4,
+    "y": 90
+   }
+  ]
  }
 }

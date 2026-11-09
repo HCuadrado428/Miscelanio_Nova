@@ -1,0 +1,34 @@
+{
+ "variants": {
+  "facing=north,subida=false": {
+   "model": "miscelanea:block/liminal/pupitre"
+  },
+  "facing=north,subida=true": {
+   "model": "miscelanea:block/liminal/pupitre_subida"
+  },
+  "facing=south,subida=false": {
+   "model": "miscelanea:block/liminal/pupitre",
+   "y": 180
+  },
+  "facing=south,subida=true": {
+   "model": "miscelanea:block/liminal/pupitre_subida",
+   "y": 180
+  },
+  "facing=west,subida=false": {
+   "model": "miscelanea:block/liminal/pupitre",
+   "y": 270
+  },
+  "facing=west,subida=true": {
+   "model": "miscelanea:block/liminal/pupitre_subida",
+   "y": 270
+  },
+  "facing=east,subida=false": {
+   "model": "miscelanea:block/liminal/pupitre",
+   "y": 90
+  },
+  "facing=east,subida=true": {
+   "model": "miscelanea:block/liminal/pupitre_subida",
+   "y": 90
+  }
+ }
+}

@@ -1,7 +1,19 @@
 {
  "variants": {
-  "": {
-   "model": "miscelanea:block/suelo_centro"
-  }
+  "": [
+   {
+    "model": "miscelanea:block/suelo_centro",
+    "weight": 30
+   },
+   {
+    "model": "miscelanea:block/liminal/suelo_centro_chicle",
+    "weight": 2
+   },
+   {
+    "model": "miscelanea:block/liminal/suelo_centro_chicle",
+    "weight": 1,
+    "y": 90
+   }
+  ]
  }
 }

@@ -1,0 +1,64 @@
+{
+ "variants": {
+  "facing=north,parte=0": {
+   "model": "miscelanea:block/liminal/haz_faros_0_0_-1"
+  },
+  "facing=north,parte=2": {
+   "model": "miscelanea:block/liminal/haz_faros_0_0_-2"
+  },
+  "facing=north,parte=1": {
+   "model": "miscelanea:block/liminal/haz_faros_1_0_-1"
+  },
+  "facing=north,parte=3": {
+   "model": "miscelanea:block/liminal/haz_faros_1_0_-2"
+  },
+  "facing=south,parte=0": {
+   "model": "miscelanea:block/liminal/haz_faros_0_0_-1",
+   "y": 180
+  },
+  "facing=south,parte=2": {
+   "model": "miscelanea:block/liminal/haz_faros_0_0_-2",
+   "y": 180
+  },
+  "facing=south,parte=1": {
+   "model": "miscelanea:block/liminal/haz_faros_1_0_-1",
+   "y": 180
+  },
+  "facing=south,parte=3": {
+   "model": "miscelanea:block/liminal/haz_faros_1_0_-2",
+   "y": 180
+  },
+  "facing=west,parte=0": {
+   "model": "miscelanea:block/liminal/haz_faros_0_0_-1",
+   "y": 270
+  },
+  "facing=west,parte=2": {
+   "model": "miscelanea:block/liminal/haz_faros_0_0_-2",
+   "y": 270
+  },
+  "facing=west,parte=1": {
+   "model": "miscelanea:block/liminal/haz_faros_1_0_-1",
+   "y": 270
+  },
+  "facing=west,parte=3": {
+   "model": "miscelanea:block/liminal/haz_faros_1_0_-2",
+   "y": 270
+  },
+  "facing=east,parte=0": {
+   "model": "miscelanea:block/liminal/haz_faros_0_0_-1",
+   "y": 90
+  },
+  "facing=east,parte=2": {
+   "model": "miscelanea:block/liminal/haz_faros_0_0_-2",
+   "y": 90
+  },
+  "facing=east,parte=1": {
+   "model": "miscelanea:block/liminal/haz_faros_1_0_-1",
+   "y": 90
+  },
+  "facing=east,parte=3": {
+   "model": "miscelanea:block/liminal/haz_faros_1_0_-2",
+   "y": 90
+  }
+ }
+}
