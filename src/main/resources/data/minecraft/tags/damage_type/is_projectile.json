@@ -2,6 +2,8 @@
   "replace": false,
   "values": [
     "miscelanea:pistola_disparo",
-    "miscelanea:pistola_perforante"
+    "miscelanea:pistola_perforante",
+    "miscelanea:rifle_disparo",
+    "miscelanea:rifle_perforante"
   ]
 }

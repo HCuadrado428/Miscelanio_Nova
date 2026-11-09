@@ -85,6 +85,17 @@ public final class ModItems {
     public static final RegistryObject<Item> REVOLVER_DARDO = ITEMS.register("revolver_dardo", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> REVOLVER_FOGUEO = ITEMS.register("revolver_fogueo", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> REVOLVER_IMAN = ITEMS.register("revolver_iman", () -> new Item(new Item.Properties()));
+    // ---- Rifle
+    /** Rifle de catalejo: rifle de cerrojo con un catalejo montado (durabilidad: se puede encantar). */
+    public static final RegistryObject<Item> RIFLE = ITEMS.register("rifle",
+            () -> new com.miscelanea.armasfuego.rifle.RifleItem(new Item.Properties().durability(500).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> BALA_RIFLE = ITEMS.register("bala_rifle",
+            () -> new com.miscelanea.armasfuego.rifle.MunicionRifleItem("item.miscelanea.bala_rifle.ayuda", new Item.Properties()));
+    public static final RegistryObject<Item> BALA_TRAZADORA = ITEMS.register("bala_trazadora",
+            () -> new com.miscelanea.armasfuego.rifle.MunicionRifleItem("item.miscelanea.bala_trazadora.ayuda", new Item.Properties()));
+    public static final RegistryObject<Item> BALA_CUERDA = ITEMS.register("bala_cuerda",
+            () -> new com.miscelanea.armasfuego.rifle.MunicionRifleItem("item.miscelanea.bala_cuerda.ayuda", new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> CASQUILLO_RIFLE = ITEMS.register("casquillo_rifle", () -> new Item(new Item.Properties()));
 
     // ---- Kingdom Hearts
     public static final RegistryObject<Item> LLAVE_ESPADA = ITEMS.register("llave_espada",
