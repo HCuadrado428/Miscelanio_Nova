@@ -1517,7 +1517,7 @@ public final class PruebaCI {
         });
     }
 
-    // ------------------------------------------------------------------ las tres armas en 3D (pasos 160-169)
+    // ------------------------------------------------------------------ las tres armas en 3D (pasos 160-172)
     /**
      * Las tres armas de fuego en la mano con su modelo 3D: primera persona, tercera de frente y de espaldas, y el
      * inventario con todas las armas (las cuatro fases del cobre) y sus municiones (que siguen siendo iconos 2D).
@@ -1548,6 +1548,7 @@ public final class PruebaCI {
                 sp.removeAllEffects();
                 sp.setHealth(sp.getMaxHealth());
                 sp.serverLevel().setDayTime(6000);
+                sp.serverLevel().setWeatherParameters(6000, 0, false, false);
                 var inv = sp.getInventory();
                 inv.clearContent();
                 ItemStack rev = piRevolver(0);
@@ -1606,17 +1607,41 @@ public final class PruebaCI {
         for (int i = 0; i < 3; i++) {
             final int slot = i;
             String n = nombres[i];
-            paso((160 + i * 3) + "_" + n + "_1p", 20, () -> {
+            int p0 = 160 + i * 4;
+            paso(p0 + "_" + n + "_1p", 20, () -> {
                 mc.player.getInventory().selected = slot;
                 mc.player.setXRot(0F);
                 mc.player.xRotO = 0F;
                 mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
             });
-            paso((161 + i * 3) + "_" + n + "_3p_frente", 15, () -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT));
-            paso((162 + i * 3) + "_" + n + "_3p_espalda", 15, () -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK));
+            paso((p0 + 1) + "_" + n + "_3p_frente", 15, () -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT));
+            paso((p0 + 2) + "_" + n + "_3p_espalda", 15, () -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK));
+            // de lado (una cámara aparte a la derecha del jugador), para ver cómo la sujeta
+            paso((p0 + 3) + "_" + n + "_3p_lado", 15, () -> {
+                mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+                mc.options.hideGui = true;
+                Vec3 ojo = mc.player.getEyePosition();
+                Vec3 fwd = Vec3.directionFromRotation(0F, mc.player.getYRot());
+                Vec3 der = new Vec3(-fwd.z, 0, fwd.x).normalize();
+                Vec3 obj = ojo.add(fwd.scale(0.5)).add(0, -0.3, 0);
+                Vec3 pos = obj.add(der.scale(2.4)).add(fwd.scale(0.4)).add(0, 0.2, 0);
+                Vec3 d = obj.subtract(pos);
+                float yRot = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
+                float xRot = (float) Math.toDegrees(-Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
+                camaraFuera = new net.minecraft.world.entity.decoration.ArmorStand(mc.level, pos.x, pos.y, pos.z);
+                camaraFuera.moveTo(pos.x, pos.y - camaraFuera.getEyeHeight(), pos.z, yRot, xRot);
+                camaraFuera.setYHeadRot(yRot);
+                mc.setCameraEntity(camaraFuera);
+            });
+            sin("armas3d_lado_quitar_" + n, 3, () -> {
+                mc.setCameraEntity(mc.player);
+                mc.options.hideGui = false;
+            });
         }
-        paso("169_inventario_armas", 20, () -> {
+        paso("172_inventario_armas", 20, () -> {
             mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            // el ratón fuera del inventario, para que no salga la ficha de ningún objeto
+            GLFW.glfwSetCursorPos(mc.getWindow().getWindow(), 4, 4);
             mc.setScreen(new net.minecraft.client.gui.screens.inventory.InventoryScreen(mc.player));
         });
         sin("armas3d_fin", 5, () -> {

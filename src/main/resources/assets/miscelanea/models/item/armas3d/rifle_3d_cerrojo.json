@@ -1326,35 +1326,35 @@
   "firstperson_righthand": {
    "rotation": [
     2,
-    10,
+    16,
     0
    ],
    "translation": [
     -1,
-    1,
-    -10
+    0.5,
+    -12
    ],
    "scale": [
-    0.8,
-    0.8,
-    0.8
+    0.7,
+    0.7,
+    0.7
    ]
   },
   "firstperson_lefthand": {
    "rotation": [
     2,
-    10,
+    16,
     0
    ],
    "translation": [
     -1,
-    1,
-    -10
+    0.5,
+    -12
    ],
    "scale": [
-    0.8,
-    0.8,
-    0.8
+    0.7,
+    0.7,
+    0.7
    ]
   },
   "thirdperson_righthand": {

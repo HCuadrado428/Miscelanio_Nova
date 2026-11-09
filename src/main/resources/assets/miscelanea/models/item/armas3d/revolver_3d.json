@@ -1046,35 +1046,35 @@
   "firstperson_righthand": {
    "rotation": [
     2,
-    12,
+    20,
     0
    ],
    "translation": [
-    -1.5,
-    0.5,
+    -1,
+    0,
     -5
    ],
    "scale": [
-    0.9,
-    0.9,
-    0.9
+    0.8,
+    0.8,
+    0.8
    ]
   },
   "firstperson_lefthand": {
    "rotation": [
     2,
-    12,
+    20,
     0
    ],
    "translation": [
-    -1.5,
-    0.5,
+    -1,
+    0,
     -5
    ],
    "scale": [
-    0.9,
-    0.9,
-    0.9
+    0.8,
+    0.8,
+    0.8
    ]
   },
   "thirdperson_righthand": {
