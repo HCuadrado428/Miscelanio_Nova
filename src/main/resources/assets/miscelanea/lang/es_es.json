@@ -2784,5 +2784,7 @@
   "block.miscelanea.fluorescente": "Panel fluorescente",
   "block.miscelanea.papel_hotel": "Papel pintado de hotel",
   "block.miscelanea.tele_sin_senal": "Tele sin señal",
-  "subtitles.miscelanea.purgatorio_tele": "Tele sin señal"
+  "subtitles.miscelanea.purgatorio_tele": "Tele sin señal",
+  "block.miscelanea.botonera": "Botonera de ascensor",
+  "purgatorio.miscelanea.planta": "Planta %s"
 }

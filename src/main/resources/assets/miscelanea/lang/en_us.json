@@ -2784,5 +2784,7 @@
   "block.miscelanea.fluorescente": "Fluorescent Panel",
   "block.miscelanea.papel_hotel": "Hotel Wallpaper",
   "block.miscelanea.tele_sin_senal": "No-Signal TV",
-  "subtitles.miscelanea.purgatorio_tele": "TV static"
+  "subtitles.miscelanea.purgatorio_tele": "TV static",
+  "block.miscelanea.botonera": "Elevator Panel",
+  "purgatorio.miscelanea.planta": "Floor %s"
 }

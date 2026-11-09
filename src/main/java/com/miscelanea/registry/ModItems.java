@@ -294,6 +294,7 @@ public final class ModItems {
     public static final RegistryObject<Item> FLUORESCENTE = ITEMS.register("fluorescente", () -> new net.minecraft.world.item.BlockItem(ModBlocks.FLUORESCENTE.get(), new Item.Properties().rarity(Rarity.COMMON)));
     public static final RegistryObject<Item> PAPEL_HOTEL = ITEMS.register("papel_hotel", () -> new net.minecraft.world.item.BlockItem(ModBlocks.PAPEL_HOTEL.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> TELE = ITEMS.register("tele_sin_senal", () -> new net.minecraft.world.item.BlockItem(ModBlocks.TELE.get(), new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> BOTONERA = ITEMS.register("botonera", () -> new net.minecraft.world.item.BlockItem(ModBlocks.BOTONERA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> TREN_MONTANA = ITEMS.register("tren_montana", () -> new com.miscelanea.montana.TrenMontanaItem(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> PIZARRA_FERIA = ITEMS.register("pizarra_feria",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PIZARRA_FERIA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));

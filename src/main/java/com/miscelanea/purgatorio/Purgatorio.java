@@ -75,6 +75,12 @@ public final class Purgatorio {
                 return;
             }
             Habitantes.tick(p);
+            // el pasillo que vuelve al mismo sitio: pasada la raya, 20 bloques atrás sin que se note (relativo: no se
+            // pierde ni la velocidad ni hacia dónde se mira)
+            int dz = PurgatorioPlano.bucle(p.getX(), p.getY(), p.getZ());
+            if (dz != 0 && !p.isPassenger())
+                p.connection.teleport(p.getX(), p.getY(), p.getZ() + dz, p.getYRot(), p.getXRot(), java.util.EnumSet.allOf(net.minecraft.world.entity.RelativeMovement.class));
+            ascensor(p);
             // la puerta de salida también se mira aquí (si el jugador no se mueve, el bloque no se entera)
             if (p.tickCount % 5 == 0) {
                 var puerta = com.miscelanea.registry.ModBlocks.PUERTA_SALIDA.get();
@@ -98,9 +104,11 @@ public final class Purgatorio {
                     salir(p);
                     return;
                 }
-                BlockPos b = recien ? new BlockPos(p.getBlockX(), PurgatorioGenerador.SUELO, p.getBlockZ()) : sitio(p, PurgatorioGenerador.SUELO + 18);
+                // (a otra parte, en el suelo de algún piso: si se dejara caer desde arriba, en las zonas con techo se
+                // quedaría encima del tejado)
+                BlockPos b = recien ? new BlockPos(p.getBlockX(), PurgatorioPlano.base(persistente(p).getInt(TAG + "_n")), p.getBlockZ()) : sitio(p);
                 preparar(l2, b);
-                persistente(p).putLong(TAG + "_t", ahora);
+                llegado(p, ahora, b);
                 p.teleportTo(b.getX() + 0.5, b.getY(), b.getZ() + 0.5);
                 p.setDeltaMovement(0, 0, 0);
                 p.fallDistance = 0;
@@ -116,6 +124,7 @@ public final class Purgatorio {
     @SubscribeEvent
     public static void fuera(PlayerEvent.PlayerLoggedOutEvent e) {
         Habitantes.olvidar(e.getEntity().getUUID());
+        VIAJES.remove(e.getEntity().getUUID());
     }
 
     /** Lleva al jugador al Purgatorio (guardando de dónde viene). */
@@ -133,9 +142,9 @@ public final class Purgatorio {
         persistente(p).put(TAG, vuelta);
         soltar(p);
         Habitantes.olvidar(p.getUUID());
-        BlockPos b = sitio(p, PurgatorioGenerador.SUELO);
+        BlockPos b = sitio(p);
         preparar(dest, b);
-        persistente(p).putLong(TAG + "_t", dest.getGameTime());
+        llegado(p, dest.getGameTime(), b);
         p.fallDistance = 0;
         p.setDeltaMovement(0, 0, 0);
         p.teleportTo(dest, b.getX() + 0.5, b.getY(), b.getZ() + 0.5, p.getYRot(), 0);
@@ -230,13 +239,58 @@ public final class Purgatorio {
                 && !s.is(net.minecraft.world.level.block.Blocks.COBWEB);
     }
 
+    // ------------------------------------------------------------------ ascensor
+    private record Viaje(long t, int dy, BlockPos boton) {}
+
+    private static final java.util.Map<java.util.UUID, Viaje> VIAJES = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /**
+     * Han apretado la botonera de un ascensor: se oyen las puertas y el motor y, en un segundo y medio, el ascensor
+     * llega a otro piso (al azar, nunca el mismo). La cabina es igual en todos los pisos y está en el mismo sitio, así
+     * que se le mueve solo en altura y no se nota el salto: al salir, otro piso y otra zona.
+     */
+    public static void llamarAscensor(ServerPlayer p, BlockPos boton) {
+        if (!en(p.level()) || VIAJES.containsKey(p.getUUID())) return;
+        int n = PurgatorioPlano.nivel(boton.getY());
+        int m = (n + 1 + p.getRandom().nextInt(PurgatorioPlano.NIVELES - 1)) % PurgatorioPlano.NIVELES;
+        VIAJES.put(p.getUUID(), new Viaje(p.serverLevel().getGameTime() + 30, PurgatorioPlano.base(m) - PurgatorioPlano.base(n), boton.immutable()));
+        p.serverLevel().playSound(null, boton, SoundEvents.PISTON_CONTRACT, SoundSource.BLOCKS, 0.5F, 0.6F);
+        p.serverLevel().playSound(null, boton, SoundEvents.MINECART_INSIDE, SoundSource.BLOCKS, 0.25F, 0.5F);
+    }
+
+    /** Cada tic: si el ascensor ha llegado y sigue dentro de la cabina, al otro piso (ding). */
+    private static void ascensor(ServerPlayer p) {
+        Viaje v = VIAJES.get(p.getUUID());
+        if (v == null || p.serverLevel().getGameTime() < v.t()) return;
+        VIAJES.remove(p.getUUID());
+        // dentro de la cabina: a menos de 2,5 bloques de su centro (la botonera está a un lado) y en el mismo piso
+        double cx = v.boton().getX() - 0.5, cz = v.boton().getZ();
+        if (Math.abs(p.getX() - cx) > 2.2 || Math.abs(p.getZ() - cz) > 2.2 || Math.abs(p.getY() - v.boton().getY()) > 2.5) return;
+        ServerLevel l = p.serverLevel();
+        preparar(l, p.blockPosition().offset(0, v.dy(), 0));
+        soltar(p);
+        p.fallDistance = 0;
+        p.connection.teleport(p.getX(), p.getY() + v.dy(), p.getZ(), p.getYRot(), p.getXRot(), java.util.EnumSet.allOf(net.minecraft.world.entity.RelativeMovement.class));
+        llegado(p, l.getGameTime(), p.blockPosition());
+        BlockPos b = v.boton().offset(0, v.dy(), 0);
+        l.playSound(null, b, SoundEvents.NOTE_BLOCK_BELL.value(), SoundSource.BLOCKS, 0.7F, 1.5F);
+        l.playSound(null, b, SoundEvents.PISTON_EXTEND, SoundSource.BLOCKS, 0.4F, 0.7F);
+        int piso = PurgatorioPlano.nivel(b.getY());
+        p.displayClientMessage(Component.translatable("purgatorio.miscelanea.planta", piso == 0 ? "0" : "-" + piso), true);
+    }
+
+    /** Para la prueba: ¿va en el ascensor? */
+    public static boolean enAscensor(ServerPlayer p) {
+        return VIAJES.containsKey(p.getUUID());
+    }
+
     /** Lo lleva a otra parte del Purgatorio (cuando le pilla un habitante). */
     public static void recolocar(ServerPlayer p) {
         ServerLevel l = nivel(p);
         if (l == null || !en(p.level())) return;
-        BlockPos b = sitio(p, PurgatorioGenerador.SUELO);
+        BlockPos b = sitio(p);
         preparar(l, b);
-        persistente(p).putLong(TAG + "_t", l.getGameTime());
+        llegado(p, l.getGameTime(), b);
         soltar(p);
         Habitantes.olvidar(p.getUUID());
         p.fallDistance = 0;
@@ -251,21 +305,89 @@ public final class Purgatorio {
             for (int z = -1; z <= 1; z++) l.getChunk(cx + x, cz + z);
     }
 
-    /** Un sitio al azar en una calle del Purgatorio (el cruce de un chunk siempre está libre). */
-    static BlockPos sitio(ServerPlayer p, int y) {
-        var r = p.getRandom();
-        int cx = r.nextInt(RADIO * 2) - RADIO, cz = r.nextInt(RADIO * 2) - RADIO;
-        return new BlockPos(cx * 16 + 8, y, cz * 16 + 8);
+    /** Apunta cuándo y a qué piso ha llegado (si se cae nada más llegar, se le devuelve ahí). */
+    static void llegado(Player p, long t, BlockPos b) {
+        persistente(p).putLong(TAG + "_t", t);
+        persistente(p).putInt(TAG + "_n", PurgatorioPlano.nivel(b.getY()));
     }
 
-    /** Para la prueba: el centro de un chunk de esa zona cerca del origen. */
+    /** ¿Es un chunk normal en ese piso (sin sala grande, ni escalera, ni ascensor, ni pilar)? */
+    static boolean normal(int n, int cx, int cz) {
+        return PurgatorioGenerador.entero(n, cx, cz);
+    }
+
+    /**
+     * Un sitio al azar en una calle del Purgatorio (el cruce de un chunk normal siempre está libre), en el piso de arriba
+     * más o menos la mitad de las veces y si no en uno de los de abajo.
+     */
+    static BlockPos sitio(ServerPlayer p) {
+        var r = p.getRandom();
+        for (int i = 0; ; i++) {
+            int cx = r.nextInt(RADIO * 2) - RADIO, cz = r.nextInt(RADIO * 2) - RADIO;
+            int n = r.nextInt(2) == 0 ? 0 : r.nextInt(PurgatorioPlano.NIVELES);
+            if (i < 30 && !normal(n, cx, cz)) continue;
+            return new BlockPos(cx * 16 + 8, PurgatorioPlano.base(n), cz * 16 + 8);
+        }
+    }
+
+    /** Para la prueba: el centro de un chunk normal de esa zona cerca del origen (en el piso de más arriba que la tenga). */
     public static BlockPos buscar(PurgatorioGenerador.Zona z) {
-        for (int r = 0; r < 40; r++)
+        for (int n = 0; n < PurgatorioPlano.NIVELES; n++) {
+            BlockPos b = buscar(z, n, 40);
+            if (b != null) return b;
+        }
+        return new BlockPos(8, PurgatorioGenerador.SUELO, 8);
+    }
+
+    @Nullable
+    public static BlockPos buscar(PurgatorioGenerador.Zona z, int n, int radio) {
+        for (int r = 0; r < radio; r++)
             for (int cx = -r; cx <= r; cx++)
                 for (int cz = -r; cz <= r; cz++)
-                    if (Math.max(Math.abs(cx), Math.abs(cz)) == r && PurgatorioGenerador.zona(cx, cz) == z && !PurgatorioGenerador.salida(cx, cz))
-                        return new BlockPos(cx * 16 + 8, PurgatorioGenerador.SUELO, cz * 16 + 8);
-        return new BlockPos(8, PurgatorioGenerador.SUELO, 8);
+                    if (Math.max(Math.abs(cx), Math.abs(cz)) == r && PurgatorioPlano.zona(n, cx, cz) == z && normal(n, cx, cz) && !PurgatorioPlano.salida(n, cx, cz))
+                        return new BlockPos(cx * 16 + 8, PurgatorioPlano.base(n), cz * 16 + 8);
+        return null;
+    }
+
+    /** Para la prueba: la sala grande de ese tipo más cercana al origen (en cualquier piso), o null. */
+    @Nullable
+    public static PurgatorioPlano.Grande buscarGrande(PurgatorioPlano.Tipo t) {
+        PurgatorioPlano.Grande mejor = null;
+        long dm = Long.MAX_VALUE;
+        for (int n = 0; n < PurgatorioPlano.NIVELES; n++)
+            for (int sx = -8; sx <= 8; sx++)
+                for (int sz = -8; sz <= 8; sz++) {
+                    var g = PurgatorioPlano.grandeDe(n, sx, sz);
+                    if (g == null || g.tipo() != t) continue;
+                    long d = (long) g.cx0() * g.cx0() + (long) g.cz0() * g.cz0() + n * 40L;
+                    if (d < dm) {
+                        dm = d;
+                        mejor = g;
+                    }
+                }
+        return mejor;
+    }
+
+    /** Para la prueba: el chunk (x, z) con escalera del piso n al n + 1 más cercano al origen. */
+    @Nullable
+    public static int[] buscarEscalera(int n) {
+        for (int r = 0; r < 60; r++)
+            for (int cx = -r; cx <= r; cx++)
+                for (int cz = -r; cz <= r; cz++)
+                    if (Math.max(Math.abs(cx), Math.abs(cz)) == r && PurgatorioPlano.escalera(n, cx, cz)
+                            && PurgatorioPlano.grande(n, cx, cz - 1) == null && PurgatorioPlano.grande(n + 1, cx, cz + 1) == null)
+                        return new int[]{cx, cz};
+        return null;
+    }
+
+    /** Para la prueba: el chunk (x, z) con ascensor más cercano al origen. */
+    @Nullable
+    public static int[] buscarAscensor() {
+        for (int r = 0; r < 60; r++)
+            for (int cx = -r; cx <= r; cx++)
+                for (int cz = -r; cz <= r; cz++)
+                    if (Math.max(Math.abs(cx), Math.abs(cz)) == r && PurgatorioPlano.ascensor(cx, cz)) return new int[]{cx, cz};
+        return null;
     }
 
     /**
@@ -275,49 +397,51 @@ public final class Purgatorio {
      */
     @Nullable
     public static BlockPos[] buscarRaro(PurgatorioGenerador.Zona z) {
-        int f = PurgatorioGenerador.SUELO;
-        int[][] q = {{0, 0}, {9, 0}, {0, 9}, {9, 9}};
-        for (int r = 0; r < 80; r++)
-            for (int cx = -r; cx <= r; cx++)
-                for (int cz = -r; cz <= r; cz++) {
-                    if (Math.max(Math.abs(cx), Math.abs(cz)) != r || PurgatorioGenerador.zona(cx, cz) != z) continue;
-                    int k = PurgatorioGenerador.raro(cx, cz);
-                    if (k < 0) continue;
-                    int bx = cx * 16, bz = cz * 16;
-                    switch (z) {
-                        case SALA -> {
-                            return new BlockPos[]{new BlockPos(bx + 12, f, bz + 4), new BlockPos(bx + 12, f, bz + 1)};
-                        }
-                        case RECREATIVA -> {
-                            return new BlockPos[]{new BlockPos(bx + 11, f, bz + 6), new BlockPos(bx + 11, f + 1, bz + 11)};
-                        }
-                        case FERIA -> {
-                            boolean norte = q[k][1] == 0;
-                            return new BlockPos[]{new BlockPos(bx + q[k][0] + 3, f, bz + (norte ? 9 : 6)), new BlockPos(bx + q[k][0] + 3, f + 1, bz + (norte ? 5 : 10))};
-                        }
-                        case HOTEL -> {
-                            int x0 = q[k][0], z0 = q[k][1], sx = x0 == 0 ? 1 : -1, dz = z0 == 0 ? 1 : -1;
-                            int xa = x0 == 0 ? 1 : 14, zc = z0 == 0 ? 1 : 14;
-                            // tumbado en la cama (de pie encima), mirando la tele de los pies
-                            return new BlockPos[]{new BlockPos(bx + xa, f + 1, bz + zc), new BlockPos(bx + xa, f + 1, bz + zc + 3 * dz)};
-                        }
-                        default -> {
-                            return null;
+        int[][] q = PurgatorioPlano.PARCELAS;
+        for (int n = 0; n < PurgatorioPlano.NIVELES; n++) {
+            int f = PurgatorioPlano.base(n);
+            for (int r = 0; r < 80; r++)
+                for (int cx = -r; cx <= r; cx++)
+                    for (int cz = -r; cz <= r; cz++) {
+                        if (Math.max(Math.abs(cx), Math.abs(cz)) != r || PurgatorioPlano.zona(n, cx, cz) != z) continue;
+                        int k = PurgatorioGenerador.raro(n, cx, cz);
+                        if (k < 0) continue;
+                        int bx = cx * 16, bz = cz * 16;
+                        switch (z) {
+                            case SALA -> {
+                                return new BlockPos[]{new BlockPos(bx + 12, f, bz + 4), new BlockPos(bx + 12, f, bz + 1)};
+                            }
+                            case RECREATIVA -> {
+                                return new BlockPos[]{new BlockPos(bx + 11, f, bz + 6), new BlockPos(bx + 11, f + 1, bz + 11)};
+                            }
+                            case FERIA -> {
+                                boolean norte = q[k][1] == 0;
+                                return new BlockPos[]{new BlockPos(bx + q[k][0] + 3, f, bz + (norte ? 9 : 6)), new BlockPos(bx + q[k][0] + 3, f + 1, bz + (norte ? 5 : 10))};
+                            }
+                            case HOTEL -> {
+                                int x0 = q[k][0], z0 = q[k][1], dz = z0 == 0 ? 1 : -1;
+                                int xa = x0 == 0 ? 1 : 14, zc = z0 == 0 ? 1 : 14;
+                                // tumbado en la cama (de pie encima), mirando la tele de los pies
+                                return new BlockPos[]{new BlockPos(bx + xa, f + 1, bz + zc), new BlockPos(bx + xa, f + 1, bz + zc + 3 * dz)};
+                            }
+                            default -> {
+                                return null;
+                            }
                         }
                     }
-                }
+        }
         return null;
     }
 
     /** Para la prueba: el agujero del Mundo sin Texturas más cercano al origen (su centro, a la altura del suelo). */
     public static BlockPos buscarAgujero() {
-        int[][] q = {{0, 0}, {9, 0}, {0, 9}, {9, 9}};
+        int[][] q = PurgatorioPlano.PARCELAS;
         for (int r = 0; r < 60; r++)
             for (int cx = -r; cx <= r; cx++)
                 for (int cz = -r; cz <= r; cz++) {
-                    if (Math.max(Math.abs(cx), Math.abs(cz)) != r || PurgatorioGenerador.zona(cx, cz) != PurgatorioGenerador.Zona.SIN_TEXTURA) continue;
+                    if (Math.max(Math.abs(cx), Math.abs(cz)) != r) continue;
                     for (int k = 0; k < 4; k++)
-                        if (!(k == 0 && PurgatorioGenerador.salida(cx, cz)) && PurgatorioGenerador.h(cx, cz, 80 + k) % 10 == 8)
+                        if (PurgatorioPlano.agujero(cx, cz, k))
                             return new BlockPos(cx * 16 + q[k][0] + 3, PurgatorioGenerador.SUELO, cz * 16 + q[k][1] + 3);
                 }
         return null;

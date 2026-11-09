@@ -1349,6 +1349,294 @@ public final class PruebaCI {
         purgatorio2();
     }
 
+    // ------------------------------------------------------------------ el Purgatorio, estructura nueva (2.0.0)
+    private static int[] p3Escalera, p3Ascensor;
+    private static int p3AscensorPiso;
+    private static com.miscelanea.purgatorio.PurgatorioPlano.Grande p3Bucle;
+
+    /** Un sitio donde se pueda estar de pie (los dos de alto libres y suelo debajo) para andar() . */
+    private static boolean pasable(net.minecraft.server.level.ServerLevel l, net.minecraft.core.BlockPos p) {
+        var s = l.getBlockState(p);
+        if (s.getBlock() instanceof net.minecraft.world.level.block.DoorBlock && !s.is(net.minecraft.world.level.block.Blocks.IRON_DOOR)) return true;
+        var f = s.getCollisionShape(l, p);
+        return f.isEmpty() || f.max(net.minecraft.core.Direction.Axis.Y) <= 0.2;
+    }
+
+    private static boolean dePie(net.minecraft.server.level.ServerLevel l, net.minecraft.core.BlockPos p) {
+        if (!pasable(l, p) || !pasable(l, p.above())) return false;
+        var b = p.below();
+        var s = l.getBlockState(b);
+        var f = s.getCollisionShape(l, b);
+        if (s.getBlock() instanceof net.minecraft.world.level.block.DoorBlock) return false;
+        return !f.isEmpty() && f.max(net.minecraft.core.Direction.Axis.Y) <= 1.0 && f.max(net.minecraft.core.Direction.Axis.Y) > 0.4;
+    }
+
+    /**
+     * Busca andando (de pie, subiendo de uno en uno, bajando hasta tres, abriendo puertas de madera) un camino desde
+     * "desde" hasta algo que cumpla "meta". Devuelve los pasos o -1 (sin camino en "max" sitios). En el hilo del servidor.
+     */
+    private static int andar(net.minecraft.server.level.ServerLevel l, net.minecraft.core.BlockPos desde, java.util.function.Predicate<net.minecraft.core.BlockPos> meta, int max) {
+        java.util.HashMap<Long, Integer> visto = new java.util.HashMap<>();
+        java.util.ArrayDeque<net.minecraft.core.BlockPos> cola = new java.util.ArrayDeque<>();
+        cola.add(desde);
+        visto.put(desde.asLong(), 0);
+        while (!cola.isEmpty() && visto.size() < max) {
+            var p = cola.poll();
+            int d = visto.get(p.asLong());
+            if (meta.test(p)) return d;
+            for (var dir : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+                var q = p.relative(dir);
+                l.getChunk(q.getX() >> 4, q.getZ() >> 4);
+                net.minecraft.core.BlockPos ok = null;
+                if (dePie(l, q)) ok = q;
+                else if (dePie(l, q.above()) && pasable(l, p.above(2))) ok = q.above();
+                else if (pasable(l, q) && pasable(l, q.above()))
+                    for (int k = 1; k <= 3 && ok == null; k++) {
+                        var r = q.below(k);
+                        if (dePie(l, r)) ok = r;
+                        else if (!pasable(l, r)) break;
+                    }
+                if (ok != null && visto.putIfAbsent(ok.asLong(), d + 1) == null) cola.add(ok);
+            }
+        }
+        return -1;
+    }
+
+    /** El plano del Purgatorio dibujado (los tres pisos, un píxel por chunk): para ver las formas de las zonas. */
+    private static void mapaPurgatorio() {
+        int R = 64, px = 3, W = (2 * R + 1) * px;
+        int[] col = {0x3a2a55, 0xc9c2a0, 0x8a2bd0, 0xb5663a, 0xff00dc, 0x6fd3e8, 0x6b6f74, 0x5f8f4a, 0xe0b84a};
+        var img = new java.awt.image.BufferedImage(W * 3 + 20, W, java.awt.image.BufferedImage.TYPE_INT_RGB);
+        int[] cuenta = new int[com.miscelanea.purgatorio.PurgatorioGenerador.Zona.values().length];
+        int grandes = 0, escaleras = 0, ascensores = 0, salidas = 0;
+        for (int n = 0; n < 3; n++)
+            for (int cx = -R; cx <= R; cx++)
+                for (int cz = -R; cz <= R; cz++) {
+                    var z = com.miscelanea.purgatorio.PurgatorioPlano.zona(n, cx, cz);
+                    cuenta[z.ordinal()]++;
+                    var g = com.miscelanea.purgatorio.PurgatorioPlano.grande(n, cx, cz);
+                    if (g != null && g.cx0() == cx && g.cz0() == cz) grandes++;
+                    Integer marca = null;
+                    if (com.miscelanea.purgatorio.PurgatorioPlano.salida(n, cx, cz)) {
+                        marca = 0x00ff00;
+                        salidas++;
+                    }
+                    if (com.miscelanea.purgatorio.PurgatorioPlano.escalera(n, cx, cz)) {
+                        marca = 0xffffff;
+                        escaleras++;
+                    }
+                    if (com.miscelanea.purgatorio.PurgatorioPlano.ascensor(cx, cz)) {
+                        marca = 0xffff00;
+                        if (n == 0) ascensores++;
+                    }
+                    for (int i = 0; i < px; i++)
+                        for (int j = 0; j < px; j++) {
+                            int c = col[z.ordinal()];
+                            if (g != null) {
+                                boolean borde = (cx == g.cx0() && i == 0) || (cx == g.cx0() + g.w() - 1 && i == px - 1) || (cz == g.cz0() && j == 0) || (cz == g.cz0() + g.d() - 1 && j == px - 1);
+                                if (borde) c = g.tipo() == com.miscelanea.purgatorio.PurgatorioPlano.Tipo.BUCLE ? 0xff2020 : 0xffffff;
+                            }
+                            if (marca != null && i == 1 && j == 1) c = marca;
+                            img.setRGB(n * (W + 10) + (cx + R) * px + i, (cz + R) * px + j, c);
+                        }
+                }
+        try {
+            java.io.File dir = new java.io.File(Minecraft.getInstance().gameDirectory, "screenshots");
+            dir.mkdirs();
+            javax.imageio.ImageIO.write(img, "png", new java.io.File(dir, "50_purgatorio_mapa.png"));
+        } catch (Exception ex) {
+            RESUMEN.add("  purgatorio, mapa: no se pudo guardar: " + ex);
+        }
+        StringBuilder sb = new StringBuilder("  purgatorio, mapa (3 pisos, 129 x 129 chunks):");
+        for (var z : com.miscelanea.purgatorio.PurgatorioGenerador.Zona.values()) sb.append(' ').append(z).append('=').append(cuenta[z.ordinal()]);
+        sb.append(" · salas grandes ").append(grandes).append(", escaleras ").append(escaleras).append(", ascensores ").append(ascensores).append(", salidas ").append(salidas);
+        RESUMEN.add(sb.toString());
+    }
+
+    /** El Purgatorio, tercera parte (2.0.0): pisos, escaleras, ascensor, salas grandes, el pasillo que vuelve, puertas a la pared y que se puede llegar andando a una salida. */
+    private static void purgatorio3() {
+        Minecraft mc = Minecraft.getInstance();
+        var srv0 = mc.getSingleplayerServer();
+        sin("purgatorio3_mapa", 2, PruebaCI::mapaPurgatorio);
+        // desde arriba y sin niebla: los tejados de cada zona dibujan sus formas
+        GameType[] antes = {GameType.CREATIVE};
+        sin("purgatorio3_arriba_ir", 100, () -> {
+            com.miscelanea.client.purgatorio.PurgatorioCliente.Niebla.sinNiebla = true;
+            UUID id = mc.player.getUUID();
+            srv0.execute(() -> {
+                ServerPlayer sp = srv0.getPlayerList().getPlayer(id);
+                var l = srv0.getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
+                if (sp == null || l == null) return;
+                antes[0] = sp.gameMode.getGameModeForPlayer();
+                sp.setGameMode(GameType.SPECTATOR);
+                sp.teleportTo(l, 8, 150, 8, 0, 90);
+            });
+        });
+        paso("50_purgatorio_desde_arriba", 80, () -> mc.player.setXRot(90));
+        sin("purgatorio3_arriba_fin", 20, () -> {
+            com.miscelanea.client.purgatorio.PurgatorioCliente.Niebla.sinNiebla = false;
+            UUID id = mc.player.getUUID();
+            srv0.execute(() -> {
+                ServerPlayer sp = srv0.getPlayerList().getPlayer(id);
+                if (sp != null) sp.setGameMode(antes[0]);
+            });
+            irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.FERIA), 0, 0);
+        });
+        // los pisos de abajo
+        for (int n = 1; n <= 2; n++) {
+            int nn = n;
+            sin("purgatorio3_piso" + n + "_ir", 60, () -> {
+                net.minecraft.core.BlockPos b = null;
+                for (var z : new com.miscelanea.purgatorio.PurgatorioGenerador.Zona[]{com.miscelanea.purgatorio.PurgatorioGenerador.Zona.HOTEL, com.miscelanea.purgatorio.PurgatorioGenerador.Zona.SALA})
+                    if (b == null) b = com.miscelanea.purgatorio.Purgatorio.buscar(z, nn, 30);
+                RESUMEN.add("  purgatorio, piso " + nn + ": " + (b == null ? "NADA" : b.toShortString() + " " + com.miscelanea.purgatorio.PurgatorioGenerador.zonaEn(b.getX(), b.getY(), b.getZ())));
+                if (b != null) irA(b, 30, 4);
+            });
+            paso("51_purgatorio_piso" + n, 40, () -> RESUMEN.add("  purgatorio, piso " + nn + ": el jugador está a y=" + (int) mc.player.getY() + ", niebla "
+                    + String.format("%.1f", com.miscelanea.client.purgatorio.PurgatorioCliente.Niebla.distanciaActual()) + ", ambiente " + com.miscelanea.client.purgatorio.PurgatorioCliente.Ambiente.sonando()));
+        }
+        // la escalera que baja del piso de arriba al de abajo
+        sin("purgatorio3_escalera_ir", 60, () -> {
+            p3Escalera = com.miscelanea.purgatorio.Purgatorio.buscarEscalera(0);
+            RESUMEN.add("  purgatorio, escalera del piso 0 al 1: " + (p3Escalera == null ? "NINGUNA" : "chunk " + p3Escalera[0] + ", " + p3Escalera[1]
+                    + " (" + com.miscelanea.purgatorio.PurgatorioPlano.zona(0, p3Escalera[0], p3Escalera[1]) + " -> " + com.miscelanea.purgatorio.PurgatorioPlano.zona(1, p3Escalera[0], p3Escalera[1] + 1) + ")"));
+            if (p3Escalera == null) throw new IllegalStateException("no hay escaleras cerca del origen");
+            irA(new net.minecraft.core.BlockPos(p3Escalera[0] * 16 + 8, 64, p3Escalera[1] * 16 - 3), 0, 30);
+        });
+        paso("52_purgatorio_escalera_arriba", 40, () -> {});
+        sin("purgatorio3_escalera_tunel", 40, () -> irA(new net.minecraft.core.BlockPos(p3Escalera[0] * 16 + 8, 63 - 5, p3Escalera[1] * 16 + 5), 0, 20));
+        paso("53_purgatorio_escalera_tunel", 30, () -> {});
+        sin("purgatorio3_escalera_abajo", 40, () -> irA(new net.minecraft.core.BlockPos(p3Escalera[0] * 16 + 8, 48, (p3Escalera[1] + 1) * 16 + 4), 180, -20));
+        paso("54_purgatorio_escalera_abajo", 30, () -> {});
+        sin("purgatorio3_escalera_andar", 20, () -> {
+            var l = srv0.getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
+            int[] e = p3Escalera;
+            var desde = new net.minecraft.core.BlockPos(e[0] * 16 + 8, 64, e[1] * 16 - 2);
+            var fin = new net.minecraft.core.BlockPos(e[0] * 16 + 8, 48, e[1] * 16 + 17);
+            int d = srv0.submit(() -> andar(l, desde, q -> q.equals(fin) || q.equals(fin.west()), 60000)).join();
+            RESUMEN.add("  purgatorio, bajar la escalera andando: " + (d < 0 ? "NO SE PUEDE" : d + " pasos"));
+            if (d < 0) throw new IllegalStateException("la escalera no se puede bajar andando");
+        });
+        // el ascensor del hotel: se aprieta la botonera y te deja en otro piso, en el mismo sitio
+        sin("purgatorio3_ascensor_ir", 60, () -> {
+            p3Ascensor = com.miscelanea.purgatorio.Purgatorio.buscarAscensor();
+            if (p3Ascensor == null) throw new IllegalStateException("no hay ascensores cerca del origen");
+            p3AscensorPiso = 0;
+            for (int n = 0; n < 3; n++)
+                if (com.miscelanea.purgatorio.PurgatorioPlano.zona(n, p3Ascensor[0], p3Ascensor[1]) == com.miscelanea.purgatorio.PurgatorioGenerador.Zona.HOTEL) {
+                    p3AscensorPiso = n;
+                    break;
+                }
+            RESUMEN.add("  purgatorio, ascensor en el chunk " + p3Ascensor[0] + ", " + p3Ascensor[1] + ", piso " + p3AscensorPiso);
+            irA(new net.minecraft.core.BlockPos(p3Ascensor[0] * 16 + 12, com.miscelanea.purgatorio.PurgatorioPlano.base(p3AscensorPiso), p3Ascensor[1] * 16 + 7), 180, 5);
+        });
+        paso("55_purgatorio_ascensor_fuera", 30, () -> {});
+        sin("purgatorio3_ascensor_dentro", 30, () -> irA(new net.minecraft.core.BlockPos(p3Ascensor[0] * 16 + 12, com.miscelanea.purgatorio.PurgatorioPlano.base(p3AscensorPiso), p3Ascensor[1] * 16 + 2), 0, 10));
+        paso("56_purgatorio_ascensor", 20, () -> {
+            UUID id = mc.player.getUUID();
+            srv0.execute(() -> {
+                ServerPlayer sp = srv0.getPlayerList().getPlayer(id);
+                var l = srv0.getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
+                if (sp == null || l == null) return;
+                var b = com.miscelanea.purgatorio.PurgatorioGenerador.botonera(p3Ascensor[0], p3Ascensor[1], p3AscensorPiso);
+                RESUMEN.add("  purgatorio, botonera: " + l.getBlockState(b).getBlock().getDescriptionId());
+                com.miscelanea.purgatorio.Purgatorio.llamarAscensor(sp, b);
+            });
+        });
+        sin("purgatorio3_ascensor_viaje", 60, () -> {});
+        sin("purgatorio3_ascensor_llega", 2, () -> {
+            int n = com.miscelanea.purgatorio.PurgatorioPlano.nivel(mc.player.getY());
+            double dx = mc.player.getX() - (p3Ascensor[0] * 16 + 12.5), dz = mc.player.getZ() - (p3Ascensor[1] * 16 + 2.5);
+            RESUMEN.add(String.format("  purgatorio, ascensor: del piso %d al %d (y=%.1f), movido en x/z %.2f, %.2f, zona al salir %s", p3AscensorPiso, n, mc.player.getY(), dx, dz,
+                    com.miscelanea.purgatorio.PurgatorioGenerador.zonaEn(mc.player.getX(), mc.player.getY(), mc.player.getZ())));
+            if (n == p3AscensorPiso) throw new IllegalStateException("el ascensor no ha cambiado de piso");
+            if (Math.abs(dx) > 0.6 || Math.abs(dz) > 0.6) throw new IllegalStateException("el ascensor le ha movido de sitio");
+        });
+        paso("57_purgatorio_ascensor_otro_piso", 30, () -> {
+            mc.player.setYRot(0);
+            mc.player.setXRot(10);
+        });
+        // las salas grandes
+        String[][] grandes = {{"PABELLON", "58_purgatorio_pabellon"}, {"SALA_ENORME", "59_purgatorio_sala_enorme"}, {"VESTIBULO", "5a_purgatorio_vestibulo"}};
+        for (String[] gr : grandes) {
+            var t = com.miscelanea.purgatorio.PurgatorioPlano.Tipo.valueOf(gr[0]);
+            sin("ir_" + gr[1], 60, () -> {
+                var g = com.miscelanea.purgatorio.Purgatorio.buscarGrande(t);
+                RESUMEN.add("  purgatorio, sala grande " + t + ": " + (g == null ? "NINGUNA" : "piso " + g.n() + ", chunks " + g.cx0() + ", " + g.cz0() + " (" + g.w() + " x " + g.d() + ")"));
+                if (g == null) throw new IllegalStateException("no hay " + t + " cerca del origen");
+                irA(new net.minecraft.core.BlockPos(g.x0() + (g.w() / 2) * 16 + 8, com.miscelanea.purgatorio.PurgatorioPlano.base(g.n()), g.z0() + g.d() * 16 - 3), 180, 6);
+            });
+            paso(gr[1], 50, () -> {});
+            sin("ir_" + gr[1] + "_2", 40, () -> {
+                var g = com.miscelanea.purgatorio.Purgatorio.buscarGrande(t);
+                irA(new net.minecraft.core.BlockPos(g.x0() + 4, com.miscelanea.purgatorio.PurgatorioPlano.base(g.n()), g.z0() + 4), -45, 12);
+            });
+            paso(gr[1] + "_2", 40, () -> {});
+        }
+        // el pasillo que vuelve al mismo sitio: se le pone pasada la raya y tiene que volver 20 atrás
+        sin("purgatorio3_bucle_ir", 60, () -> {
+            p3Bucle = com.miscelanea.purgatorio.Purgatorio.buscarGrande(com.miscelanea.purgatorio.PurgatorioPlano.Tipo.BUCLE);
+            RESUMEN.add("  purgatorio, pasillo que vuelve: " + (p3Bucle == null ? "NINGUNO" : "piso " + p3Bucle.n() + ", chunks " + p3Bucle.cx0() + ", " + p3Bucle.cz0() + " (" + p3Bucle.zona() + ")"));
+            if (p3Bucle == null) throw new IllegalStateException("no hay pasillo-bucle cerca del origen");
+            irA(new net.minecraft.core.BlockPos(p3Bucle.x0() + 8, com.miscelanea.purgatorio.PurgatorioPlano.base(p3Bucle.n()), p3Bucle.z0() + 2), 0, 4);
+        });
+        paso("5b_purgatorio_bucle", 40, () -> {});
+        sin("purgatorio3_bucle_andar", 40, () -> irA(new net.minecraft.core.BlockPos(p3Bucle.x0() + 8, com.miscelanea.purgatorio.PurgatorioPlano.base(p3Bucle.n()), p3Bucle.z0() + 29), 0, 4));
+        sin("purgatorio3_bucle_mira", 2, () -> {
+            double lz = mc.player.getZ() - p3Bucle.z0();
+            RESUMEN.add(String.format("  purgatorio, pasillo que vuelve: puesto a 29,5 de la entrada, ahora a %.1f (%s)", lz, lz < 20 ? "ha vuelto atrás" : "NO ha vuelto"));
+            if (lz >= 20) throw new IllegalStateException("el pasillo que vuelve no le ha devuelto");
+        });
+        paso("5c_purgatorio_bucle_vuelta", 20, () -> {});
+        // una puerta que da a la pared (en el hotel): se abre y se mira
+        net.minecraft.core.BlockPos[] ciega = {null};
+        sin("purgatorio3_puerta_pared_ir", 60, () -> {
+            for (int r = 0; r < 50 && ciega[0] == null; r++)
+                for (int cx = -r; cx <= r && ciega[0] == null; cx++)
+                    for (int cz = -r; cz <= r && ciega[0] == null; cz++) {
+                        if (Math.max(Math.abs(cx), Math.abs(cz)) != r || com.miscelanea.purgatorio.PurgatorioPlano.zona(0, cx, cz) != com.miscelanea.purgatorio.PurgatorioGenerador.Zona.HOTEL
+                                || !com.miscelanea.purgatorio.PurgatorioGenerador.entero(0, cx, cz) || com.miscelanea.purgatorio.PurgatorioPlano.salida(0, cx, cz)) continue;
+                        for (int k = 2; k < 4; k++)
+                            if (!com.miscelanea.purgatorio.PurgatorioGenerador.habitacionTele(0, cx, cz, k) && com.miscelanea.purgatorio.PurgatorioPlano.hn(0, cx, cz, 180 + k) % 6 == 0) {
+                                ciega[0] = new net.minecraft.core.BlockPos(cx * 16 + com.miscelanea.purgatorio.PurgatorioPlano.PARCELAS[k][0] + 3, 64, cz * 16 + 9);
+                                break;
+                            }
+                    }
+            RESUMEN.add("  purgatorio, puerta que da a la pared: " + (ciega[0] == null ? "NINGUNA" : ciega[0].toShortString()));
+            if (ciega[0] == null) return;
+            var l = srv0.getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
+            irA(ciega[0].north(2), 0, 12);
+            srv0.execute(() -> {
+                var s = l.getBlockState(ciega[0]);
+                if (s.getBlock() instanceof net.minecraft.world.level.block.DoorBlock)
+                    ((net.minecraft.world.level.block.DoorBlock) s.getBlock()).setOpen(null, l, s, ciega[0], true);
+            });
+        });
+        paso("5d_purgatorio_puerta_pared", 30, () -> {});
+        // que se llega andando a una salida desde el piso de más abajo (por escaleras: el ascensor no se cuenta)
+        sin("purgatorio3_alcanzable", 40, () -> {
+            var l = srv0.getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
+            String mal = srv0.submit(() -> {
+                String m = null;
+                for (int n = 0; n < 3; n++) {
+                    net.minecraft.core.BlockPos desde = null;
+                    for (var z : com.miscelanea.purgatorio.PurgatorioGenerador.Zona.values())
+                        if (desde == null) desde = com.miscelanea.purgatorio.Purgatorio.buscar(z, n, 6);
+                    if (desde == null) continue;
+                    long t0 = System.nanoTime();
+                    var puerta = com.miscelanea.registry.ModBlocks.PUERTA_SALIDA.get();
+                    int d = andar(l, desde, q -> l.getBlockState(q).is(puerta), 250000);
+                    RESUMEN.add(String.format("  purgatorio, andando desde el piso %d (%s) hasta una salida: %s (%.1f s)", n, desde.toShortString(),
+                            d < 0 ? "NO SE LLEGA" : d + " pasos", (System.nanoTime() - t0) / 1e9));
+                    if (d < 0) m = "desde el piso " + n + " no se llega andando a ninguna salida";
+                }
+                return m;
+            }).join();
+            if (mal != null) throw new IllegalStateException(mal);
+        });
+        sin("purgatorio3_fin", 200, () -> {});
+    }
+
     /** El Purgatorio, segunda parte (2.0.0, repaso): rincones raros, costuras, salir de un muro, configuración y el aviso de mundo experimental. */
     private static void purgatorio2() {
         Minecraft mc = Minecraft.getInstance();
@@ -1360,6 +1648,7 @@ public final class PruebaCI {
                 if (sp != null) com.miscelanea.purgatorio.Purgatorio.entrar(sp, null);
             });
         });
+        purgatorio3();
         // los rincones raros: la silla de cara a la pared, la única máquina encendida, la caseta abierta y la tele sin señal
         String[][] raros = {{"SALA", "4e_purgatorio_sala_silla"}, {"RECREATIVA", "4f_purgatorio_recreativa_una"},
                 {"FERIA", "4g_purgatorio_caseta_peluche"}, {"HOTEL", "4h_purgatorio_hotel_tele"}};

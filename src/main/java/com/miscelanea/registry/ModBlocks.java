@@ -115,6 +115,10 @@ public final class ModBlocks {
     public static final RegistryObject<Block> TELE = BLOCKS.register("tele_sin_senal",
             () -> new com.miscelanea.purgatorio.TeleBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(1.0F)
                     .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 9)));
+    /** La botonera del ascensor del hotel del Purgatorio (te deja en otro piso). */
+    public static final RegistryObject<Block> BOTONERA = BLOCKS.register("botonera",
+            () -> new com.miscelanea.purgatorio.BotoneraBlock(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.0F)
+                    .sound(SoundType.METAL).noOcclusion().noCollission().lightLevel(st -> 4)));
     /** Recreativa fundida de la Recreativa Infinita (sin bloque-entidad: no se enciende ni suelta nada). */
     public static final RegistryObject<Block> RECREATIVA_APAGADA = BLOCKS.register("recreativa_apagada",
             () -> new com.miscelanea.purgatorio.RecreativaApagadaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE)

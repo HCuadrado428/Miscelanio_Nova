@@ -81,7 +81,10 @@ public final class Habitantes {
         int a = (r.nextBoolean() ? 1 : -1) * (2 + r.nextInt(2)), b = r.nextInt(7) - 3;
         int cx = (p.getBlockX() >> 4) + (r.nextBoolean() ? a : b), cz = (p.getBlockZ() >> 4) + (r.nextBoolean() ? b : a);
         if (Math.max(Math.abs(cx - (p.getBlockX() >> 4)), Math.abs(cz - (p.getBlockZ() >> 4))) < 2) return;
-        BlockPos sitio = new BlockPos(cx * 16 + 8, PurgatorioGenerador.SUELO, cz * 16 + 8);
+        // en el piso del jugador (el cruce de un chunk normal está libre)
+        int n = PurgatorioPlano.nivel(p.getY());
+        if (!PurgatorioGenerador.entero(n, cx, cz)) return;
+        BlockPos sitio = new BlockPos(cx * 16 + 8, PurgatorioPlano.base(n), cz * 16 + 8);
         aparecer(l, sitio, null);
     }
 
@@ -96,7 +99,7 @@ public final class Habitantes {
         Purgado g = ModEntities.PURGADO.get().create(l);
         if (g == null) return null;
         if (v == null) {
-            var z = PurgatorioGenerador.zona(sitio.getX() >> 4, sitio.getZ() >> 4);
+            var z = PurgatorioGenerador.zonaEn(sitio.getX(), sitio.getY(), sitio.getZ());
             int k = l.random.nextInt(10);
             v = z == PurgatorioGenerador.Zona.SIN_TEXTURA ? (k < 7 ? Purgado.Variante.SIN_TEXTURA : Purgado.Variante.RELLENO)
                     : k < 5 ? Purgado.Variante.HEROBRINE : k < 8 ? Purgado.Variante.RELLENO : Purgado.Variante.SIN_TEXTURA;

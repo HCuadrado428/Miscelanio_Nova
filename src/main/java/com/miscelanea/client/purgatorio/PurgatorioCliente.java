@@ -30,6 +30,10 @@ public final class PurgatorioCliente {
             case RECREATIVA -> 22;
             case HOTEL -> 20;
             case SIN_TEXTURA -> 30;
+            case PISCINA -> 26;
+            case APARCAMIENTO -> 26;
+            case COLEGIO -> 20;
+            case CENTRO -> 30;
         };
     }
 
@@ -41,6 +45,10 @@ public final class PurgatorioCliente {
             case RECREATIVA -> new float[]{0.05F, 0.02F, 0.09F};
             case HOTEL -> new float[]{0.09F, 0.06F, 0.035F};
             case SIN_TEXTURA -> new float[]{0.0F, 0.0F, 0.0F};
+            case PISCINA -> new float[]{0.04F, 0.08F, 0.10F};
+            case APARCAMIENTO -> new float[]{0.06F, 0.07F, 0.06F};
+            case COLEGIO -> new float[]{0.05F, 0.055F, 0.08F};
+            case CENTRO -> new float[]{0.09F, 0.075F, 0.065F};
         };
     }
 
@@ -90,8 +98,8 @@ public final class PurgatorioCliente {
 
         static PurgatorioGenerador.Zona zona() {
             Minecraft mc = Minecraft.getInstance();
-            var c = mc.gameRenderer.getMainCamera().getBlockPosition();
-            return PurgatorioGenerador.zona(c.getX() >> 4, c.getZ() >> 4);
+            var c = mc.gameRenderer.getMainCamera().getPosition();
+            return PurgatorioGenerador.zonaEn(c.x, c.y, c.z);
         }
 
         /** Una vez por fotograma: acerca la niebla actual a la de la zona. */
@@ -121,10 +129,14 @@ public final class PurgatorioCliente {
             return dist;
         }
 
+        /** Para la prueba: sin niebla (para la foto desde arriba). */
+        public static boolean sinNiebla;
+
         @SubscribeEvent
         public static void niebla(ViewportEvent.RenderFog e) {
             if (!aqui()) return;
             if (dist < 0) actualizar();
+            if (sinNiebla) return;
             float lejos = Math.min(e.getFarPlaneDistance(), dist);
             e.setNearPlaneDistance(e.getMode() == FogRenderer.FogMode.FOG_SKY ? 0 : lejos * 0.15F);
             e.setFarPlaneDistance(lejos);
@@ -178,6 +190,7 @@ public final class PurgatorioCliente {
                 case RECREATIVA -> com.miscelanea.registry.ModSounds.PURGATORIO_RECREATIVA.get();
                 case HOTEL -> com.miscelanea.registry.ModSounds.PURGATORIO_HOTEL.get();
                 case SIN_TEXTURA -> com.miscelanea.registry.ModSounds.PURGATORIO_SIN_TEXTURA.get();
+                default -> com.miscelanea.registry.ModSounds.PURGATORIO_SALA.get();
             };
         }
 
@@ -190,6 +203,7 @@ public final class PurgatorioCliente {
                 case RECREATIVA -> 0.36F;
                 case HOTEL -> 0.60F;
                 case SIN_TEXTURA -> 0.33F;
+                default -> 0.6F;
             };
         }
 
@@ -331,6 +345,7 @@ public final class PurgatorioCliente {
                     else
                         COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.ENDERMAN_TELEPORT, x, y, zz, 0.3F, 0.5F));
                 }
+                default -> COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.WOOD_PLACE, x, y - 1, zz, 0.5F, 0.55F));
             }
         }
 

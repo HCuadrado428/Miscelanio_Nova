@@ -254,6 +254,7 @@ public class Miscelanea {
             event.accept(ModItems.FLUORESCENTE);
             event.accept(ModItems.PAPEL_HOTEL);
             event.accept(ModItems.TELE);
+            event.accept(ModItems.BOTONERA);
             event.accept(com.miscelanea.movil.MovilRegistro.MOVIL);
             event.accept(com.miscelanea.movil.MovilRegistro.CAJERO_ITEM);
             event.accept(ModItems.OCARINA);

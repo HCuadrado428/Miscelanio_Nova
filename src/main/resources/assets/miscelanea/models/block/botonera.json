@@ -1,0 +1,100 @@
+{
+ "parent": "minecraft:block/block",
+ "textures": {
+  "particle": "miscelanea:block/botonera",
+  "f": "miscelanea:block/botonera",
+  "l": "miscelanea:block/botonera_lado"
+ },
+ "elements": [
+  {
+   "from": [
+    4,
+    2,
+    14
+   ],
+   "to": [
+    12,
+    14,
+    16
+   ],
+   "faces": {
+    "north": {
+     "texture": "#f",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ]
+    },
+    "south": {
+     "texture": "#l",
+     "uv": [
+      4,
+      2,
+      12,
+      14
+     ],
+     "cullface": "south"
+    },
+    "east": {
+     "texture": "#l",
+     "uv": [
+      0,
+      2,
+      2,
+      14
+     ]
+    },
+    "west": {
+     "texture": "#l",
+     "uv": [
+      14,
+      2,
+      16,
+      14
+     ]
+    },
+    "up": {
+     "texture": "#l",
+     "uv": [
+      4,
+      14,
+      12,
+      16
+     ]
+    },
+    "down": {
+     "texture": "#l",
+     "uv": [
+      4,
+      0,
+      12,
+      2
+     ]
+    }
+   }
+  }
+ ],
+ "display": {
+  "gui": {
+   "rotation": [
+    0,
+    180,
+    0
+   ],
+   "scale": [
+    1.2,
+    1.2,
+    1.2
+   ]
+  },
+  "fixed": {
+   "rotation": [
+    0,
+    180,
+    0
+   ]
+  }
+ }
+}
