@@ -1,0 +1,129 @@
+Prueba del móvil (Miscelánea)
+OK    preparar
+OK    00_mundo
+OK    01_inicio
+OK    02_camara
+OK    03_filtro_1
+OK    03_filtro_2
+OK    03_filtro_3
+OK    03_filtro_4
+OK    03_filtro_5
+OK    03_filtro_6
+OK    03_filtro_7
+OK    03_filtro_8
+OK    03_foto_gameboy
+OK    04_zoom
+OK    05_horizontal
+OK    vuelve_vertical
+OK    06_foto
+OK    espera_foto
+OK    07_temporizador
+OK    espera_temporizador
+OK    temporizador_fuera
+OK    08_flash
+OK    espera_flash
+OK    09_grabando
+OK    para_video
+OK    10_galeria
+  galería: 5 (la última es un vídeo de 3125 ms)
+OK    11_visor
+OK    12_llamada_grupo
+OK    13_llamada
+OK    14_entrante
+OK    15_manos_libres
+OK    16_teclado
+OK    17_ajustes
+OK    gramola_poner
+OK    20_gramola_menu
+OK    21_videoclip_hotel_inicio
+OK    22_videoclip_hotel_8s
+OK    23_videoclip_hotel_20s
+OK    24_tras_salir
+OK    gramola_otra
+OK    25_videoclip_disco
+OK    26_tras_salir_disco
+  pociones: red_mushroom=gigante brown_mushroom=enano echo_shard=ecolocalizacion ink_sac=niebla_viviente amethyst_shard=espejismo feather=helio snowball=ventilador wheat=borrachera cocoa_beans=tartamudeo
+OK    pociones
+OK    recorte_niveles
+  recorte: espada {net.minecraft.world.item.enchantment.DamageEnchantment@50e79a29=5, net.minecraft.world.item.enchantment.DigDurabilityEnchantment@7d6e697e=3, net.minecraft.world.item.enchantment.MendingEnchantment@4b19e50f=1} · peto {net.minecraft.world.item.enchantment.ProtectionEnchantment@67c5bdda=4, net.minecraft.world.item.enchantment.ThornsEnchantment@3fda3f84=3} · libro {net.minecraft.world.item.enchantment.ProtectionEnchantment@67c5bdda=4} · xp +200 · espada con durabilidad: true
+OK    perfil_vacio
+  rendimiento sin_sala: 9.8 fps · 51.0 ms/fotograma · bloques-entidad 0.65 ms · pantalla 0.00 ms (103 fotogramas)
+OK    perfil_sala
+  rendimiento: sala con 31 de 35 cosas
+  rendimiento colocar: 9.4 fps · 80.8 ms/fotograma · bloques-entidad 27.50 ms · pantalla 0.00 ms (10 fotogramas)
+OK    perfil_mirar
+  rendimiento sala: 20.8 fps · 37.8 ms/fotograma · bloques-entidad 9.94 ms · pantalla 0.00 ms (312 fotogramas)
+  rendimiento: 5 máquinas con partida retransmitida
+OK    perfil_jugar
+OK    70_perfil_mazmorra
+  rendimiento mazmorra: 27.1 fps · 27.9 ms/fotograma · bloques-entidad 3.97 ms · pantalla 1.57 ms (418 fotogramas)
+OK    perfil_turbo
+OK    71_perfil_turbo
+  rendimiento turbo: 29.5 fps · 25.7 ms/fotograma · bloques-entidad 3.51 ms · pantalla 0.81 ms (453 fotogramas)
+  perfil sin_sala (214 muestras, 32% en nativo): MovilCliente.tick 1.4% MapaCache.tick 1.4% MapaCache.carpeta 0.5% Tesoros.tick 0.5% CastigoCliente.llevaBolaEnBrazos 0.5% Tamanos.tick 0.5% ImitarVoz.tick 0.5% AnimCastigo.isActive 0.5% AnimCastigo.calcular 0.5% EstaticaCliente.tick 0.5% MapaCache.pintar 0.5% PocionesEventos.tickVivo 0.5%
+  perfil colocar (18 muestras, 50% en nativo): RecreativaRenderer.m_6922_ 11.1% CartelRecordsRenderer.m_6922_ 11.1% CartelRecordsRenderer.tablon 11.1% RecreativaRenderer.render 11.1% CartelRecordsRenderer.render 11.1% ImperioRenderer.render 5.6% PantallaTextura.subir 5.6% PantallaTextura.<init> 5.6% ImperioRenderer.m_6922_ 5.6% ArcadeCliente.tick 5.6% CartelRecordsRenderer.q 5.6% PantallaTextura.actualizar 5.6%
+  perfil sala (291 muestras, 52% en nativo): RecreativaRenderer.m_6922_ 9.6% RecreativaRenderer.render 9.6% PantallaTextura.subir 9.3% PantallaTextura.actualizar 9.3% FutbolinRenderer.m_6922_ 5.2% FutbolinRenderer.render 5.2% CartelRecordsRenderer.m_6922_ 4.1% CartelRecordsRenderer.render 4.1% CartelRecordsRenderer.tablon 3.8% BoleraRenderer.m_6922_ 3.4% BoleraRenderer.render 3.4% FeriaPiezas.modelo 3.1%
+  perfil mazmorra (305 muestras, 58% en nativo): ArcadeScreen.m_88315_ 9.2% Mazmorra3D.dibujar 5.6% ArcadeScreen.pantalla 5.6% FutbolinRenderer.m_6922_ 5.2% FutbolinRenderer.render 5.2% FeriaPiezas.modelo 3.3% BoleraRenderer.render 3.0% BoleraRenderer.m_6922_ 3.0% CartelRecordsRenderer.m_6922_ 2.6% CartelRecordsRenderer.render 2.6% CartelRecordsRenderer.tablon 2.3% ArcadeScreen.lambda$render$1 1.3%
+  perfil turbo (285 muestras, 62% en nativo): FutbolinRenderer.m_6922_ 5.3% FutbolinRenderer.render 5.3% BoleraRenderer.render 4.2% FeriaPiezas.modelo 4.2% BoleraRenderer.m_6922_ 4.2% ArcadeScreen.m_88315_ 1.8% RecreativaRenderer.m_6922_ 1.4% RecreativaRenderer.render 1.4% FeriaPiezas.caja 0.7% PantallaTextura.subir 0.7% FlotaRenderer.m_6922_ 0.7% AirHockeyRenderer.render 0.7%
+OK    perfil_fin
+OK    72_perfil_sala
+OK    laser_poner
+OK    laser_encender
+OK    80_laser_primera
+OK    laser_primera_quitar_hud
+  láser laser_primera: el punto sale a (-1.4, -0.5) px de la mira (30 píxeles rojos, imagen 854x480) · calculado (-0.8, +0.0) px, a 0.022 bloques de donde mira y a 0.032 del que ven los demás
+OK    laser_primera_medir
+OK    laser_fov
+OK    81_laser_fov105
+OK    laser_fov105_quitar_hud
+  láser laser_fov105: el punto sale a (-1.0, -0.8) px de la mira (9 píxeles rojos, imagen 854x480) · calculado (-0.5, -0.3) px, a 0.031 bloques de donde mira y a 0.026 del que ven los demás
+OK    laser_fov105_medir
+OK    laser_gigante
+  láser: de gigante, ojos a 4.86 bloques del suelo
+OK    82_laser_gigante
+OK    laser_gigante_quitar_hud
+  láser laser_gigante: el punto sale a (-0.3, +0.1) px de la mira (33 píxeles rojos, imagen 854x480) · calculado (+0.2, +0.6) px, a 0.021 bloques de donde mira y a 0.036 del que ven los demás
+OK    laser_gigante_medir
+OK    laser_normal
+OK    laser_fuera_poner
+OK    83_laser_desde_fuera
+OK    laser_desde_fuera_quitar_hud
+  láser laser_desde_fuera: el punto sale a (-1.1, -1.1) px de donde mira (43 píxeles rojos, imagen 854x480) · calculado (+0.0, -0.7) px, a 0.019 bloques de donde mira y a 0.033 del que ven los demás
+OK    laser_desde_fuera_medir
+OK    laser_fuera_quitar
+OK    84_laser_tercera
+OK    laser_fin
+OK    eco_poner
+OK    eco_hablador
+OK    eco_ruido
+OK    90_eco_activo
+  eco activo: niebla hasta 0.02 bloques · ondas 7, bloques 1287, entidades 2, fallos al dibujar 0 · imagen: 79% negra, luz media 30, 15345 px azulados, 28 px muy claros · hablo (solo ruido del micro): no
+OK    eco_medir
+OK    91_eco_tercera
+OK    eco_mirar_cielo
+OK    92_eco_cielo
+  eco mirando arriba (a mediodía): imagen: 89% negra, luz media 14, 4201 px azulados, 28 px muy claros
+OK    eco_medir_cielo
+OK    eco_andar
+OK    94_eco_andando
+  eco andando: ondas de mis pasos 3, de los pasos del otro 3 · ondas 9, bloques 1629, entidades 2, fallos al dibujar 0
+OK    eco_medir_pasos
+OK    eco_quitar
+OK    93_eco_quitado
+  eco quitado: niebla hasta 192.0 bloques · ondas 0, bloques 0, entidades 0, fallos al dibujar 0 · imagen: 11% negra, luz media 78, 280 px azulados, 120 px muy claros
+OK    eco_comprobar
+OK    eco_fin
+OK    logros_cargados
+  logros: 63 cargados de la pestaña (se esperan 63) · sin errores en el registro
+OK    logros_comprobar_carga
+OK    logros_dar
+OK    95_logros_aviso
+OK    logros_mirar
+  logros conseguidos (16): raiz movil/movil movil/foto movil/video movil/bizum feria/tirolina mesa/parchis baile/pista baile/videoclip baile/walken pociones/gigante pociones/borrachera pociones/eco sala/lazo varios/paella varios/bacalao
+OK    logros_comprobar
+OK    96_logros_pantalla
+OK    97_logros_pantalla_arriba
+OK    logros_fin
+  cara propia (la de su modelo) guardada: sí
+OK    cerrar
+TODO BIEN
