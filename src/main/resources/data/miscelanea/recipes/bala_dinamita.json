@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "miscelanea:revolver_bala"
+    },
+    {
+      "item": "miscelanea:revolver_bala"
+    },
+    {
+      "item": "minecraft:gunpowder"
+    },
+    {
+      "item": "minecraft:paper"
+    }
+  ],
+  "result": {
+    "item": "miscelanea:bala_dinamita",
+    "count": 2
+  }
+}

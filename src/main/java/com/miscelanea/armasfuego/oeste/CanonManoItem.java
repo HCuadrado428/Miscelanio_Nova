@@ -44,37 +44,50 @@ public class CanonManoItem extends ArmaFuegoItem {
     }
 
     @Override
-    public int capacidad() {
+    public int capacidad(ItemStack s) {
         return 1;
     }
 
     @Override
-    public int ticksRecarga() {
+    public int ticksRecarga(ItemStack s) {
         return EquilibrioArmas.canonRecarga();
+    }
+
+    @Override
+    protected boolean acepta(ItemStack m) {
+        return piedra(m) || m.is(com.miscelanea.registry.ModItems.BOLANO_INCENDIARIO.get()) || m.is(com.miscelanea.registry.ModItems.BOLANO_FUEGOS.get());
+    }
+
+    @Override
+    protected net.minecraft.world.item.Item municionNormal() {
+        return Items.COBBLESTONE;
+    }
+
+    /** Cualquier roca es el bolaño normal. */
+    @Override
+    protected net.minecraft.world.item.Item tipoDe(ItemStack m) {
+        return piedra(m) ? Items.COBBLESTONE : m.getItem();
+    }
+
+    @Override
+    protected int polvora() {
+        return 2;
+    }
+
+    @Override
+    protected boolean femenino() {
+        return false;
+    }
+
+    /** Ticks de la mecha (Mecha corta: un 30 % menos por nivel). */
+    public static int mechaTicks(ItemStack s) {
+        return Math.max(4, Math.round(EquilibrioArmas.canonMecha() * (1 - 0.3F * nivel(com.miscelanea.registry.ModEnchantments.CANON_MECHA_CORTA, s))));
     }
 
     private static boolean piedra(ItemStack s) {
         return s.is(Tags.Items.COBBLESTONE) || s.is(Items.STONE) || s.is(Items.COBBLED_DEEPSLATE);
     }
 
-    @Override
-    public boolean tieneMunicion(Player p) {
-        return !buscar(p, CanonManoItem::piedra).isEmpty() && contar(p, x -> x.is(Items.GUNPOWDER)) >= 2;
-    }
-
-    @Override
-    protected int gastarMunicion(ServerPlayer p, ItemStack s) {
-        ItemStack b = buscar(p, CanonManoItem::piedra);
-        if (b.isEmpty() || contar(p, x -> x.is(Items.GUNPOWDER)) < 2) return 0;
-        b.shrink(1);
-        for (int k = 0; k < 2; k++) buscar(p, x -> x.is(Items.GUNPOWDER)).shrink(1);
-        return 1;
-    }
-
-    @Override
-    public ItemStack iconoMunicion() {
-        return new ItemStack(Items.COBBLESTONE);
-    }
 
     @Override
     protected SoundEvent sonidoRecarga() {
@@ -83,7 +96,7 @@ public class CanonManoItem extends ArmaFuegoItem {
 
     @Override
     protected int enfriamiento(Player p, ItemStack s) {
-        return EquilibrioArmas.canonMecha() + 10;
+        return mechaTicks(s) + 10;
     }
 
     public static long mecha(ItemStack s) {
@@ -97,7 +110,7 @@ public class CanonManoItem extends ArmaFuegoItem {
             intentar(level, p, s);
             return InteractionResultHolder.fail(s);
         }
-        s.getOrCreateTag().putLong(MECHA, level.getGameTime() + EquilibrioArmas.canonMecha());
+        s.getOrCreateTag().putLong(MECHA, level.getGameTime() + mechaTicks(s));
         if (!level.isClientSide)
             level.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.FLINTANDSTEEL_USE, SoundSource.PLAYERS, 1.0F, 1.0F);
         p.getCooldowns().addCooldown(this, enfriamiento(p, s));
@@ -127,14 +140,14 @@ public class CanonManoItem extends ArmaFuegoItem {
         }
         if (!level.isClientSide) {
             ServerPlayer sp = (ServerPlayer) p;
-            if (MosqueteItem.mojada(p)) {
+            if (MosqueteItem.mojada(p) && !(EquilibrioArmas.sinAtascosPrueba)) {
                 ponerBalas(s, 0);
                 level.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 0.8F, 1.0F);
                 p.displayClientMessage(Component.translatable("msg.miscelanea.armafuego.mojada").withStyle(ChatFormatting.AQUA), true);
                 LogrosMiscelanea.dar(sp, "polvora_mojada");
                 return;
             }
-            if (p.getRandom().nextFloat() < EquilibrioArmas.canonRevienta()) {
+            if (nivel(com.miscelanea.registry.ModEnchantments.CANON_BIEN_FUNDIDO, s) == 0 && p.getRandom().nextFloat() < EquilibrioArmas.canonRevienta()) {
                 reventar(sp, s);
                 return;
             }
@@ -164,6 +177,8 @@ public class CanonManoItem extends ArmaFuegoItem {
         ServerLevel l = p.serverLevel();
         Vec3 b = boca(p, 1.2, 0.3, 0.2);
         BolaCanonEntity bola = new BolaCanonEntity(ModEntities.BOLA_CANON.get(), p, l);
+        var tipo = tipoActual(s);
+        bola.setItem(new ItemStack(tipo));
         bola.setPos(b.x, b.y, b.z);
         bola.shootFromRotation(p, p.getXRot(), p.getYRot(), 0F, 2.2F, 4.0F);
         l.addFreshEntity(bola);

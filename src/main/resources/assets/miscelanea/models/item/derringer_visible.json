@@ -5,7 +5,10 @@
   "particle": "miscelanea:item/derringer"
  },
  "base": {
-  "parent": "miscelanea:item/armas3d/derringer_3d"
+  "parent": "miscelanea:item/armas3d/derringer_3d",
+  "textures": {
+   "cobre": "miscelanea:item/armas3d/g_cobre_0"
+  }
  },
  "perspectives": {
   "gui": {

@@ -2,6 +2,7 @@
  "credit": "miscelanea",
  "ambientocclusion": false,
  "textures": {
+  "cobre": "miscelanea:item/armas3d/g_cobre_0",
   "hierro": "miscelanea:item/armas3d/g_hierro",
   "acero": "miscelanea:item/armas3d/g_acero",
   "laton": "miscelanea:item/armas3d/g_laton",
@@ -16,8 +17,8 @@
   "brasa": "miscelanea:item/armas3d/g_brasa",
   "tambor": "miscelanea:item/armas3d/g_tambor",
   "terciopelo": "miscelanea:item/armas3d/g_terciopelo",
-  "particle": "miscelanea:item/armas3d/g_laton",
-  "tolva": "miscelanea:item/armas3d/g_tolva"
+  "tolva": "miscelanea:item/armas3d/g_tolva",
+  "particle": "miscelanea:item/armas3d/g_laton"
  },
  "elements": [
   {
@@ -379,7 +380,7 @@
       15.0,
       11.5
      ],
-     "texture": "#laton"
+     "texture": "#cobre"
     },
     "south": {
      "uv": [
@@ -388,7 +389,7 @@
       15.0,
       11.5
      ],
-     "texture": "#laton"
+     "texture": "#cobre"
     },
     "east": {
      "uv": [
@@ -397,7 +398,7 @@
       6.5,
       11.5
      ],
-     "texture": "#laton"
+     "texture": "#cobre"
     },
     "west": {
      "uv": [
@@ -406,7 +407,7 @@
       6.5,
       11.5
      ],
-     "texture": "#laton"
+     "texture": "#cobre"
     },
     "up": {
      "uv": [
@@ -415,7 +416,7 @@
       15.0,
       14.0
      ],
-     "texture": "#laton"
+     "texture": "#cobre"
     },
     "down": {
      "uv": [
@@ -424,7 +425,7 @@
       15.0,
       14.0
      ],
-     "texture": "#laton"
+     "texture": "#cobre"
     }
    }
   },

@@ -5,7 +5,10 @@
   "particle": "miscelanea:item/mosquete"
  },
  "base": {
-  "parent": "miscelanea:item/armas3d/mosquete_3d_1"
+  "parent": "miscelanea:item/armas3d/mosquete_3d_1",
+  "textures": {
+   "cobre": "miscelanea:item/armas3d/g_cobre_0"
+  }
  },
  "perspectives": {
   "gui": {

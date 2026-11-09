@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/mosquete",
+  "display": {
+    "icon": {
+      "item": "miscelanea:bola_cadena"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.cadena.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.cadena.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "mosquete_cadena": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "mosquete_cadena"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 15
+  }
+}

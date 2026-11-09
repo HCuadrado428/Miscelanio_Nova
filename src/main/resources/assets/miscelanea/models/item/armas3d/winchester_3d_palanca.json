@@ -3,6 +3,7 @@
  "gui_light": "front",
  "ambientocclusion": false,
  "textures": {
+  "cobre": "miscelanea:item/armas3d/g_cobre_0",
   "hierro": "miscelanea:item/armas3d/g_hierro",
   "acero": "miscelanea:item/armas3d/g_acero",
   "laton": "miscelanea:item/armas3d/g_laton",
@@ -234,7 +235,7 @@
       4.85,
       9.5
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "south": {
      "uv": [
@@ -243,7 +244,7 @@
       4.85,
       9.5
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "east": {
      "uv": [
@@ -252,7 +253,7 @@
       6.15,
       9.5
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "west": {
      "uv": [
@@ -261,7 +262,7 @@
       6.15,
       9.5
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "up": {
      "uv": [
@@ -270,7 +271,7 @@
       4.85,
       12.25
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "down": {
      "uv": [
@@ -279,7 +280,7 @@
       4.85,
       12.25
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     }
    }
   },
@@ -506,7 +507,7 @@
       8.6,
       11.05
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "south": {
      "uv": [
@@ -515,7 +516,7 @@
       8.6,
       11.05
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "east": {
      "uv": [
@@ -524,7 +525,7 @@
       6.9,
       11.05
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "west": {
      "uv": [
@@ -533,7 +534,7 @@
       6.9,
       11.05
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "up": {
      "uv": [
@@ -542,7 +543,7 @@
       8.6,
       1.05
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "down": {
      "uv": [
@@ -551,7 +552,7 @@
       8.6,
       1.05
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     }
    }
   },
@@ -574,7 +575,7 @@
       6.75,
       11.5
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "south": {
      "uv": [
@@ -583,7 +584,7 @@
       6.75,
       11.5
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "east": {
      "uv": [
@@ -592,7 +593,7 @@
       15.75,
       11.5
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "west": {
      "uv": [
@@ -601,7 +602,7 @@
       15.75,
       11.5
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "up": {
      "uv": [
@@ -610,7 +611,7 @@
       6.75,
       10.0
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "down": {
      "uv": [
@@ -619,7 +620,7 @@
       6.75,
       10.0
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     }
    }
   },

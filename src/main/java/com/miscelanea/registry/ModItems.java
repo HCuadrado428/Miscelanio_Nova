@@ -384,6 +384,31 @@ public final class ModItems {
     public static final RegistryObject<Item> REVOLVER_TIEMPO = ITEMS.register("revolver_tiempo", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> BALA_PINTURA = ITEMS.register("bala_pintura",
             () -> new com.miscelanea.armasfuego.rifle.MunicionRifleItem("item.miscelanea.bala_pintura.ayuda", new Item.Properties()));
+    // munición especial de las seis nuevas (dos por arma)
+    public static final RegistryObject<Item> BALA_PLATA = ITEMS.register("bala_plata",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties()));
+    public static final RegistryObject<Item> BALA_DINAMITA = ITEMS.register("bala_dinamita",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties()));
+    public static final RegistryObject<Item> CARTA_MARCADA = ITEMS.register("carta_marcada",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties()));
+    public static final RegistryObject<Item> BALA_ORO = ITEMS.register("bala_oro",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties()));
+    public static final RegistryObject<Item> TAMBOR_TRAZADOR = ITEMS.register("tambor_trazador",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties().stacksTo(8)));
+    public static final RegistryObject<Item> TAMBOR_AGUA = ITEMS.register("tambor_agua",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties().stacksTo(8)));
+    public static final RegistryObject<Item> CINTA_INCENDIARIA = ITEMS.register("cinta_incendiaria",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> CINTA_PALOMITAS = ITEMS.register("cinta_palomitas",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> METRALLA = ITEMS.register("metralla",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties()));
+    public static final RegistryObject<Item> BOLA_CADENA = ITEMS.register("bola_cadena",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties()));
+    public static final RegistryObject<Item> BOLANO_INCENDIARIO = ITEMS.register("bolano_incendiario",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> BOLANO_FUEGOS = ITEMS.register("bolano_fuegos",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties().stacksTo(16)));
     // ---- fin armas de fuego (segunda tanda)
 
     private ModItems() {}

@@ -48,10 +48,20 @@ public class BolaCanonEntity extends ThrowableItemProjectile {
         if (!level().isClientSide && tickCount > 200) discard();
     }
 
+    private boolean fuegos() {
+        return getItem().is(com.miscelanea.registry.ModItems.BOLANO_FUEGOS.get());
+    }
+
+    private boolean incendiario() {
+        return getItem().is(com.miscelanea.registry.ModItems.BOLANO_INCENDIARIO.get());
+    }
+
     @Override
     protected void onHitEntity(EntityHitResult r) {
-        if (r.getEntity() instanceof LivingEntity v && level() instanceof ServerLevel)
-            Balistica.herir(v, getOwner(), EquilibrioArmas.canonDano(), 0.3F, CanonManoItem.DANO, false);
+        if (r.getEntity() instanceof LivingEntity v && level() instanceof ServerLevel) {
+            Balistica.herir(v, getOwner(), EquilibrioArmas.canonDano() * (fuegos() ? 0.35F : 1F), 0.3F, CanonManoItem.DANO, false);
+            if (incendiario()) v.setSecondsOnFire(6);
+        }
     }
 
     @Override
@@ -61,17 +71,26 @@ public class BolaCanonEntity extends ThrowableItemProjectile {
         Vec3 q = r.getLocation();
         Entity directo = r instanceof EntityHitResult eh ? eh.getEntity() : null;
         // estallido: un tercio del daño alrededor y un empujón (sin romper bloques salvo que lo diga la config)
-        float alrededor = EquilibrioArmas.canonDano() / 3F;
+        float alrededor = EquilibrioArmas.canonDano() / 3F * (fuegos() ? 0.35F : 1F);
         for (LivingEntity v : l.getEntitiesOfClass(LivingEntity.class, new AABB(q, q).inflate(2.5), e -> e.isAlive() && e != directo)) {
             double d = v.position().distanceTo(q);
             if (d > 2.5) continue;
             float k = (float) (1 - d / 2.5);
             Balistica.herir(v, getOwner(), alrededor * k, 0.0F, CanonManoItem.DANO, false);
+            if (incendiario()) v.setSecondsOnFire(4);
             Vec3 emp = v.position().subtract(q).normalize().scale(0.6 * k);
             v.push(emp.x, 0.25 * k, emp.z);
             v.hurtMarked = true;
         }
-        if (EquilibrioArmas.canonRompe()) {
+        if (fuegos()) {
+            // el bolaño de feria: una palmera de fuegos artificiales de colores (casi sin daño)
+            for (int i = 0; i < 5; i++)
+                l.sendParticles(ParticleTypes.FIREWORK, q.x, q.y + 0.5, q.z, 14, 0.15, 0.15, 0.15, 0.25);
+            l.sendParticles(ParticleTypes.FLASH, q.x, q.y + 0.5, q.z, 1, 0, 0, 0, 0);
+            l.playSound(null, q.x, q.y, q.z, net.minecraft.sounds.SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, SoundSource.PLAYERS, 3.0F, 1.0F);
+            l.playSound(null, q.x, q.y, q.z, net.minecraft.sounds.SoundEvents.FIREWORK_ROCKET_TWINKLE, SoundSource.PLAYERS, 2.0F, 1.0F);
+            if (getOwner() instanceof net.minecraft.server.level.ServerPlayer sp) com.miscelanea.logros.LogrosMiscelanea.dar(sp, "canon_fuegos");
+        } else if (EquilibrioArmas.canonRompe()) {
             l.explode(this, q.x, q.y, q.z, 1.6F, Level.ExplosionInteraction.TNT);
         } else {
             l.sendParticles(ParticleTypes.EXPLOSION, q.x, q.y, q.z, 1, 0, 0, 0, 0);
@@ -80,6 +99,7 @@ public class BolaCanonEntity extends ThrowableItemProjectile {
                 l.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, l.getBlockState(bh.getBlockPos())), q.x, q.y, q.z, 16, 0.3, 0.3, 0.3, 0.15);
             l.playSound(null, q.x, q.y, q.z, ModSounds.CANON_DISPARO.get(), SoundSource.PLAYERS, 2.0F, 1.3F);
             l.gameEvent(this, GameEvent.EXPLODE, q);
+            if (incendiario()) l.sendParticles(ParticleTypes.FLAME, q.x, q.y + 0.3, q.z, 30, 0.8, 0.3, 0.8, 0.02);
         }
         discard();
     }

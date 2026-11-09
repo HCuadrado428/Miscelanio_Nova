@@ -61,25 +61,121 @@ public abstract class ArmaFuegoItem extends Item {
 
     // ------------------------------------------------------------------ lo que define cada arma
 
-    /** Balas que caben. */
-    public abstract int capacidad();
+    /** NBT: la munición que hay dentro (id del objeto). */
+    public static final String TIPO = "Tipo";
 
-    /** Ticks de un paso de recarga. */
-    public abstract int ticksRecarga();
+    /** Balas que caben (con sus encantamientos). */
+    public abstract int capacidad(ItemStack s);
+
+    /** Ticks de un paso de recarga (con sus encantamientos). */
+    public abstract int ticksRecarga(ItemStack s);
 
     /** Si cada paso mete una bala (Winchester) o se llena de golpe al acabar (las demás). */
     public boolean recargaPorBala() {
         return false;
     }
 
-    /** ¿Tiene encima lo necesario para un paso de recarga? */
-    public abstract boolean tieneMunicion(Player p);
+    /** ¿Es munición de esta arma? (la normal y las especiales) */
+    protected abstract boolean acepta(ItemStack m);
 
-    /** Gasta lo de un paso de recarga y devuelve cuántas balas mete. */
-    protected abstract int gastarMunicion(ServerPlayer p, ItemStack s);
+    /** La munición normal (la que sale si no hay nada dentro). */
+    protected abstract Item municionNormal();
+
+    /** El tipo de munición de un objeto (el cañón cuenta cualquier roca como el bolaño normal). */
+    protected Item tipoDe(ItemStack m) {
+        return m.getItem();
+    }
+
+    /** Balas que mete cada objeto de munición (un tambor entero, o una). */
+    protected int balasPorObjeto(ItemStack s) {
+        return 1;
+    }
+
+    /** Si al recargar se meten de golpe todas las que quepan, una por objeto (la Derringer). */
+    protected boolean llenaDeGolpe() {
+        return false;
+    }
+
+    /** Pólvora que hace falta además de la munición en cada recarga (mosquete y cañón). */
+    protected int polvora() {
+        return 0;
+    }
+
+    /** Si al recargar se cambia todo (tambor, cinta): no hace falta que sea del mismo tipo que lo que hay. */
+    protected boolean cambiaEntera() {
+        return balasPorObjeto(ItemStack.EMPTY) > 1;
+    }
+
+    /** Para el nombre con el óxido («erosionada» o «erosionado»). */
+    protected boolean femenino() {
+        return true;
+    }
+
+    /** Disparos para pasar de fase de óxido (como el revólver: 40). */
+    protected int usosPorFase() {
+        return 40;
+    }
+
+    public static Item tipo(ItemStack s) {
+        if (!s.hasTag() || !s.getTag().contains(TIPO)) return null;
+        return net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation(s.getTag().getString(TIPO)));
+    }
+
+    /** La munición que hay dentro (o la normal). */
+    public Item tipoActual(ItemStack s) {
+        Item t = tipo(s);
+        return t == null || t == net.minecraft.world.item.Items.AIR ? municionNormal() : t;
+    }
 
     /** El objeto que se enseña en el HUD junto al contador. */
-    public abstract ItemStack iconoMunicion();
+    public ItemStack iconoMunicion(ItemStack s) {
+        return new ItemStack(tipoActual(s));
+    }
+
+    /** La munición que se va a meter: de la misma que hay si queda algo; si no, la de la otra mano o la primera que haya. */
+    public ItemStack elegir(Player p, ItemStack s) {
+        if (balas(s) > 0 && !cambiaEntera()) {
+            Item t = tipoActual(s);
+            return buscar(p, x -> acepta(x) && tipoDe(x) == t);
+        }
+        return buscar(p, this::acepta);
+    }
+
+    /** Lleno, pero con un tambor (o cinta) de otra munición a mano: se puede cambiar. */
+    protected boolean cambiaTipo(Player p, ItemStack s) {
+        if (!cambiaEntera()) return false;
+        ItemStack m = elegir(p, s);
+        return !m.isEmpty() && tipoDe(m) != tipoActual(s);
+    }
+
+    public boolean tieneMunicion(Player p, ItemStack s) {
+        return !elegir(p, s).isEmpty() && contar(p, x -> x.is(net.minecraft.world.item.Items.GUNPOWDER)) >= polvora();
+    }
+
+    /** Gasta lo de un paso de recarga y devuelve cuántas balas mete. */
+    protected int gastarMunicion(ServerPlayer p, ItemStack s) {
+        ItemStack m = elegir(p, s);
+        if (m.isEmpty()) return 0;
+        Item t = tipoDe(m);
+        if (t != tipoActual(s) && cambiaEntera()) ponerBalas(s, 0);   // el tambor o la cinta viejos se quitan
+        s.getOrCreateTag().putString(TIPO, net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(t).toString());
+        for (int k = 0; k < polvora(); k++) buscar(p, x -> x.is(net.minecraft.world.item.Items.GUNPOWDER)).shrink(1);
+        if (!llenaDeGolpe()) {
+            m.shrink(1);
+            return balasPorObjeto(s);
+        }
+        int n = 0, hueco = capacidad(s) - balas(s);
+        while (n < hueco && !m.isEmpty()) {
+            m.shrink(1);
+            n++;
+            if (m.isEmpty()) m = buscar(p, x -> acepta(x) && tipoDe(x) == t);
+        }
+        return n;
+    }
+
+    public static int nivel(net.minecraftforge.registries.RegistryObject<net.minecraft.world.item.enchantment.Enchantment> e, ItemStack s) {
+        return net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(e.get(), s);
+    }
 
     /** El disparo de verdad (ya comprobado que hay bala, no está atascada ni en espera). */
     protected abstract void disparar(ServerPlayer p, ItemStack s);
@@ -87,9 +183,10 @@ public abstract class ArmaFuegoItem extends Item {
     /** Ticks de espera tras un disparo (cooldown del objeto). */
     protected abstract int enfriamiento(Player p, ItemStack s);
 
-    /** Probabilidad de que se encasquille un disparo. */
+    /** Probabilidad de que se encasquille un disparo (más cuanto más oxidado, como las tres primeras). */
     protected float probAtasco(Player p, ItemStack s) {
-        return EquilibrioArmas.encasquilladoBase();
+        if (EquilibrioArmas.sinAtascosPrueba) return 0F;
+        return EquilibrioArmas.encasquilladoBase() + Cobre.ATASCO[Cobre.oxido(s)];
     }
 
     /** Sonido del paso de recarga. */
@@ -125,7 +222,7 @@ public abstract class ArmaFuegoItem extends Item {
     }
 
     public boolean llena(ItemStack s) {
-        return balas(s) >= capacidad();
+        return balas(s) >= capacidad(s);
     }
 
     // ------------------------------------------------------------------ controles
@@ -136,14 +233,24 @@ public abstract class ArmaFuegoItem extends Item {
         if (hand != InteractionHand.MAIN_HAND) return InteractionResultHolder.pass(s);
         CompoundTag t = s.getOrCreateTag();
         if (p.isShiftKeyDown()) {
+            // agachado con un panal o un hacha en la otra mano: encerar o rascar el cobre (como el revólver)
+            ItemStack otra = p.getOffhandItem();
+            if (Cobre.esPanal(otra) || Cobre.esHacha(otra)) {
+                if (!level.isClientSide) {
+                    Vec3 b = boca(p, 0.6, 0.3, 0.25);
+                    if (Cobre.esPanal(otra)) Cobre.encerar(p, s, otra, b);
+                    else Cobre.rascar(p, s, otra, b);
+                }
+                return InteractionResultHolder.sidedSuccess(s, level.isClientSide);
+            }
             if (atascada(s)) {
                 t.putInt(MODO, MODO_DESATASCO);
                 p.startUsingItem(hand);
                 return InteractionResultHolder.consume(s);
             }
-            if (llena(s) || !p.getAbilities().instabuild && !tieneMunicion(p)) {
+            if (llena(s) && !cambiaTipo(p, s) || !p.getAbilities().instabuild && !tieneMunicion(p, s)) {
                 if (!level.isClientSide && !llena(s))
-                    p.displayClientMessage(Component.translatable("msg.miscelanea.armafuego.sin_municion", iconoMunicion().getHoverName()).withStyle(ChatFormatting.GRAY), true);
+                    p.displayClientMessage(Component.translatable("msg.miscelanea.armafuego.sin_municion", iconoMunicion(s).getHoverName()).withStyle(ChatFormatting.GRAY), true);
                 return InteractionResultHolder.fail(s);
             }
             t.putInt(MODO, MODO_RECARGA);
@@ -190,6 +297,7 @@ public abstract class ArmaFuegoItem extends Item {
         if (!p.getAbilities().instabuild) ponerBalas(s, balas(s) - 1);
         s.getOrCreateTag().putLong(DISPARO_T, level.getGameTime());
         disparar(sp, s);
+        if (Cobre.desgastar(s, usosPorFase(), p.isInWaterOrRain())) Cobre.avisar(sp, s);
         if (s.isDamageableItem()) s.hurtAndBreak(1, p, x -> x.broadcastBreakEvent(EquipmentSlot.MAINHAND));
         return true;
     }
@@ -212,14 +320,19 @@ public abstract class ArmaFuegoItem extends Item {
         switch (modo(s)) {
             case MODO_RECARGA -> {
                 if (level.isClientSide) return;
-                int paso = ticksRecarga();
+                int paso = ticksRecarga(s);
                 if (t > 0 && t % paso == 0) {
-                    if (llena(s) || !p.getAbilities().instabuild && !tieneMunicion(p)) {
+                    if (llena(s) && !cambiaTipo(p, s) || !p.getAbilities().instabuild && !tieneMunicion(p, s)) {
                         p.stopUsingItem();
                         return;
                     }
-                    int n = p.getAbilities().instabuild ? (recargaPorBala() ? 1 : capacidad()) : gastarMunicion((ServerPlayer) p, s);
-                    ponerBalas(s, Math.min(capacidad(), balas(s) + n));
+                    int n = p.getAbilities().instabuild ? (recargaPorBala() ? 1 : capacidad(s)) : gastarMunicion((ServerPlayer) p, s);
+                    if (p.getAbilities().instabuild && !s.getOrCreateTag().contains(TIPO)) {
+                        ItemStack m = elegir(p, s);
+                        Item ti = m.isEmpty() ? municionNormal() : tipoDe(m);
+                        s.getOrCreateTag().putString(TIPO, net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(ti).toString());
+                    }
+                    ponerBalas(s, Math.min(capacidad(s), balas(s) + n));
                     level.playSound(null, p.getX(), p.getY(), p.getZ(), sonidoRecarga(), SoundSource.PLAYERS, 0.8F, 0.95F + p.getRandom().nextFloat() * 0.1F);
                     alRecargar((ServerPlayer) p, s);
                     if (!recargaPorBala() || llena(s)) p.stopUsingItem();
@@ -307,6 +420,7 @@ public abstract class ArmaFuegoItem extends Item {
     protected static Balistica.Tiro tiro(ServerPlayer p, float dano, double alcance, double desdeCaida, float minCaida, double disp,
                                          float perf, ResourceKey<DamageType> tipo, boolean rafaga, @Nullable ParticleOptions estela) {
         ServerLevel l = p.serverLevel();
+        disp += Cobre.DISPERSION[Cobre.oxido(p.getMainHandItem())];
         Vec3 dir = Balistica.dispersar(p.getViewVector(1.0F), disp, p.getRandom());
         Balistica.Tiro t = Balistica.trazar(l, p, p.getEyePosition(), dir, alcance, boca(p, 0.8, 0.3, 0.22), estela);
         if (t.entidad() != null) {
@@ -378,17 +492,39 @@ public abstract class ArmaFuegoItem extends Item {
 
     @Override
     public int getEnchantmentValue() {
-        return 1;
+        return 12;
+    }
+
+    @Override
+    public boolean isValidRepairItem(ItemStack s, ItemStack material) {
+        return material.is(net.minecraft.world.item.Items.COPPER_INGOT);
+    }
+
+    @Override
+    public Component getName(ItemStack s) {
+        return Cobre.nombre(Component.translatable(getDescriptionId(s)), s, femenino());
+    }
+
+    /** En el inventario, como un saco: un panal encima lo encera y un hacha lo rasca (clic derecho). */
+    @Override
+    public boolean overrideOtherStackedOnMe(ItemStack s, ItemStack otro, net.minecraft.world.inventory.Slot slot, net.minecraft.world.inventory.ClickAction a,
+                                            Player p, net.minecraft.world.entity.SlotAccess cursor) {
+        if (a != net.minecraft.world.inventory.ClickAction.SECONDARY || !slot.allowModification(p) || otro.isEmpty()) return false;
+        if (Cobre.esPanal(otro)) return Cobre.encerar(p, s, otro, null);
+        if (Cobre.esHacha(otro)) return Cobre.rascar(p, s, otro, null);
+        return false;
     }
 
     @Override
     public void appendHoverText(ItemStack s, @Nullable Level level, List<Component> l, TooltipFlag f) {
-        l.add(Component.translatable("msg.miscelanea.armafuego.balas", balas(s), capacidad(), iconoMunicion().getHoverName()).withStyle(ChatFormatting.GOLD));
+        l.add(Component.translatable("msg.miscelanea.armafuego.balas", balas(s), capacidad(s), iconoMunicion(s).getHoverName()).withStyle(ChatFormatting.GOLD));
+        l.add(Cobre.estado(s));
         if (atascada(s)) l.add(Component.translatable("msg.miscelanea.armafuego.atascada").withStyle(ChatFormatting.RED));
         String id = getDescriptionId();
         l.add(Component.translatable(id + ".ayuda1").withStyle(ChatFormatting.GRAY));
         l.add(Component.translatable(id + ".ayuda2").withStyle(ChatFormatting.DARK_GRAY));
         l.add(Component.translatable("msg.miscelanea.armafuego.ayuda_recarga").withStyle(ChatFormatting.DARK_GRAY));
+        l.add(Component.translatable("msg.miscelanea.armafuego.ayuda_cobre").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     @Override

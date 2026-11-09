@@ -3,6 +3,7 @@
  "gui_light": "front",
  "ambientocclusion": false,
  "textures": {
+  "cobre": "miscelanea:item/armas3d/g_cobre_0",
   "hierro": "miscelanea:item/armas3d/g_hierro",
   "acero": "miscelanea:item/armas3d/g_acero",
   "laton": "miscelanea:item/armas3d/g_laton",

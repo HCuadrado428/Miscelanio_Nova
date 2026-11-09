@@ -1,0 +1,111 @@
+{
+  "parent": "miscelanea:armas/cofre",
+  "display": {
+    "icon": {
+      "item": "minecraft:oxidized_copper"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.patina.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.patina.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "gatling": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:gatling"
+            ],
+            "nbt": "{Oxido:3}"
+          }
+        ]
+      }
+    },
+    "winchester": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:winchester"
+            ],
+            "nbt": "{Oxido:3}"
+          }
+        ]
+      }
+    },
+    "derringer": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:derringer"
+            ],
+            "nbt": "{Oxido:3}"
+          }
+        ]
+      }
+    },
+    "thompson": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:thompson"
+            ],
+            "nbt": "{Oxido:3}"
+          }
+        ]
+      }
+    },
+    "mosquete": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:mosquete"
+            ],
+            "nbt": "{Oxido:3}"
+          }
+        ]
+      }
+    },
+    "canon_mano": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:canon_mano"
+            ],
+            "nbt": "{Oxido:3}"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "gatling",
+      "winchester",
+      "derringer",
+      "thompson",
+      "mosquete",
+      "canon_mano"
+    ]
+  ],
+  "rewards": {
+    "experience": 10
+  }
+}

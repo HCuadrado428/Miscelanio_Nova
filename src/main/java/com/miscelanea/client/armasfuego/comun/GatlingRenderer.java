@@ -25,6 +25,8 @@ import net.minecraftforge.client.model.data.ModelData;
 public class GatlingRenderer extends EntityRenderer<GatlingEntity> {
     public static final ResourceLocation BASE = rl("base"), YUGO = rl("yugo"), CUERPO = rl("cuerpo"), CANONES = rl("canones"), MANIVELA = rl("manivela");
     public static final ResourceLocation[] TODOS = {BASE, YUGO, CUERPO, CANONES, MANIVELA};
+    /** El cuerpo de cobre en cada fase del óxido (el 0 es CUERPO). */
+    public static final ResourceLocation[] CUERPOS = {rl("cuerpo_1"), rl("cuerpo_2"), rl("cuerpo_3")};
     /** Pivote del cabeceo y eje de los cañones (px del modelo) y eje de la manivela (y, z). */
     private static final float PIV_Y = 17.25F / 16F, PIV_Z = 8F / 16F, MAN_Y = 17.25F / 16F, MAN_Z = 12.5F / 16F;
 
@@ -57,7 +59,8 @@ public class GatlingRenderer extends EntityRenderer<GatlingEntity> {
         ps.translate(0.5, PIV_Y, PIV_Z);
         ps.mulPose(Axis.XP.rotationDegrees(-gx));
         ps.translate(-0.5, -PIV_Y, -PIV_Z);
-        dibujar(ps, buf, CUERPO, luz, 1, 1, 1);
+        int ox = e.oxido();
+        dibujar(ps, buf, ox <= 0 ? CUERPO : CUERPOS[Math.min(3, ox) - 1], luz, 1, 1, 1);
         // cañones: giran sobre su eje; con el calor, rojos y brillando
         ps.pushPose();
         ps.translate(0.5, PIV_Y, 0);

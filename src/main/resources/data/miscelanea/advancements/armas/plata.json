@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/winchester",
+  "display": {
+    "icon": {
+      "item": "miscelanea:bala_plata"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.plata.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.plata.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "winchester_plata": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "winchester_plata"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}
