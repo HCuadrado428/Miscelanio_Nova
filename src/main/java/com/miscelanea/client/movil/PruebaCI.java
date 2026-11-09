@@ -1397,6 +1397,8 @@ public final class PruebaCI {
     private static void rifle() {
         Minecraft mc = Minecraft.getInstance();
         sin("rifle_poner", 40, () -> {
+            // un menú abierto (cofre…) se cierra también en el servidor
+            if (mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>) mc.player.closeContainer();
             mc.setScreen(null);
             mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
             mc.options.hideGui = false;
@@ -2539,7 +2541,12 @@ public final class PruebaCI {
             // el enfriamiento de la reventada es del objeto (de todas las escopetas de presión): fuera para seguir
             sp.getCooldowns().removeCooldown(s.getItem());
         }));
-        sin("esc_valvula_bombear", 30, () -> mantenerUso = true);
+        // mirando al cielo: tras el empujón de la reventada a veces quedaba mirando un cofre y el clic derecho mantenido
+        // lo abría (y con el cofre abierto en el servidor, el inventario ya no llegaba al cliente en los pasos del rifle)
+        sin("esc_valvula_bombear", 30, () -> {
+            mc.player.setXRot(-75F);
+            mantenerUso = true;
+        });
         sin("esc_valvula_chk", 5, () -> {
             mantenerUso = false;
             mc.options.keyUse.setDown(false);
