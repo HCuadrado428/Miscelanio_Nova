@@ -51,6 +51,8 @@ public final class Habitantes {
     }
 
     static void escuchar(ServerPlayer p) {
+        // con el "No molestar" de la llave del hotel colgado no se le oye
+        if (com.miscelanea.purgatorio.eventos.PurgatorioExtras.noMolestar(p)) return;
         Vec3 ahora = p.position(), antes = ANTES.put(p.getUUID(), ahora);
         double andado = antes == null ? 0 : Math.sqrt(Math.pow(ahora.x - antes.x, 2) + Math.pow(ahora.z - antes.z, 2));
         if (andado > 8) andado = 0;            // se ha teletransportado (o le han recolocado): eso no hace ruido

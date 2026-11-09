@@ -1,0 +1,28 @@
+{
+ "display": {
+  "icon": {
+   "item": "minecraft:player_head"
+  },
+  "title": {
+   "translate": "advancements.miscelanea.purgatorio.herobrine.title"
+  },
+  "description": {
+   "translate": "advancements.miscelanea.purgatorio.herobrine.description"
+  },
+  "frame": "task",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": true
+ },
+ "parent": "miscelanea:purgatorio/pillado",
+ "criteria": {
+  "pegar": {
+   "trigger": "minecraft:impossible"
+  }
+ },
+ "requirements": [
+  [
+   "pegar"
+  ]
+ ]
+}

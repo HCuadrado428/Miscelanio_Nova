@@ -1,0 +1,28 @@
+{
+ "display": {
+  "icon": {
+   "item": "miscelanea:tique_turno"
+  },
+  "title": {
+   "translate": "advancements.miscelanea.purgatorio.turno.title"
+  },
+  "description": {
+   "translate": "advancements.miscelanea.purgatorio.turno.description"
+  },
+  "frame": "task",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": false
+ },
+ "parent": "miscelanea:purgatorio/rincones",
+ "criteria": {
+  "canjear": {
+   "trigger": "minecraft:impossible"
+  }
+ },
+ "requirements": [
+  [
+   "canjear"
+  ]
+ ]
+}

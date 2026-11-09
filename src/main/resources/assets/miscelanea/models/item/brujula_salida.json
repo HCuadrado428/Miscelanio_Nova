@@ -1,0 +1,104 @@
+{
+ "parent": "minecraft:item/generated",
+ "textures": {
+  "layer0": "miscelanea:item/brujula_salida_00"
+ },
+ "overrides": [
+  {
+   "predicate": {
+    "angle": 0.03125
+   },
+   "model": "miscelanea:item/brujula_salida_01"
+  },
+  {
+   "predicate": {
+    "angle": 0.09375
+   },
+   "model": "miscelanea:item/brujula_salida_02"
+  },
+  {
+   "predicate": {
+    "angle": 0.15625
+   },
+   "model": "miscelanea:item/brujula_salida_03"
+  },
+  {
+   "predicate": {
+    "angle": 0.21875
+   },
+   "model": "miscelanea:item/brujula_salida_04"
+  },
+  {
+   "predicate": {
+    "angle": 0.28125
+   },
+   "model": "miscelanea:item/brujula_salida_05"
+  },
+  {
+   "predicate": {
+    "angle": 0.34375
+   },
+   "model": "miscelanea:item/brujula_salida_06"
+  },
+  {
+   "predicate": {
+    "angle": 0.40625
+   },
+   "model": "miscelanea:item/brujula_salida_07"
+  },
+  {
+   "predicate": {
+    "angle": 0.46875
+   },
+   "model": "miscelanea:item/brujula_salida_08"
+  },
+  {
+   "predicate": {
+    "angle": 0.53125
+   },
+   "model": "miscelanea:item/brujula_salida_09"
+  },
+  {
+   "predicate": {
+    "angle": 0.59375
+   },
+   "model": "miscelanea:item/brujula_salida_10"
+  },
+  {
+   "predicate": {
+    "angle": 0.65625
+   },
+   "model": "miscelanea:item/brujula_salida_11"
+  },
+  {
+   "predicate": {
+    "angle": 0.71875
+   },
+   "model": "miscelanea:item/brujula_salida_12"
+  },
+  {
+   "predicate": {
+    "angle": 0.78125
+   },
+   "model": "miscelanea:item/brujula_salida_13"
+  },
+  {
+   "predicate": {
+    "angle": 0.84375
+   },
+   "model": "miscelanea:item/brujula_salida_14"
+  },
+  {
+   "predicate": {
+    "angle": 0.90625
+   },
+   "model": "miscelanea:item/brujula_salida_15"
+  },
+  {
+   "predicate": {
+    "angle": 0.96875
+   },
+   "model": "miscelanea:item/brujula_salida"
+  }
+ ]
+}

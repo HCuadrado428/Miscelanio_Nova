@@ -166,6 +166,7 @@ public class Purgado extends PathfinderMob {
         l.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.PURGADO_PURGA.get(), SoundSource.HOSTILE, 1.2F, 1F);
         l.sendParticles(ParticleTypes.SMOKE, getX(), getY() + 1, getZ(), 30, 0.3, 0.6, 0.3, 0.02);
         p.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 50, 0, false, false));
+        com.miscelanea.purgatorio.eventos.PurgatorioExtras.pillado(p);   // logros
         Purgatorio.recolocar(p);
         p.displayClientMessage(Component.translatable("purgatorio.miscelanea.purgado"), true);
         discard();

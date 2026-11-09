@@ -146,13 +146,15 @@ public class RecreativaBlock extends BaseEntityBlock {
     public static boolean gastarFicha(Player p) {
         var inv = p.getInventory();
         ItemStack mano = p.getMainHandItem();
+        // la ficha infinita del Purgatorio vale y no se gasta
+        if (mano.getItem() instanceof com.miscelanea.purgatorio.eventos.FichaInfinitaItem) return true;
         if (esFicha(mano)) {
             mano.shrink(1);
             return true;
         }
         for (int i = 0; i < inv.getContainerSize(); i++)
             if (esFicha(inv.getItem(i))) {
-                inv.getItem(i).shrink(1);
+                if (!(inv.getItem(i).getItem() instanceof com.miscelanea.purgatorio.eventos.FichaInfinitaItem)) inv.getItem(i).shrink(1);
                 return true;
             }
         return false;
