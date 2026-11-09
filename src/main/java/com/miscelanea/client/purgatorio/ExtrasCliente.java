@@ -12,9 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.player.RemotePlayer;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.item.CompassItemPropertyFunction;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.DefaultPlayerSkin;
@@ -38,7 +35,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -63,7 +59,7 @@ import java.util.UUID;
  *       repite, lejos y con posición.</li>
  *   <li><b>Jugadores fantasma</b> (uno cada 45-120 s, como mucho dos a la vez): a lo lejos, dentro de la niebla, alguien
  *       con el nombre y la skin de gente del servidor que no está aquí (o con un nombre inventado), quieto mirándote o
- *       andando. Si te acercas o lo miras fijamente un rato, ya no está. Solo se dibuja: no es una entidad del mundo.</li>
+ *       andando. Si te acercas o lo miras fijamente un rato, ya no está. Solo existe en el mundo de tu cliente (el servidor no sabe nada de él).</li>
  * </ul>
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
@@ -102,6 +98,7 @@ public final class ExtrasCliente {
 
     // ------------------------------------------------------------------ estado
     private static int edad, proxChat = 1600, proxSonido = 900, proxFantasma = 500;
+    private static int siguienteId;
     private static int chats, sonidos, fantasmasVistos, fantasmasSalidos;
     private static Object nivel;
     private record Programado(int t, Runnable r) {}
@@ -136,6 +133,7 @@ public final class ExtrasCliente {
             COLA.clear();
         }
         if (!aqui(mc)) {
+            for (Fantasma f : FANTASMAS) quitar(mc, f);
             FANTASMAS.clear();
             COLA.clear();
             return;
@@ -157,7 +155,7 @@ public final class ExtrasCliente {
             if (FANTASMAS.isEmpty() || (FANTASMAS.size() < 2 && r.nextInt(4) == 0)) aparecer(mc, r, null, null, false);
         }
         for (int i = FANTASMAS.size() - 1; i >= 0; i--)
-            if (!FANTASMAS.get(i).tick(mc, r)) FANTASMAS.remove(i);
+            if (!FANTASMAS.get(i).tick(mc, r)) quitar(mc, FANTASMAS.remove(i));
     }
 
     // ------------------------------------------------------------------ chat corrupto
@@ -289,7 +287,7 @@ public final class ExtrasCliente {
     /** Pieles ya buscadas: uuid → {piel, "slim"/"default"}. */
     private static final Map<UUID, Object[]> PIELES = new HashMap<>();
 
-    /** Un jugador de mentira con el perfil de alguien: solo se dibuja (no se mete en el mundo). */
+    /** Un jugador de mentira con el perfil de alguien, solo en el mundo de este cliente. */
     static final class Sombra extends RemotePlayer {
         Sombra(ClientLevel l, GameProfile g) {
             super(l, g);
@@ -355,10 +353,6 @@ public final class ExtrasCliente {
             xo = x;
             yo = y;
             zo = z;
-            s.setOldPosAndRot();
-            s.yBodyRotO = s.yBodyRot;
-            s.yHeadRotO = s.yHeadRot;
-            s.tickCount++;
             double dx = p.getX() - x, dz = p.getZ() - z, dist = Math.sqrt(dx * dx + dz * dz);
             Vec3 ojo = p.getEyePosition();
             Vec3 hacia = new Vec3(x, y + 1.5, z).subtract(ojo).normalize();
@@ -394,15 +388,14 @@ public final class ExtrasCliente {
             float yaw;
             if (anda) yaw = rumbo;
             else yaw = (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) - 90F;
-            s.setYRot(yaw);
             s.yBodyRot = Mth.approachDegrees(s.yBodyRot, yaw, 6F);
             float cabeza = (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) - 90F;
             // la cabeza te sigue un poco aunque ande (no más de 50 grados del cuerpo)
             s.yHeadRot = s.yBodyRot + Mth.clamp(Mth.wrapDegrees(cabeza - s.yBodyRot), -50F, 50F);
             double dy = p.getEyeY() - (y + 1.62);
-            s.setXRot(Mth.clamp((float) -(Mth.atan2(dy, Math.max(dist, 0.5)) * Mth.RAD_TO_DEG), -40F, 40F));
-            s.walkAnimation.update((float) Math.min(paso * 4, 1), 0.4F);
-            s.setPos(x, y, z);
+            float cabeceo = Mth.clamp((float) -(Mth.atan2(dy, Math.max(dist, 0.5)) * Mth.RAD_TO_DEG), -40F, 40F);
+            // el mundo del cliente lo mueve (y calcula el paso de andar) hacia aquí
+            s.lerpTo(x, y, z, yaw, cabeceo, 2, false);
             return true;
         }
 
@@ -468,9 +461,10 @@ public final class ExtrasCliente {
             proxFantasma = Integer.MAX_VALUE;
             return false;
         }
-        s.setId(-7000 - (edad & 0x3FF));
+        s.setId(-7000 - (siguienteId++ & 0x3FF));
         buscarPiel(mc, g);
         Fantasma f = new Fantasma(s, sitio.x, sitio.y, sitio.z);
+        s.moveTo(sitio.x, sitio.y, sitio.z, 0, 0);
         f.fijo = fijo;
         // la mitad andan (cruzando, de lado), la otra mitad se quedan quietos mirándote
         if (!fijo && r.nextBoolean()) {
@@ -482,6 +476,14 @@ public final class ExtrasCliente {
         s.setYRot(f.anda ? f.rumbo : yaw);
         s.yBodyRot = s.yBodyRotO = s.getYRot();
         s.yHeadRot = s.yHeadRotO = yaw;
+        try {
+            // solo en el mundo de este cliente: el servidor no sabe nada de él
+            l.addPlayer(s.getId(), s);
+        } catch (Exception ex) {
+            Miscelanea.LOGGER.warn("Purgatorio: no se pudo meter un jugador fantasma", ex);
+            proxFantasma = Integer.MAX_VALUE;
+            return false;
+        }
         FANTASMAS.add(f);
         fantasmasSalidos++;
         return true;
@@ -499,30 +501,8 @@ public final class ExtrasCliente {
         return FANTASMAS.isEmpty() ? null : new Vec3(FANTASMAS.get(0).x, FANTASMAS.get(0).y, FANTASMAS.get(0).z);
     }
 
-    @SubscribeEvent
-    public static void dibujar(RenderLevelStageEvent e) {
-        if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_ENTITIES || FANTASMAS.isEmpty()) return;
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null) return;
-        float pt = e.getPartialTick();
-        Vec3 cam = e.getCamera().getPosition();
-        MultiBufferSource.BufferSource bs = mc.renderBuffers().bufferSource();
-        EntityRenderDispatcher rd = mc.getEntityRenderDispatcher();
-        rd.setRenderShadow(false);
-        try {
-            for (Fantasma f : FANTASMAS) {
-                double x = Mth.lerp(pt, f.xo, f.x), y = Mth.lerp(pt, f.yo, f.y), z = Mth.lerp(pt, f.zo, f.z);
-                int luz = LevelRenderer.getLightColor(mc.level, BlockPos.containing(x, y + 1.0, z));
-                rd.render(f.s, x - cam.x, y - cam.y, z - cam.z, f.s.getYRot(), pt, e.getPoseStack(), bs, luz);
-            }
-        } catch (Exception ex) {
-            Miscelanea.LOGGER.warn("Purgatorio: fallo al dibujar un jugador fantasma; se dejan de sacar", ex);
-            FANTASMAS.clear();
-            proxFantasma = Integer.MAX_VALUE;
-        } finally {
-            rd.setRenderShadow(true);
-            bs.endBatch();
-        }
+    private static void quitar(Minecraft mc, Fantasma f) {
+        if (mc.level != null && mc.level.getEntity(f.s.getId()) == f.s) mc.level.removeEntity(f.s.getId(), net.minecraft.world.entity.Entity.RemovalReason.DISCARDED);
     }
 
     // ------------------------------------------------------------------ la brújula de salida

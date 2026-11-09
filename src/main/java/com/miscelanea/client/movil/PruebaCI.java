@@ -1490,7 +1490,22 @@ public final class PruebaCI {
             }
             RESUMEN.add(b.toString());
         }));
-        paso("4o_purgatorio_objetos_raros", 30, () -> enServidor(sp -> sp.connection.teleport(sp.getX(), sp.getY(), sp.getZ(), sp.getYRot() + 180, 30)));
+        // para la foto: a tres bloques del primero, mirándolos
+        sin("pex_raros_mirar", 30, () -> enServidor(sp -> {
+            var l = sp.serverLevel();
+            var lista = l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, sp.getBoundingBox().inflate(16),
+                    ie -> ie.getItem().hasTag() && ie.getItem().getTag().getBoolean(com.miscelanea.purgatorio.eventos.ObjetosRaros.MARCA));
+            if (lista.isEmpty()) return;
+            var ie = lista.get(0);
+            for (int[] d : new int[][]{{-3, 0}, {3, 0}, {0, -3}, {0, 3}}) {
+                var q = com.miscelanea.purgatorio.eventos.PurgatorioExtras.libreCerca(l, ie.getBlockX() + d[0], ie.getBlockY(), ie.getBlockZ() + d[1], 0);
+                if (q == null) continue;
+                double dx = ie.getX() - (q.getX() + 0.5), dz = ie.getZ() - (q.getZ() + 0.5);
+                sp.teleportTo(l, q.getX() + 0.5, q.getY(), q.getZ() + 0.5, (float) Math.toDegrees(Math.atan2(-dx, dz)), 45);
+                return;
+            }
+        }));
+        paso("4o_purgatorio_objetos_raros", 10, () -> {});
         sin("pex_raros_coger", 30, () -> enServidor(sp -> {
             var l = sp.serverLevel();
             var lista = l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, sp.getBoundingBox().inflate(16),
