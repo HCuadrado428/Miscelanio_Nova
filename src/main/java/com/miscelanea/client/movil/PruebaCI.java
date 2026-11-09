@@ -1008,7 +1008,16 @@ public final class PruebaCI {
             mc.player.getInventory().selected = 0;
             piApuntar(piPunto(6, 0, 1.3));
         });
-        paso("103_bala_desenfunde", 3, piTiro());
+        paso("103_bala_desenfunde", 3, () -> {
+            // el servidor mira con la vista de ahora y cuenta el desenfunde desde ya (a pocos fps se pasaba la ventana)
+            float y = mc.player.getYRot(), x = mc.player.getXRot();
+            piSrv(sp -> {
+                sp.setYRot(y);
+                sp.setXRot(x);
+                com.miscelanea.armasfuego.pistola.Revolver.desenfundePrueba(sp);
+            });
+            piDisparar();
+        });
         sin("pistola_bala_ver", 8, () -> piSrv(sp -> {
             var h = piHusk(sp);
             PI.put("vida1", h == null ? -1F : h.getHealth());
@@ -1020,10 +1029,16 @@ public final class PruebaCI {
             piApuntar(piPunto(6, 5, 1.2));   // el reflejo del husk en la pared de cobre
         });
         // ---- Carambola: la bala rebota en el cobre y da al husk
-        sin("pistola_carambola_traza", 4, () -> piSrv(sp -> {
+        sin("pistola_carambola_traza", 4, () -> {
+          float cy = mc.player.getYRot(), cx = mc.player.getXRot();
+          piSrv(sp -> {
+            // la vista del servidor puede ir por detrás de la del cliente (con shaders): se pone la de ahora
+            sp.setYRot(cy);
+            sp.setXRot(cx);
             var im = com.miscelanea.armasfuego.pistola.Revolver.trazar(sp.serverLevel(), sp, sp.getEyePosition(), sp.getViewVector(1F), 64, 1, sp.getEyePosition());
             PI.put("traza", im.rebotes() + " rebote(s), da a " + (im.entidad() == null ? "nada" : im.entidad().getType().toShortString()));
-        }));
+          });
+        });
         paso("104_carambola", 3, piTiro());
         sin("pistola_carambola_ver", 8, () -> piSrv(sp -> {
             var h = piHusk(sp);
@@ -2337,7 +2352,7 @@ public final class PruebaCI {
             piApuntar(a2Punto(8, 0, 1.2));
             a2Vida("m0");
         });
-        paso("240_mosquete_1p", 4, () -> {});
+        paso("240_mosquete_1p", 10, () -> {});
         sin("a2_mosquete_gatillo", 1, piTiro());
         paso("241_mosquete_cazoleta", 1, () -> {});
         paso("242_mosquete_humo", 6, () -> {});
@@ -2386,7 +2401,7 @@ public final class PruebaCI {
             piApuntar(a2Punto(8, 0, 1.6));
             a2Vida("c0");
         });
-        paso("250_canon_1p", 4, () -> {});
+        paso("250_canon_1p", 10, () -> {});
         paso("251_canon_mecha", 14, piTiro());
         paso("252_canon_disparo", 18, () -> piApuntar(a2Punto(8, 0, 1.6)));
         sin("a2_canon_esperar", 10, () -> {});

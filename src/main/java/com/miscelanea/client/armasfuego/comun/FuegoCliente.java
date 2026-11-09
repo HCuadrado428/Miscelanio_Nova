@@ -147,9 +147,11 @@ public final class FuegoCliente {
                 ps.translate(0, -0.06F * entra + Mth.sin(tUso * 1.9F) * 0.015F, 0.02F * entra);
                 girar(ps, lado, Axis.ZP.rotationDegrees(lado * 30F * entra));
             } else {
-                ps.translate(lado * -0.1F * entra, 0.06F * entra - 0.025F * golpe, -0.02F * entra);
-                girar(ps, lado, Axis.ZP.rotationDegrees(lado * 22F * entra));
+                // sube, se gira de costado (se ven la portilla y la palanca, o el brocal del tambor) y se ladea un poco
+                ps.translate(lado * -0.15F * entra, 0.16F * entra - 0.02F * golpe, -0.04F * entra);
+                girar(ps, lado, Axis.YP.rotationDegrees(lado * 35F * entra));
                 girar(ps, lado, Axis.XP.rotationDegrees(-8F * entra + 4F * golpe));
+                girar(ps, lado, Axis.ZP.rotationDegrees(lado * 12F * entra));
             }
         }
         // la palanca de la Winchester: a pie, el arma baja un poco; a caballo, un giro entero (spin-cock)
