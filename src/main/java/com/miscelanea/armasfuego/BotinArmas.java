@@ -52,7 +52,7 @@ public class BotinArmas extends LootModifier {
         super(condiciones);
     }
 
-    public enum Arma {REVOLVER, ESCOPETA, RIFLE}
+    public enum Arma {REVOLVER, ESCOPETA, RIFLE, GATLING, WINCHESTER, DERRINGER, THOMPSON, MOSQUETE, CANON}
 
     /** Qué arma puede salir en esa tabla de botín (null: ninguna). */
     public static Arma arma(ResourceLocation id) {
@@ -61,7 +61,22 @@ public class BotinArmas extends LootModifier {
         if (p.equals("chests/pillager_outpost")) return Arma.RIFLE;
         if (p.startsWith("chests/shipwreck_")) return Arma.ESCOPETA;
         if (p.startsWith("chests/village/") && probabilidad(id) > 0) return Arma.REVOLVER;
-        return null;
+        return armaNueva(p);
+    }
+
+    /** Segunda tanda: cada una en una estructura distinta (sin mirar la probabilidad: la usa probabilidad()). */
+    private static Arma armaNueva(String p) {
+        switch (p) {
+            case "chests/desert_pyramid": return Arma.GATLING;
+            case "chests/abandoned_mineshaft": return Arma.WINCHESTER;
+            case "chests/buried_treasure": return Arma.DERRINGER;
+            case "chests/woodland_mansion": return Arma.THOMPSON;
+            case "chests/stronghold_corridor":
+            case "chests/stronghold_crossing": return Arma.MOSQUETE;
+            case "chests/bastion_other":
+            case "chests/bastion_bridge": return Arma.CANON;
+            default: return null;
+        }
     }
 
     /** Probabilidad de que el arma salga en un cofre de esa tabla. */
@@ -69,6 +84,16 @@ public class BotinArmas extends LootModifier {
         String p = id.getPath();
         if (p.equals("chests/pillager_outpost")) return ConfigServidor.botinRifle();
         if (p.startsWith("chests/shipwreck_")) return ConfigServidor.botinEscopeta();
+        Arma a = armaNueva(p);
+        if (a != null) switch (a) {
+            case GATLING: return com.miscelanea.armasfuego.comun.EquilibrioArmas.botinGatling();
+            case WINCHESTER: return com.miscelanea.armasfuego.comun.EquilibrioArmas.botinWinchester();
+            case DERRINGER: return com.miscelanea.armasfuego.comun.EquilibrioArmas.botinDerringer();
+            case THOMPSON: return com.miscelanea.armasfuego.comun.EquilibrioArmas.botinThompson();
+            case MOSQUETE: return com.miscelanea.armasfuego.comun.EquilibrioArmas.botinMosquete();
+            case CANON: return com.miscelanea.armasfuego.comun.EquilibrioArmas.botinCanon();
+            default: break;
+        }
         if (p.startsWith("chests/village/")) {
             String n = p.substring("chests/village/".length());
             if (n.equals("village_armorer") || n.equals("village_toolsmith") || n.equals("village_weaponsmith"))
@@ -101,7 +126,7 @@ public class BotinArmas extends LootModifier {
                 if (oxido > 0) arma.getOrCreateTag().putInt(com.miscelanea.armasfuego.pistola.Tambor.OXIDO, oxido);
                 l.add(new ItemStack(ModItems.REVOLVER_BALA.get(), 3 + r.nextInt(6)));
                 if (r.nextFloat() < 0.35F) {
-                    var raras = List.of(ModItems.REVOLVER_BENGALA, ModItems.REVOLVER_DARDO, ModItems.REVOLVER_FOGUEO, ModItems.REVOLVER_IMAN);
+                    var raras = List.of(ModItems.REVOLVER_BENGALA, ModItems.REVOLVER_DARDO, ModItems.REVOLVER_FOGUEO, ModItems.REVOLVER_IMAN, ModItems.REVOLVER_TIEMPO);
                     l.add(new ItemStack(raras.get(r.nextInt(raras.size())).get(), 1 + r.nextInt(3)));
                 }
             }
@@ -112,12 +137,48 @@ public class BotinArmas extends LootModifier {
                 l.add(new ItemStack(com.miscelanea.armasfuego.escopeta.TipoCartucho.GRAVA.item(), 2 + r.nextInt(5)));
                 if (r.nextFloat() < 0.4F) l.add(new ItemStack(tipos[r.nextInt(tipos.length)].item(), 1 + r.nextInt(3)));
             }
+            case GATLING -> {
+                arma = new ItemStack(ModItems.GATLING.get());
+                l.add(new ItemStack(ModItems.CINTA_GATLING.get(), 1 + r.nextInt(2)));
+            }
+            case WINCHESTER -> {
+                arma = new ItemStack(ModItems.WINCHESTER.get());
+                com.miscelanea.armasfuego.comun.ArmaFuegoItem.ponerBalas(arma, r.nextInt(5));
+                l.add(new ItemStack(ModItems.REVOLVER_BALA.get(), 6 + r.nextInt(7)));
+            }
+            case DERRINGER -> {
+                arma = new ItemStack(ModItems.DERRINGER.get());
+                com.miscelanea.armasfuego.comun.ArmaFuegoItem.ponerBalas(arma, 2);
+                l.add(new ItemStack(ModItems.BALA_DERRINGER.get(), 4 + r.nextInt(5)));
+            }
+            case THOMPSON -> {
+                // sale dentro de su estuche de violín, claro
+                ItemStack t = new ItemStack(ModItems.THOMPSON.get());
+                com.miscelanea.armasfuego.comun.ArmaFuegoItem.ponerBalas(t, 10 + r.nextInt(30));
+                l.add(new ItemStack(ModItems.CARGADOR_THOMPSON.get(), 1));
+                l.add(0, com.miscelanea.armasfuego.oeste.EstucheViolinItem.con(t));
+                return l;
+            }
+            case MOSQUETE -> {
+                arma = new ItemStack(ModItems.MOSQUETE.get());
+                l.add(new ItemStack(ModItems.BOLA_MOSQUETE.get(), 4 + r.nextInt(6)));
+                l.add(new ItemStack(net.minecraft.world.item.Items.GUNPOWDER, 2 + r.nextInt(4)));
+            }
+            case CANON -> {
+                arma = new ItemStack(ModItems.CANON_MANO.get());
+                l.add(new ItemStack(net.minecraft.world.item.Items.GUNPOWDER, 4 + r.nextInt(5)));
+            }
             default -> {
                 arma = new ItemStack(ModItems.RIFLE.get());
                 if (oxido > 0) arma.getOrCreateTag().putInt(com.miscelanea.armasfuego.rifle.Rifle.OXIDO, oxido);
                 l.add(new ItemStack(ModItems.BALA_RIFLE.get(), 4 + r.nextInt(7)));
                 if (r.nextFloat() < 0.25F) l.add(new ItemStack(ModItems.BALA_TRAZADORA.get(), 2 + r.nextInt(3)));
                 if (r.nextFloat() < 0.2F) l.add(new ItemStack(ModItems.BALA_CUERDA.get(), 1 + r.nextInt(2)));
+                if (r.nextFloat() < 0.15F) {
+                    ItemStack pin = com.miscelanea.armasfuego.rifle.Pintura.bala(r.nextInt(16));
+                    pin.setCount(2 + r.nextInt(3));
+                    l.add(pin);
+                }
             }
         }
         if (r.nextDouble() < ConfigServidor.botinEncantada()) {

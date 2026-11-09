@@ -67,7 +67,9 @@ public final class Revolver {
 
     /** Parte del daño de la bala que se salta la armadura (equilibrio de armaduras: pistola 15 %). */
     public static final float PERFORACION = 0.15F;
-    public static final float DANO_BALA = 7.0F, DANO_IMAN = 3.0F, DANO_DARDO = 1.0F, CRITICO = 1.75F;
+    public static final float DANO_IMAN = 3.0F, DANO_DARDO = 1.0F, DANO_TIEMPO = 2.0F, CRITICO = 1.75F;
+    /** Casquillos gastados en el tambor (salen al recargar) y la hora de la última recarga (animación del tambor abierto). */
+    public static final String GASTADAS = "Gastadas", CARGA_T = "CargaT";
     public static final double ALCANCE = 64;
     public static final int ENFRIAMIENTO = 7, VENTANA_DESENFUNDE = 20, USOS_POR_OXIDO = 40;
     /** Dispersión (radianes, gaussiana) y probabilidad de que se encasquille, según el óxido. */
@@ -114,7 +116,7 @@ public final class Revolver {
             return true;
         }
         int ox = Tambor.oxido(s);
-        if (r.nextFloat() < ENCASQUILLA[ox]) {
+        if (r.nextFloat() < ENCASQUILLA[ox] + com.miscelanea.armasfuego.comun.EquilibrioArmas.encasquilladoBase()) {
             // encasquillado: la bala se queda en su recámara
             l.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.REVOLVER_VACIO.get(), SoundSource.PLAYERS, 0.9F, 0.7F);
             l.sendParticles(ParticleTypes.SMOKE, boca.x, boca.y, boca.z, 3, 0.03, 0.03, 0.03, 0.01);
@@ -123,6 +125,7 @@ public final class Revolver {
             return true;
         }
         Tambor.poner(s, pos, Carga.VACIA);
+        s.getOrCreateTag().putInt(GASTADAS, Math.min(Tambor.N, s.getOrCreateTag().getInt(GASTADAS) + 1));
         oxidar(p, s);
 
         boolean critico = false;
@@ -142,7 +145,7 @@ public final class Revolver {
             l.gameEvent(p, GameEvent.EXPLODE, boca);
         } else {
             l.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.REVOLVER_DISPARO.get(), SoundSource.PLAYERS, 4.0F,
-                    (c == Carga.DARDO ? 1.25F : c == Carga.BENGALA ? 0.8F : 1.0F) + r.nextFloat() * 0.08F);
+                    (c == Carga.DARDO ? 1.25F : c == Carga.BENGALA ? 0.8F : c == Carga.TIEMPO ? 0.7F : 1.0F) + r.nextFloat() * 0.08F);
             l.gameEvent(p, GameEvent.PROJECTILE_SHOOT, boca);
         }
         if (critico) {
@@ -155,7 +158,7 @@ public final class Revolver {
             return true;
         }
         switch (c) {
-            case BALA, DARDO, IMAN -> {
+            case BALA, DARDO, IMAN, TIEMPO -> {
                 // la bala imán se pega donde da (no rebota): con Carambola se iba rebotando lejos de lo tirado
                 int rebotes = c == Carga.IMAN ? 0 : EncantamientoRevolver.nivel(ModEnchantments.REVOLVER_CARAMBOLA, s);
                 Impacto im = trazar(l, p, p.getEyePosition(), dir, ALCANCE, rebotes, boca);
@@ -186,6 +189,7 @@ public final class Revolver {
                 p.hurt(l.damageSources().onFire(), 2F);
             }
             case IMAN -> atraer(l, p, p.position());
+            case TIEMPO -> ralentizar(p);
             case FOGUEO -> {
                 com.miscelanea.logros.LogrosMiscelanea.dar(p, "revolver_ruleta_fogueo");
                 p.displayClientMessage(Component.translatable("pistola.miscelanea.ruleta.fogueo").withStyle(ChatFormatting.YELLOW), true);
@@ -244,7 +248,7 @@ public final class Revolver {
             if (v instanceof ServerPlayer otro) Duelo.impacto(p, otro);
             switch (c) {
                 case BALA -> {
-                    float d = DANO_BALA * (critico ? CRITICO : 1F);
+                    float d = com.miscelanea.armasfuego.comun.EquilibrioArmas.revolverDano() * (critico ? CRITICO : 1F);
                     if (herir(v, p, d)) {
                         Vec3 emp = v.position().subtract(p.position()).normalize();
                         v.knockback(0.25, -emp.x, -emp.z);
@@ -259,6 +263,11 @@ public final class Revolver {
                 case IMAN -> {
                     herir(v, p, DANO_IMAN * (critico ? CRITICO : 1F));
                     atraer(l, p, q);
+                }
+                case TIEMPO -> {
+                    herir(v, p, DANO_TIEMPO * (critico ? CRITICO : 1F));
+                    ralentizar(v);
+                    if (v != p) com.miscelanea.logros.LogrosMiscelanea.dar(p, "revolver_tiempo");
                 }
                 default -> {}
             }
@@ -313,6 +322,17 @@ public final class Revolver {
         if (!(v instanceof Player)) v.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 120, 0));
         if (v.level() instanceof ServerLevel l)
             l.sendParticles(ParticleTypes.EFFECT, v.getX(), v.getY() + v.getBbHeight() * 0.8, v.getZ(), 8, 0.25, 0.25, 0.25, 0.02);
+    }
+
+    /** Tiempo bala: lentitud muy fuerte, caída lenta y cansancio un rato (todo va a cámara lenta... salvo tu ego). */
+    public static void ralentizar(LivingEntity v) {
+        v.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, v instanceof Player ? 60 : 120, 3));
+        v.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 60, 0));
+        v.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, 100, 1));
+        if (v.level() instanceof ServerLevel l) {
+            l.sendParticles(ParticleTypes.END_ROD, v.getX(), v.getY() + v.getBbHeight() * 0.6, v.getZ(), 10, 0.3, 0.4, 0.3, 0.01);
+            l.playSound(null, v.getX(), v.getY(), v.getZ(), ModSounds.TIEMPO_BALA.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+        }
     }
 
     /** Bala de fogueo: los animales de alrededor salen corriendo (como cuando les pegas, pero sin pegarles). */
@@ -376,7 +396,7 @@ public final class Revolver {
     private static void fogonazo(ServerLevel l, Vec3 b, Vec3 mira, boolean grande) {
         // un poco por delante de la boca: pegado a la cámara tapaba toda la pantalla
         Vec3 q = b.add(mira.scale(0.7));
-        l.sendParticles(ParticleTypes.FLASH, q.x, q.y, q.z, 1, 0, 0, 0, 0);
+        l.sendParticles(com.miscelanea.armasfuego.comun.ArmasFuegoRegistro.FOGONAZO.get(), q.x, q.y, q.z, grande ? 3 : 1, 0.02, 0.02, 0.02, 0);
         l.sendParticles(ParticleTypes.SMOKE, q.x, q.y, q.z, grande ? 5 : 2, 0.04, 0.04, 0.04, 0.01);
         if (grande) {
             l.sendParticles(ParticleTypes.FLAME, q.x, q.y, q.z, 2, 0.03, 0.03, 0.03, 0.02);
@@ -464,6 +484,11 @@ public final class Revolver {
         }
         Tambor.poner(s, hueco, c);
         if (!p.getAbilities().instabuild) municion.shrink(1);
+        s.getOrCreateTag().putLong(CARGA_T, l.getGameTime());
+        // se abre el tambor y caen los casquillos gastados
+        int gastadas = s.getOrCreateTag().getInt(GASTADAS);
+        for (int i = 0; i < gastadas; i++) com.miscelanea.armasfuego.comun.ArmaFuegoItem.casquillo(l, p, boca(p).add(0, -0.1, 0));
+        s.getOrCreateTag().remove(GASTADAS);
         l.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.REVOLVER_CARGAR.get(), SoundSource.PLAYERS, 0.7F, 0.95F + p.getRandom().nextFloat() * 0.1F);
         return true;
     }

@@ -13,7 +13,9 @@ public enum Carga {
     BENGALA("bengala", ModItems.REVOLVER_BENGALA, 0xFFFF4A2A),
     DARDO("dardo", ModItems.REVOLVER_DARDO, 0xFF7BC248),
     FOGUEO("fogueo", ModItems.REVOLVER_FOGUEO, 0xFFF2EAD2),
-    IMAN("iman", ModItems.REVOLVER_IMAN, 0xFF4F7FE0);
+    IMAN("iman", ModItems.REVOLVER_IMAN, 0xFF4F7FE0),
+    /** Tiempo bala (1.1.0): lo que alcanza se queda a cámara lenta un rato. */
+    TIEMPO("tiempo", ModItems.REVOLVER_TIEMPO, 0xFF9B7BFF);
 
     public final String id;
     private final Supplier<Item> item;

@@ -1,0 +1,23 @@
+{
+ "loader": "forge:separate_transforms",
+ "gui_light": "front",
+ "textures": {
+  "particle": "miscelanea:item/revolver_erosionado"
+ },
+ "base": {
+  "parent": "miscelanea:item/armas3d/revolver_3d_abierto",
+  "textures": {
+   "cobre": "miscelanea:item/armas3d/cobre_2",
+   "tambor": "miscelanea:item/armas3d/tambor_frente_2",
+   "tambor_lado": "miscelanea:item/armas3d/tambor_lado_2"
+  }
+ },
+ "perspectives": {
+  "gui": {
+   "parent": "minecraft:item/generated",
+   "textures": {
+    "layer0": "miscelanea:item/revolver_erosionado"
+   }
+  }
+ }
+}

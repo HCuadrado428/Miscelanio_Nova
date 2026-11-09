@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/cofre",
+  "display": {
+    "icon": {
+      "item": "miscelanea:derringer"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.derringer.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.derringer.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "derringer_tahur": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "derringer_tahur"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 15
+  }
+}

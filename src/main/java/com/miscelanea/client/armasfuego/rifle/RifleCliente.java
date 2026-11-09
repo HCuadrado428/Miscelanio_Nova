@@ -108,6 +108,7 @@ public final class RifleCliente {
         // culatazo: la vista sube (menos con la mira puesta)
         float sube = p.isScoping() ? 1.6F : 4.5F;
         p.setXRot(Math.max(-90F, p.getXRot() - sube));
+        com.miscelanea.client.armasfuego.comun.FuegoCliente.patada(0F, p.isScoping() ? 2F : 5F, 0F);
         p.setYRot(p.getYRot() + (p.getRandom().nextFloat() - 0.5F) * sube * 0.4F);
         ultYaw = p.getYRot();
         ultPitch = p.getXRot();

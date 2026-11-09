@@ -1,0 +1,18 @@
+{
+ "loader": "forge:separate_transforms",
+ "gui_light": "front",
+ "textures": {
+  "particle": "miscelanea:item/estuche_violin"
+ },
+ "base": {
+  "parent": "miscelanea:item/armas3d/estuche_violin_3d"
+ },
+ "perspectives": {
+  "gui": {
+   "parent": "minecraft:item/generated",
+   "textures": {
+    "layer0": "miscelanea:item/estuche_violin"
+   }
+  }
+ }
+}

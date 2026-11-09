@@ -97,7 +97,7 @@ public final class EscopetaCliente {
         ModNetwork.CHANNEL.sendToServer(new DispararPresionPacket());
         // retroceso en la mira
         float f = Math.min(Presion.presion(s) / 100F, 1.3F);
-        p.setXRot(p.getXRot() - (Presion.tolva(s) == null ? 2F : 3F + 6F * f));
+        com.miscelanea.client.armasfuego.comun.FuegoCliente.patada(Presion.tolva(s) == null ? 2F : 3F + 6F * f, 4F + 4F * f, 1.2F);
     }
 
     // ---------------------------------------------------------------- pose y bombeo
@@ -110,7 +110,10 @@ public final class EscopetaCliente {
     }
 
     public static boolean mano(PoseStack ps, LocalPlayer pl, HumanoidArm brazo, ItemStack s, float pt, float equip) {
-        if (!pl.isUsingItem() || pl.getUseItem() != s) return false;
+        if (!pl.isUsingItem() || pl.getUseItem() != s) {
+            com.miscelanea.client.armasfuego.comun.FuegoCliente.culatazo(ps);
+            return false;
+        }
         int i = brazo == HumanoidArm.RIGHT ? 1 : -1;
         ps.translate(i * 0.56F, -0.52F + equip * -0.6F, -0.72F);
         float t = pl.getTicksUsingItem() + pt;

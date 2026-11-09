@@ -1,0 +1,160 @@
+{
+  "parent": "miscelanea:armas/cofre",
+  "display": {
+    "icon": {
+      "item": "miscelanea:winchester"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.coleccionista.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.coleccionista.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "revolver": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:revolver"
+            ]
+          }
+        ]
+      }
+    },
+    "escopeta_presion": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:escopeta_presion"
+            ]
+          }
+        ]
+      }
+    },
+    "rifle": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:rifle"
+            ]
+          }
+        ]
+      }
+    },
+    "gatling": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:gatling"
+            ]
+          }
+        ]
+      }
+    },
+    "winchester": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:winchester"
+            ]
+          }
+        ]
+      }
+    },
+    "derringer": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:derringer"
+            ]
+          }
+        ]
+      }
+    },
+    "thompson": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:thompson"
+            ]
+          }
+        ]
+      }
+    },
+    "mosquete": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:mosquete"
+            ]
+          }
+        ]
+      }
+    },
+    "canon_mano": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:canon_mano"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "revolver"
+    ],
+    [
+      "escopeta_presion"
+    ],
+    [
+      "rifle"
+    ],
+    [
+      "gatling"
+    ],
+    [
+      "winchester"
+    ],
+    [
+      "derringer"
+    ],
+    [
+      "thompson"
+    ],
+    [
+      "mosquete"
+    ],
+    [
+      "canon_mano"
+    ]
+  ],
+  "rewards": {
+    "experience": 50
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/cofre",
+  "display": {
+    "icon": {
+      "item": "miscelanea:winchester"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.winchester.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.winchester.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "winchester_disparo": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "winchester_disparo"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

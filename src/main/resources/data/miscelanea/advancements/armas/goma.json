@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/granjero",
+  "display": {
+    "icon": {
+      "item": "miscelanea:escopeta_cartucho_goma"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.goma.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.goma.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "escopeta_goma": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "escopeta_goma"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

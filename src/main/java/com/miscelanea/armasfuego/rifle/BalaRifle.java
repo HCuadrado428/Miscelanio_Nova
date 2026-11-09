@@ -54,7 +54,8 @@ public class BalaRifle extends Projectile {
     private static final EntityDataAccessor<Byte> TIPO = SynchedEntityData.defineId(BalaRifle.class, EntityDataSerializers.BYTE);
     private static final DustParticleOptions ESTELA = new DustParticleOptions(new Vector3f(1.0F, 0.55F, 0.15F), 0.9F);
 
-    private float dano = Rifle.DANO;
+    private float dano = 9F;
+    private int color;
     private int atraviesa;
     private boolean blandos, recto, silencio;
     private int tirolinero;
@@ -87,6 +88,10 @@ public class BalaRifle extends Projectile {
     @Override
     protected void defineSynchedData() {
         entityData.define(TIPO, (byte) 0);
+    }
+
+    public void ponerColor(int c) {
+        color = c;
     }
 
     public int tipo() {
@@ -224,7 +229,7 @@ public class BalaRifle extends Projectile {
     private void darA(Entity e, Vec3 punto, Vec3 v) {
         Entity dueno = getOwner();
         boolean cabeza = e instanceof LivingEntity && punto.y >= e.getEyeY() - 0.22;
-        float d = dano * (cabeza ? Rifle.CABEZA : 1F) * (tipo() == Rifle.CUERDA ? 0.4F : 1F);
+        float d = dano * (cabeza ? com.miscelanea.armasfuego.comun.EquilibrioArmas.rifleCabeza() : 1F) * (tipo() == Rifle.CUERDA ? 0.4F : tipo() == Rifle.PINTURA ? 0.25F : 1F);
         boolean entra = RifleDano.golpear(e, this, dueno, d);
         ServerLevel sl = (ServerLevel) level();
         if (entra && e instanceof LivingEntity le) {
@@ -232,6 +237,14 @@ public class BalaRifle extends Projectile {
             Vec3 h = new Vec3(v.x, 0, v.z);
             if (h.lengthSqr() > 1e-6) le.knockback(0.35, -h.x, -h.z);
             if (tipo() == Rifle.TRAZADORA) le.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200, 0, false, false), dueno);
+            if (tipo() == Rifle.PINTURA) {
+                sl.sendParticles(Pintura.polvo(color), punto.x, punto.y, punto.z, 16, 0.3, 0.3, 0.3, 0);
+                sl.playSound(null, punto.x, punto.y, punto.z, com.miscelanea.registry.ModSounds.PINTURA_SPLAT.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                if (le instanceof net.minecraft.world.entity.animal.Sheep oveja) {
+                    oveja.setColor(net.minecraft.world.item.DyeColor.byId(color));
+                    if (dueno instanceof ServerPlayer sp) com.miscelanea.logros.LogrosMiscelanea.dar(sp, "rifle_pintura");
+                }
+            }
         }
         if (cabeza) {
             sl.sendParticles(ParticleTypes.CRIT, punto.x, punto.y, punto.z, 10, 0.1, 0.1, 0.1, 0.3);
@@ -252,6 +265,11 @@ public class BalaRifle extends Projectile {
         if (tipo() == Rifle.TRAZADORA) {
             sl.sendParticles(ParticleTypes.GLOW, q.x, q.y, q.z, 14, 0.25, 0.25, 0.25, 0.02);
             sl.sendParticles(ParticleTypes.WAX_ON, q.x, q.y, q.z, 6, 0.2, 0.2, 0.2, 0.5);
+        }
+        if (tipo() == Rifle.PINTURA) {
+            int n = Pintura.pintar(sl, pos, color, q);
+            sl.playSound(null, pos, com.miscelanea.registry.ModSounds.PINTURA_SPLAT.get(), SoundSource.BLOCKS, 1.0F, 0.9F + sl.random.nextFloat() * 0.2F);
+            if (n >= 5 && getOwner() instanceof ServerPlayer sp) com.miscelanea.logros.LogrosMiscelanea.dar(sp, "rifle_pintura");
         }
         if (tipo() == Rifle.CUERDA) {
             Vec3 n = Vec3.atLowerCornerOf(bh.getDirection().getNormal());

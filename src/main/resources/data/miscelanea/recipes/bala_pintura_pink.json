@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "miscelanea:bala_rifle"
+    },
+    {
+      "item": "minecraft:pink_dye"
+    }
+  ],
+  "result": {
+    "item": "miscelanea:bala_pintura",
+    "count": 1,
+    "nbt": "{Color:6}"
+  }
+}

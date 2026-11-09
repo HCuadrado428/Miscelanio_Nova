@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/cofre",
+  "display": {
+    "icon": {
+      "item": "miscelanea:mosquete"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.mosquete.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.mosquete.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "mosquete_disparo": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "mosquete_disparo"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

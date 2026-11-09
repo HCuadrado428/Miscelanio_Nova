@@ -14,7 +14,9 @@ public enum TipoCartucho {
     MIEL("miel", 6, 0.3F, 0.7F, false),
     SAL("sal", 12, 0.0F, 0.8F, true),
     SEMILLAS("semillas", 10, 0.0F, 0.8F, true),
-    CONFETI("confeti", 16, 0.0F, 0.7F, false);
+    CONFETI("confeti", 16, 0.0F, 0.7F, false),
+    /** Bolas de goma (1.1.0): rebotan hasta dos veces en los bloques y empujan mucho. */
+    GOMA("goma", 8, 0.5F, 1.0F, true);
 
     public final String id;
     public final int perdigones;

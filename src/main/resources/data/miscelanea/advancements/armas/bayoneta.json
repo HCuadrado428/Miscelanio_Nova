@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/mosquete",
+  "display": {
+    "icon": {
+      "item": "minecraft:iron_sword"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.bayoneta.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.bayoneta.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "mosquete_bayoneta": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "mosquete_bayoneta"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

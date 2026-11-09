@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String PROTOCOLO = "55";
+    private static final String PROTOCOLO = "56";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "main"),
@@ -305,6 +305,12 @@ public final class ModNetwork {
                 .encoder(com.miscelanea.armasfuego.rifle.TirolinasPacket::encode)
                 .decoder(com.miscelanea.armasfuego.rifle.TirolinasPacket::new)
                 .consumerMainThread(com.miscelanea.armasfuego.rifle.TirolinasPacket::handle)
+                .add();
+        // ---- Gatling (al final: paquete nuevo)
+        CHANNEL.messageBuilder(com.miscelanea.armasfuego.gatling.GatlingPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.armasfuego.gatling.GatlingPacket::encode)
+                .decoder(com.miscelanea.armasfuego.gatling.GatlingPacket::new)
+                .consumerMainThread(com.miscelanea.armasfuego.gatling.GatlingPacket::handle)
                 .add();
     }
 }

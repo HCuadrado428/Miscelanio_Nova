@@ -61,7 +61,9 @@ public final class DisparoPresion {
     private DisparoPresion() {}
 
     /** Daño de un perdigón de grava a fuerza 1 (100 de presión) y a quemarropa. */
-    public static final float DANO_PERDIGON = 1.6F;
+    public static float danoPerdigon() {
+        return com.miscelanea.armasfuego.comun.EquilibrioArmas.escopetaPerdigon();
+    }
 
     // ================================================================ bombear
 
@@ -134,7 +136,7 @@ public final class DisparoPresion {
         RandomSource r = p.getRandom();
         int ox = Presion.oxido(s);
         // el cobre oxidado a veces se encasquilla: se escapa el aire por la junta
-        if (ox > 0 && r.nextFloat() < 0.03F * ox) {
+        if (r.nextFloat() < 0.03F * ox + com.miscelanea.armasfuego.comun.EquilibrioArmas.encasquilladoBase()) {
             Vec3 m = boca(p);
             sl.sendParticles(ParticleTypes.CLOUD, m.x, m.y, m.z, 6, 0.1, 0.1, 0.1, 0.02);
             sl.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 0.5F, 1.5F);
@@ -183,19 +185,26 @@ public final class DisparoPresion {
         List<BlockHitResult> bloques = new ArrayList<>();
         ClipContext.Block forma = t == TipoCartucho.SEMILLAS ? ClipContext.Block.OUTLINE : ClipContext.Block.COLLIDER;
         for (int i = 0; i < t.perdigones; i++) {
-            Vec3 dir = mira.add(r.nextGaussian() * disp, r.nextGaussian() * disp, r.nextGaussian() * disp).normalize();
-            Vec3 fin = ojo.add(dir.scale(alcance));
-            BlockHitResult bh = sl.clip(new ClipContext(ojo, fin, forma, ClipContext.Fluid.NONE, p));
+          Vec3 dir = mira.add(r.nextGaussian() * disp, r.nextGaussian() * disp, r.nextGaussian() * disp).normalize();
+          Vec3 desde = ojo, boca0 = boca;
+          double resto = alcance;
+          // la goma rebota hasta dos veces en los bloques (con lo que le quede de alcance)
+          for (int rebote = 0; rebote <= (t == TipoCartucho.GOMA ? 2 : 0); rebote++) {
+            final boolean rebotado = rebote > 0;
+            final Vec3 o0 = desde;
+            Vec3 fin = desde.add(dir.scale(resto));
+            BlockHitResult bh = sl.clip(new ClipContext(desde, fin, forma, ClipContext.Fluid.NONE, p));
             if (bh.getType() != HitResult.Type.MISS) fin = bh.getLocation();
-            EntityHitResult eh = ProjectileUtil.getEntityHitResult(p, ojo, fin, new AABB(ojo, fin).inflate(1.0),
-                    e -> e instanceof LivingEntity && e.isAlive() && !e.isSpectator() && e != p, ojo.distanceToSqr(fin));
+            EntityHitResult eh = ProjectileUtil.getEntityHitResult(p, desde, fin, new AABB(desde, fin).inflate(1.0),
+                    e -> e instanceof LivingEntity && e.isAlive() && !e.isSpectator() && (e != p || rebotado), o0.distanceToSqr(fin));
             Vec3 impacto;
             if (eh != null && eh.getEntity() instanceof LivingEntity v) {
                 impacto = eh.getLocation();
-                double d = ojo.distanceTo(impacto);
+                double d = alcance - resto + o0.distanceTo(impacto);
                 float caida = d < 4 ? 1.0F : (float) Mth.clampedLerp(1.0, 0.3, (d - 4) / Math.max(1, alcance - 4));
-                float[] g = golpes.computeIfAbsent(v, k -> new float[2]);
-                g[0] += DANO_PERDIGON * f * t.dano * caida;
+                float[] g = golpes.computeIfAbsent(v, k -> new float[3]);
+                g[0] += danoPerdigon() * f * t.dano * caida;
+                if (rebotado) g[2] = 1;
                 g[1] += 1;
             } else {
                 impacto = fin;
@@ -209,11 +218,23 @@ public final class DisparoPresion {
             impactoParticulas(sl, t, impacto, r);
             // estela del perdigón
             for (int k = 1; k <= 3; k++) {
-                Vec3 q = boca.lerp(impacto, k / 4.0 * r.nextDouble());
+                Vec3 q = boca0.lerp(impacto, k / 4.0 * r.nextDouble());
                 sl.sendParticles(estela(t, r), q.x, q.y, q.z, 1, 0, 0, 0, 0);
             }
+            if (t != TipoCartucho.GOMA || eh != null || bh.getType() == HitResult.Type.MISS) break;
+            resto -= desde.distanceTo(impacto);
+            if (resto < 1) break;
+            Vec3 n = Vec3.atLowerCornerOf(bh.getDirection().getNormal());
+            dir = dir.subtract(n.scale(2 * dir.dot(n))).normalize();
+            desde = impacto.add(n.scale(0.02));
+            boca0 = desde;
+            if (rebote == 0 && i % 3 == 0) sl.playSound(null, impacto.x, impacto.y, impacto.z, com.miscelanea.registry.ModSounds.GOMA_REBOTE.get(), SoundSource.PLAYERS, 0.6F, 0.9F + r.nextFloat() * 0.4F);
+          }
         }
-        for (Map.Entry<LivingEntity, float[]> e : golpes.entrySet()) alcanzar(p, t, e.getKey(), e.getValue()[0], (int) e.getValue()[1], fuerza, mira);
+        for (Map.Entry<LivingEntity, float[]> e : golpes.entrySet()) {
+            alcanzar(p, t, e.getKey(), e.getValue()[0], (int) e.getValue()[1], fuerza, mira);
+            if (e.getValue()[2] > 0 && e.getKey() != p) com.miscelanea.logros.LogrosMiscelanea.dar(p, "escopeta_goma");
+        }
         Set<BlockPos> hechos = new HashSet<>();
         int nieve = 0;
         for (BlockHitResult bh : bloques) {
@@ -223,8 +244,7 @@ public final class DisparoPresion {
         // fogonazo de aire, ruido y retroceso
         sl.sendParticles(ParticleTypes.CLOUD, boca.x, boca.y, boca.z, 3, 0.05, 0.05, 0.05, 0.05);
         sl.sendParticles(ParticleTypes.POOF, boca.x, boca.y, boca.z, 2, 0.03, 0.03, 0.03, 0.03);
-        sl.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 2.5F, 0.55F + r.nextFloat() * 0.1F);
-        sl.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 0.45F, 1.9F);
+        sl.playSound(null, p.getX(), p.getY(), p.getZ(), com.miscelanea.registry.ModSounds.PRESION_DISPARO.get(), SoundSource.PLAYERS, 3.0F, 0.95F + r.nextFloat() * 0.1F);
         if (t == TipoCartucho.CONFETI) {
             sl.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, SoundSource.PLAYERS, 1.5F, 1.2F);
             sl.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.FIREWORK_ROCKET_TWINKLE, SoundSource.PLAYERS, 1.2F, 1.0F);
@@ -243,6 +263,7 @@ public final class DisparoPresion {
             case SAL -> ParticleTypes.WHITE_ASH;
             case SEMILLAS -> new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.WHEAT_SEEDS));
             case CONFETI -> confeti(r);
+            case GOMA -> ParticleTypes.CRIT;
         };
     }
 
@@ -296,6 +317,12 @@ public final class DisparoPresion {
                 if (v instanceof Animal a && a.isFood(new ItemStack(Items.WHEAT_SEEDS)) && a.canFallInLove() && a.getAge() == 0) a.setInLove(p);
             }
             case CONFETI -> sl.sendParticles(ParticleTypes.HAPPY_VILLAGER, v.getX(), v.getY() + v.getBbHeight() * 0.8, v.getZ(), 4, 0.3, 0.3, 0.3, 0);
+            case GOMA -> {
+                // las bolas de goma empujan mucho más que la grava
+                double k = (0.3 + 0.12 * n) * Math.min(fuerza, 1.3F) * (1 - v.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+                v.setDeltaMovement(v.getDeltaMovement().add(mira.x * k, 0.2 * k, mira.z * k));
+                v.hurtMarked = true;
+            }
             default -> {}
         }
     }

@@ -28,7 +28,7 @@
         ]
       }
     },
-    "escopeta": {
+    "escopeta_presion": {
       "trigger": "minecraft:inventory_changed",
       "conditions": {
         "items": [
@@ -51,13 +51,91 @@
           }
         ]
       }
+    },
+    "gatling": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:gatling"
+            ]
+          }
+        ]
+      }
+    },
+    "winchester": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:winchester"
+            ]
+          }
+        ]
+      }
+    },
+    "derringer": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:derringer"
+            ]
+          }
+        ]
+      }
+    },
+    "thompson": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:thompson"
+            ]
+          }
+        ]
+      }
+    },
+    "mosquete": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:mosquete"
+            ]
+          }
+        ]
+      }
+    },
+    "canon_mano": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:canon_mano"
+            ]
+          }
+        ]
+      }
     }
   },
   "requirements": [
     [
       "revolver",
-      "escopeta",
-      "rifle"
+      "escopeta_presion",
+      "rifle",
+      "gatling",
+      "winchester",
+      "derringer",
+      "thompson",
+      "mosquete",
+      "canon_mano"
     ]
   ],
   "rewards": {
