@@ -1684,6 +1684,7 @@ public final class PruebaCI {
             irMirando(ir[0], ir[1]);
         });
         paso("4w_purgatorio_escalera_mecanica", 30, () -> {});
+        liminal();
         // caerse por un agujero del Mundo sin Texturas (de golpe por debajo del suelo, sin esperar a la caída: con shaders va lento)
         sin("pex_caida", 30, () -> enServidor(sp -> {
             var ag = com.miscelanea.purgatorio.Purgatorio.buscarAgujero();
@@ -1725,6 +1726,161 @@ public final class PruebaCI {
                 sp.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.Mob.class, sp.getBoundingBox().inflate(80)).forEach(net.minecraft.world.entity.Entity::discard);
             });
         });
+    }
+
+    // ------------------------------------------------------------------ el espacio liminal (2.0.0): atrezo nuevo y zonas mejoradas
+    /** En el servidor: el bloque de ese tipo más cercano a c (en x/z, hasta r, de y0 a y1) que cumpla "ok", o null. */
+    private static net.minecraft.core.BlockPos cercano(net.minecraft.core.BlockPos c, int r, int y0, int y1, java.util.function.Predicate<net.minecraft.world.level.block.state.BlockState> ok) {
+        var srv = Minecraft.getInstance().getSingleplayerServer();
+        var l = srv.getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
+        return srv.submit(() -> {
+            for (int d = 0; d <= r; d++)
+                for (int dx = -d; dx <= d; dx++)
+                    for (int dz = -d; dz <= d; dz++) {
+                        if (Math.max(Math.abs(dx), Math.abs(dz)) != d) continue;
+                        l.getChunk((c.getX() + dx) >> 4, (c.getZ() + dz) >> 4);
+                        for (int y = y0; y <= y1; y++) {
+                            var q = new net.minecraft.core.BlockPos(c.getX() + dx, y, c.getZ() + dz);
+                            if (ok.test(l.getBlockState(q))) return q;
+                        }
+                    }
+            return (net.minecraft.core.BlockPos) null;
+        }).join();
+    }
+
+    private static net.minecraft.core.BlockPos[] lim = new net.minecraft.core.BlockPos[8];
+    private static float limGiro;
+
+    private static void liminal() {
+        Minecraft mc = Minecraft.getInstance();
+        var FAC = net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING;
+        // otra foto de la escalera mecánica un momento después: los peldaños se han movido
+        paso("6a_liminal_escalera_en_marcha", 12, () -> {
+            int n = 0;
+            var p = mc.player.blockPosition();
+            for (int cx = -3; cx <= 3; cx++)
+                for (int cz = -3; cz <= 3; cz++) {
+                    var ch = mc.level.getChunkSource().getChunkNow((p.getX() >> 4) + cx, (p.getZ() >> 4) + cz);
+                    if (ch != null) for (var be : ch.getBlockEntities().values()) if (be instanceof com.miscelanea.purgatorio.liminal.AtrezoBE) n++;
+                }
+            RESUMEN.add("  liminal, bloques-entidad del atrezo (GeckoLib) cargados en 7 x 7 chunks del centro comercial: " + n);
+        });
+        // un coche aparcado, de cerca
+        sin("lim_coche_ir", 60, () -> {
+            var b = com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.APARCAMIENTO);
+            lim[0] = cercano(b, 40, b.getY(), b.getY(), st -> st.is(com.miscelanea.purgatorio.liminal.LiminalRegistro.COCHE.get()) && st.getValue(com.miscelanea.purgatorio.liminal.Bloques.PARTE8) == 0
+                    && !st.getValue(com.miscelanea.purgatorio.liminal.Bloques.FAROS));
+            RESUMEN.add("  liminal, coche aparcado: " + (lim[0] == null ? "NINGUNO" : lim[0].toShortString()));
+            if (lim[0] == null) throw new IllegalStateException("no hay coches en el aparcamiento");
+            var st = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION).getBlockState(lim[0]);
+            var f = st.getValue(FAC);
+            var centro = lim[0].relative(f.getClockWise(), 1).relative(f.getOpposite(), 2);
+            irMirando(lim[0].relative(f, 3).relative(f.getClockWise(), -2), centro);
+        });
+        paso("6b_liminal_coche", 30, () -> {});
+        sin("lim_coche_2", 30, () -> {
+            var st = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION).getBlockState(lim[0]);
+            var f = st.getValue(FAC);
+            var centro = lim[0].relative(f.getClockWise(), 1).relative(f.getOpposite(), 2);
+            irMirando(lim[0].relative(f.getOpposite(), 6).relative(f.getClockWise(), 4), centro);
+        });
+        paso("6c_liminal_coche_detras", 30, () -> {});
+        // los maniquíes del escaparate: se mira a uno, se aparta la vista y al volver te está mirando
+        sin("lim_maniqui_ir", 60, () -> {
+            var b = com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.CENTRO);
+            lim[1] = cercano(b, 64, b.getY(), b.getY(), st -> st.is(com.miscelanea.purgatorio.liminal.LiminalRegistro.MANIQUI.get()));
+            RESUMEN.add("  liminal, maniquí: " + (lim[1] == null ? "NINGUNO" : lim[1].toShortString()));
+            if (lim[1] == null) throw new IllegalStateException("no hay escaparates con maniquíes cerca");
+            var f = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION).getBlockState(lim[1]).getValue(FAC);
+            irMirando(lim[1].relative(f, 4).relative(f.getClockWise(), 3), lim[1].above());
+        });
+        paso("6d_liminal_maniquies", 30, () -> {
+            if (mc.level.getBlockEntity(lim[1]) instanceof com.miscelanea.purgatorio.liminal.AtrezoBE be) limGiro = be.giro;
+        });
+        sin("lim_maniqui_mirar_atras", 15, () -> mc.player.setYRot(mc.player.getYRot() + 180));
+        sin("lim_maniqui_volver", 10, () -> mc.player.setYRot(mc.player.getYRot() + 180));
+        paso("6e_liminal_maniqui_te_mira", 20, () -> {
+            var be = mc.level.getBlockEntity(lim[1]) instanceof com.miscelanea.purgatorio.liminal.AtrezoBE a ? a : null;
+            RESUMEN.add(String.format("  liminal, maniquí: miraba a %.0f, ahora a %.0f (se ha girado %d veces)", limGiro, be == null ? Float.NaN : be.giro, be == null ? -1 : be.giros));
+            if (be == null || be.giros == 0) RESUMEN.add("  AVISO: el maniquí no se ha girado al no mirarlo");
+        });
+        // la piscina llena con su flotador
+        sin("lim_piscina_ir", 60, () -> {
+            var b = com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.PISCINA);
+            lim[2] = cercano(b, 48, b.getY() - 1, b.getY() - 1, st -> st.is(com.miscelanea.purgatorio.liminal.LiminalRegistro.FLOTADOR.get()));
+            RESUMEN.add("  liminal, flotador en una piscina llena: " + (lim[2] == null ? "NINGUNO" : lim[2].toShortString()));
+            if (lim[2] == null) throw new IllegalStateException("no hay piscinas llenas con flotador cerca");
+            var l = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
+            var desde = com.miscelanea.purgatorio.eventos.PurgatorioExtras.libreCerca(l, lim[2].getX() + 4, lim[2].getY() + 1, lim[2].getZ() + 4, 3);
+            irMirando(desde == null ? lim[2].offset(4, 1, 4) : desde, lim[2]);
+        });
+        paso("6f_liminal_piscina_llena", 40, () -> RESUMEN.add("  liminal, piscina: ecos de pasos hasta ahora " + com.miscelanea.client.purgatorio.LiminalCliente.ecos));
+        // las Backrooms (en la sala de espera)
+        sin("lim_backrooms_ir", 60, () -> {
+            net.minecraft.core.BlockPos b = null;
+            for (int n = 0; n < 3 && b == null; n++)
+                for (int r = 0; r < 40 && b == null; r++)
+                    for (int cx = -r; cx <= r && b == null; cx++)
+                        for (int cz = -r; cz <= r && b == null; cz++)
+                            if (Math.max(Math.abs(cx), Math.abs(cz)) == r && com.miscelanea.purgatorio.PurgatorioPlano.zona(n, cx, cz) == com.miscelanea.purgatorio.PurgatorioGenerador.Zona.SALA
+                                    && com.miscelanea.purgatorio.PurgatorioGenerador.entero(n, cx, cz) && com.miscelanea.purgatorio.PurgatorioGenerador.backrooms(n, cx, cz)
+                                    && com.miscelanea.purgatorio.PurgatorioGenerador.backrooms(n, cx + 1, cz) && !com.miscelanea.purgatorio.PurgatorioPlano.salida(n, cx, cz))
+                                b = new net.minecraft.core.BlockPos(cx * 16 + 8, com.miscelanea.purgatorio.PurgatorioPlano.base(n), cz * 16 + 8);
+            RESUMEN.add("  liminal, Backrooms: " + (b == null ? "NINGUNA" : b.toShortString()));
+            if (b == null) throw new IllegalStateException("no hay Backrooms cerca");
+            lim[3] = b;
+            irA(b, -70, 4);
+        });
+        paso("6g_liminal_backrooms", 40, () -> {});
+        sin("lim_backrooms_2", 30, () -> irA(lim[3], 160, 2));
+        paso("6h_liminal_backrooms_2", 30, () -> {});
+        // un aula con sus pupitres
+        sin("lim_aula_ir", 60, () -> {
+            var b = com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.COLEGIO);
+            lim[4] = cercano(b, 40, b.getY(), b.getY(), st -> st.is(com.miscelanea.purgatorio.liminal.LiminalRegistro.PUPITRE.get()) && !st.getValue(com.miscelanea.purgatorio.liminal.Bloques.SUBIDA));
+            RESUMEN.add("  liminal, pupitre: " + (lim[4] == null ? "NINGUNO" : lim[4].toShortString()));
+            if (lim[4] == null) throw new IllegalStateException("no hay pupitres cerca");
+            var f = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION).getBlockState(lim[4]).getValue(FAC);
+            // de pie al fondo del aula, mirando a la pizarra (el pupitre de delante es el de la fila de la pizarra)
+            int x0 = lim[4].getX() - Math.floorMod(lim[4].getX(), 16) + (Math.floorMod(lim[4].getX(), 16) < 8 ? 3 : 12);
+            var fondo = new net.minecraft.core.BlockPos(x0, lim[4].getY(), lim[4].getZ()).relative(f.getOpposite(), 3);
+            irMirando(fondo, fondo.relative(f, 6).above());
+        });
+        paso("6i_liminal_aula", 30, () -> {});
+        // el ventilador del techo de la sala de espera
+        sin("lim_ventilador_ir", 60, () -> {
+            var b = com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.SALA);
+            lim[5] = cercano(b, 64, b.getY() + 3, b.getY() + 3, st -> st.is(com.miscelanea.purgatorio.liminal.LiminalRegistro.VENTILADOR.get()));
+            RESUMEN.add("  liminal, ventilador: " + (lim[5] == null ? "NINGUNO" : lim[5].toShortString()));
+            if (lim[5] == null) throw new IllegalStateException("no hay ventiladores cerca");
+            irMirando(lim[5].offset(-3, -3, -3), lim[5]);
+        });
+        paso("6j_liminal_ventilador", 30, () -> {});
+        // una máquina expendedora: foto y se usa (suelta algo, o se traga la moneda, y queda agotada)
+        sin("lim_maquina_ir", 60, () -> {
+            var b = com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.CENTRO);
+            lim[6] = cercano(b, 64, b.getY(), b.getY(), st -> st.is(com.miscelanea.purgatorio.liminal.LiminalRegistro.MAQUINA.get()) && !st.getValue(com.miscelanea.purgatorio.liminal.Bloques.ARRIBA));
+            RESUMEN.add("  liminal, máquina expendedora: " + (lim[6] == null ? "NINGUNA" : lim[6].toShortString()));
+            if (lim[6] == null) throw new IllegalStateException("no hay máquinas expendedoras cerca");
+            var f = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION).getBlockState(lim[6]).getValue(FAC);
+            irMirando(lim[6].relative(f, 3).relative(f.getClockWise(), 1), lim[6].above());
+        });
+        paso("6k_liminal_maquina", 30, () -> enServidor(sp -> {
+            var l = sp.serverLevel();
+            var st = l.getBlockState(lim[6]);
+            var res = st.use(l, sp, net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(lim[6]), net.minecraft.core.Direction.UP, lim[6], false));
+            boolean vacia = l.getBlockState(lim[6]).getValue(com.miscelanea.purgatorio.liminal.Bloques.VACIA);
+            RESUMEN.add("  liminal, máquina usada: " + res + ", agotada=" + vacia);
+            if (!vacia) RESUMEN.add("  FALLO: la máquina expendedora no se ha agotado al usarla");
+        }));
+        // el garaje con el coche de los faros, de lejos (el haz de luz)
+        sin("lim_faros_ir", 60, () -> {
+            var b = com.miscelanea.purgatorio.Purgatorio.buscarRaro(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.APARCAMIENTO);
+            if (b == null) throw new IllegalStateException("no hay coche con los faros encendidos");
+            int bx = b[0].getX() - Math.floorMod(b[0].getX(), 16), bz = b[0].getZ() - Math.floorMod(b[0].getZ(), 16);
+            irMirando(new net.minecraft.core.BlockPos(bx + 9, b[0].getY(), bz + 4), new net.minecraft.core.BlockPos(bx + 13, b[0].getY(), bz + 12));
+        });
+        paso("6l_liminal_faros", 30, () -> {});
     }
 
     // ------------------------------------------------------------------ el Purgatorio, estructura nueva (2.0.0)

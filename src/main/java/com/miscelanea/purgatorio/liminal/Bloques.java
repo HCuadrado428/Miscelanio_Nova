@@ -373,7 +373,7 @@ public final class Bloques {
         @Override
         public void animateTick(BlockState s, Level l, BlockPos p, RandomSource r) {
             if (r.nextInt(90) == 0)
-                l.playLocalSound(p.getX() + 0.5, p.getY() + 3.5, p.getZ() + 0.5, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER_INTO_FLUID, SoundSource.AMBIENT, 0.6F, 0.7F + r.nextFloat() * 0.2F, false);
+                l.playLocalSound(p.getX() + 0.5, p.getY() + 3.5, p.getZ() + 0.5, SoundEvents.POINTED_DRIPSTONE_DRIP_WATER, SoundSource.AMBIENT, 0.6F, 0.7F + r.nextFloat() * 0.2F, false);
         }
     }
 

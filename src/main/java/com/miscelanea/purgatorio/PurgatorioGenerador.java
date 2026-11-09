@@ -500,7 +500,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 // un mostrador de "turnos" con su planta y la máquina de café
                 l.caja(5, f, 6, 10, f, 6, d(Blocks.SMOOTH_QUARTZ));
                 l.pon(5, f + 1, 6, d(Blocks.POTTED_BAMBOO));
-                maquina(l, f, 12, 1, Direction.SOUTH, hn(n, cx, cz, 12));
+                expendedora(l, f, 12, 1, Direction.SOUTH, hn(n, cx, cz, 12));
             }
         }
         // tabiques: hacia otras zonas siempre; entre salas, a veces (y en la sala rara, en los cuatro lados). Con hueco en
@@ -588,7 +588,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
             int x = 1 + (int) ((q >> 4) % 5), z = 9 + (int) ((q >> 8) % 5);
             if (l.libre(x, f, z)) switch ((int) ((q >> 12) % 4)) {
                 case 0 -> l.pon(x, f, z, com.miscelanea.purgatorio.liminal.LiminalRegistro.SILLA_ESPERA.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, LADOS[(int) ((q >> 16) & 3)]));
-                case 1 -> maquina(l, f, x, z, LADOS[(int) ((q >> 16) & 3)], q);
+                case 1 -> expendedora(l, f, x, z, LADOS[(int) ((q >> 16) & 3)], q);
                 case 2 -> l.pon(x, f, z, com.miscelanea.purgatorio.liminal.LiminalRegistro.SENAL_MOJADO.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, LADOS[(int) ((q >> 16) & 3)]));
                 default -> l.pon(x, f, z, com.miscelanea.purgatorio.liminal.LiminalRegistro.CARRITO.get().defaultBlockState().setValue(com.miscelanea.purgatorio.liminal.Bloques.GIRADO, true));
             }
@@ -1385,7 +1385,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 // un banco del vestuario, una papelera y la máquina de refrescos
                 for (int x = qx + 2; x <= qx + 4; x++) l.pon(x, f, qz + 3, d(Blocks.BIRCH_SLAB));
                 l.pon(qx + 5, f, qz + 3, d(Blocks.CAULDRON));
-                maquina(l, f, qx + 3, qz == 0 ? qz + 1 : qz + 5, qz == 0 ? Direction.SOUTH : Direction.NORTH, hp);
+                expendedora(l, f, qx + 3, qz == 0 ? qz + 1 : qz + 5, qz == 0 ? Direction.SOUTH : Direction.NORTH, hp);
             }
             // y el cartel de suelo mojado, de vez en cuando, en el borde
             if (!rara && hp % 7 == 3) l.pon(qx + 6, f, qz == 0 ? qz + 1 : qz + 5, com.miscelanea.purgatorio.liminal.LiminalRegistro.SENAL_MOJADO.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, LADOS[(int) (hp >> 8 & 3)]));
@@ -1438,7 +1438,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
     }
 
     /** Una máquina expendedora de dos de alto (roja o azul) mirando a "mira". */
-    static void maquina(Lienzo l, int f, int x, int z, Direction mira, long r) {
+    static void expendedora(Lienzo l, int f, int x, int z, Direction mira, long r) {
         if (!l.libre(x, f, z) || !l.libre(x, f + 1, z)) return;
         BlockState m = com.miscelanea.purgatorio.liminal.LiminalRegistro.MAQUINA.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, mira)
                 .setValue(com.miscelanea.purgatorio.liminal.Bloques.COLOR2, (int) ((r >> 4) & 1));
@@ -1600,7 +1600,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 // un rincón del pasillo: taquillas en fila y un banco
                 for (int x = qx + 1; x <= qx + 5; x++) taquillas(l, f, x, qz == 0 ? qz + 1 : qz + 5, qz == 0 ? Direction.SOUTH : Direction.NORTH);
                 for (int x = qx + 2; x <= qx + 4; x++) l.pon(x, f, qz == 0 ? qz + 4 : qz + 2, d(Blocks.OAK_SLAB));
-                if (hn(n, cx, cz, 215 + k) % 2 == 0) maquina(l, f, qx == 0 ? 6 : 9, qz + 3, qx == 0 ? Direction.EAST : Direction.WEST, hn(n, cx, cz, 216 + k));
+                if (hn(n, cx, cz, 215 + k) % 2 == 0) expendedora(l, f, qx == 0 ? 6 : 9, qz + 3, qx == 0 ? Direction.EAST : Direction.WEST, hn(n, cx, cz, 216 + k));
             }
         }
         BlockState zoc = ModBlocks.PARED_COLEGIO_ZOCALO.get().defaultBlockState(), pared = ModBlocks.PARED_COLEGIO.get().defaultBlockState();
@@ -1694,7 +1694,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 // un carrito que alguien dejó tirado y, contra la pared, la máquina de refrescos
                 if (r % 2 == 0) l.pon(qx + 2 + (int) ((r >> 3) % 3), f, qz == 0 ? 2 : 13, com.miscelanea.purgatorio.liminal.LiminalRegistro.CARRITO.get().defaultBlockState()
                         .setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, LADOS[(int) ((r >> 5) & 3)]).setValue(com.miscelanea.purgatorio.liminal.Bloques.GIRADO, ((r >> 7) & 1) == 0));
-                maquina(l, f, qx + 3, qz == 0 ? 0 : 15, qz == 0 ? Direction.SOUTH : Direction.NORTH, r);
+                expendedora(l, f, qx + 3, qz == 0 ? 0 : 15, qz == 0 ? Direction.SOUTH : Direction.NORTH, r);
             }
             // y en el pasillo, de vez en cuando, el cartel de suelo mojado (no choca: no corta el paso)
             if (hn(n, cx, cz, 226 + k) % 9 == 0) l.pon(k % 2 == 0 ? 7 : 8, f, qz == 0 ? 2 : 13, com.miscelanea.purgatorio.liminal.LiminalRegistro.SENAL_MOJADO.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, LADOS[k]));
@@ -1801,8 +1801,8 @@ public class PurgatorioGenerador extends ChunkGenerator {
                     l.pon(x, f - 4, z, (z - pz0) % 4 == 2 && x > px0 + 1 && x < px1 - 1 ? raya : azul);
                 } else {
                     l.pon(x, f - 1, z, borde);
-                    boolean foco = (x == px0 - 1 || x == px1 + 1) ? (z - pz0) % 6 == 3 : (z == pz0 - 1 || z == pz1 + 1) && (x - px0) % 6 == 3;
-                    l.pon(x, f - 2, z, foco ? com.miscelanea.purgatorio.liminal.LiminalRegistro.LUZ_PISCINA.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING,
+                    boolean focoP = (x == px0 - 1 || x == px1 + 1) ? (z - pz0) % 6 == 3 : (z == pz0 - 1 || z == pz1 + 1) && (x - px0) % 6 == 3;
+                    l.pon(x, f - 2, z, focoP ? com.miscelanea.purgatorio.liminal.LiminalRegistro.LUZ_PISCINA.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING,
                             x == px0 - 1 ? Direction.EAST : x == px1 + 1 ? Direction.WEST : z == pz0 - 1 ? Direction.SOUTH : Direction.NORTH) : azul);
                     l.pon(x, f - 3, z, azul);
                 }
