@@ -1615,7 +1615,8 @@ public final class PruebaCI {
                 var d = com.miscelanea.armasfuego.rifle.Tirolinas.de(sp.serverLevel());
                 var t = d.save(new net.minecraft.nbt.CompoundTag());
                 var otra = com.miscelanea.armasfuego.rifle.Tirolinas.cargar(t);
-                if (!d.isDirty() || otra.lineas().size() != d.lineas().size() || !otra.lineas().get(0).b().equals(d.lineas().get(0).b()))
+                // (sin mirar isDirty: si justo se ha autoguardado el mundo ya no está «sucio» y fallaba sin motivo)
+                if (otra.lineas().size() != d.lineas().size() || !otra.lineas().get(0).b().equals(d.lineas().get(0).b()))
                     rifleFallo = "la tirolina no se guarda bien con el mundo";
             });
         });
