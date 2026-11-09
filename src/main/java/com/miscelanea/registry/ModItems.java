@@ -357,5 +357,34 @@ public final class ModItems {
     }
     // ---- fin escopeta de presión
 
+    // ---- Armas de fuego (segunda tanda): Gatling, Winchester, Derringer, Thompson, mosquete y cañón de mano
+    public static final RegistryObject<Item> GATLING = ITEMS.register("gatling",
+            () -> new com.miscelanea.armasfuego.gatling.GatlingItem(new Item.Properties().durability(1500).rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> CINTA_GATLING = ITEMS.register("cinta_gatling",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> WINCHESTER = ITEMS.register("winchester",
+            () -> new com.miscelanea.armasfuego.oeste.WinchesterItem(new Item.Properties().durability(700).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> DERRINGER = ITEMS.register("derringer",
+            () -> new com.miscelanea.armasfuego.oeste.DerringerItem(new Item.Properties().durability(300).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> BALA_DERRINGER = ITEMS.register("bala_derringer",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties()));
+    public static final RegistryObject<Item> THOMPSON = ITEMS.register("thompson",
+            () -> new com.miscelanea.armasfuego.oeste.ThompsonItem(new Item.Properties().durability(1200).rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> CARGADOR_THOMPSON = ITEMS.register("cargador_thompson",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties().stacksTo(8)));
+    public static final RegistryObject<Item> ESTUCHE_VIOLIN = ITEMS.register("estuche_violin",
+            () -> new com.miscelanea.armasfuego.oeste.EstucheViolinItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> MOSQUETE = ITEMS.register("mosquete",
+            () -> new com.miscelanea.armasfuego.oeste.MosqueteItem(new Item.Properties().durability(500).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> BOLA_MOSQUETE = ITEMS.register("bola_mosquete",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties()));
+    public static final RegistryObject<Item> CANON_MANO = ITEMS.register("canon_mano",
+            () -> new com.miscelanea.armasfuego.oeste.CanonManoItem(new Item.Properties().durability(250).rarity(Rarity.UNCOMMON)));
+    // munición rara nueva para las tres primeras: tiempo bala (revólver) y pintura (rifle); la de goma va con los cartuchos de la escopeta
+    public static final RegistryObject<Item> REVOLVER_TIEMPO = ITEMS.register("revolver_tiempo", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> BALA_PINTURA = ITEMS.register("bala_pintura",
+            () -> new com.miscelanea.armasfuego.rifle.MunicionRifleItem("item.miscelanea.bala_pintura.ayuda", new Item.Properties()));
+    // ---- fin armas de fuego (segunda tanda)
+
     private ModItems() {}
 }

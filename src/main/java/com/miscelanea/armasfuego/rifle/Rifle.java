@@ -54,11 +54,14 @@ public final class Rifle {
     public static final int CERROJO_TICKS = 16, T_EXPULSA = 11, T_CARGA = 5;
     /** Tiempo con la mira quieta para contener la respiración. */
     public static final int FIRME_TICKS = 40;
-    public static final float DANO = 12F, CABEZA = 1.75F, VELOCIDAD = 6F;
+    /** Daño y cabeza: ahora en la config (EquilibrioArmas.rifleDano / rifleCabeza); estos son los de por defecto. */
+    public static final float DANO = 9F, CABEZA = 1.6F, VELOCIDAD = 6F;
     public static final double GRAVEDAD = 0.012;
     /** Largo de la cuerda (y lo que añade cada nivel de Tirolinero). */
     public static final double CUERDA_MAX = 48, CUERDA_NIVEL = 16;
-    public static final int BALA = 0, TRAZADORA = 1, CUERDA = 2;
+    public static final int BALA = 0, TRAZADORA = 1, CUERDA = 2, PINTURA = 3;
+    /** Color de la bala de pintura que hay en la recámara. */
+    public static final String RECAMARA_COLOR = "RecamaraColor";
 
     // ------------------------------------------------------------------ estado del arma
 
@@ -96,6 +99,7 @@ public final class Rifle {
         if (i == ModItems.BALA_RIFLE.get()) return BALA;
         if (i == ModItems.BALA_TRAZADORA.get()) return TRAZADORA;
         if (i == ModItems.BALA_CUERDA.get()) return CUERDA;
+        if (i == ModItems.BALA_PINTURA.get()) return PINTURA;
         return -1;
     }
 
@@ -145,7 +149,7 @@ public final class Rifle {
         t.putString(RECAMARA, "");
         t.putBoolean(GASTADA, false);
         if (vivo != null && !p.getAbilities().instabuild) {
-            ItemStack devuelto = new ItemStack(vivo);
+            ItemStack devuelto = vivo == ModItems.BALA_PINTURA.get() ? Pintura.bala(t.getInt(RECAMARA_COLOR)) : new ItemStack(vivo);
             if (!p.getInventory().add(devuelto)) p.drop(devuelto, false);
         }
         if (!casquillo) return;
@@ -171,6 +175,7 @@ public final class Rifle {
         Item cargado = null;
         if (!m.isEmpty()) {
             cargado = m.getItem();
+            if (cargado == ModItems.BALA_PINTURA.get()) s.getOrCreateTag().putInt(RECAMARA_COLOR, Pintura.color(m));
             if (!p.getAbilities().instabuild) m.shrink(1);
         } else if (p.getAbilities().instabuild) {
             cargado = ModItems.BALA_RIFLE.get();
@@ -198,7 +203,7 @@ public final class Rifle {
         CompoundTag t = s.getOrCreateTag();
         int ox = oxido(s);
         // el cobre oxidado falla a veces: el cartucho no sale y hay que sacarlo con el cerrojo
-        if (ox > 0 && p.getRandom().nextFloat() < ox * 0.04F) {
+        if (p.getRandom().nextFloat() < ox * 0.04F + com.miscelanea.armasfuego.comun.EquilibrioArmas.encasquilladoBase()) {
             t.putBoolean(GASTADA, true);
             l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.DISPENSER_FAIL, SoundSource.PLAYERS, 0.8F, 1.4F);
             return;
@@ -218,8 +223,9 @@ public final class Rifle {
         BalaRifle b = new BalaRifle(ModEntities.BALA_RIFLE.get(), l);
         b.setOwner(p);
         b.setPos(ojo.x, ojo.y - 0.08, ojo.z);
-        float dano = DANO;
-        if (contenida) dano *= 1.15F + 0.1F * resp;
+        float dano = com.miscelanea.armasfuego.comun.EquilibrioArmas.rifleDano();
+        // respiración contenida: x1,1 + 0,05 por nivel (antes 1,15 + 0,1: con la cabeza mataba de un tiro)
+        if (contenida) dano *= 1.1F + 0.05F * resp;
         int atravesar = nivel(s, ModEnchantments.ATRAVESAR.get());
         int tirolinero = nivel(s, ModEnchantments.TIROLINERO.get());
         boolean silencio = nivel(s, ModEnchantments.SILENCIADOR.get()) > 0;
@@ -227,6 +233,7 @@ public final class Rifle {
         Vec3 inicio = new Vec3(p.getX(), p.getY() + 2.9, p.getZ());
         b.preparar(tipo, dano, atravesar > 0 ? atravesar + 1 : 0, atravesar > 0, contenida, tirolinero, silencio, inicio,
                 p.onGround() ? p.getOnPos() : null);
+        if (tipo == PINTURA) b.ponerColor(t.getInt(RECAMARA_COLOR));
         b.setDeltaMovement(dir.scale(VELOCIDAD));
         b.setYRot(yr);
         b.setXRot(xr);
@@ -237,12 +244,14 @@ public final class Rifle {
             l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 0.35F, 1.7F);
             l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.WOOL_HIT, SoundSource.PLAYERS, 0.6F, 0.6F);
         } else {
-            l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1.1F, 1.9F);
+            l.playSound(null, p.getX(), p.getY(), p.getZ(), com.miscelanea.registry.ModSounds.RIFLE_CATALEJO_DISPARO.get(), SoundSource.PLAYERS, 4.0F, 0.95F + p.getRandom().nextFloat() * 0.1F);
             l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.FIREWORK_ROCKET_LARGE_BLAST_FAR, SoundSource.PLAYERS, 4.0F, 0.6F);
             l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS, 1.0F, 0.6F);
             l.gameEvent(p, GameEvent.PROJECTILE_SHOOT, p.position());
             Vec3 boca = ojo.add(dir.scale(1.2)).add(0, -0.15, 0);
             l.sendParticles(ParticleTypes.SMOKE, boca.x, boca.y, boca.z, 4, 0.04, 0.04, 0.04, 0.01);
+            Vec3 fg = ojo.add(dir.scale(1.6)).add(0, -0.15, 0);
+            l.sendParticles(com.miscelanea.armasfuego.comun.ArmasFuegoRegistro.FOGONAZO.get(), fg.x, fg.y, fg.z, 1, 0, 0, 0, 0);
         }
         t.putInt("Disparos", t.getInt("Disparos") + 1);
         // el cobre se oxida poco a poco con el uso (salvo encerado)

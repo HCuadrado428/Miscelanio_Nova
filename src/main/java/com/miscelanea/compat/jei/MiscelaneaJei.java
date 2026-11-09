@@ -85,6 +85,12 @@ public class MiscelaneaJei implements IModPlugin {
         info(r, ModItems.REVOLVER, "revolver_botin");
         info(r, ModItems.ESCOPETA_PRESION, "escopeta_botin");
         info(r, ModItems.RIFLE, "rifle_botin");
+        info(r, ModItems.GATLING, "gatling_botin");
+        info(r, ModItems.WINCHESTER, "winchester_botin");
+        info(r, ModItems.DERRINGER, "derringer_botin");
+        info(r, ModItems.THOMPSON, "thompson_botin");
+        info(r, ModItems.MOSQUETE, "mosquete_botin");
+        info(r, ModItems.CANON_MANO, "canon_botin");
     }
 
     @Override

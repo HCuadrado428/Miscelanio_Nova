@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/sedante",
+  "display": {
+    "icon": {
+      "item": "miscelanea:revolver_tiempo"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.tiempo_bala.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.tiempo_bala.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "revolver_tiempo": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "revolver_tiempo"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/winchester",
+  "display": {
+    "icon": {
+      "item": "minecraft:saddle"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.winchester_giro.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.winchester_giro.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "winchester_giro": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "winchester_giro"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

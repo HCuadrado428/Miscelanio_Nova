@@ -101,5 +101,13 @@ public final class ModEntities {
             () -> EntityType.Builder.<com.miscelanea.armasfuego.rifle.GanchoTirolina>of(com.miscelanea.armasfuego.rifle.GanchoTirolina::new, MobCategory.MISC)
                     .sized(0.4F, 0.4F).clientTrackingRange(10).updateInterval(1).noSummon().build("gancho_tirolina"));
 
+    // ---- Armas de fuego (segunda tanda)
+    public static final RegistryObject<EntityType<com.miscelanea.armasfuego.gatling.GatlingEntity>> GATLING = ENTITIES.register("gatling",
+            () -> EntityType.Builder.<com.miscelanea.armasfuego.gatling.GatlingEntity>of(com.miscelanea.armasfuego.gatling.GatlingEntity::new, MobCategory.MISC)
+                    .sized(1.0F, 1.3F).clientTrackingRange(10).updateInterval(2).build("gatling"));
+    public static final RegistryObject<EntityType<com.miscelanea.armasfuego.oeste.BolaCanonEntity>> BOLA_CANON = ENTITIES.register("bola_canon",
+            () -> EntityType.Builder.<com.miscelanea.armasfuego.oeste.BolaCanonEntity>of(com.miscelanea.armasfuego.oeste.BolaCanonEntity::new, MobCategory.MISC)
+                    .sized(0.4F, 0.4F).clientTrackingRange(8).updateInterval(1).noSummon().build("bola_canon"));
+
     private ModEntities() {}
 }

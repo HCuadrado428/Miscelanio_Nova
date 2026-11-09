@@ -1,0 +1,26 @@
+{
+ "loader": "forge:separate_transforms",
+ "gui_light": "front",
+ "textures": {
+  "particle": "miscelanea:item/canon_mano"
+ },
+ "base": {
+  "parent": "miscelanea:item/armas3d/canon_mano_3d"
+ },
+ "perspectives": {
+  "gui": {
+   "parent": "minecraft:item/generated",
+   "textures": {
+    "layer0": "miscelanea:item/canon_mano"
+   }
+  }
+ },
+ "overrides": [
+  {
+   "predicate": {
+    "miscelanea:mecha": 1
+   },
+   "model": "miscelanea:item/canon_mano_encendida"
+  }
+ ]
+}

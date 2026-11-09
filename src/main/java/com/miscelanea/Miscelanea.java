@@ -52,6 +52,7 @@ public class Miscelanea {
         com.miscelanea.movil.MovilRegistro.registrar(modBus);
         // ---- Armas de fuego: se encuentran en cofres (Global Loot Modifier)
         com.miscelanea.armasfuego.BotinArmas.registrar(modBus);
+        com.miscelanea.armasfuego.comun.ArmasFuegoRegistro.registrar(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::creativeTabs);
@@ -184,6 +185,21 @@ public class Miscelanea {
             event.accept(ModItems.BALA_TRAZADORA);
             event.accept(ModItems.BALA_CUERDA);
             event.accept(ModItems.CASQUILLO_RIFLE);
+            event.accept(ModItems.REVOLVER_TIEMPO);
+            for (int c = 0; c < 16; c++) event.accept(com.miscelanea.armasfuego.rifle.Pintura.bala(c));
+            // ---- Armas de fuego (segunda tanda)
+            event.accept(ModItems.GATLING);
+            event.accept(ModItems.CINTA_GATLING);
+            event.accept(ModItems.WINCHESTER);
+            event.accept(ModItems.DERRINGER);
+            event.accept(ModItems.BALA_DERRINGER);
+            event.accept(com.miscelanea.armasfuego.oeste.EstucheViolinItem.con(new net.minecraft.world.item.ItemStack(ModItems.THOMPSON.get())));
+            event.accept(ModItems.THOMPSON);
+            event.accept(ModItems.ESTUCHE_VIOLIN);
+            event.accept(ModItems.CARGADOR_THOMPSON);
+            event.accept(ModItems.MOSQUETE);
+            event.accept(ModItems.BOLA_MOSQUETE);
+            event.accept(ModItems.CANON_MANO);
             for (int c = 0; c < com.miscelanea.laser.Laser.COLORES.length; c++) {
                 net.minecraft.world.item.ItemStack laser = new net.minecraft.world.item.ItemStack(com.miscelanea.laser.LaserRegistro.PUNTERO.get());
                 if (c > 0) laser.getOrCreateTag().putInt(com.miscelanea.laser.Laser.COLOR, c);

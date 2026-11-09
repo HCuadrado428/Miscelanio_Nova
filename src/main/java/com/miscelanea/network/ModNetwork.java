@@ -306,5 +306,11 @@ public final class ModNetwork {
                 .decoder(com.miscelanea.armasfuego.rifle.TirolinasPacket::new)
                 .consumerMainThread(com.miscelanea.armasfuego.rifle.TirolinasPacket::handle)
                 .add();
+        // ---- Gatling (al final: paquete nuevo)
+        CHANNEL.messageBuilder(com.miscelanea.armasfuego.gatling.GatlingPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.armasfuego.gatling.GatlingPacket::encode)
+                .decoder(com.miscelanea.armasfuego.gatling.GatlingPacket::new)
+                .consumerMainThread(com.miscelanea.armasfuego.gatling.GatlingPacket::handle)
+                .add();
     }
 }
