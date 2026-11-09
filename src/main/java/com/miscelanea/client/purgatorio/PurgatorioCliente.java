@@ -190,12 +190,15 @@ public final class PurgatorioCliente {
                 case RECREATIVA -> com.miscelanea.registry.ModSounds.PURGATORIO_RECREATIVA.get();
                 case HOTEL -> com.miscelanea.registry.ModSounds.PURGATORIO_HOTEL.get();
                 case SIN_TEXTURA -> com.miscelanea.registry.ModSounds.PURGATORIO_SIN_TEXTURA.get();
-                default -> com.miscelanea.registry.ModSounds.PURGATORIO_SALA.get();
+                case PISCINA -> com.miscelanea.registry.ModSounds.PURGATORIO_PISCINA.get();
+                case APARCAMIENTO -> com.miscelanea.registry.ModSounds.PURGATORIO_APARCAMIENTO.get();
+                case COLEGIO -> com.miscelanea.registry.ModSounds.PURGATORIO_COLEGIO.get();
+                case CENTRO -> com.miscelanea.registry.ModSounds.PURGATORIO_CENTRO.get();
             };
         }
 
-        /** Volumen de cada bucle a tope: los cinco igualados a unos -25 LUFS (medidos: feria -24,6, hotel -26,5,
-         * recreativa -21,3, sala -27 y sin texturas -20,3). */
+        /** Volumen de cada bucle a tope: todos igualados (medidos en LUFS: feria -24,6, hotel -26,5, recreativa -21,3,
+         * sala -27, sin texturas -20,3, piscina -24,3, garaje -19, colegio -25,4 y centro comercial -19,9). */
         static float ganancia(PurgatorioGenerador.Zona z) {
             return switch (z) {
                 case FERIA -> 0.50F;
@@ -203,7 +206,10 @@ public final class PurgatorioCliente {
                 case RECREATIVA -> 0.36F;
                 case HOTEL -> 0.60F;
                 case SIN_TEXTURA -> 0.33F;
-                default -> 0.6F;
+                case PISCINA -> 0.48F;
+                case APARCAMIENTO -> 0.26F;
+                case COLEGIO -> 0.55F;
+                case CENTRO -> 0.29F;
             };
         }
 
@@ -290,6 +296,7 @@ public final class PurgatorioCliente {
                 // pasos que vienen por detrás y se paran
                 net.minecraft.sounds.SoundEvent paso = switch (z) {
                     case RECREATIVA, HOTEL -> net.minecraft.sounds.SoundEvents.WOOL_STEP;
+                    case PISCINA, CENTRO -> net.minecraft.sounds.SoundEvents.CALCITE_STEP;
                     case SIN_TEXTURA -> net.minecraft.sounds.SoundEvents.GRASS_STEP;
                     default -> net.minecraft.sounds.SoundEvents.STONE_STEP;
                 };
@@ -345,7 +352,42 @@ public final class PurgatorioCliente {
                     else
                         COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.ENDERMAN_TELEPORT, x, y, zz, 0.3F, 0.5F));
                 }
-                default -> COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.WOOD_PLACE, x, y - 1, zz, 0.5F, 0.55F));
+                case PISCINA -> {
+                    if (tipo == 1)
+                        // algo que cae al agua (al dedo de agua) al fondo de la piscina
+                        COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.GENERIC_SPLASH, x, y - 1, zz, 0.35F, 0.6F));
+                    else
+                        // el silbato del socorrista, lejos y desafinado
+                        COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.NOTE_BLOCK_FLUTE.value(), x, y + 1, zz, 0.4F, 1.7F));
+                }
+                case APARCAMIENTO -> {
+                    if (tipo == 1)
+                        // la puerta de un coche que se cierra, al fondo de la planta
+                        COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.IRON_DOOR_CLOSE, x, y, zz, 0.5F, 0.7F));
+                    else {
+                        // una alarma que empieza y se calla enseguida
+                        for (int i = 0; i < 4; i++)
+                            COLA.add(new Susto(edad + i * 7, net.minecraft.sounds.SoundEvents.NOTE_BLOCK_BIT.value(), x, y, zz, 0.3F, i % 2 == 0 ? 1.4F : 1.1F));
+                    }
+                }
+                case COLEGIO -> {
+                    if (tipo == 1) {
+                        // un balón que bota en el gimnasio
+                        for (int i = 0; i < 4; i++)
+                            COLA.add(new Susto(edad + i * (9 - i * 2), net.minecraft.sounds.SoundEvents.WOOL_PLACE, x, y - 1, zz, 0.5F - i * 0.1F, 0.6F));
+                    } else
+                        // el timbre del recreo, ahogado, como si sonara en otro edificio
+                        COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.NOTE_BLOCK_BELL.value(), x, y + 2, zz, 0.35F, 0.6F));
+                }
+                case CENTRO -> {
+                    if (tipo == 1)
+                        // una persiana que alguien sube un poco y vuelve a bajar
+                        COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.CHAIN_STEP, x, y, zz, 0.6F, 0.5F));
+                    else
+                        // el aviso de megafonía (las tres notas) sin aviso detrás
+                        for (int i = 0; i < 3; i++)
+                            COLA.add(new Susto(edad + i * 8, net.minecraft.sounds.SoundEvents.NOTE_BLOCK_CHIME.value(), x, y + 3, zz, 0.35F, new float[]{1.19F, 0.94F, 0.79F}[i]));
+                }
             }
         }
 

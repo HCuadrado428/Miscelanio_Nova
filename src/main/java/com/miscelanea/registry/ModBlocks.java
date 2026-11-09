@@ -119,6 +119,55 @@ public final class ModBlocks {
     public static final RegistryObject<Block> BOTONERA = BLOCKS.register("botonera",
             () -> new com.miscelanea.purgatorio.BotoneraBlock(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(1.0F)
                     .sound(SoundType.METAL).noOcclusion().noCollission().lightLevel(st -> 4)));
+    // El Purgatorio (2.0.0): la piscina vacía, el garaje, el colegio de noche y el centro comercial cerrado
+    public static final RegistryObject<Block> AZULEJO_PISCINA = BLOCKS.register("azulejo_piscina",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> AZULEJO_PISCINA_AZUL = BLOCKS.register("azulejo_piscina_azul",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> AZULEJO_PISCINA_RAYA = BLOCKS.register("azulejo_piscina_raya",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLUE).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> BORDE_PISCINA = BLOCKS.register("borde_piscina",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.SAND).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> AGUA_POCA = BLOCKS.register("agua_poca",
+            () -> new com.miscelanea.purgatorio.AguaPocaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WATER).strength(0.2F).sound(SoundType.WET_GRASS).noCollission().noOcclusion()));
+    public static final RegistryObject<Block> FOCO = BLOCKS.register("foco",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.0F).sound(SoundType.GLASS).lightLevel(st -> 15)));
+    public static final RegistryObject<Block> SUELO_APARCAMIENTO = BLOCKS.register("suelo_aparcamiento",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> SUELO_APARCAMIENTO_RAYA = BLOCKS.register("suelo_aparcamiento_raya",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> SUELO_APARCAMIENTO_FLECHA = BLOCKS.register("suelo_aparcamiento_flecha",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> TECHO_APARCAMIENTO = BLOCKS.register("techo_aparcamiento",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> PARED_APARCAMIENTO = BLOCKS.register("pared_aparcamiento",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> PARED_APARCAMIENTO_FRANJA = BLOCKS.register("pared_aparcamiento_franja",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> COLUMNA_APARCAMIENTO = BLOCKS.register("columna_aparcamiento",
+            () -> new com.miscelanea.purgatorio.NumeradoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLUE).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> COLUMNA_APARCAMIENTO_BASE = BLOCKS.register("columna_aparcamiento_base",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> SUELO_COLEGIO = BLOCKS.register("suelo_colegio",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.SAND).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> PARED_COLEGIO = BLOCKS.register("pared_colegio",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.SAND).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> PARED_COLEGIO_ZOCALO = BLOCKS.register("pared_colegio_zocalo",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> TAQUILLA = BLOCKS.register("taquilla",
+            () -> new com.miscelanea.purgatorio.TaquillaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLUE).strength(2.0F, 6.0F).sound(SoundType.METAL)));
+    public static final RegistryObject<Block> PIZARRA = BLOCKS.register("pizarra",
+            () -> new com.miscelanea.purgatorio.MitadBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(1.5F).sound(SoundType.WOOD)));
+    public static final RegistryObject<Block> RELOJ_PARADO = BLOCKS.register("reloj_parado",
+            () -> new com.miscelanea.purgatorio.RelojParadoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).strength(0.5F).sound(SoundType.WOOD).noCollission().noOcclusion()));
+    public static final RegistryObject<Block> SUELO_CENTRO = BLOCKS.register("suelo_centro",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.SAND).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> PERSIANA = BLOCKS.register("persiana",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0F, 6.0F).sound(SoundType.METAL)));
+    public static final RegistryObject<Block> ROTULO_TIENDA = BLOCKS.register("rotulo_tienda",
+            () -> new com.miscelanea.purgatorio.NumeradoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(1.0F).sound(SoundType.GLASS)));
+    public static final RegistryObject<Block> ESCALERA_MECANICA = BLOCKS.register("escalera_mecanica",
+            () -> new net.minecraft.world.level.block.StairBlock(() -> net.minecraft.world.level.block.Blocks.IRON_BLOCK.defaultBlockState(), BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0F, 6.0F).sound(SoundType.METAL)));
     /** Recreativa fundida de la Recreativa Infinita (sin bloque-entidad: no se enciende ni suelta nada). */
     public static final RegistryObject<Block> RECREATIVA_APAGADA = BLOCKS.register("recreativa_apagada",
             () -> new com.miscelanea.purgatorio.RecreativaApagadaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE)

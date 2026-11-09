@@ -2585,5 +2585,37 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.purgatorio_tele"
+  },
+  "purgatorio_piscina": {
+    "sounds": [
+      {
+        "name": "miscelanea:purgatorio/piscina",
+        "stream": true
+      }
+    ]
+  },
+  "purgatorio_aparcamiento": {
+    "sounds": [
+      {
+        "name": "miscelanea:purgatorio/aparcamiento",
+        "stream": true
+      }
+    ]
+  },
+  "purgatorio_colegio": {
+    "sounds": [
+      {
+        "name": "miscelanea:purgatorio/colegio",
+        "stream": true
+      }
+    ]
+  },
+  "purgatorio_centro": {
+    "sounds": [
+      {
+        "name": "miscelanea:purgatorio/centro",
+        "stream": true
+      }
+    ]
   }
 }

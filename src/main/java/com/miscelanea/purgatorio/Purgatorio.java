@@ -77,9 +77,13 @@ public final class Purgatorio {
             Habitantes.tick(p);
             // el pasillo que vuelve al mismo sitio: pasada la raya, 20 bloques atrás sin que se note (relativo: no se
             // pierde ni la velocidad ni hacia dónde se mira)
+            // (una vez y espera: hasta que el cliente confirma, el servidor le sigue viendo donde estaba)
             int dz = PurgatorioPlano.bucle(p.getX(), p.getY(), p.getZ());
-            if (dz != 0 && !p.isPassenger())
+            long ya = ((ServerLevel) l).getGameTime();
+            if (dz != 0 && !p.isPassenger() && ya - BUCLE.getOrDefault(p.getUUID(), -100L) > 40) {
+                BUCLE.put(p.getUUID(), ya);
                 p.connection.teleport(p.getX(), p.getY(), p.getZ() + dz, p.getYRot(), p.getXRot(), java.util.EnumSet.allOf(net.minecraft.world.entity.RelativeMovement.class));
+            }
             ascensor(p);
             // la puerta de salida también se mira aquí (si el jugador no se mueve, el bloque no se entera)
             if (p.tickCount % 5 == 0) {
@@ -125,6 +129,7 @@ public final class Purgatorio {
     public static void fuera(PlayerEvent.PlayerLoggedOutEvent e) {
         Habitantes.olvidar(e.getEntity().getUUID());
         VIAJES.remove(e.getEntity().getUUID());
+        BUCLE.remove(e.getEntity().getUUID());
     }
 
     /** Lleva al jugador al Purgatorio (guardando de dónde viene). */
@@ -242,6 +247,8 @@ public final class Purgatorio {
     // ------------------------------------------------------------------ ascensor
     private record Viaje(long t, int dy, BlockPos boton) {}
 
+    /** Cuándo se le devolvió por última vez en el pasillo que vuelve (para no hacerlo dos veces seguidas). */
+    private static final java.util.Map<java.util.UUID, Long> BUCLE = new java.util.concurrent.ConcurrentHashMap<>();
     private static final java.util.Map<java.util.UUID, Viaje> VIAJES = new java.util.concurrent.ConcurrentHashMap<>();
 
     /**
@@ -423,6 +430,18 @@ public final class Purgatorio {
                                 int xa = x0 == 0 ? 1 : 14, zc = z0 == 0 ? 1 : 14;
                                 // tumbado en la cama (de pie encima), mirando la tele de los pies
                                 return new BlockPos[]{new BlockPos(bx + xa, f + 1, bz + zc), new BlockPos(bx + xa, f + 1, bz + zc + 3 * dz)};
+                            }
+                            case PISCINA -> {
+                                return new BlockPos[]{new BlockPos(bx + 12, f, bz + 8), new BlockPos(bx + 12, f - 3, bz + 12)};
+                            }
+                            case APARCAMIENTO -> {
+                                return new BlockPos[]{new BlockPos(bx + 13, f, bz + 7), new BlockPos(bx + 12, f, bz + 11)};
+                            }
+                            case COLEGIO -> {
+                                return new BlockPos[]{new BlockPos(bx + 3, f, bz + 5), new BlockPos(bx + 3, f + 1, bz)};
+                            }
+                            case CENTRO -> {
+                                return new BlockPos[]{new BlockPos(bx + 3, f, bz + 8), new BlockPos(bx + 3, f + 1, bz + 1)};
                             }
                             default -> {
                                 return null;

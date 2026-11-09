@@ -1,0 +1,95 @@
+{
+ "parent": "minecraft:block/block",
+ "render_type": "minecraft:cutout",
+ "textures": {
+  "particle": "miscelanea:block/reloj_parado",
+  "r": "miscelanea:block/reloj_parado",
+  "c": "minecraft:block/black_concrete"
+ },
+ "elements": [
+  {
+   "from": [
+    2,
+    2,
+    15
+   ],
+   "to": [
+    14,
+    14,
+    16
+   ],
+   "faces": {
+    "north": {
+     "texture": "#r",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ]
+    },
+    "south": {
+     "texture": "#c",
+     "cullface": "south"
+    },
+    "east": {
+     "texture": "#c",
+     "uv": [
+      0,
+      0,
+      1,
+      12
+     ]
+    },
+    "west": {
+     "texture": "#c",
+     "uv": [
+      0,
+      0,
+      1,
+      12
+     ]
+    },
+    "up": {
+     "texture": "#c",
+     "uv": [
+      0,
+      0,
+      12,
+      1
+     ]
+    },
+    "down": {
+     "texture": "#c",
+     "uv": [
+      0,
+      0,
+      12,
+      1
+     ]
+    }
+   }
+  }
+ ],
+ "display": {
+  "gui": {
+   "rotation": [
+    0,
+    180,
+    0
+   ],
+   "scale": [
+    1.2,
+    1.2,
+    1.2
+   ]
+  },
+  "fixed": {
+   "rotation": [
+    0,
+    180,
+    0
+   ]
+  }
+ }
+}

@@ -68,8 +68,8 @@ public final class PurgatorioPlano {
             {22, 14, 12, 14, 10, 9, 9, 10},
             {14, 10, 17, 14, 21, 12, 12},
             {12, 9, 13, 12, 34, 10, 10}};
-    /** Mientras no estén hechas, las zonas nuevas se cambian por estas (ver {@link #hecha}). */
-    static boolean nuevas = false;
+    /** Si se apagan las zonas nuevas (para comparar con el Purgatorio de antes), se cambian por las de siempre (ver {@link #hecha}). */
+    static boolean nuevas = true;
 
     static boolean hecha(Zona z) {
         return nuevas || z.ordinal() <= Zona.SIN_TEXTURA.ordinal();

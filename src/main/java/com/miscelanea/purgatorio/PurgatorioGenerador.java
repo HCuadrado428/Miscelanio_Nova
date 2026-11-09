@@ -146,6 +146,18 @@ public class PurgatorioGenerador extends ChunkGenerator {
             case RECREATIVA -> {
                 return entero(n, cx, cz) && recreativaRara(n, cx, cz) ? 4 : -1;
             }
+            case PISCINA -> {
+                return entero(n, cx, cz) && piscinaRara(n, cx, cz) ? 4 : -1;
+            }
+            case APARCAMIENTO -> {
+                return entero(n, cx, cz) && garajeRaro(n, cx, cz) ? 4 : -1;
+            }
+            case COLEGIO -> {
+                return !ocupada(n, cx, cz, 0) && aulaRara(n, cx, cz) ? 0 : -1;
+            }
+            case CENTRO -> {
+                return !ocupada(n, cx, cz, 0) && tiendaRara(n, cx, cz) ? 0 : -1;
+            }
             case FERIA -> {
                 for (int k = 0; k < 4; k++)
                     if (!ocupada(n, cx, cz, k) && h(cx, cz, 20 + k) % 10 < 4 && casetaAbierta(cx, cz, k)) return k;
@@ -237,6 +249,17 @@ public class PurgatorioGenerador extends ChunkGenerator {
 
     static final BlockState AIRE = Blocks.AIR.defaultBlockState();
 
+    /**
+     * Barrotes, vallas y cristales ya unidos (al generar no se avisa a los vecinos y saldrían como postes sueltos):
+     * ns = unidos de norte a sur, eo = de este a oeste.
+     */
+    static BlockState unida(Block b, boolean ns, boolean eo) {
+        return b.defaultBlockState().setValue(net.minecraft.world.level.block.CrossCollisionBlock.NORTH, ns)
+                .setValue(net.minecraft.world.level.block.CrossCollisionBlock.SOUTH, ns)
+                .setValue(net.minecraft.world.level.block.CrossCollisionBlock.EAST, eo)
+                .setValue(net.minecraft.world.level.block.CrossCollisionBlock.WEST, eo);
+    }
+
     @Override
     public CompletableFuture<ChunkAccess> fillFromNoise(Executor e, Blender bl, RandomState r, StructureManager sm, ChunkAccess c) {
         Lienzo l = new Lienzo(c);
@@ -256,7 +279,10 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 case RECREATIVA -> recreativa(l, n, f, cx, cz);
                 case HOTEL -> hotel(l, n, f, cx, cz);
                 case SIN_TEXTURA -> sinTextura(l, f, cx, cz);
-                default -> sala(l, n, f, cx, cz);
+                case PISCINA -> piscina(l, n, f, cx, cz);
+                case APARCAMIENTO -> aparcamiento(l, n, f, cx, cz);
+                case COLEGIO -> colegio(l, n, f, cx, cz);
+                case CENTRO -> centro(l, n, f, cx, cz);
             }
             if (PurgatorioPlano.salida(n, cx, cz)) puertaSalida(l, f, z);
             if (n == 0) contagio(l, f, cx, cz, z);
@@ -375,8 +401,8 @@ public class PurgatorioGenerador extends ChunkGenerator {
 
     private static void taquilla(Lienzo l, int f, int qx, int qz) {
         l.caja(qx + 2, f, qz + 2, qx + 4, f + 2, qz + 4, d(Blocks.WHITE_TERRACOTTA));
-        l.pon(qx + 3, f + 1, qz + 2, d(Blocks.GLASS_PANE));
-        l.pon(qx + 3, f + 1, qz + 4, d(Blocks.GLASS_PANE));
+        l.pon(qx + 3, f + 1, qz + 2, unida(Blocks.GLASS_PANE, false, true));
+        l.pon(qx + 3, f + 1, qz + 4, unida(Blocks.GLASS_PANE, false, true));
         l.caja(qx + 1, f + 3, qz + 1, qx + 5, f + 3, qz + 5, d(Blocks.RED_CONCRETE));
         l.pon(qx + 3, f + 4, qz + 3, Blocks.SMOOTH_STONE_SLAB.defaultBlockState().setValue(SlabBlock.TYPE, SlabType.BOTTOM));
     }
@@ -445,7 +471,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
                         for (int y = 0; y < i; y++) l.pon(10 + i, f + y, z, d(Blocks.SMOOTH_QUARTZ));
                         l.pon(10 + i, f + i, z, escalon(Blocks.QUARTZ_STAIRS, Direction.EAST));
                     }
-                for (int i = 0; i < 4; i++) l.pon(10 + i, f + i + 1, 14, d(Blocks.IRON_BARS));
+                for (int i = 0; i < 4; i++) l.pon(10 + i, f + i + 1, 14, unida(Blocks.IRON_BARS, false, true));
             } else {
                 // un mostrador de "turnos" con su planta
                 l.caja(5, f, 6, 10, f, 6, d(Blocks.SMOOTH_QUARTZ));
@@ -778,7 +804,10 @@ public class PurgatorioGenerador extends ChunkGenerator {
             case RECREATIVA -> ModBlocks.MOQUETA_RECREATIVA.get().defaultBlockState();
             case HOTEL -> ModBlocks.MOQUETA_HOTEL.get().defaultBlockState();
             case SIN_TEXTURA -> ModBlocks.SIN_TEXTURA.get().defaultBlockState();
-            default -> d(Blocks.SMOOTH_STONE);
+            case PISCINA -> ModBlocks.AZULEJO_PISCINA.get().defaultBlockState();
+            case APARCAMIENTO -> ModBlocks.SUELO_APARCAMIENTO.get().defaultBlockState();
+            case COLEGIO -> ModBlocks.SUELO_COLEGIO.get().defaultBlockState();
+            case CENTRO -> ModBlocks.SUELO_CENTRO.get().defaultBlockState();
         };
     }
 
@@ -822,7 +851,10 @@ public class PurgatorioGenerador extends ChunkGenerator {
             case RECREATIVA -> d(Blocks.BLACK_CONCRETE);
             case HOTEL -> d(Blocks.DARK_OAK_PLANKS);
             case SIN_TEXTURA -> ModBlocks.SIN_TEXTURA.get().defaultBlockState();
-            default -> d(Blocks.SMOOTH_STONE);
+            case PISCINA -> ModBlocks.AZULEJO_PISCINA_AZUL.get().defaultBlockState();
+            case APARCAMIENTO -> ModBlocks.COLUMNA_APARCAMIENTO_BASE.get().defaultBlockState();
+            case COLEGIO -> ModBlocks.PARED_COLEGIO_ZOCALO.get().defaultBlockState();
+            case CENTRO -> d(Blocks.SMOOTH_QUARTZ);
         };
         int zz = 3;
         for (int y = 0; y < 4; y++) {
@@ -870,14 +902,14 @@ public class PurgatorioGenerador extends ChunkGenerator {
             // paredes del túnel, y arriba (z = 0..3) la barandilla del hueco en el piso n
             int alto = z <= 3 ? f : s + 3;
             for (int y = s - 2; y <= alto; y++) {
-                BlockState b = y == f ? d(Blocks.IRON_BARS) : pared;
+                BlockState b = y == f ? unida(Blocks.IRON_BARS, true, false) : pared;
                 l.pon(6, y, z, b);
                 l.pon(9, y, z, b);
             }
         }
         // barandilla al final del hueco, en el piso n (para no caerse desde el puente)
-        l.pon(7, f, 4, d(Blocks.IRON_BARS));
-        l.pon(8, f, 4, d(Blocks.IRON_BARS));
+        l.pon(7, f, 4, unida(Blocks.IRON_BARS, false, true));
+        l.pon(8, f, 4, unida(Blocks.IRON_BARS, false, true));
     }
 
     // ------------------------------------------------------------------ ascensor
@@ -944,6 +976,9 @@ public class PurgatorioGenerador extends ChunkGenerator {
             case PABELLON -> pabellon(l, f, g);
             case VESTIBULO -> vestibulo(l, f, g);
             case BUCLE -> bucle(l, f, g);
+            case PISCINA_OLIMPICA -> piscinaOlimpica(l, f, g);
+            case GIMNASIO -> gimnasio(l, f, g);
+            case ATRIO -> atrio(l, f, g);
             default -> salaEnorme(l, f, g);
         }
     }
@@ -989,8 +1024,9 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 for (int y = 1; y < 7; y++) l.pon(sx, f + y, sz, d(Blocks.CHAIN));
             }
         // farolillos colgando (fuera de la pista, del techo; dentro, de la red)
-        for (int x = 4; x < W - 3; x += 8)
-            for (int z = 4; z < D - 3; z += 8) {
+        for (int x = 4; x < W - 3; x += 4)
+            for (int z = 4; z < D - 3; z += 4) {
+                if ((x % 8 != 4 || z % 8 != 4) && !(x >= px0 && x <= px1 && z >= pz0 && z <= pz1 && (z & 1) == 0)) continue;
                 boolean viva = h(g.x0() + x, g.z0() + z, 601) % 4 != 0;
                 boolean pista = x >= px0 && x <= px1 && z >= pz0 && z <= pz1;
                 BlockState fa = viva ? Blocks.LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, true) : d(Blocks.CHAIN);
@@ -1060,11 +1096,14 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 boolean negro = ((x >> 1) + (z >> 1) & 1) == 0;
                 boolean alfombra = (x == 23 || x == 24) && z >= 6;
                 l.pon(x, f - 1, z, alfombra ? ModBlocks.MOQUETA_HOTEL.get().defaultBlockState() : d(negro ? Blocks.POLISHED_BLACKSTONE : Blocks.QUARTZ_BLOCK));
-                if (x % 6 == 3 && z % 6 == 3) l.pon(x, f + 8, z, d(Blocks.OCHRE_FROGLIGHT));
+                if (x % 4 == 2 && z % 4 == 2) l.pon(x, f + 8, z, d(Blocks.OCHRE_FROGLIGHT));
             }
-        // columnas
-        for (int[] c : new int[][]{{12, 10}, {35, 10}, {12, 22}, {35, 22}})
+        // columnas, con un aplique a cada lado
+        for (int[] c : new int[][]{{12, 10}, {35, 10}, {12, 22}, {35, 22}}) {
             for (int y = 0; y < 8; y++) l.pon(c[0], f + y, c[1], d(Blocks.QUARTZ_PILLAR));
+            for (Direction dd : LADOS)
+                l.pon(c[0] + dd.getStepX(), f + 3, c[1] + dd.getStepZ(), Blocks.WALL_TORCH.defaultBlockState().setValue(WallTorchBlock.FACING, dd));
+        }
         // recepción: el mostrador, el timbre, una lámpara y los casilleros de las llaves en la pared
         for (int x = 15; x <= 32; x++) {
             l.pon(x, f, 5, d(Blocks.DARK_OAK_PLANKS));
@@ -1086,7 +1125,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
             }
             for (int x : new int[]{29, 36}) {
                 for (int y = 0; y <= i; y++) l.pon(x, f + y, z, d(Blocks.QUARTZ_BLOCK));
-                l.pon(x, f + i + 1, z, d(Blocks.DARK_OAK_FENCE));
+                l.pon(x, f + i + 1, z, unida(Blocks.DARK_OAK_FENCE, true, false));
             }
         }
         // los ascensores de la pared del oeste: puertas de hierro (no abren) con su marco y su piloto apagado
@@ -1114,12 +1153,13 @@ public class PurgatorioGenerador extends ChunkGenerator {
         // dos lámparas de araña
         for (int[] c : new int[][]{{18, 16}, {40, 16}}) {
             l.pon(c[0], f + 7, c[1], d(Blocks.CHAIN));
-            l.pon(c[0], f + 6, c[1], d(Blocks.GOLD_BLOCK));
+            l.pon(c[0], f + 6, c[1], d(Blocks.CHAIN));
             BlockState fa = Blocks.LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, true);
-            l.pon(c[0], f + 5, c[1], fa);
+            l.pon(c[0], f + 5, c[1], d(Blocks.SHROOMLIGHT));
+            l.pon(c[0], f + 4, c[1], fa);
             for (Direction dd : LADOS) {
-                l.pon(c[0] + dd.getStepX(), f + 6, c[1] + dd.getStepZ(), d(Blocks.GOLD_BLOCK));
-                l.pon(c[0] + dd.getStepX(), f + 5, c[1] + dd.getStepZ(), fa);
+                l.pon(c[0] + dd.getStepX(), f + 5, c[1] + dd.getStepZ(), unida(Blocks.IRON_BARS, dd.getAxis() == Direction.Axis.Z, dd.getAxis() == Direction.Axis.X));
+                l.pon(c[0] + dd.getStepX(), f + 4, c[1] + dd.getStepZ(), fa);
             }
         }
     }
@@ -1134,7 +1174,15 @@ public class PurgatorioGenerador extends ChunkGenerator {
         int D = g.d() * 16;
         BlockState suelo, techo, pared, zocalo, luz;
         Block puerta;
-        if (g.zona() == Zona.HOTEL) {
+        boolean colegio = g.zona() == Zona.COLEGIO;
+        if (colegio) {
+            suelo = ModBlocks.SUELO_COLEGIO.get().defaultBlockState();
+            techo = ModBlocks.TECHO_SALA.get().defaultBlockState();
+            pared = ModBlocks.PARED_COLEGIO.get().defaultBlockState();
+            zocalo = ModBlocks.PARED_COLEGIO_ZOCALO.get().defaultBlockState();
+            luz = ModBlocks.FLUORESCENTE.get().defaultBlockState();
+            puerta = Blocks.OAK_DOOR;
+        } else if (g.zona() == Zona.HOTEL) {
             suelo = ModBlocks.MOQUETA_HOTEL.get().defaultBlockState();
             techo = d(Blocks.SMOOTH_SANDSTONE);
             pared = ModBlocks.PAPEL_HOTEL.get().defaultBlockState();
@@ -1162,6 +1210,11 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 l.pon(6, f + y, z, y == 0 ? zocalo : pared);
                 l.pon(9, f + y, z, y == 0 ? zocalo : pared);
             }
+            if (colegio && z > 0 && z < D - 1 && z % 4 != 1) {
+                // en el colegio, taquillas a los dos lados entre puerta y puerta
+                taquillas(l, f, 6, z, Direction.EAST);
+                taquillas(l, f, 9, z, Direction.WEST);
+            }
             if (z % 4 == 1 && z < D - 1) {
                 // una puerta a cada lado, que al abrirla da a la pared
                 BlockState pe = puerta.defaultBlockState().setValue(DoorBlock.FACING, Direction.EAST);
@@ -1183,6 +1236,552 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 l.pon(x, f + y, 0, paso ? AIRE : y == 3 && (x == 7 || x == 8) ? zocalo : pared);
                 l.pon(x, f + y, D - 1, pared);
             }
+    }
+
+    // ------------------------------------------------------------------ Piscina vacía
+    /** La piscina a oscuras con un solo foco encendido y un flotador en el fondo seco (una de cada 17). */
+    public static boolean piscinaRara(int n, int cx, int cz) {
+        return hn(n, cx, cz, 142) % 17 == 0 && !PurgatorioPlano.salida(n, cx, cz);
+    }
+
+    /**
+     * Piscinas cubiertas, de azulejo, sin agua (o con un dedo de agua en el fondo), con su escalerilla, gradas, la silla
+     * del socorrista y focos en el techo. Suenan las gotas con eco.
+     */
+    private static void piscina(Lienzo l, int n, int f, int cx, int cz) {
+        boolean rara = zona(n, cx, cz) == Zona.PISCINA && raro(n, cx, cz) == 4;
+        BlockState blanco = ModBlocks.AZULEJO_PISCINA.get().defaultBlockState(), azul = ModBlocks.AZULEJO_PISCINA_AZUL.get().defaultBlockState();
+        BlockState foco = ModBlocks.FOCO.get().defaultBlockState();
+        for (int x = 0; x < 16; x++)
+            for (int z = 0; z < 16; z++) {
+                l.pon(x, f - 1, z, blanco);
+                l.pon(x, f - 2, z, d(Blocks.STONE));
+                boolean luz = x % 5 == 2 && z % 5 == 2;
+                boolean encendido = rara ? x == 12 && z == 12 : hn(n, cx * 16 + x, cz * 16 + z, 3) % 5 != 0;
+                l.pon(x, f + 6, z, luz ? (encendido ? foco : d(Blocks.GRAY_CONCRETE)) : d(Blocks.SMOOTH_QUARTZ));
+            }
+        for (int k = 0; k < 4; k++) {
+            int qx = PurgatorioPlano.PARCELAS[k][0], qz = PurgatorioPlano.PARCELAS[k][1];
+            if (ocupada(n, cx, cz, k)) continue;
+            if (rara) {
+                if (k == 3) pileta(l, f, qx, qz, false, true);
+                continue;
+            }
+            int t = (int) (hn(n, cx, cz, 190 + k) % 10);
+            if (t < 6) pileta(l, f, qx, qz, hn(n, cx, cz, 195 + k) % 3 == 0, false);
+            else if (t < 8) gradas(l, f, qx, qz, qz == 0);
+            else if (t == 8) socorrista(l, f, qx, qz);
+            else {
+                // un banco del vestuario y una papelera
+                for (int x = qx + 2; x <= qx + 4; x++) l.pon(x, f, qz + 3, d(Blocks.BIRCH_SLAB));
+                l.pon(qx + 5, f, qz + 3, d(Blocks.CAULDRON));
+            }
+        }
+        for (Direction dd : LADOS) {
+            int nx = cx + dd.getStepX(), nz = cz + dd.getStepZ();
+            if (zona(n, nx, nz) == Zona.PISCINA && PurgatorioPlano.grande(n, nx, nz) == null) continue;
+            tabique(l, f, dd, 6, azul, blanco, 3, blanco);
+        }
+    }
+
+    /** Una piscina de 5 x 5 en la parcela: dos de hondo, el fondo azul con su raya, el borde y la escalerilla. */
+    private static void pileta(Lienzo l, int f, int qx, int qz, boolean agua, boolean flotador) {
+        BlockState azul = ModBlocks.AZULEJO_PISCINA_AZUL.get().defaultBlockState(), raya = ModBlocks.AZULEJO_PISCINA_RAYA.get().defaultBlockState();
+        BlockState borde = ModBlocks.BORDE_PISCINA.get().defaultBlockState();
+        for (int x = qx; x <= qx + 6; x++)
+            for (int z = qz; z <= qz + 6; z++) {
+                boolean dentro = x > qx && x < qx + 6 && z > qz && z < qz + 6;
+                if (dentro) {
+                    l.pon(x, f - 1, z, AIRE);
+                    l.pon(x, f - 2, z, agua ? ModBlocks.AGUA_POCA.get().defaultBlockState() : AIRE);
+                    l.pon(x, f - 3, z, z == qz + 3 ? raya : azul);
+                } else {
+                    l.pon(x, f - 1, z, borde);
+                    l.pon(x, f - 2, z, azul);
+                }
+            }
+        BlockState esc = Blocks.LADDER.defaultBlockState().setValue(net.minecraft.world.level.block.LadderBlock.FACING, Direction.SOUTH);
+        l.pon(qx + 3, f - 2, qz + 1, esc);
+        l.pon(qx + 3, f - 1, qz + 1, esc);
+        if (flotador) {
+            // el flotador en el fondo seco: un anillo rojo y blanco
+            int i = 0;
+            for (int x = -1; x <= 1; x++)
+                for (int z = -1; z <= 1; z++)
+                    if (x != 0 || z != 0) l.pon(qx + 3 + x, f - 2, qz + 3 + z, d(i++ % 2 == 0 ? Blocks.RED_CARPET : Blocks.WHITE_CARPET));
+        }
+    }
+
+    /** Gradas de tres filas, de espaldas a la calle. */
+    private static void gradas(Lienzo l, int f, int qx, int qz, boolean norte) {
+        for (int i = 0; i < 3; i++) {
+            int z = norte ? qz + 5 - i : qz + 1 + i;
+            for (int x = qx + 1; x <= qx + 5; x++) {
+                for (int y = 0; y < i; y++) l.pon(x, f + y, z, d(Blocks.SMOOTH_QUARTZ));
+                l.pon(x, f + i, z, escalon(Blocks.QUARTZ_STAIRS, norte ? Direction.NORTH : Direction.SOUTH));
+            }
+        }
+    }
+
+    /** La silla alta del socorrista, vacía, con el flotador colgado. */
+    private static void socorrista(Lienzo l, int f, int qx, int qz) {
+        int x = qx + 3, z = qz + 3;
+        l.pon(x, f, z, d(Blocks.BIRCH_FENCE));
+        l.pon(x, f + 1, z, d(Blocks.BIRCH_FENCE));
+        l.pon(x, f + 2, z, escalon(Blocks.BIRCH_STAIRS, qz == 0 ? Direction.NORTH : Direction.SOUTH));
+        l.pon(x, f + 3, z + (qz == 0 ? -1 : 1), d(Blocks.WHITE_WOOL));
+        l.pon(x + 1, f, z, d(Blocks.RED_CARPET));
+        l.pon(x + 1, f, z + 1, d(Blocks.WHITE_CARPET));
+    }
+
+    // ------------------------------------------------------------------ Aparcamiento subterráneo
+    /** La plaza del fondo con el coche de los faros encendidos, y el resto a oscuras (una de cada 19). */
+    public static boolean garajeRaro(int n, int cx, int cz) {
+        return hn(n, cx, cz, 143) % 19 == 0 && !PurgatorioPlano.salida(n, cx, cz);
+    }
+
+    /**
+     * Plantas de garaje que no se acaban: hormigón con manchas de aceite, plazas con su raya, flechas, columnas con su
+     * letra y su número pintados y la franja amarilla y negra abajo, fluorescentes que zumban (alguno parpadeando) y
+     * coches aparcados sin nadie, hechos con bloques. Hay muchas rampas a la planta de abajo.
+     */
+    private static void aparcamiento(Lienzo l, int n, int f, int cx, int cz) {
+        boolean rara = zona(n, cx, cz) == Zona.APARCAMIENTO && raro(n, cx, cz) == 4;
+        BlockState suelo = ModBlocks.SUELO_APARCAMIENTO.get().defaultBlockState(), raya = ModBlocks.SUELO_APARCAMIENTO_RAYA.get().defaultBlockState();
+        BlockState techo = ModBlocks.TECHO_APARCAMIENTO.get().defaultBlockState(), luz = ModBlocks.FLUORESCENTE.get().defaultBlockState();
+        for (int x = 0; x < 16; x++)
+            for (int z = 0; z < 16; z++) {
+                boolean plaza = (x == 1 || x == 4 || x == 11 || x == 14) && (z >= 1 && z <= 4 || z >= 11 && z <= 14);
+                l.pon(x, f - 1, z, plaza ? raya : suelo);
+                l.pon(x, f - 2, z, d(Blocks.STONE));
+                boolean tubo = (x == 7 && z % 4 == 2) || (z == 7 && x % 4 == 2);
+                l.pon(x, f + 4, z, tubo ? luz.setValue(FluorescenteBlock.ENCENDIDO, !rara && hn(n, cx * 16 + x, cz * 16 + z, 3) % 4 != 0) : techo);
+            }
+        l.pon(7, f - 1, 3, ModBlocks.SUELO_APARCAMIENTO_FLECHA.get().defaultBlockState());
+        l.pon(8, f - 1, 12, ModBlocks.SUELO_APARCAMIENTO_FLECHA.get().defaultBlockState());
+        // columnas con su letra y su número (cada una distinta)
+        var col = (NumeradoBlock) ModBlocks.COLUMNA_APARCAMIENTO.get();
+        int[][] cols = {{4, 0}, {11, 0}, {4, 15}, {11, 15}};
+        for (int i = 0; i < 4; i++) {
+            int x = cols[i][0], z = cols[i][1];
+            l.pon(x, f, z, ModBlocks.COLUMNA_APARCAMIENTO_BASE.get().defaultBlockState());
+            l.pon(x, f + 1, z, col.con(cx * 2 + (x > 8 ? 1 : 0) + cz * 3 + (z > 8 ? 1 : 0)));
+            l.pon(x, f + 2, z, col.con(cx * 2 + (x > 8 ? 1 : 0) + cz * 3 + (z > 8 ? 1 : 0)));
+            l.pon(x, f + 3, z, ModBlocks.PARED_APARCAMIENTO.get().defaultBlockState());
+        }
+        // coches aparcados: en las cuatro plazas, más o menos la mitad
+        Block[] color = {Blocks.RED_CONCRETE, Blocks.BLUE_CONCRETE, Blocks.WHITE_CONCRETE, Blocks.BLACK_CONCRETE, Blocks.GRAY_CONCRETE, Blocks.YELLOW_CONCRETE, Blocks.LIGHT_BLUE_CONCRETE};
+        for (int k = 0; k < 4; k++) {
+            if (ocupada(n, cx, cz, k)) continue;
+            int x0 = k % 2 == 0 ? 2 : 12, z0 = k < 2 ? 1 : 11;
+            long r = hn(n, cx, cz, 200 + k);
+            if (rara ? k == 3 : r % 10 < 6) coche(l, f, x0, z0, k >= 2, color[(int) ((r >> 8) % color.length)], rara && k == 3);
+        }
+        for (Direction dd : LADOS) {
+            int nx = cx + dd.getStepX(), nz = cz + dd.getStepZ();
+            if (zona(n, nx, nz) == Zona.APARCAMIENTO && PurgatorioPlano.grande(n, nx, nz) == null) continue;
+            BlockState p = ModBlocks.PARED_APARCAMIENTO.get().defaultBlockState(), fr = ModBlocks.PARED_APARCAMIENTO_FRANJA.get().defaultBlockState();
+            for (int i = 0; i < 16; i++) {
+                boolean paso = i == 7 || i == 8;
+                int x = dd == Direction.WEST ? 0 : dd == Direction.EAST ? 15 : i;
+                int z = dd == Direction.NORTH ? 0 : dd == Direction.SOUTH ? 15 : i;
+                for (int y = paso ? 3 : 0; y < 4; y++) l.pon(x, f + y, z, y == 1 ? fr : p);
+            }
+        }
+    }
+
+    /**
+     * Un coche aparcado de 2 x 4: la carrocería de un color, las ventanillas oscuras arriba (el capó y el maletero, más
+     * bajos), los faros y los pilotos (botones) y las ruedas (botones negros a los lados). Mira hacia la calle.
+     */
+    private static void coche(Lienzo l, int f, int x0, int z0, boolean haciaNorte, Block color, boolean faros) {
+        Direction delante = haciaNorte ? Direction.NORTH : Direction.SOUTH;
+        int zf = haciaNorte ? z0 : z0 + 3, zt = haciaNorte ? z0 + 3 : z0;
+        for (int x = x0; x <= x0 + 1; x++) {
+            for (int z = z0; z <= z0 + 3; z++) l.pon(x, f, z, d(color));
+            l.pon(x, f + 1, z0 + 1, d(Blocks.TINTED_GLASS));
+            l.pon(x, f + 1, z0 + 2, d(Blocks.TINTED_GLASS));
+            if (faros) l.pon(x, f, zf, d(Blocks.PEARLESCENT_FROGLIGHT));
+            else l.pon(x, f, zf + delante.getStepZ(), Blocks.BIRCH_BUTTON.defaultBlockState()
+                    .setValue(net.minecraft.world.level.block.ButtonBlock.FACE, net.minecraft.world.level.block.state.properties.AttachFace.WALL)
+                    .setValue(net.minecraft.world.level.block.ButtonBlock.FACING, delante));
+            l.pon(x, f, zt - delante.getStepZ(), Blocks.CRIMSON_BUTTON.defaultBlockState()
+                    .setValue(net.minecraft.world.level.block.ButtonBlock.FACE, net.minecraft.world.level.block.state.properties.AttachFace.WALL)
+                    .setValue(net.minecraft.world.level.block.ButtonBlock.FACING, delante.getOpposite()));
+        }
+        for (int z : new int[]{z0, z0 + 3}) {
+            BlockState rueda = Blocks.POLISHED_BLACKSTONE_BUTTON.defaultBlockState()
+                    .setValue(net.minecraft.world.level.block.ButtonBlock.FACE, net.minecraft.world.level.block.state.properties.AttachFace.WALL);
+            l.pon(x0 - 1, f, z, rueda.setValue(net.minecraft.world.level.block.ButtonBlock.FACING, Direction.WEST));
+            l.pon(x0 + 2, f, z, rueda.setValue(net.minecraft.world.level.block.ButtonBlock.FACING, Direction.EAST));
+        }
+    }
+
+    // ------------------------------------------------------------------ Colegio de noche
+    /** El aula con las sillas subidas en los pupitres menos una, de cara a la pizarra y con la luz encendida encima (una de cada 13). */
+    public static boolean aulaRara(int n, int cx, int cz) {
+        return hn(n, cx, cz, 144) % 13 == 0 && hn(n, cx, cz, 210) % 10 < 8;
+    }
+
+    /**
+     * Un colegio de noche: pasillos de terrazo con taquillas a los dos lados, aulas con los pupitres y sus sillas, la
+     * pizarra borrada y el reloj parado en las cuatro y diez. Casi todas las luces apagadas.
+     */
+    private static void colegio(Lienzo l, int n, int f, int cx, int cz) {
+        BlockState terrazo = ModBlocks.SUELO_COLEGIO.get().defaultBlockState(), placa = ModBlocks.TECHO_SALA.get().defaultBlockState();
+        BlockState luz = ModBlocks.FLUORESCENTE.get().defaultBlockState();
+        for (int x = 0; x < 16; x++)
+            for (int z = 0; z < 16; z++) {
+                boolean pasillo = x == 7 || x == 8 || z == 7 || z == 8;
+                l.pon(x, f - 1, z, pasillo ? terrazo : d(Blocks.OAK_PLANKS));
+                l.pon(x, f - 2, z, d(Blocks.STONE));
+                boolean tubo = pasillo && (x == 7 || z == 7) && (x + z) % 5 == 2;
+                l.pon(x, f + 4, z, tubo ? luz.setValue(FluorescenteBlock.ENCENDIDO, hn(n, cx * 16 + x, cz * 16 + z, 3) % 3 == 0) : placa);
+            }
+        boolean rara = zona(n, cx, cz) == Zona.COLEGIO && raro(n, cx, cz) == 0;
+        for (int k = 0; k < 4; k++) {
+            if (ocupada(n, cx, cz, k)) continue;
+            int qx = PurgatorioPlano.PARCELAS[k][0], qz = PurgatorioPlano.PARCELAS[k][1];
+            if (hn(n, cx, cz, 210 + k) % 10 < 8) aula(l, n, f, cx, cz, k, qx, qz, rara && k == 0);
+            else {
+                // un rincón del pasillo: taquillas en fila y un banco
+                for (int x = qx + 1; x <= qx + 5; x++) taquillas(l, f, x, qz == 0 ? qz + 1 : qz + 5, qz == 0 ? Direction.SOUTH : Direction.NORTH);
+                for (int x = qx + 2; x <= qx + 4; x++) l.pon(x, f, qz == 0 ? qz + 4 : qz + 2, d(Blocks.OAK_SLAB));
+            }
+        }
+        BlockState zoc = ModBlocks.PARED_COLEGIO_ZOCALO.get().defaultBlockState(), pared = ModBlocks.PARED_COLEGIO.get().defaultBlockState();
+        for (Direction dd : LADOS) {
+            int nx = cx + dd.getStepX(), nz = cz + dd.getStepZ();
+            if (zona(n, nx, nz) == Zona.COLEGIO && PurgatorioPlano.grande(n, nx, nz) == null) continue;
+            tabique(l, f, dd, 4, zoc, pared, 3, pared);
+        }
+    }
+
+    private static void taquillas(Lienzo l, int f, int x, int z, Direction mira) {
+        BlockState t = ModBlocks.TAQUILLA.get().defaultBlockState().setValue(TaquillaBlock.FACING, mira);
+        l.pon(x, f, z, t);
+        l.pon(x, f + 1, z, t.setValue(MitadBlock.ARRIBA, true));
+    }
+
+    /** Un aula en la parcela: la pared que da a cada pasillo hecha de taquillas, la puerta, la pizarra, el reloj y los pupitres. */
+    private static void aula(Lienzo l, int n, int f, int cx, int cz, int k, int x0, int z0, boolean rara) {
+        int x1 = x0 + 6, z1 = z0 + 6;
+        BlockState zoc = ModBlocks.PARED_COLEGIO_ZOCALO.get().defaultBlockState(), pared = ModBlocks.PARED_COLEGIO.get().defaultBlockState();
+        for (int x = x0; x <= x1; x++)
+            for (int z = z0; z <= z1; z++) {
+                if (x != x0 && x != x1 && z != z0 && z != z1) continue;
+                for (int y = 0; y < 4; y++) l.pon(x, f + y, z, y == 0 ? zoc : pared);
+            }
+        boolean norte = z0 == 0, oeste = x0 == 0;
+        int zp = norte ? z1 : z0, xq = oeste ? x1 : x0, zb = norte ? z0 : z1, dz = norte ? 1 : -1;
+        Direction aPasillo = norte ? Direction.SOUTH : Direction.NORTH, aPasillo2 = oeste ? Direction.EAST : Direction.WEST;
+        // las taquillas: la pared que da a los pasillos
+        for (int x = x0 + 1; x < x1; x++) if (x != x0 + 3) taquillas(l, f, x, zp, aPasillo);
+        for (int z = z0 + 1; z < z1; z++) taquillas(l, f, xq, z, aPasillo2);
+        BlockState pu = Blocks.OAK_DOOR.defaultBlockState().setValue(DoorBlock.FACING, aPasillo.getOpposite());
+        l.pon(x0 + 3, f, zp, pu);
+        l.pon(x0 + 3, f + 1, zp, pu.setValue(DoorBlock.HALF, DoubleBlockHalf.UPPER));
+        // la pizarra borrada en la pared del fondo y el reloj parado encima
+        var piz = ModBlocks.PIZARRA.get().defaultBlockState();
+        for (int x = x0 + 2; x <= x0 + 4; x++) {
+            l.pon(x, f + 1, zb, piz);
+            l.pon(x, f + 2, zb, piz.setValue(MitadBlock.ARRIBA, true));
+        }
+        l.pon(x0 + 3, f + 3, zb + dz, ModBlocks.RELOJ_PARADO.get().defaultBlockState().setValue(RelojParadoBlock.FACING, norte ? Direction.SOUTH : Direction.NORTH));
+        // pupitres (tablero sobre el suelo) con su silla detrás, mirando a la pizarra; pasillo en medio, hasta la puerta
+        BlockState mesa = Blocks.SPRUCE_TRAPDOOR.defaultBlockState().setValue(TrapDoorBlock.HALF, Half.TOP);
+        Direction respaldo = norte ? Direction.SOUTH : Direction.NORTH;
+        for (int fila = 0; fila < 2; fila++) {
+            int zm = zb + dz * (2 + fila * 2), zs = zm + dz;
+            for (int x : new int[]{x0 + 1, x0 + 2, x0 + 4, x0 + 5}) {
+                l.pon(x, f, zm, mesa);
+                boolean bajada = !rara || (fila == 1 && x == x0 + 2);
+                if (bajada) l.pon(x, f, zs, escalon(Blocks.OAK_STAIRS, respaldo));
+                else l.pon(x, f + 1, zm, escalon(Blocks.OAK_STAIRS, respaldo).setValue(StairBlock.HALF, Half.TOP));
+            }
+        }
+        // la luz del aula: apagada (o, en la rara, encendida justo encima de la silla que queda)
+        l.pon(rara ? x0 + 2 : x0 + 3, f + 4, zb + dz * 3, ModBlocks.FLUORESCENTE.get().defaultBlockState().setValue(FluorescenteBlock.ENCENDIDO, rara));
+    }
+
+    // ------------------------------------------------------------------ Centro comercial cerrado
+    /** La tienda de teles con la persiana a medio subir y todas las teles encendidas sin señal (una de cada 15). */
+    public static boolean tiendaRara(int n, int cx, int cz) {
+        return hn(n, cx, cz, 145) % 15 == 0 && hn(n, cx, cz, 220) % 10 < 8;
+    }
+
+    /**
+     * Un centro comercial cerrado de noche: suelo brillante, tiendas con la persiana echada y el rótulo apagado, alguna
+     * escalera mecánica parada que sube hasta el techo, bancos y macetas, y el hilo musical sonando para nadie.
+     */
+    private static void centro(Lienzo l, int n, int f, int cx, int cz) {
+        BlockState suelo = ModBlocks.SUELO_CENTRO.get().defaultBlockState(), luz = ModBlocks.FLUORESCENTE.get().defaultBlockState();
+        for (int x = 0; x < 16; x++)
+            for (int z = 0; z < 16; z++) {
+                l.pon(x, f - 1, z, suelo);
+                l.pon(x, f - 2, z, d(Blocks.STONE));
+                boolean tubo = (z == 7 || z == 8) && x % 4 == 1 || (x == 7 || x == 8) && z % 4 == 1;
+                l.pon(x, f + 6, z, tubo ? luz.setValue(FluorescenteBlock.ENCENDIDO, hn(n, cx * 16 + x, cz * 16 + z, 3) % 2 == 0) : d(Blocks.SMOOTH_QUARTZ));
+            }
+        boolean rara = zona(n, cx, cz) == Zona.CENTRO && raro(n, cx, cz) == 0;
+        for (int k = 0; k < 4; k++) {
+            if (ocupada(n, cx, cz, k)) continue;
+            int qx = PurgatorioPlano.PARCELAS[k][0], qz = PurgatorioPlano.PARCELAS[k][1];
+            long t = hn(n, cx, cz, 220 + k) % 10;
+            if (t < 8) tienda(l, n, f, cx, cz, k, qx, qz == 0, rara && k == 0);
+            else if (t == 8) escaleraMecanicaANada(l, f, qx, qz == 0);
+            else {
+                int z = qz == 0 ? 4 : 11;
+                for (int x = qx + 2; x <= qx + 4; x++) l.pon(x, f, z, escalon(Blocks.DARK_OAK_STAIRS, qz == 0 ? Direction.NORTH : Direction.SOUTH));
+                l.pon(qx + 1, f, z, d(Blocks.POTTED_FERN));
+                l.pon(qx + 5, f, z, d(Blocks.POTTED_AZALEA_BUSH));
+            }
+        }
+        for (Direction dd : LADOS) {
+            int nx = cx + dd.getStepX(), nz = cz + dd.getStepZ();
+            if (zona(n, nx, nz) == Zona.CENTRO && PurgatorioPlano.grande(n, nx, nz) == null) continue;
+            tabique(l, f, dd, 6, d(Blocks.LIGHT_GRAY_CONCRETE), d(Blocks.WHITE_CONCRETE), 3, d(Blocks.WHITE_CONCRETE));
+        }
+    }
+
+    /** Una tienda de 7 x 6 de cara a la calle de en medio: la persiana echada, el rótulo apagado encima y nada dentro. */
+    private static void tienda(Lienzo l, int n, int f, int cx, int cz, int k, int x0, boolean norte, boolean rara) {
+        int zf = norte ? 5 : 10, zb = norte ? 0 : 15, dz = norte ? 1 : -1;
+        BlockState pared = d(Blocks.WHITE_CONCRETE), persiana = ModBlocks.PERSIANA.get().defaultBlockState();
+        for (int z = Math.min(zb, zf); z <= Math.max(zb, zf); z++)
+            for (int y = 0; y < 6; y++) {
+                l.pon(x0, f + y, z, pared);
+                l.pon(x0 + 6, f + y, z, pared);
+            }
+        for (int x = x0; x <= x0 + 6; x++)
+            for (int y = 0; y < 6; y++) l.pon(x, f + y, zb, pared);
+        int rotulo = (int) (hn(n, cx, cz, 230 + k) % 6);
+        for (int x = x0 + 1; x <= x0 + 5; x++) {
+            for (int y = 0; y < 3; y++) l.pon(x, f + y, zf, rara && y < 2 ? AIRE : persiana);
+            l.pon(x, f + 4, zf, pared);
+            l.pon(x, f + 5, zf, pared);
+        }
+        for (int x = x0; x <= x0 + 6; x++) l.pon(x, f + 3, zf, ((NumeradoBlock) ModBlocks.ROTULO_TIENDA.get()).con(rara ? 1 : rotulo));
+        if (rara) {
+            // la tienda de teles: dos filas de teles encendidas sin señal en el fondo, mirando a la persiana, y la luz
+            for (int x = x0 + 1; x <= x0 + 5; x++) {
+                l.pon(x, f, zb + dz, d(Blocks.SPRUCE_PLANKS));
+                for (int y = 1; y <= 2; y++)
+                    l.pon(x, f + y, zb + dz, ModBlocks.TELE.get().defaultBlockState().setValue(TeleBlock.FACING, norte ? Direction.SOUTH : Direction.NORTH));
+            }
+            l.pon(x0 + 3, f + 5, zb + 3 * dz, Blocks.LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, true));
+        }
+    }
+
+    /** Una escalera mecánica parada que sube hasta el techo y no lleva a ningún sitio, con sus barandillas de cristal. */
+    private static void escaleraMecanicaANada(Lienzo l, int f, int qx, boolean norte) {
+        BlockState esc = ModBlocks.ESCALERA_MECANICA.get().defaultBlockState().setValue(StairBlock.FACING, norte ? Direction.NORTH : Direction.SOUTH);
+        for (int i = 0; i < 6; i++) {
+            int z = norte ? 5 - i : 10 + i;
+            for (int x = qx + 2; x <= qx + 3; x++) {
+                for (int y = 0; y < i; y++) l.pon(x, f + y, z, d(Blocks.BLACK_CONCRETE));
+                l.pon(x, f + i, z, esc);
+            }
+            for (int x : new int[]{qx + 1, qx + 4}) {
+                for (int y = 0; y <= i; y++) l.pon(x, f + y, z, d(Blocks.BLACK_CONCRETE));
+                if (i < 5) l.pon(x, f + i + 1, z, unida(Blocks.GLASS_PANE, true, false));
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------ salas grandes de las zonas nuevas
+    /**
+     * La piscina olímpica (3 x 2 chunks): un vaso enorme de tres de hondo con sus calles, el dedo de agua en la parte
+     * honda, las escalerillas, los poyetes de salida, el trampolín, las gradas y los focos.
+     */
+    private static void piscinaOlimpica(Lienzo l, int f, Grande g) {
+        int W = g.w() * 16, D = g.d() * 16;
+        BlockState blanco = ModBlocks.AZULEJO_PISCINA.get().defaultBlockState(), azul = ModBlocks.AZULEJO_PISCINA_AZUL.get().defaultBlockState();
+        BlockState raya = ModBlocks.AZULEJO_PISCINA_RAYA.get().defaultBlockState(), borde = ModBlocks.BORDE_PISCINA.get().defaultBlockState();
+        cascaron(l, f, g, blanco, d(Blocks.SMOOTH_QUARTZ), (i, y) -> y == 0 ? azul : blanco, blanco);
+        BlockState foco = ModBlocks.FOCO.get().defaultBlockState();
+        for (int x = l.ox; x < l.ox + 16; x++)
+            for (int z = l.oz; z < l.oz + 16; z++)
+                if (x % 6 == 3 && z % 6 == 3 && h(g.x0() + x, g.z0() + z, 3) % 5 != 0) l.pon(x, f + 8, z, foco);
+        int px0 = 6, px1 = 41, pz0 = 7, pz1 = 26;
+        for (int x = px0 - 1; x <= px1 + 1; x++)
+            for (int z = pz0 - 1; z <= pz1 + 1; z++) {
+                boolean dentro = x >= px0 && x <= px1 && z >= pz0 && z <= pz1;
+                if (dentro) {
+                    for (int y = 1; y <= 3; y++) l.pon(x, f - y, z, AIRE);
+                    l.pon(x, f - 4, z, (z - pz0) % 4 == 2 && x > px0 + 1 && x < px1 - 1 ? raya : azul);
+                    if (x > px1 - 12 && h(g.x0() + x, g.z0() + z, 610) % 7 != 0) l.pon(x, f - 3, z, ModBlocks.AGUA_POCA.get().defaultBlockState());
+                } else {
+                    l.pon(x, f - 1, z, borde);
+                    l.pon(x, f - 2, z, azul);
+                    l.pon(x, f - 3, z, azul);
+                }
+            }
+        // escalerillas en las cuatro esquinas
+        for (int[] e : new int[][]{{px0 + 1, pz0, 0}, {px1 - 1, pz0, 0}, {px0 + 1, pz1, 1}, {px1 - 1, pz1, 1}})
+            for (int y = 1; y <= 3; y++)
+                l.pon(e[0], f - y, e[1], Blocks.LADDER.defaultBlockState().setValue(net.minecraft.world.level.block.LadderBlock.FACING, e[2] == 0 ? Direction.SOUTH : Direction.NORTH));
+        // poyetes de salida al oeste, uno por calle
+        for (int z = pz0 + 2; z <= pz1 - 1; z += 4) {
+            l.pon(px0 - 1, f, z, d(Blocks.SMOOTH_QUARTZ));
+            l.pon(px0 - 1, f + 1, z, d(Blocks.SMOOTH_QUARTZ_SLAB));
+        }
+        // el trampolín al este: la escalera, la tabla que sale sobre el vaso
+        int tz = (pz0 + pz1) / 2;
+        for (int y = 0; y < 3; y++) {
+            l.pon(px1 + 3, f + y, tz, d(Blocks.WHITE_CONCRETE));
+            l.pon(px1 + 4, f + y, tz, Blocks.LADDER.defaultBlockState().setValue(net.minecraft.world.level.block.LadderBlock.FACING, Direction.EAST));
+        }
+        for (int x = px1 - 2; x <= px1 + 3; x++) l.pon(x, f + 3, tz, d(Blocks.BIRCH_SLAB));
+        // gradas al norte, con pasillos frente a las puertas
+        for (int i = 0; i < 3; i++) {
+            int z = 5 - i;
+            for (int x = 3; x < W - 3; x++) {
+                if ((x & 15) >= 6 && (x & 15) <= 9) continue;
+                for (int y = 0; y < i; y++) l.pon(x, f + y, z, d(Blocks.SMOOTH_QUARTZ));
+                l.pon(x, f + i, z, escalon(Blocks.QUARTZ_STAIRS, Direction.NORTH));
+            }
+        }
+        // focos en las paredes largas
+        for (int x = 4; x < W - 3; x += 8) {
+            l.pon(x, f + 6, 1, foco);
+            l.pon(x, f + 6, D - 2, foco);
+        }
+    }
+
+    /**
+     * El gimnasio (2 x 2 chunks): suelo de madera con las rayas de la pista, dos canastas, espalderas en la pared,
+     * colchonetas, el potro y unas gradas; los fluorescentes del techo, casi todos apagados.
+     */
+    private static void gimnasio(Lienzo l, int f, Grande g) {
+        int W = g.w() * 16, D = g.d() * 16;
+        cascaron(l, f, g, d(Blocks.BIRCH_PLANKS), ModBlocks.TECHO_SALA.get().defaultBlockState(),
+                (i, y) -> y == 0 ? ModBlocks.PARED_COLEGIO_ZOCALO.get().defaultBlockState() : ModBlocks.PARED_COLEGIO.get().defaultBlockState(),
+                ModBlocks.PARED_COLEGIO.get().defaultBlockState());
+        for (int x = l.ox; x < l.ox + 16; x++)
+            for (int z = l.oz; z < l.oz + 16; z++) {
+                if (x <= 0 || z <= 0 || x >= W - 1 || z >= D - 1) continue;
+                boolean linea = x == 4 || x == W - 5 || z == 4 || z == D - 5 || z == D / 2;
+                double r = Math.sqrt((x - W / 2.0 + 0.5) * (x - W / 2.0 + 0.5) + (z - D / 2.0 + 0.5) * (z - D / 2.0 + 0.5));
+                if (r > 3.5 && r < 4.5) linea = true;
+                if (linea && x >= 4 && x <= W - 5 && z >= 4 && z <= D - 5) l.pon(x, f - 1, z, d(Blocks.WHITE_CONCRETE));
+                if (x % 5 == 2 && z % 5 == 2)
+                    l.pon(x, f + 8, z, ModBlocks.FLUORESCENTE.get().defaultBlockState().setValue(FluorescenteBlock.ENCENDIDO, h(g.x0() + x, g.z0() + z, 3) % 3 == 0));
+            }
+        // las dos canastas (tablero blanco, aro de hierro) en las paredes del norte y del sur
+        for (int[] c : new int[][]{{1, 2, 1}, {D - 2, D - 3, -1}}) {
+            for (int x = W / 2 - 2; x <= W / 2 + 1; x++)
+                for (int y = 4; y <= 6; y++) l.pon(x, f + y, c[0], d(Blocks.WHITE_CONCRETE));
+            for (int x = W / 2 - 1; x <= W / 2; x++)
+                l.pon(x, f + 4, c[1], Blocks.IRON_TRAPDOOR.defaultBlockState().setValue(TrapDoorBlock.HALF, Half.TOP));
+        }
+        // espalderas en la pared del este
+        for (int z = 10; z <= 21; z++) {
+            if ((z & 15) == 7 || (z & 15) == 8) continue;
+            for (int y = 0; y < 5; y++)
+                l.pon(W - 2, f + y, z, Blocks.LADDER.defaultBlockState().setValue(net.minecraft.world.level.block.LadderBlock.FACING, Direction.WEST));
+        }
+        // colchonetas azules y el potro
+        for (int x = 6; x <= 9; x++)
+            for (int z = 20; z <= 22; z++) l.pon(x, f, z, d(Blocks.BLUE_CARPET));
+        l.pon(10, f, 12, d(Blocks.DARK_OAK_FENCE));
+        l.pon(12, f, 12, d(Blocks.DARK_OAK_FENCE));
+        for (int x = 10; x <= 12; x++) l.pon(x, f + 1, 12, d(Blocks.BROWN_WOOL));
+        // gradas en el oeste
+        for (int i = 0; i < 3; i++) {
+            int x = 2 + i;
+            for (int z = 10; z <= 21; z++) {
+                if ((z & 15) >= 6 && (z & 15) <= 9) continue;
+                for (int y = 0; y < i; y++) l.pon(x, f + y, z, d(Blocks.OAK_PLANKS));
+                l.pon(x, f + i, z, escalon(Blocks.OAK_STAIRS, Direction.WEST));
+            }
+        }
+    }
+
+    /**
+     * El atrio del centro comercial (3 x 3 chunks): una fuente seca en medio (con monedas en el fondo), dos escaleras
+     * mecánicas paradas que suben a la entreplanta del norte, tiendas cerradas en las paredes, bancos y macetas, y la
+     * claraboya negra del techo.
+     */
+    private static void atrio(Lienzo l, int f, Grande g) {
+        int W = g.w() * 16, D = g.d() * 16;
+        BlockState persiana = ModBlocks.PERSIANA.get().defaultBlockState();
+        var rot = (NumeradoBlock) ModBlocks.ROTULO_TIENDA.get();
+        cascaron(l, f, g, ModBlocks.SUELO_CENTRO.get().defaultBlockState(), d(Blocks.SMOOTH_QUARTZ), (i, y) -> {
+            int j = i & 15;
+            boolean tienda = (j >= 2 && j <= 5) || (j >= 10 && j <= 13);
+            if (tienda && y < 3) return persiana;
+            if (tienda && y == 3) return rot.con(i / 4);
+            return y == 0 ? d(Blocks.LIGHT_GRAY_CONCRETE) : d(Blocks.WHITE_CONCRETE);
+        }, d(Blocks.WHITE_CONCRETE));
+        for (int x = l.ox; x < l.ox + 16; x++)
+            for (int z = l.oz; z < l.oz + 16; z++) {
+                if (x <= 0 || z <= 0 || x >= W - 1 || z >= D - 1) continue;
+                // la claraboya (negra: aquí no hay cielo) y las luces del techo
+                boolean clara = Math.abs(x - W / 2.0 + 0.5) < 8 && Math.abs(z - D / 2.0 + 0.5) < 8;
+                if (clara) l.pon(x, f + 10, z, (x + z) % 4 == 0 ? d(Blocks.WHITE_CONCRETE) : d(Blocks.BLACK_STAINED_GLASS));
+                else if (x % 6 == 3 && z % 6 == 3) l.pon(x, f + 10, z, ModBlocks.FLUORESCENTE.get().defaultBlockState().setValue(FluorescenteBlock.ENCENDIDO, h(g.x0() + x, g.z0() + z, 3) % 2 == 0));
+            }
+        // la entreplanta del norte (z = 1..11) con su barandilla de cristal y tiendas cerradas al fondo
+        for (int x = 1; x < W - 1; x++) {
+            for (int z = 1; z <= 11; z++) l.pon(x, f + 5, z, d(Blocks.SMOOTH_QUARTZ));
+            l.pon(x, f + 6, 11, unida(Blocks.GLASS_PANE, false, true));
+            l.pon(x, f + 4, 11, ModBlocks.FLUORESCENTE.get().defaultBlockState().setValue(FluorescenteBlock.ENCENDIDO, x % 8 == 4));
+            int j = x & 15;
+            if ((j >= 2 && j <= 5) || (j >= 10 && j <= 13)) {
+                for (int y = 6; y <= 8; y++) l.pon(x, f + y, 1, persiana);
+                l.pon(x, f + 9, 1, rot.con(x / 4 + 3));
+            }
+        }
+        // las dos escaleras mecánicas paradas, de la planta a la entreplanta (6 escalones, hacia el norte)
+        for (int ex : new int[]{14, 32}) {
+            for (int i = 0; i < 6; i++) {
+                int z = 17 - i;
+                for (int x = ex; x <= ex + 1; x++) {
+                    for (int y = 0; y < i; y++) l.pon(x, f + y, z, d(Blocks.BLACK_CONCRETE));
+                    l.pon(x, f + i, z, ModBlocks.ESCALERA_MECANICA.get().defaultBlockState().setValue(StairBlock.FACING, Direction.NORTH));
+                }
+                for (int x : new int[]{ex - 1, ex + 2}) {
+                    for (int y = 0; y <= i; y++) l.pon(x, f + y, z, d(Blocks.BLACK_CONCRETE));
+                    l.pon(x, f + i + 1, z, unida(Blocks.GLASS_PANE, true, false));
+                }
+            }
+            // el hueco de la barandilla donde llega
+            l.pon(ex, f + 6, 11, AIRE);
+            l.pon(ex + 1, f + 6, 11, AIRE);
+        }
+        // la fuente seca: el pilón redondo, el fondo con monedas y el surtidor de tres pisos
+        int fx = W / 2, fz = D / 2 + 4;
+        for (int x = -6; x <= 6; x++)
+            for (int z = -6; z <= 6; z++) {
+                double r = Math.sqrt((x + 0.5) * (x + 0.5) + (z + 0.5) * (z + 0.5));
+                if (r > 6.3) continue;
+                if (r > 5.3) l.pon(fx + x, f, fz + z, d(Blocks.SMOOTH_QUARTZ));
+                else {
+                    l.pon(fx + x, f - 1, fz + z, d(Blocks.POLISHED_ANDESITE));
+                    if (h(g.x0() + x, g.z0() + z, 620) % 9 == 0) l.pon(fx + x, f, fz + z, d(Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE));
+                }
+            }
+        for (int y = 0; y < 3; y++) {
+            l.pon(fx, f + y, fz, d(Blocks.QUARTZ_PILLAR));
+            l.pon(fx - 1, f + y, fz, d(Blocks.QUARTZ_PILLAR));
+            l.pon(fx, f + y, fz - 1, d(Blocks.QUARTZ_PILLAR));
+            l.pon(fx - 1, f + y, fz - 1, d(Blocks.QUARTZ_PILLAR));
+        }
+        for (int x = -2; x <= 1; x++)
+            for (int z = -2; z <= 1; z++) l.pon(fx + x, f + 3, fz + z, d(Blocks.SMOOTH_QUARTZ_SLAB));
+        l.pon(fx, f + 4, fz, d(Blocks.QUARTZ_PILLAR));
+        // bancos y macetas alrededor
+        for (int[] b : new int[][]{{fx - 9, fz, 0}, {fx + 8, fz, 0}, {fx, fz + 9, 1}}) {
+            for (int k = -1; k <= 1; k++) {
+                int x = b[2] == 0 ? b[0] : b[0] + k, z = b[2] == 0 ? b[1] + k : b[1];
+                l.pon(x, f, z, escalon(Blocks.DARK_OAK_STAIRS, b[2] == 0 ? (b[0] < fx ? Direction.WEST : Direction.EAST) : Direction.SOUTH));
+            }
+        }
+        for (int[] m : new int[][]{{fx - 9, fz - 4}, {fx + 8, fz - 4}, {fx - 9, fz + 4}, {fx + 8, fz + 4}}) {
+            l.pon(m[0], f, m[1], d(Blocks.POLISHED_ANDESITE));
+            l.pon(m[0], f + 1, m[1], d(Blocks.POTTED_AZALEA_BUSH));
+        }
     }
 
     // ------------------------------------------------------------------ lo que pide Minecraft (sin nada que hacer)

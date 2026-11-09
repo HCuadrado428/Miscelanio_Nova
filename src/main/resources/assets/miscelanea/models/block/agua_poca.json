@@ -1,0 +1,67 @@
+{
+ "parent": "minecraft:block/block",
+ "render_type": "minecraft:translucent",
+ "textures": {
+  "particle": "miscelanea:block/agua_poca",
+  "a": "miscelanea:block/agua_poca"
+ },
+ "elements": [
+  {
+   "from": [
+    0,
+    0,
+    0
+   ],
+   "to": [
+    16,
+    0.5,
+    16
+   ],
+   "faces": {
+    "up": {
+     "texture": "#a"
+    },
+    "down": {
+     "texture": "#a",
+     "cullface": "down"
+    },
+    "north": {
+     "texture": "#a",
+     "uv": [
+      0,
+      15,
+      16,
+      16
+     ]
+    },
+    "south": {
+     "texture": "#a",
+     "uv": [
+      0,
+      15,
+      16,
+      16
+     ]
+    },
+    "east": {
+     "texture": "#a",
+     "uv": [
+      0,
+      15,
+      16,
+      16
+     ]
+    },
+    "west": {
+     "texture": "#a",
+     "uv": [
+      0,
+      15,
+      16,
+      16
+     ]
+    }
+   }
+  }
+ ]
+}

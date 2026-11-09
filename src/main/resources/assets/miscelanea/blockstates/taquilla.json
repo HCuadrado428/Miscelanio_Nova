@@ -1,0 +1,34 @@
+{
+ "variants": {
+  "arriba=false,facing=north": {
+   "model": "miscelanea:block/taquilla_abajo"
+  },
+  "arriba=false,facing=east": {
+   "model": "miscelanea:block/taquilla_abajo",
+   "y": 90
+  },
+  "arriba=false,facing=south": {
+   "model": "miscelanea:block/taquilla_abajo",
+   "y": 180
+  },
+  "arriba=false,facing=west": {
+   "model": "miscelanea:block/taquilla_abajo",
+   "y": 270
+  },
+  "arriba=true,facing=north": {
+   "model": "miscelanea:block/taquilla_arriba"
+  },
+  "arriba=true,facing=east": {
+   "model": "miscelanea:block/taquilla_arriba",
+   "y": 90
+  },
+  "arriba=true,facing=south": {
+   "model": "miscelanea:block/taquilla_arriba",
+   "y": 180
+  },
+  "arriba=true,facing=west": {
+   "model": "miscelanea:block/taquilla_arriba",
+   "y": 270
+  }
+ }
+}

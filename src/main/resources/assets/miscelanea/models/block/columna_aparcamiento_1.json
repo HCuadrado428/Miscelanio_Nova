@@ -1,0 +1,7 @@
+{
+ "parent": "minecraft:block/cube_column",
+ "textures": {
+  "side": "miscelanea:block/columna_aparcamiento_1",
+  "end": "miscelanea:block/columna_aparcamiento_tapa"
+ }
+}
