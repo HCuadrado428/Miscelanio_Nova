@@ -146,6 +146,7 @@ public final class ClientEvents {
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.ONDA.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.MAZO_LANZADO.get(), com.miscelanea.client.armas.MazoLanzadoRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.RECREATIVA_BE.get(), com.miscelanea.client.arcade.RecreativaRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.purgatorio.liminal.LiminalRegistro.ATREZO_BE.get(), com.miscelanea.client.purgatorio.LiminalCliente.AtrezoRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.TREN_MONTANA.get(), com.miscelanea.client.montana.TrenMontanaRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.RIZO_BE.get(), com.miscelanea.client.montana.RizoRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.CARTEL_RECORDS_BE.get(), com.miscelanea.client.arcade.CartelRecordsRenderer::new);

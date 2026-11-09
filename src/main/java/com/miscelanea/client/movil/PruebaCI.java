@@ -1822,7 +1822,10 @@ public final class PruebaCI {
             var desde = com.miscelanea.purgatorio.eventos.PurgatorioExtras.libreCerca(l, lim[2].getX() + 4, lim[2].getY() + 1, lim[2].getZ() + 4, 3);
             irMirando(desde == null ? lim[2].offset(4, 1, 4) : desde, lim[2]);
         });
-        paso("6f_liminal_piscina_llena", 40, () -> RESUMEN.add("  liminal, piscina: ecos de pasos hasta ahora " + com.miscelanea.client.purgatorio.LiminalCliente.ecos));
+        paso("6f_liminal_piscina_llena", 40, () -> {
+            mc.level.playLocalSound(mc.player.getX(), mc.player.getY(), mc.player.getZ(), net.minecraft.sounds.SoundEvents.STONE_STEP, net.minecraft.sounds.SoundSource.PLAYERS, 0.5F, 1F, false);
+            RESUMEN.add("  liminal, piscina: ecos de pasos " + com.miscelanea.client.purgatorio.LiminalCliente.ecos + " (sin tarjeta de sonido no suena nada)");
+        });
         // las Backrooms (en la sala de espera)
         sin("lim_backrooms_ir", 60, () -> {
             net.minecraft.core.BlockPos b = null;

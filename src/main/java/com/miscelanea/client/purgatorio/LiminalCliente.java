@@ -44,11 +44,6 @@ public final class LiminalCliente {
     @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static final class Registro {
         @SubscribeEvent
-        public static void renderers(EntityRenderersEvent.RegisterRenderers e) {
-            e.registerBlockEntityRenderer(LiminalRegistro.ATREZO_BE.get(), AtrezoRenderer::new);
-        }
-
-        @SubscribeEvent
         public static void colores(RegisterColorHandlersEvent.Block e) {
             e.register((s, l, p, i) -> i == 0 ? COCHES[s.getValue(Bloques.COLOR8)] : -1, LiminalRegistro.COCHE.get());
             e.register((s, l, p, i) -> i == 0 ? SILLAS[s.getValue(Bloques.COLOR4)] : -1, LiminalRegistro.SILLA_ESPERA.get());
