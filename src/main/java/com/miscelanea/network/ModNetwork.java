@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String PROTOCOLO = "52";
+    private static final String PROTOCOLO = "53";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "main"),
@@ -278,16 +278,6 @@ public final class ModNetwork {
                 .consumerMainThread(com.miscelanea.mesas.PrivadoPacket::handle)
                 .add();
         id = com.miscelanea.tortura.TorturaRed.registrar(CHANNEL, id);
-        CHANNEL.messageBuilder(com.miscelanea.encantos.MesaPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(com.miscelanea.encantos.MesaPacket::encode)
-                .decoder(com.miscelanea.encantos.MesaPacket::new)
-                .consumerMainThread(com.miscelanea.encantos.MesaPacket::handle)
-                .add();
-        CHANNEL.messageBuilder(com.miscelanea.encantos.EncantosPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(com.miscelanea.encantos.EncantosPacket::encode)
-                .decoder(com.miscelanea.encantos.EncantosPacket::new)
-                .consumerMainThread(com.miscelanea.encantos.EncantosPacket::handle)
-                .add();
         CHANNEL.messageBuilder(com.miscelanea.armas.BallestaRecargaPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(com.miscelanea.armas.BallestaRecargaPacket::encode)
                 .decoder(com.miscelanea.armas.BallestaRecargaPacket::new)
