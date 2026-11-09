@@ -147,8 +147,8 @@ public final class FuegoCliente {
                 ps.translate(0, -0.06F * entra + Mth.sin(tUso * 1.9F) * 0.015F, 0.02F * entra);
                 girar(ps, lado, Axis.ZP.rotationDegrees(lado * 30F * entra));
             } else {
-                ps.translate(lado * -0.08F * entra, -0.1F * entra - 0.025F * golpe, 0.04F * entra);
-                girar(ps, lado, Axis.ZP.rotationDegrees(lado * 28F * entra));
+                ps.translate(lado * -0.1F * entra, 0.06F * entra - 0.025F * golpe, -0.02F * entra);
+                girar(ps, lado, Axis.ZP.rotationDegrees(lado * 22F * entra));
                 girar(ps, lado, Axis.XP.rotationDegrees(-8F * entra + 4F * golpe));
             }
         }
