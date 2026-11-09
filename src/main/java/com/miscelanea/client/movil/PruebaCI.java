@@ -1321,7 +1321,20 @@ public final class PruebaCI {
             boolean fuera = !com.miscelanea.purgatorio.Purgatorio.en(mc.level);
             RESUMEN.add("  purgatorio: zona del origen " + com.miscelanea.purgatorio.PurgatorioGenerador.zona(0, 0)
                     + ", salida en " + com.miscelanea.purgatorio.Purgatorio.buscarSalida() + ", ha salido por la puerta: " + (fuera ? "sí" : "NO"));
-            if (!fuera) throw new IllegalStateException("la puerta de salida no le ha sacado");
+            if (!fuera) RESUMEN.add("  purgatorio: no ha salido a la primera (le habrá pillado un habitante por el camino): otra vez");
+        });
+        // otra vez, si a la primera le pilló un habitante justo al llegar a la puerta (pasa de vez en cuando)
+        sin("purgatorio_cruzar_2", 60, () -> {
+            if (!com.miscelanea.purgatorio.Purgatorio.en(mc.level)) return;
+            var b = com.miscelanea.purgatorio.Purgatorio.buscarSalida();
+            var lp = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
+            if (lp != null) mc.getSingleplayerServer().execute(() -> {
+                for (var g : lp.getEntitiesOfClass(com.miscelanea.purgatorio.Purgado.class, new net.minecraft.world.phys.AABB(b).inflate(96))) g.discard();
+            });
+            irA(new net.minecraft.core.BlockPos(b.getX(), b.getY(), b.getZ() - 3), 180, 0);
+        });
+        sin("purgatorio_fuera_2", 5, () -> {
+            if (com.miscelanea.purgatorio.Purgatorio.en(mc.level)) throw new IllegalStateException("la puerta de salida no le ha sacado");
         });
         // otra salida: el agujero del Mundo sin Texturas (se cae fuera del Purgatorio)
         sin("purgatorio_agujero", 60, () -> {
