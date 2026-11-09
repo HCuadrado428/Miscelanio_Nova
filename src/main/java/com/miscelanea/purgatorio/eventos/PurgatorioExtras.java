@@ -79,7 +79,7 @@ public final class PurgatorioExtras {
         return persistente(p).getLong(SILENCIO) > p.level().getGameTime();
     }
 
-    static void ponerNoMolestar(ServerPlayer p, int tics) {
+    public static void ponerNoMolestar(ServerPlayer p, int tics) {
         persistente(p).putLong(SILENCIO, p.level().getGameTime() + tics);
     }
 

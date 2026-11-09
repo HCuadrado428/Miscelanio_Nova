@@ -1305,6 +1305,9 @@ public final class PruebaCI {
             var lp = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
             if (lp != null) mc.getSingleplayerServer().execute(() -> {
                 for (var g : lp.getEntitiesOfClass(com.miscelanea.purgatorio.Purgado.class, new net.minecraft.world.phys.AABB(b).inflate(96))) g.discard();
+                // y que no le oiga ninguno mientras cruza (a veces salía uno nuevo y le recolocaba lejos de la puerta)
+                var sp = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
+                if (sp != null) com.miscelanea.purgatorio.eventos.PurgatorioExtras.ponerNoMolestar(sp, 200);
             });
             irA(new net.minecraft.core.BlockPos(b.getX(), b.getY(), b.getZ() - 3), 180, 0);
         });
@@ -1791,7 +1794,8 @@ public final class PruebaCI {
             var f = st.getValue(FAC);
             var centro = lim[0].relative(f.getClockWise(), 1).relative(f.getOpposite(), 2);
             // desde la calle, en diagonal
-            irMirando(lim[0].relative(f, 3).relative(f.getClockWise(), 5), centro);
+            var hacia = Math.floorMod(lim[0].getX(), 16) < 8 ? net.minecraft.core.Direction.EAST : net.minecraft.core.Direction.WEST;
+            irMirando(lim[0].relative(f, 3).relative(hacia, 4), centro);
         });
         paso("6c_liminal_coche_diagonal", 30, () -> {});
         // los maniquíes del escaparate: se mira a uno, se aparta la vista y al volver te está mirando
