@@ -533,6 +533,11 @@ public final class Revolver {
         }
     }
 
+    /** Para la prueba del CI: «se acaba de sacar» (con shaders, a 1-2 fps, entre paso y paso se pasaba la ventana). */
+    public static void desenfundePrueba(ServerPlayer p) {
+        SACADO.put(p.getUUID(), p.serverLevel().getGameTime());
+    }
+
     static void limpiar() {
         SACADO.clear();
         VISTO.clear();
