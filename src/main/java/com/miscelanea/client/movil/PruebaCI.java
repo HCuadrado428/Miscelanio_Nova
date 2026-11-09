@@ -1169,7 +1169,14 @@ public final class PruebaCI {
         sin("esc_confeti", 5, () -> escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.CONFETI, 100, escHuskPos()));
         paso("130_confeti", 6, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
         // ---- soplido (tolva vacía): empuja al cerdo
-        sin("esc_soplido", 10, () -> {
+        sin("esc_soplido_cerdo", 5, () -> escServidor(sp -> {
+            // el cerdo se pasea: se le pone a 4 bloques delante
+            var c = escEntidad(escCerdo);
+            Vec3 m = Vec3.directionFromRotation(0, sp.getYRot());
+            c.teleportTo(sp.getX() + m.x * 4, sp.getY(), sp.getZ() + m.z * 4);
+            c.setDeltaMovement(Vec3.ZERO);
+        }));
+        sin("esc_soplido", 3, () -> {
             var c = escEntidad(escCerdo);
             escCerdoPos = c.position();
             escCargar(null, 90, c.position().add(0, 0.5, 0));
@@ -1249,6 +1256,8 @@ public final class PruebaCI {
             s.enchant(com.miscelanea.registry.ModEnchantments.ESCOPETA_DOBLE_CAMARA.get(), 1);
             com.miscelanea.armasfuego.escopeta.Presion.ponerPresion(s, 95);
             sp.getInventory().setItem(0, s);
+            // el enfriamiento de la reventada es del objeto (de todas las escopetas de presión): fuera para seguir
+            sp.getCooldowns().removeCooldown(s.getItem());
         }));
         sin("esc_valvula_bombear", 30, () -> mantenerUso = true);
         sin("esc_valvula_chk", 5, () -> {
@@ -1323,6 +1332,7 @@ public final class PruebaCI {
             com.miscelanea.armasfuego.escopeta.Presion.ponerTolva(s, com.miscelanea.armasfuego.escopeta.TipoCartucho.INCENDIARIO, 9);
             com.miscelanea.armasfuego.escopeta.Presion.ponerPresion(s, 92);
             sp.getInventory().selected = 3;
+            sp.connection.send(new net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket(3));
             sp.connection.teleport(sp.getX(), sp.getY(), sp.getZ(), sp.getYRot(), 10F);
         }));
         paso("135_cobre_y_roja", 10, () -> {});
