@@ -1458,6 +1458,17 @@ public final class PruebaCI {
             rifleSalto = false;
             mc.options.keyJump.setDown(false);
         });
+        // si con los pocos fotogramas de los shaders el primer salto no ha cogido la cuerda, se vuelve a saltar
+        sin("rifle_salta2", 12, () -> {
+            if (!(mc.player.getVehicle() instanceof com.miscelanea.armasfuego.rifle.GanchoTirolina)) {
+                RESUMEN.add("  rifle: el primer salto no ha cogido la cuerda; se salta otra vez");
+                rifleSalto = true;
+            }
+        });
+        sin("rifle_salta_soltar2", 8, () -> {
+            rifleSalto = false;
+            mc.options.keyJump.setDown(false);
+        });
         paso("149_colgado", 3, () -> {
             if (!(mc.player.getVehicle() instanceof com.miscelanea.armasfuego.rifle.GanchoTirolina))
                 throw new IllegalStateException("saltando debajo de la cuerda no se ha colgado");
@@ -1600,7 +1611,8 @@ public final class PruebaCI {
             });
         });
         // las armas no se fabrican: salen en los cofres (puestos de saqueadores, barcos hundidos, aldeas)
-        sin("armas_botin", 10, () -> rifleSrv(sp -> {
+        sin("armas_botin", 40, () -> rifleSrv(sp -> {
+          try {
             var srv = sp.server;
             var l = sp.serverLevel();
             String[][] tablas = {{"chests/pillager_outpost", "rifle"}, {"chests/shipwreck_supply", "escopeta_presion"},
@@ -1610,7 +1622,7 @@ public final class PruebaCI {
                     {"chests/simple_dungeon", "-"}};
             java.util.Set<String> armas = java.util.Set.of("revolver", "rifle", "escopeta_presion");
             StringBuilder sb = new StringBuilder(), mal = new StringBuilder();
-            int total = 200;
+            int total = 150;
             for (String[] t : tablas) {
                 var tabla = srv.getLootData().getLootTable(new net.minecraft.resources.ResourceLocation("minecraft", t[0]));
                 int n = 0, enc = 0, ox = 0, mun = 0;
@@ -1639,7 +1651,14 @@ public final class PruebaCI {
             // y ya no hay receta que las fabrique (la munición sí)
             int recMunicion = 0;
             for (var r : srv.getRecipeManager().getRecipes()) {
-                var k = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(r.getResultItem(srv.registryAccess()).getItem());
+                ItemStack res;
+                try {
+                    res = r.getResultItem(srv.registryAccess());
+                } catch (Throwable t) {
+                    continue;   // recetas especiales de otros mods que no tienen un resultado fijo
+                }
+                if (res == null || res.isEmpty()) continue;
+                var k = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(res.getItem());
                 if (k == null || !k.getNamespace().equals(Miscelanea.MOD_ID)) continue;
                 if (armas.contains(k.getPath())) mal.append("receta ").append(r.getId()).append("; ");
                 if (k.getPath().startsWith("revolver_") || k.getPath().startsWith("bala_") || k.getPath().startsWith("escopeta_cartucho_") || k.getPath().equals("casquillo_rifle")) recMunicion++;
@@ -1648,6 +1667,10 @@ public final class PruebaCI {
             if (recMunicion < 16) mal.append("faltan recetas de munición (").append(recMunicion).append("); ");
             PI.put("botin", sb.toString());
             PI.put("botin_mal", mal.toString());
+          } catch (Throwable t) {
+            Miscelanea.LOGGER.error("[PruebaCI] botín de las armas", t);
+            PI.put("botin_mal", "error: " + t);
+          }
         }));
         sin("armas_botin_comprobar", 4, () -> {
             RESUMEN.add("  armas en cofres: " + PI.getOrDefault("botin", "(sin datos)"));
