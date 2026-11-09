@@ -1,0 +1,170 @@
+Prueba del móvil (Miscelánea)
+OK    preparar
+OK    00_mundo
+OK    01_inicio
+OK    02_camara
+OK    03_filtro_1
+OK    03_filtro_2
+OK    03_filtro_3
+OK    03_filtro_4
+OK    03_filtro_5
+OK    03_filtro_6
+OK    03_filtro_7
+OK    03_filtro_8
+OK    03_foto_gameboy
+OK    04_zoom
+OK    05_horizontal
+OK    vuelve_vertical
+OK    06_foto
+OK    espera_foto
+OK    07_temporizador
+OK    espera_temporizador
+OK    temporizador_fuera
+OK    08_flash
+OK    espera_flash
+OK    09_grabando
+OK    para_video
+OK    10_galeria
+  galería: 5 (la última es un vídeo de 3000 ms)
+OK    11_visor
+OK    12_llamada_grupo
+OK    13_llamada
+OK    14_entrante
+OK    15_manos_libres
+OK    16_teclado
+OK    17_ajustes
+OK    gramola_poner
+OK    20_gramola_menu
+OK    21_videoclip_hotel_inicio
+OK    22_videoclip_hotel_8s
+OK    23_videoclip_hotel_20s
+OK    24_tras_salir
+OK    gramola_otra
+OK    25_videoclip_disco
+OK    26_tras_salir_disco
+  pociones: red_mushroom=gigante brown_mushroom=enano echo_shard=ecolocalizacion ink_sac=niebla_viviente amethyst_shard=espejismo feather=helio snowball=ventilador wheat=borrachera cocoa_beans=tartamudeo
+OK    pociones
+OK    recorte_niveles
+  recorte: espada {net.minecraft.world.item.enchantment.DamageEnchantment@659924c8=5, net.minecraft.world.item.enchantment.DigDurabilityEnchantment@1e8cc604=3, net.minecraft.world.item.enchantment.MendingEnchantment@4ed8e7fc=1} · peto {net.minecraft.world.item.enchantment.ProtectionEnchantment@5b0273d5=4, net.minecraft.world.item.enchantment.ThornsEnchantment@115e60b9=3} · libro {net.minecraft.world.item.enchantment.ProtectionEnchantment@5b0273d5=4} · xp +200 · espada con durabilidad: true
+OK    perfil_vacio
+  rendimiento sin_sala: 1.8 fps · 410.8 ms/fotograma · bloques-entidad 0.39 ms · pantalla 0.00 ms (22 fotogramas)
+OK    perfil_sala
+  rendimiento: sala con 35 de 35 cosas
+  rendimiento colocar: 1.6 fps · 582.7 ms/fotograma · bloques-entidad 7.50 ms · pantalla 0.00 ms (4 fotogramas)
+OK    perfil_mirar
+  rendimiento sala: 3.9 fps · 242.7 ms/fotograma · bloques-entidad 4.74 ms · pantalla 0.00 ms (57 fotogramas)
+  rendimiento: 5 máquinas con partida retransmitida
+OK    perfil_jugar
+OK    70_perfil_mazmorra
+  rendimiento mazmorra: 4.6 fps · 202.1 ms/fotograma · bloques-entidad 2.66 ms · pantalla 2.91 ms (75 fotogramas)
+OK    perfil_turbo
+OK    71_perfil_turbo
+  rendimiento turbo: 4.8 fps · 197.9 ms/fotograma · bloques-entidad 2.36 ms · pantalla 1.63 ms (76 fotogramas)
+  perfil sin_sala (235 muestras, 41% en nativo): BichoRenderer.render 11.1% BichoRenderer.m_7392_ 11.1% MovilCliente.tick 1.7% MapaCache.tick 1.7% MapaCache.pintar 1.7% MovilCliente.poseDe 0.9% AnimMovil.isActive 0.9% EcoCliente.activo 0.4% HachaCliente.hacha 0.4% EstocadaAnimacion.isActive 0.4% EstaticaHud.hud 0.4% CaraPantalla.enMonitor 0.4%
+  perfil colocar (47 muestras, 65% en nativo): BichoRenderer.render 6.4% BichoRenderer.m_7392_ 6.4% PantallaTextura.<init> 4.3% ArcadeCliente.tick 4.3% PantallaTextura.tablaCrt 4.3% RecreativaRenderer.render 2.1% RecreativaRenderer.m_6922_ 2.1% PantallaTextura.subir 2.1% PantallaTextura.actualizar 2.1%
+  perfil sala (246 muestras, 69% en nativo): BichoRenderer.render 4.5% BichoRenderer.m_7392_ 4.5% RecreativaRenderer.m_6922_ 1.2% RecreativaRenderer.render 1.2% BoleraRenderer.render 0.8% BoleraRenderer.m_6922_ 0.8% PantallaTextura.subir 0.8% PantallaTextura.actualizar 0.8% CartelRecordsRenderer.quad 0.4% FeriaPiezas.modelo 0.4% ImperioRenderer.local 0.4% ClientAgarres.activo 0.4%
+  perfil mazmorra (268 muestras, 73% en nativo): BichoRenderer.render 5.6% BichoRenderer.m_7392_ 5.6% ArcadeScreen.m_88315_ 1.5% ArcadeScreen.empezar 0.7% PantallaTextura.subir 0.7% CartelRecordsRenderer.texto 0.7% Mazmorra3D.dibujar 0.7% Mazmorra3D.reiniciar 0.7% MapaCache.tick 0.7% PocionesEventos.tickVivo 0.7% ArcadeScreen.pantalla 0.7% CartelRecordsRenderer.m_6922_ 0.7%
+  perfil turbo (264 muestras, 75% en nativo): BichoRenderer.render 3.4% BichoRenderer.m_7392_ 3.4% RecreativaRenderer.render 1.9% RecreativaRenderer.m_6922_ 1.9% PantallaTextura.subir 1.1% PantallaTextura.actualizar 1.1% RecreativaBlockEntity.getRenderBoundingBox 0.4% PocionesEventos.tickVivo 0.4%
+OK    perfil_fin
+OK    72_perfil_sala
+OK    laser_poner
+OK    laser_encender
+OK    80_laser_primera
+OK    laser_primera_quitar_hud
+  láser laser_primera: el punto sale a (-1.1, -1.5) px de la mira (256 píxeles rojos, imagen 854x480) · calculado (+0.6, +0.3) px, a 0.019 bloques de donde mira y a 0.010 del que ven los demás
+OK    laser_primera_medir
+OK    laser_fov
+OK    81_laser_fov105
+OK    laser_fov105_quitar_hud
+  láser laser_fov105: el punto sale a (-1.2, -0.0) px de la mira (37 píxeles rojos, imagen 854x480) · calculado (+0.3, -0.2) px, a 0.019 bloques de donde mira y a 0.004 del que ven los demás
+OK    laser_fov105_medir
+OK    laser_gigante
+  láser: de gigante, ojos a 4.86 bloques del suelo
+OK    82_laser_gigante
+OK    laser_gigante_quitar_hud
+  láser laser_gigante: el punto sale a (-1.4, +0.3) px de la mira (168 píxeles rojos, imagen 854x480) · calculado (-0.1, +0.2) px, a 0.006 bloques de donde mira y a 0.022 del que ven los demás
+OK    laser_gigante_medir
+OK    laser_normal
+OK    laser_fuera_poner
+OK    83_laser_desde_fuera
+OK    laser_desde_fuera_quitar_hud
+  láser laser_desde_fuera: el punto sale a (-2.3, -0.8) px de donde mira (89 píxeles rojos, imagen 854x480) · calculado (+0.0, -0.6) px, a 0.016 bloques de donde mira y a 0.028 del que ven los demás
+OK    laser_desde_fuera_medir
+OK    laser_fuera_quitar
+OK    84_laser_tercera
+OK    laser_fin
+OK    eco_poner
+OK    eco_hablador
+OK    eco_ruido
+OK    90_eco_activo
+  eco activo: niebla hasta 0.02 bloques · ondas 5, bloques 2705, entidades 3, fallos al dibujar 0 · imagen: 44% negra, luz media 71, 42861 px azulados, 20 px muy claros · hablo (solo ruido del micro): no
+OK    eco_medir
+OK    91_eco_tercera
+OK    eco_mirar_cielo
+OK    92_eco_cielo
+  eco mirando arriba (a mediodía): imagen: 81% negra, luz media 14, 5074 px azulados, 37 px muy claros
+OK    eco_medir_cielo
+OK    eco_andar
+OK    94_eco_andando
+  eco andando: ondas de mis pasos 4, de los pasos del otro 4 · ondas 11, bloques 2736, entidades 5, fallos al dibujar 0
+OK    eco_medir_pasos
+OK    eco_quitar
+OK    93_eco_quitado
+  eco quitado: niebla hasta 192.0 bloques · ondas 0, bloques 0, entidades 0, fallos al dibujar 0 · imagen: 2% negra, luz media 148, 32556 px azulados, 195 px muy claros
+OK    eco_comprobar
+OK    eco_fin
+OK    rifle_poner
+OK    140_rifle_mano
+OK    141_cerrojo
+OK    rifle_cargado
+OK    142_mira
+  rifle: telémetro 23.9 m · Disecado · firme true
+OK    rifle_disparo_cabeza
+  rifle: sensor de sculk tras el disparo: active
+OK    rifle_cabeza_comprobar
+  rifle: disparo a la cabeza → husk muerto
+OK    rifle_cerrojo2
+OK    rifle_apunta_cuerpo
+OK    rifle_disparo_cuerpo
+OK    rifle_cuerpo_comprobar
+  rifle: disparo al cuerpo del husk con diamante → le quedan 10.64 de vida (esperado ~10,6; sin perforar 12,3)
+OK    rifle_trazadora
+OK    rifle_trazadora_cerrojo
+OK    rifle_apunta_golem
+OK    143_trazadora
+OK    144_brillo
+  rifle: gólem tras la trazadora: brilla true, vida 88.0
+OK    rifle_brillo_comprobar
+OK    rifle_foto_mira
+OK    rifle_foto
+  rifle: fotos 1 (movil), galería 5 → 6
+OK    145_foto
+OK    146_foto_galeria
+OK    rifle_silenciador
+OK    rifle_silencio_apunta
+OK    rifle_silencio_disparo
+  rifle: con Silenciador, el sensor de sculk tras el disparo: inactive
+OK    rifle_silencio_espera
+OK    rifle_torre
+OK    rifle_cuerda_cerrojo
+OK    rifle_cuerda_apunta
+OK    147_cuerda
+  rifle: tirolina de 21.4 bloques, de 91.9 a 83.1 de altura
+OK    148_cuerda_fuera
+OK    rifle_salta
+OK    149_colgado
+OK    150_bajando
+OK    rifle_llegada
+  rifle: tras bajar está a 0.0 del suelo, colgado: false
+OK    151_abajo
+OK    rifle_tijeras
+OK    rifle_cortar
+  rifle: tirolinas tras las tijeras 0, balas de cuerda 2 → 2
+OK    152_cortada
+OK    rifle_oxido
+  rifle: encerar true, desencerar true, rascar true · en la mesa: [atravesar, ojo_halcon, respiracion_contenida, silenciador, tirolinero] · solo para el rifle true
+OK    153_oxidado
+OK    rifle_fin
+  cara propia (la de su modelo) guardada: sí
+OK    cerrar
+TODO BIEN
