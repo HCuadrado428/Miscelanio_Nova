@@ -1401,8 +1401,9 @@ public class PurgatorioGenerador extends ChunkGenerator {
             for (int z = z0; z <= z0 + 3; z++) l.pon(x, f, z, d(color));
             l.pon(x, f + 1, z0 + 1, d(Blocks.TINTED_GLASS));
             l.pon(x, f + 1, z0 + 2, d(Blocks.TINTED_GLASS));
-            if (faros) l.pon(x, f, zf, d(Blocks.PEARLESCENT_FROGLIGHT));
-            else l.pon(x, f, zf + delante.getStepZ(), Blocks.BIRCH_BUTTON.defaultBlockState()
+            if (faros) l.pon(x, f, zf + 2 * delante.getStepZ(), Blocks.LIGHT.defaultBlockState().setValue(net.minecraft.world.level.block.LightBlock.LEVEL, 15));
+            l.pon(x, f, zf + delante.getStepZ(), faros ? Blocks.END_ROD.defaultBlockState().setValue(net.minecraft.world.level.block.EndRodBlock.FACING, delante)
+                    : Blocks.BIRCH_BUTTON.defaultBlockState()
                     .setValue(net.minecraft.world.level.block.ButtonBlock.FACE, net.minecraft.world.level.block.state.properties.AttachFace.WALL)
                     .setValue(net.minecraft.world.level.block.ButtonBlock.FACING, delante));
             l.pon(x, f, zt - delante.getStepZ(), Blocks.CRIMSON_BUTTON.defaultBlockState()
@@ -1583,8 +1584,8 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 l.pon(x, f + i, z, esc);
             }
             for (int x : new int[]{qx + 1, qx + 4}) {
-                for (int y = 0; y <= i; y++) l.pon(x, f + y, z, d(Blocks.BLACK_CONCRETE));
-                if (i < 5) l.pon(x, f + i + 1, z, unida(Blocks.GLASS_PANE, true, false));
+                for (int y = 0; y <= i; y++) l.pon(x, f + y, z, d(Blocks.LIGHT_GRAY_CONCRETE));
+                if (i < 5) l.pon(x, f + i + 1, z, d(Blocks.BLACK_CONCRETE));
             }
         }
     }
@@ -1602,7 +1603,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
         BlockState foco = ModBlocks.FOCO.get().defaultBlockState();
         for (int x = l.ox; x < l.ox + 16; x++)
             for (int z = l.oz; z < l.oz + 16; z++)
-                if (x % 6 == 3 && z % 6 == 3 && h(g.x0() + x, g.z0() + z, 3) % 5 != 0) l.pon(x, f + 8, z, foco);
+                if (x % 4 == 2 && z % 4 == 2 && h(g.x0() + x, g.z0() + z, 3) % 5 != 0) l.pon(x, f + 8, z, foco);
         int px0 = 6, px1 = 41, pz0 = 7, pz1 = 26;
         for (int x = px0 - 1; x <= px1 + 1; x++)
             for (int z = pz0 - 1; z <= pz1 + 1; z++) {
@@ -1666,7 +1667,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 if (r > 3.5 && r < 4.5) linea = true;
                 if (linea && x >= 4 && x <= W - 5 && z >= 4 && z <= D - 5) l.pon(x, f - 1, z, d(Blocks.WHITE_CONCRETE));
                 if (x % 5 == 2 && z % 5 == 2)
-                    l.pon(x, f + 8, z, ModBlocks.FLUORESCENTE.get().defaultBlockState().setValue(FluorescenteBlock.ENCENDIDO, h(g.x0() + x, g.z0() + z, 3) % 3 == 0));
+                    l.pon(x, f + 8, z, ModBlocks.FLUORESCENTE.get().defaultBlockState().setValue(FluorescenteBlock.ENCENDIDO, h(g.x0() + x, g.z0() + z, 3) % 3 != 0));
             }
         // las dos canastas (tablero blanco, aro de hierro) en las paredes del norte y del sur
         for (int[] c : new int[][]{{1, 2, 1}, {D - 2, D - 3, -1}}) {
@@ -1720,7 +1721,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 // la claraboya (negra: aquí no hay cielo) y las luces del techo
                 boolean clara = Math.abs(x - W / 2.0 + 0.5) < 8 && Math.abs(z - D / 2.0 + 0.5) < 8;
                 if (clara) l.pon(x, f + 10, z, (x + z) % 4 == 0 ? d(Blocks.WHITE_CONCRETE) : d(Blocks.BLACK_STAINED_GLASS));
-                else if (x % 6 == 3 && z % 6 == 3) l.pon(x, f + 10, z, ModBlocks.FLUORESCENTE.get().defaultBlockState().setValue(FluorescenteBlock.ENCENDIDO, h(g.x0() + x, g.z0() + z, 3) % 2 == 0));
+                else if (x % 4 == 2 && z % 4 == 2) l.pon(x, f + 10, z, ModBlocks.FLUORESCENTE.get().defaultBlockState().setValue(FluorescenteBlock.ENCENDIDO, h(g.x0() + x, g.z0() + z, 3) % 4 != 0));
             }
         // la entreplanta del norte (z = 1..11) con su barandilla de cristal y tiendas cerradas al fondo
         for (int x = 1; x < W - 1; x++) {
@@ -1742,8 +1743,8 @@ public class PurgatorioGenerador extends ChunkGenerator {
                     l.pon(x, f + i, z, ModBlocks.ESCALERA_MECANICA.get().defaultBlockState().setValue(StairBlock.FACING, Direction.NORTH));
                 }
                 for (int x : new int[]{ex - 1, ex + 2}) {
-                    for (int y = 0; y <= i; y++) l.pon(x, f + y, z, d(Blocks.BLACK_CONCRETE));
-                    l.pon(x, f + i + 1, z, unida(Blocks.GLASS_PANE, true, false));
+                    for (int y = 0; y <= i; y++) l.pon(x, f + y, z, d(Blocks.LIGHT_GRAY_CONCRETE));
+                    l.pon(x, f + i + 1, z, d(Blocks.BLACK_CONCRETE));
                 }
             }
             // el hueco de la barandilla donde llega

@@ -435,7 +435,7 @@ public final class Purgatorio {
                                 return new BlockPos[]{new BlockPos(bx + 12, f, bz + 8), new BlockPos(bx + 12, f - 3, bz + 12)};
                             }
                             case APARCAMIENTO -> {
-                                return new BlockPos[]{new BlockPos(bx + 13, f, bz + 7), new BlockPos(bx + 12, f, bz + 11)};
+                                return new BlockPos[]{new BlockPos(bx + 13, f, bz + 6), new BlockPos(bx + 12, f, bz + 10)};
                             }
                             case COLEGIO -> {
                                 return new BlockPos[]{new BlockPos(bx + 3, f, bz + 5), new BlockPos(bx + 3, f + 1, bz)};
