@@ -798,6 +798,7 @@ public final class PruebaCI {
                     Vec3 vp = piPunto(3 + i, -4 - (i % 2), 0);
                     v.moveTo(vp.x, vp.y, vp.z, 0, 0);
                     v.setPersistenceRequired();
+                    v.setNoAi(true);   // quietas hasta el fogueo: si no, alguna se mete delante del husk
                     l.addFreshEntity(v);
                 }
                 sp.setGameMode(GameType.SURVIVAL);
@@ -940,8 +941,10 @@ public final class PruebaCI {
             piComprobar("dardo de sedante (lentitud)", Boolean.TRUE.equals(PI.get("dardo")), String.valueOf(PI.get("dardo")));
             piSrv(sp -> {
                 double d = 0;
-                for (var v : sp.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.animal.Cow.class, new net.minecraft.world.phys.AABB(piO).inflate(30)))
+                for (var v : sp.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.animal.Cow.class, new net.minecraft.world.phys.AABB(piO).inflate(30))) {
                     d += v.distanceTo(sp);
+                    v.setNoAi(false);
+                }
                 PI.put("vacas0", d);
             });
             piApuntar(piPunto(10, 1, 1.5));
@@ -1564,16 +1567,21 @@ public final class PruebaCI {
                         com.miscelanea.registry.ModItems.REVOLVER_DARDO, com.miscelanea.registry.ModItems.REVOLVER_FOGUEO,
                         com.miscelanea.registry.ModItems.REVOLVER_IMAN, com.miscelanea.registry.ModItems.BALA_RIFLE))
                     inv.setItem(k++, new ItemStack(m.get(), 12));
-                // en la mochila: las otras fases del cobre, el resto de la munición y los cartuchos
+                // en la mochila: las otras fases del cobre, el resto de la munición y los cartuchos (la casilla 13 se
+                // deja vacía: al abrir el inventario el ratón queda en el centro, justo encima, y sacaría su ficha)
                 k = 9;
+                java.util.function.IntUnaryOperator sig = x -> x == 13 ? 14 : x;
                 for (int o2 = 1; o2 < 4; o2++) {
+                    k = sig.applyAsInt(k);
                     inv.setItem(k++, piRevolver(o2));
                     ItemStack e = new ItemStack(com.miscelanea.registry.ModItems.ESCOPETA_PRESION.get());
                     com.miscelanea.armasfuego.escopeta.Presion.ponerOxido(e, o2);
                     com.miscelanea.armasfuego.escopeta.Presion.ponerPresion(e, 30 * o2);
+                    k = sig.applyAsInt(k);
                     inv.setItem(k++, e);
                     ItemStack r = new ItemStack(com.miscelanea.registry.ModItems.RIFLE.get());
                     r.getOrCreateTag().putInt(com.miscelanea.armasfuego.rifle.Rifle.OXIDO, o2);
+                    k = sig.applyAsInt(k);
                     inv.setItem(k++, r);
                 }
                 for (var m : List.of(com.miscelanea.registry.ModItems.BALA_TRAZADORA, com.miscelanea.registry.ModItems.BALA_CUERDA,
@@ -1640,8 +1648,6 @@ public final class PruebaCI {
         }
         paso("172_inventario_armas", 20, () -> {
             mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
-            // el ratón fuera del inventario, para que no salga la ficha de ningún objeto
-            GLFW.glfwSetCursorPos(mc.getWindow().getWindow(), 4, 4);
             mc.setScreen(new net.minecraft.client.gui.screens.inventory.InventoryScreen(mc.player));
         });
         sin("armas3d_fin", 5, () -> {
