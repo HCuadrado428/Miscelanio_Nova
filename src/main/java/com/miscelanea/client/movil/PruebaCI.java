@@ -1806,8 +1806,15 @@ public final class PruebaCI {
         paso("6d_liminal_maniquies", 30, () -> {
             if (mc.level.getBlockEntity(lim[1]) instanceof com.miscelanea.purgatorio.liminal.AtrezoBE be) limGiro = be.giro;
         });
-        sin("lim_maniqui_mirar_atras", 15, () -> mc.player.setYRot(mc.player.getYRot() + 180));
-        sin("lim_maniqui_volver", 10, () -> mc.player.setYRot(mc.player.getYRot() + 180));
+        // se aparta a un lado, de espaldas al escaparate, y luego vuelve a mirar
+        sin("lim_maniqui_mirar_atras", 20, () -> {
+            var f = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION).getBlockState(lim[1]).getValue(FAC);
+            irA(lim[1].relative(f, 4).relative(f.getClockWise(), 4), f.toYRot(), 0);
+        });
+        sin("lim_maniqui_volver", 10, () -> {
+            var f = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION).getBlockState(lim[1]).getValue(FAC);
+            irMirando(lim[1].relative(f, 4).relative(f.getClockWise(), 4), lim[1].above());
+        });
         paso("6e_liminal_maniqui_te_mira", 20, () -> {
             var be = mc.level.getBlockEntity(lim[1]) instanceof com.miscelanea.purgatorio.liminal.AtrezoBE a ? a : null;
             RESUMEN.add(String.format("  liminal, maniquí: miraba a %.0f, ahora a %.0f (se ha girado %d veces; maniquíes vistos %d, tics %d)", limGiro, be == null ? Float.NaN : be.giro,
