@@ -338,6 +338,7 @@ public final class PruebaCI {
         rendimiento();
         laser();
         eco();
+        dream();
         sin("cerrar", 10, () -> {
             mc.setScreen(null);
             RESUMEN.add("  cara propia (la de su modelo) guardada: " + (CarasCliente.tiene(mc.player.getUUID()) ? "sí" : "NO"));
@@ -679,6 +680,341 @@ public final class PruebaCI {
                 if (sp != null) sp.setGameMode(GameType.CREATIVE);
             });
         });
+    }
+
+    // ------------------------------------------------------------------ Dream (mordisco, veneno, caza, contagio)
+    private static volatile UUID dHusk, dAldeano, dGambito;
+    private static volatile String dLectura = "";
+    private static volatile boolean dOk, dMordiendo, dInfectado, dCeguera, dVelocidad, dSalto, dSol, dNausea, dInfeccionYo, dMordiscoYo;
+    private static volatile int dLentitud = -1, dDosis, dDesangrado = -1, dDesangradoDur, dPresaId = -1;
+    private static volatile float dDano;
+    private static volatile UUID dPresa;
+    private static net.minecraft.client.player.RemotePlayer dJugador;
+    private static final int DREAM_ID = -428_180;
+
+    private static void servidor(java.util.function.Consumer<ServerPlayer> f) {
+        Minecraft mc = Minecraft.getInstance();
+        var srv = mc.getSingleplayerServer();
+        UUID id = mc.player.getUUID();
+        srv.execute(() -> {
+            ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+            if (sp != null) f.accept(sp);
+        });
+    }
+
+    @javax.annotation.Nullable
+    private static net.minecraft.world.entity.LivingEntity dEnte(ServerPlayer sp, UUID u) {
+        return u != null && sp.serverLevel().getEntity(u) instanceof net.minecraft.world.entity.LivingEntity le ? le : null;
+    }
+
+    /** Lee en el servidor cómo está la víctima (para mirarlo en el paso siguiente, en el hilo del cliente). */
+    private static void dLeer(ServerPlayer sp, UUID u) {
+        var v = dEnte(sp, u);
+        dMordiendo = com.miscelanea.dream.Mordiscos.mordiendo(sp);
+        dDano = com.miscelanea.dream.Mordiscos.pruebaUltimoDano;
+        var pr = com.miscelanea.dream.Persecucion.presa(sp);
+        dPresa = pr == null ? null : pr.getUUID();
+        dPresaId = pr == null ? -1 : pr.getId();
+        dVelocidad = sp.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SPEED);
+        dSalto = sp.hasEffect(net.minecraft.world.effect.MobEffects.JUMP);
+        dSol = com.miscelanea.dream.Persecucion.alSol(sp);
+        dNausea = sp.hasEffect(net.minecraft.world.effect.MobEffects.CONFUSION);
+        dInfeccionYo = sp.hasEffect(com.miscelanea.dream.DreamRegistro.INFECCION.get());
+        dMordiscoYo = sp.hasEffect(com.miscelanea.dream.DreamRegistro.MORDISCO.get());
+        if (v == null) {
+            dLectura = "sin víctima";
+            return;
+        }
+        var lent = v.getEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN);
+        var des = v.getEffect(com.miscelanea.dream.DreamRegistro.DESANGRADO.get());
+        dLentitud = lent == null ? -1 : lent.getAmplifier();
+        dCeguera = v.hasEffect(net.minecraft.world.effect.MobEffects.BLINDNESS);
+        dInfectado = v.hasEffect(com.miscelanea.dream.DreamRegistro.INFECCION.get());
+        dDosis = com.miscelanea.dream.Mordiscos.dosis(v);
+        dDesangrado = des == null ? -1 : des.getAmplifier();
+        dDesangradoDur = des == null ? 0 : des.getDuration();
+        dLectura = String.format("dosis %d · Lentitud %s · ceguera %s · Desangrado %s · infectado %s · último mordisco %.1f de daño · vida %.0f",
+                dDosis, dLentitud < 0 ? "no" : String.valueOf(dLentitud + 1), dCeguera ? "sí" : "no", dDesangrado < 0 ? "no" : String.valueOf(dDesangrado + 1),
+                dInfectado ? "sí" : "no", dDano, v.getHealth());
+    }
+
+    /**
+     * La esencia de Dream: un jugador de mentira (solo en este cliente) con los ojos brillando de noche, los míos en
+     * tercera persona, un mordisco a un husk (sin IA, con mucha vida) que acumula veneno hasta Lentitud IV y Ceguera y lo
+     * acaba infectando, el fuego que me obliga a soltar y deja la presa marcada, su rastro de pisadas con el latido y la
+     * flecha del HUD, el puñetazo que marca, morder siendo un infectado (más flojo), el sol (más flojo), el Gambito que me
+     * hace soltar y la leche (quita la infección y deja el Desangrado a medias).
+     */
+    private static void dream() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("dream_poner", 30, () -> {
+            mc.setScreen(null);
+            mc.options.hideGui = false;
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            servidor(sp -> {
+                var l = sp.serverLevel();
+                var mira = net.minecraft.core.Direction.fromYRot(sp.getYRot());
+                var lado = mira.getClockWise();
+                var o = sp.blockPosition();
+                var aire = net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
+                for (var b : net.minecraft.core.BlockPos.betweenClosed(o.relative(lado, -9).relative(mira, -4).below(), o.relative(lado, 9).relative(mira, 14).above(10)))
+                    l.setBlock(b, b.getY() < o.getY() ? net.minecraft.world.level.block.Blocks.GRASS_BLOCK.defaultBlockState() : aire, 2);
+                l.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, new net.minecraft.world.phys.AABB(o).inflate(24),
+                        en -> !(en instanceof net.minecraft.world.entity.player.Player)).forEach(net.minecraft.world.entity.Entity::discard);
+                l.getGameRules().getRule(net.minecraft.world.level.GameRules.RULE_DOMOBSPAWNING).set(false, srv(sp));
+                l.setDayTime(18000);
+                l.setWeatherParameters(6000, 0, false, false);
+                sp.setGameMode(GameType.SURVIVAL);
+                sp.removeAllEffects();
+                sp.setHealth(sp.getMaxHealth());
+                sp.getInventory().selected = 8;
+                sp.getInventory().setItem(8, ItemStack.EMPTY);
+                sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND, ItemStack.EMPTY);
+                var h = new net.minecraft.world.entity.monster.Husk(net.minecraft.world.entity.EntityType.HUSK, l);
+                var hp = net.minecraft.world.phys.Vec3.atBottomCenterOf(o.relative(mira, 2));
+                h.moveTo(hp.x, hp.y, hp.z, mira.getOpposite().toYRot(), 0F);
+                h.setNoAi(true);
+                h.setPersistenceRequired();
+                h.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(400);
+                h.setHealth(400);
+                l.addFreshEntity(h);
+                dHusk = h.getUUID();
+                var a = new net.minecraft.world.entity.npc.Villager(net.minecraft.world.entity.EntityType.VILLAGER, l);
+                var ap = net.minecraft.world.phys.Vec3.atBottomCenterOf(o.relative(mira, 3).relative(lado, 4));
+                a.moveTo(ap.x, ap.y, ap.z, mira.getOpposite().toYRot(), 0F);
+                a.setNoAi(true);
+                a.setPersistenceRequired();
+                a.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(200);
+                a.setHealth(200);
+                l.addFreshEntity(a);
+                dAldeano = a.getUUID();
+                com.miscelanea.dream.Mordiscos.pruebaSinEscape = true;
+                com.miscelanea.dream.Mordiscos.pruebaSinEsperas();
+                sp.addEffect(com.miscelanea.dream.EsenciaDreamItem.efecto());
+                sp.connection.teleport(o.getX() + 0.5, o.getY(), o.getZ() + 0.5, mira.toYRot(), 8F);
+            });
+        });
+        sin("dream_otro", 10, () -> {
+            // un jugador de mentira (solo en este cliente), Dream como yo, delante a la izquierda
+            var mira = net.minecraft.core.Direction.fromYRot(mc.player.getYRot());
+            var lado = mira.getCounterClockWise();
+            var pos = net.minecraft.world.phys.Vec3.atBottomCenterOf(mc.player.blockPosition().relative(mira, 4).relative(lado, 2));
+            dJugador = new net.minecraft.client.player.RemotePlayer(mc.level, new com.mojang.authlib.GameProfile(UUID.nameUUIDFromBytes("Dream".getBytes()), "Dream"));
+            dJugador.setId(DREAM_ID);
+            dJugador.moveTo(pos.x, pos.y, pos.z, mira.getOpposite().toYRot() + 20F, 0F);
+            dJugador.setYHeadRot(mira.getOpposite().toYRot() + 20F);
+            dJugador.yBodyRot = mira.getOpposite().toYRot() + 20F;
+            mc.level.addPlayer(DREAM_ID, dJugador);
+            com.miscelanea.client.dream.PersecucionCliente.pruebaAura(DREAM_ID);
+            com.miscelanea.client.dream.OjosLayer.pruebaDibujados = 0;
+        });
+        paso("180_dream_ojos_otro", 10, () -> {});
+        sin("dream_ojos_otro_ver", 1, () -> {
+            int n = com.miscelanea.client.dream.OjosLayer.pruebaDibujados;
+            RESUMEN.add("  dream: ojos del otro (de noche) dibujados " + n + " veces · tengo el mordisco: " + mc.player.hasEffect(com.miscelanea.dream.DreamRegistro.MORDISCO.get()));
+            if (n <= 0) throw new IllegalStateException("no brillan los ojos del otro Dream en la oscuridad");
+            mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
+            if (dJugador != null) mc.level.removeEntity(DREAM_ID, net.minecraft.world.entity.Entity.RemovalReason.DISCARDED);
+            dJugador = null;
+            com.miscelanea.client.dream.OjosLayer.pruebaDibujados = 0;
+        });
+        paso("181_dream_ojos_propios", 10, () -> {});
+        sin("dream_morder", 4, () -> {
+            int n = com.miscelanea.client.dream.OjosLayer.pruebaDibujados;
+            RESUMEN.add("  dream: mis ojos (tercera persona) dibujados " + n + " veces");
+            if (n <= 0) throw new IllegalStateException("no me brillan los ojos en la oscuridad");
+            mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK);
+            servidor(sp -> {
+                var h = dEnte(sp, dHusk);
+                dOk = h != null && com.miscelanea.dream.Mordiscos.pruebaMorder(sp, h);
+            });
+        });
+        paso("182_dream_mordisco", 40, () -> {
+            if (!dOk) throw new IllegalStateException("no se ha podido empezar a morder al husk");
+        });
+        sin("dream_mordisco_ver", 40, () -> {
+            var e = com.miscelanea.client.dream.ClientMordiscos.local();
+            if (e == null || e.rol != com.miscelanea.client.dream.ClientMordiscos.Rol.MORDEDOR) throw new IllegalStateException("el cliente no sabe que estoy mordiendo");
+        });
+        sin("dream_veneno_leer", 3, () -> servidor(sp -> dLeer(sp, dHusk)));
+        paso("183_dream_veneno", 3, () -> {
+            RESUMEN.add("  dream veneno: " + dLectura);
+            if (!dMordiendo) throw new IllegalStateException("el mordisco se ha acabado solo");
+            if (dDosis < 3) throw new IllegalStateException("el veneno no se acumula: " + dDosis + " dosis");
+            if (dLentitud != 3) throw new IllegalStateException("desde la 3.ª dosis tenía que tener Lentitud IV");
+            if (!dCeguera) throw new IllegalStateException("desde la 3.ª dosis tenía que tener Ceguera");
+            if (Math.abs(dDano - 3.0F) > 0.01F) throw new IllegalStateException("el mordisco de Dream de noche tenía que hacer 3 de daño");
+        });
+        sin("dream_contagio_espera", 50, () -> {});
+        sin("dream_contagio_leer", 3, () -> servidor(sp -> dLeer(sp, dHusk)));
+        paso("184_dream_contagio", 3, () -> {
+            RESUMEN.add("  dream contagio: " + dLectura);
+            if (dDosis < 4) throw new IllegalStateException("no le han dado 4 mordiscos");
+            if (!dInfectado) throw new IllegalStateException("tras 4 mordiscos seguidos el husk tenía que quedar infectado");
+        });
+        // el fuego me obliga a soltar, y la presa queda marcada
+        sin("dream_fuego", 6, () -> servidor(sp -> sp.setRemainingFireTicks(60)));
+        sin("dream_fuego_leer", 3, () -> servidor(sp -> {
+            dLeer(sp, dHusk);
+            sp.clearFire();
+        }));
+        sin("dream_fuego_ver", 2, () -> {
+            RESUMEN.add("  dream fuego: sigo mordiendo " + (dMordiendo ? "sí" : "no") + " · presa marcada " + (dPresa != null && dPresa.equals(dHusk) ? "el husk" : String.valueOf(dPresa)));
+            if (dMordiendo) throw new IllegalStateException("ardiendo sigo mordiendo");
+            if (dPresa == null || !dPresa.equals(dHusk)) throw new IllegalStateException("al soltarla, la presa no queda marcada");
+            com.miscelanea.client.dream.PersecucionCliente.pruebaLatidos = 0;
+            com.miscelanea.client.dream.PersecucionCliente.pruebaFlechas = 0;
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            mc.player.setXRot(30F);
+            mc.player.xRotO = 30F;
+        });
+        // la presa huye: va dejando pisadas que solo veo yo
+        for (int i = 0; i < 12; i++) {
+            final int k = i;
+            sin("dream_huye_" + i, 3, () -> servidor(sp -> {
+                var h = dEnte(sp, dHusk);
+                if (h == null) return;
+                var mira = net.minecraft.core.Direction.fromYRot(sp.getYRot());
+                var lado = mira.getClockWise();
+                double f = 3 + k * 0.8, s = Math.sin(k * 0.6) * 1.6;
+                h.teleportTo(sp.getX() + mira.getStepX() * f + lado.getStepX() * s, sp.getY(), sp.getZ() + mira.getStepZ() * f + lado.getStepZ() * s);
+            }));
+        }
+        sin("dream_rastro_leer", 6, () -> servidor(sp -> dLeer(sp, dHusk)));
+        paso("185_dream_rastro", 4, () -> {
+            int huellas = com.miscelanea.client.dream.PersecucionCliente.huellas();
+            int latidos = com.miscelanea.client.dream.PersecucionCliente.pruebaLatidos;
+            int flechas = com.miscelanea.client.dream.PersecucionCliente.pruebaFlechas;
+            RESUMEN.add("  dream rastro: cazando " + com.miscelanea.client.dream.PersecucionCliente.cazando() + " · pisadas " + huellas + " · latidos " + latidos
+                    + " · flecha dibujada " + flechas + " · Velocidad " + dVelocidad + " · Impulso " + dSalto);
+            if (!com.miscelanea.client.dream.PersecucionCliente.cazando() || com.miscelanea.client.dream.PersecucionCliente.presaId() != dPresaId)
+                throw new IllegalStateException("el cliente no sabe a quién cazo");
+            if (huellas < 4) throw new IllegalStateException("la presa no deja rastro");
+            if (latidos < 1) throw new IllegalStateException("no oigo el latido de la presa cerca");
+            if (flechas < 1) throw new IllegalStateException("no sale la flecha del HUD");
+            if (!dVelocidad || !dSalto) throw new IllegalStateException("persiguiendo no tengo Velocidad e Impulso");
+        });
+        sin("dream_girar", 3, () -> {
+            mc.player.setYRot(mc.player.getYRot() + 100F);
+            mc.player.yRotO = mc.player.getYRot();
+            mc.player.setXRot(5F);
+            mc.player.xRotO = 5F;
+        });
+        paso("186_dream_flecha", 6, () -> {});
+        // el puñetazo con la mano vacía marca
+        sin("dream_punetazo", 3, () -> {
+            mc.player.setYRot(mc.player.getYRot() - 100F);
+            mc.player.yRotO = mc.player.getYRot();
+            servidor(sp -> {
+                var a = dEnte(sp, dAldeano);
+                if (a != null) sp.attack(a);
+            });
+        });
+        sin("dream_punetazo_leer", 3, () -> servidor(sp -> dLeer(sp, dAldeano)));
+        sin("dream_punetazo_ver", 1, () -> {
+            RESUMEN.add("  dream puñetazo: presa " + (dAldeano.equals(dPresa) ? "el aldeano" : String.valueOf(dPresa)));
+            if (!dAldeano.equals(dPresa)) throw new IllegalStateException("el puñetazo con la mano vacía no marca");
+        });
+        // infectado (sin la esencia): muerdo más flojo
+        sin("dream_infectado", 4, () -> {
+            mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
+            servidor(sp -> {
+                com.miscelanea.dream.Persecucion.desmarcar(sp);
+                sp.removeEffect(com.miscelanea.dream.DreamRegistro.MORDISCO.get());
+                sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(com.miscelanea.dream.DreamRegistro.INFECCION.get(), 20 * 60, 0));
+                com.miscelanea.dream.Mordiscos.pruebaSinEsperas();
+                com.miscelanea.dream.Mordiscos.pruebaUltimoDano = 0;
+                var a = dEnte(sp, dAldeano);
+                dOk = a != null && com.miscelanea.dream.Mordiscos.pruebaMorder(sp, a);
+            });
+        });
+        sin("dream_infectado_espera", 30, () -> {
+            if (!dOk) throw new IllegalStateException("un infectado no puede morder");
+        });
+        sin("dream_infectado_leer", 3, () -> servidor(sp -> dLeer(sp, dAldeano)));
+        paso("187_dream_infectado", 3, () -> {
+            RESUMEN.add("  dream infectado: " + dLectura);
+            if (Math.abs(dDano - 1.5F) > 0.01F) throw new IllegalStateException("el mordisco de un infectado tenía que hacer 1,5 (la mitad)");
+        });
+        // al sol: muerdo más flojo
+        sin("dream_sol", 6, () -> {
+            mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK);
+            servidor(sp -> {
+                sp.removeEffect(com.miscelanea.dream.DreamRegistro.INFECCION.get());
+                sp.serverLevel().setDayTime(6000);
+                sp.addEffect(com.miscelanea.dream.EsenciaDreamItem.efecto());
+            });
+        });
+        sin("dream_sol_morder", 30, () -> servidor(sp -> {
+            com.miscelanea.dream.Mordiscos.pruebaSinEsperas();
+            com.miscelanea.dream.Mordiscos.pruebaUltimoDano = 0;
+            var h = dEnte(sp, dHusk);
+            dOk = h != null && com.miscelanea.dream.Mordiscos.pruebaMorder(sp, h);
+        }));
+        sin("dream_sol_leer", 3, () -> servidor(sp -> dLeer(sp, dHusk)));
+        paso("188_dream_sol", 3, () -> {
+            RESUMEN.add("  dream al sol: " + dSol + " · " + dLectura);
+            if (!dOk) throw new IllegalStateException("no se ha podido morder al sol");
+            if (!dSol) throw new IllegalStateException("a mediodía a cielo abierto no cuenta como al sol");
+            if (Math.abs(dDano - 1.8F) > 0.01F) throw new IllegalStateException("al sol el mordisco tenía que hacer 1,8");
+        });
+        // el Gambito me hace soltar (aunque el golpe sea flojo)
+        sin("dream_gambito", 6, () -> servidor(sp -> {
+            var l = sp.serverLevel();
+            var g = new net.minecraft.world.entity.monster.Husk(net.minecraft.world.entity.EntityType.HUSK, l);
+            g.moveTo(sp.getX() - 1.5, sp.getY(), sp.getZ(), 0F, 0F);
+            g.setNoAi(true);
+            g.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(com.miscelanea.registry.ModItems.MAZO_WEMMBU.get()));
+            l.addFreshEntity(g);
+            dGambito = g.getUUID();
+            sp.invulnerableTime = 0;
+            sp.hurt(sp.damageSources().mobAttack(g), 1.0F);
+        }));
+        sin("dream_gambito_leer", 3, () -> servidor(sp -> dLeer(sp, dHusk)));
+        paso("189_dream_gambito", 3, () -> {
+            RESUMEN.add("  dream Gambito: sigo mordiendo " + dMordiendo + " · mareado " + dNausea);
+            if (dMordiendo) throw new IllegalStateException("con el Gambito no suelto");
+            if (!dNausea) throw new IllegalStateException("el Gambito no me deja atontado");
+        });
+        // la leche: fuera la infección, el Desangrado a medias
+        sin("dream_leche", 4, () -> servidor(sp -> {
+            sp.removeAllEffects();
+            sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(com.miscelanea.dream.DreamRegistro.DESANGRADO.get(), 200, 1));
+            sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(com.miscelanea.dream.DreamRegistro.INFECCION.get(), 1200, 0));
+            ItemStack leche = new ItemStack(net.minecraft.world.item.Items.MILK_BUCKET);
+            ItemStack res = leche.copy().finishUsingItem(sp.serverLevel(), sp);
+            net.minecraftforge.event.ForgeEventFactory.onItemUseFinish(sp, leche, 0, res);
+            var d = sp.getEffect(com.miscelanea.dream.DreamRegistro.DESANGRADO.get());
+            dDesangrado = d == null ? -1 : d.getAmplifier();
+            dDesangradoDur = d == null ? 0 : d.getDuration();
+            dInfeccionYo = sp.hasEffect(com.miscelanea.dream.DreamRegistro.INFECCION.get());
+        }));
+        sin("dream_leche_ver", 1, () -> {
+            RESUMEN.add("  dream leche: Desangrado " + (dDesangrado < 0 ? "no" : (dDesangrado + 1) + " (" + dDesangradoDur + " ticks)") + " · infección " + dInfeccionYo);
+            if (dInfeccionYo) throw new IllegalStateException("la leche no cura la infección");
+            if (dDesangrado != 0 || dDesangradoDur > 100 || dDesangradoDur < 60) throw new IllegalStateException("la leche tenía que dejar el Desangrado en I y a la mitad");
+        });
+        sin("dream_fin", 5, () -> {
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            servidor(sp -> {
+                com.miscelanea.dream.Mordiscos.pruebaSinEscape = false;
+                com.miscelanea.dream.Persecucion.desmarcar(sp);
+                sp.removeAllEffects();
+                sp.clearFire();
+                sp.setHealth(sp.getMaxHealth());
+                sp.setGameMode(GameType.CREATIVE);
+                sp.serverLevel().setDayTime(6000);
+                sp.serverLevel().getGameRules().getRule(net.minecraft.world.level.GameRules.RULE_DOMOBSPAWNING).set(true, srv(sp));
+                for (UUID u : new UUID[]{dHusk, dAldeano, dGambito}) {
+                    var e = dEnte(sp, u);
+                    if (e != null) e.discard();
+                }
+            });
+        });
+    }
+
+    private static net.minecraft.server.MinecraftServer srv(ServerPlayer sp) {
+        return sp.server;
     }
 
     // ------------------------------------------------------------------ ecolocalización

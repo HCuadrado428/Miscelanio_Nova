@@ -40,6 +40,12 @@ public final class ConfigServidor {
     private static final ForgeConfigSpec.IntValue EQUILIBRIO_XP_POR_NIVEL;
     private static final ForgeConfigSpec.DoubleValue MORDISCO_DANO, MORDISCO_UMBRAL, DESANGRADO_DANO;
     private static final ForgeConfigSpec.ConfigValue<String> ANILLO_DIMENSION;
+    // ---- Dream: veneno por niveles, persecución, contagio y debilidades
+    private static final ForgeConfigSpec.BooleanValue PERSECUCION_ACTIVADA, RASTRO_ACTIVADO, CONTAGIO_ACTIVADO, CONTAGIO_CADENA,
+            DEBILIDAD_SOL, DREAM_PRESENCIA;
+    private static final ForgeConfigSpec.IntValue MORDISCO_CEGUERA_DESDE, MORDISCO_CEGUERA_S, MORDISCO_DOSIS_OLVIDO_S, MARCA_S,
+            PERSECUCION_VELOCIDAD, PERSECUCION_SALTO, PERSECUCION_DISTANCIA, LATIDO_DISTANCIA, CONTAGIO_MORDISCOS, CONTAGIO_S;
+    private static final ForgeConfigSpec.DoubleValue MORDISCO_QTE_DIFICULTAD, CONTAGIO_FUERZA, SOL_FUERZA;
     // ---- glitch (muestra de glitch)
     private static final ForgeConfigSpec.IntValue GLITCH_RADIO, GLITCH_BLOQUES_TICK;
     private static final ForgeConfigSpec.BooleanValue GLITCH_DESTRUIR, GLITCH_CONTENEDORES;
@@ -173,28 +179,77 @@ public final class ConfigServidor {
                 .define("mordisco_activado", true);
         MORDISCO_JUGADORES = b.comment("Si se puede morder a otros jugadores (además de respetar el PvP del servidor y los equipos).")
                 .define("mordisco_a_jugadores", true);
-        MORDISCO_LENTITUD_MAX = b.comment("Veneno paralizante: cada mordisco deja Lentitud, que sube un nivel cada dos mordiscos seguidos",
-                        "hasta este tope (0 = Lentitud I, 1 = II, 2 = III...).")
-                .defineInRange("mordisco_lentitud_max", 2, 0, 6);
+        MORDISCO_LENTITUD_MAX = b.comment("Veneno paralizante por niveles: el veneno se acumula en la víctima (dosis). Lentitud I con la 1.ª dosis,",
+                        "II con la 2.ª y este tope desde la 3.ª (0 = Lentitud I, 1 = II, 2 = III, 3 = IV...).")
+                .defineInRange("mordisco_lentitud_max", 3, 0, 6);
         MORDISCO_LENTITUD_S = b.comment("Segundos de Lentitud que deja cada mordisco (muerde cada 1,5 s).")
                 .defineInRange("mordisco_lentitud_segundos", 8, 1, 120);
         MORDISCO_NAUSEA_S = b.comment("Segundos de Náuseas (mareo) que deja cada mordisco. 0 = sin náuseas.")
                 .defineInRange("mordisco_nausea_segundos", 10, 0, 120);
-        MORDISCO_DESANGRADO_NIVEL = b.comment("Nivel del Desangrado de cada mordisco (0 = I: pierde vida cada 2 s; II cada 1 s...).")
-                .defineInRange("mordisco_desangrado_nivel", 0, 0, 3);
+        MORDISCO_DESANGRADO_NIVEL = b.comment("Nivel máximo del Desangrado del mordisco: I hasta la 4.ª dosis, y sube uno cada 4 dosis hasta este tope",
+                        "(0 = siempre I: pierde vida cada 2 s; 1 = II, cada 1 s...).")
+                .defineInRange("mordisco_desangrado_nivel", 1, 0, 3);
         MORDISCO_DESANGRADO_S = b.comment("Segundos de Desangrado que deja cada mordisco. 0 = no sangra.")
-                .defineInRange("mordisco_desangrado_segundos", 10, 0, 300);
-        MORDISCO_DEBILIDAD_S = b.comment("Segundos de Debilidad I que deja cada mordisco. 0 = sin debilidad.")
+                .defineInRange("mordisco_desangrado_segundos", 8, 0, 300);
+        MORDISCO_DEBILIDAD_S = b.comment("Segundos de Debilidad que deja cada mordisco (I; II desde la 4.ª dosis). 0 = sin debilidad.")
                 .defineInRange("mordisco_debilidad_segundos", 6, 0, 120);
         MORDISCO_DANO = b.comment("Daño directo de cada mordisco (los colmillos), aparte del desangrado.")
-                .defineInRange("mordisco_dano", 1.0, 0.0, 100.0);
+                .defineInRange("mordisco_dano", 3.0, 0.0, 100.0);
         DESANGRADO_DANO = b.comment("Daño de cada pérdida de sangre del efecto Desangrado (ignora la armadura).")
-                .defineInRange("desangrado_dano", 1.0, 0.0, 100.0);
+                .defineInRange("desangrado_dano", 1.5, 0.0, 100.0);
         VENENO_ENFRIAMIENTO_S = b.comment("Segundos sin veneno después de extraerlo en una botella (Veneno de Dream): mientras tanto",
                         "no se puede volver a extraer ni morder. 0 = sin espera.")
                 .defineInRange("veneno_enfriamiento_segundos", 300, 0, 86400);
-        MORDISCO_UMBRAL = b.comment("Daño de un solo golpe que, recibido por quien muerde, le obliga a soltar a su presa.")
-                .defineInRange("mordisco_umbral_soltar", 3.0, 0.0, 1000.0);
+        MORDISCO_UMBRAL = b.comment("Daño de un solo golpe que, recibido por quien muerde, le obliga a soltar a su presa",
+                        "(el Gambito y el fuego le hacen soltar siempre).")
+                .defineInRange("mordisco_umbral_soltar", 6.0, 0.0, 1000.0);
+        MORDISCO_CEGUERA_DESDE = b.comment("Desde qué dosis de veneno cada mordisco deja también Ceguera breve. 0 = nunca.")
+                .defineInRange("mordisco_ceguera_desde_dosis", 3, 0, 50);
+        MORDISCO_CEGUERA_S = b.comment("Segundos de Ceguera de cada mordisco (desde la dosis de arriba).")
+                .defineInRange("mordisco_ceguera_segundos", 3, 1, 60);
+        MORDISCO_DOSIS_OLVIDO_S = b.comment("El veneno se acumula de un mordisco a otro (también entre agarres): se pierde una dosis cada estos",
+                        "segundos sin que te muerdan. La leche quita todas las dosis.")
+                .defineInRange("mordisco_dosis_olvido_segundos", 12, 1, 600);
+        MORDISCO_QTE_DIFICULTAD = b.comment("Dificultad del primer forcejeo de la víctima (0 = muy fácil, 1 = muy difícil). Sube un poco con cada",
+                        "dosis que ya llevaba (hasta 0,85) y baja 0,1 con cada intento fallido (la adrenalina), así que siempre se acaba pudiendo.",
+                        "Si quien muerde está al sol, o es un infectado, es 0,15 más fácil.")
+                .defineInRange("mordisco_qte_dificultad", 0.65, 0.0, 1.0);
+        PERSECUCION_ACTIVADA = b.comment("Persecución (manhunt): la presa que se suelta queda marcada, y Dream también puede marcar a alguien",
+                        "dándole un puñetazo con la mano vacía. Mientras dura, Dream corre y salta más cerca de su presa, oye su latido",
+                        "y ve hacia dónde está en el HUD.")
+                .define("persecucion_activada", true);
+        MARCA_S = b.comment("Segundos que dura la marca de una presa.")
+                .defineInRange("marca_segundos", 45, 5, 3600);
+        PERSECUCION_VELOCIDAD = b.comment("Velocidad que tiene Dream persiguiendo a su presa marcada (0 = Velocidad I, 1 = II...; -1 = nada).")
+                .defineInRange("persecucion_velocidad", 0, -1, 4);
+        PERSECUCION_SALTO = b.comment("Impulso (salto) que tiene Dream persiguiendo a su presa (0 = Impulso I...; -1 = nada).")
+                .defineInRange("persecucion_salto", 0, -1, 4);
+        PERSECUCION_DISTANCIA = b.comment("Bloques a los que tiene que estar la presa para que Dream tenga la velocidad y el salto.")
+                .defineInRange("persecucion_distancia", 64, 4, 512);
+        LATIDO_DISTANCIA = b.comment("Bloques a los que Dream oye el latido de su presa (más rápido cuanto más cerca). 0 = no se oye.")
+                .defineInRange("latido_distancia", 20, 0, 128);
+        RASTRO_ACTIVADO = b.comment("Si la presa marcada deja un rastro de pisadas verdes que solo ve Dream (unos 20 s).")
+                .define("rastro_activado", true);
+        DREAM_PRESENCIA = b.comment("Si se nota que viene: Dream gruñe y olfatea de vez en cuando (menos agachado), suelta babas verdes",
+                        "y le brillan los ojos en la oscuridad (también a los infectados).")
+                .define("presencia_activada", true);
+        CONTAGIO_ACTIVADO = b.comment("Contagio: quien recibe muchos mordiscos seguidos sin soltarse queda infectado y puede morder a otros",
+                        "un rato (más flojo). Los mobs infectados envenenan un poco con sus golpes. La leche lo cura.")
+                .define("contagio_activado", true);
+        CONTAGIO_MORDISCOS = b.comment("Mordiscos seguidos en un mismo agarre que infectan a la víctima.")
+                .defineInRange("contagio_mordiscos", 4, 1, 100);
+        CONTAGIO_S = b.comment("Segundos que dura la infección.")
+                .defineInRange("contagio_segundos", 90, 5, 3600);
+        CONTAGIO_FUERZA = b.comment("Fuerza del mordisco de un infectado comparado con el de Dream (daño y duraciones; sin ceguera,",
+                        "Lentitud como mucho II).")
+                .defineInRange("contagio_fuerza", 0.5, 0.0, 1.0);
+        CONTAGIO_CADENA = b.comment("Si los infectados también infectan al morder (el apocalipsis). Si no, solo infecta Dream.")
+                .define("contagio_en_cadena", true);
+        DEBILIDAD_SOL = b.comment("Si a Dream le debilita la luz del sol directa (de día, a cielo abierto y sin lluvia): muerde más flojo,",
+                        "su presa se suelta más fácil y no tiene la velocidad de la persecución.")
+                .define("debilidad_sol", true);
+        SOL_FUERZA = b.comment("Fuerza del mordisco al sol (multiplica el daño).")
+                .defineInRange("sol_fuerza", 0.6, 0.0, 1.0);
         ANILLO_DIMENSION = b.comment("Dimensión a la que lleva el anillo de medianoche (la de «The Midnight» de Cryptic Mushroom).")
                 .define("anillo_dimension", "midnight:the_midnight");
         ANILLO_ENFRIAMIENTO_S = b.comment("Segundos de espera del anillo de medianoche después de viajar.")
@@ -488,6 +543,25 @@ public final class ConfigServidor {
     public static int venenoEnfriamientoTicks() { return i(VENENO_ENFRIAMIENTO_S) * 20; }
     public static float mordiscoDano() { return (float) d(MORDISCO_DANO); }
     public static float mordiscoUmbral() { return (float) d(MORDISCO_UMBRAL); }
+    public static int mordiscoCegueraDesde() { return i(MORDISCO_CEGUERA_DESDE); }
+    public static int mordiscoCegueraTicks() { return i(MORDISCO_CEGUERA_S) * 20; }
+    public static int mordiscoDosisOlvidoTicks() { return Math.max(20, i(MORDISCO_DOSIS_OLVIDO_S) * 20); }
+    public static float mordiscoQteDificultad() { return (float) d(MORDISCO_QTE_DIFICULTAD); }
+    public static boolean persecucionActivada() { return b(PERSECUCION_ACTIVADA); }
+    public static int marcaTicks() { return i(MARCA_S) * 20; }
+    public static int persecucionVelocidad() { return i(PERSECUCION_VELOCIDAD); }
+    public static int persecucionSalto() { return i(PERSECUCION_SALTO); }
+    public static int persecucionDistancia() { return i(PERSECUCION_DISTANCIA); }
+    public static int latidoDistancia() { return i(LATIDO_DISTANCIA); }
+    public static boolean rastroActivado() { return b(RASTRO_ACTIVADO); }
+    public static boolean dreamPresencia() { return b(DREAM_PRESENCIA); }
+    public static boolean contagioActivado() { return b(CONTAGIO_ACTIVADO); }
+    public static int contagioMordiscos() { return i(CONTAGIO_MORDISCOS); }
+    public static int contagioTicks() { return i(CONTAGIO_S) * 20; }
+    public static float contagioFuerza() { return (float) d(CONTAGIO_FUERZA); }
+    public static boolean contagioCadena() { return b(CONTAGIO_CADENA); }
+    public static boolean debilidadSol() { return b(DEBILIDAD_SOL); }
+    public static float solFuerza() { return (float) d(SOL_FUERZA); }
     public static String anilloDimension() { return s(ANILLO_DIMENSION); }
     public static boolean equilibrioActivo() { return b(EQUILIBRIO_ACTIVO); }
     public static boolean equilibrioMobs() { return b(EQUILIBRIO_MOBS); }

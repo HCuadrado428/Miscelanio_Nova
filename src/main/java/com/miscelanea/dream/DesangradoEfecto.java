@@ -63,6 +63,12 @@ public class DesangradoEfecto extends MobEffect {
         }
     }
 
+    /** La leche no lo cura entero: lo deja en la mitad y un nivel menos (Persecucion.leche). */
+    @Override
+    public java.util.List<net.minecraft.world.item.ItemStack> getCurativeItems() {
+        return new java.util.ArrayList<>();
+    }
+
     @Override
     public void initializeClient(Consumer<IClientMobEffectExtensions> consumer) {
         // el icono va en textures/gui (no en el atlas de efectos)

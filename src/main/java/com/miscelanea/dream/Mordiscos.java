@@ -64,6 +64,13 @@ import java.util.UUID;
  * le pasa el efecto, si se separan, si uno muere, se desconecta o cambia de dimensión.
  * <p>
  * Tras extraer el veneno en una botella ({@link VenenoDream}) no se puede morder durante un rato.
+ * <p>
+ * Desde la 1.1: el veneno se acumula por dosis en la víctima (también entre agarres; se pierde una cada
+ * ConfigServidor.mordiscoDosisOlvidoTicks sin mordiscos): Lentitud I, II y desde la 3.ª dosis IV, con Ceguera breve;
+ * Debilidad II desde la 4.ª y Desangrado II desde la 5.ª. Quien recibe ConfigServidor.contagioMordiscos mordiscos en un
+ * mismo agarre queda infectado ({@link DreamRegistro#INFECCION}) y puede morder también, más flojo. Debilidades: al sol
+ * muerde más flojo y se le escapan más fácil, el fuego y el Gambito le hacen soltar. La persecución (marca, rastro,
+ * latido) va en {@link Persecucion}.
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID)
 public final class Mordiscos {
@@ -78,7 +85,7 @@ public final class Mordiscos {
     /** Lo más que aguanta sujetando (por si la víctima no hace nada): 1 minuto. */
     private static final int MAX_TICKS = 60 * 20;
     /** Quien muerde no puede volver a agarrar hasta pasado esto; la víctima suelta queda a salvo un rato. */
-    private static final int ENFRIAMIENTO = 60, INMUNIDAD = 100;
+    private static final int ENFRIAMIENTO = 60, INMUNIDAD = 160;
     private static final double DIST_MAX = 3.5;
     /** Distancia a la que se sujeta a la víctima (de centro a centro). */
     public static final double DISTANCIA = 0.62;
@@ -90,14 +97,17 @@ public final class Mordiscos {
         int ticks;
         int prox = PRIMER_MORDISCO;
         int escapeMob;
-        float dificultad = 0.55F;
+        float dificultad = 0.65F;
         boolean enQte;
+        /** Quien muerde es un infectado (no Dream): muerde más flojo. */
+        final boolean infectado;
         /** Mordiscos dados en este agarre (la lentitud sube con ellos). */
         int mordiscos;
 
         Mordisco(LivingEntity mordedor, LivingEntity victima) {
             this.mordedor = mordedor;
             this.victima = victima;
+            this.infectado = !mordedor.hasEffect(DreamRegistro.MORDISCO.get());
         }
     }
 
@@ -106,6 +116,58 @@ public final class Mordiscos {
     /** Tick del servidor hasta el que no se puede (mordedor: volver a morder; víctima: ser mordida). */
     private static final Map<UUID, Long> ESPERA = new HashMap<>(), INMUNE = new HashMap<>();
     private static long tick;
+    /** Veneno acumulado en cada víctima: {dosis, tick del último mordisco}. */
+    private static final Map<UUID, long[]> DOSIS = new HashMap<>();
+    /** Solo para la prueba del CI: los mobs no se sueltan solos. */
+    public static boolean pruebaSinEscape;
+    /** Solo para la prueba del CI: el daño del último mordisco. */
+    public static float pruebaUltimoDano;
+
+    /** Puede morder: tiene «Mordisco venenoso» (Dream) o está infectado (si el contagio está activado). */
+    public static boolean puedeMorder(LivingEntity e) {
+        return e.hasEffect(DreamRegistro.MORDISCO.get()) || (ConfigServidor.contagioActivado() && e.hasEffect(DreamRegistro.INFECCION.get()));
+    }
+
+    /** Dosis de veneno que lleva ahora (se van perdiendo con el tiempo). */
+    public static int dosis(Entity v) {
+        long[] d = DOSIS.get(v.getUUID());
+        if (d == null) return 0;
+        long r = d[0] - (tick - d[1]) / ConfigServidor.mordiscoDosisOlvidoTicks();
+        if (r <= 0) {
+            DOSIS.remove(v.getUUID());
+            return 0;
+        }
+        return (int) r;
+    }
+
+    private static int sumarDosis(Entity v) {
+        int d = dosis(v) + 1;
+        DOSIS.put(v.getUUID(), new long[]{d, tick});
+        return d;
+    }
+
+    /** La leche limpia el veneno acumulado. */
+    public static void quitarDosis(Entity v) {
+        DOSIS.remove(v.getUUID());
+    }
+
+    public static long tick() {
+        return tick;
+    }
+
+    /** Lo que se llama al empezar un mordisco desde la prueba del CI (igual que el clic derecho, sin el clic). */
+    public static boolean pruebaMorder(ServerPlayer p, LivingEntity v) {
+        if (!candidato(p, v) || motivo(p, v) != null) return false;
+        empezar(p, v);
+        return true;
+    }
+
+    /** Solo para la prueba: que no esté en espera ni la víctima inmune. */
+    public static void pruebaSinEsperas() {
+        ESPERA.clear();
+        INMUNE.clear();
+        DOSIS.clear();
+    }
 
     public static boolean mordiendo(Entity e) {
         return POR_MORDEDOR.containsKey(e.getUUID());
@@ -120,7 +182,7 @@ public final class Mordiscos {
     /** Lo que se mira también en el cliente (para no tragarse el clic cuando seguro que no se puede). */
     public static boolean candidato(Player p, Entity t) {
         if (!(t instanceof LivingEntity v) || !v.isAlive() || t == p || p.isSpectator()) return false;
-        if (!p.getMainHandItem().isEmpty() || !p.hasEffect(DreamRegistro.MORDISCO.get())) return false;
+        if (!p.getMainHandItem().isEmpty() || !puedeMorder(p)) return false;
         if (v instanceof Player vp && (vp.isCreative() || vp.isSpectator())) return false;
         if (v instanceof TamableAnimal ta && ta.isOwnedBy(p)) return false;
         return v.getBbHeight() <= 2.7F && v.getBbWidth() <= 1.5F && !v.getType().is(Tags.EntityTypes.BOSSES);
@@ -132,6 +194,7 @@ public final class Mordiscos {
         if (!ConfigServidor.mordiscoActivado()) return "miscelanea.mordisco.desactivado";
         if (mordiendo(p) || esVictima(p)) return "";
         if (ESPERA.getOrDefault(p.getUUID(), 0L) > tick) return "miscelanea.mordisco.espera";
+        if (p.isOnFire()) return "miscelanea.mordisco.fuego";
         if (v instanceof Player vp) {
             if (!ConfigServidor.mordiscoJugadores() || !p.server.isPvpAllowed() || !p.canHarmPlayer(vp)) return "miscelanea.mordisco.pvp";
             if (p.level().getDifficulty() == Difficulty.PEACEFUL) return "miscelanea.mordisco.pacifico";
@@ -168,6 +231,10 @@ public final class Mordiscos {
     private static void empezar(ServerPlayer p, LivingEntity v) {
         Mordisco m = new Mordisco(p, v);
         m.escapeMob = 80 + p.getRandom().nextInt(120);
+        // más difícil cuanto más veneno lleva ya; más fácil si quien muerde está al sol o es un infectado
+        float dif = Math.min(0.85F, ConfigServidor.mordiscoQteDificultad() + 0.03F * dosis(v));
+        if (m.infectado || Persecucion.alSol(p)) dif -= 0.15F;
+        m.dificultad = Math.max(0.15F, dif);
         POR_MORDEDOR.put(p.getUUID(), m);
         POR_VICTIMA.put(v.getUUID(), m);
         if (v.isPassenger()) v.stopRiding();
@@ -209,7 +276,7 @@ public final class Mordiscos {
                     } else {
                         if (r != QteResultado.CANCELADO) {
                             // la adrenalina ayuda: el siguiente forcejeo es algo más fácil
-                            m.dificultad = Math.max(0.2F, m.dificultad - 0.08F);
+                            m.dificultad = Math.max(0.15F, m.dificultad - 0.1F);
                             if (pl != null) pl.displayClientMessage(Component.translatable("miscelanea.mordisco.qte_fallo"), true);
                         }
                         programarQte(m, REINTENTO_QTE);
@@ -241,20 +308,35 @@ public final class Mordiscos {
         p.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 30, 3, false, false, true));
         p.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 30, 1, false, false, true));
         p.level().playSound(null, v.getX(), v.getY(), v.getZ(), SoundEvents.PLAYER_ATTACK_KNOCKBACK, SoundSource.PLAYERS, 1.0F, 0.8F);
+        // la adrenalina: la parálisis afloja y corre un poco más (para que la huida sea posible)
+        MobEffectInstance lent = v.getEffect(MobEffects.MOVEMENT_SLOWDOWN);
+        if (lent != null && lent.getAmplifier() > 0) {
+            v.removeEffect(MobEffects.MOVEMENT_SLOWDOWN);
+            v.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, Math.min(lent.getDuration(), 60), 0));
+        }
+        v.removeEffect(MobEffects.BLINDNESS);
+        v.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 60, 0, false, false, true));
         if (v instanceof ServerPlayer vp) vp.displayClientMessage(Component.translatable("miscelanea.mordisco.libre"), true);
         if (p instanceof ServerPlayer sp) sp.displayClientMessage(Component.translatable("miscelanea.mordisco.escapa", v.getDisplayName()), true);
+        // y empieza la caza: la presa que se escapa queda marcada
+        if (p instanceof ServerPlayer sp) Persecucion.marcar(sp, v);
     }
 
     /** Quien muerde suelta (agachándose o por un golpe fuerte). */
     private static void soltar(Mordisco m, boolean golpe) {
+        soltar(m, golpe, "miscelanea.mordisco.golpe");
+    }
+
+    private static void soltar(Mordisco m, boolean golpe, String texto) {
         terminar(m);
         if (golpe && m.mordedor.isAlive()) {
             m.mordedor.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 25, 2, false, false, true));
-            if (m.mordedor instanceof ServerPlayer sp) sp.displayClientMessage(Component.translatable("miscelanea.mordisco.golpe"), true);
+            if (m.mordedor instanceof ServerPlayer sp) sp.displayClientMessage(Component.translatable(texto), true);
         }
         if (m.victima.isAlive()) {
             Vec3 dir = Vec3.directionFromRotation(0, m.mordedor.getYRot());
             empujar(m.victima, new Vec3(dir.x * 0.3, 0.1, dir.z * 0.3));
+            if (m.mordedor instanceof ServerPlayer sp && m.mordedor.isAlive()) Persecucion.marcar(sp, m.victima);
         }
     }
 
@@ -278,13 +360,14 @@ public final class Mordiscos {
         if (tick % 200 == 0) {
             ESPERA.values().removeIf(t -> t <= tick);
             INMUNE.values().removeIf(t -> t <= tick);
+            DOSIS.values().removeIf(d -> d[0] - (tick - d[1]) / ConfigServidor.mordiscoDosisOlvidoTicks() <= 0);
         }
         if (POR_MORDEDOR.isEmpty()) return;
         boolean activado = ConfigServidor.mordiscoActivado();
         for (Mordisco m : new ArrayList<>(POR_MORDEDOR.values())) {
             LivingEntity p = m.mordedor, v = m.victima;
             if (!activado || !p.isAlive() || !v.isAlive() || p.isRemoved() || v.isRemoved() || p.level() != v.level()
-                    || p.distanceTo(v) > DIST_MAX || !p.hasEffect(DreamRegistro.MORDISCO.get()) || p.isSpectator()
+                    || p.distanceTo(v) > DIST_MAX || !puedeMorder(p) || p.isSpectator()
                     || (v instanceof Player vp && (vp.isCreative() || vp.isSpectator())) || m.ticks > MAX_TICKS) {
                 terminar(m);
                 continue;
@@ -294,9 +377,14 @@ public final class Mordiscos {
                 soltar(m, false);
                 continue;
             }
+            // el fuego le hace soltar
+            if (p.isOnFire()) {
+                soltar(m, true, "miscelanea.mordisco.fuego_suelta");
+                continue;
+            }
             sujetar(m);
             p.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 5, 3, true, false, false));
-            if (!(v instanceof Player) && m.ticks >= m.escapeMob) {
+            if (!(v instanceof Player) && m.ticks >= m.escapeMob && !pruebaSinEscape) {
                 liberarse(m);
                 continue;
             }
@@ -309,18 +397,40 @@ public final class Mordiscos {
 
     private static void morder(ServerLevel l, Mordisco m) {
         LivingEntity v = m.victima, p = m.mordedor;
-        // veneno de Komodo: paraliza (lentitud que sube cada dos mordiscos), marea, desangra y debilita
+        // veneno de Komodo por dosis: paraliza (cada vez más), marea, ciega, desangra y debilita
         m.mordiscos++;
-        int lentitud = Math.min(ConfigServidor.mordiscoLentitudMax(), (m.mordiscos - 1) / 2);
-        v.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, ConfigServidor.mordiscoLentitudTicks(), lentitud), p);
+        int d = sumarDosis(v);
+        float fDur = m.infectado ? ConfigServidor.contagioFuerza() : 1.0F;
+        float fDano = fDur * (Persecucion.alSol(p) ? ConfigServidor.solFuerza() : 1.0F);
+        int max = ConfigServidor.mordiscoLentitudMax();
+        int lentitud = d >= 3 ? max : Math.min(max, d - 1);
+        if (m.infectado) lentitud = Math.min(lentitud, 1);
+        v.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, dur(ConfigServidor.mordiscoLentitudTicks(), fDur), lentitud), p);
         if (ConfigServidor.mordiscoNauseaTicks() > 0)
-            v.addEffect(new MobEffectInstance(MobEffects.CONFUSION, ConfigServidor.mordiscoNauseaTicks(), 0), p);
+            v.addEffect(new MobEffectInstance(MobEffects.CONFUSION, dur(ConfigServidor.mordiscoNauseaTicks(), fDur), 0), p);
+        int ceguera = ConfigServidor.mordiscoCegueraDesde();
+        if (!m.infectado && ceguera > 0 && d >= ceguera)
+            v.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, ConfigServidor.mordiscoCegueraTicks(), 0), p);
         if (ConfigServidor.mordiscoDebilidadTicks() > 0)
-            v.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, ConfigServidor.mordiscoDebilidadTicks(), 0), p);
-        if (ConfigServidor.mordiscoDesangradoTicks() > 0)
-            v.addEffect(new MobEffectInstance(DreamRegistro.DESANGRADO.get(), ConfigServidor.mordiscoDesangradoTicks(),
-                    ConfigServidor.mordiscoDesangradoNivel(), false, false, true), p);
-        float dano = ConfigServidor.mordiscoDano();
+            v.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, dur(ConfigServidor.mordiscoDebilidadTicks(), fDur), d >= 4 && !m.infectado ? 1 : 0), p);
+        if (ConfigServidor.mordiscoDesangradoTicks() > 0) {
+            int nivel = Math.min(ConfigServidor.mordiscoDesangradoNivel(), (d - 1) / 4);
+            if (m.infectado) nivel = 0;
+            v.addEffect(new MobEffectInstance(DreamRegistro.DESANGRADO.get(), dur(ConfigServidor.mordiscoDesangradoTicks(), fDur),
+                    nivel, false, false, true), p);
+        }
+        // contagio: no se ha soltado a tiempo
+        if (ConfigServidor.contagioActivado() && m.mordiscos == ConfigServidor.contagioMordiscos() && !v.hasEffect(DreamRegistro.MORDISCO.get())
+                && (!m.infectado || ConfigServidor.contagioCadena()) && !v.getType().is(Tags.EntityTypes.BOSSES)) {
+            v.addEffect(new MobEffectInstance(DreamRegistro.INFECCION.get(), ConfigServidor.contagioTicks(), 0), p);
+            l.playSound(null, v.getX(), v.getY(), v.getZ(), SoundEvents.ZOMBIE_VILLAGER_CONVERTED, SoundSource.PLAYERS, 0.6F, 1.4F);
+            l.sendParticles(new DustParticleOptions(new Vector3f(0.56F, 0.71F, 0.19F), 1.2F), v.getX(), v.getY() + v.getBbHeight() * 0.6, v.getZ(),
+                    24, v.getBbWidth() * 0.4, v.getBbHeight() * 0.3, v.getBbWidth() * 0.4, 0.0);
+            if (v instanceof ServerPlayer vp) vp.displayClientMessage(Component.translatable("miscelanea.mordisco.infectado"), true);
+            if (p instanceof ServerPlayer sp) sp.displayClientMessage(Component.translatable("miscelanea.mordisco.contagia", v.getDisplayName()), true);
+        }
+        float dano = ConfigServidor.mordiscoDano() * fDano;
+        pruebaUltimoDano = dano;
         if (dano > 0) {
             v.invulnerableTime = 0;
             v.hurt(new DamageSource(l.registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(DANO), p), dano);
@@ -340,6 +450,10 @@ public final class Mordiscos {
     }
 
     /** Mantiene a la víctima delante de quien muerde, cara a cara. */
+    private static int dur(int ticks, float f) {
+        return Math.max(20, Math.round(ticks * f));
+    }
+
     private static void sujetar(Mordisco m) {
         LivingEntity p = m.mordedor, v = m.victima;
         float yawP = p instanceof Player ? p.getYRot() : p.yBodyRot;
@@ -370,7 +484,24 @@ public final class Mordiscos {
         LivingEntity herido = e.getEntity();
         if (herido.level().isClientSide) return;
         Mordisco m = POR_MORDEDOR.get(herido.getUUID());
-        if (m != null && e.getAmount() >= ConfigServidor.mordiscoUmbral() && e.getSource().getEntity() != herido) soltar(m, true);
+        if (m == null || e.getSource().getEntity() == herido) return;
+        if (esGambito(e.getSource())) {
+            // el Gambito de Wemmbu le saca los colmillos de golpe (y le deja atontado)
+            soltar(m, true, "miscelanea.mordisco.gambito");
+            herido.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 50, 3, false, false, true));
+            herido.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 80, 0, false, false, true));
+        } else if (e.getSource().is(net.minecraft.tags.DamageTypeTags.IS_FIRE)) {
+            soltar(m, true, "miscelanea.mordisco.fuego_suelta");
+        } else if (e.getAmount() >= ConfigServidor.mordiscoUmbral()) {
+            soltar(m, true);
+        }
+    }
+
+    /** Golpe del Gambito (el mazo de Wemmbu), en la mano o lanzado. */
+    public static boolean esGambito(DamageSource s) {
+        if (s.getDirectEntity() instanceof com.miscelanea.armas.MazoLanzado) return true;
+        return s.getEntity() instanceof LivingEntity a && s.getDirectEntity() == a
+                && a.getMainHandItem().is(com.miscelanea.registry.ModItems.MAZO_WEMMBU.get());
     }
 
     /** La víctima no puede pegar (ni un mob sujeto puede atacar). */

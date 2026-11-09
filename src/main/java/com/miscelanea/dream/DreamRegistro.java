@@ -33,6 +33,8 @@ public final class DreamRegistro {
 
     /** Verde veneno oscuro del mordisco (efecto, esencia, partículas y viñeta). */
     public static final int COLOR_MORDISCO = 0x2E5A1C;
+    /** Verde amarillento enfermo de la infección (contagio). */
+    public static final int COLOR_INFECCION = 0x8FB531;
     /** Rojo sangre oscuro del desangrado. */
     public static final int COLOR_DESANGRADO = 0x8A0F12;
 
@@ -40,6 +42,8 @@ public final class DreamRegistro {
     public static final RegistryObject<MobEffect> MORDISCO = EFFECTS.register("mordisco_venenoso", MordiscoEfecto::new);
     /** Lo que deja el veneno del mordisco (como la baba de un dragón de Komodo): la herida no deja de sangrar. */
     public static final RegistryObject<MobEffect> DESANGRADO = EFFECTS.register("desangrado", DesangradoEfecto::new);
+    /** Contagio: quien no se suelta a tiempo puede morder a otros un rato (más flojo). */
+    public static final RegistryObject<MobEffect> INFECCION = EFFECTS.register("infeccion_dream", InfeccionEfecto::new);
 
     // ---- caldero de mezclas
     public static final RegistryObject<Block> CALDERO = BLOCKS.register("caldero_mezclas",

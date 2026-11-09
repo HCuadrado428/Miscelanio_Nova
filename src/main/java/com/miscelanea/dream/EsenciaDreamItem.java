@@ -88,5 +88,6 @@ public class EsenciaDreamItem extends Item {
         tip.add(Component.translatable("item.miscelanea.esencia_dream.lore2").withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC));
         tip.add(Component.translatable("item.miscelanea.esencia_dream.uso").withStyle(ChatFormatting.DARK_PURPLE));
         tip.add(Component.translatable("item.miscelanea.esencia_dream.uso2").withStyle(ChatFormatting.DARK_PURPLE));
+        tip.add(Component.translatable("item.miscelanea.esencia_dream.uso3").withStyle(ChatFormatting.DARK_PURPLE));
     }
 }

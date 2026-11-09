@@ -42,5 +42,16 @@ public final class DreamClienteMod {
     public static void overlays(RegisterGuiOverlaysEvent e) {
         e.registerBelowAll("dream_mordisco", MordiscoCliente::hud);
         e.registerAboveAll("dream_anillo", AnilloCliente::hud);
+        e.registerAbove(net.minecraftforge.client.gui.overlay.VanillaGuiOverlay.CROSSHAIR.id(), "dream_persecucion", PersecucionCliente::hud);
+    }
+
+    /** Los ojos que brillan en la oscuridad (Dream y los infectados). */
+    @SubscribeEvent
+    public static void capas(EntityRenderersEvent.AddLayers e) {
+        for (String skin : e.getSkins()) {
+            net.minecraft.client.renderer.entity.LivingEntityRenderer<net.minecraft.client.player.AbstractClientPlayer,
+                    net.minecraft.client.model.PlayerModel<net.minecraft.client.player.AbstractClientPlayer>> r = e.getSkin(skin);
+            if (r != null) r.addLayer(new OjosLayer(r, "slim".equals(skin)));
+        }
     }
 }

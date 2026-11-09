@@ -15,7 +15,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 /** Canal de red propio de lo de Dream ("miscelanea:dream"): no toca la numeración de ModNetwork ni la de otros canales. */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class DreamRed {
-    private static final String PROTOCOLO = "2";
+    private static final String PROTOCOLO = "3";
 
     public static final SimpleChannel CANAL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "dream"),
@@ -33,6 +33,10 @@ public final class DreamRed {
                     .encoder(AnilloPacket::encode).decoder(AnilloPacket::new).consumerMainThread(AnilloPacket::handle).add();
             CANAL.messageBuilder(VenenoPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                     .encoder(VenenoPacket::encode).decoder(VenenoPacket::new).consumerMainThread(VenenoPacket::handle).add();
+            CANAL.messageBuilder(PersecucionPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                    .encoder(PersecucionPacket::encode).decoder(PersecucionPacket::new).consumerMainThread(PersecucionPacket::handle).add();
+            CANAL.messageBuilder(AuraPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                    .encoder(AuraPacket::encode).decoder(AuraPacket::new).consumerMainThread(AuraPacket::handle).add();
         });
     }
 
