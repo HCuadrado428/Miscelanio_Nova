@@ -1,0 +1,478 @@
+Prueba del móvil (Miscelánea)
+OK    preparar
+OK    00_mundo
+OK    01_inicio
+OK    02_camara
+OK    03_filtro_1
+OK    03_filtro_2
+OK    03_filtro_3
+OK    03_filtro_4
+OK    03_filtro_5
+OK    03_filtro_6
+OK    03_filtro_7
+OK    03_filtro_8
+OK    03_foto_gameboy
+OK    04_zoom
+OK    05_horizontal
+OK    vuelve_vertical
+OK    06_foto
+OK    espera_foto
+OK    07_temporizador
+OK    espera_temporizador
+OK    temporizador_fuera
+OK    08_flash
+OK    espera_flash
+OK    09_grabando
+OK    para_video
+OK    10_galeria
+  galería: 5 (la última es un vídeo de 3125 ms)
+OK    11_visor
+OK    12_llamada_grupo
+OK    13_llamada
+OK    14_entrante
+OK    15_manos_libres
+OK    16_teclado
+OK    17_ajustes
+OK    gramola_poner
+OK    20_gramola_menu
+OK    21_videoclip_hotel_inicio
+OK    22_videoclip_hotel_8s
+OK    23_videoclip_hotel_20s
+OK    24_tras_salir
+OK    gramola_otra
+OK    25_videoclip_disco
+OK    26_tras_salir_disco
+  pociones: red_mushroom=gigante brown_mushroom=enano echo_shard=ecolocalizacion ink_sac=niebla_viviente amethyst_shard=espejismo feather=helio snowball=ventilador wheat=borrachera cocoa_beans=tartamudeo
+OK    pociones
+OK    montana_construir
+  montaña: RRSSSSSSRBBBBBBRRRCCRRRRRRRRRRRRRRRRRRRRRRRCCCC (47 trozos, cerrado)
+OK    montana_circuito
+  tren 00: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_00
+  tren 01: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_01
+  tren 02: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_02
+  tren 03: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_03
+  tren 04: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_04
+  tren 05: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_05
+  tren 06: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_06
+  tren 07: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_07
+  tren 08: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_08
+  tren 09: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_09
+  tren 10: RECTA/ESTACION y=0.2 v=0.00
+OK    31_montana_10
+  tren 11: RECTA/ESTACION y=0.2 v=0.00
+OK    31_montana_11
+  tren 12: RECTA/ESTACION y=0.2 v=0.00
+OK    31_montana_12
+  tren 13: SUBIDA/CADENA y=1.1 v=0.12
+OK    31_montana_13
+  tren 14: SUBIDA/CADENA y=2.9 v=0.12
+OK    31_montana_14
+  tren 15: SUBIDA/CADENA y=4.9 v=0.12
+OK    31_montana_15
+  montaña, trozos por los que ha pasado: [RECTA/ESTACION, SUBIDA/CADENA]
+  AVISO: el tren no llegó al rizo
+OK    montana_fin
+OK    montana_pilares_ir
+  montaña: 18 bloques de pilar debajo de la vía
+OK    32_montana_pilares
+OK    montana_rizo_ir
+  rizo: 1 tren(es) cerca; jugador en minecraft:overworld
+OK    montana_rizo_espera
+OK    33_montana_rizo_00
+  rizo 1: RIZO 0, 0, -16 y=2.7 v=0.50, 2 montados
+OK    33_montana_rizo_01
+  rizo 2: RIZO 0, 0, -16 y=3.8 v=0.37, 2 montados
+OK    33_montana_rizo_02
+  rizo 3: RIZO 0, 0, -16 y=1.2 v=0.56, 2 montados
+OK    33_montana_rizo_03
+  rizo 4: RECTA 1, 0, -21 y=0.2 v=0.63, 2 montados
+OK    33_montana_rizo_04
+  rizo 5: RECTA 2, 0, -19 y=0.2 v=0.62, 2 montados
+OK    33_montana_rizo_05
+  rizo 6: RECTA 2, 0, -15 y=0.2 v=0.62, 2 montados
+OK    33_montana_rizo_06
+  rizo 7: RECTA 2, 0, -12 y=0.2 v=0.61, 2 montados
+OK    33_montana_rizo_07
+  rizo 8: RECTA 2, 0, -8 y=0.2 v=0.61, 2 montados
+OK    33_montana_rizo_08
+  rizo 9: RECTA 2, 0, -4 y=0.2 v=0.60, 2 montados
+OK    33_montana_rizo_09
+  rizo 10: RECTA 2, 0, -1 y=0.2 v=0.31, 2 montados
+OK    33_montana_rizo_10
+  rizo 11: RECTA 2, 0, 0 y=0.2 v=0.31, 2 montados
+OK    33_montana_rizo_11
+  montaña, trozos (con el rizo): [RECTA/ESTACION, SUBIDA/CADENA, RIZO, RECTA]
+OK    montana_rizo_fin
+OK    purgatorio_entrar
+OK    purgatorio_feria_ir
+OK    40_purgatorio_feria
+OK    41_purgatorio_feria_2
+OK    purgatorio_habitante
+  purgatorio, habitante: sale en 8, 64, 17
+OK    49_purgatorio_habitantes
+  habitantes 0: HEROBRINE a 9.0 SIN_TEXTURA a 11.2 RELLENO a 13.0
+OK    49_purgatorio_habitante_0
+  habitantes 1: HEROBRINE a 5.7 (cazando) SIN_TEXTURA a 7.7 (cazando) RELLENO a 9.5 (cazando)
+OK    49_purgatorio_habitante_1
+  habitantes 2: HEROBRINE a 1.8 (cazando) SIN_TEXTURA a 4.0 (cazando) RELLENO a 5.6 (cazando)
+OK    49_purgatorio_habitante_2
+  habitantes 3: HEROBRINE a 1.1 (cazando) SIN_TEXTURA a 0.9 (cazando) RELLENO a 2.1 (cazando)
+OK    49_purgatorio_habitante_3
+OK    purgatorio_habitante_fin
+  purgatorio, habitante: el jugador está a 1775 bloques de donde estaba (le ha pillado y le ha recolocado)
+OK    purgatorio_habitante_mira
+OK    purgatorio_sala_ir
+OK    42_purgatorio_sala
+OK    43_purgatorio_sala_2
+OK    purgatorio_recreativa_ir
+OK    45_purgatorio_recreativa
+  purgatorio, recreativa: 94 fundidas, 18 vivas (18 con bloque-entidad), ambiente: RECREATIVA=0.36 sustos=1
+OK    46_purgatorio_recreativa_2
+OK    purgatorio_hotel_ir
+OK    4a_purgatorio_hotel
+  purgatorio, hotel: ambiente HOTEL=0.60 sustos=1
+OK    4b_purgatorio_hotel_2
+OK    purgatorio_hotel_cuarto
+OK    4c_purgatorio_hotel_cuarto
+OK    purgatorio_sin_textura_ir
+OK    47_purgatorio_sin_textura
+  purgatorio, sin texturas: ambiente SIN_TEXTURA=0.33 sustos=1
+OK    48_purgatorio_sin_textura_2
+OK    purgatorio_salida_ir
+OK    44_purgatorio_salida
+OK    purgatorio_cruzar
+  purgatorio (servidor): jugador en minecraft:overworld 14, 66, -14, bloque de la puerta: Block{miscelanea:puerta_salida}
+  purgatorio: zona del origen FERIA, salida en BlockPos{x=35, y=64, z=54}, ha salido por la puerta: sí
+OK    purgatorio_fuera
+  purgatorio: agujero del Mundo sin Texturas en BlockPos{x=-84, y=64, z=-125}
+OK    purgatorio_agujero
+OK    4d_purgatorio_agujero
+OK    purgatorio_agujero_caer
+  purgatorio: ha salido por el agujero: sí (y=66)
+OK    purgatorio_agujero_fuera
+OK    purgatorio2_entrar
+  purgatorio, mapa (3 pisos, 129 x 129 chunks): FERIA=3644 SALA=7056 RECREATIVA=4843 HOTEL=6503 SIN_TEXTURA=1974 PISCINA=5798 APARCAMIENTO=9739 COLEGIO=5437 CENTRO=4929 · salas grandes 387, escaleras 2161, ascensores 319, salidas 729
+OK    purgatorio3_mapa
+OK    purgatorio3_arriba_ir
+OK    50_purgatorio_desde_arriba
+OK    purgatorio3_arriba_fin
+  purgatorio, piso 1: -24, 48, -24 HOTEL
+OK    purgatorio3_piso1_ir
+  purgatorio, piso 1: el jugador está a y=48, niebla 20.0, ambiente HOTEL=0.60 sustos=1 tele=-31, 49, -28
+OK    51_purgatorio_piso1
+  purgatorio, piso 2: -8, 32, 8 HOTEL
+OK    purgatorio3_piso2_ir
+  purgatorio, piso 2: el jugador está a y=32, niebla 20.0, ambiente HOTEL=0.60 sustos=1
+OK    51_purgatorio_piso2
+  purgatorio, escalera del piso 0 al 1: chunk -1, 0 (FERIA -> PISCINA)
+OK    purgatorio3_escalera_ir
+OK    52_purgatorio_escalera_arriba
+OK    purgatorio3_escalera_tunel
+OK    53_purgatorio_escalera_tunel
+OK    purgatorio3_escalera_abajo
+OK    54_purgatorio_escalera_abajo
+  purgatorio, bajar la escalera andando: 19 pasos
+OK    purgatorio3_escalera_andar
+  purgatorio, ascensor en el chunk -1, -1, piso 2
+OK    purgatorio3_ascensor_ir
+OK    55_purgatorio_ascensor_fuera
+OK    purgatorio3_ascensor_dentro
+OK    56_purgatorio_ascensor
+  purgatorio, botonera: block.miscelanea.botonera
+OK    purgatorio3_ascensor_viaje
+  purgatorio, ascensor: del piso 2 al 0 (y=64.0), movido en x/z 0.00, 0.00, zona al salir FERIA
+OK    purgatorio3_ascensor_llega
+OK    57_purgatorio_ascensor_otro_piso
+  purgatorio, sala grande PABELLON: piso 0, chunks -4, 8 (3 x 3)
+OK    ir_58_purgatorio_pabellon
+OK    58_purgatorio_pabellon
+OK    ir_58_purgatorio_pabellon_2
+OK    58_purgatorio_pabellon_2
+  purgatorio, sala grande SALA_ENORME: piso 1, chunks 10, -4 (3 x 3)
+OK    ir_59_purgatorio_sala_enorme
+OK    59_purgatorio_sala_enorme
+OK    ir_59_purgatorio_sala_enorme_2
+OK    59_purgatorio_sala_enorme_2
+  purgatorio, sala grande VESTIBULO: piso 0, chunks 3, -6 (3 x 2)
+OK    ir_5a_purgatorio_vestibulo
+OK    5a_purgatorio_vestibulo
+OK    ir_5a_purgatorio_vestibulo_2
+OK    5a_purgatorio_vestibulo_2
+  purgatorio, pasillo que vuelve: piso 0, chunks 1, 8 (SALA)
+OK    purgatorio3_bucle_ir
+OK    5b_purgatorio_bucle
+OK    purgatorio3_bucle_andar
+  purgatorio, pasillo que vuelve: puesto a 29,5 de la entrada, ahora a 9.5 (ha vuelto 20 atrás)
+OK    purgatorio3_bucle_mira
+OK    5c_purgatorio_bucle_vuelta
+  purgatorio, puerta que da a la pared: 3, 64, -39
+OK    purgatorio3_puerta_pared_ir
+OK    purgatorio3_puerta_pared_abrir
+OK    5d_purgatorio_puerta_pared
+  purgatorio, zona nueva PISCINA: -104, 64, -24 (piso 0)
+OK    ir_60_purgatorio_piscina
+  purgatorio, 60_purgatorio_piscina: niebla 26.0, ambiente PISCINA=0.48 sustos=6
+OK    60_purgatorio_piscina
+OK    60_purgatorio_piscina_2
+  purgatorio, rincón raro de PISCINA: -4, 64, -168
+OK    ir_60_purgatorio_piscina_raro
+  purgatorio, rincón raro de PISCINA: mira a block.miscelanea.azulejo_piscina_raya, ambiente PISCINA=0.48 sustos=6
+OK    60_purgatorio_piscina_raro
+  purgatorio, sala grande PISCINA_OLIMPICA: piso 0, chunks 8, 2
+OK    ir_60_purgatorio_piscina_grande
+OK    60_purgatorio_piscina_grande
+OK    ir_60_purgatorio_piscina_grande_2
+OK    60_purgatorio_piscina_grande_2
+  purgatorio, zona nueva APARCAMIENTO: 8, 48, 24 (piso 1)
+OK    ir_61_purgatorio_aparcamiento
+  purgatorio, 61_purgatorio_aparcamiento: niebla 26.0, ambiente APARCAMIENTO=0.26 sustos=6 tele=1, 49, 36
+OK    61_purgatorio_aparcamiento
+OK    61_purgatorio_aparcamiento_2
+  purgatorio, rincón raro de APARCAMIENTO: 77, 48, 86
+OK    ir_61_purgatorio_aparcamiento_raro
+  purgatorio, rincón raro de APARCAMIENTO: mira a block.minecraft.end_rod, ambiente APARCAMIENTO=0.26 sustos=7
+OK    61_purgatorio_aparcamiento_raro
+  purgatorio, zona nueva COLEGIO: -40, 64, 8 (piso 0)
+OK    ir_62_purgatorio_colegio
+  purgatorio, 62_purgatorio_colegio: niebla 20.0, ambiente COLEGIO=0.55 sustos=7
+OK    62_purgatorio_colegio
+OK    62_purgatorio_colegio_2
+  purgatorio, rincón raro de COLEGIO: -77, 64, -11
+OK    ir_62_purgatorio_colegio_raro
+  purgatorio, rincón raro de COLEGIO: mira a block.miscelanea.pizarra, ambiente COLEGIO=0.55 sustos=7
+OK    62_purgatorio_colegio_raro
+  purgatorio, sala grande GIMNASIO: piso 0, chunks 8, 8
+OK    ir_62_purgatorio_colegio_grande
+OK    62_purgatorio_colegio_grande
+OK    ir_62_purgatorio_colegio_grande_2
+OK    62_purgatorio_colegio_grande_2
+  purgatorio, zona nueva CENTRO: -88, 64, 104 (piso 0)
+OK    ir_63_purgatorio_centro
+  purgatorio, 63_purgatorio_centro: niebla 30.0, ambiente CENTRO=0.29 sustos=7
+OK    63_purgatorio_centro
+OK    63_purgatorio_centro_2
+  purgatorio, rincón raro de CENTRO: -125, 64, 136
+OK    ir_63_purgatorio_centro_raro
+  purgatorio, rincón raro de CENTRO: mira a block.miscelanea.tele_sin_senal, ambiente CENTRO=0.29 sustos=7 tele=-125, 65, 129
+OK    63_purgatorio_centro_raro
+  purgatorio, sala grande ATRIO: piso 0, chunks -13, 3
+OK    ir_63_purgatorio_centro_grande
+OK    63_purgatorio_centro_grande
+OK    ir_63_purgatorio_centro_grande_2
+OK    63_purgatorio_centro_grande_2
+  purgatorio, andando desde el piso 0 (8, 64, 8) hasta una salida: 48 pasos (0.0 s)
+  purgatorio, andando desde el piso 1 (-72, 48, -72) hasta una salida: 46 pasos (0.0 s)
+  purgatorio, andando desde el piso 2 (8, 32, 8) hasta una salida: 90 pasos (0.0 s)
+OK    purgatorio3_alcanzable
+OK    purgatorio3_fin
+  purgatorio, rincón raro de SALA: 28, 64, -92
+OK    ir_4e_purgatorio_sala_silla
+  purgatorio, 4e_purgatorio_sala_silla: mira a block.minecraft.quartz_stairs, niebla 24.0, ambiente SALA=0.62 sustos=10
+OK    4e_purgatorio_sala_silla
+  purgatorio, rincón raro de RECREATIVA: 59, 64, 118
+OK    ir_4f_purgatorio_recreativa_una
+  purgatorio, 4f_purgatorio_recreativa_una: mira a block.miscelanea.recreativa_astro, niebla 22.0, ambiente RECREATIVA=0.36 sustos=15
+OK    4f_purgatorio_recreativa_una
+  purgatorio, rincón raro de FERIA: -20, 64, -26
+OK    ir_4g_purgatorio_caseta_peluche
+  purgatorio, 4g_purgatorio_caseta_peluche: mira a block.miscelanea.peluche, niebla 34.0, ambiente FERIA=0.50 sustos=19
+OK    4g_purgatorio_caseta_peluche
+  purgatorio, rincón raro de HOTEL: -2, 65, -63
+OK    ir_4h_purgatorio_hotel_tele
+  purgatorio, 4h_purgatorio_hotel_tele: mira a block.miscelanea.tele_sin_senal, niebla 20.1, ambiente HOTEL=0.60 sustos=20 tele=-2, 65, -60
+OK    4h_purgatorio_hotel_tele
+  purgatorio, tras los sustos: HOTEL=0.60 sustos=23 tele=-2, 65, -60
+OK    purgatorio_sustos
+  purgatorio, costura FERIA -> SALA: 57, 64, -8
+OK    ir_4i_purgatorio_costura_feria_sala
+  purgatorio, 4i_purgatorio_costura_feria_sala: niebla 33.9, ambiente FERIA=0.50 sustos=23
+OK    4i_purgatorio_costura_feria_sala
+  purgatorio, costura SIN_TEXTURA -> HOTEL: 121, 64, -136
+OK    ir_4j_purgatorio_costura_sin_textura
+  purgatorio, 4j_purgatorio_costura_sin_textura: niebla 30.0, ambiente SIN_TEXTURA=0.33 sustos=23
+OK    4j_purgatorio_costura_sin_textura
+  purgatorio, costura FERIA -> SIN_TEXTURA: -151, 64, 328
+OK    ir_4k_purgatorio_costura_feria_sin_textura
+  purgatorio, 4k_purgatorio_costura_feria_sin_textura: niebla 34.0, ambiente FERIA=0.50 sustos=23
+OK    4k_purgatorio_costura_feria_sin_textura
+  purgatorio, niebla antes de cruzar: 34.0
+OK    purgatorio_niebla_cruza
+  purgatorio, niebla a los 3 tics de cruzar: 31.8 (fundiéndose)
+OK    purgatorio_niebla_cruza_2
+  purgatorio, niebla a los 3 s: 24.0 (sala: 24)
+OK    purgatorio_niebla_cruza_3
+OK    purgatorio_cuantos
+  purgatorio, habitantes ahora: 0 (tope por jugador 2, total 12)
+OK    purgatorio_muro
+OK    purgatorio_muro_salir
+  purgatorio, salir tras colarse por un muro: en minecraft:overworld 14, 70, -14 (fuera del muro)
+OK    purgatorio_muro_fuera
+OK    purgatorio_config_entrar
+  purgatorio, configuración: activado=true, pared=0.12, vacío=true, dentro=true
+OK    purgatorio_config_apagar
+  purgatorio, desactivado: le ha sacado
+OK    purgatorio_config_fuera
+  aviso experimental: localvar$zbk000$miscelanea$sinAvisoAlAbrir localvar$zbk000$miscelanea$sinAvisoAlCrear al crear: sin aviso
+OK    purgatorio_aviso_experimental
+OK    pex_entrar
+  purgatorio, logros tras recorrerlo: raiz=sí todas_zonas=sí rincones=sí turno=NO no_molestar=NO pillado=sí herobrine=NO reloj=NO sin_pillar=sí caida=sí fantasma=NO objeto_raro=NO missingno=NO (rincones: sala=sí recreativa=sí feria=sí hotel=sí piscina=sí aparcamiento=sí colegio=sí centro=sí)
+  purgatorio, fantasmas=0 (salidos 3, vistos 0), chat roto=1, sonidos rotos=3, nombres=0 (inventados)
+OK    pex_logros_antes
+OK    pex_brujula_ir
+  purgatorio, brújula de salida: apunta a 51, 64, 3, salida más cercana 51, 64, 3 (en el cliente: BlockPos{x=51, y=64, z=3})
+OK    4l_purgatorio_brujula
+OK    pex_reloj_a
+OK    pex_reloj_b
+OK    pex_reloj_usar
+  purgatorio, reloj al revés: usado=true desde 72, 64, -8
+  purgatorio, reloj al revés: ahora en 72, 64, -8, a 0.0 bloques de donde estaba (A 72, 64, -8, B -56, 64, -56)
+OK    pex_reloj_fin
+OK    pex_tique
+  purgatorio, tique de turno: canjeado=true
+  purgatorio, tique: le han llamado a 51, 64, 5, a 2.0 bloques de la puerta 51, 64, 3
+OK    4m_purgatorio_tique_salida
+OK    pex_llave_ficha
+  purgatorio, llave 404: colgada=true, no molestar=true
+  purgatorio, ficha infinita: tres partidas true true true, quedan 1 ficha_infinita
+OK    pex_llave_ficha_ver
+OK    pex_missingno_ir
+OK    4n_purgatorio_missingno
+OK    pex_missingno
+  purgatorio, MissingNo.: +61 en el sexto hueco (64 dirt), el bloque se ha ido
+OK    pex_raros_ir
+OK    pex_raros
+  purgatorio, objetos raros tirados: «Espada (1) (copia) final_FINAL» en 18, 64, -1 «item.minecraft.missingno» en 17, 64, 0 «Nuevo documento de texto (3).txt» en 10, 64, -1 «Copia de seguridad de Steve» en 14, 64, 0
+OK    pex_raros_mirar
+OK    4o_purgatorio_objetos_raros
+OK    pex_raros_coger
+  purgatorio, objetos raros en el suelo: 3
+  purgatorio, ha cogido un objeto raro: sí
+OK    pex_raros_cogido
+  purgatorio, chat roto: xX_Steve_Xx se ha uniiido a la partiiida
+  purgatorio, chat roto: <Alex_backup> no encuentro la salida
+  purgatorio, chat roto: [Servidor] Guardando el mundo... 404 %
+  purgatorio, chat roto: java.lang.NullPointtterException: Cannnnot invoke "Salida.abrir()" becaussse "this.sa^ida" is null
+  purgatorio, chat roto: <??>? Offlin¿
+OK    4p_purgatorio_chat
+OK    pex_fantasma_ir
+OK    pex_fantasma_ir_2
+  purgatorio, jugador fantasma: sale=true en 72, 64, 4, fantasmas=1 (salidos 5, vistos 0), chat roto=6, sonidos rotos=5, nombres=0 (inventados)
+OK    pex_fantasma_sale
+OK    4q_purgatorio_fantasma
+OK    pex_fantasma_mirar
+  purgatorio, fantasma tras mirarlo fijamente: quedan 0, logro sí, fantasmas=0 (salidos 5, vistos 1), chat roto=6, sonidos rotos=5, nombres=0 (inventados)
+OK    4r_purgatorio_fantasma_ido
+OK    pex_fantasma_acercarse
+  purgatorio, fantasma al acercarse: quedan 0
+OK    pex_fantasma_acercarse_fin
+OK    pex_herobrine
+  purgatorio, pegarle a Herobrine: logro true, se le cae reloj_reves
+OK    pex_rincon_ir
+  purgatorio, premios de rincones raros cerca: brujula_salida en -20, 64, -20
+OK    4s_purgatorio_rincon_premio
+OK    pex_premio_PISCINA
+  purgatorio, premio del rincón raro de PISCINA (piso 0, sitio -4, 62, -164): brujula_salida en -4, 62, -164
+OK    pex_premio_PISCINA_ver
+OK    pex_premio_APARCAMIENTO
+  purgatorio, premio del rincón raro de APARCAMIENTO (piso 1, sitio 76, 48, 88): tique_turno en 76, 48, 88
+OK    4u_purgatorio_premio_coche
+OK    pex_premio_COLEGIO
+  purgatorio, premio del rincón raro de COLEGIO (piso 0, sitio -77, 64, -15): reloj_reves en -77, 64, -15
+OK    pex_premio_COLEGIO_ver
+OK    pex_premio_CENTRO
+  purgatorio, premio del rincón raro de CENTRO (piso 0, sitio -125, 64, 131): missingno en -125, 64, 131
+OK    4v_purgatorio_premio_teles
+  purgatorio, escalera mecánica suelta: -94, 66, 99
+OK    pex_escalera_mecanica_ir
+OK    4w_purgatorio_escalera_mecanica
+OK    pex_caida
+  purgatorio, caerse por el agujero: fuera=true, logro sí
+OK    pex_caida_fin
+  purgatorio, logros al final: raiz=sí todas_zonas=sí rincones=sí turno=sí no_molestar=sí pillado=sí herobrine=sí reloj=sí sin_pillar=sí caida=sí fantasma=sí objeto_raro=sí missingno=sí (rincones: sala=sí recreativa=sí feria=sí hotel=sí piscina=sí aparcamiento=sí colegio=sí centro=sí)
+OK    pex_logros
+OK    4t_purgatorio_logros
+OK    pex_salir
+  purgatorio, brújula fuera: da vueltas
+OK    pex_fuera
+OK    recorte_niveles
+  recorte: espada {net.minecraft.world.item.enchantment.DamageEnchantment@1618999a=5, net.minecraft.world.item.enchantment.DigDurabilityEnchantment@609e153f=3, net.minecraft.world.item.enchantment.MendingEnchantment@3a7fe31b=1} · peto {net.minecraft.world.item.enchantment.ProtectionEnchantment@39a354e=4, net.minecraft.world.item.enchantment.ThornsEnchantment@18acb6a1=3} · libro {net.minecraft.world.item.enchantment.ProtectionEnchantment@39a354e=4} · xp +200 · espada con durabilidad: true
+OK    perfil_vacio
+  rendimiento sin_sala: 2.8 fps · 177.8 ms/fotograma · bloques-entidad 9.35 ms · pantalla 0.00 ms (32 fotogramas)
+OK    perfil_sala
+  rendimiento: sala con 35 de 35 cosas
+  rendimiento colocar: 4.8 fps · 149.8 ms/fotograma · bloques-entidad 31.49 ms · pantalla 0.00 ms (5 fotogramas)
+OK    perfil_mirar
+  rendimiento sala: 9.6 fps · 88.7 ms/fotograma · bloques-entidad 12.08 ms · pantalla 0.00 ms (144 fotogramas)
+  rendimiento: 5 máquinas con partida retransmitida
+OK    perfil_jugar
+OK    70_perfil_mazmorra
+  rendimiento mazmorra: 12.1 fps · 70.7 ms/fotograma · bloques-entidad 9.61 ms · pantalla 2.12 ms (190 fotogramas)
+OK    perfil_turbo
+OK    71_perfil_turbo
+  rendimiento turbo: 12.7 fps · 67.5 ms/fotograma · bloques-entidad 9.05 ms · pantalla 1.09 ms (197 fotogramas)
+  perfil sin_sala (327 muestras, 13% en nativo): RizoRenderer.render 5.2% RizoRenderer.m_6922_ 5.2% RizoRenderer.v 4.9% RizoRenderer.tubo 4.6% BichoRenderer.render 2.1% BichoRenderer.m_7392_ 2.1% MapaCache.tick 1.2% MovilCliente.tick 1.2% PocionesEventos.tickVivo 0.6% MapaCache.region 0.6% MapaCache.pintar 0.6% PurgatorioCliente$Ambiente.tick 0.3%
+  perfil colocar (33 muestras, 24% en nativo): DominoRenderer.m_6922_ 6.1% DominoRenderer.render 6.1% TableroRenderer.render 3.0% RizoRenderer.render 3.0% BillarCliente.tick 3.0% FutbolinPartida.<init> 3.0% DominoRenderer.rect 3.0% FlotaRenderer.m_6922_ 3.0% MesaGrandeBlock.m_142194_ 3.0% RizoRenderer.m_6922_ 3.0% RizoRenderer.v 3.0% BichoRenderer.render 3.0%
+  perfil sala (284 muestras, 54% en nativo): RecreativaRenderer.m_6922_ 6.7% RecreativaRenderer.render 6.7% PantallaTextura.subir 6.3% PantallaTextura.actualizar 6.3% TableroRenderer.render 5.3% TableroRenderer.m_6922_ 5.3% BichoRenderer.render 2.5% BichoRenderer.m_7392_ 2.5% CartelRecordsRenderer.m_6922_ 1.8% CartelRecordsRenderer.tablon 1.8% CartelRecordsRenderer.render 1.8% BoleraRenderer.render 1.4%
+  perfil mazmorra (294 muestras, 65% en nativo): PantallaTextura.subir 5.4% PantallaTextura.actualizar 5.4% RecreativaRenderer.m_6922_ 5.4% RecreativaRenderer.render 5.4% TableroRenderer.render 4.1% TableroRenderer.m_6922_ 4.1% BichoRenderer.render 2.7% BichoRenderer.m_7392_ 2.7% PocionesEventos.tickVivo 1.4% ArcadeScreen.m_88315_ 1.0% CartelRecordsRenderer.m_6922_ 1.0% CartelRecordsRenderer.render 1.0%
+  perfil turbo (291 muestras, 62% en nativo): TableroRenderer.render 5.8% TableroRenderer.m_6922_ 5.8% PantallaTextura.subir 3.4% PantallaTextura.actualizar 3.4% RecreativaRenderer.m_6922_ 3.4% RecreativaRenderer.render 3.4% CartelRecordsRenderer.m_6922_ 2.1% CartelRecordsRenderer.render 2.1% BoleraRenderer.render 1.7% BoleraRenderer.m_6922_ 1.7% BichoRenderer.render 1.7% BichoRenderer.m_7392_ 1.7%
+OK    perfil_fin
+OK    72_perfil_sala
+OK    laser_poner
+OK    laser_encender
+OK    80_laser_primera
+OK    laser_primera_quitar_hud
+  láser laser_primera: el punto sale a (-1.1, -0.9) px de la mira (26 píxeles rojos, imagen 854x480) · calculado (-0.6, -0.4) px, a 0.021 bloques de donde mira y a 0.009 del que ven los demás
+OK    laser_primera_medir
+OK    laser_fov
+OK    81_laser_fov105
+OK    laser_fov105_quitar_hud
+  láser laser_fov105: el punto sale a (-0.6, +0.1) px de la mira (10 píxeles rojos, imagen 854x480) · calculado (-0.2, +0.6) px, a 0.033 bloques de donde mira y a 0.037 del que ven los demás
+OK    laser_fov105_medir
+OK    laser_gigante
+  láser: de gigante, ojos a 4.86 bloques del suelo
+OK    82_laser_gigante
+OK    laser_gigante_quitar_hud
+  láser laser_gigante: el punto sale a (-0.2, -1.1) px de la mira (32 píxeles rojos, imagen 854x480) · calculado (+0.3, -0.6) px, a 0.022 bloques de donde mira y a 0.026 del que ven los demás
+OK    laser_gigante_medir
+OK    laser_normal
+OK    laser_fuera_poner
+OK    83_laser_desde_fuera
+OK    laser_desde_fuera_quitar_hud
+  láser laser_desde_fuera: el punto sale a (-1.7, -0.8) px de donde mira (35 píxeles rojos, imagen 854x480) · calculado (-0.8, -0.5) px, a 0.026 bloques de donde mira y a 0.025 del que ven los demás
+OK    laser_desde_fuera_medir
+OK    laser_fuera_quitar
+OK    84_laser_tercera
+OK    laser_fin
+OK    eco_poner
+OK    eco_hablador
+OK    eco_ruido
+OK    90_eco_activo
+  eco activo: niebla hasta 0.02 bloques · ondas 7, bloques 1091, entidades 2, fallos al dibujar 0 · imagen: 70% negra, luz media 28, 12220 px azulados, 28 px muy claros · hablo (solo ruido del micro): no
+OK    eco_medir
+OK    91_eco_tercera
+OK    eco_mirar_cielo
+OK    92_eco_cielo
+  eco mirando arriba (a mediodía): imagen: 83% negra, luz media 10, 334 px azulados, 28 px muy claros
+OK    eco_medir_cielo
+OK    eco_andar
+OK    94_eco_andando
+  eco andando: ondas de mis pasos 3, de los pasos del otro 3 · ondas 9, bloques 2248, entidades 6, fallos al dibujar 0
+OK    eco_medir_pasos
+OK    eco_quitar
+OK    93_eco_quitado
+  eco quitado: niebla hasta 192.0 bloques · ondas 0, bloques 0, entidades 0, fallos al dibujar 0 · imagen: 7% negra, luz media 70, 623 px azulados, 21 px muy claros
+OK    eco_comprobar
+OK    eco_fin
+  cara propia (la de su modelo) guardada: sí
+OK    cerrar
+TODO BIEN
