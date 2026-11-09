@@ -133,6 +133,11 @@ public class PurgatorioGenerador extends ChunkGenerator {
         return true;
     }
 
+    /** Lo raro que hay en el chunk del piso de arriba (para lo que no sabe de pisos; ver {@link #raro(int, int, int)}). */
+    public static int raro(int cx, int cz) {
+        return raro(0, cx, cz);
+    }
+
     /**
      * Para la prueba: lo raro que hay en el chunk del piso n (si es de esa zona y es un chunk normal). -1 = nada; 0-3 =
      * la parcela (caseta abierta o habitación de la tele); 4 = el chunk entero (sala de la silla, salón de una máquina).
