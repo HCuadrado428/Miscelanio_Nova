@@ -129,25 +129,51 @@ public final class LiminalCliente {
         return (float) Math.toDegrees(Math.atan2(-dx, -dz));
     }
 
+    /** Los maniquíes que se han dibujado hace poco (para girarlos cuando no se ven: entonces ya no se dibujan). */
+    static final java.util.Set<AtrezoBE> MANIQUIES = java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
+
+    /** Al dibujarlo: se apunta y, la primera vez, mira a donde mira su bloque. */
+    static void girarManiqui(AtrezoBE be) {
+        if (Float.isNaN(be.giro)) be.giro = 180 - be.getBlockState().getValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING).toYRot();
+        if (MANIQUIES.size() < 64) MANIQUIES.add(be);
+    }
+
     /**
      * El maniquí: mientras lo miras no se mueve; en cuanto no está a la vista (y estás cerca), se gira de golpe hacia ti.
-     * Así, cada vez que vuelves la vista, te está mirando.
+     * Así, cada vez que vuelves la vista, te está mirando. Se mira cada 4 tics y solo los que se han visto.
      */
-    static void girarManiqui(AtrezoBE be) {
-        var cam = Minecraft.getInstance().gameRenderer.getMainCamera();
-        var p = be.getBlockPos();
-        if (Float.isNaN(be.giro)) be.giro = 180 - be.getBlockState().getValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING).toYRot();
-        double dx = cam.getPosition().x - (p.getX() + 0.5), dy = cam.getPosition().y - (p.getY() + 1.5), dz = cam.getPosition().z - (p.getZ() + 0.5);
-        double d = Math.sqrt(dx * dx + dy * dy + dz * dz);
-        var mira = cam.getLookVector();
-        double cos = d < 1e-3 ? 1 : -(mira.x() * dx + mira.y() * dy + mira.z() * dz) / d;
-        be.mirado = cos > 0.5;
-        if (!be.mirado && d < 22) {
-            float a = angulo(dx, dz);
-            float dif = Math.abs(((a - be.giro) % 360 + 540) % 360 - 180);
-            if (dif > 4) {
-                be.giro = a;
-                be.giros++;
+    @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
+    public static final class Maniquies {
+        @SubscribeEvent
+        public static void tick(net.minecraftforge.event.TickEvent.ClientTickEvent e) {
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.END || MANIQUIES.isEmpty()) return;
+            Minecraft mc = Minecraft.getInstance();
+            if (mc.level == null || mc.player == null || mc.player.tickCount % 4 != 0) return;
+            var cam = mc.gameRenderer.getMainCamera();
+            var mira = cam.getLookVector();
+            var it = MANIQUIES.iterator();
+            while (it.hasNext()) {
+                AtrezoBE be = it.next();
+                if (be.isRemoved() || be.getLevel() != mc.level) {
+                    it.remove();
+                    continue;
+                }
+                var p = be.getBlockPos();
+                double dx = cam.getPosition().x - (p.getX() + 0.5), dy = cam.getPosition().y - (p.getY() + 1.5), dz = cam.getPosition().z - (p.getZ() + 0.5);
+                double d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                if (d > 40) {
+                    it.remove();
+                    continue;
+                }
+                double cos = d < 1e-3 ? 1 : -(mira.x() * dx + mira.y() * dy + mira.z() * dz) / d;
+                be.mirado = cos > 0.45;
+                if (be.mirado || d > 22) continue;
+                float a = angulo(dx, dz);
+                float dif = Math.abs(((a - be.giro) % 360 + 540) % 360 - 180);
+                if (dif > 4) {
+                    be.giro = a;
+                    be.giros++;
+                }
             }
         }
     }

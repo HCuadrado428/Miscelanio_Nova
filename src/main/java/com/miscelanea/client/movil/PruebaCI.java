@@ -1800,7 +1800,7 @@ public final class PruebaCI {
             RESUMEN.add("  liminal, maniquí: " + (lim[1] == null ? "NINGUNO" : lim[1].toShortString()));
             if (lim[1] == null) throw new IllegalStateException("no hay escaparates con maniquíes cerca");
             var f = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION).getBlockState(lim[1]).getValue(FAC);
-            irMirando(lim[1].relative(f, 4).relative(f.getClockWise(), 3), lim[1].above());
+            irMirando(lim[1].relative(f, 5).relative(f.getClockWise(), 2), lim[1].above());
         });
         paso("6d_liminal_maniquies", 30, () -> {
             if (mc.level.getBlockEntity(lim[1]) instanceof com.miscelanea.purgatorio.liminal.AtrezoBE be) limGiro = be.giro;
@@ -1819,8 +1819,9 @@ public final class PruebaCI {
             RESUMEN.add("  liminal, flotador en una piscina llena: " + (lim[2] == null ? "NINGUNO" : lim[2].toShortString()));
             if (lim[2] == null) throw new IllegalStateException("no hay piscinas llenas con flotador cerca");
             var l = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
-            var desde = com.miscelanea.purgatorio.eventos.PurgatorioExtras.libreCerca(l, lim[2].getX() + 4, lim[2].getY() + 1, lim[2].getZ() + 4, 3);
-            irMirando(desde == null ? lim[2].offset(4, 1, 4) : desde, lim[2]);
+            // de pie en el borde (o en la calle de al lado), mirando al flotador
+            var desde = com.miscelanea.purgatorio.eventos.PurgatorioExtras.libreCerca(l, lim[2].getX(), lim[2].getY() + 1, lim[2].getZ() + 3, 1);
+            irMirando(desde == null ? lim[2].offset(0, 1, 3) : desde, lim[2].below());
         });
         paso("6f_liminal_piscina_llena", 40, () -> {
             mc.level.playLocalSound(mc.player.getX(), mc.player.getY(), mc.player.getZ(), net.minecraft.sounds.SoundEvents.STONE_STEP, net.minecraft.sounds.SoundSource.PLAYERS, 0.5F, 1F, false);

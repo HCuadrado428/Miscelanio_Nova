@@ -588,7 +588,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
             int x = 1 + (int) ((q >> 4) % 5), z = 9 + (int) ((q >> 8) % 5);
             if (l.libre(x, f, z)) switch ((int) ((q >> 12) % 4)) {
                 case 0 -> l.pon(x, f, z, com.miscelanea.purgatorio.liminal.LiminalRegistro.SILLA_ESPERA.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, LADOS[(int) ((q >> 16) & 3)]));
-                case 1 -> expendedora(l, f, x, z, LADOS[(int) ((q >> 16) & 3)], q);
+                case 1 -> expendedora(l, f, x, z, Direction.EAST, q);
                 case 2 -> l.pon(x, f, z, com.miscelanea.purgatorio.liminal.LiminalRegistro.SENAL_MOJADO.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, LADOS[(int) ((q >> 16) & 3)]));
                 default -> l.pon(x, f, z, com.miscelanea.purgatorio.liminal.LiminalRegistro.CARRITO.get().defaultBlockState().setValue(com.miscelanea.purgatorio.liminal.Bloques.GIRADO, true));
             }
