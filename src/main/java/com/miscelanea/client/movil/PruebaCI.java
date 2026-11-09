@@ -355,7 +355,7 @@ public final class PruebaCI {
     private static final String[] LOGROS_AQUI = {"sala/lazo", "movil/bizum", "feria/tirolina", "mesa/parchis", "pociones/borrachera",
             "varios/paella", "varios/bacalao"};
     private static volatile List<String> logrosHechos, logrosFaltan;
-    /** Mientras se mide la imagen: fuera los avisos de logros. */
+    /** Mientras se mide la imagen: fuera los avisos de logros (y su mensaje en el chat). */
     private static boolean sinAvisos;
     private static volatile int logrosCargados = -1;
 
@@ -1100,7 +1100,10 @@ public final class PruebaCI {
             com.miscelanea.client.pociones.EcoCliente.habla(ecoHabla, 0.3F);
             com.miscelanea.client.pociones.EcoCliente.hablaYo(0.01F);
         }
-        if (sinAvisos) mc.getToasts().clear();
+        if (sinAvisos) {
+            mc.getToasts().clear();
+            mc.gui.getChat().clearMessages(false);   // «… ha conseguido el progreso …» también es texto claro
+        }
         // que MC-Runtime-Test no dé la prueba por acabada mientras sigue esto
         if (mc.player.tickCount > 60) mc.player.tickCount = 60;
         if (++ticksEnMundo < 40) return;
