@@ -443,7 +443,8 @@ public final class ExtrasCliente {
             double d = 13 + r.nextDouble() * (lejos - 13);
             double fx = p.getX() - Mth.sin(a * Mth.DEG_TO_RAD) * d, fz = p.getZ() + Mth.cos(a * Mth.DEG_TO_RAD) * d;
             double fy = suelo(l, fx, p.getY(), fz);
-            if (Double.isNaN(fy)) continue;
+            // en su mismo piso (no en el de arriba o el de abajo, por el hueco de una escalera)
+            if (Double.isNaN(fy) || com.miscelanea.purgatorio.PurgatorioPlano.nivel(fy) != com.miscelanea.purgatorio.PurgatorioPlano.nivel(p.getY())) continue;
             var bh = l.clip(new ClipContext(p.getEyePosition(), new Vec3(fx, fy + 1.5, fz), ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, p));
             if (bh.getType() != HitResult.Type.MISS) continue;
             sitio = new Vec3(fx, fy, fz);

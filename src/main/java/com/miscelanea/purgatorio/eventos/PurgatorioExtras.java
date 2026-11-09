@@ -5,6 +5,7 @@ import com.miscelanea.purgatorio.Purgado;
 import com.miscelanea.purgatorio.Purgatorio;
 import com.miscelanea.purgatorio.PurgatorioConfig;
 import com.miscelanea.purgatorio.PurgatorioGenerador;
+import com.miscelanea.purgatorio.PurgatorioPlano;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
@@ -58,7 +59,7 @@ public final class PurgatorioExtras {
     /** El segundo tono del timbre del turno. */
     static final Map<UUID, Integer> TIMBRES = new ConcurrentHashMap<>();
     /** Parcelas de cada chunk (las mismas que usa el generador para las casetas y las habitaciones). */
-    private static final int[][] PARCELA = {{0, 0}, {9, 0}, {0, 9}, {9, 9}};
+    private static final int[][] PARCELA = PurgatorioPlano.PARCELAS;
 
     private static CompoundTag persistente(Player p) {
         CompoundTag raiz = p.getPersistentData();
@@ -166,9 +167,9 @@ public final class PurgatorioExtras {
         if (!persistente(p).getBoolean(PILLADO)) Logros.dar(p, "sin_pillar", "salir");
     }
 
-    /** Apunta la zona en la que está; con todas, el logro. */
+    /** Apunta la zona en la que está (en su piso); con todas (también las nuevas, las de los pisos de abajo), el logro. */
     private static void zonas(ServerPlayer p) {
-        var z = PurgatorioGenerador.zona(p.getBlockX() >> 4, p.getBlockZ() >> 4);
+        var z = PurgatorioGenerador.zonaEn(p.getX(), p.getY(), p.getZ());
         CompoundTag t = persistente(p).getCompound(ZONAS);
         if (t.getBoolean(z.name())) return;
         t.putBoolean(z.name(), true);
@@ -184,6 +185,24 @@ public final class PurgatorioExtras {
         return new int[]{cx * 16 + 8, cz * 16 + 8};
     }
 
+    /**
+     * El sitio exacto (x, y, z del mundo) donde se deja el premio de los rincones raros de las zonas nuevas, o null (en
+     * las de siempre, cerca del centro de lo raro): piscina, en medio del flotador del fondo seco, debajo del foco;
+     * aparcamiento, en el suelo delante del coche, con los faros encima; colegio, a los pies de la pizarra, delante de la única silla bajada;
+     * centro comercial, delante de las teles, debajo del farol.
+     */
+    @Nullable
+    public static int[] sitioPremio(PurgatorioGenerador.Zona z, int n, int cx, int cz) {
+        int f = PurgatorioPlano.base(n), x = cx * 16, w = cz * 16;
+        return switch (z.name()) {
+            case "PISCINA" -> new int[]{x + 12, f - 2, w + 12};
+            case "APARCAMIENTO" -> new int[]{x + 12, f, w + 8};
+            case "COLEGIO" -> new int[]{x + 3, f, w + 1};
+            case "CENTRO" -> new int[]{x + 3, f, w + 3};
+            default -> null;
+        };
+    }
+
     /** El objeto purgado que da cada rincón raro. */
     static ItemStack premio(PurgatorioGenerador.Zona z, long semilla) {
         return switch (z.name()) {
@@ -191,30 +210,41 @@ public final class PurgatorioExtras {
             case "RECREATIVA" -> new ItemStack(ExtrasRegistro.FICHA_INFINITA.get());
             case "FERIA" -> new ItemStack(ExtrasRegistro.BRUJULA.get());
             case "HOTEL" -> new ItemStack(ExtrasRegistro.LLAVE.get());
+            // la piscina a oscuras: perdido en el fondo, la brújula; el coche: el tique del parking (que también te llama);
+            // el aula: el reloj (el de la pared lleva parado en las cuatro y diez); las teles sin señal: el MissingNo.
+            case "PISCINA" -> new ItemStack(ExtrasRegistro.BRUJULA.get());
+            case "APARCAMIENTO" -> new ItemStack(ExtrasRegistro.TIQUE.get(), 2);
+            case "COLEGIO" -> new ItemStack(ExtrasRegistro.RELOJ.get());
+            case "CENTRO" -> new ItemStack(ExtrasRegistro.MISSINGNO_ITEM.get());
             default -> new ItemStack(semilla % 2 == 0 ? ExtrasRegistro.RELOJ.get() : ExtrasRegistro.MISSINGNO_ITEM.get());
         };
     }
 
     private static void rincones(ServerPlayer p) {
         ServerLevel l = p.serverLevel();
-        int pcx = p.getBlockX() >> 4, pcz = p.getBlockZ() >> 4;
+        int pcx = p.getBlockX() >> 4, pcz = p.getBlockZ() >> 4, n = PurgatorioPlano.nivel(p.getY());
         for (int dx = -1; dx <= 1; dx++)
             for (int dz = -1; dz <= 1; dz++) {
-                int cx = pcx + dx, cz = pcz + dz, k = PurgatorioGenerador.raro(cx, cz);
+                int cx = pcx + dx, cz = pcz + dz, k = PurgatorioGenerador.raro(n, cx, cz);
                 if (k < 0) continue;
                 int[] c = centroRaro(cx, cz, k);
                 double ddx = p.getX() - (c[0] + 0.5), ddz = p.getZ() - (c[1] + 0.5), r = k == 4 ? 9 : 7;
                 if (ddx * ddx + ddz * ddz > r * r) continue;
-                var zona = PurgatorioGenerador.zona(cx, cz);
+                var zona = PurgatorioGenerador.zona(n, cx, cz);
                 Logros.dar(p, "rincones", zona.name().toLowerCase(java.util.Locale.ROOT));
+                // la de arriba, como antes (para no dar otra vez los ya cogidos); las de abajo, con su piso
                 long clave = ChunkPos.asLong(cx, cz) * 5 + k;
+                if (n > 0) clave = clave * 3 + n;
+                final long cl = clave;
                 RinconesDatos datos = RinconesDatos.de(l);
                 if (datos.cogido(clave)) continue;
                 AABB caja = new AABB(c[0] - 12, p.getY() - 8, c[1] - 12, c[0] + 12, p.getY() + 8, c[1] + 12);
                 boolean yaEsta = !l.getEntitiesOfClass(ItemEntity.class, caja, ie -> ie.getItem().hasTag() && ie.getItem().getTag().contains("MiscelaneaRincon")
-                        && ie.getItem().getTag().getLong("MiscelaneaRincon") == clave).isEmpty();
+                        && ie.getItem().getTag().getLong("MiscelaneaRincon") == cl).isEmpty();
                 if (yaEsta) continue;
-                BlockPos sitio = libreCerca(l, c[0], p.getBlockY(), c[1], 4);
+                int[] s = sitioPremio(zona, n, cx, cz);
+                BlockPos sitio = s != null ? libreCerca(l, s[0], s[1], s[2], 1) : null;
+                if (sitio == null) sitio = libreCerca(l, c[0], p.getBlockY(), c[1], 4);
                 if (sitio == null) continue;
                 ItemStack st = premio(zona, clave);
                 st.getOrCreateTag().putLong("MiscelaneaRincon", clave);
@@ -265,7 +295,7 @@ public final class PurgatorioExtras {
             int x = (int) Math.floor(p.getX() - Math.sin(a) * d), z = (int) Math.floor(p.getZ() + Math.cos(a) * d);
             BlockPos s = libreCerca(l, x, p.getBlockY(), z, 1);
             if (s == null) continue;
-            boolean sinTextura = PurgatorioGenerador.zona(x >> 4, z >> 4) == PurgatorioGenerador.Zona.SIN_TEXTURA;
+            boolean sinTextura = PurgatorioGenerador.zonaEn(x, s.getY(), z) == PurgatorioGenerador.Zona.SIN_TEXTURA;
             return soltarEn(l, s, ObjetosRaros.uno(r, k, sinTextura));
         }
         return null;

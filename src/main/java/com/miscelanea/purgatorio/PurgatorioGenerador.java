@@ -1579,9 +1579,15 @@ public class PurgatorioGenerador extends ChunkGenerator {
         }
     }
 
-    /** Una escalera mecánica parada que sube hasta el techo y no lleva a ningún sitio, con sus barandillas de cristal. */
+    /**
+     * Una escalera mecánica parada que sube hasta el techo y no lleva a ningún sitio. Los lados van en rampa (cuarzo liso
+     * con su escalón arriba, como el faldón de verdad) y encima la barandilla de cristal: de lejos se ve una pieza
+     * inclinada y fina, no un montón de bloques escalonados.
+     */
     private static void escaleraMecanicaANada(Lienzo l, int f, int qx, boolean norte) {
-        BlockState esc = ModBlocks.ESCALERA_MECANICA.get().defaultBlockState().setValue(StairBlock.FACING, norte ? Direction.NORTH : Direction.SOUTH);
+        Direction sube = norte ? Direction.NORTH : Direction.SOUTH;
+        BlockState esc = ModBlocks.ESCALERA_MECANICA.get().defaultBlockState().setValue(StairBlock.FACING, sube);
+        BlockState lado = d(Blocks.SMOOTH_QUARTZ), rampa = escalon(Blocks.SMOOTH_QUARTZ_STAIRS, sube), cristal = unida(Blocks.GLASS_PANE, true, false);
         for (int i = 0; i < 6; i++) {
             int z = norte ? 5 - i : 10 + i;
             for (int x = qx + 2; x <= qx + 3; x++) {
@@ -1589,8 +1595,9 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 l.pon(x, f + i, z, esc);
             }
             for (int x : new int[]{qx + 1, qx + 4}) {
-                for (int y = 0; y <= i; y++) l.pon(x, f + y, z, d(Blocks.LIGHT_GRAY_CONCRETE));
-                if (i < 5) l.pon(x, f + i + 1, z, d(Blocks.BLACK_CONCRETE));
+                for (int y = 0; y < i; y++) l.pon(x, f + y, z, lado);
+                l.pon(x, f + i, z, rampa);
+                if (i < 5) l.pon(x, f + i + 1, z, cristal);
             }
         }
     }

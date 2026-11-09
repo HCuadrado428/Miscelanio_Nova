@@ -27,6 +27,18 @@
   },
   "hotel": {
    "trigger": "minecraft:impossible"
+  },
+  "piscina": {
+   "trigger": "minecraft:impossible"
+  },
+  "aparcamiento": {
+   "trigger": "minecraft:impossible"
+  },
+  "colegio": {
+   "trigger": "minecraft:impossible"
+  },
+  "centro": {
+   "trigger": "minecraft:impossible"
   }
  },
  "requirements": [
@@ -41,6 +53,18 @@
   ],
   [
    "hotel"
+  ],
+  [
+   "piscina"
+  ],
+  [
+   "aparcamiento"
+  ],
+  [
+   "colegio"
+  ],
+  [
+   "centro"
   ]
  ]
 }

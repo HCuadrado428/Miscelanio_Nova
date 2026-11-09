@@ -1376,7 +1376,7 @@ public final class PruebaCI {
         for (String l : LOGROS_PURGATORIO)
             b.append(l).append(com.miscelanea.purgatorio.eventos.Logros.tiene(sp, l) ? "=sí " : "=NO ");
         b.append("(rincones:");
-        for (String c : new String[]{"sala", "recreativa", "feria", "hotel"})
+        for (String c : new String[]{"sala", "recreativa", "feria", "hotel", "piscina", "aparcamiento", "colegio", "centro"})
             b.append(' ').append(c).append(com.miscelanea.purgatorio.eventos.Logros.tiene(sp, "rincones", c) ? "=sí" : "=NO");
         return b.append(')').toString();
     }
@@ -1614,6 +1614,57 @@ public final class PruebaCI {
             RESUMEN.add(b.toString());
             if (lista.isEmpty()) throw new IllegalStateException("en la caseta abierta no hay premio");
         });
+        // los premios de los rincones raros de las zonas nuevas (en los pisos de abajo también), cada uno en su sitio
+        for (String[] zr : new String[][]{{"PISCINA", null}, {"APARCAMIENTO", "4u_purgatorio_premio_coche"}, {"COLEGIO", null}, {"CENTRO", "4v_purgatorio_premio_teles"}}) {
+            var zona = com.miscelanea.purgatorio.PurgatorioGenerador.Zona.valueOf(zr[0]);
+            sin("pex_premio_" + zr[0], 60, () -> {
+                var b = com.miscelanea.purgatorio.Purgatorio.buscarRaro(zona);
+                if (b == null) throw new IllegalStateException("no hay rincón raro de " + zona);
+                irMirando(b[0], b[1]);
+            });
+            Runnable ver = () -> {
+                ServerPlayer sp = spPrueba();
+                int n = com.miscelanea.purgatorio.PurgatorioPlano.nivel(sp.getY());
+                int[] s = com.miscelanea.purgatorio.eventos.PurgatorioExtras.sitioPremio(zona, n, sp.getBlockX() >> 4, sp.getBlockZ() >> 4);
+                var lista = sp.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, sp.getBoundingBox().inflate(16),
+                        ie -> ie.getItem().hasTag() && ie.getItem().getTag().contains("MiscelaneaRincon"));
+                StringBuilder sb = new StringBuilder("  purgatorio, premio del rincón raro de " + zona + " (piso " + n + ", sitio "
+                        + (s == null ? "?" : s[0] + ", " + s[1] + ", " + s[2]) + "):");
+                boolean bien = false;
+                for (var ie : lista) {
+                    sb.append(' ').append(ie.getItem().getItem()).append(" en ").append(ie.blockPosition().toShortString());
+                    if (s != null && ie.blockPosition().distSqr(new net.minecraft.core.BlockPos(s[0], s[1], s[2])) <= 2) bien = true;
+                }
+                if (lista.isEmpty()) sb.append(" NINGUNO");
+                RESUMEN.add(sb.toString());
+                if (!bien) throw new IllegalStateException("el premio del rincón raro de " + zona + " no está en su sitio");
+            };
+            if (zr[1] != null) paso(zr[1], 30, ver);
+            else sin("pex_premio_" + zr[0] + "_ver", 30, ver);
+        }
+        // una escalera mecánica suelta del centro comercial, vista desde el cruce de pasillos (los lados en rampa y el cristal)
+        sin("pex_escalera_mecanica_ir", 60, () -> {
+            net.minecraft.core.BlockPos[] ir = null;
+            for (int n = 0; n < 3 && ir == null; n++)
+                for (int r = 0; r < 50 && ir == null; r++)
+                    for (int cx = -r; cx <= r && ir == null; cx++)
+                        for (int cz = -r; cz <= r && ir == null; cz++) {
+                            if (Math.max(Math.abs(cx), Math.abs(cz)) != r || com.miscelanea.purgatorio.PurgatorioPlano.zona(n, cx, cz) != com.miscelanea.purgatorio.PurgatorioGenerador.Zona.CENTRO
+                                    || com.miscelanea.purgatorio.PurgatorioPlano.grande(n, cx, cz) != null || com.miscelanea.purgatorio.PurgatorioPlano.escalera(n, cx, cz)
+                                    || (n > 0 && com.miscelanea.purgatorio.PurgatorioPlano.escalera(n - 1, cx, cz))) continue;
+                            for (int k = 0; k < 4 && ir == null; k++) {
+                                if (com.miscelanea.purgatorio.PurgatorioGenerador.ocupada(n, cx, cz, k) || com.miscelanea.purgatorio.PurgatorioPlano.hn(n, cx, cz, 220 + k) % 10 != 8) continue;
+                                int qx = com.miscelanea.purgatorio.PurgatorioPlano.PARCELAS[k][0], f = com.miscelanea.purgatorio.PurgatorioPlano.base(n);
+                                boolean norte = com.miscelanea.purgatorio.PurgatorioPlano.PARCELAS[k][1] == 0;
+                                ir = new net.minecraft.core.BlockPos[]{new net.minecraft.core.BlockPos(cx * 16 + (qx == 0 ? 8 : 7), f, cz * 16 + (norte ? 8 : 7)),
+                                        new net.minecraft.core.BlockPos(cx * 16 + qx + 2, f + 2, cz * 16 + (norte ? 3 : 12))};
+                            }
+                        }
+            RESUMEN.add("  purgatorio, escalera mecánica suelta: " + (ir == null ? "NINGUNA cerca" : ir[1].toShortString()));
+            if (ir == null) throw new IllegalStateException("no hay escalera mecánica suelta cerca");
+            irMirando(ir[0], ir[1]);
+        });
+        paso("4w_purgatorio_escalera_mecanica", 30, () -> {});
         // caerse por un agujero del Mundo sin Texturas (de golpe por debajo del suelo, sin esperar a la caída: con shaders va lento)
         sin("pex_caida", 30, () -> enServidor(sp -> {
             var ag = com.miscelanea.purgatorio.Purgatorio.buscarAgujero();

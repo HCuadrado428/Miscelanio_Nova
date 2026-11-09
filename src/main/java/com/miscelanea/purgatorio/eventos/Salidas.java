@@ -1,7 +1,7 @@
 package com.miscelanea.purgatorio.eventos;
 
 import com.miscelanea.purgatorio.Purgatorio;
-import com.miscelanea.purgatorio.PurgatorioGenerador;
+import com.miscelanea.purgatorio.PurgatorioPlano;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -10,8 +10,8 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import javax.annotation.Nullable;
 
 /**
- * Dónde está la puerta de SALIDA más cercana. Se pregunta al generador qué chunks tienen salida
- * ({@link PurgatorioGenerador#salida}) y, si el chunk ya está cargado, se busca dentro la puerta de verdad (así no
+ * Dónde está la puerta de SALIDA más cercana del piso en el que se está (las de otros pisos no se pueden alcanzar
+ * sin buscar escaleras). Se pregunta al plano qué chunks tienen salida en ese piso ({@link PurgatorioPlano#salida}) y, si el chunk ya está cargado, se busca dentro la puerta de verdad (así no
  * depende de en qué parte del chunk la ponga el generador).
  */
 public final class Salidas {
@@ -20,16 +20,17 @@ public final class Salidas {
     /** Hasta dónde se busca (en chunks): hay más o menos una salida de cada 60 chunks. */
     static final int RADIO = 32;
 
-    /** El chunk con salida más cercano a ese sitio (o null si no hay ninguno en el radio). */
+    /** El chunk con salida de su piso más cercano a ese sitio (o null si no hay ninguno en el radio). */
     @Nullable
     public static long[] chunkCercano(BlockPos de) {
+        int n = PurgatorioPlano.nivel(de.getY());
         int pcx = de.getX() >> 4, pcz = de.getZ() >> 4;
         for (int r = 0; r <= RADIO; r++) {
             long mejor = Long.MAX_VALUE;
             long[] res = null;
             for (int dx = -r; dx <= r; dx++)
                 for (int dz = -r; dz <= r; dz++) {
-                    if (Math.max(Math.abs(dx), Math.abs(dz)) != r || !PurgatorioGenerador.salida(pcx + dx, pcz + dz)) continue;
+                    if (Math.max(Math.abs(dx), Math.abs(dz)) != r || !PurgatorioPlano.salida(n, pcx + dx, pcz + dz)) continue;
                     long d = (long) dx * dx + (long) dz * dz;
                     if (d < mejor) {
                         mejor = d;
@@ -40,7 +41,7 @@ public final class Salidas {
             if (res != null) {
                 for (int dx = -(r + 1); dx <= r + 1; dx++)
                     for (int dz = -(r + 1); dz <= r + 1; dz++) {
-                        if (Math.max(Math.abs(dx), Math.abs(dz)) != r + 1 || !PurgatorioGenerador.salida(pcx + dx, pcz + dz)) continue;
+                        if (Math.max(Math.abs(dx), Math.abs(dz)) != r + 1 || !PurgatorioPlano.salida(n, pcx + dx, pcz + dz)) continue;
                         long d = (long) dx * dx + (long) dz * dz;
                         if (d < mejor) {
                             mejor = d;
@@ -61,20 +62,21 @@ public final class Salidas {
     public static BlockPos cercana(ServerLevel l, BlockPos de, boolean cargar) {
         long[] c = chunkCercano(de);
         if (c == null) return null;
-        int cx = (int) c[0], cz = (int) c[1];
-        BlockPos estimada = new BlockPos(cx * 16 + 3, PurgatorioGenerador.SUELO, cz * 16 + 3);
+        int cx = (int) c[0], cz = (int) c[1], n = PurgatorioPlano.nivel(de.getY());
+        BlockPos estimada = new BlockPos(cx * 16 + 3, PurgatorioPlano.base(n), cz * 16 + 3);
         if (!Purgatorio.en(l)) return estimada;
         if (!l.hasChunk(cx, cz)) {
             if (!cargar) return estimada;
             Purgatorio.preparar(l, estimada);
         }
-        BlockPos p = buscarPuerta(l.getChunk(cx, cz), de.getY());
+        BlockPos p = buscarPuerta(l.getChunk(cx, cz), PurgatorioPlano.base(n));
         return p != null ? p : estimada;
     }
 
-    /** Busca el bloque de puerta de salida de más abajo en el chunk (primero cerca de la altura dada). */
+    /** Busca la puerta de salida del chunk en ese piso (su bloque de abajo), la más cerca de la altura dada. */
     @Nullable
     static BlockPos buscarPuerta(LevelChunk ch, int yCerca) {
+        int piso = PurgatorioPlano.nivel(yCerca);
         var puerta = com.miscelanea.registry.ModBlocks.PUERTA_SALIDA.get();
         int x0 = ch.getPos().getMinBlockX(), z0 = ch.getPos().getMinBlockZ();
         int min = ch.getMinBuildHeight(), max = ch.getMaxBuildHeight();
@@ -93,7 +95,7 @@ public final class Salidas {
                         if (sec.getBlockState(x, y, z).is(puerta)) {
                             q.set(x0 + x, yb + y, z0 + z);
                             // la de abajo de cada puerta
-                            if (ch.getBlockState(q.below()).is(puerta)) continue;
+                            if (ch.getBlockState(q.below()).is(puerta) || PurgatorioPlano.nivel(q.getY()) != piso) continue;
                             int d = Math.abs(q.getY() - yCerca);
                             if (d < dm) {
                                 dm = d;
