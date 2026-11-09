@@ -47,7 +47,7 @@ public final class LiminalRegistro {
             () -> new Bloques.Coche(p(MapColor.METAL, 3.0F, SoundType.METAL).noOcclusion().pushReaction(PushReaction.BLOCK)));
     public static final RegistryObject<Block> HAZ_FAROS = BLOCKS.register("haz_faros",
             () -> new Bloques.Haz(BlockBehaviour.Properties.of().noCollission().noOcclusion().strength(-1.0F, 3600000.0F).noLootTable()
-                    .lightLevel(s -> s.getValue(Bloques.PARTE4) < 2 ? 11 : 8).pushReaction(PushReaction.DESTROY).replaceable()));
+                    .lightLevel(s -> s.getValue(Bloques.PARTE4) < 2 ? 15 : 12).pushReaction(PushReaction.DESTROY).replaceable()));
     public static final RegistryObject<Block> SILLA_ESPERA = BLOCKS.register("silla_espera", () -> new Bloques.SillaEspera(p(MapColor.COLOR_BLUE, 1.0F, SoundType.METAL).noOcclusion()));
     public static final RegistryObject<Block> MAQUINA = BLOCKS.register("maquina_expendedora",
             () -> new Bloques.Maquina(p(MapColor.COLOR_RED, 3.0F, SoundType.METAL).noOcclusion().lightLevel(s -> 7).pushReaction(PushReaction.BLOCK)));

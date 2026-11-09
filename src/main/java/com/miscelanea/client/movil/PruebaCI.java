@@ -1813,11 +1813,11 @@ public final class PruebaCI {
         // se aparta a un lado, de espaldas al escaparate, y luego vuelve a mirar
         sin("lim_maniqui_mirar_atras", 20, () -> {
             var f = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION).getBlockState(lim[1]).getValue(FAC);
-            irA(lim[1].relative(f, 4).relative(f.getClockWise(), 4), f.toYRot(), 0);
+            irA(lim[1].relative(f, 5).relative(f.getClockWise(), 2), f.toYRot(), 0);
         });
         sin("lim_maniqui_volver", 10, () -> {
             var f = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION).getBlockState(lim[1]).getValue(FAC);
-            irMirando(lim[1].relative(f, 4).relative(f.getClockWise(), 4), lim[1].above());
+            irMirando(lim[1].relative(f, 5).relative(f.getClockWise(), 2), lim[1].above());
         });
         paso("6e_liminal_maniqui_te_mira", 20, () -> {
             var be = mc.level.getBlockEntity(lim[1]) instanceof com.miscelanea.purgatorio.liminal.AtrezoBE a ? a : null;

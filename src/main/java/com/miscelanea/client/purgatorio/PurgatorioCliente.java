@@ -106,6 +106,11 @@ public final class PurgatorioCliente {
         static void actualizar() {
             PurgatorioGenerador.Zona z = zona();
             float td = distancia(z);
+            // en las salas más grandes (el atrio del centro comercial y la piscina olímpica) se ve más lejos: si no, la
+            // niebla se come las escaleras mecánicas y el fondo de la piscina
+            var c = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
+            var g = com.miscelanea.purgatorio.PurgatorioPlano.grande(com.miscelanea.purgatorio.PurgatorioPlano.nivel(c.y), (int) Math.floor(c.x) >> 4, (int) Math.floor(c.z) >> 4);
+            if (g != null && (g.tipo() == com.miscelanea.purgatorio.PurgatorioPlano.Tipo.ATRIO || g.tipo() == com.miscelanea.purgatorio.PurgatorioPlano.Tipo.PISCINA_OLIMPICA)) td = 46;
             float[] tc = colorNiebla(z);
             long ahora = net.minecraft.Util.getMillis();
             float dt = (ahora - ultimo) / 1000F;
