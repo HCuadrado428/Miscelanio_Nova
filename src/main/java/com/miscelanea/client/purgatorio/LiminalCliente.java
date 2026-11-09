@@ -41,20 +41,16 @@ public final class LiminalCliente {
     static final int[] SILLAS = {0x2F5FA8, 0xD8742A, 0x3D8C5A, 0x8E8E94};
     static final int[] MAQUINAS = {0xC42A26, 0x2A58B8};
 
-    @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static final class Registro {
-        @SubscribeEvent
-        public static void colores(RegisterColorHandlersEvent.Block e) {
-            e.register((s, l, p, i) -> i == 0 ? COCHES[s.getValue(Bloques.COLOR8)] : -1, LiminalRegistro.COCHE.get());
-            e.register((s, l, p, i) -> i == 0 ? SILLAS[s.getValue(Bloques.COLOR4)] : -1, LiminalRegistro.SILLA_ESPERA.get());
-            e.register((s, l, p, i) -> i == 0 ? MAQUINAS[s.getValue(Bloques.COLOR2)] : -1, LiminalRegistro.MAQUINA.get());
-        }
+    /** Los colores (con tinte) de los coches, las sillas y las máquinas (se registran en ClientEvents, con los demás). */
+    public static void colores(RegisterColorHandlersEvent.Block e) {
+        e.register((s, l, p, i) -> i == 0 ? COCHES[s.getValue(Bloques.COLOR8)] : -1, LiminalRegistro.COCHE.get());
+        e.register((s, l, p, i) -> i == 0 ? SILLAS[s.getValue(Bloques.COLOR4)] : -1, LiminalRegistro.SILLA_ESPERA.get());
+        e.register((s, l, p, i) -> i == 0 ? MAQUINAS[s.getValue(Bloques.COLOR2)] : -1, LiminalRegistro.MAQUINA.get());
+    }
 
-        @SubscribeEvent
-        public static void coloresObjeto(RegisterColorHandlersEvent.Item e) {
-            e.register((st, i) -> i == 0 ? SILLAS[0] : -1, LiminalRegistro.SILLA_ESPERA.get());
-            e.register((st, i) -> i == 0 ? MAQUINAS[0] : -1, LiminalRegistro.MAQUINA.get());
-        }
+    public static void coloresObjeto(RegisterColorHandlersEvent.Item e) {
+        e.register((st, i) -> i == 0 ? SILLAS[0] : -1, LiminalRegistro.SILLA_ESPERA.get());
+        e.register((st, i) -> i == 0 ? MAQUINAS[0] : -1, LiminalRegistro.MAQUINA.get());
     }
 
     // ------------------------------------------------------------------ GeckoLib
@@ -130,7 +126,7 @@ public final class LiminalCliente {
     }
 
     /** Los maniquíes que se han dibujado hace poco (para girarlos cuando no se ven: entonces ya no se dibujan). */
-    static final java.util.Set<AtrezoBE> MANIQUIES = java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
+    public static final java.util.Set<AtrezoBE> MANIQUIES = java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
 
     /** Al dibujarlo: se apunta y, la primera vez, mira a donde mira su bloque. */
     static void girarManiqui(AtrezoBE be) {
@@ -142,13 +138,15 @@ public final class LiminalCliente {
      * El maniquí: mientras lo miras no se mueve; en cuanto no está a la vista (y estás cerca), se gira de golpe hacia ti.
      * Así, cada vez que vuelves la vista, te está mirando. Se mira cada 4 tics y solo los que se han visto.
      */
-    @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
+    /** Para la prueba: cuántas veces se ha mirado si hay que girar los maniquíes. */
+    public static int ticksManiqui;
+
     public static final class Maniquies {
-        @SubscribeEvent
-        public static void tick(net.minecraftforge.event.TickEvent.ClientTickEvent e) {
-            if (e.phase != net.minecraftforge.event.TickEvent.Phase.END || MANIQUIES.isEmpty()) return;
+        /** Cada tic del cliente (lo llama el ambiente del Purgatorio). */
+        public static void tick() {
+            if (MANIQUIES.isEmpty()) return;
             Minecraft mc = Minecraft.getInstance();
-            if (mc.level == null || mc.player == null || mc.player.tickCount % 4 != 0) return;
+            if (mc.level == null || mc.player == null || (ticksManiqui++ & 3) != 0) return;
             var cam = mc.gameRenderer.getMainCamera();
             var mira = cam.getLookVector();
             var it = MANIQUIES.iterator();
@@ -203,9 +201,8 @@ public final class LiminalCliente {
     /** Para la prueba: cuántos ecos han sonado. */
     public static int ecos;
 
-    @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
     public static final class Sonidos {
-        @SubscribeEvent
+        /** Cada sonido que suena (lo llama el ambiente del Purgatorio). */
         public static void sonido(PlaySoundEvent e) {
             SoundInstance s = e.getSound();
             if (s == null || s instanceof Eco) return;

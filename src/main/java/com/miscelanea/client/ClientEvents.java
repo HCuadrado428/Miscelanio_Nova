@@ -96,10 +96,12 @@ public final class ClientEvents {
             event.register((st, l, p, tinte) -> tinte == 0 && st.hasProperty(com.miscelanea.muebles.Muebles.COLOR)
                             ? com.miscelanea.muebles.Muebles.rgb(st.getValue(com.miscelanea.muebles.Muebles.COLOR)) : -1,
                     com.miscelanea.registry.ModBlocks.SILLA.get(), com.miscelanea.registry.ModBlocks.SOFA.get(), com.miscelanea.registry.ModBlocks.LAMPARA.get());
+            com.miscelanea.client.purgatorio.LiminalCliente.colores(event);
         }
 
         @SubscribeEvent
         public static void coloresItem(net.minecraftforge.client.event.RegisterColorHandlersEvent.Item event) {
+            com.miscelanea.client.purgatorio.LiminalCliente.coloresObjeto(event);
             event.register((st, tinte) -> tinte == 1 ? com.miscelanea.feria.AlgodonItem.color(st) : -1, com.miscelanea.registry.ModItems.ALGODON.get());
             event.register((st, tinte) -> tinte == 1 ? com.miscelanea.feria.CapsulaGachaItem.color(st) : -1, com.miscelanea.registry.ModItems.CAPSULA_GACHA.get());
             event.register((st, tinte) -> {

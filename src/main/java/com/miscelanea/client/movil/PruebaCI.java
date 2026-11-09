@@ -1809,7 +1809,8 @@ public final class PruebaCI {
         sin("lim_maniqui_volver", 10, () -> mc.player.setYRot(mc.player.getYRot() + 180));
         paso("6e_liminal_maniqui_te_mira", 20, () -> {
             var be = mc.level.getBlockEntity(lim[1]) instanceof com.miscelanea.purgatorio.liminal.AtrezoBE a ? a : null;
-            RESUMEN.add(String.format("  liminal, maniquí: miraba a %.0f, ahora a %.0f (se ha girado %d veces)", limGiro, be == null ? Float.NaN : be.giro, be == null ? -1 : be.giros));
+            RESUMEN.add(String.format("  liminal, maniquí: miraba a %.0f, ahora a %.0f (se ha girado %d veces; maniquíes vistos %d, tics %d)", limGiro, be == null ? Float.NaN : be.giro,
+                    be == null ? -1 : be.giros, com.miscelanea.client.purgatorio.LiminalCliente.MANIQUIES.size(), com.miscelanea.client.purgatorio.LiminalCliente.ticksManiqui));
             if (be == null || be.giros == 0) RESUMEN.add("  AVISO: el maniquí no se ha girado al no mirarlo");
         });
         // la piscina llena con su flotador

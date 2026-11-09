@@ -237,6 +237,7 @@ public final class PurgatorioCliente {
         @SubscribeEvent
         public static void tick(net.minecraftforge.event.TickEvent.ClientTickEvent e) {
             if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
+            LiminalCliente.Maniquies.tick();
             Minecraft mc = Minecraft.getInstance();
             if (mc.level != nivel) {
                 // Minecraft para todos los sonidos al cambiar de mundo: lo que hubiera ya no suena
@@ -284,6 +285,12 @@ public final class PurgatorioCliente {
                 sustos++;
             }
             if (edad % 10 == 0) teles(mc);
+        }
+
+        /** El eco de los pasos en las salas vacías (ver {@link LiminalCliente}). */
+        @SubscribeEvent
+        public static void sonido(net.minecraftforge.client.event.sound.PlaySoundEvent e) {
+            LiminalCliente.Sonidos.sonido(e);
         }
 
         /** Programa un susto según la zona (todo con sonidos del juego, cambiados de tono). */
