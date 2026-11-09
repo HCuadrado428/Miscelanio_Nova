@@ -1790,13 +1790,10 @@ public final class PruebaCI {
             var st = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION).getBlockState(lim[0]);
             var f = st.getValue(FAC);
             var centro = lim[0].relative(f.getClockWise(), 1).relative(f.getOpposite(), 2);
-            // de lado (en la plaza de al lado, que está libre), para ver el perfil
-            var l = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
-            var lado = com.miscelanea.purgatorio.eventos.PurgatorioExtras.libreCerca(l, centro.relative(f.getClockWise(), 3).getX(), centro.getY(), centro.relative(f.getClockWise(), 3).getZ(), 1);
-            if (lado == null) lado = com.miscelanea.purgatorio.eventos.PurgatorioExtras.libreCerca(l, lim[0].relative(f.getClockWise(), -3).getX(), centro.getY(), lim[0].relative(f.getClockWise(), -3).relative(f.getOpposite(), 2).getZ(), 1);
-            irMirando(lado == null ? lim[0].relative(f, 3) : lado, centro);
+            // desde la calle, en diagonal
+            irMirando(lim[0].relative(f, 3).relative(f.getClockWise(), 5), centro);
         });
-        paso("6c_liminal_coche_detras", 30, () -> {});
+        paso("6c_liminal_coche_diagonal", 30, () -> {});
         // los maniquíes del escaparate: se mira a uno, se aparta la vista y al volver te está mirando
         sin("lim_maniqui_ir", 60, () -> {
             var b = com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.CENTRO);
@@ -1804,7 +1801,7 @@ public final class PruebaCI {
             RESUMEN.add("  liminal, maniquí: " + (lim[1] == null ? "NINGUNO" : lim[1].toShortString()));
             if (lim[1] == null) throw new IllegalStateException("no hay escaparates con maniquíes cerca");
             var f = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION).getBlockState(lim[1]).getValue(FAC);
-            irMirando(lim[1].relative(f, 5).relative(f.getClockWise(), 2), lim[1].above());
+            irMirando(lim[1].relative(f, 4), lim[1].above());
         });
         paso("6d_liminal_maniquies", 30, () -> {
             if (mc.level.getBlockEntity(lim[1]) instanceof com.miscelanea.purgatorio.liminal.AtrezoBE be) limGiro = be.giro;
