@@ -1,0 +1,178 @@
+Prueba del móvil (Miscelánea)
+OK    preparar
+OK    00_mundo
+OK    01_inicio
+OK    02_camara
+OK    03_filtro_1
+OK    03_filtro_2
+OK    03_filtro_3
+OK    03_filtro_4
+OK    03_filtro_5
+OK    03_filtro_6
+OK    03_filtro_7
+OK    03_filtro_8
+OK    03_foto_gameboy
+OK    04_zoom
+OK    05_horizontal
+OK    vuelve_vertical
+OK    06_foto
+OK    espera_foto
+OK    07_temporizador
+OK    espera_temporizador
+OK    temporizador_fuera
+OK    08_flash
+OK    espera_flash
+OK    09_grabando
+OK    para_video
+OK    10_galeria
+  galería: 5 (la última es un vídeo de 3000 ms)
+OK    11_visor
+OK    12_llamada_grupo
+OK    13_llamada
+OK    14_entrante
+OK    15_manos_libres
+OK    16_teclado
+OK    17_ajustes
+OK    gramola_poner
+OK    20_gramola_menu
+OK    21_videoclip_hotel_inicio
+OK    22_videoclip_hotel_8s
+OK    23_videoclip_hotel_20s
+OK    24_tras_salir
+OK    gramola_otra
+OK    25_videoclip_disco
+OK    26_tras_salir_disco
+  pociones: red_mushroom=gigante brown_mushroom=enano echo_shard=ecolocalizacion ink_sac=niebla_viviente amethyst_shard=espejismo feather=helio snowball=ventilador wheat=borrachera cocoa_beans=tartamudeo
+OK    pociones
+OK    recorte_niveles
+  recorte: espada {net.minecraft.world.item.enchantment.DamageEnchantment@510d091d=5, net.minecraft.world.item.enchantment.DigDurabilityEnchantment@3014dd32=3, net.minecraft.world.item.enchantment.MendingEnchantment@145c9485=1} · peto {net.minecraft.world.item.enchantment.ProtectionEnchantment@d022dbf=4, net.minecraft.world.item.enchantment.ThornsEnchantment@45402ebf=3} · libro {net.minecraft.world.item.enchantment.ProtectionEnchantment@d022dbf=4} · xp +200 · espada con durabilidad: true
+OK    perfil_vacio
+  rendimiento sin_sala: 1.3 fps · 565.6 ms/fotograma · bloques-entidad 0.20 ms · pantalla 0.00 ms (20 fotogramas)
+OK    perfil_sala
+  rendimiento: sala con 35 de 35 cosas
+  rendimiento colocar: 1.1 fps · 826.3 ms/fotograma · bloques-entidad 19.26 ms · pantalla 0.00 ms (4 fotogramas)
+OK    perfil_mirar
+  rendimiento sala: 2.2 fps · 416.3 ms/fotograma · bloques-entidad 8.23 ms · pantalla 0.00 ms (33 fotogramas)
+  rendimiento: 5 máquinas con partida retransmitida
+OK    perfil_jugar
+OK    70_perfil_mazmorra
+  rendimiento mazmorra: 2.9 fps · 321.7 ms/fotograma · bloques-entidad 2.77 ms · pantalla 4.39 ms (48 fotogramas)
+OK    perfil_turbo
+OK    71_perfil_turbo
+  rendimiento turbo: 3.0 fps · 309.6 ms/fotograma · bloques-entidad 2.46 ms · pantalla 2.15 ms (50 fotogramas)
+  perfil sin_sala (328 muestras, 37% en nativo): BichoRenderer.render 10.7% BichoRenderer.m_7392_ 10.7% MovilCliente.tick 0.9% MapaCache.tick 0.9% PocionesEventos.tickVivo 0.9% MapaCache.pintar 0.6% MapaCache.altura 0.3% Tamanos.tick 0.3% MapaCache.region 0.3% TableroCliente.tick 0.3%
+  perfil colocar (57 muestras, 70% en nativo): BichoRenderer.render 7.0% BichoRenderer.m_7392_ 7.0% PantallaTextura.<init> 3.5% ArcadeCliente.tick 3.5% PantallaTextura.tablaCrt 3.5% ParchisRenderer.m_6922_ 1.8% ParchisRenderer.render 1.8% BichoEntity.lambda$registerControllers$0 1.8% PocionesEventos.tickVivo 1.8%
+  perfil sala (247 muestras, 66% en nativo): BichoRenderer.render 3.6% BichoRenderer.m_7392_ 3.6% RecreativaRenderer.m_6922_ 1.6% RecreativaRenderer.render 1.6% PantallaTextura.subir 1.2% PantallaTextura.actualizar 1.2% FeriaPiezas.modelo 0.8% Pantalla.rect 0.8% BoleraRenderer.render 0.4% BoleraRenderer.m_6922_ 0.4% FutbolinRenderer.m_6922_ 0.4% FutbolinRenderer.render 0.4%
+  perfil mazmorra (293 muestras, 67% en nativo): BichoRenderer.render 3.8% BichoRenderer.m_7392_ 3.8% ArcadeScreen.m_88315_ 1.4% ArcadeScreen.empezar 0.7% PantallaTextura.subir 0.7% Mazmorra3D.reiniciar 0.7% PantallaTextura.actualizar 0.7% ArcadeScreen.paso 0.7% RecreativaRenderer.m_6922_ 0.7% Sprite.hoja 0.7% Mazmorra3D.pasoCosas 0.7% RecreativaRenderer.render 0.7%
+  perfil turbo (285 muestras, 70% en nativo): BichoRenderer.render 3.9% BichoRenderer.m_7392_ 3.9% PantallaTextura.subir 1.1% PantallaTextura.actualizar 1.1% PocionesEventos.tickVivo 1.1% RecreativaRenderer.m_6922_ 1.1% RecreativaRenderer.render 1.1% ArcadeScreen.m_88315_ 0.7% ArcadeScreen.empezar 0.4% DetectorCliente.lleva 0.4% AirHockeyRenderer.render 0.4% TurboCosta.dibujarVista 0.4%
+OK    perfil_fin
+OK    72_perfil_sala
+OK    laser_poner
+OK    laser_encender
+OK    80_laser_primera
+OK    laser_primera_quitar_hud
+  láser laser_primera: el punto sale a (+0.0, +0.1) px de la mira (149 píxeles rojos, imagen 854x480) · calculado (-1.0, -0.1) px, a 0.029 bloques de donde mira y a 0.024 del que ven los demás
+OK    laser_primera_medir
+OK    laser_fov
+OK    81_laser_fov105
+OK    laser_fov105_quitar_hud
+  láser laser_fov105: el punto sale a (-1.3, -0.1) px de la mira (53 píxeles rojos, imagen 854x480) · calculado (-0.2, -0.2) px, a 0.015 bloques de donde mira y a 0.007 del que ven los demás
+OK    laser_fov105_medir
+OK    laser_gigante
+  láser: de gigante, ojos a 4.86 bloques del suelo
+OK    82_laser_gigante
+OK    laser_gigante_quitar_hud
+  láser laser_gigante: el punto sale a (+0.2, -1.3) px de la mira (89 píxeles rojos, imagen 854x480) · calculado (-0.7, +0.4) px, a 0.025 bloques de donde mira y a 0.039 del que ven los demás
+OK    laser_gigante_medir
+OK    laser_normal
+OK    laser_fuera_poner
+OK    83_laser_desde_fuera
+OK    laser_desde_fuera_quitar_hud
+  láser laser_desde_fuera: el punto sale a (-2.1, +0.1) px de donde mira (141 píxeles rojos, imagen 854x480) · calculado (-0.8, -1.0) px, a 0.037 bloques de donde mira y a 0.033 del que ven los demás
+OK    laser_desde_fuera_medir
+OK    laser_fuera_quitar
+OK    84_laser_tercera
+OK    laser_fin
+OK    eco_poner
+OK    eco_hablador
+OK    eco_ruido
+OK    90_eco_activo
+  eco activo: niebla hasta 0.02 bloques · ondas 5, bloques 2385, entidades 2, fallos al dibujar 0 · imagen: 47% negra, luz media 67, 41575 px azulados, 21 px muy claros · hablo (solo ruido del micro): no
+OK    eco_medir
+OK    91_eco_tercera
+OK    eco_mirar_cielo
+OK    92_eco_cielo
+  eco mirando arriba (a mediodía): imagen: 85% negra, luz media 9, 331 px azulados, 37 px muy claros
+OK    eco_medir_cielo
+OK    eco_andar
+OK    94_eco_andando
+  eco andando: ondas de mis pasos 6, de los pasos del otro 6 · ondas 11, bloques 2817, entidades 4, fallos al dibujar 0
+OK    eco_medir_pasos
+OK    eco_quitar
+OK    93_eco_quitado
+  eco quitado: niebla hasta 192.0 bloques · ondas 0, bloques 0, entidades 0, fallos al dibujar 0 · imagen: 2% negra, luz media 158, 33488 px azulados, 501 px muy claros
+OK    eco_comprobar
+OK    eco_fin
+OK    dream_poner
+OK    dream_otro
+OK    180_dream_ojos_otro
+  dream: ojos del otro (de noche) dibujados 16 veces · tengo el mordisco: true
+OK    dream_ojos_otro_ver
+OK    181_dream_ojos_propios
+  dream: mis ojos (tercera persona) dibujados 16 veces
+OK    dream_morder
+OK    182_dream_mordisco
+OK    dream_mordisco_ver
+OK    dream_veneno_leer
+  dream veneno: dosis 4 · Lentitud 4 · ceguera sí · Desangrado 1 · infectado sí · último mordisco 3.0 de daño · vida 388
+OK    183_dream_veneno
+OK    dream_contagio_espera
+OK    dream_contagio_leer
+  dream contagio: dosis 6 · Lentitud 4 · ceguera sí · Desangrado 2 · infectado sí · último mordisco 3.0 de daño · vida 379
+OK    184_dream_contagio
+OK    dream_fuego
+OK    dream_fuego_leer
+  dream fuego: sigo mordiendo no · presa marcada el husk
+OK    dream_fuego_ver
+OK    dream_huye_0
+OK    dream_huye_1
+OK    dream_huye_2
+OK    dream_huye_3
+OK    dream_huye_4
+OK    dream_huye_5
+OK    dream_huye_6
+OK    dream_huye_7
+OK    dream_huye_8
+OK    dream_huye_9
+OK    dream_huye_10
+OK    dream_huye_11
+OK    dream_rastro_leer
+  dream rastro: cazando true · pisadas 12 · latidos 23 · flecha dibujada 51 · Velocidad true · Impulso true
+OK    185_dream_rastro
+OK    dream_girar
+OK    186_dream_flecha
+OK    dream_punetazo
+OK    dream_punetazo_leer
+  dream puñetazo: presa el aldeano
+OK    dream_punetazo_ver
+OK    dream_infectado
+OK    dream_infectado_espera
+OK    dream_infectado_leer
+  dream infectado: dosis 2 · Lentitud 2 · ceguera no · Desangrado 1 · infectado no · último mordisco 1.5 de daño · vida 196
+OK    187_dream_infectado
+OK    dream_sol
+OK    dream_sol_morder
+OK    dream_sol_leer
+  dream al sol: true · dosis 0 · Lentitud no · ceguera no · Desangrado no · infectado sí · último mordisco 0.9 de daño · vida 361
+FALLO 188_dream_sol: java.lang.IllegalStateException: no se ha podido morder al sol
+OK    dream_gambito
+OK    dream_gambito_leer
+  dream Gambito: sigo mordiendo false · mareado true
+OK    189_dream_gambito
+OK    dream_leche
+  dream leche: Desangrado 1 (100 ticks) · infección false
+OK    dream_leche_ver
+OK    dream_fin
+  cara propia (la de su modelo) guardada: sí
+OK    cerrar
+1 PASOS FALLARON
