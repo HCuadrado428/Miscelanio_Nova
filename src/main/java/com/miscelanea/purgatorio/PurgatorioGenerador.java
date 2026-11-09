@@ -1731,7 +1731,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 for (int y = 1; y < 3; y++) l.pon(x, f + y, zf, unida(Blocks.GLASS_PANE, false, true));
                 for (int z = Math.min(zb, zf) + 1; z < Math.max(zb, zf); z++) l.pon(x, f - 1, z, d(Blocks.SMOOTH_QUARTZ));
             }
-            l.pon(x0 + 3, f + 4, zf - 2 * dz, Blocks.LIGHT.defaultBlockState().setValue(net.minecraft.world.level.block.LightBlock.LEVEL, 10));
+            l.pon(x0 + 3, f + 3, zf - dz, Blocks.LIGHT.defaultBlockState().setValue(net.minecraft.world.level.block.LightBlock.LEVEL, 14));
             Direction afuera = norte ? Direction.SOUTH : Direction.NORTH;
             long r = hn(n, cx, cz, 236 + k);
             for (int i = 0; i < 3; i++) {

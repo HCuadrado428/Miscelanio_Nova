@@ -1790,7 +1790,11 @@ public final class PruebaCI {
             var st = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION).getBlockState(lim[0]);
             var f = st.getValue(FAC);
             var centro = lim[0].relative(f.getClockWise(), 1).relative(f.getOpposite(), 2);
-            irMirando(lim[0].relative(f.getOpposite(), 6).relative(f.getClockWise(), 4), centro);
+            // de lado (en la plaza de al lado, que está libre), para ver el perfil
+            var l = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
+            var lado = com.miscelanea.purgatorio.eventos.PurgatorioExtras.libreCerca(l, centro.relative(f.getClockWise(), 3).getX(), centro.getY(), centro.relative(f.getClockWise(), 3).getZ(), 1);
+            if (lado == null) lado = com.miscelanea.purgatorio.eventos.PurgatorioExtras.libreCerca(l, lim[0].relative(f.getClockWise(), -3).getX(), centro.getY(), lim[0].relative(f.getClockWise(), -3).relative(f.getOpposite(), 2).getZ(), 1);
+            irMirando(lado == null ? lim[0].relative(f, 3) : lado, centro);
         });
         paso("6c_liminal_coche_detras", 30, () -> {});
         // los maniquíes del escaparate: se mira a uno, se aparta la vista y al volver te está mirando
@@ -1856,8 +1860,8 @@ public final class PruebaCI {
             var f = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION).getBlockState(lim[4]).getValue(FAC);
             // de pie al fondo del aula, mirando a la pizarra (el pupitre de delante es el de la fila de la pizarra)
             int x0 = lim[4].getX() - Math.floorMod(lim[4].getX(), 16) + (Math.floorMod(lim[4].getX(), 16) < 8 ? 3 : 12);
-            var fondo = new net.minecraft.core.BlockPos(x0, lim[4].getY(), lim[4].getZ()).relative(f.getOpposite(), 3);
-            irMirando(fondo, fondo.relative(f, 6).above());
+            var fondo = new net.minecraft.core.BlockPos(x0, lim[4].getY(), lim[4].getZ()).relative(f.getOpposite(), 1);
+            irMirando(fondo, fondo.relative(f, 5).above());
         });
         paso("6i_liminal_aula", 30, () -> {});
         // el ventilador del techo de la sala de espera
