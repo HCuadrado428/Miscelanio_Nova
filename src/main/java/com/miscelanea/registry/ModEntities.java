@@ -89,5 +89,17 @@ public final class ModEntities {
             () -> EntityType.Builder.<com.miscelanea.bichos.BichoEntity>of(com.miscelanea.bichos.BichoEntity::new, MobCategory.AMBIENT)
                     .sized(0.35F, 0.3F).clientTrackingRange(6).build("bicho"));
 
+    // ---- Pistola (bengala del revólver: se ve de lejos)
+    public static final RegistryObject<EntityType<com.miscelanea.armasfuego.pistola.BengalaEntity>> REVOLVER_BENGALA = ENTITIES.register("revolver_bengala",
+            () -> EntityType.Builder.<com.miscelanea.armasfuego.pistola.BengalaEntity>of(com.miscelanea.armasfuego.pistola.BengalaEntity::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F).clientTrackingRange(16).updateInterval(2).fireImmune().build("revolver_bengala"));
+    // ---- Rifle
+    public static final RegistryObject<EntityType<com.miscelanea.armasfuego.rifle.BalaRifle>> BALA_RIFLE = ENTITIES.register("bala_rifle",
+            () -> EntityType.Builder.<com.miscelanea.armasfuego.rifle.BalaRifle>of(com.miscelanea.armasfuego.rifle.BalaRifle::new, MobCategory.MISC)
+                    .sized(0.1F, 0.1F).clientTrackingRange(12).updateInterval(1).noSummon().build("bala_rifle"));
+    public static final RegistryObject<EntityType<com.miscelanea.armasfuego.rifle.GanchoTirolina>> GANCHO_TIROLINA = ENTITIES.register("gancho_tirolina",
+            () -> EntityType.Builder.<com.miscelanea.armasfuego.rifle.GanchoTirolina>of(com.miscelanea.armasfuego.rifle.GanchoTirolina::new, MobCategory.MISC)
+                    .sized(0.4F, 0.4F).clientTrackingRange(10).updateInterval(1).noSummon().build("gancho_tirolina"));
+
     private ModEntities() {}
 }

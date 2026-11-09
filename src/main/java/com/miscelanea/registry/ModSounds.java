@@ -241,6 +241,16 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> GB_INICIO = register("gb_inicio");
     public static final RegistryObject<SoundEvent> GB_MUSICA = register("gb_musica");
 
+    // ---- Pistola (revólver de ruleta)
+    public static final RegistryObject<SoundEvent> REVOLVER_DISPARO = register("revolver_disparo");
+    public static final RegistryObject<SoundEvent> REVOLVER_FOGUEO = register("revolver_fogueo");
+    public static final RegistryObject<SoundEvent> REVOLVER_VACIO = register("revolver_vacio");
+    public static final RegistryObject<SoundEvent> REVOLVER_CARGAR = register("revolver_cargar");
+    public static final RegistryObject<SoundEvent> REVOLVER_RULETA = register("revolver_ruleta");
+    public static final RegistryObject<SoundEvent> REVOLVER_REBOTE = register("revolver_rebote");
+    public static final RegistryObject<SoundEvent> REVOLVER_AMARTILLAR = register("revolver_amartillar");
+    public static final RegistryObject<SoundEvent> REVOLVER_DUELO = register("revolver_duelo");
+
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name,
                 () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Miscelanea.MOD_ID, name)));

@@ -135,6 +135,7 @@ public class ProyectilPodrido extends ThrowableItemProjectile {
             Parte parte = c.manchar(v, cual, punto, huevo());
             Escarnio.impacto(this, v, parte, lluvia);
             reventar(punto);
+            com.miscelanea.logros.LogrosMiscelanea.dar(getOwner(), "tomatazo");
             return true;
         }
         return false;

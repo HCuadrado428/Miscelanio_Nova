@@ -72,6 +72,8 @@ public class Victorias extends SavedData {
         v.setDirty();
         // el ranking del servidor lleva su propia cuenta (con la hora, para desempatar) y avisa a los tablones
         com.miscelanea.ranking.Ranking.victoria(s, u, nombre, juego);
+        com.miscelanea.logros.LogrosMiscelanea.dar(s, u, "victoria");
+        com.miscelanea.logros.LogrosMiscelanea.dar(s, u, "victoria_" + juego);
         return c[0];
     }
 

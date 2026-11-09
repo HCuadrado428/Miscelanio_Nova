@@ -24,9 +24,55 @@ public final class ModEnchantments {
     public static final RegistryObject<Enchantment> TURBO = register(Modo.TURBO);
     public static final RegistryObject<Enchantment> ALQUIMISTA = register(Modo.ALQUIMISTA);
 
+    // ---- Pistola (revólver de ruleta)
+    public static final EnchantmentCategory REVOLVER =
+            EnchantmentCategory.create("MISCELANEA_REVOLVER", item -> item instanceof com.miscelanea.armasfuego.pistola.RevolverItem);
+    public static final RegistryObject<Enchantment> REVOLVER_ABANICO = ENCHANTMENTS.register("revolver_abanico",
+            () -> new com.miscelanea.armasfuego.pistola.EncantamientoRevolver(Enchantment.Rarity.RARE, 1, 20, 0, ModEnchantments.REVOLVER_DESENFUNDE));
+    public static final RegistryObject<Enchantment> REVOLVER_CARAMBOLA = ENCHANTMENTS.register("revolver_carambola",
+            () -> new com.miscelanea.armasfuego.pistola.EncantamientoRevolver(Enchantment.Rarity.UNCOMMON, 2, 10, 12, null));
+    public static final RegistryObject<Enchantment> REVOLVER_DESENFUNDE = ENCHANTMENTS.register("revolver_desenfunde",
+            () -> new com.miscelanea.armasfuego.pistola.EncantamientoRevolver(Enchantment.Rarity.UNCOMMON, 1, 15, 0, ModEnchantments.REVOLVER_ABANICO));
+    public static final RegistryObject<Enchantment> REVOLVER_SENALERO = ENCHANTMENTS.register("revolver_senalero",
+            () -> new com.miscelanea.armasfuego.pistola.EncantamientoRevolver(Enchantment.Rarity.UNCOMMON, 1, 8, 0, null));
+    // ---- Rifle
+    /** Solo para el rifle de catalejo. */
+    public static final EnchantmentCategory RIFLE =
+            EnchantmentCategory.create("MISCELANEA_RIFLE", item -> item instanceof com.miscelanea.armasfuego.rifle.RifleItem);
+    /** Mira quieta 2 s: el siguiente disparo va recto y hace más daño. */
+    public static final RegistryObject<Enchantment> RESPIRACION = ENCHANTMENTS.register("respiracion_contenida",
+            () -> new com.miscelanea.armasfuego.rifle.RifleEncantamiento(Enchantment.Rarity.UNCOMMON, 3, 10, 10, RIFLE));
+    /** La bala pasa por varios mobs y por bloques blandos. */
+    public static final RegistryObject<Enchantment> ATRAVESAR = ENCHANTMENTS.register("atravesar",
+            () -> new com.miscelanea.armasfuego.rifle.RifleEncantamiento(Enchantment.Rarity.RARE, 3, 5, 10, RIFLE));
+    /** Lo que se mira con la mira brilla un rato. */
+    public static final RegistryObject<Enchantment> OJO_HALCON = ENCHANTMENTS.register("ojo_halcon",
+            () -> new com.miscelanea.armasfuego.rifle.RifleEncantamiento(Enchantment.Rarity.UNCOMMON, 2, 12, 15, RIFLE));
+    /** Tirolinas más largas y más rápidas. */
+    public static final RegistryObject<Enchantment> TIROLINERO = ENCHANTMENTS.register("tirolinero",
+            () -> new com.miscelanea.armasfuego.rifle.RifleEncantamiento(Enchantment.Rarity.UNCOMMON, 3, 5, 9, RIFLE));
+    /** El disparo casi no hace ruido (ni lo notan el sculk ni el Warden). */
+    public static final RegistryObject<Enchantment> SILENCIADOR = ENCHANTMENTS.register("silenciador",
+            () -> new com.miscelanea.armasfuego.rifle.RifleEncantamiento(Enchantment.Rarity.RARE, 1, 20, 0, RIFLE));
+
     private static RegistryObject<Enchantment> register(Modo modo) {
         return ENCHANTMENTS.register(modo.id(), () -> new ModoEnchantment(modo, ASPIRAFANTASMAS));
     }
+
+    // ---- Escopeta de presión
+    public static final EnchantmentCategory ESCOPETA_PRESION =
+            EnchantmentCategory.create("MISCELANEA_ESCOPETA_PRESION", item -> item instanceof com.miscelanea.armasfuego.escopeta.EscopetaPresionItem);
+    public static final RegistryObject<Enchantment> ESCOPETA_COMPRESOR = ENCHANTMENTS.register("escopeta_compresor",
+            () -> new com.miscelanea.armasfuego.escopeta.EncantamientoEscopeta(com.miscelanea.armasfuego.escopeta.Presion.Encantamiento.COMPRESOR, Enchantment.Rarity.UNCOMMON, 3, 10, 15));
+    public static final RegistryObject<Enchantment> ESCOPETA_VALVULA = ENCHANTMENTS.register("escopeta_valvula_seguridad",
+            () -> new com.miscelanea.armasfuego.escopeta.EncantamientoEscopeta(com.miscelanea.armasfuego.escopeta.Presion.Encantamiento.VALVULA, Enchantment.Rarity.RARE, 1, 20, 0));
+    public static final RegistryObject<Enchantment> ESCOPETA_DOBLE_CAMARA = ENCHANTMENTS.register("escopeta_doble_camara",
+            () -> new com.miscelanea.armasfuego.escopeta.EncantamientoEscopeta(com.miscelanea.armasfuego.escopeta.Presion.Encantamiento.DOBLE_CAMARA, Enchantment.Rarity.RARE, 1, 20, 0));
+    public static final RegistryObject<Enchantment> ESCOPETA_FUELLE = ENCHANTMENTS.register("escopeta_fuelle",
+            () -> new com.miscelanea.armasfuego.escopeta.EncantamientoEscopeta(com.miscelanea.armasfuego.escopeta.Presion.Encantamiento.FUELLE, Enchantment.Rarity.COMMON, 3, 5, 10));
+    public static final RegistryObject<Enchantment> ESCOPETA_RECICLAJE = ENCHANTMENTS.register("escopeta_reciclaje",
+            () -> new com.miscelanea.armasfuego.escopeta.EncantamientoEscopeta(com.miscelanea.armasfuego.escopeta.Presion.Encantamiento.RECICLAJE, Enchantment.Rarity.UNCOMMON, 3, 10, 12));
+    // ---- fin escopeta de presión
 
     private ModEnchantments() {}
 }

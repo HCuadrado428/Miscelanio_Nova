@@ -50,6 +50,8 @@ public class Miscelanea {
         com.miscelanea.estatica.EstaticaRegistro.registrar(modBus);
         com.miscelanea.laser.LaserRegistro.registrar(modBus);
         com.miscelanea.movil.MovilRegistro.registrar(modBus);
+        // ---- Armas de fuego: se encuentran en cofres (Global Loot Modifier)
+        com.miscelanea.armasfuego.BotinArmas.registrar(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::creativeTabs);
@@ -59,6 +61,8 @@ public class Miscelanea {
         event.enqueueWork(() -> {
             ModPotions.registerBrewingRecipes();
             ModNetwork.register();
+            // logros: el criterio propio miscelanea:accion
+            com.miscelanea.logros.LogrosMiscelanea.registrar();
         });
     }
 
@@ -160,6 +164,26 @@ public class Miscelanea {
             event.accept(ModItems.LANZACOHETES);
             event.accept(ModItems.COHETE);
             event.accept(ModItems.BALLESTA_REPETICION);
+            // ---- Pistola
+            event.accept(ModItems.REVOLVER);
+            event.accept(ModItems.REVOLVER_BALA);
+            event.accept(ModItems.REVOLVER_BENGALA);
+            event.accept(ModItems.REVOLVER_DARDO);
+            event.accept(ModItems.REVOLVER_FOGUEO);
+            event.accept(ModItems.REVOLVER_IMAN);
+            for (var en : java.util.List.of(ModEnchantments.REVOLVER_ABANICO, ModEnchantments.REVOLVER_CARAMBOLA,
+                    ModEnchantments.REVOLVER_DESENFUNDE, ModEnchantments.REVOLVER_SENALERO))
+                event.accept(net.minecraft.world.item.EnchantedBookItem.createForEnchantment(
+                        new net.minecraft.world.item.enchantment.EnchantmentInstance(en.get(), en.get().getMaxLevel())));
+            // ---- Escopeta de presión
+            event.accept(ModItems.ESCOPETA_PRESION);
+            for (var t : com.miscelanea.armasfuego.escopeta.TipoCartucho.values()) event.accept(t.item());
+            // ---- Rifle
+            event.accept(ModItems.RIFLE);
+            event.accept(ModItems.BALA_RIFLE);
+            event.accept(ModItems.BALA_TRAZADORA);
+            event.accept(ModItems.BALA_CUERDA);
+            event.accept(ModItems.CASQUILLO_RIFLE);
             for (int c = 0; c < com.miscelanea.laser.Laser.COLORES.length; c++) {
                 net.minecraft.world.item.ItemStack laser = new net.minecraft.world.item.ItemStack(com.miscelanea.laser.LaserRegistro.PUNTERO.get());
                 if (c > 0) laser.getOrCreateTag().putInt(com.miscelanea.laser.Laser.COLOR, c);

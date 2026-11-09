@@ -168,6 +168,7 @@ public final class Mordiscos {
     private static void empezar(ServerPlayer p, LivingEntity v) {
         Mordisco m = new Mordisco(p, v);
         m.escapeMob = 80 + p.getRandom().nextInt(120);
+        com.miscelanea.logros.LogrosMiscelanea.dar(p, "mordisco");
         POR_MORDEDOR.put(p.getUUID(), m);
         POR_VICTIMA.put(v.getUUID(), m);
         if (v.isPassenger()) v.stopRiding();
@@ -242,6 +243,7 @@ public final class Mordiscos {
         p.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 30, 1, false, false, true));
         p.level().playSound(null, v.getX(), v.getY(), v.getZ(), SoundEvents.PLAYER_ATTACK_KNOCKBACK, SoundSource.PLAYERS, 1.0F, 0.8F);
         if (v instanceof ServerPlayer vp) vp.displayClientMessage(Component.translatable("miscelanea.mordisco.libre"), true);
+        com.miscelanea.logros.LogrosMiscelanea.dar(v, "escapar_mordisco");
         if (p instanceof ServerPlayer sp) sp.displayClientMessage(Component.translatable("miscelanea.mordisco.escapa", v.getDisplayName()), true);
     }
 

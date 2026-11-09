@@ -1,0 +1,30 @@
+{
+  "parent": "miscelanea:movil/foto",
+  "display": {
+    "icon": {
+      "item": "miscelanea:movil",
+      "nbt": "{Color:13655984}"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.movil.minegram.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.movil.minegram.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "minegram": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "minegram"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

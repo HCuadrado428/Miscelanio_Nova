@@ -77,6 +77,7 @@ public final class Clips {
         d.setDirty();
         p.level().playSound(p, p.getX(), p.getY(), p.getZ(), MovilRegistro.OBTURADOR.get(), SoundSource.PLAYERS, 0.4F, 1.3F);
         MovilServidor.enviarFotos(p);
+        com.miscelanea.logros.LogrosMiscelanea.dar(p, "video");
     }
 
     record Info(int fps, int w, int h, int n, int ms, byte[] primera) {}

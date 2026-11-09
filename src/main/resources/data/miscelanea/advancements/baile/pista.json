@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:raiz",
+  "display": {
+    "icon": {
+      "item": "miscelanea:pista_baile"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.baile.pista.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.baile.pista.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "baile": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "baile"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 5
+  }
+}

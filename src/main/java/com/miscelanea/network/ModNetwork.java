@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class ModNetwork {
-    private static final String PROTOCOLO = "53";
+    private static final String PROTOCOLO = "55";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "main"),
@@ -282,6 +282,29 @@ public final class ModNetwork {
                 .encoder(com.miscelanea.armas.BallestaRecargaPacket::encode)
                 .decoder(com.miscelanea.armas.BallestaRecargaPacket::new)
                 .consumerMainThread(com.miscelanea.armas.BallestaRecargaPacket::handle)
+                .add();
+        // ---- Pistola
+        CHANNEL.messageBuilder(com.miscelanea.armasfuego.pistola.GirarPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.armasfuego.pistola.GirarPacket::encode)
+                .decoder(com.miscelanea.armasfuego.pistola.GirarPacket::new)
+                .consumerMainThread(com.miscelanea.armasfuego.pistola.GirarPacket::handle)
+                .add();
+        // ---- Escopeta de presión
+        CHANNEL.messageBuilder(com.miscelanea.armasfuego.escopeta.DispararPresionPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.armasfuego.escopeta.DispararPresionPacket::encode)
+                .decoder(com.miscelanea.armasfuego.escopeta.DispararPresionPacket::new)
+                .consumerMainThread(com.miscelanea.armasfuego.escopeta.DispararPresionPacket::handle)
+                .add();
+        // ---- Rifle
+        CHANNEL.messageBuilder(com.miscelanea.armasfuego.rifle.RifleAccionPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.armasfuego.rifle.RifleAccionPacket::encode)
+                .decoder(com.miscelanea.armasfuego.rifle.RifleAccionPacket::new)
+                .consumerMainThread(com.miscelanea.armasfuego.rifle.RifleAccionPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.armasfuego.rifle.TirolinasPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.miscelanea.armasfuego.rifle.TirolinasPacket::encode)
+                .decoder(com.miscelanea.armasfuego.rifle.TirolinasPacket::new)
+                .consumerMainThread(com.miscelanea.armasfuego.rifle.TirolinasPacket::handle)
                 .add();
     }
 }

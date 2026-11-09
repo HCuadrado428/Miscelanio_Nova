@@ -1,0 +1,32 @@
+{
+  "parent": "miscelanea:pociones/gigante",
+  "display": {
+    "icon": {
+      "item": "minecraft:potion",
+      "nbt": "{Potion:\"miscelanea:fantasma\"}"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.pociones.fantasma.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.pociones.fantasma.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "efecto": {
+      "trigger": "minecraft:effects_changed",
+      "conditions": {
+        "effects": {
+          "miscelanea:fantasma": {}
+        }
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

@@ -357,6 +357,7 @@ public class ParchisPartida {
             tFin += 18;
             bonos.add(20);
             anotar("come|" + actual().nombre + "|" + deColor(capColor).nombre);
+            com.miscelanea.logros.LogrosMiscelanea.dar(actual().uuid, "parchis_come");
         }
         if (hasta == META) {
             bonos.add(10);

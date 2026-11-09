@@ -36,5 +36,7 @@ public class ArcadeRecords extends SavedData {
     public static void registrar(ServerPlayer p, String juego, int puntos) {
         if (!ArcadeJuegos.valido(juego) || puntos <= 0 || puntos > 99_999_999) return;
         Ranking.mejor(p, juego, puntos);
+        if (ArcadeJuegos.esArcade(juego)) com.miscelanea.logros.LogrosMiscelanea.dar(p, "arcade");
+        com.miscelanea.logros.LogrosMiscelanea.dar(p, "puntos_" + juego);
     }
 }

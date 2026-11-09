@@ -20,6 +20,10 @@
     "miscelanea:estatica_perforante",
     "miscelanea:estatica_pura",
     "miscelanea:arma_perforante",
-    "miscelanea:arma_verdadera"
+    "miscelanea:arma_verdadera",
+    "miscelanea:pistola_perforante",
+    "miscelanea:pistola_ruleta",
+    "miscelanea:escopeta_presion",
+    "miscelanea:rifle_perforante"
   ]
 }

@@ -1,0 +1,30 @@
+{
+  "parent": "miscelanea:movil/movil",
+  "display": {
+    "icon": {
+      "item": "miscelanea:movil",
+      "nbt": "{Color:5617754}"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.movil.llamada.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.movil.llamada.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "llamada": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "llamada"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

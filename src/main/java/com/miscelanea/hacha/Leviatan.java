@@ -308,6 +308,7 @@ public final class Leviatan {
         if (o.getItem() instanceof HachaItem) HachaItem.ponerLanzada(o, false);
         if (p.getMainHandItem().getItem() instanceof HachaItem) {
             anunciar(p, AccionHacha.ATRAPAR, true);
+            com.miscelanea.logros.LogrosMiscelanea.dar(p, "hacha_atrapar");
             p.level().playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.HACHA_ATRAPAR.get(), SoundSource.PLAYERS, 1.1F, 1.0F);
         }
     }

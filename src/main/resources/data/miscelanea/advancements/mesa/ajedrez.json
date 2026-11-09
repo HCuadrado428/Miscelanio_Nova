@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:mesa/victoria",
+  "display": {
+    "icon": {
+      "item": "miscelanea:tablero"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.mesa.ajedrez.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.mesa.ajedrez.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "victoria_ajedrez": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "victoria_ajedrez"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

@@ -2524,5 +2524,77 @@
       "miscelanea:movil_tono_5"
     ],
     "subtitle": "subtitles.miscelanea.movil_tono"
+  },
+  "revolver_disparo": {
+    "sounds": [
+      {
+        "name": "miscelanea:revolver_disparo",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.revolver_disparo"
+  },
+  "revolver_fogueo": {
+    "sounds": [
+      {
+        "name": "miscelanea:revolver_fogueo",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.revolver_fogueo"
+  },
+  "revolver_rebote": {
+    "sounds": [
+      {
+        "name": "miscelanea:revolver_rebote",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.revolver_rebote"
+  },
+  "revolver_ruleta": {
+    "sounds": [
+      {
+        "name": "miscelanea:revolver_ruleta",
+        "attenuation_distance": 12
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.revolver_ruleta"
+  },
+  "revolver_vacio": {
+    "sounds": [
+      {
+        "name": "miscelanea:revolver_vacio",
+        "attenuation_distance": 10
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.revolver_vacio"
+  },
+  "revolver_cargar": {
+    "sounds": [
+      {
+        "name": "miscelanea:revolver_cargar",
+        "attenuation_distance": 8
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.revolver_cargar"
+  },
+  "revolver_amartillar": {
+    "sounds": [
+      {
+        "name": "miscelanea:revolver_amartillar",
+        "attenuation_distance": 10
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.revolver_amartillar"
+  },
+  "revolver_duelo": {
+    "sounds": [
+      {
+        "name": "miscelanea:revolver_duelo",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.revolver_duelo"
   }
 }

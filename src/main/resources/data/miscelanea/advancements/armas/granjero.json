@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/cofre",
+  "display": {
+    "icon": {
+      "item": "miscelanea:escopeta_cartucho_semillas"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.granjero.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.granjero.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "escopeta_semillas": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "escopeta_semillas"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}
