@@ -338,6 +338,7 @@ public final class PruebaCI {
         rendimiento();
         laser();
         eco();
+        pistola();
         sin("cerrar", 10, () -> {
             mc.setScreen(null);
             RESUMEN.add("  cara propia (la de su modelo) guardada: " + (CarasCliente.tiene(mc.player.getUUID()) ? "sí" : "NO"));
@@ -679,6 +680,445 @@ public final class PruebaCI {
                 if (sp != null) sp.setGameMode(GameType.CREATIVE);
             });
         });
+    }
+
+    // ------------------------------------------------------------------ revólver de ruleta (pistola)
+    private static volatile net.minecraft.core.BlockPos piO;
+    private static volatile net.minecraft.core.Direction piMira, piLado;
+    private static volatile UUID piHusk;
+    private static final java.util.Map<String, Object> PI = new java.util.concurrent.ConcurrentHashMap<>();
+    private static net.minecraftforge.common.util.FakePlayer piForastero;
+
+    private static void piSrv(java.util.function.Consumer<ServerPlayer> f) {
+        Minecraft mc = Minecraft.getInstance();
+        var srv = mc.getSingleplayerServer();
+        UUID id = mc.player.getUUID();
+        srv.execute(() -> {
+            ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+            if (sp == null) return;
+            try {
+                f.accept(sp);
+            } catch (Throwable t) {
+                PI.put("error", t.toString());
+                Miscelanea.LOGGER.error("[PruebaCI] pistola (servidor)", t);
+            }
+        });
+    }
+
+    /** Punto del campo de tiro: m bloques hacia delante, l a la derecha, y de altura sobre el suelo (centro del bloque de salida). */
+    private static Vec3 piPunto(double m, double l, double y) {
+        var o = piO;
+        return new Vec3(o.getX() + 0.5 + piMira.getStepX() * m + piLado.getStepX() * l, o.getY() + y,
+                o.getZ() + 0.5 + piMira.getStepZ() * m + piLado.getStepZ() * l);
+    }
+
+    private static void piApuntar(Vec3 q) {
+        var p = Minecraft.getInstance().player;
+        Vec3 d = q.subtract(p.getEyePosition());
+        float y = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
+        float x = (float) Math.toDegrees(-Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
+        p.setYRot(y);
+        p.setXRot(x);
+        p.yRotO = y;
+        p.xRotO = x;
+        p.setYHeadRot(y);
+    }
+
+    private static void piDisparar() {
+        Minecraft mc = Minecraft.getInstance();
+        mc.gameMode.useItem(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND);
+    }
+
+    private static net.minecraft.world.entity.monster.Husk piHusk(ServerPlayer sp) {
+        return piHusk == null ? null : (net.minecraft.world.entity.monster.Husk) sp.serverLevel().getEntity(piHusk);
+    }
+
+    private static ItemStack piRevolver(int oxido, Object... encs) {
+        ItemStack r = new ItemStack(com.miscelanea.registry.ModItems.REVOLVER.get());
+        for (int i = 0; i + 1 < encs.length; i += 2)
+            r.enchant(((net.minecraftforge.registries.RegistryObject<net.minecraft.world.item.enchantment.Enchantment>) encs[i]).get(), (Integer) encs[i + 1]);
+        if (oxido > 0) r.getOrCreateTag().putInt(com.miscelanea.armasfuego.pistola.Tambor.OXIDO, oxido);
+        return r;
+    }
+
+    private static void piComprobar(String que, boolean bien, String detalle) {
+        RESUMEN.add("  pistola: " + que + ": " + detalle);
+        if (!bien) throw new IllegalStateException(que + " (" + detalle + ")");
+    }
+
+    private static Object piError() {
+        return PI.remove("error");
+    }
+
+    /**
+     * El revólver de ruleta en un campo de tiro: cargar con agachado + clic derecho (munición en la otra mano), girar
+     * el tambor (agachado + clic izquierdo), Desenfunde contra un husk, Carambola en una pared de cobre, bengala de
+     * noche (luz de verdad, Señalero, vista de lejos y que la luz se quita), dardo, fogueo con vacas, bala imán, ruleta
+     * a la sien con fogueo, óxido/cera/rascado, la pose en tercera persona, Abanico, los encantamientos de la mesa y un
+     * duelo contra un forastero (jugador de mentira).
+     */
+    private static void pistola() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("pistola_preparar", 40, () -> {
+            mc.setScreen(null);
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            mc.options.hideGui = false;
+            mc.gui.getChat().clearMessages(false);
+            piSrv(sp -> {
+                var l = sp.serverLevel();
+                var mira = net.minecraft.core.Direction.fromYRot(sp.getYRot());
+                var lado = mira.getClockWise();
+                var o = sp.blockPosition();
+                var aire = net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
+                for (var b : net.minecraft.core.BlockPos.betweenClosed(o.relative(lado, -9).relative(mira, -3).below(), o.relative(lado, 9).relative(mira, 16).above(14)))
+                    l.setBlock(b, b.getY() < o.getY() ? net.minecraft.world.level.block.Blocks.GRASS_BLOCK.defaultBlockState() : aire, 2);
+                // pared de cobre a la derecha (para la Carambola)
+                for (int k = 1; k <= 10; k++)
+                    for (int y = 0; y <= 3; y++)
+                        l.setBlock(o.relative(lado, 3).relative(mira, k).above(y), net.minecraft.world.level.block.Blocks.CUT_COPPER.defaultBlockState(), 2);
+                l.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, new net.minecraft.world.phys.AABB(o).inflate(30),
+                        e -> !(e instanceof net.minecraft.world.entity.player.Player)).forEach(net.minecraft.world.entity.Entity::discard);
+                piO = o.immutable();
+                piMira = mira;
+                piLado = lado;
+                // un husk quieto (no se quema de día) a 6 bloques y tres vacas a la izquierda
+                var h = net.minecraft.world.entity.EntityType.HUSK.create(l);
+                Vec3 hp = piPunto(6, 0, 0);
+                h.moveTo(hp.x, hp.y, hp.z, mira.toYRot() + 180, 0);
+                h.setNoAi(true);
+                h.setPersistenceRequired();
+                h.setSilent(true);
+                l.addFreshEntity(h);
+                piHusk = h.getUUID();
+                for (int i = 0; i < 3; i++) {
+                    var v = net.minecraft.world.entity.EntityType.COW.create(l);
+                    Vec3 vp = piPunto(3 + i, -4 - (i % 2), 0);
+                    v.moveTo(vp.x, vp.y, vp.z, 0, 0);
+                    v.setPersistenceRequired();
+                    l.addFreshEntity(v);
+                }
+                sp.setGameMode(GameType.SURVIVAL);
+                sp.removeAllEffects();
+                sp.setHealth(sp.getMaxHealth());
+                sp.getInventory().clearContent();
+                sp.getInventory().setItem(0, piRevolver(0, com.miscelanea.registry.ModEnchantments.REVOLVER_CARAMBOLA, 2,
+                        com.miscelanea.registry.ModEnchantments.REVOLVER_DESENFUNDE, 1, com.miscelanea.registry.ModEnchantments.REVOLVER_SENALERO, 1));
+                sp.getInventory().setItem(1, new ItemStack(net.minecraft.world.item.Items.STICK));
+                sp.getInventory().selected = 0;
+                sp.getInventory().offhand.set(0, new ItemStack(com.miscelanea.registry.ModItems.REVOLVER_BALA.get(), 2));
+                sp.serverLevel().setDayTime(6000);
+                sp.connection.teleport(o.getX() + 0.5, o.getY(), o.getZ() + 0.5, mira.toYRot(), 0F);
+            });
+        });
+        sin("pistola_mirar", 10, () -> {
+            mc.player.getInventory().selected = 0;
+            piApuntar(piPunto(8, 0, 1.4));
+        });
+        paso("100_revolver_mano", 10, () -> {
+            Object e = piError();
+            if (e != null) throw new IllegalStateException("preparar: " + e);
+        });
+        // ---- cargar: agachado + clic derecho con la munición en la otra mano
+        var orden = new net.minecraftforge.registries.RegistryObject[]{null, null, com.miscelanea.registry.ModItems.REVOLVER_BENGALA,
+                com.miscelanea.registry.ModItems.REVOLVER_DARDO, com.miscelanea.registry.ModItems.REVOLVER_FOGUEO};
+        sin("pistola_agachar", 6, () -> mc.options.keyShift.setDown(true));
+        for (int i = 0; i < orden.length; i++) {
+            final var mun = orden[i];
+            if (mun != null)
+                sin("pistola_mano_" + i, 4, () -> piSrv(sp -> sp.getInventory().offhand.set(0, new ItemStack((net.minecraft.world.item.Item) mun.get(), 3))));
+            sin("pistola_cargar_" + i, 6, () -> {
+                if (!mc.player.isShiftKeyDown()) throw new IllegalStateException("no está agachado");
+                piDisparar();
+            });
+        }
+        sin("pistola_cargado", 4, () -> piSrv(sp -> PI.put("tambor", java.util.Arrays.toString(com.miscelanea.armasfuego.pistola.Tambor.recamaras(sp.getMainHandItem())))));
+        paso("101_tambor_cargado", 6, () -> {
+            String t = String.valueOf(PI.get("tambor"));
+            piComprobar("cargar 5 recámaras agachado (bala, bala, bengala, dardo, fogueo, vacía)", t.equals("[1, 1, 2, 3, 4, 0]"), t);
+        });
+        // ---- girar el tambor: agachado + clic izquierdo
+        sin("pistola_girar", 5, () -> net.minecraft.client.KeyMapping.click(mc.options.keyAttack.getKey()));
+        paso("102_ruleta_girando", 20, () -> {
+            ItemStack s = mc.player.getMainHandItem();
+            long hace = mc.level.getGameTime() - com.miscelanea.armasfuego.pistola.Tambor.giroT(s);
+            piComprobar("girar el tambor (agachado + clic izquierdo)", com.miscelanea.armasfuego.pistola.Tambor.girado(s) && hace >= 0 && hace < 40,
+                    "girado " + com.miscelanea.armasfuego.pistola.Tambor.girado(s) + ", hace " + hace + " ticks");
+        });
+        sin("pistola_ruleta_fin", 6, () -> {
+            mc.options.keyShift.setDown(false);
+            piSrv(sp -> {
+                ItemStack s = sp.getMainHandItem();
+                com.miscelanea.armasfuego.pistola.Tambor.ponerPos(s, 0);
+                s.getOrCreateTag().remove(com.miscelanea.armasfuego.pistola.Tambor.GIRADO);
+                sp.getInventory().offhand.set(0, ItemStack.EMPTY);
+            });
+        });
+        // ---- Desenfunde: se cambia de ranura y se dispara enseguida al husk
+        sin("pistola_enfunda", 5, () -> mc.player.getInventory().selected = 1);
+        sin("pistola_desenfunda", 3, () -> {
+            mc.player.getInventory().selected = 0;
+            piApuntar(piPunto(6, 0, 1.3));
+        });
+        paso("103_bala_desenfunde", 3, piTiro());
+        sin("pistola_bala_ver", 8, () -> piSrv(sp -> {
+            var h = piHusk(sp);
+            PI.put("vida1", h == null ? -1F : h.getHealth());
+            if (h != null) h.setHealth(h.getMaxHealth());
+        }));
+        sin("pistola_bala_comprobar", 14, () -> {
+            float v = (Float) PI.getOrDefault("vida1", -2F);
+            piComprobar("bala con Desenfunde (crítico) al husk", v >= 0 && v <= 10.5F, "le queda " + v + " de 20");
+            piApuntar(piPunto(6, 5, 1.2));   // el reflejo del husk en la pared de cobre
+        });
+        // ---- Carambola: la bala rebota en el cobre y da al husk
+        sin("pistola_carambola_traza", 4, () -> piSrv(sp -> {
+            var im = com.miscelanea.armasfuego.pistola.Revolver.trazar(sp.serverLevel(), sp, sp.getEyePosition(), sp.getViewVector(1F), 64, 1, sp.getEyePosition());
+            PI.put("traza", im.rebotes() + " rebote(s), da a " + (im.entidad() == null ? "nada" : im.entidad().getType().toShortString()));
+        }));
+        paso("104_carambola", 3, piTiro());
+        sin("pistola_carambola_ver", 8, () -> piSrv(sp -> {
+            var h = piHusk(sp);
+            PI.put("vida2", h == null ? -1F : h.getHealth());
+            if (h != null) h.setHealth(h.getMaxHealth());
+        }));
+        sin("pistola_carambola_comprobar", 14, () -> {
+            float v = (Float) PI.getOrDefault("vida2", -2F);
+            String tr = String.valueOf(PI.get("traza"));
+            piComprobar("Carambola: rebota en la pared de cobre y da al husk", v >= 0 && v < 20F && tr.startsWith("1 rebote") && tr.endsWith("husk"),
+                    tr + "; le queda " + v + " de 20");
+            mc.player.setXRot(-40);
+            piApuntar(piPunto(12, 0, 12));
+            piSrv(sp -> sp.serverLevel().setDayTime(18000));
+        });
+        // ---- bengala de noche
+        paso("105_bengala_sale", 12, piTiro());
+        sin("pistola_bengala_sube", 70, () -> piApuntar(piPunto(7, 0, 0.5)));
+        sin("pistola_bengala_ver", 4, () -> piSrv(sp -> {
+            var l = sp.serverLevel();
+            var bs = l.getEntitiesOfClass(com.miscelanea.armasfuego.pistola.BengalaEntity.class, new net.minecraft.world.phys.AABB(piO).inflate(40));
+            int luces = 0;
+            for (var b : net.minecraft.core.BlockPos.betweenClosed(piO.offset(-24, -2, -24), piO.offset(24, 24, 24)))
+                if (l.getBlockState(b).is(net.minecraft.world.level.block.Blocks.LIGHT)) luces++;
+            var h = piHusk(sp);
+            PI.put("bengala", bs.size() + " bengala(s)" + (bs.isEmpty() ? "" : String.format(" a %.1f bloques de altura", bs.get(0).getY() - piO.getY()))
+                    + ", " + luces + " bloque(s) de luz, " + com.miscelanea.armasfuego.pistola.LucesTemporales.cuantas(sp.server) + " apuntadas, husk brilla: "
+                    + (h != null && h.hasEffect(net.minecraft.world.effect.MobEffects.GLOWING)));
+            PI.put("bengala_ok", !bs.isEmpty() && luces >= 1 && h != null && h.hasEffect(net.minecraft.world.effect.MobEffects.GLOWING)
+                    && l.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, net.minecraft.core.BlockPos.containing(piPunto(7, 0, 0.5))) >= 8);
+        }));
+        paso("106_bengala_noche", 10, () -> piComprobar("bengala: sube, ilumina (bloques de luz) y con Señalero el husk brilla",
+                Boolean.TRUE.equals(PI.get("bengala_ok")), String.valueOf(PI.get("bengala"))));
+        sin("pistola_lejos_poner", 20, () -> {
+            var bs = mc.level.getEntitiesOfClass(com.miscelanea.armasfuego.pistola.BengalaEntity.class, mc.player.getBoundingBox().inflate(48));
+            Vec3 obj = bs.isEmpty() ? piPunto(10, 0, 12) : bs.get(0).position();
+            Vec3 pos = piPunto(-36, -10, 34);
+            mc.options.hideGui = true;
+            Vec3 d = obj.subtract(pos);
+            float yRot = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
+            float xRot = (float) Math.toDegrees(-Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
+            camaraFuera = new net.minecraft.world.entity.decoration.ArmorStand(mc.level, pos.x, pos.y, pos.z);
+            camaraFuera.moveTo(pos.x, pos.y - camaraFuera.getEyeHeight(), pos.z, yRot, xRot);
+            camaraFuera.setYHeadRot(yRot);
+            mc.setCameraEntity(camaraFuera);
+        });
+        paso("107_bengala_lejos", 10, () -> {});
+        sin("pistola_lejos_quitar", 6, () -> {
+            mc.setCameraEntity(mc.player);
+            mc.options.hideGui = false;
+            piApuntar(piPunto(6, 0, 1.3));
+        });
+        // ---- dardo de sedante
+        paso("108_dardo", 10, piTiro());
+        sin("pistola_dardo_ver", 4, () -> piSrv(sp -> {
+            var h = piHusk(sp);
+            PI.put("dardo", h != null && h.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN));
+        }));
+        sin("pistola_dardo_comprobar", 8, () -> {
+            piComprobar("dardo de sedante (lentitud)", Boolean.TRUE.equals(PI.get("dardo")), String.valueOf(PI.get("dardo")));
+            piSrv(sp -> {
+                double d = 0;
+                for (var v : sp.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.animal.Cow.class, new net.minecraft.world.phys.AABB(piO).inflate(30)))
+                    d += v.distanceTo(sp);
+                PI.put("vacas0", d);
+            });
+            piApuntar(piPunto(10, 1, 1.5));
+        });
+        // ---- fogueo: las vacas salen corriendo
+        paso("109_fogueo", 3, piTiro());
+        sin("pistola_fogueo_espera", 50, () -> {});
+        sin("pistola_fogueo_ver", 4, () -> piSrv(sp -> {
+            double d = 0;
+            for (var v : sp.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.animal.Cow.class, new net.minecraft.world.phys.AABB(piO).inflate(40)))
+                d += v.distanceTo(sp);
+            PI.put("vacas1", d);
+        }));
+        sin("pistola_fogueo_comprobar", 4, () -> {
+            double a = (Double) PI.getOrDefault("vacas0", 0.0), b = (Double) PI.getOrDefault("vacas1", 0.0);
+            piComprobar("fogueo: las vacas huyen", b > a + 3, String.format("distancia total de las vacas %.1f → %.1f", a, b));
+        });
+        // ---- recámara vacía y bala imán
+        sin("pistola_vacia", 10, () -> piDisparar());
+        sin("pistola_iman_poner", 10, () -> piSrv(sp -> {
+            ItemStack s = sp.getMainHandItem();
+            PI.put("vacio", java.util.Arrays.toString(com.miscelanea.armasfuego.pistola.Tambor.recamaras(s)) + " pos " + com.miscelanea.armasfuego.pistola.Tambor.pos(s));
+            com.miscelanea.armasfuego.pistola.Tambor.poner(s, 0, com.miscelanea.armasfuego.pistola.Carga.IMAN);
+            com.miscelanea.armasfuego.pistola.Tambor.poner(s, 1, com.miscelanea.armasfuego.pistola.Carga.FOGUEO);
+            var l = sp.serverLevel();
+            for (int i = 0; i < 3; i++) {
+                Vec3 q = piPunto(9 + i * 0.6, -2, 0.1);
+                var it = new net.minecraft.world.entity.item.ItemEntity(l, q.x, q.y, q.z, new ItemStack(i == 1 ? net.minecraft.world.item.Items.EMERALD : net.minecraft.world.item.Items.GOLD_INGOT, 2));
+                it.setDeltaMovement(Vec3.ZERO);
+                it.setPickUpDelay(0);
+                l.addFreshEntity(it);
+            }
+        }));
+        sin("pistola_iman_apuntar", 12, () -> {
+            piComprobar("la recámara vacía hace clic y el tambor vuelve a la primera", String.valueOf(PI.get("vacio")).equals("[0, 0, 0, 0, 0, 0] pos 0"), String.valueOf(PI.get("vacio")));
+            piApuntar(piPunto(9.6, -2, 0.05));
+        });
+        paso("110_iman", 6, piTiro());
+        sin("pistola_iman_espera", 50, () -> {});
+        sin("pistola_iman_ver", 4, () -> piSrv(sp -> {
+            int oro = 0;
+            for (ItemStack x : sp.getInventory().items) if (x.is(net.minecraft.world.item.Items.GOLD_INGOT) || x.is(net.minecraft.world.item.Items.EMERALD)) oro += x.getCount();
+            PI.put("iman", oro);
+        }));
+        sin("pistola_iman_comprobar", 4, () -> {
+            mc.player.setXRot(88);
+            mc.player.xRotO = 88;
+            piSrv(sp -> {
+                sp.removeAllEffects();
+                sp.setHealth(sp.getMaxHealth());
+                PI.put("vida_sien", sp.getHealth());
+            });
+            piComprobar("bala imán: lo tirado viene volando hacia ti", (Integer) PI.getOrDefault("iman", 0) >= 4, PI.get("iman") + " objetos recogidos de 6");
+        });
+        // ---- ruleta rusa a la sien con fogueo
+        paso("111_ruleta_sien", 4, piTiro());
+        sin("pistola_sien_ver", 6, () -> piSrv(sp -> PI.put("sien", sp.isAlive() && sp.getHealth() >= (Float) PI.getOrDefault("vida_sien", 20F)
+                && sp.hasEffect(net.minecraft.world.effect.MobEffects.CONFUSION))));
+        sin("pistola_sien_comprobar", 4, () -> {
+            boolean sien = Boolean.TRUE.equals(PI.get("sien"));
+            piSrv(sp -> {
+                sp.removeAllEffects();
+                for (int i = 1; i <= 3; i++) sp.getInventory().setItem(i, piRevolver(i));
+                sp.getMainHandItem().getOrCreateTag().putInt(com.miscelanea.armasfuego.pistola.Tambor.OXIDO, 3);
+                sp.getServer().overworld().setDayTime(6000);
+            });
+            piApuntar(piPunto(8, 2, 1.0));
+            piComprobar("ruleta a la sien con fogueo (vivo, mareado)", sien, String.valueOf(PI.get("sien")));
+        });
+        paso("112_oxidado", 10, () -> {});
+        // ---- encerar con panal y rascar con hacha (en la otra mano, agachado + clic derecho)
+        sin("pistola_panal", 4, () -> piSrv(sp -> sp.getInventory().offhand.set(0, new ItemStack(net.minecraft.world.item.Items.HONEYCOMB))));
+        sin("pistola_agachar2", 4, () -> mc.options.keyShift.setDown(true));
+        sin("pistola_encerar", 6, () -> piDisparar());
+        sin("pistola_encerado", 4, () -> piSrv(sp -> {
+            PI.put("cera", com.miscelanea.armasfuego.pistola.Tambor.encerado(sp.getMainHandItem()));
+            sp.getInventory().offhand.set(0, new ItemStack(net.minecraft.world.item.Items.IRON_AXE));
+        }));
+        sin("pistola_rascar1", 6, () -> piDisparar());
+        sin("pistola_rascar2", 6, () -> piDisparar());
+        sin("pistola_rascado", 4, () -> piSrv(sp -> {
+            ItemStack s = sp.getMainHandItem();
+            PI.put("rascado", "encerado " + com.miscelanea.armasfuego.pistola.Tambor.encerado(s) + ", óxido " + com.miscelanea.armasfuego.pistola.Tambor.oxido(s));
+        }));
+        sin("pistola_cera_comprobar", 4, () -> {
+            mc.options.keyShift.setDown(false);
+            piComprobar("panal: encera", Boolean.TRUE.equals(PI.get("cera")), String.valueOf(PI.get("cera")));
+            piComprobar("hacha: quita la cera y luego un paso de óxido", "encerado false, óxido 2".equals(PI.get("rascado")), String.valueOf(PI.get("rascado")));
+            piApuntar(piPunto(8, 0, 1.4));
+        });
+        paso("113_tercera_frente", 20, () -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT));
+        paso("114_tercera_espalda", 20, () -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK));
+        // ---- encantamientos en la mesa (lo que la mesa puede sacar para el revólver) y Abanico
+        sin("pistola_mesa", 4, () -> {
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            var rev = new ItemStack(com.miscelanea.registry.ModItems.REVOLVER.get());
+            java.util.Set<String> vistos = new java.util.TreeSet<>();
+            var rnd = net.minecraft.util.RandomSource.create(428);
+            for (int i = 0; i < 200; i++)
+                for (var e : net.minecraft.world.item.enchantment.EnchantmentHelper.selectEnchantment(rnd, rev, 5 + rnd.nextInt(26), false))
+                    vistos.add(net.minecraftforge.registries.ForgeRegistries.ENCHANTMENTS.getKey(e.enchantment).getPath() + " " + e.level);
+            boolean soloSuyos = vistos.stream().allMatch(x -> x.startsWith("revolver_"));
+            var ab = com.miscelanea.registry.ModEnchantments.REVOLVER_ABANICO.get();
+            var de = com.miscelanea.registry.ModEnchantments.REVOLVER_DESENFUNDE.get();
+            boolean incompatibles = !ab.isCompatibleWith(de) && !de.isCompatibleWith(ab);
+            boolean espada = com.miscelanea.registry.ModEnchantments.REVOLVER_CARAMBOLA.get().canEnchant(new ItemStack(net.minecraft.world.item.Items.DIAMOND_SWORD));
+            piComprobar("mesa de encantar: solo los suyos, Abanico y Desenfunde incompatibles, no valen para una espada",
+                    soloSuyos && vistos.size() >= 4 && incompatibles && !espada, vistos + ", incompatibles " + incompatibles + ", espada " + espada);
+            piSrv(sp -> {
+                ItemStack r = piRevolver(0, com.miscelanea.registry.ModEnchantments.REVOLVER_ABANICO, 1);
+                for (int i = 0; i < 6; i++) com.miscelanea.armasfuego.pistola.Tambor.poner(r, i, com.miscelanea.armasfuego.pistola.Carga.BALA);
+                sp.getInventory().setItem(0, r);
+                sp.getInventory().offhand.set(0, ItemStack.EMPTY);
+                var h = piHusk(sp);
+                if (h != null) h.setHealth(h.getMaxHealth());
+            });
+            piApuntar(piPunto(6, 0, 1.3));
+        });
+        sin("pistola_agachar3", 6, () -> mc.options.keyShift.setDown(true));
+        sin("pistola_abanico", 5, () -> piDisparar());
+        paso("115_abanico", 24, () -> {});
+        sin("pistola_abanico_ver", 4, () -> {
+            mc.options.keyShift.setDown(false);
+            piSrv(sp -> PI.put("abanico", com.miscelanea.armasfuego.pistola.Tambor.cargadas(sp.getMainHandItem())));
+        });
+        sin("pistola_abanico_comprobar", 4, () -> piComprobar("Abanico: vacía el tambor de golpe", Integer.valueOf(0).equals(PI.get("abanico")),
+                PI.get("abanico") + " balas quedan"));
+        // ---- duelo contra un forastero (jugador de mentira: no está en la lista de jugadores, así que se le da por código)
+        sin("pistola_duelo_poner", 6, () -> {
+            mc.gui.getChat().clearMessages(false);
+            piSrv(sp -> {
+                ItemStack r = piRevolver(0);
+                com.miscelanea.armasfuego.pistola.Tambor.poner(r, 0, com.miscelanea.armasfuego.pistola.Carga.FOGUEO);
+                sp.getInventory().setItem(0, r);
+                piForastero = net.minecraftforge.common.util.FakePlayerFactory.get(sp.serverLevel(),
+                        new com.mojang.authlib.GameProfile(UUID.nameUUIDFromBytes("Forastero".getBytes()), "Forastero"));
+                Vec3 q = piPunto(8, 0, 0);
+                piForastero.setPos(q.x, q.y, q.z);
+                com.miscelanea.armasfuego.pistola.Duelo.retar(piForastero, sp);
+                com.miscelanea.armasfuego.pistola.Duelo.ganadorPrueba = null;
+            });
+        });
+        paso("116_duelo_reto", 6, () -> {});
+        sin("pistola_duelo_acepta", 10, () -> piSrv(sp -> PI.put("acepta", com.miscelanea.armasfuego.pistola.Duelo.aceptarPrueba(sp))));
+        paso("117_duelo_cuenta", 4, () -> piComprobar("duelo: acepta el reto", Boolean.TRUE.equals(PI.get("acepta")), String.valueOf(PI.get("acepta"))));
+        sin("pistola_duelo_antes", 4, () -> piDisparar());
+        sin("pistola_duelo_antes_ver", 4, () -> piSrv(sp -> PI.put("antes", com.miscelanea.armasfuego.pistola.Tambor.pos(sp.getMainHandItem()) == 0
+                && com.miscelanea.armasfuego.pistola.Tambor.siguiente(sp.getMainHandItem()) == com.miscelanea.armasfuego.pistola.Carga.FOGUEO)));
+        sin("pistola_duelo_espera", 32, () -> piComprobar("duelo: antes del ¡YA! no dispara", Boolean.TRUE.equals(PI.get("antes")), String.valueOf(PI.get("antes"))));
+        paso("118_duelo_ya", 8, () -> {});
+        sin("pistola_duelo_tiro", 4, () -> piSrv(sp -> com.miscelanea.armasfuego.pistola.Duelo.impacto(sp, piForastero)));
+        paso("119_duelo_gana", 10, () -> piComprobar("duelo: gana el primero que da", mc.player.getGameProfile().getName().equals(com.miscelanea.armasfuego.pistola.Duelo.ganadorPrueba),
+                String.valueOf(com.miscelanea.armasfuego.pistola.Duelo.ganadorPrueba)));
+        // ---- la luz de la bengala se quita sola al apagarse
+        sin("pistola_apagar", 50, () -> piSrv(sp -> sp.serverLevel().getEntitiesOfClass(com.miscelanea.armasfuego.pistola.BengalaEntity.class,
+                new net.minecraft.world.phys.AABB(piO).inflate(60)).forEach(net.minecraft.world.entity.Entity::discard)));
+        sin("pistola_luces_ver", 4, () -> piSrv(sp -> {
+            int luces = 0;
+            for (var b : net.minecraft.core.BlockPos.betweenClosed(piO.offset(-24, -2, -24), piO.offset(24, 30, 24)))
+                if (sp.serverLevel().getBlockState(b).is(net.minecraft.world.level.block.Blocks.LIGHT)) luces++;
+            PI.put("luces", luces + " en el mundo, " + com.miscelanea.armasfuego.pistola.LucesTemporales.cuantas(sp.server) + " apuntadas");
+        }));
+        sin("pistola_fin", 6, () -> {
+            mc.options.keyShift.setDown(false);
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            piSrv(sp -> {
+                sp.setGameMode(GameType.CREATIVE);
+                sp.removeAllEffects();
+                sp.setHealth(sp.getMaxHealth());
+                var h = piHusk(sp);
+                if (h != null) h.discard();
+            });
+            Object e = piError();
+            piComprobar("la luz de la bengala se quita al apagarse", "0 en el mundo, 0 apuntadas".equals(PI.get("luces")), String.valueOf(PI.get("luces")));
+            if (e != null) throw new IllegalStateException("error en el servidor: " + e);
+        });
+    }
+
+    private static Runnable piTiro() {
+        return PruebaCI::piDisparar;
     }
 
     // ------------------------------------------------------------------ ecolocalización

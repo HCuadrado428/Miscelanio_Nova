@@ -89,5 +89,10 @@ public final class ModEntities {
             () -> EntityType.Builder.<com.miscelanea.bichos.BichoEntity>of(com.miscelanea.bichos.BichoEntity::new, MobCategory.AMBIENT)
                     .sized(0.35F, 0.3F).clientTrackingRange(6).build("bicho"));
 
+    // ---- Pistola (bengala del revólver: se ve de lejos)
+    public static final RegistryObject<EntityType<com.miscelanea.armasfuego.pistola.BengalaEntity>> REVOLVER_BENGALA = ENTITIES.register("revolver_bengala",
+            () -> EntityType.Builder.<com.miscelanea.armasfuego.pistola.BengalaEntity>of(com.miscelanea.armasfuego.pistola.BengalaEntity::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F).clientTrackingRange(16).updateInterval(2).fireImmune().build("revolver_bengala"));
+
     private ModEntities() {}
 }
