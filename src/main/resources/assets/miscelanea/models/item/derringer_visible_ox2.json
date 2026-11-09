@@ -7,7 +7,7 @@
  "base": {
   "parent": "miscelanea:item/armas3d/derringer_3d",
   "textures": {
-   "cobre": "miscelanea:item/armas3d/g_cobre_2"
+   "cobre": "miscelanea:item/armas3d/cobre_2"
   }
  },
  "perspectives": {
