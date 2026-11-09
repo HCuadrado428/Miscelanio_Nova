@@ -150,7 +150,8 @@ public final class Revolver {
         }
         switch (c) {
             case BALA, DARDO, IMAN -> {
-                int rebotes = EncantamientoRevolver.nivel(ModEnchantments.REVOLVER_CARAMBOLA, s);
+                // la bala imán se pega donde da (no rebota): con Carambola se iba rebotando lejos de lo tirado
+                int rebotes = c == Carga.IMAN ? 0 : EncantamientoRevolver.nivel(ModEnchantments.REVOLVER_CARAMBOLA, s);
                 Impacto im = trazar(l, p, p.getEyePosition(), dir, ALCANCE, rebotes, boca);
                 impactar(l, p, c, im, critico);
             }
@@ -309,8 +310,7 @@ public final class Revolver {
     /** Bala de fogueo: los animales de alrededor salen corriendo (como cuando les pegas, pero sin pegarles). */
     private static void asustar(ServerLevel l, ServerPlayer p) {
         for (PathfinderMob m : l.getEntitiesOfClass(PathfinderMob.class, p.getBoundingBox().inflate(20), e -> e instanceof Animal && e.isAlive())) {
-            Vec3 lejos = DefaultRandomPos.getPosAway(m, 16, 7, p.position());
-            if (lejos != null) m.getNavigation().moveTo(lejos.x, lejos.y, lejos.z, 2.0);
+            HuirDelTiro.asustar(m, p.position(), 100);   // 5 s corriendo lejos del tiro (antes los paseos le cambiaban el camino)
             if (m instanceof net.minecraft.world.entity.animal.horse.AbstractHorse h) h.makeMad();
         }
     }
@@ -505,6 +505,7 @@ public final class Revolver {
         VISTO.clear();
         ABANICO.clear();
         TIRONES.clear();
+        HuirDelTiro.limpiar();
     }
 
     static void olvidar(UUID id) {

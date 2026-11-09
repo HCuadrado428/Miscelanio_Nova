@@ -341,6 +341,7 @@ public final class PruebaCI {
         pistola();
         escopeta();
         rifle();
+        armas3d();
         sin("cerrar", 10, () -> {
             mc.setScreen(null);
             RESUMEN.add("  cara propia (la de su modelo) guardada: " + (CarasCliente.tiene(mc.player.getUUID()) ? "sí" : "NO"));
@@ -1513,6 +1514,118 @@ public final class PruebaCI {
             mc.options.keyJump.setDown(false);
             mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
             rifleSrv(sp -> sp.setGameMode(GameType.CREATIVE));
+        });
+    }
+
+    // ------------------------------------------------------------------ las tres armas en 3D (pasos 160-169)
+    /**
+     * Las tres armas de fuego en la mano con su modelo 3D: primera persona, tercera de frente y de espaldas, y el
+     * inventario con todas las armas (las cuatro fases del cobre) y sus municiones (que siguen siendo iconos 2D).
+     */
+    private static void armas3d() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("armas3d_preparar", 30, () -> {
+            mc.setScreen(null);
+            mc.options.hideGui = false;
+            mc.gui.getChat().clearMessages(false);
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            rifleSrv(sp -> {
+                var l = sp.serverLevel();
+                var mira = net.minecraft.core.Direction.fromYRot(sp.getYRot());
+                var lado = mira.getClockWise();
+                var o = sp.blockPosition();
+                var aire = net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
+                var suelo = net.minecraft.world.level.block.Blocks.GRASS_BLOCK.defaultBlockState();
+                for (var b : net.minecraft.core.BlockPos.betweenClosed(o.relative(lado, -8).relative(mira, -8).below(), o.relative(lado, 8).relative(mira, 12).above(6)))
+                    l.setBlock(b, b.getY() < o.getY() ? suelo : aire, 2);
+                // una pared de ladrillo lejos, para que el arma se vea sobre algo
+                for (int k = -8; k <= 8; k++)
+                    for (int y = 0; y <= 4; y++)
+                        l.setBlock(o.relative(mira, 12).relative(lado, k).above(y), net.minecraft.world.level.block.Blocks.BRICKS.defaultBlockState(), 2);
+                l.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, new net.minecraft.world.phys.AABB(o).inflate(20),
+                        e -> !(e instanceof net.minecraft.world.entity.player.Player)).forEach(net.minecraft.world.entity.Entity::discard);
+                sp.setGameMode(GameType.SURVIVAL);
+                sp.removeAllEffects();
+                sp.setHealth(sp.getMaxHealth());
+                sp.serverLevel().setDayTime(6000);
+                var inv = sp.getInventory();
+                inv.clearContent();
+                ItemStack rev = piRevolver(0);
+                for (int i = 0; i < 4; i++) com.miscelanea.armasfuego.pistola.Tambor.poner(rev, i, com.miscelanea.armasfuego.pistola.Carga.values()[1 + i % 5]);
+                ItemStack esc = new ItemStack(com.miscelanea.registry.ModItems.ESCOPETA_PRESION.get());
+                com.miscelanea.armasfuego.escopeta.Presion.ponerPresion(esc, 60);
+                inv.setItem(0, rev);
+                inv.setItem(1, esc);
+                inv.setItem(2, new ItemStack(com.miscelanea.registry.ModItems.RIFLE.get()));
+                // munición del revólver y del rifle en la barra
+                int k = 3;
+                for (var m : List.of(com.miscelanea.registry.ModItems.REVOLVER_BALA, com.miscelanea.registry.ModItems.REVOLVER_BENGALA,
+                        com.miscelanea.registry.ModItems.REVOLVER_DARDO, com.miscelanea.registry.ModItems.REVOLVER_FOGUEO,
+                        com.miscelanea.registry.ModItems.REVOLVER_IMAN, com.miscelanea.registry.ModItems.BALA_RIFLE))
+                    inv.setItem(k++, new ItemStack(m.get(), 12));
+                // en la mochila: las otras fases del cobre, el resto de la munición y los cartuchos
+                k = 9;
+                for (int o2 = 1; o2 < 4; o2++) {
+                    inv.setItem(k++, piRevolver(o2));
+                    ItemStack e = new ItemStack(com.miscelanea.registry.ModItems.ESCOPETA_PRESION.get());
+                    com.miscelanea.armasfuego.escopeta.Presion.ponerOxido(e, o2);
+                    com.miscelanea.armasfuego.escopeta.Presion.ponerPresion(e, 30 * o2);
+                    inv.setItem(k++, e);
+                    ItemStack r = new ItemStack(com.miscelanea.registry.ModItems.RIFLE.get());
+                    r.getOrCreateTag().putInt(com.miscelanea.armasfuego.rifle.Rifle.OXIDO, o2);
+                    inv.setItem(k++, r);
+                }
+                for (var m : List.of(com.miscelanea.registry.ModItems.BALA_TRAZADORA, com.miscelanea.registry.ModItems.BALA_CUERDA,
+                        com.miscelanea.registry.ModItems.CASQUILLO_RIFLE))
+                    inv.setItem(k++, new ItemStack(m.get(), 8));
+                for (var t : com.miscelanea.armasfuego.escopeta.TipoCartucho.values())
+                    inv.setItem(k++, new ItemStack(t.item(), 16));
+                inv.selected = 0;
+                sp.connection.send(new net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket(0));
+                sp.connection.teleport(o.getX() + 0.5, o.getY(), o.getZ() + 0.5, mira.toYRot(), 0F);
+            });
+        });
+        // los modelos de mano son 3D (forge:separate_transforms) y el del inventario es el icono plano
+        sin("armas3d_modelos", 4, () -> {
+            var ir = mc.getItemRenderer();
+            StringBuilder mal = new StringBuilder();
+            for (var it : List.of(com.miscelanea.registry.ModItems.REVOLVER, com.miscelanea.registry.ModItems.ESCOPETA_PRESION,
+                    com.miscelanea.registry.ModItems.RIFLE)) {
+                ItemStack st = new ItemStack(it.get());
+                var m = ir.getModel(st, mc.level, mc.player, 0);
+                var mano = m.applyTransform(net.minecraft.world.item.ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, new com.mojang.blaze3d.vertex.PoseStack(), false);
+                var gui = m.applyTransform(net.minecraft.world.item.ItemDisplayContext.GUI, new com.mojang.blaze3d.vertex.PoseStack(), false);
+                boolean ok = m.getClass().getName().contains("SeparateTransforms") && mano != gui;
+                String linea = it.getId().getPath() + ": " + m.getClass().getSimpleName() + (mano != gui ? " (mano 3D, inventario plano)" : " (MISMO MODELO EN MANO E INVENTARIO)");
+                RESUMEN.add("  armas 3D: " + linea);
+                if (!ok || m == ir.getItemModelShaper().getModelManager().getMissingModel()) mal.append(linea).append("; ");
+            }
+            if (mal.length() > 0) throw new IllegalStateException("modelos 3D de las armas: " + mal);
+        });
+        String[] nombres = {"revolver", "escopeta", "rifle"};
+        for (int i = 0; i < 3; i++) {
+            final int slot = i;
+            String n = nombres[i];
+            paso((160 + i * 3) + "_" + n + "_1p", 20, () -> {
+                mc.player.getInventory().selected = slot;
+                mc.player.setXRot(0F);
+                mc.player.xRotO = 0F;
+                mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            });
+            paso((161 + i * 3) + "_" + n + "_3p_frente", 15, () -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT));
+            paso((162 + i * 3) + "_" + n + "_3p_espalda", 15, () -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK));
+        }
+        paso("169_inventario_armas", 20, () -> {
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            mc.setScreen(new net.minecraft.client.gui.screens.inventory.InventoryScreen(mc.player));
+        });
+        sin("armas3d_fin", 5, () -> {
+            mc.setScreen(null);
+            mc.player.getInventory().selected = 0;
+            rifleSrv(sp -> {
+                sp.getInventory().clearContent();
+                sp.setGameMode(GameType.CREATIVE);
+            });
         });
     }
 

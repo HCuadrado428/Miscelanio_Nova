@@ -88,13 +88,17 @@ public final class PistolaCliente {
         for (int i = 0; i < Tambor.N; i++) {
             double r = Math.toRadians(angulo + i * 60);
             int x = (int) Math.round(Math.sin(r) * 6.0) - 2, y = (int) Math.round(-Math.cos(r) * 6.0) - 2;
-            g.fill(x, y, x + 4, y + 4, 0xFF2A1A12);
-            g.fill(x + 1, y + 1, x + 4, y + 4, 0xFF120C08);
+            // recámara vacía: un agujero negro con el borde oscuro
+            g.fill(x, y, x + 4, y + 4, 0xFF3A1E14);
+            g.fill(x + 1, y + 1, x + 3, y + 3, 0xFF0C0806);
             Carga c = Tambor.en(s, i);
             if (c == Carga.VACIA) continue;
-            g.fill(x, y, x + 4, y + 4, 0xFF000000 | oscuro(c.color));
-            g.fill(x, y, x + 3, y + 3, c.color);
-            g.fill(x, y, x + 1, y + 1, 0xFF000000 | claro(c.color));
+            // cargada: el culote de latón con el pistón del color de la munición en el centro
+            g.fill(x, y, x + 4, y + 4, 0xFF8A6114);
+            g.fill(x, y, x + 3, y + 3, 0xFFD9A92B);
+            g.fill(x, y, x + 1, y + 1, 0xFFFAE27C);
+            g.fill(x + 1, y + 1, x + 3, y + 3, 0xFF000000 | oscuro(c.color));
+            g.fill(x + 1, y + 1, x + 2, y + 2, c.color);
         }
         // la muesca de la que toca (o "?" si se ha girado)
         if (girado) {

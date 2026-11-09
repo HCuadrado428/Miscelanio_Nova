@@ -13,13 +13,13 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
 /**
- * El rifle en la mano: en tercera persona, con la mira puesta, se encara con las dos manos (como la ballesta
- * cargada); en primera persona, el arma se ladea al accionar el cerrojo y da un culatazo al disparar.
+ * El rifle en la mano: en tercera persona se encara con las dos manos (como la ballesta cargada); en primera persona, el arma se ladea al accionar el cerrojo y da un culatazo al disparar.
  */
 public class RifleManoCliente implements IClientItemExtensions {
     @Override
     public HumanoidModel.ArmPose getArmPose(LivingEntity e, InteractionHand mano, ItemStack s) {
-        if (e.isUsingItem() && e.getUseItem() == s) return HumanoidModel.ArmPose.CROSSBOW_HOLD;
+        // en la mano buena se lleva encarado con las dos manos (como la ballesta cargada), apunte o no
+        if (mano == InteractionHand.MAIN_HAND || e.isUsingItem() && e.getUseItem() == s) return HumanoidModel.ArmPose.CROSSBOW_HOLD;
         return null;
     }
 
