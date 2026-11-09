@@ -28,10 +28,5 @@ public final class ModEnchantments {
         return ENCHANTMENTS.register(modo.id(), () -> new ModoEnchantment(modo, ASPIRAFANTASMAS));
     }
 
-    static {
-        // los encantamientos estilo Enchancement (se registran en este mismo DeferredRegister)
-        com.miscelanea.encantos.Encantos.cargar();
-    }
-
     private ModEnchantments() {}
 }
