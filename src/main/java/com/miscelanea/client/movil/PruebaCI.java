@@ -2043,6 +2043,20 @@ public final class PruebaCI {
         mc.setCameraEntity(camaraFuera);
     }
 
+    /** Cámara aparte en {@code pos} mirando a {@code obj}. */
+    private static void a2VistaA(Vec3 obj, Vec3 pos) {
+        Minecraft mc = Minecraft.getInstance();
+        mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+        mc.options.hideGui = true;
+        Vec3 d = obj.subtract(pos);
+        float yRot = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
+        float xRot = (float) Math.toDegrees(-Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
+        camaraFuera = new net.minecraft.world.entity.decoration.ArmorStand(mc.level, pos.x, pos.y, pos.z);
+        camaraFuera.moveTo(pos.x, pos.y - camaraFuera.getEyeHeight(), pos.z, yRot, xRot);
+        camaraFuera.setYHeadRot(yRot);
+        mc.setCameraEntity(camaraFuera);
+    }
+
     private static void a2Camara1p() {
         Minecraft mc = Minecraft.getInstance();
         mc.setCameraEntity(mc.player);
@@ -2634,7 +2648,9 @@ public final class PruebaCI {
         });
         paso("274_gatling_oxidada", 14, () -> {
             a2Comprobar("la Gatling plantada se oxida y se encera con un panal", "true · óxido 3".equals(PI.get("g_cera")), String.valueOf(PI.get("g_cera")));
-            a2Vista(3.2, 2.2, 0.8);
+            // de cerca y de tres cuartos, mirando a la Gatling (no al jugador)
+            Vec3 g = a2Punto(2.5, 2, 0.55);
+            a2VistaA(g, a2Punto(0.6, 4.2, 1.6));
         });
         sin("a2c_gatling_fuera", 4, () -> {
             a2Camara1p();
