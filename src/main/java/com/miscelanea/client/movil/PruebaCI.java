@@ -1609,8 +1609,10 @@ public final class PruebaCI {
                 return;
             }
             g.getPersistentData().putBoolean("MiscelaneaSueltaSiOSi", true);
+            // al pegarle, a veces se descoloca (aparece unos bloques más allá): lo suyo se le cae donde estaba
+            var dondeEstaba = g.getBoundingBox();
             sp.attack(g);
-            var caido = l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, g.getBoundingBox().inflate(12), ie -> ie.getAge() < 40);
+            var caido = l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, dondeEstaba.inflate(12), ie -> ie.getAge() < 40);
             RESUMEN.add("  purgatorio, pegarle a Herobrine: logro " + com.miscelanea.purgatorio.eventos.Logros.tiene(sp, "herobrine") + ", se le cae "
                     + (caido.isEmpty() ? "NADA" : caido.get(0).getItem().getItem().toString()));
             if (caido.isEmpty()) RESUMEN.add("  FALLO: a Herobrine no se le ha caído nada");
