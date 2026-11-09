@@ -1187,6 +1187,7 @@ public final class PruebaCI {
 
     /** Dónde estaba antes de las pruebas del Purgatorio (al acabar se le devuelve ahí: lo de después se monta a su alrededor). */
     private static volatile Vec3 antesPurgatorio;
+    private static volatile long horaAntesPurgatorio = -1;
 
     private static void purgatorio() {
         Minecraft mc = Minecraft.getInstance();
@@ -1201,6 +1202,7 @@ public final class PruebaCI {
                 sp.getInventory().setItem(0, ItemStack.EMPTY);
                 if (srv.getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION) == null) RESUMEN.add("  FALLO: no existe la dimensión del Purgatorio");
                 antesPurgatorio = sp.position();
+                horaAntesPurgatorio = sp.serverLevel().getDayTime();
                 com.miscelanea.purgatorio.Purgatorio.entrar(sp, "purgatorio.miscelanea.vacio");
             });
         });
@@ -1709,6 +1711,9 @@ public final class PruebaCI {
                 // de vuelta a donde estaba antes del Purgatorio (al salir tras caerse se puede acabar en otro sitio, sin cargar)
                 if (antesPurgatorio != null && !com.miscelanea.purgatorio.Purgatorio.en(sp.level()))
                     sp.teleportTo(sp.serverLevel(), antesPurgatorio.x, antesPurgatorio.y, antesPurgatorio.z, sp.getYRot(), 0);
+                // y a la hora de entonces: las pruebas del Purgatorio son largas y, si se hace de noche, los zombis se cuelan en las de después
+                if (horaAntesPurgatorio >= 0) sp.serverLevel().setDayTime(horaAntesPurgatorio);
+                sp.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.monster.Monster.class, sp.getBoundingBox().inflate(64)).forEach(net.minecraft.world.entity.Entity::discard);
             });
         });
     }
