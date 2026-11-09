@@ -3,7 +3,7 @@ name: Compilar JAR
 on:
   push:
     # main = lo publicado; arreglos = 1.x.(y+1); novedades = 1.(x+1).0; version-2 = 2.0.0
-    branches: [main, arreglos, novedades, version-2, agente-armas]
+    branches: [main, arreglos, novedades, version-2]
   workflow_dispatch:
 
 permissions:
