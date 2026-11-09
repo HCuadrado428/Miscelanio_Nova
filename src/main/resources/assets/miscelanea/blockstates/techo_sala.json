@@ -1,0 +1,24 @@
+{
+ "variants": {
+  "": [
+   {
+    "model": "miscelanea:block/techo_sala",
+    "weight": 14
+   },
+   {
+    "model": "miscelanea:block/techo_sala",
+    "y": 90,
+    "weight": 14
+   },
+   {
+    "model": "miscelanea:block/techo_sala_mancha",
+    "weight": 1
+   },
+   {
+    "model": "miscelanea:block/techo_sala_mancha",
+    "y": 180,
+    "weight": 1
+   }
+  ]
+ }
+}

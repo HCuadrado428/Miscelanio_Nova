@@ -288,6 +288,12 @@ public final class ModItems {
     public static final RegistryObject<Item> SIN_TEXTURA = ITEMS.register("sin_textura", () -> new net.minecraft.world.item.BlockItem(ModBlocks.SIN_TEXTURA.get(), new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> MOQUETA_HOTEL = ITEMS.register("moqueta_hotel", () -> new net.minecraft.world.item.BlockItem(ModBlocks.MOQUETA_HOTEL.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> MOQUETA_RECREATIVA = ITEMS.register("moqueta_recreativa", () -> new net.minecraft.world.item.BlockItem(ModBlocks.MOQUETA_RECREATIVA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> SUELO_SALA = ITEMS.register("suelo_sala", () -> new net.minecraft.world.item.BlockItem(ModBlocks.SUELO_SALA.get(), new Item.Properties().rarity(Rarity.COMMON)));
+    public static final RegistryObject<Item> TECHO_SALA = ITEMS.register("techo_sala", () -> new net.minecraft.world.item.BlockItem(ModBlocks.TECHO_SALA.get(), new Item.Properties().rarity(Rarity.COMMON)));
+    public static final RegistryObject<Item> PARED_SALA = ITEMS.register("pared_sala", () -> new net.minecraft.world.item.BlockItem(ModBlocks.PARED_SALA.get(), new Item.Properties().rarity(Rarity.COMMON)));
+    public static final RegistryObject<Item> FLUORESCENTE = ITEMS.register("fluorescente", () -> new net.minecraft.world.item.BlockItem(ModBlocks.FLUORESCENTE.get(), new Item.Properties().rarity(Rarity.COMMON)));
+    public static final RegistryObject<Item> PAPEL_HOTEL = ITEMS.register("papel_hotel", () -> new net.minecraft.world.item.BlockItem(ModBlocks.PAPEL_HOTEL.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> TELE = ITEMS.register("tele_sin_senal", () -> new net.minecraft.world.item.BlockItem(ModBlocks.TELE.get(), new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> TREN_MONTANA = ITEMS.register("tren_montana", () -> new com.miscelanea.montana.TrenMontanaItem(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> PIZARRA_FERIA = ITEMS.register("pizarra_feria",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PIZARRA_FERIA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));

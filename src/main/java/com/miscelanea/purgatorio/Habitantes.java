@@ -17,19 +17,25 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Los habitantes del Purgatorio ({@link Purgado}): cuántos hay, dónde salen y qué oyen. Lo que oyen se mira cada 5 tics
  * por jugador: si habla por el chat de voz (Simple Voice Chat, si está), se le oye a 22 bloques; corriendo, a 12;
- * andando, a 4,5; agachado o quieto, nada. Como mucho hay {@link #MAX} cerca de cada jugador, y salen fuera de la
- * vista (a dos o tres chunks, dentro de la niebla).
+ * andando, a 4,5; agachado o quieto, nada. Cuántos hay lo dice la configuración ({@link PurgatorioConfig}: unos pocos
+ * cerca de cada jugador y un tope para todo el Purgatorio), y salen fuera de la vista (a dos o tres chunks, dentro de
+ * la niebla). No se guardan con el mundo: si no hay nadie cerca, desaparecen.
  */
 public final class Habitantes {
     private Habitantes() {}
 
-    static final int MAX = 2;
     /** Última vez (ms) que cada jugador habló por el chat de voz: lo apunta el plugin del voicechat, desde su hilo. */
     public static final Map<UUID, Long> HABLA = new ConcurrentHashMap<>();
     private static final Map<UUID, Vec3> ANTES = new ConcurrentHashMap<>();
 
     public static void habla(UUID u) {
         HABLA.put(u, System.currentTimeMillis());
+    }
+
+    /** Se olvida de un jugador (al salir del Purgatorio o del servidor): que no se queden apuntados para siempre. */
+    public static void olvidar(UUID u) {
+        HABLA.remove(u);
+        ANTES.remove(u);
     }
 
     static boolean hablando(UUID u) {
@@ -67,13 +73,21 @@ public final class Habitantes {
     /** Si hay pocos cerca, saca uno en el cruce de un chunk a dos o tres chunks (ya cargado y despejado). */
     static void poblar(ServerPlayer p) {
         ServerLevel l = p.serverLevel();
-        if (l.getEntitiesOfClass(Purgado.class, p.getBoundingBox().inflate(64)).size() >= MAX) return;
+        if (!PurgatorioConfig.activado()) return;
+        int max = PurgatorioConfig.habitantesPorJugador();
+        if (max <= 0 || l.getEntitiesOfClass(Purgado.class, p.getBoundingBox().inflate(64)).size() >= max) return;
+        if (cuantos(l) >= PurgatorioConfig.maxHabitantes()) return;
         var r = p.getRandom();
         int a = (r.nextBoolean() ? 1 : -1) * (2 + r.nextInt(2)), b = r.nextInt(7) - 3;
         int cx = (p.getBlockX() >> 4) + (r.nextBoolean() ? a : b), cz = (p.getBlockZ() >> 4) + (r.nextBoolean() ? b : a);
         if (Math.max(Math.abs(cx - (p.getBlockX() >> 4)), Math.abs(cz - (p.getBlockZ() >> 4))) < 2) return;
         BlockPos sitio = new BlockPos(cx * 16 + 8, PurgatorioGenerador.SUELO, cz * 16 + 8);
         aparecer(l, sitio, null);
+    }
+
+    /** Cuántos habitantes hay ahora en todo el Purgatorio (solo se mira cada 10 s por jugador, y si hay pocos cerca). */
+    public static int cuantos(ServerLevel l) {
+        return l.getEntities(ModEntities.PURGADO.get(), g -> g.isAlive()).size();
     }
 
     /** Pone uno en ese sitio (si está cargado y libre). Variante: la de la zona si es null. */

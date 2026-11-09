@@ -1,0 +1,10 @@
+{
+ "variants": {
+  "encendido=true": {
+   "model": "miscelanea:block/fluorescente"
+  },
+  "encendido=false": {
+   "model": "miscelanea:block/fluorescente_fundido"
+  }
+ }
+}

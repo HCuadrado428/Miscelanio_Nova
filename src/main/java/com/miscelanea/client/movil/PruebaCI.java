@@ -1170,9 +1170,19 @@ public final class PruebaCI {
             var l = srv.getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
             if (sp == null || l == null) return;
             com.miscelanea.purgatorio.Purgatorio.preparar(l, b);
+            // que ningún habitante que ande cerca le pille y le recoloque en mitad de la foto
+            for (var g : l.getEntitiesOfClass(com.miscelanea.purgatorio.Purgado.class, new net.minecraft.world.phys.AABB(b).inflate(96))) g.discard();
             sp.getPersistentData().getCompound(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG).putLong("miscelanea_purgatorio_t", l.getGameTime());
             sp.teleportTo(l, b.getX() + 0.5, b.getY(), b.getZ() + 0.5, yaw, pitch);
         });
+    }
+
+    /** Pone al jugador en "desde" (en el Purgatorio) mirando al centro del bloque "hacia". */
+    private static void irMirando(net.minecraft.core.BlockPos desde, net.minecraft.core.BlockPos hacia) {
+        double dx = hacia.getX() - desde.getX(), dz = hacia.getZ() - desde.getZ(), dy = hacia.getY() + 0.5 - (desde.getY() + 1.62);
+        float yaw = (float) Math.toDegrees(Math.atan2(-dx, dz));
+        float pitch = (float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx * dx + dz * dz)));
+        irA(desde, yaw, pitch);
     }
 
     private static void purgatorio() {
@@ -1192,7 +1202,8 @@ public final class PruebaCI {
         });
         sin("purgatorio_feria_ir", 140, () -> {
             if (!com.miscelanea.purgatorio.Purgatorio.en(mc.level)) throw new IllegalStateException("no ha entrado en el Purgatorio");
-            irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.FERIA), -35, 20);
+            // por la calle de en medio, mirando hacia el cruce (no pegado a la farola)
+            irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.FERIA).offset(0, 0, -6), 0, 6);
         });
         paso("40_purgatorio_feria", 30, () -> {});
         paso("41_purgatorio_feria_2", 30, () -> mc.player.setYRot(mc.player.getYRot() + 120));
@@ -1334,6 +1345,180 @@ public final class PruebaCI {
             boolean fuera = !com.miscelanea.purgatorio.Purgatorio.en(mc.level);
             RESUMEN.add("  purgatorio: ha salido por el agujero: " + (fuera ? "sí" : "NO") + " (y=" + (int) mc.player.getY() + ")");
             if (!fuera) RESUMEN.add("  AVISO: el agujero no le ha sacado");
+        });
+        purgatorio2();
+    }
+
+    /** El Purgatorio, segunda parte (2.0.0, repaso): rincones raros, costuras, salir de un muro, configuración y el aviso de mundo experimental. */
+    private static void purgatorio2() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("purgatorio2_entrar", 60, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp != null) com.miscelanea.purgatorio.Purgatorio.entrar(sp, null);
+            });
+        });
+        // los rincones raros: la silla de cara a la pared, la única máquina encendida, la caseta abierta y la tele sin señal
+        String[][] raros = {{"SALA", "4e_purgatorio_sala_silla"}, {"RECREATIVA", "4f_purgatorio_recreativa_una"},
+                {"FERIA", "4g_purgatorio_caseta_peluche"}, {"HOTEL", "4h_purgatorio_hotel_tele"}};
+        for (String[] r : raros) {
+            var zona = com.miscelanea.purgatorio.PurgatorioGenerador.Zona.valueOf(r[0]);
+            sin("ir_" + r[1], 50, () -> {
+                if (!com.miscelanea.purgatorio.Purgatorio.en(mc.level)) throw new IllegalStateException("no está en el Purgatorio");
+                var b = com.miscelanea.purgatorio.Purgatorio.buscarRaro(zona);
+                RESUMEN.add("  purgatorio, rincón raro de " + zona + ": " + (b == null ? "NINGUNO cerca" : b[0].toShortString()));
+                if (b == null) throw new IllegalStateException("no hay rincón raro de " + zona + " cerca del origen");
+                irMirando(b[0], b[1]);
+            });
+            paso(r[1], 50, () -> {
+                var b = com.miscelanea.purgatorio.Purgatorio.buscarRaro(zona);
+                var lp = mc.getSingleplayerServer().getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
+                String que = lp == null || b == null ? "?" : lp.getBlockState(b[1]).getBlock().getDescriptionId();
+                RESUMEN.add("  purgatorio, " + r[1] + ": mira a " + que + ", niebla " + String.format("%.1f", com.miscelanea.client.purgatorio.PurgatorioCliente.Niebla.distanciaActual())
+                        + ", ambiente " + com.miscelanea.client.purgatorio.PurgatorioCliente.Ambiente.sonando());
+                if (zona == com.miscelanea.purgatorio.PurgatorioGenerador.Zona.HOTEL && lp != null && !(lp.getBlockState(b[1]).getBlock() instanceof com.miscelanea.purgatorio.TeleBlock))
+                    throw new IllegalStateException("en la habitación de la tele no hay tele: " + lp.getBlockState(b[1]));
+                if (zona == com.miscelanea.purgatorio.PurgatorioGenerador.Zona.FERIA && lp != null && !(lp.getBlockState(b[1]).getBlock() instanceof com.miscelanea.feria.PelucheBlock))
+                    throw new IllegalStateException("en la caseta abierta no hay peluche: " + lp.getBlockState(b[1]));
+                // un susto ya, para ver que se programa y suena
+                com.miscelanea.client.purgatorio.PurgatorioCliente.Ambiente.sustoYa();
+            });
+        }
+        sin("purgatorio_sustos", 40, () -> RESUMEN.add("  purgatorio, tras los sustos: " + com.miscelanea.client.purgatorio.PurgatorioCliente.Ambiente.sonando()));
+        // costuras entre zonas: de la feria a una sala de espera, y el borde del Mundo sin Texturas
+        String[][] costuras = {{"FERIA", "SALA", "4i_purgatorio_costura_feria_sala"}, {"SIN_TEXTURA", "HOTEL", "4j_purgatorio_costura_sin_textura"},
+                {"FERIA", "SIN_TEXTURA", "4k_purgatorio_costura_feria_sin_textura"}};
+        for (String[] c : costuras) {
+            var a = com.miscelanea.purgatorio.PurgatorioGenerador.Zona.valueOf(c[0]);
+            var b = com.miscelanea.purgatorio.PurgatorioGenerador.Zona.valueOf(c[1]);
+            sin("ir_" + c[2], 50, () -> {
+                net.minecraft.core.BlockPos p = null;
+                for (int r = 0; r < 60 && p == null; r++)
+                    for (int cx = -r; cx <= r && p == null; cx++)
+                        for (int cz = -r; cz <= r && p == null; cz++)
+                            if (Math.max(Math.abs(cx), Math.abs(cz)) == r && com.miscelanea.purgatorio.PurgatorioGenerador.zona(cx, cz) == a
+                                    && com.miscelanea.purgatorio.PurgatorioGenerador.zona(cx + 1, cz) == b && !com.miscelanea.purgatorio.PurgatorioGenerador.salida(cx, cz))
+                                p = new net.minecraft.core.BlockPos(cx * 16 + 9, com.miscelanea.purgatorio.PurgatorioGenerador.SUELO, cz * 16 + 8);
+                RESUMEN.add("  purgatorio, costura " + a + " -> " + b + ": " + (p == null ? "NINGUNA cerca" : p.toShortString()));
+                if (p != null) irA(p, -90, 8);
+            });
+            paso(c[2], 40, () -> RESUMEN.add("  purgatorio, " + c[2] + ": niebla " + String.format("%.1f", com.miscelanea.client.purgatorio.PurgatorioCliente.Niebla.distanciaActual())
+                    + ", ambiente " + com.miscelanea.client.purgatorio.PurgatorioCliente.Ambiente.sonando()));
+        }
+        // la niebla cambia poco a poco al pasar de zona: de la feria (34) a la sala (24) no salta de golpe
+        sin("purgatorio_niebla_cruza", 3, () -> {
+            irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.SALA), 0, 0);
+            RESUMEN.add(String.format("  purgatorio, niebla antes de cruzar: %.1f", com.miscelanea.client.purgatorio.PurgatorioCliente.Niebla.distanciaActual()));
+        });
+        sin("purgatorio_niebla_cruza_2", 60, () -> RESUMEN.add(String.format("  purgatorio, niebla a los 3 tics de cruzar: %.1f (fundiéndose)",
+                com.miscelanea.client.purgatorio.PurgatorioCliente.Niebla.distanciaActual())));
+        sin("purgatorio_niebla_cruza_3", 2, () -> {
+            float d = com.miscelanea.client.purgatorio.PurgatorioCliente.Niebla.distanciaActual();
+            RESUMEN.add(String.format("  purgatorio, niebla a los 3 s: %.1f (sala: 24)", d));
+            if (Math.abs(d - 24) > 1.5F) throw new IllegalStateException("la niebla no ha llegado a la de la sala: " + d);
+        });
+        // habitantes: cuántos hay y que no pasan del tope
+        sin("purgatorio_cuantos", 2, () -> {
+            var srv = mc.getSingleplayerServer();
+            var lp = srv.getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION);
+            if (lp == null) return;
+            srv.execute(() -> {
+                int n = com.miscelanea.purgatorio.Habitantes.cuantos(lp);
+                RESUMEN.add("  purgatorio, habitantes ahora: " + n + " (tope por jugador " + com.miscelanea.purgatorio.PurgatorioConfig.habitantesPorJugador()
+                        + ", total " + com.miscelanea.purgatorio.PurgatorioConfig.maxHabitantes() + ")");
+            });
+        });
+        // salir después de colarse por un muro: no puede volver a quedar dentro del bloque
+        sin("purgatorio_muro", 40, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                com.miscelanea.purgatorio.Purgatorio.salir(sp);
+                var ow = sp.serverLevel();
+                var g = sp.blockPosition();
+                // un muro macizo de 3 x 4 x 3 donde está (como si se hubiera asfixiado dentro)
+                for (var q : net.minecraft.core.BlockPos.betweenClosed(g.offset(-1, 0, -1), g.offset(1, 3, 1)))
+                    ow.setBlockAndUpdate(q, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+                com.miscelanea.purgatorio.Purgatorio.entrar(sp, "purgatorio.miscelanea.noclip");
+            });
+        });
+        sin("purgatorio_muro_salir", 40, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp != null) com.miscelanea.purgatorio.Purgatorio.salir(sp);
+            });
+        });
+        sin("purgatorio_muro_fuera", 2, () -> {
+            var sp = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
+            if (sp == null) return;
+            var l = sp.serverLevel();
+            var pies = sp.blockPosition();
+            boolean libre = l.getBlockState(pies).getCollisionShape(l, pies).isEmpty() && l.getBlockState(pies.above()).getCollisionShape(l, pies.above()).isEmpty();
+            RESUMEN.add("  purgatorio, salir tras colarse por un muro: en " + l.dimension().location() + " " + pies.toShortString() + (libre ? " (fuera del muro)" : " DENTRO DEL MURO"));
+            if (com.miscelanea.purgatorio.Purgatorio.en(l)) throw new IllegalStateException("no ha salido del Purgatorio");
+            if (!libre) throw new IllegalStateException("ha salido dentro del muro");
+        });
+        // configuración: con el Purgatorio desactivado, a quien esté dentro se le saca
+        sin("purgatorio_config_entrar", 40, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp != null) com.miscelanea.purgatorio.Purgatorio.entrar(sp, null);
+            });
+        });
+        sin("purgatorio_config_apagar", 60, () -> {
+            RESUMEN.add("  purgatorio, configuración: activado=" + com.miscelanea.purgatorio.PurgatorioConfig.activado() + ", pared="
+                    + com.miscelanea.purgatorio.PurgatorioConfig.probabilidadPared() + ", vacío=" + com.miscelanea.purgatorio.PurgatorioConfig.entrarAlCaer()
+                    + ", dentro=" + com.miscelanea.purgatorio.Purgatorio.en(mc.level));
+            com.miscelanea.purgatorio.PurgatorioConfig.paraPrueba(false);
+        });
+        sin("purgatorio_config_fuera", 2, () -> {
+            boolean dentro = com.miscelanea.purgatorio.Purgatorio.en(mc.level);
+            com.miscelanea.purgatorio.PurgatorioConfig.paraPrueba(true);
+            RESUMEN.add("  purgatorio, desactivado: " + (dentro ? "SIGUE DENTRO" : "le ha sacado"));
+            if (dentro) throw new IllegalStateException("con el Purgatorio desactivado sigue dentro");
+        });
+        // el aviso de "configuración experimental" al crear un mundo (y que el del abrir está puesto)
+        sin("purgatorio_aviso_experimental", 5, () -> {
+            var c = net.minecraft.client.gui.screens.worldselection.WorldOpenFlows.class;
+            StringBuilder sb = new StringBuilder("  aviso experimental: ");
+            int puestos = 0;
+            for (var m : c.getDeclaredMethods())
+                if (m.getName().contains("sinAvisoAlCrear") || m.getName().contains("sinAvisoAlAbrir")) {
+                    puestos++;
+                    sb.append(m.getName()).append(' ');
+                }
+            boolean[] creado = {false};
+            boolean encontrado = false;
+            for (var m : c.getDeclaredMethods()) {
+                var t = m.getParameterTypes();
+                if (java.lang.reflect.Modifier.isStatic(m.getModifiers()) && t.length == 5 && t[0] == Minecraft.class && t[2] == com.mojang.serialization.Lifecycle.class
+                        && t[3] == Runnable.class && t[4] == boolean.class) {
+                    encontrado = true;
+                    try {
+                        m.setAccessible(true);
+                        m.invoke(null, mc, null, com.mojang.serialization.Lifecycle.experimental(), (Runnable) () -> creado[0] = true, false);
+                    } catch (Exception ex) {
+                        sb.append("(no se pudo llamar: ").append(ex).append(") ");
+                    }
+                }
+            }
+            var pantalla = mc.screen;
+            if (pantalla != null) {
+                sb.append("sale la pantalla ").append(pantalla.getClass().getSimpleName()).append(' ');
+                mc.setScreen(null);
+            }
+            sb.append(!encontrado ? "al crear: no se encuentra el método" : creado[0] ? "al crear: sin aviso" : "al crear: CON AVISO");
+            RESUMEN.add(sb.toString());
+            if (puestos < 2) throw new IllegalStateException("el mixin del aviso experimental no está puesto (" + puestos + " de 2)");
+            if (encontrado && !creado[0]) throw new IllegalStateException("al crear un mundo sale el aviso experimental");
         });
     }
 

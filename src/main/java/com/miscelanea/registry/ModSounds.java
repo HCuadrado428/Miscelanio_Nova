@@ -248,6 +248,7 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> PURGATORIO_HOTEL = register("purgatorio_hotel");
     public static final RegistryObject<SoundEvent> PURGADO_OYE = register("purgado_oye");
     public static final RegistryObject<SoundEvent> PURGADO_PURGA = register("purgado_purga");
+    public static final RegistryObject<SoundEvent> PURGATORIO_TELE = register("purgatorio_tele");
 
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name,

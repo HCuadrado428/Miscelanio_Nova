@@ -2777,5 +2777,12 @@
   "subtitles.miscelanea.purgado_oye": "Algo te ha oído",
   "subtitles.miscelanea.purgado_purga": "Te han purgado",
   "purgatorio.miscelanea.purgado": "Te ha encontrado. Ya no estás donde estabas.",
-  "block.miscelanea.moqueta_hotel": "Moqueta de hotel"
+  "block.miscelanea.moqueta_hotel": "Moqueta de hotel",
+  "block.miscelanea.suelo_sala": "Linóleo de sala de espera",
+  "block.miscelanea.techo_sala": "Placa de techo",
+  "block.miscelanea.pared_sala": "Pared de sala de espera",
+  "block.miscelanea.fluorescente": "Panel fluorescente",
+  "block.miscelanea.papel_hotel": "Papel pintado de hotel",
+  "block.miscelanea.tele_sin_senal": "Tele sin señal",
+  "subtitles.miscelanea.purgatorio_tele": "Tele sin señal"
 }

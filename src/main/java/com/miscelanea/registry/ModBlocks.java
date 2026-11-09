@@ -98,6 +98,23 @@ public final class ModBlocks {
     /** Moqueta de hexágonos del Hotel del Videoclip. Solo sale allí. */
     public static final RegistryObject<Block> MOQUETA_HOTEL = BLOCKS.register("moqueta_hotel",
             () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(0.8F).sound(SoundType.WOOL)));
+    /** Sala de Espera: suelo de linóleo, placas de techo, pared pintada y el panel de fluorescentes (encendido o fundido). */
+    public static final RegistryObject<Block> SUELO_SALA = BLOCKS.register("suelo_sala",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.SAND).strength(1.2F, 4.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> TECHO_SALA = BLOCKS.register("techo_sala",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).strength(0.6F).sound(SoundType.WOOL)));
+    public static final RegistryObject<Block> PARED_SALA = BLOCKS.register("pared_sala",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.QUARTZ).strength(1.2F, 4.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> FLUORESCENTE = BLOCKS.register("fluorescente",
+            () -> new com.miscelanea.purgatorio.FluorescenteBlock(BlockBehaviour.Properties.of().mapColor(MapColor.SNOW).strength(0.6F)
+                    .sound(SoundType.GLASS).lightLevel(st -> st.getValue(com.miscelanea.purgatorio.FluorescenteBlock.ENCENDIDO) ? 15 : 0)));
+    /** Papel pintado del Hotel del Videoclip (crema, con rayas y su dibujito). */
+    public static final RegistryObject<Block> PAPEL_HOTEL = BLOCKS.register("papel_hotel",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.SAND).strength(1.2F, 4.0F).sound(SoundType.WOOD)));
+    /** La tele de tubo sin señal de alguna habitación del hotel. */
+    public static final RegistryObject<Block> TELE = BLOCKS.register("tele_sin_senal",
+            () -> new com.miscelanea.purgatorio.TeleBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(1.0F)
+                    .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 9)));
     /** Recreativa fundida de la Recreativa Infinita (sin bloque-entidad: no se enciende ni suelta nada). */
     public static final RegistryObject<Block> RECREATIVA_APAGADA = BLOCKS.register("recreativa_apagada",
             () -> new com.miscelanea.purgatorio.RecreativaApagadaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE)

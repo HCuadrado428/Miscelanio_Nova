@@ -1,0 +1,14 @@
+{
+ "variants": {
+  "": [
+   {
+    "model": "miscelanea:block/pared_sala",
+    "weight": 40
+   },
+   {
+    "model": "miscelanea:block/pared_sala_marco",
+    "weight": 1
+   }
+  ]
+ }
+}

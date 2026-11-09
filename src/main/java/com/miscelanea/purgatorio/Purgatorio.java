@@ -15,6 +15,8 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -34,8 +36,6 @@ public final class Purgatorio {
 
     public static final ResourceKey<Level> DIMENSION = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(Miscelanea.MOD_ID, "purgatorio"));
     private static final String TAG = "miscelanea_purgatorio";
-    /** Probabilidad de colarse cada vez que hace daño estar dentro de un bloque (cada medio segundo). */
-    private static final float NOCLIP = 0.12F;
     /** Lo lejos (en chunks) que se puede aparecer del centro. */
     private static final int RADIO = 120;
 
@@ -58,7 +58,7 @@ public final class Purgatorio {
     @SubscribeEvent
     public static void danio(LivingAttackEvent e) {
         if (!(e.getEntity() instanceof ServerPlayer p) || en(p.level())) return;
-        if (e.getSource().is(DamageTypes.IN_WALL) && p.getRandom().nextFloat() < NOCLIP) {
+        if (e.getSource().is(DamageTypes.IN_WALL) && PurgatorioConfig.activado() && p.getRandom().nextFloat() < PurgatorioConfig.probabilidadPared()) {
             e.setCanceled(true);
             entrar(p, "purgatorio.miscelanea.noclip");
         }
@@ -69,6 +69,11 @@ public final class Purgatorio {
         if (e.phase != TickEvent.Phase.END || !(e.player instanceof ServerPlayer p) || p.isSpectator()) return;
         Level l = p.level();
         if (en(l)) {
+            // con el Purgatorio desactivado en la configuración, a quien esté dentro se le saca
+            if (p.tickCount % 20 == 0 && !PurgatorioConfig.activado()) {
+                salir(p);
+                return;
+            }
             Habitantes.tick(p);
             // la puerta de salida también se mira aquí (si el jugador no se mueve, el bloque no se entera)
             if (p.tickCount % 5 == 0) {
@@ -86,7 +91,10 @@ public final class Purgatorio {
                 long ahora = l2.getGameTime();
                 boolean recien = ahora - persistente(p).getLong(TAG + "_t") < 400;
                 // por los agujeros del Mundo sin Texturas se cae fuera del Purgatorio: de vuelta a casa
-                if (!recien && PurgatorioGenerador.zona(p.getBlockX() >> 4, p.getBlockZ() >> 4) == PurgatorioGenerador.Zona.SIN_TEXTURA) {
+                // (también nada más llegar: si encima hay un agujero de verdad, no es que el suelo no hubiera cargado)
+                boolean agujero = l.getBlockState(new BlockPos(p.getBlockX(), PurgatorioGenerador.SUELO - 1, p.getBlockZ())).isAir()
+                        && l.getBlockState(new BlockPos(p.getBlockX(), PurgatorioGenerador.SUELO - 2, p.getBlockZ())).isAir();
+                if ((!recien || agujero) && PurgatorioGenerador.zona(p.getBlockX() >> 4, p.getBlockZ() >> 4) == PurgatorioGenerador.Zona.SIN_TEXTURA) {
                     salir(p);
                     return;
                 }
@@ -99,8 +107,15 @@ public final class Purgatorio {
             }
             return;
         }
-        if (l.dimension() == Level.OVERWORLD && p.getY() < l.getMinBuildHeight() - 40 && !p.getAbilities().flying)
+        if (l.dimension() == Level.OVERWORLD && p.getY() < l.getMinBuildHeight() - 40 && !p.getAbilities().flying
+                && PurgatorioConfig.activado() && PurgatorioConfig.entrarAlCaer())
             entrar(p, "purgatorio.miscelanea.vacio");
+    }
+
+    /** Al irse del servidor se olvida lo que se sabía de él (para no ir guardando jugadores que ya no están). */
+    @SubscribeEvent
+    public static void fuera(PlayerEvent.PlayerLoggedOutEvent e) {
+        Habitantes.olvidar(e.getEntity().getUUID());
     }
 
     /** Lleva al jugador al Purgatorio (guardando de dónde viene). */
@@ -116,7 +131,8 @@ public final class Purgatorio {
             vuelta.putDouble("Z", p.getZ());
         }
         persistente(p).put(TAG, vuelta);
-        if (p.isPassenger()) com.miscelanea.montana.MontanaEventos.bajarSiOSi(p);
+        soltar(p);
+        Habitantes.olvidar(p.getUUID());
         BlockPos b = sitio(p, PurgatorioGenerador.SUELO);
         preparar(dest, b);
         persistente(p).putLong(TAG + "_t", dest.getGameTime());
@@ -128,35 +144,90 @@ public final class Purgatorio {
         Miscelanea.LOGGER.debug("Purgatorio: entra {} en {}", p.getGameProfile().getName(), b);
     }
 
-    /** Sale por una puerta de SALIDA: a donde estaba (o a su cama / el punto de aparición). */
+    /**
+     * Sale por una puerta de SALIDA (o por un agujero): a donde estaba. Si se coló por una pared, al hueco libre más
+     * cercano (no otra vez dentro del bloque); si se cayó al vacío, a su cama o al punto de aparición del mundo.
+     */
     public static void salir(ServerPlayer p) {
         if (!en(p.level())) return;
         CompoundTag datos = persistente(p);
         CompoundTag v = datos.getCompound(TAG);
         datos.remove(TAG);
         ServerLevel dest = null;
-        BlockPos b = null;
+        Vec3 b = null;
         ResourceLocation rl = ResourceLocation.tryParse(v.getString("Dim"));
         if (rl != null) dest = p.server.getLevel(ResourceKey.create(Registries.DIMENSION, rl));
         if (dest == null || dest.dimension() == DIMENSION) dest = p.server.overworld();
         if (v.contains("X")) {
             BlockPos g = BlockPos.containing(v.getDouble("X"), v.getDouble("Y"), v.getDouble("Z"));
-            // si se coló por una pared, sale encima de ella (no otra vez dentro)
-            b = dest.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, g);
-            if (!dest.dimensionType().hasCeiling() || b.getY() <= g.getY() + 2) {
-                if (dest.getBlockState(g).isAir() && dest.getBlockState(g.above()).isAir()) b = g;
-            } else b = g.above();
+            BlockPos h = hueco(dest, g);
+            if (h == null && !dest.dimensionType().hasCeiling()) h = dest.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, g);
+            if (h != null) b = Vec3.atBottomCenterOf(h);
         }
         if (b == null) {
-            BlockPos s = p.getRespawnPosition() != null && p.getRespawnDimension() == dest.dimension() ? p.getRespawnPosition() : dest.getSharedSpawnPos();
-            b = dest.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, s);
+            // a su cama (o ancla) si la tiene, como al reaparecer, pero sin gastar la carga del ancla
+            ServerLevel cama = p.server.getLevel(p.getRespawnDimension());
+            BlockPos rp = p.getRespawnPosition();
+            if (cama != null && rp != null && !cama.dimension().equals(DIMENSION)) {
+                var o = Player.findRespawnPositionAndUseSpawnBlock(cama, rp, p.getRespawnAngle(), p.isRespawnForced(), true);
+                if (o.isPresent()) {
+                    dest = cama;
+                    b = o.get();
+                }
+            }
         }
+        if (b == null) {
+            dest = p.server.overworld();
+            b = Vec3.atBottomCenterOf(dest.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, dest.getSharedSpawnPos()));
+        }
+        soltar(p);
+        Habitantes.olvidar(p.getUUID());
         p.fallDistance = 0;
         p.setDeltaMovement(0, 0, 0);
-        p.teleportTo(dest, b.getX() + 0.5, b.getY(), b.getZ() + 0.5, p.getYRot(), p.getXRot());
-        dest.playSound(null, b, SoundEvents.BEACON_ACTIVATE, SoundSource.AMBIENT, 1F, 1.4F);
+        p.teleportTo(dest, b.x, b.y, b.z, p.getYRot(), p.getXRot());
+        dest.playSound(null, b.x, b.y, b.z, SoundEvents.BEACON_ACTIVATE, SoundSource.AMBIENT, 1F, 1.4F);
         p.displayClientMessage(Component.translatable("purgatorio.miscelanea.salida"), true);
-        Miscelanea.LOGGER.info("Purgatorio: sale {} a {} {}", p.getGameProfile().getName(), dest.dimension().location(), b);
+        Miscelanea.LOGGER.info("Purgatorio: sale {} a {} {}", p.getGameProfile().getName(), dest.dimension().location(), BlockPos.containing(b));
+    }
+
+    /** Le baja de lo que lleve montado (también del tren de la montaña rusa) y le quita lo que lleve encima. */
+    static void soltar(ServerPlayer p) {
+        if (p.isPassenger()) com.miscelanea.montana.MontanaEventos.bajarSiOSi(p);
+        if (p.isVehicle()) p.ejectPassengers();
+        if (p.isSleeping()) p.stopSleeping();
+    }
+
+    /**
+     * El hueco de dos de alto más cercano a g donde se pueda estar (sin chocar con nada, sin lava ni fuego), mejor con
+     * suelo debajo: primero en la misma columna (arriba antes que abajo) y luego en anillos de hasta 3 bloques.
+     */
+    @Nullable
+    public static BlockPos hueco(ServerLevel l, BlockPos g) {
+        int[] dys = {0, 1, -1, 2, -2, 3, 4, -3, 5, 6, -4, 7, 8};
+        BlockPos sinSuelo = null;
+        BlockPos.MutableBlockPos q = new BlockPos.MutableBlockPos();
+        for (int r = 0; r <= 3; r++)
+            for (int dx = -r; dx <= r; dx++)
+                for (int dz = -r; dz <= r; dz++) {
+                    if (Math.max(Math.abs(dx), Math.abs(dz)) != r) continue;
+                    for (int dy : dys) {
+                        q.set(g.getX() + dx, g.getY() + dy, g.getZ() + dz);
+                        if (q.getY() <= l.getMinBuildHeight() || q.getY() + 1 >= l.getMaxBuildHeight()) continue;
+                        if (!cabe(l, q) || !cabe(l, q.above())) continue;
+                        BlockPos abajo = q.below();
+                        if (!l.getBlockState(abajo).getCollisionShape(l, abajo).isEmpty()) return q.immutable();
+                        if (sinSuelo == null) sinSuelo = q.immutable();
+                    }
+                }
+        return sinSuelo;
+    }
+
+    private static boolean cabe(ServerLevel l, BlockPos q) {
+        var s = l.getBlockState(q);
+        return s.getCollisionShape(l, q).isEmpty() && !l.getFluidState(q).is(net.minecraft.tags.FluidTags.LAVA)
+                && !s.is(net.minecraft.tags.BlockTags.FIRE) && !s.is(net.minecraft.world.level.block.Blocks.POWDER_SNOW)
+                && !s.is(net.minecraft.world.level.block.Blocks.SWEET_BERRY_BUSH) && !s.is(net.minecraft.world.level.block.Blocks.CACTUS)
+                && !s.is(net.minecraft.world.level.block.Blocks.COBWEB);
     }
 
     /** Lo lleva a otra parte del Purgatorio (cuando le pilla un habitante). */
@@ -166,6 +237,8 @@ public final class Purgatorio {
         BlockPos b = sitio(p, PurgatorioGenerador.SUELO);
         preparar(l, b);
         persistente(p).putLong(TAG + "_t", l.getGameTime());
+        soltar(p);
+        Habitantes.olvidar(p.getUUID());
         p.fallDistance = 0;
         p.setDeltaMovement(0, 0, 0);
         p.teleportTo(l, b.getX() + 0.5, b.getY(), b.getZ() + 0.5, p.getYRot(), 0);
@@ -193,6 +266,46 @@ public final class Purgatorio {
                     if (Math.max(Math.abs(cx), Math.abs(cz)) == r && PurgatorioGenerador.zona(cx, cz) == z && !PurgatorioGenerador.salida(cx, cz))
                         return new BlockPos(cx * 16 + 8, PurgatorioGenerador.SUELO, cz * 16 + 8);
         return new BlockPos(8, PurgatorioGenerador.SUELO, 8);
+    }
+
+    /**
+     * Para la prueba: el rincón raro de esa zona más cercano al origen: {dónde ponerse, adónde mirar} (o null). Sala: la
+     * silla de cara a la pared; recreativa: la única máquina encendida; feria: la caseta abierta con el peluche; hotel:
+     * la habitación de la tele.
+     */
+    @Nullable
+    public static BlockPos[] buscarRaro(PurgatorioGenerador.Zona z) {
+        int f = PurgatorioGenerador.SUELO;
+        int[][] q = {{0, 0}, {9, 0}, {0, 9}, {9, 9}};
+        for (int r = 0; r < 80; r++)
+            for (int cx = -r; cx <= r; cx++)
+                for (int cz = -r; cz <= r; cz++) {
+                    if (Math.max(Math.abs(cx), Math.abs(cz)) != r || PurgatorioGenerador.zona(cx, cz) != z) continue;
+                    int k = PurgatorioGenerador.raro(cx, cz);
+                    if (k < 0) continue;
+                    int bx = cx * 16, bz = cz * 16;
+                    switch (z) {
+                        case SALA -> {
+                            return new BlockPos[]{new BlockPos(bx + 12, f, bz + 6), new BlockPos(bx + 12, f, bz + 1)};
+                        }
+                        case RECREATIVA -> {
+                            return new BlockPos[]{new BlockPos(bx + 11, f, bz + 6), new BlockPos(bx + 11, f + 1, bz + 11)};
+                        }
+                        case FERIA -> {
+                            boolean norte = q[k][1] == 0;
+                            return new BlockPos[]{new BlockPos(bx + q[k][0] + 3, f, bz + (norte ? 9 : 6)), new BlockPos(bx + q[k][0] + 3, f + 1, bz + (norte ? 5 : 10))};
+                        }
+                        case HOTEL -> {
+                            int x0 = q[k][0], z0 = q[k][1], sx = x0 == 0 ? 1 : -1, dz = z0 == 0 ? 1 : -1;
+                            int xa = x0 == 0 ? 1 : 14, zc = z0 == 0 ? 1 : 14;
+                            return new BlockPos[]{new BlockPos(bx + xa + 2 * sx, f, bz + zc + 2 * dz), new BlockPos(bx + xa, f + 1, bz + zc + 3 * dz)};
+                        }
+                        default -> {
+                            return null;
+                        }
+                    }
+                }
+        return null;
     }
 
     /** Para la prueba: el agujero del Mundo sin Texturas más cercano al origen (su centro, a la altura del suelo). */

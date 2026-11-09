@@ -2777,5 +2777,12 @@
   "subtitles.miscelanea.purgado_oye": "Something heard you",
   "subtitles.miscelanea.purgado_purga": "You got purged",
   "purgatorio.miscelanea.purgado": "It found you. You are no longer where you were.",
-  "block.miscelanea.moqueta_hotel": "Hotel Carpet"
+  "block.miscelanea.moqueta_hotel": "Hotel Carpet",
+  "block.miscelanea.suelo_sala": "Waiting Room Linoleum",
+  "block.miscelanea.techo_sala": "Ceiling Tile",
+  "block.miscelanea.pared_sala": "Waiting Room Wall",
+  "block.miscelanea.fluorescente": "Fluorescent Panel",
+  "block.miscelanea.papel_hotel": "Hotel Wallpaper",
+  "block.miscelanea.tele_sin_senal": "No-Signal TV",
+  "subtitles.miscelanea.purgatorio_tele": "TV static"
 }

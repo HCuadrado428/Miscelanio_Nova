@@ -84,6 +84,54 @@ public class PurgatorioGenerador extends ChunkGenerator {
         return h(cx, cz, 7) % 60 == 0;
     }
 
+    // ------------------------------------------------------------------ rincones raros (de vez en cuando)
+    /** Sala de Espera vacía y a oscuras, con una sola silla de cara a la pared (una de cada 23). */
+    public static boolean salaRara(int cx, int cz) {
+        return h(cx, cz, 140) % 23 == 0 && !salida(cx, cz);
+    }
+
+    /** Salón recreativo vacío y a oscuras con una sola máquina encendida (uno de cada 15). */
+    public static boolean recreativaRara(int cx, int cz) {
+        return h(cx, cz, 141) % 15 == 0 && !salida(cx, cz);
+    }
+
+    /** La caseta abierta de la feria, con la luz encendida y un peluche (si en la parcela k hay caseta: una de cada 11). */
+    public static boolean casetaAbierta(int cx, int cz, int k) {
+        return h(cx, cz, 150 + k) % 11 == 0;
+    }
+
+    /** La habitación del hotel con la tele encendida sin señal y la puerta entornada (una de cada 8). */
+    public static boolean habitacionTele(int cx, int cz, int k) {
+        return h(cx, cz, 160 + k) % 8 == 0;
+    }
+
+    /**
+     * Para la prueba: lo raro que hay en el chunk (si es de esa zona). -1 = nada; 0-3 = la parcela (caseta abierta o
+     * habitación de la tele); 4 = el chunk entero (sala de la silla, salón de una máquina).
+     */
+    public static int raro(int cx, int cz) {
+        boolean s = salida(cx, cz);
+        switch (zona(cx, cz)) {
+            case SALA -> {
+                return salaRara(cx, cz) ? 4 : -1;
+            }
+            case RECREATIVA -> {
+                return recreativaRara(cx, cz) ? 4 : -1;
+            }
+            case FERIA -> {
+                for (int k = 0; k < 4; k++)
+                    if (!(s && k == 0) && h(cx, cz, 20 + k) % 10 < 4 && casetaAbierta(cx, cz, k)) return k;
+            }
+            case HOTEL -> {
+                for (int k = 0; k < 4; k++)
+                    if (!(s && k == 0) && habitacionTele(cx, cz, k)) return k;
+            }
+            default -> {
+            }
+        }
+        return -1;
+    }
+
     // ------------------------------------------------------------------ escribir el chunk
     private static final class Lienzo {
         final ChunkAccess c;
@@ -102,6 +150,18 @@ public class PurgatorioGenerador extends ChunkGenerator {
             c.setBlockState(p.set(c.getPos().getMinBlockX() + x, y, c.getPos().getMinBlockZ() + z), s, false);
             a.update(x, y, z, s);
             b.update(x, y, z, s);
+        }
+
+        /** ¿Hay aire ahí? (fuera del chunk: no). */
+        boolean libre(int x, int y, int z) {
+            if (x < 0 || x > 15 || z < 0 || z > 15) return false;
+            return c.getBlockState(p.set(c.getPos().getMinBlockX() + x, y, c.getPos().getMinBlockZ() + z)).isAir();
+        }
+
+        /** Lo pone solo si no hay aire (para "descargar" algo que ya está, sin dejar bloques sueltos en el aire). */
+        void cambiar(int x, int y, int z, BlockState s) {
+            if (x < 0 || x > 15 || z < 0 || z > 15 || libre(x, y, z)) return;
+            pon(x, y, z, s);
         }
 
         void caja(int x0, int y0, int z0, int x1, int y1, int z1, BlockState s) {
@@ -128,6 +188,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
             default -> sinTextura(l, cx, cz);
         }
         if (salida(cx, cz)) puertaSalida(l, z);
+        contagio(l, cx, cz, z);
         return CompletableFuture.completedFuture(c);
     }
 
@@ -155,7 +216,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
             if (salida(cx, cz) && k == 0) continue;        // ahí va la puerta
             int tipo = (int) (h(cx, cz, 20 + k) % 10);
             boolean norte = qz == 0;
-            if (tipo < 4) caseta(l, qx, norte, (int) (h(cx, cz, 30 + k) % 4));
+            if (tipo < 4) caseta(l, qx, norte, (int) (h(cx, cz, 30 + k) % 4), casetaAbierta(cx, cz, k));
             else if (tipo < 6) banco(l, qx, qz, norte);
             else if (tipo == 6) tiovivo(l, qx, qz);
             else if (tipo == 7) taquilla(l, qx, qz);
@@ -173,7 +234,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
     }
 
     /** Caseta de feria cerrada: lona a rayas en el tejado y la cortina echada en el mostrador. */
-    private static void caseta(Lienzo l, int qx, boolean norte, int color) {
+    private static void caseta(Lienzo l, int qx, boolean norte, int color, boolean abierta) {
         int f = SUELO;
         Block[] lona = {Blocks.RED_WOOL, Blocks.BLUE_WOOL, Blocks.YELLOW_WOOL, Blocks.GREEN_WOOL};
         Block[] cortina = {Blocks.RED_CONCRETE, Blocks.BLUE_CONCRETE, Blocks.ORANGE_CONCRETE, Blocks.LIME_CONCRETE};
@@ -197,8 +258,21 @@ public class PurgatorioGenerador extends ChunkGenerator {
         for (int x = x0; x <= x1; x++)
             for (int z = zf; z != zd + 2 * paso; z += paso) l.pon(x, f + 3, z, d((x & 1) == 0 ? lona[color] : Blocks.WHITE_WOOL));
         // una bombilla de feria apagada en cada esquina del toldo
-        l.pon(x0, f + 2, zd + paso, d(Blocks.REDSTONE_LAMP));
-        l.pon(x1, f + 2, zd + paso, d(Blocks.REDSTONE_LAMP));
+        BlockState bombilla = d(Blocks.REDSTONE_LAMP).setValue(net.minecraft.world.level.block.RedstoneLampBlock.LIT, abierta);
+        l.pon(x0, f + 2, zd + paso, bombilla);
+        l.pon(x1, f + 2, zd + paso, bombilla);
+        if (abierta) {
+            // la única abierta de la feria: la cortina subida, la luz de dentro encendida y un peluche en el mostrador,
+            // mirando a la calle (nadie lo ha ganado)
+            for (int x = x0 + 1; x < x1; x++) {
+                l.pon(x, f + 1, zd, d(Blocks.AIR));
+                l.pon(x, f + 2, zd, d(Blocks.AIR));
+            }
+            l.pon(x0 + 2, f + 1, zd, com.miscelanea.registry.ModBlocks.PELUCHE.get().defaultBlockState()
+                    .setValue(com.miscelanea.feria.PelucheBlock.FACING, norte ? Direction.SOUTH : Direction.NORTH)
+                    .setValue(com.miscelanea.feria.PelucheBlock.COLOR, qx == 0 ? 1 : 3));
+            l.pon(x0 + 3, f + 2, zd - 2 * paso, Blocks.LANTERN.defaultBlockState().setValue(LanternBlock.HANGING, true));
+        }
     }
 
     private static void banco(Lienzo l, int qx, int qz, boolean norte) {
@@ -241,7 +315,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
         for (int i = 0; i < n; i++) {
             long s = h((int) r, i, 77);
             int x = qx + (int) (s % 7), z = qz + (int) ((s >> 8) % 7);
-            if (x == 6 && z == 6) continue;
+            if (x == 6 && z == 6 || !l.libre(x, SUELO, z)) continue;   // solo en el suelo libre (no dentro de una caseta)
             l.pon(x, SUELO, z, d(b[(int) ((s >> 16) % b.length)]));
         }
     }
@@ -253,47 +327,69 @@ public class PurgatorioGenerador extends ChunkGenerator {
      */
     private static void sala(Lienzo l, int cx, int cz) {
         int f = SUELO, techo = SUELO + 4;
+        // de vez en cuando, una sala vacía a oscuras con una sola silla, de cara a la pared, y una luz encima
+        boolean rara = salaRara(cx, cz);
+        BlockState suelo = com.miscelanea.registry.ModBlocks.SUELO_SALA.get().defaultBlockState();
+        BlockState placa = com.miscelanea.registry.ModBlocks.TECHO_SALA.get().defaultBlockState();
+        BlockState luz = com.miscelanea.registry.ModBlocks.FLUORESCENTE.get().defaultBlockState();
         for (int x = 0; x < 16; x++)
             for (int z = 0; z < 16; z++) {
-                l.pon(x, f - 1, z, d(((x >> 1) + (z >> 1) & 1) == 0 ? Blocks.WHITE_CONCRETE : Blocks.LIGHT_GRAY_CONCRETE));
+                l.pon(x, f - 1, z, suelo);
                 l.pon(x, f - 2, z, d(Blocks.STONE));
-                boolean luz = x % 5 == 2 && z % 5 == 2 && h(cx * 16 + x, cz * 16 + z, 3) % 5 != 0;
-                l.pon(x, techo, z, d(luz ? Blocks.SEA_LANTERN : Blocks.SMOOTH_QUARTZ));
+                boolean panel = x % 5 == 2 && z % 5 == 2;
+                boolean encendido = rara ? x == 12 && z == 2 : h(cx * 16 + x, cz * 16 + z, 3) % 5 != 0;
+                l.pon(x, techo, z, panel ? luz.setValue(FluorescenteBlock.ENCENDIDO, encendido) : placa);
             }
-        // sillas en filas mirando al norte, con pasillo en medio
-        int filas = (int) (h(cx, cz, 4) % 3);
-        if (filas > 0)
-            for (int zr : new int[]{3, 11})
-                for (int x = 1; x < 15; x++) {
-                    if (x == 7 || x == 8) continue;
-                    l.pon(x, f, zr, Blocks.QUARTZ_STAIRS.defaultBlockState().setValue(StairBlock.FACING, Direction.SOUTH));
-                    if (filas == 2) l.pon(x, f, zr + 2, Blocks.QUARTZ_STAIRS.defaultBlockState().setValue(StairBlock.FACING, Direction.SOUTH));
-                }
-        else {
-            // un mostrador de "turnos" con su planta
-            l.caja(5, f, 6, 10, f, 6, d(Blocks.SMOOTH_QUARTZ));
-            l.pon(5, f + 1, 6, d(Blocks.POTTED_BAMBOO));
+        if (rara) {
+            l.pon(12, f, 1, Blocks.QUARTZ_STAIRS.defaultBlockState().setValue(StairBlock.FACING, Direction.SOUTH));
+        } else {
+            // sillas en filas mirando al norte, con pasillo en medio
+            int filas = (int) (h(cx, cz, 4) % 3);
+            if (filas > 0)
+                for (int zr : new int[]{3, 11})
+                    for (int x = 1; x < 15; x++) {
+                        if (x == 7 || x == 8) continue;
+                        l.pon(x, f, zr, Blocks.QUARTZ_STAIRS.defaultBlockState().setValue(StairBlock.FACING, Direction.SOUTH));
+                        if (filas == 2) l.pon(x, f, zr + 2, Blocks.QUARTZ_STAIRS.defaultBlockState().setValue(StairBlock.FACING, Direction.SOUTH));
+                    }
+            else {
+                // un mostrador de "turnos" con su planta
+                l.caja(5, f, 6, 10, f, 6, d(Blocks.SMOOTH_QUARTZ));
+                l.pon(5, f + 1, 6, d(Blocks.POTTED_BAMBOO));
+            }
         }
-        // tabiques: hacia la feria siempre; entre salas, a veces. Con hueco en el centro para pasar
-        Direction[] lados = {Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
-        for (Direction dd : lados) {
+        // tabiques: hacia la feria siempre; entre salas, a veces (y en la sala rara, en los cuatro lados). Con hueco en
+        // el centro para pasar, con su dintel
+        BlockState pared = com.miscelanea.registry.ModBlocks.PARED_SALA.get().defaultBlockState();
+        for (Direction dd : LADOS) {
             int nx = cx + dd.getStepX(), nz = cz + dd.getStepZ();
-            boolean feria = zona(nx, nz) != Zona.SALA;
+            boolean otra = zona(nx, nz) != Zona.SALA;
             // cada borde se decide una vez para los dos chunks que lo comparten
             int bx = Math.min(cx, nx) * 2 + (dd.getAxis() == Direction.Axis.X ? 1 : 0), bz = Math.min(cz, nz);
-            boolean pared = feria || h(bx, bz, 5) % 3 == 0;
-            if (!pared) continue;
-            for (int i = 0; i < 16; i++) {
-                if (i == 7 || i == 8) continue;               // la puerta
-                int x = dd == Direction.WEST ? 0 : dd == Direction.EAST ? 15 : i;
-                int z = dd == Direction.NORTH ? 0 : dd == Direction.SOUTH ? 15 : i;
-                for (int y = 0; y < 4; y++) l.pon(x, f + y, z, d(y == 0 ? Blocks.LIGHT_GRAY_CONCRETE : Blocks.WHITE_CONCRETE));
-            }
+            if (otra || rara || h(bx, bz, 5) % 3 == 0)
+                tabique(l, dd, 4, d(Blocks.LIGHT_GRAY_CONCRETE), pared, 3, pared);
         }
         // columnas en las esquinas
         for (int x : new int[]{0, 15})
             for (int z : new int[]{0, 15})
                 for (int y = 0; y < 4; y++) l.pon(x, f + y, z, d(Blocks.QUARTZ_PILLAR));
+    }
+
+    private static final Direction[] LADOS = {Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
+
+    /**
+     * Un tabique en el borde del chunk (lado dd) de "alto" bloques: zócalo abajo y pared encima, con el hueco de paso de
+     * dos de ancho en medio (donde siguen las calles y los pasillos) cerrado por arriba desde la altura "hueco" con el
+     * dintel: así se ve una puerta y no un agujero en la pared.
+     */
+    private static void tabique(Lienzo l, Direction dd, int alto, BlockState zocalo, BlockState pared, int hueco, BlockState dintel) {
+        int f = SUELO;
+        for (int i = 0; i < 16; i++) {
+            boolean paso = i == 7 || i == 8;
+            int x = dd == Direction.WEST ? 0 : dd == Direction.EAST ? 15 : i;
+            int z = dd == Direction.NORTH ? 0 : dd == Direction.SOUTH ? 15 : i;
+            for (int y = paso ? hueco : 0; y < alto; y++) l.pon(x, f + y, z, paso ? dintel : y == 0 ? zocalo : pared);
+        }
     }
 
     // ------------------------------------------------------------------ Recreativa Infinita
@@ -307,17 +403,20 @@ public class PurgatorioGenerador extends ChunkGenerator {
      */
     private static void recreativa(Lienzo l, int cx, int cz) {
         int f = SUELO, techo = SUELO + 5;
+        // de vez en cuando, un salón vacío y a oscuras con una sola máquina encendida en medio
+        boolean rara = recreativaRara(cx, cz);
         BlockState moqueta = com.miscelanea.registry.ModBlocks.MOQUETA_RECREATIVA.get().defaultBlockState();
         for (int x = 0; x < 16; x++)
             for (int z = 0; z < 16; z++) {
                 l.pon(x, f - 1, z, moqueta);
                 l.pon(x, f - 2, z, d(Blocks.STONE));
                 boolean pasillo = x == 7 || x == 8 || z == 7 || z == 8;
-                boolean luz = pasillo && (x == 7 || z == 7) && ((x + z) % 4 == 2) && h(cx * 16 + x, cz * 16 + z, 3) % 7 != 0;
+                boolean luz = !rara && pasillo && (x == 7 || z == 7) && ((x + z) % 4 == 2) && h(cx * 16 + x, cz * 16 + z, 3) % 7 != 0;
                 l.pon(x, techo, z, d(luz ? ((x + z) % 8 == 2 ? Blocks.PEARLESCENT_FROGLIGHT : Blocks.VERDANT_FROGLIGHT) : Blocks.BLACK_CONCRETE));
             }
         int[][] q = {{0, 0}, {9, 0}, {0, 9}, {9, 9}};
-        for (int k = 0; k < 4; k++) {
+        if (rara) maquina(l, 11, 11, Direction.NORTH, 1);      // r = 1: viva, la primera de la lista
+        for (int k = 0; k < 4 && !rara; k++) {
             int qx = q[k][0], qz = q[k][1];
             if (salida(cx, cz) && k == 0) continue;
             long t = h(cx, cz, 50 + k) % 10;
@@ -342,14 +441,15 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 l.pon(qx + 5, f, qz + 2, d(Blocks.CAULDRON));
             }
         }
-        // paredes negras hacia las zonas que no son recreativa (con su hueco para pasar)
-        for (Direction dd : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST}) {
+        // paredes negras hacia las zonas que no son recreativa (con su puerta para pasar)
+        for (Direction dd : LADOS) {
             if (zona(cx + dd.getStepX(), cz + dd.getStepZ()) == Zona.RECREATIVA) continue;
-            for (int i = 0; i < 16; i++) {
-                if (i == 7 || i == 8) continue;
+            tabique(l, dd, 5, d(Blocks.BLACK_CONCRETE), d(Blocks.BLACK_CONCRETE), 3, d(Blocks.BLACK_CONCRETE));
+            for (int i = 0; i < 16; i += 3) {
+                if (i == 6 || i == 9) continue;      // junto a la puerta, no
                 int x = dd == Direction.WEST ? 0 : dd == Direction.EAST ? 15 : i;
                 int z = dd == Direction.NORTH ? 0 : dd == Direction.SOUTH ? 15 : i;
-                for (int y = 0; y < 5; y++) l.pon(x, f + y, z, d(y == 2 && i % 3 == 0 ? Blocks.PURPLE_STAINED_GLASS : Blocks.BLACK_CONCRETE));
+                l.pon(x, f + 2, z, d(Blocks.PURPLE_STAINED_GLASS));
             }
         }
     }
@@ -390,6 +490,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
     private static void hotel(Lienzo l, int cx, int cz) {
         int f = SUELO, techo = SUELO + 4;
         BlockState moqueta = com.miscelanea.registry.ModBlocks.MOQUETA_HOTEL.get().defaultBlockState();
+        BlockState papel = com.miscelanea.registry.ModBlocks.PAPEL_HOTEL.get().defaultBlockState();
         for (int x = 0; x < 16; x++)
             for (int z = 0; z < 16; z++) {
                 boolean pasillo = x == 7 || x == 8 || z == 7 || z == 8;
@@ -406,17 +507,20 @@ public class PurgatorioGenerador extends ChunkGenerator {
             for (int x = x0; x <= x1; x++)
                 for (int z = z0; z <= z1; z++) {
                     if (x != x0 && x != x1 && z != z0 && z != z1) continue;
-                    for (int y = 0; y < 4; y++) l.pon(x, f + y, z, d(y == 0 ? Blocks.DARK_OAK_PLANKS : Blocks.SMOOTH_SANDSTONE));
+                    for (int y = 0; y < 4; y++) l.pon(x, f + y, z, y == 0 ? d(Blocks.DARK_OAK_PLANKS) : papel);
                 }
+            // de vez en cuando, la habitación de la tele: la puerta entornada, la lámpara apagada y la tele encendida sin
+            // señal, de cara a la cama
+            boolean tele = habitacionTele(cx, cz, k);
             // la puerta, en la pared que da al pasillo largo (el de z = 7..8)
             int zp = z0 == 0 ? z1 : z0, xp = x0 + 3;
             Direction mira = z0 == 0 ? Direction.SOUTH : Direction.NORTH;
             BlockState pu = Blocks.DARK_OAK_DOOR.defaultBlockState().setValue(net.minecraft.world.level.block.DoorBlock.FACING, mira.getOpposite());
+            if (tele) pu = pu.setValue(net.minecraft.world.level.block.DoorBlock.OPEN, true);
             l.pon(xp, f, zp, pu);
             l.pon(xp, f + 1, zp, pu.setValue(net.minecraft.world.level.block.DoorBlock.HALF, net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER));
             // un aplique a cada lado de la puerta, en el pasillo
             int zf = zp + (z0 == 0 ? 1 : -1);
-            l.pon(xp - 2, f + 2, zp, d(Blocks.SMOOTH_SANDSTONE));
             l.pon(xp - 2, f + 2, zf, Blocks.WALL_TORCH.defaultBlockState().setValue(net.minecraft.world.level.block.WallTorchBlock.FACING, mira));
             if (h(cx, cz, 110 + k) % 3 != 0)
                 l.pon(xp + 2, f + 2, zf, Blocks.WALL_TORCH.defaultBlockState().setValue(net.minecraft.world.level.block.WallTorchBlock.FACING, mira));
@@ -437,19 +541,19 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 l.pon(x, f, zc + 2 * dz, d(Blocks.RED_WOOL));
             }
             l.pon(xa + 2 * sx, f, zc, d(Blocks.SPRUCE_PLANKS));
-            l.pon(xa + 2 * sx, f + 1, zc, Blocks.LANTERN.defaultBlockState());
+            if (tele) {
+                // a los pies de la cama, en un mueble bajo, mirando a la almohada
+                l.pon(xa, f, zc + 3 * dz, d(Blocks.DARK_OAK_PLANKS));
+                l.pon(xa, f + 1, zc + 3 * dz, com.miscelanea.registry.ModBlocks.TELE.get().defaultBlockState()
+                        .setValue(TeleBlock.FACING, dz > 0 ? Direction.NORTH : Direction.SOUTH));
+            } else l.pon(xa + 2 * sx, f + 1, zc, Blocks.LANTERN.defaultBlockState());
             if (h(cx, cz, 120 + k) % 2 == 0)
                 l.pon(xa + 4 * sx, f, zc, Blocks.SPRUCE_STAIRS.defaultBlockState().setValue(StairBlock.FACING, x0 == 0 ? Direction.WEST : Direction.EAST));
         }
-        // paredes hacia las zonas que no son hotel (el pasillo sigue: es la puerta)
-        for (Direction dd : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST}) {
+        // paredes hacia las zonas que no son hotel (el pasillo sigue: es la puerta, con su marco de madera)
+        for (Direction dd : LADOS) {
             if (zona(cx + dd.getStepX(), cz + dd.getStepZ()) == Zona.HOTEL) continue;
-            for (int i = 0; i < 16; i++) {
-                if (i == 7 || i == 8) continue;
-                int x = dd == Direction.WEST ? 0 : dd == Direction.EAST ? 15 : i;
-                int z = dd == Direction.NORTH ? 0 : dd == Direction.SOUTH ? 15 : i;
-                for (int y = 0; y < 4; y++) l.pon(x, f + y, z, d(y == 0 ? Blocks.DARK_OAK_PLANKS : Blocks.SMOOTH_SANDSTONE));
-            }
+            tabique(l, dd, 4, d(Blocks.DARK_OAK_PLANKS), papel, 3, d(Blocks.DARK_OAK_PLANKS));
         }
     }
 
@@ -525,6 +629,47 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 l.pon(ax + 1, f + 1, az, st);
                 l.pon(ax, f + 2, az, st);
             }
+        }
+    }
+
+    // ------------------------------------------------------------------ costuras con el Mundo sin Texturas
+    /** El suelo propio de cada zona (el que asoma entre los cuadros rosas cerca de la raya). */
+    private static BlockState suelo(Zona z) {
+        return switch (z) {
+            case FERIA -> d(Blocks.BLACK_CONCRETE);
+            case SALA -> com.miscelanea.registry.ModBlocks.SUELO_SALA.get().defaultBlockState();
+            case RECREATIVA -> com.miscelanea.registry.ModBlocks.MOQUETA_RECREATIVA.get().defaultBlockState();
+            case HOTEL -> com.miscelanea.registry.ModBlocks.MOQUETA_HOTEL.get().defaultBlockState();
+            default -> com.miscelanea.registry.ModBlocks.SIN_TEXTURA.get().defaultBlockState();
+        };
+    }
+
+    /**
+     * La raya con el Mundo sin Texturas no es limpia: como si el mundo se estuviera cargando, cerca del borde del Mundo
+     * sin Texturas asoma el suelo de la zona de al lado (cada vez menos al alejarse), y en la zona de al lado el suelo y
+     * la pared que dan al Mundo sin Texturas tienen bloques que "no han cargado". Solo se cambian bloques que ya están
+     * (nada queda flotando) y las calles, pasillos y puertas siguen libres.
+     */
+    private static void contagio(Lienzo l, int cx, int cz, Zona z) {
+        int f = SUELO;
+        BlockState st = com.miscelanea.registry.ModBlocks.SIN_TEXTURA.get().defaultBlockState();
+        int[] pSin = {72, 52, 34, 18, 7}, pOtra = {40, 18, 6};
+        for (Direction dd : LADOS) {
+            Zona otra = zona(cx + dd.getStepX(), cz + dd.getStepZ());
+            if (otra == z || (z != Zona.SIN_TEXTURA && otra != Zona.SIN_TEXTURA)) continue;
+            int[] prob = z == Zona.SIN_TEXTURA ? pSin : pOtra;
+            BlockState pone = z == Zona.SIN_TEXTURA ? suelo(otra) : st;
+            for (int dist = 0; dist < prob.length; dist++)
+                for (int i = 0; i < 16; i++) {
+                    int x = dd == Direction.WEST ? dist : dd == Direction.EAST ? 15 - dist : i;
+                    int zz = dd == Direction.NORTH ? dist : dd == Direction.SOUTH ? 15 - dist : i;
+                    long r = h(cx * 16 + x, cz * 16 + zz, 170 + dd.ordinal()) % 100;
+                    if (r < prob[dist]) l.cambiar(x, f - 1, zz, pone);
+                    // y la pared que da al Mundo sin Texturas, con huecos rosas
+                    if (dist == 0 && z != Zona.SIN_TEXTURA && z != Zona.FERIA)
+                        for (int y = 0; y < 4; y++)
+                            if (h(cx * 16 + x, f + y, cz * 16 + zz) % 100 < 22) l.cambiar(x, f + y, zz, st);
+                }
         }
     }
 

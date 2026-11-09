@@ -73,8 +73,16 @@ public final class PurgatorioCliente {
         }
     }
 
+    /**
+     * La niebla: corta, del color de cada zona, y al pasar de una zona a otra el color y la distancia cambian poco a poco
+     * (en un segundo, más o menos) en vez de saltar en la raya del chunk.
+     */
     @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
     public static final class Niebla {
+        /** Lo que se está usando ahora (va hacia lo de la zona en la que se está); dist < 0 = aún nada. */
+        static float dist = -1, r, g, b;
+        private static long ultimo;
+
         static boolean aqui() {
             Minecraft mc = Minecraft.getInstance();
             return mc.level != null && Purgatorio.en(mc.level);
@@ -86,10 +94,38 @@ public final class PurgatorioCliente {
             return PurgatorioGenerador.zona(c.getX() >> 4, c.getZ() >> 4);
         }
 
+        /** Una vez por fotograma: acerca la niebla actual a la de la zona. */
+        static void actualizar() {
+            PurgatorioGenerador.Zona z = zona();
+            float td = distancia(z);
+            float[] tc = colorNiebla(z);
+            long ahora = net.minecraft.Util.getMillis();
+            float dt = (ahora - ultimo) / 1000F;
+            ultimo = ahora;
+            if (dist < 0 || dt > 1.5F || dt < 0) {
+                dist = td;
+                r = tc[0];
+                g = tc[1];
+                b = tc[2];
+                return;
+            }
+            float k = 1 - (float) Math.exp(-dt / 0.45F);
+            dist += (td - dist) * k;
+            r += (tc[0] - r) * k;
+            g += (tc[1] - g) * k;
+            b += (tc[2] - b) * k;
+        }
+
+        /** Para la prueba: la distancia de niebla que se está usando ahora. */
+        public static float distanciaActual() {
+            return dist;
+        }
+
         @SubscribeEvent
         public static void niebla(ViewportEvent.RenderFog e) {
             if (!aqui()) return;
-            float lejos = Math.min(e.getFarPlaneDistance(), distancia(zona()));
+            if (dist < 0) actualizar();
+            float lejos = Math.min(e.getFarPlaneDistance(), dist);
             e.setNearPlaneDistance(e.getMode() == FogRenderer.FogMode.FOG_SKY ? 0 : lejos * 0.15F);
             e.setFarPlaneDistance(lejos);
             e.setFogShape(FogShape.SPHERE);
@@ -98,22 +134,42 @@ public final class PurgatorioCliente {
 
         @SubscribeEvent
         public static void color(ViewportEvent.ComputeFogColor e) {
-            if (!aqui()) return;
-            float[] c = colorNiebla(zona());
-            e.setRed(c[0]);
-            e.setGreen(c[1]);
-            e.setBlue(c[2]);
+            if (!aqui()) {
+                dist = -1;
+                return;
+            }
+            actualizar();
+            e.setRed(r);
+            e.setGreen(g);
+            e.setBlue(b);
         }
     }
 
     // ------------------------------------------------------------------ ambiente
     /**
-     * Un sonido de fondo en bucle por zona (sin posición: suena "en la cabeza"); al cambiar de zona el de antes se
-     * apaga poco a poco y entra el nuevo. Solo hay uno sonando a la vez.
+     * El sonido del Purgatorio, mezclado aquí (no en los sonidos: así se sabe lo que suena aunque no haya tarjeta de
+     * sonido, como en la prueba):
+     * <ul>
+     *   <li>Un bucle de fondo por zona, sin posición; al cambiar de zona el de antes baja en 2 s y entra el nuevo. Cada
+     *       zona lleva su ganancia para que todas suenen igual de fuerte (medidas en LUFS).</li>
+     *   <li>De vez en cuando (cada 25-90 s), un susto lejos y con posición: pasos que se acercan por detrás, un timbre de
+     *       turno, una puerta, unos golpes en una puerta... Siempre más bajo que el fondo y nunca dos a la vez.</li>
+     *   <li>El ruido de la tele sin señal más cercana (si hay alguna a menos de 14 bloques).</li>
+     * </ul>
+     * Si Minecraft corta los sonidos (al cambiar de mundo o con /stopsound), el bucle se vuelve a poner.
      */
     @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
     public static final class Ambiente {
+        /** Volumen de mezcla (0-1) de cada zona y el sonido que lo toca. */
+        private static final java.util.EnumMap<PurgatorioGenerador.Zona, Float> MEZCLA = new java.util.EnumMap<>(PurgatorioGenerador.Zona.class);
         private static final java.util.EnumMap<PurgatorioGenerador.Zona, Bucle> SONANDO = new java.util.EnumMap<>(PurgatorioGenerador.Zona.class);
+        /** Sustos ya programados (tic en el que suenan) y cuántos han sonado. */
+        private static final java.util.ArrayDeque<Susto> COLA = new java.util.ArrayDeque<>();
+        private static int edad, proximo = 500, sustos;
+        private static Object nivel;
+        private static BucleTele tele;
+
+        private record Susto(int t, net.minecraft.sounds.SoundEvent s, double x, double y, double z, float v, float p) {}
 
         static net.minecraft.sounds.SoundEvent sonido(PurgatorioGenerador.Zona z) {
             return switch (z) {
@@ -125,40 +181,197 @@ public final class PurgatorioCliente {
             };
         }
 
-        /** Para la prueba: qué ambientes suenan y a qué volumen. */
+        /** Volumen de cada bucle a tope: los cinco igualados a unos -25 LUFS (medidos: feria -24,6, hotel -26,5,
+         * recreativa -21,3, sala -27 y sin texturas -20,3). */
+        static float ganancia(PurgatorioGenerador.Zona z) {
+            return switch (z) {
+                case FERIA -> 0.50F;
+                case SALA -> 0.62F;
+                case RECREATIVA -> 0.36F;
+                case HOTEL -> 0.60F;
+                case SIN_TEXTURA -> 0.33F;
+            };
+        }
+
+        static float volumen(PurgatorioGenerador.Zona z) {
+            return MEZCLA.getOrDefault(z, 0F) * ganancia(z);
+        }
+
+        /** Para la prueba: qué ambientes suenan y a qué volumen, cuántos sustos han sonado y si hay una tele cerca. */
         public static String sonando() {
             StringBuilder b = new StringBuilder();
-            SONANDO.forEach((z, s) -> b.append(z).append(String.format("=%.2f ", s.vol())));
-            return b.length() == 0 ? "ninguno" : b.toString().trim();
+            MEZCLA.forEach((z, v) -> {
+                if (v > 0) b.append(z).append(String.format("=%.2f ", volumen(z)));
+            });
+            if (b.length() == 0) b.append("ninguno ");
+            b.append("sustos=").append(sustos);
+            if (tele != null && !tele.isStopped()) b.append(" tele=").append(tele.pos.toShortString());
+            return b.toString();
+        }
+
+        /** Para la prueba: adelanta el próximo susto. */
+        public static void sustoYa() {
+            proximo = 1;
         }
 
         @SubscribeEvent
         public static void tick(net.minecraftforge.event.TickEvent.ClientTickEvent e) {
             if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
             Minecraft mc = Minecraft.getInstance();
-            PurgatorioGenerador.Zona aqui = mc.player != null && Niebla.aqui() && !mc.isPaused() ? Niebla.zona() : null;
-            SONANDO.values().removeIf(b -> b.isStopped());
-            for (var en : SONANDO.entrySet()) en.getValue().quiere = en.getKey() == aqui;
-            if (aqui != null && !SONANDO.containsKey(aqui)) {
-                Bucle b = new Bucle(sonido(aqui));
-                SONANDO.put(aqui, b);
-                mc.getSoundManager().play(b);
+            if (mc.level != nivel) {
+                // Minecraft para todos los sonidos al cambiar de mundo: lo que hubiera ya no suena
+                nivel = mc.level;
+                SONANDO.clear();
+                COLA.clear();
+                tele = null;
+            }
+            if (mc.isPaused()) return;
+            edad++;
+            PurgatorioGenerador.Zona aqui = mc.player != null && Niebla.aqui() ? Niebla.zona() : null;
+            var sm = mc.getSoundManager();
+            for (PurgatorioGenerador.Zona z : PurgatorioGenerador.Zona.values()) {
+                float v = MEZCLA.getOrDefault(z, 0F), meta = z == aqui ? 1 : 0;
+                v = meta > v ? Math.min(meta, v + 1 / 40F) : Math.max(meta, v - 1 / 40F);
+                if (v <= 0) {
+                    MEZCLA.remove(z);
+                    Bucle b = SONANDO.remove(z);
+                    if (b != null) b.parar();
+                    continue;
+                }
+                MEZCLA.put(z, v);
+                Bucle b = SONANDO.get(z);
+                // si se ha cortado desde fuera (ha sonado y ya no está), se vuelve a poner
+                if (b == null || b.isStopped() || (b.tocado && !sm.isActive(b))) {
+                    b = new Bucle(z);
+                    SONANDO.put(z, b);
+                    sm.play(b);
+                }
+            }
+            if (aqui == null) {
+                COLA.clear();
+                if (tele != null) tele.parar();
+                tele = null;
+                return;
+            }
+            // sustos
+            if (--proximo <= 0) {
+                planear(mc, aqui);
+                proximo = 500 + mc.player.getRandom().nextInt(1300);
+            }
+            while (!COLA.isEmpty() && COLA.peek().t() <= edad) {
+                Susto s = COLA.poll();
+                mc.level.playLocalSound(s.x(), s.y(), s.z(), s.s(), net.minecraft.sounds.SoundSource.AMBIENT, s.v(), s.p(), false);
+                sustos++;
+            }
+            if (edad % 10 == 0) teles(mc);
+        }
+
+        /** Programa un susto según la zona (todo con sonidos del juego, cambiados de tono). */
+        private static void planear(Minecraft mc, PurgatorioGenerador.Zona z) {
+            if (!COLA.isEmpty()) return;
+            var p = mc.player;
+            var r = p.getRandom();
+            int tipo = r.nextInt(3);
+            if (tipo == 0) {
+                // pasos que vienen por detrás y se paran
+                net.minecraft.sounds.SoundEvent paso = switch (z) {
+                    case RECREATIVA, HOTEL -> net.minecraft.sounds.SoundEvents.WOOL_STEP;
+                    case SIN_TEXTURA -> net.minecraft.sounds.SoundEvents.GRASS_STEP;
+                    default -> net.minecraft.sounds.SoundEvents.STONE_STEP;
+                };
+                var atras = p.getLookAngle().multiply(-1, 0, -1).normalize();
+                int n = 4 + r.nextInt(4);
+                for (int i = 0; i < n; i++) {
+                    double d = 13 - i * 1.1;
+                    COLA.add(new Susto(edad + 10 + i * 9, paso, p.getX() + atras.x * d + (i % 2 == 0 ? 0.3 : -0.3), p.getY(), p.getZ() + atras.z * d,
+                            0.5F, 0.85F + r.nextFloat() * 0.1F));
+                }
+                return;
+            }
+            double ang = r.nextDouble() * Math.PI * 2, d = 10 + r.nextDouble() * 8;
+            double x = p.getX() + Math.cos(ang) * d, y = p.getEyeY(), zz = p.getZ() + Math.sin(ang) * d;
+            switch (z) {
+                case FERIA -> {
+                    if (tipo == 1) {
+                        // tres notas del organillo, desafinadas, que no terminan la melodía
+                        float[] notas = {0.75F, 0.63F, 0.56F};
+                        for (int i = 0; i < 3; i++)
+                            COLA.add(new Susto(edad + i * 12, net.minecraft.sounds.SoundEvents.NOTE_BLOCK_CHIME.value(), x, y, zz, 0.45F, notas[i] * 0.97F));
+                    } else
+                        COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.IRON_DOOR_CLOSE, x, y, zz, 0.6F, 0.5F));   // una persiana metálica
+                }
+                case SALA -> {
+                    if (tipo == 1) {
+                        // el timbre del turno (nadie te va a llamar)
+                        COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.NOTE_BLOCK_BELL.value(), x, y + 1, zz, 0.5F, 1.19F));
+                        COLA.add(new Susto(edad + 9, net.minecraft.sounds.SoundEvents.NOTE_BLOCK_BELL.value(), x, y + 1, zz, 0.5F, 0.94F));
+                    } else
+                        COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.WOOD_PLACE, x, y - 1, zz, 0.5F, 0.55F));    // una silla que se arrastra
+                }
+                case RECREATIVA -> {
+                    if (tipo == 1) {
+                        // una máquina que arranca sola: la musiquilla de empezar partida, lejos
+                        float[] notas = {1.0F, 1.26F, 1.5F, 2.0F};
+                        for (int i = 0; i < 4; i++)
+                            COLA.add(new Susto(edad + i * 3, net.minecraft.sounds.SoundEvents.NOTE_BLOCK_BIT.value(), x, y, zz, 0.35F, notas[i]));
+                    } else
+                        COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.CHAIN_PLACE, x, y - 1, zz, 0.45F, 1.6F));   // una moneda que cae
+                }
+                case HOTEL -> {
+                    if (tipo == 1) {
+                        // tres golpes en una puerta
+                        for (int i = 0; i < 3; i++)
+                            COLA.add(new Susto(edad + i * 6, net.minecraft.sounds.SoundEvents.WOOD_HIT, x, y, zz, 0.7F, 0.7F));
+                    } else
+                        COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.WOODEN_DOOR_CLOSE, x, y, zz, 0.55F, 0.8F));
+                }
+                case SIN_TEXTURA -> {
+                    if (tipo == 1)
+                        COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.ITEM_PICKUP, x, y, zz, 0.5F, 0.5F));
+                    else
+                        COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.ENDERMAN_TELEPORT, x, y, zz, 0.3F, 0.5F));
+                }
+            }
+        }
+
+        /** El ruido de la tele más cercana que el cliente ha visto hace poco (las teles se apuntan solas al dibujarse). */
+        private static void teles(Minecraft mc) {
+            long ahora = System.currentTimeMillis();
+            com.miscelanea.purgatorio.TeleBlock.VISTAS.entrySet().removeIf(en -> ahora - en.getValue() > 10000);
+            net.minecraft.core.BlockPos mejor = null;
+            double dm = 14 * 14;
+            for (var en : com.miscelanea.purgatorio.TeleBlock.VISTAS.keySet()) {
+                double d = en.distToCenterSqr(mc.player.position());
+                if (d < dm && mc.level.getBlockState(en).getBlock() instanceof com.miscelanea.purgatorio.TeleBlock) {
+                    dm = d;
+                    mejor = en;
+                }
+            }
+            if (tele != null && (mejor == null || !tele.pos.equals(mejor) || tele.isStopped() || (tele.tocado && !mc.getSoundManager().isActive(tele)))) {
+                tele.parar();
+                tele = null;
+            }
+            if (mejor != null && tele == null) {
+                tele = new BucleTele(mejor);
+                mc.getSoundManager().play(tele);
             }
         }
     }
 
+    /** El bucle de fondo de una zona: su volumen lo lleva {@link Ambiente} (aquí solo se copia). */
     static final class Bucle extends net.minecraft.client.resources.sounds.AbstractTickableSoundInstance {
-        /** Volumen al que va (y cuánto sube o baja por tic: 2 s de fundido). */
-        static final float MAX = 0.55F, PASO = MAX / 40;
-        boolean quiere = true;
+        final PurgatorioGenerador.Zona zona;
+        /** Ha llegado a sonar (si luego deja de estar activo es que lo han cortado). */
+        boolean tocado;
 
-        Bucle(net.minecraft.sounds.SoundEvent s) {
-            super(s, net.minecraft.sounds.SoundSource.AMBIENT, net.minecraft.client.resources.sounds.SoundInstance.createUnseededRandom());
+        Bucle(PurgatorioGenerador.Zona z) {
+            super(Ambiente.sonido(z), net.minecraft.sounds.SoundSource.AMBIENT, net.minecraft.client.resources.sounds.SoundInstance.createUnseededRandom());
+            zona = z;
             looping = true;
             delay = 0;
             relative = true;
             attenuation = Attenuation.NONE;
-            volume = 0.001F;
+            volume = Math.max(0.001F, Ambiente.volumen(z));
         }
 
         @Override
@@ -166,20 +379,43 @@ public final class PurgatorioCliente {
             return true;
         }
 
-        float vol() {
-            return volume;
+        void parar() {
+            stop();
         }
 
         @Override
         public void tick() {
-            if (quiere) volume = Math.min(MAX, volume + PASO);
-            else {
-                volume -= PASO;
-                if (volume <= 0) {
-                    volume = 0;
-                    stop();
-                }
-            }
+            tocado = true;
+            float v = Ambiente.volumen(zona);
+            if (v <= 0) stop();
+            else volume = v;
+        }
+    }
+
+    /** El siseo de la tele sin señal, con posición (se oye a unos 10 bloques). */
+    static final class BucleTele extends net.minecraft.client.resources.sounds.AbstractTickableSoundInstance {
+        final net.minecraft.core.BlockPos pos;
+        boolean tocado;
+
+        BucleTele(net.minecraft.core.BlockPos p) {
+            super(com.miscelanea.registry.ModSounds.PURGATORIO_TELE.get(), net.minecraft.sounds.SoundSource.BLOCKS,
+                    net.minecraft.client.resources.sounds.SoundInstance.createUnseededRandom());
+            pos = p;
+            looping = true;
+            delay = 0;
+            volume = 0.3F;
+            x = p.getX() + 0.5;
+            y = p.getY() + 0.5;
+            z = p.getZ() + 0.5;
+        }
+
+        void parar() {
+            stop();
+        }
+
+        @Override
+        public void tick() {
+            tocado = true;
         }
     }
 }

@@ -2576,5 +2576,14 @@
         "stream": true
       }
     ]
+  },
+  "purgatorio_tele": {
+    "sounds": [
+      {
+        "name": "miscelanea:purgatorio/tele",
+        "attenuation_distance": 10
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.purgatorio_tele"
   }
 }

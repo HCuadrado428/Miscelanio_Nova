@@ -41,6 +41,10 @@ public class Purgado extends PathfinderMob {
     private Vec3 objetivo;
     private int paciencia;
     private double prisa = 1;
+    /** Para ver si se ha atascado: dónde estaba hace un rato, cuántas veces seguidas no ha avanzado y cuándo buscó camino. */
+    @Nullable
+    private Vec3 antes;
+    private int atascos, ultimoCamino = -100;
 
     public Purgado(EntityType<? extends Purgado> t, Level l) {
         super(t, l);
@@ -91,20 +95,22 @@ public class Purgado extends PathfinderMob {
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
-        if (tickCount % 40 == 0 && level().getNearestPlayer(this, 80) == null) {
+        if (tickCount % 40 == 0 && (level().getNearestPlayer(this, 80) == null || !PurgatorioConfig.activado())) {
             discard();
             return;
         }
         if (objetivo != null) {
-            if (tickCount % 10 == 0 || getNavigation().isDone()) getNavigation().moveTo(objetivo.x, objetivo.y, objetivo.z, prisa);
-            getLookControl().setLookAt(objetivo.x, objetivo.y + 1.6, objetivo.z);
-            if (distanceToSqr(objetivo) < 2.0 || getNavigation().isDone()) {
-                if (--paciencia <= 0) {
-                    objetivo = null;
-                    getNavigation().stop();
-                    entityData.set(CAZANDO, false);
-                }
+            // el camino se busca como mucho cada 10 tics (cada 20 si el último no llegaba): barato aunque no se pueda llegar
+            boolean hecho = getNavigation().isDone();
+            if (tickCount - ultimoCamino >= (hecho ? 20 : 10) && distanceToSqr(objetivo) >= 2.0) {
+                getNavigation().moveTo(objetivo.x, objetivo.y, objetivo.z, prisa);
+                ultimoCamino = tickCount;
             }
+            getLookControl().setLookAt(objetivo.x, objetivo.y + 1.6, objetivo.z);
+            if (distanceToSqr(objetivo) < 2.0 || hecho) {
+                if (--paciencia <= 0) olvidar();
+            }
+            if (objetivo != null && tickCount % 40 == 0) desatascar();
         } else if (random.nextInt(300) == 0) {
             // quieto casi siempre; a ratos da unos pasos sin rumbo
             getNavigation().moveTo(getX() + random.nextGaussian() * 4, getY(), getZ() + random.nextGaussian() * 4, 0.5);
@@ -117,6 +123,41 @@ public class Purgado extends PathfinderMob {
                     purgar(p);
                     return;
                 }
+    }
+
+    private void olvidar() {
+        objetivo = null;
+        antes = null;
+        atascos = 0;
+        getNavigation().stop();
+        entityData.set(CAZANDO, false);
+    }
+
+    /**
+     * Si va detrás de algo y en 2 s no ha avanzado ni medio bloque (contra una esquina, una valla, una silla...), se
+     * "descoloca" un par de bloques hacia donde iba, como cuando le pegas; a la tercera, lo deja.
+     */
+    private void desatascar() {
+        Vec3 aqui = position();
+        boolean quieto = antes != null && aqui.distanceToSqr(antes) < 0.25 && distanceToSqr(objetivo) > 4.0;
+        antes = aqui;
+        if (!quieto) {
+            atascos = 0;
+            return;
+        }
+        if (++atascos >= 3) {
+            olvidar();
+            return;
+        }
+        Vec3 hacia = objetivo.subtract(aqui).multiply(1, 0, 1).normalize();
+        for (int i = 0; i < 6; i++) {
+            double k = 1.5 + random.nextDouble() * 2;
+            if (randomTeleport(getX() + hacia.x * k + random.nextGaussian() * 0.8, getY(), getZ() + hacia.z * k + random.nextGaussian() * 0.8, false)) {
+                getNavigation().stop();
+                ultimoCamino = -100;
+                break;
+            }
+        }
     }
 
     /** Te ha encontrado: a oscuras un momento y a otra parte del Purgatorio. Él también se va. */
@@ -154,6 +195,12 @@ public class Purgado extends PathfinderMob {
 
     @Override
     public boolean requiresCustomPersistence() {
+        return false;
+    }
+
+    /** No se guardan con el chunk: así no se van acumulando en los sitios por los que ya ha pasado alguien. */
+    @Override
+    public boolean shouldBeSaved() {
         return false;
     }
 

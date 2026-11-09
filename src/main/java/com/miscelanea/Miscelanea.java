@@ -248,6 +248,12 @@ public class Miscelanea {
             event.accept(ModItems.SIN_TEXTURA);
             event.accept(ModItems.MOQUETA_RECREATIVA);
             event.accept(ModItems.MOQUETA_HOTEL);
+            event.accept(ModItems.SUELO_SALA);
+            event.accept(ModItems.TECHO_SALA);
+            event.accept(ModItems.PARED_SALA);
+            event.accept(ModItems.FLUORESCENTE);
+            event.accept(ModItems.PAPEL_HOTEL);
+            event.accept(ModItems.TELE);
             event.accept(com.miscelanea.movil.MovilRegistro.MOVIL);
             event.accept(com.miscelanea.movil.MovilRegistro.CAJERO_ITEM);
             event.accept(ModItems.OCARINA);
