@@ -58,7 +58,7 @@ public class MissingnoBlock extends Block {
         l.sendParticles(ParticleTypes.SMOKE, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 10, 0.3, 0.3, 0.3, 0.01);
         // un "grito" de Pokémon roto: dos sonidos del juego, uno muy grave y otro al revés de agudo
         l.playSound(null, pos, SoundEvents.ALLAY_HURT, SoundSource.BLOCKS, 0.7F, 0.5F);
-        l.playSound(null, pos, SoundEvents.PARROT_IMITATE_ENDERMAN, SoundSource.BLOCKS, 0.6F, 1.9F);
+        l.playSound(null, pos, SoundEvents.ENDERMAN_AMBIENT, SoundSource.BLOCKS, 0.6F, 1.9F);
         if (suma > 0) {
             sp.displayClientMessage(Component.translatable("block.miscelanea.missingno.suma", sexto.getHoverName(), suma).withStyle(ChatFormatting.LIGHT_PURPLE), true);
             Logros.dar(sp, "missingno", "sexto");
