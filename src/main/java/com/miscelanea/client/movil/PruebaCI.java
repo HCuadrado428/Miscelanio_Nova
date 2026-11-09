@@ -82,7 +82,6 @@ public final class PruebaCI {
         }
     }
     private static boolean terminada;
-    private static net.minecraft.core.BlockPos ENCANTOS_MESA = net.minecraft.core.BlockPos.ZERO;
     private static volatile net.minecraft.core.BlockPos gramola;
 
     private static void paso(String nombre, int espera, Runnable accion) {
@@ -304,86 +303,41 @@ public final class PruebaCI {
         });
         montana();
         purgatorio();
-        // encantamientos estilo Enchancement: limpiar lo prohibido, mesa de elegir y sin durabilidad
-        sin("encantos_limpiar", 5, () -> {
+        // recorte de niveles imposibles (equilibrio): todo lo que pase de su máximo se deja en el máximo
+        sin("recorte_niveles", 5, () -> {
             var srv = mc.getSingleplayerServer();
             UUID id = mc.player.getUUID();
             srv.execute(() -> {
                 ServerPlayer sp = srv.getPlayerList().getPlayer(id);
                 if (sp == null) return;
-                var E = net.minecraft.world.item.enchantment.Enchantments.class;
                 ItemStack espada = new ItemStack(net.minecraft.world.item.Items.NETHERITE_SWORD);
                 espada.enchant(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS, 10);
                 espada.enchant(net.minecraft.world.item.enchantment.Enchantments.UNBREAKING, 3);
                 espada.enchant(net.minecraft.world.item.enchantment.Enchantments.MENDING, 1);
-                espada.enchant(net.minecraft.world.item.enchantment.Enchantments.MOB_LOOTING, 7);
                 ItemStack peto = new ItemStack(net.minecraft.world.item.Items.NETHERITE_CHESTPLATE);
                 peto.enchant(net.minecraft.world.item.enchantment.Enchantments.ALL_DAMAGE_PROTECTION, 7);
                 peto.enchant(net.minecraft.world.item.enchantment.Enchantments.THORNS, 3);
-                ItemStack libro = com.miscelanea.encantos.MesaEncantar.libro(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS);
+                ItemStack libro = net.minecraft.world.item.EnchantedBookItem.createForEnchantment(
+                        new net.minecraft.world.item.enchantment.EnchantmentInstance(net.minecraft.world.item.enchantment.Enchantments.ALL_DAMAGE_PROTECTION, 6));
                 sp.getInventory().setItem(3, espada);
                 sp.getInventory().setItem(4, peto);
                 sp.getInventory().setItem(5, libro);
                 int xp = sp.totalExperience;
-                com.miscelanea.encantos.Reglas.limpiarInventario(sp);
-                var m1 = net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantments(sp.getInventory().getItem(3));
+                com.miscelanea.equilibrio.RecorteNiveles.recortarInventario(sp);
+                ItemStack e3 = sp.getInventory().getItem(3), e5 = sp.getInventory().getItem(5);
+                var m1 = net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantments(e3);
                 var m2 = net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantments(sp.getInventory().getItem(4));
-                var m3 = net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantments(sp.getInventory().getItem(5));
-                RESUMEN.add("  encantos: espada " + m1 + " · peto " + m2 + " · libro " + m3 + " · xp +" + (sp.totalExperience - xp)
-                        + " · espada con durabilidad: " + sp.getInventory().getItem(3).isDamageableItem());
-                boolean bien = m1.size() == 1 && m1.getOrDefault(net.minecraft.world.item.enchantment.Enchantments.MOB_LOOTING, 0) == 3 && m2.isEmpty()
-                        && m3.size() == 1 && m3.keySet().iterator().next() instanceof com.miscelanea.encantos.EncantoMisc
-                        && sp.totalExperience > xp && !sp.getInventory().getItem(3).isDamageableItem();
-                if (!bien) RESUMEN.add("  FALLO: la limpieza de encantamientos no ha salido como debía");
+                var m3 = net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantments(e5);
+                RESUMEN.add("  recorte: espada " + m1 + " · peto " + m2 + " · libro " + m3 + " · xp +" + (sp.totalExperience - xp)
+                        + " · espada con durabilidad: " + e3.isDamageableItem());
+                boolean bien = m1.size() == 3 && m1.getOrDefault(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS, 0) == 5 && m1.getOrDefault(net.minecraft.world.item.enchantment.Enchantments.UNBREAKING, 0) == 3
+                        && m1.getOrDefault(net.minecraft.world.item.enchantment.Enchantments.MENDING, 0) == 1
+                        && m2.size() == 2 && m2.getOrDefault(net.minecraft.world.item.enchantment.Enchantments.ALL_DAMAGE_PROTECTION, 0) == 4 && m2.getOrDefault(net.minecraft.world.item.enchantment.Enchantments.THORNS, 0) == 3
+                        && e5.is(net.minecraft.world.item.Items.ENCHANTED_BOOK) && m3.size() == 1 && m3.getOrDefault(net.minecraft.world.item.enchantment.Enchantments.ALL_DAMAGE_PROTECTION, 0) == 4
+                        && sp.totalExperience > xp && e3.isDamageableItem();
+                if (!bien) RESUMEN.add("  FALLO: el recorte de niveles imposibles no ha salido como debía");
             });
         });
-        sin("encantos_mesa", 30, () -> {
-            var srv = mc.getSingleplayerServer();
-            UUID id = mc.player.getUUID();
-            srv.execute(() -> {
-                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
-                if (sp == null) return;
-                var l = sp.serverLevel();
-                var dir = sp.getDirection();
-                var mesa = sp.blockPosition().relative(dir, 3);
-                ENCANTOS_MESA = mesa;
-                for (var b : net.minecraft.core.BlockPos.betweenClosed(mesa.offset(-2, 0, -2), mesa.offset(2, 1, 2)))
-                    l.setBlockAndUpdate(b, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
-                l.setBlockAndUpdate(mesa, net.minecraft.world.level.block.Blocks.ENCHANTING_TABLE.defaultBlockState());
-                var est = mesa.relative(dir, 2);
-                l.setBlockAndUpdate(est, net.minecraft.world.level.block.Blocks.CHISELED_BOOKSHELF.defaultBlockState()
-                        .setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, dir.getOpposite()));
-                if (l.getBlockEntity(est) instanceof net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity be) {
-                    be.setItem(0, com.miscelanea.encantos.MesaEncantar.libro(com.miscelanea.encantos.Encantos.VAMPIRO.get()));
-                    be.setItem(1, com.miscelanea.encantos.MesaEncantar.libro(com.miscelanea.encantos.Encantos.BERSERKER.get()));
-                    be.setItem(2, com.miscelanea.encantos.MesaEncantar.libro(com.miscelanea.encantos.Encantos.ESCARCHA.get()));
-                    be.setItem(3, com.miscelanea.encantos.MesaEncantar.libro(com.miscelanea.encantos.Encantos.ADRENALINA.get()));
-                    be.setItem(4, com.miscelanea.encantos.MesaEncantar.libro(net.minecraft.world.item.enchantment.Enchantments.MOB_LOOTING));
-                }
-                sp.getInventory().setItem(0, new ItemStack(net.minecraft.world.item.Items.DIAMOND_SWORD));
-                sp.getInventory().selected = 0;
-                com.miscelanea.encantos.MesaEncantar.abrir(sp, mesa);
-            });
-        });
-        paso("60_mesa_encantar", 20, () -> {
-            if (!(mc.screen instanceof com.miscelanea.client.encantos.MesaEncantarScreen)) throw new IllegalStateException("no se ha abierto la mesa de elegir");
-        });
-        sin("encantos_elegir", 20, () -> {
-            var srv = mc.getSingleplayerServer();
-            UUID id = mc.player.getUUID();
-            srv.execute(() -> {
-                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
-                if (sp == null) return;
-                com.miscelanea.encantos.MesaEncantar.elegir(sp, ENCANTOS_MESA, "miscelanea:vampiro");
-                com.miscelanea.encantos.MesaEncantar.elegir(sp, ENCANTOS_MESA, "miscelanea:berserker");
-                com.miscelanea.encantos.MesaEncantar.elegir(sp, ENCANTOS_MESA, "miscelanea:escarcha");    // ya no cabe (límite 2)
-                var m = net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantments(sp.getMainHandItem());
-                RESUMEN.add("  mesa: la espada tiene " + m.keySet().stream().map(e -> e.getDescriptionId().replace("enchantment.", "")).toList());
-                if (m.size() != 2 || !m.containsKey(com.miscelanea.encantos.Encantos.VAMPIRO.get())) RESUMEN.add("  FALLO: la mesa de elegir no ha encantado bien");
-            });
-        });
-        paso("61_mesa_llena", 20, () -> {});
-        sin("encantos_fin", 5, () -> mc.setScreen(null));
         rendimiento();
         laser();
         eco();

@@ -6,9 +6,7 @@
   "refmap": "miscelanea.refmap.json",
   "mixins": [
     "LivingEntityAireMixin",
-    "LivingEntityGolpeAccessor",
-    "AbstractArrowAccessor",
-    "ItemStackDurabilidadMixin"
+    "LivingEntityGolpeAccessor"
   ],
   "client": [
     "CameraMixin",
@@ -26,8 +24,7 @@
     "KeyMappingAccessor",
     "KeyMappingMixin",
     "GameRendererMixin",
-    "WorldOpenFlowsMixin",
-    "MinecraftBrilloMixin"
+    "WorldOpenFlowsMixin"
   ],
   "injectors": {
     "defaultRequire": 1
