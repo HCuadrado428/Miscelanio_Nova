@@ -707,6 +707,41 @@ public final class PruebaCI {
         });
     }
 
+    /** Lo mismo pero dentro de n ticks del servidor (para mirar algo que dura poco, como un sensor de sculk). */
+    private static final List<Object[]> RIFLE_TRAS = new ArrayList<>();
+
+    private static void rifleSrvTras(int n, java.util.function.Consumer<ServerPlayer> c) {
+        synchronized (RIFLE_TRAS) {
+            RIFLE_TRAS.add(new Object[]{n, c, Minecraft.getInstance().player.getUUID()});
+        }
+    }
+
+    @SubscribeEvent
+    @SuppressWarnings("unchecked")
+    public static void rifleServidor(TickEvent.ServerTickEvent e) {
+        if (!ACTIVA || e.phase != TickEvent.Phase.END) return;
+        List<Object[]> listos = new ArrayList<>();
+        synchronized (RIFLE_TRAS) {
+            for (var it = RIFLE_TRAS.iterator(); it.hasNext(); ) {
+                Object[] t = it.next();
+                t[0] = (Integer) t[0] - 1;
+                if ((Integer) t[0] <= 0) {
+                    listos.add(t);
+                    it.remove();
+                }
+            }
+        }
+        for (Object[] t : listos) {
+            ServerPlayer sp = e.getServer().getPlayerList().getPlayer((UUID) t[2]);
+            if (sp == null) continue;
+            try {
+                ((java.util.function.Consumer<ServerPlayer>) t[1]).accept(sp);
+            } catch (Throwable ex) {
+                rifleFallo = ex.toString();
+            }
+        }
+    }
+
     private static void rifleComprobar() {
         String f = rifleFallo;
         rifleFallo = null;
@@ -830,17 +865,19 @@ public final class PruebaCI {
                     com.miscelanea.client.armasfuego.rifle.RifleCliente.firme()));
             if (d < 15 || d > 35) throw new IllegalStateException("el telémetro no marca la distancia al husk: " + d);
             rifleClic();
+            // el sensor de sculk, a 3 bloques, se activa un momento con el ruido del disparo
+            rifleSrvTras(8, sp -> {
+                var fase = net.minecraft.world.level.block.SculkSensorBlock.getPhase(sp.serverLevel().getBlockState(rifleSensor));
+                RESUMEN.add("  rifle: sensor de sculk tras el disparo: " + fase);
+                if (fase != net.minecraft.world.level.block.state.properties.SculkSensorPhase.ACTIVE) rifleFallo = "el sensor de sculk no ha oído el disparo";
+            });
         });
         sin("rifle_cabeza_comprobar", 2, () -> rifleSrv(sp -> {
             var l = sp.serverLevel();
             var z = l.getEntity(rifleZ1);
             boolean muerto = z == null || !z.isAlive() || ((net.minecraft.world.entity.LivingEntity) z).getHealth() <= 0;
-            var st = l.getBlockState(rifleSensor);
-            var fase = net.minecraft.world.level.block.SculkSensorBlock.getPhase(st);
-            RESUMEN.add("  rifle: disparo a la cabeza → husk " + (muerto ? "muerto" : "vivo con " + ((net.minecraft.world.entity.LivingEntity) z).getHealth())
-                    + " · sensor de sculk " + fase);
-            if (!muerto) rifleFallo = "el disparo a la cabeza no ha matado al husk";
-            else if (fase != net.minecraft.world.level.block.state.properties.SculkSensorPhase.ACTIVE) rifleFallo = "el sensor de sculk no ha oído el disparo";
+            RESUMEN.add("  rifle: disparo a la cabeza → husk " + (muerto ? "muerto" : "vivo con " + ((net.minecraft.world.entity.LivingEntity) z).getHealth()));
+            if (!muerto && rifleFallo == null) rifleFallo = "el disparo a la cabeza no ha matado al husk";
         }));
         sin("rifle_cerrojo2", 25, () -> {
             rifleComprobar();
@@ -913,13 +950,18 @@ public final class PruebaCI {
         });
         sin("rifle_silencio_disparo", 10, () -> {
             if (!com.miscelanea.armasfuego.rifle.Rifle.lista(mc.player.getMainHandItem())) throw new IllegalStateException("no hay bala para el disparo con silenciador");
+            rifleSrv(sp -> {
+                var fase = net.minecraft.world.level.block.SculkSensorBlock.getPhase(sp.serverLevel().getBlockState(rifleSensor));
+                if (fase == net.minecraft.world.level.block.state.properties.SculkSensorPhase.ACTIVE) rifleFallo = "el sensor de sculk ya estaba activo antes del disparo con silenciador";
+            });
             rifleClic();
+            rifleSrvTras(8, sp -> {
+                var fase = net.minecraft.world.level.block.SculkSensorBlock.getPhase(sp.serverLevel().getBlockState(rifleSensor));
+                RESUMEN.add("  rifle: con Silenciador, el sensor de sculk tras el disparo: " + fase);
+                if (fase == net.minecraft.world.level.block.state.properties.SculkSensorPhase.ACTIVE) rifleFallo = "el sensor de sculk ha oído el disparo con silenciador";
+            });
         });
-        sin("rifle_silencio_comprobar", 2, () -> rifleSrv(sp -> {
-            var fase = net.minecraft.world.level.block.SculkSensorBlock.getPhase(sp.serverLevel().getBlockState(rifleSensor));
-            RESUMEN.add("  rifle: con Silenciador el sensor de sculk está " + fase);
-            if (fase == net.minecraft.world.level.block.state.properties.SculkSensorPhase.ACTIVE) rifleFallo = "el sensor de sculk ha oído el disparo con silenciador";
-        }));
+        sin("rifle_silencio_espera", 15, () -> {});
         // bala de cuerda: desde lo alto de una torre hasta el suelo
         sin("rifle_torre", 30, () -> {
             rifleComprobar();

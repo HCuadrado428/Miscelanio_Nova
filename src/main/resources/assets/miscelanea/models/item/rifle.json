@@ -12,39 +12,39 @@
   },
   {
    "predicate": {
-    "miscelanea:oxido": 1
+    "miscelanea:oxido": 0.33
    },
    "model": "miscelanea:item/rifle_expuesto"
   },
   {
    "predicate": {
-    "miscelanea:oxido": 1,
+    "miscelanea:oxido": 0.33,
     "miscelanea:cerrojo": 1
    },
    "model": "miscelanea:item/rifle_expuesto_cerrojo"
   },
   {
    "predicate": {
-    "miscelanea:oxido": 2
+    "miscelanea:oxido": 0.66
    },
    "model": "miscelanea:item/rifle_erosionado"
   },
   {
    "predicate": {
-    "miscelanea:oxido": 2,
+    "miscelanea:oxido": 0.66,
     "miscelanea:cerrojo": 1
    },
    "model": "miscelanea:item/rifle_erosionado_cerrojo"
   },
   {
    "predicate": {
-    "miscelanea:oxido": 3
+    "miscelanea:oxido": 1.0
    },
    "model": "miscelanea:item/rifle_oxidado"
   },
   {
    "predicate": {
-    "miscelanea:oxido": 3,
+    "miscelanea:oxido": 1.0,
     "miscelanea:cerrojo": 1
    },
    "model": "miscelanea:item/rifle_oxidado_cerrojo"

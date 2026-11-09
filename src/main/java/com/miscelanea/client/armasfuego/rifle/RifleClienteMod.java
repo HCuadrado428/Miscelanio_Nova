@@ -22,8 +22,8 @@ public final class RifleClienteMod {
     @SubscribeEvent
     public static void setup(FMLClientSetupEvent e) {
         e.enqueueWork(() -> {
-            // óxido del cobre (0 a 3) y cerrojo abierto (mientras se acciona)
-            ItemProperties.register(ModItems.RIFLE.get(), new ResourceLocation(Miscelanea.MOD_ID, "oxido"), (s, l, en, seed) -> Rifle.oxido(s));
+            // óxido del cobre (0, 1/3, 2/3, 1: las propiedades van de 0 a 1) y cerrojo abierto (mientras se acciona)
+            ItemProperties.register(ModItems.RIFLE.get(), new ResourceLocation(Miscelanea.MOD_ID, "oxido"), (s, l, en, seed) -> Rifle.oxido(s) / 3F);
             ItemProperties.register(ModItems.RIFLE.get(), new ResourceLocation(Miscelanea.MOD_ID, "cerrojo"),
                     (s, l, en, seed) -> Rifle.cerrojo(s) > 2 ? 1F : 0F);
         });
