@@ -773,35 +773,35 @@
   "firstperson_righthand": {
    "rotation": [
     2,
-    16,
+    12,
     0
    ],
    "translation": [
     -1,
-    1.0,
-    -9
+    3.0,
+    -11
    ],
    "scale": [
-    0.62,
-    0.62,
-    0.62
+    0.58,
+    0.58,
+    0.58
    ]
   },
   "firstperson_lefthand": {
    "rotation": [
     2,
-    16,
+    12,
     0
    ],
    "translation": [
     -1,
-    1.0,
-    -9
+    3.0,
+    -11
    ],
    "scale": [
-    0.62,
-    0.62,
-    0.62
+    0.58,
+    0.58,
+    0.58
    ]
   },
   "thirdperson_righthand": {

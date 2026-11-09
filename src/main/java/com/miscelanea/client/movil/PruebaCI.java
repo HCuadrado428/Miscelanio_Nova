@@ -2337,7 +2337,7 @@ public final class PruebaCI {
             piApuntar(a2Punto(8, 0, 1.2));
             a2Vida("m0");
         });
-        paso("240_mosquete_1p", 4, () -> {});
+        paso("240_mosquete_1p", 10, () -> {});
         sin("a2_mosquete_gatillo", 1, piTiro());
         paso("241_mosquete_cazoleta", 1, () -> {});
         paso("242_mosquete_humo", 6, () -> {});
@@ -2386,7 +2386,7 @@ public final class PruebaCI {
             piApuntar(a2Punto(8, 0, 1.6));
             a2Vida("c0");
         });
-        paso("250_canon_1p", 4, () -> {});
+        paso("250_canon_1p", 10, () -> {});
         paso("251_canon_mecha", 14, piTiro());
         paso("252_canon_disparo", 18, () -> piApuntar(a2Punto(8, 0, 1.6)));
         sin("a2_canon_esperar", 10, () -> {});
