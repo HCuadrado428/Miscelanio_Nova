@@ -286,7 +286,7 @@ public final class Purgatorio {
                     int bx = cx * 16, bz = cz * 16;
                     switch (z) {
                         case SALA -> {
-                            return new BlockPos[]{new BlockPos(bx + 12, f, bz + 6), new BlockPos(bx + 12, f, bz + 1)};
+                            return new BlockPos[]{new BlockPos(bx + 12, f, bz + 4), new BlockPos(bx + 12, f, bz + 1)};
                         }
                         case RECREATIVA -> {
                             return new BlockPos[]{new BlockPos(bx + 11, f, bz + 6), new BlockPos(bx + 11, f + 1, bz + 11)};
@@ -298,7 +298,8 @@ public final class Purgatorio {
                         case HOTEL -> {
                             int x0 = q[k][0], z0 = q[k][1], sx = x0 == 0 ? 1 : -1, dz = z0 == 0 ? 1 : -1;
                             int xa = x0 == 0 ? 1 : 14, zc = z0 == 0 ? 1 : 14;
-                            return new BlockPos[]{new BlockPos(bx + xa + 2 * sx, f, bz + zc + 2 * dz), new BlockPos(bx + xa, f + 1, bz + zc + 3 * dz)};
+                            // tumbado en la cama (de pie encima), mirando la tele de los pies
+                            return new BlockPos[]{new BlockPos(bx + xa, f + 1, bz + zc), new BlockPos(bx + xa, f + 1, bz + zc + 3 * dz)};
                         }
                         default -> {
                             return null;

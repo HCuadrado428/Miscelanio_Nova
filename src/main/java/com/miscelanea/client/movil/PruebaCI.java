@@ -1206,7 +1206,7 @@ public final class PruebaCI {
             irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.FERIA).offset(0, 0, -6), 0, 6);
         });
         paso("40_purgatorio_feria", 30, () -> {});
-        paso("41_purgatorio_feria_2", 30, () -> mc.player.setYRot(mc.player.getYRot() + 120));
+        paso("41_purgatorio_feria_2", 30, () -> mc.player.setYRot(mc.player.getYRot() + 180));
         // un habitante: se le "habla" (como si fuera el chat de voz) y viene a tientas hasta pillarle
         sin("purgatorio_habitante", 20, () -> {
             var b = com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.FERIA);

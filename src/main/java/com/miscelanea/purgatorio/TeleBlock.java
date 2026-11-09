@@ -2,7 +2,6 @@ package com.miscelanea.purgatorio;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
@@ -61,11 +60,5 @@ public class TeleBlock extends HorizontalDirectionalBlock {
     @Override
     public void animateTick(BlockState s, Level l, BlockPos p, RandomSource r) {
         if (VISTAS.size() < 64) VISTAS.put(p.immutable(), System.currentTimeMillis());
-        if (r.nextInt(12) == 0) {
-            // alguna chispa de electricidad estática en la pantalla
-            Direction f = s.getValue(FACING);
-            l.addParticle(ParticleTypes.ELECTRIC_SPARK, p.getX() + 0.5 + f.getStepX() * 0.45 + (r.nextDouble() - 0.5) * 0.5,
-                    p.getY() + 0.25 + r.nextDouble() * 0.5, p.getZ() + 0.5 + f.getStepZ() * 0.45 + (r.nextDouble() - 0.5) * 0.5, 0, 0, 0);
-        }
     }
 }
