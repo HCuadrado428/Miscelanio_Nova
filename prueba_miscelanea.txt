@@ -1,0 +1,271 @@
+Prueba del móvil (Miscelánea)
+OK    preparar
+OK    00_mundo
+OK    01_inicio
+OK    02_camara
+OK    03_filtro_1
+OK    03_filtro_2
+OK    03_filtro_3
+OK    03_filtro_4
+OK    03_filtro_5
+OK    03_filtro_6
+OK    03_filtro_7
+OK    03_filtro_8
+OK    03_foto_gameboy
+OK    04_zoom
+OK    05_horizontal
+OK    vuelve_vertical
+OK    06_foto
+OK    espera_foto
+OK    07_temporizador
+OK    espera_temporizador
+OK    temporizador_fuera
+OK    08_flash
+OK    espera_flash
+OK    09_grabando
+OK    para_video
+OK    10_galeria
+  galería: 5 (la última es un vídeo de 3125 ms)
+OK    11_visor
+OK    12_llamada_grupo
+OK    13_llamada
+OK    14_entrante
+OK    15_manos_libres
+OK    16_teclado
+OK    17_ajustes
+OK    gramola_poner
+OK    20_gramola_menu
+OK    21_videoclip_hotel_inicio
+OK    22_videoclip_hotel_8s
+OK    23_videoclip_hotel_20s
+OK    24_tras_salir
+OK    gramola_otra
+OK    25_videoclip_disco
+OK    26_tras_salir_disco
+  pociones: red_mushroom=gigante brown_mushroom=enano echo_shard=ecolocalizacion ink_sac=niebla_viviente amethyst_shard=espejismo feather=helio snowball=ventilador wheat=borrachera cocoa_beans=tartamudeo
+OK    pociones
+OK    montana_construir
+  montaña: RRSSSSSSRBBBBBBRRRCCRRRRRRRRRRRRRRRRRRRRRRRCCCC (47 trozos, cerrado)
+OK    montana_circuito
+  estación: cuenta atrás 4 s, v=0.0
+OK    30_montana_cuenta
+OK    montana_salida
+  tren 00: RECTA/ESTACION y=0.2 v=0.18
+OK    30_montana_00
+  tren 01: SUBIDA/CADENA y=1.3 v=0.12
+OK    30_montana_01
+  tren 02: SUBIDA/CADENA y=3.0 v=0.12
+OK    30_montana_02
+  tren 03: SUBIDA/CADENA y=4.5 v=0.12
+OK    30_montana_03
+  tren 04: SUBIDA/CADENA y=6.1 v=0.12
+OK    30_montana_04
+  tren 05: BAJADA y=5.4 v=0.12
+OK    30_montana_05
+  tren 06: BAJADA y=2.6 v=0.38
+OK    30_montana_06
+  tren 07: RIZO y=4.1 v=0.46
+OK    30_montana_07
+  tren 08: RECTA y=0.2 v=0.60
+OK    30_montana_08
+  tren 09: RECTA y=0.2 v=0.59
+OK    30_montana_09
+  barra de seguridad (agachado en marcha): sigue montado, bien
+  tren 10: RECTA y=0.2 v=0.30
+OK    31_montana_10
+  tren 11: RECTA/ESTACION y=0.2 v=0.29
+OK    31_montana_11
+  tren 12: RECTA/ESTACION y=0.2 v=0.00
+OK    31_montana_12
+  tren 13: RECTA/ESTACION y=0.2 v=0.00
+OK    31_montana_13
+  tren 14: RECTA/ESTACION y=0.2 v=0.00
+OK    31_montana_14
+  tren 15: RECTA/ESTACION y=0.2 v=0.00
+OK    31_montana_15
+  montaña, trozos por los que ha pasado: [RECTA/ESTACION, SUBIDA/CADENA, BAJADA, RIZO, RECTA]
+  foto de la bajada: 0 mandada(s) a la galería
+FALLO montana_fin: java.lang.IllegalStateException: no se ha hecho la foto de la bajada
+OK    montana_pilares_ir
+  montaña: 22 bloques de pilar debajo de la vía
+OK    32_montana_pilares
+OK    montana_rizo_ir
+  rizo: 1 tren(es) cerca; jugador en minecraft:overworld
+OK    montana_rizo_espera
+OK    33_montana_rizo_00
+  rizo 1: RIZO 0, 0, -16 y=1.3 v=0.60, 2 montados
+OK    33_montana_rizo_01
+  rizo 2: RIZO 0, 0, -16 y=3.3 v=0.52, 2 montados
+OK    33_montana_rizo_02
+  rizo 3: RIZO 0, 0, -16 y=4.0 v=0.41, 2 montados
+OK    33_montana_rizo_03
+  rizo 4: RIZO 0, 0, -16 y=2.6 v=0.38, 2 montados
+OK    33_montana_rizo_04
+  rizo 5: RIZO 0, 0, -16 y=1.2 v=0.44, 2 montados
+OK    33_montana_rizo_05
+  rizo 6: RIZO 0, 0, -16 y=0.3 v=0.54, 2 montados
+OK    33_montana_rizo_06
+  rizo 7: CURVA_DER 1, 0, -22 y=0.2 v=0.60, 2 montados
+OK    33_montana_rizo_07
+  rizo 8: RECTA 2, 0, -20 y=0.2 v=0.60, 2 montados
+OK    33_montana_rizo_08
+  rizo 9: RECTA 2, 0, -18 y=0.2 v=0.60, 2 montados
+OK    33_montana_rizo_09
+  rizo 10: RECTA 2, 0, -15 y=0.2 v=0.60, 2 montados
+OK    33_montana_rizo_10
+  rizo 11: RECTA 2, 0, -13 y=0.2 v=0.59, 2 montados
+OK    33_montana_rizo_11
+  montaña, trozos (con el rizo): [RECTA/ESTACION, SUBIDA/CADENA, BAJADA, RIZO, RECTA, CURVA_DER]
+OK    montana_rizo_fin
+OK    montana_colocar
+  colocar solas: 10,0,0=recta/north 10,0,-1=subida/north 10,1,-2=recta/north 10,0,-3=bajada/north 10,0,-4=curva_der/north 11,0,-4=recta/east 12,0,-4=recta/east · seguidas: 7
+OK    34_montana_vagones
+OK    montana_piezas_ir
+OK    35_montana_piezas
+OK    montana_estacion_ir
+OK    36_montana_estacion
+OK    montana_dos_trenes
+OK    montana_dos_trenes_0
+OK    montana_dos_trenes_1
+OK    montana_dos_trenes_2
+OK    montana_dos_trenes_3
+OK    montana_dos_trenes_4
+OK    montana_dos_trenes_5
+OK    montana_dos_trenes_6
+OK    montana_dos_trenes_7
+OK    montana_dos_trenes_8
+OK    montana_dos_trenes_9
+OK    montana_dos_trenes_10
+OK    montana_dos_trenes_11
+OK    montana_dos_trenes_12
+OK    montana_dos_trenes_13
+OK    montana_dos_trenes_14
+OK    montana_dos_trenes_15
+OK    montana_dos_trenes_16
+OK    montana_dos_trenes_17
+OK    montana_dos_trenes_18
+OK    montana_dos_trenes_19
+  dos trenes en la vía (2): lo más cerca que han estado dos vagones, 1.63 bloques
+OK    montana_dos_trenes_fin
+OK    montana_romper
+  vía rota bajo el tren: 0 tren(es) quedan, 1 objeto(s) soltado(s), pasajero MONTADO
+FALLO montana_romper_fin: java.lang.IllegalStateException: al romper la vía el tren no se rompe bien
+OK    purgatorio_entrar
+OK    purgatorio_feria_ir
+OK    40_purgatorio_feria
+OK    41_purgatorio_feria_2
+OK    purgatorio_habitante
+  purgatorio, habitante: sale en 8, 64, 17
+OK    49_purgatorio_habitantes
+  habitantes 0: HEROBRINE a 9.0 SIN_TEXTURA a 11.2 RELLENO a 13.0
+OK    49_purgatorio_habitante_0
+  habitantes 1: HEROBRINE a 6.0 (cazando) SIN_TEXTURA a 8.3 (cazando) RELLENO a 10.1 (cazando)
+OK    49_purgatorio_habitante_1
+  habitantes 2: HEROBRINE a 2.1 (cazando) SIN_TEXTURA a 4.6 (cazando) RELLENO a 6.2 (cazando)
+OK    49_purgatorio_habitante_2
+  habitantes 3: HEROBRINE a 1.1 (cazando) SIN_TEXTURA a 1.2 (cazando) RELLENO a 2.6 (cazando)
+OK    49_purgatorio_habitante_3
+OK    purgatorio_habitante_fin
+  purgatorio, habitante: el jugador está a 1472 bloques de donde estaba (le ha pillado y le ha recolocado)
+OK    purgatorio_habitante_mira
+OK    purgatorio_sala_ir
+OK    42_purgatorio_sala
+OK    43_purgatorio_sala_2
+OK    purgatorio_recreativa_ir
+OK    45_purgatorio_recreativa
+  purgatorio, recreativa: 127 fundidas, 25 vivas (25 con bloque-entidad), ambiente: FERIA=0.00 SALA=0.00 RECREATIVA=0.00
+OK    46_purgatorio_recreativa_2
+OK    purgatorio_hotel_ir
+OK    4a_purgatorio_hotel
+  purgatorio, hotel: ambiente FERIA=0.00 SALA=0.00 RECREATIVA=0.00 HOTEL=0.00
+OK    4b_purgatorio_hotel_2
+OK    purgatorio_hotel_cuarto
+OK    4c_purgatorio_hotel_cuarto
+OK    purgatorio_sin_textura_ir
+OK    47_purgatorio_sin_textura
+  purgatorio, sin texturas: ambiente FERIA=0.00 SALA=0.00 RECREATIVA=0.00 HOTEL=0.00 SIN_TEXTURA=0.00
+OK    48_purgatorio_sin_textura_2
+OK    purgatorio_salida_ir
+OK    44_purgatorio_salida
+OK    purgatorio_cruzar
+  purgatorio (servidor): jugador en minecraft:overworld 10, 70, 7, bloque de la puerta: Block{miscelanea:puerta_salida}
+  purgatorio: zona del origen FERIA, salida en BlockPos{x=35, y=64, z=54}, ha salido por la puerta: sí
+OK    purgatorio_fuera
+  purgatorio: agujero del Mundo sin Texturas en BlockPos{x=-84, y=64, z=35}
+OK    purgatorio_agujero
+OK    4d_purgatorio_agujero
+OK    purgatorio_agujero_caer
+  purgatorio: ha salido por el agujero: sí (y=70)
+OK    purgatorio_agujero_fuera
+OK    recorte_niveles
+  recorte: espada {net.minecraft.world.item.enchantment.DamageEnchantment@2fc77f67=5, net.minecraft.world.item.enchantment.DigDurabilityEnchantment@513cb724=3, net.minecraft.world.item.enchantment.MendingEnchantment@222df2c1=1} · peto {net.minecraft.world.item.enchantment.ProtectionEnchantment@78d44fda=4, net.minecraft.world.item.enchantment.ThornsEnchantment@5b796ef4=3} · libro {net.minecraft.world.item.enchantment.ProtectionEnchantment@78d44fda=4} · xp +200 · espada con durabilidad: true
+OK    perfil_vacio
+  rendimiento sin_sala: 10.7 fps · 48.6 ms/fotograma · bloques-entidad 0.60 ms · pantalla 0.00 ms (113 fotogramas)
+OK    perfil_sala
+  rendimiento: sala con 31 de 35 cosas
+  rendimiento colocar: 10.4 fps · 69.6 ms/fotograma · bloques-entidad 17.52 ms · pantalla 0.00 ms (11 fotogramas)
+OK    perfil_mirar
+  rendimiento sala: 26.3 fps · 29.6 ms/fotograma · bloques-entidad 5.21 ms · pantalla 0.00 ms (395 fotogramas)
+  rendimiento: 5 máquinas con partida retransmitida
+OK    perfil_jugar
+OK    70_perfil_mazmorra
+  rendimiento mazmorra: 30.3 fps · 25.5 ms/fotograma · bloques-entidad 4.52 ms · pantalla 1.05 ms (466 fotogramas)
+OK    perfil_turbo
+OK    71_perfil_turbo
+  rendimiento turbo: 32.3 fps · 24.3 ms/fotograma · bloques-entidad 4.77 ms · pantalla 0.69 ms (496 fotogramas)
+  perfil sin_sala (217 muestras, 30% en nativo): MovilCliente.tick 6.0% MapaCache.tick 6.0% MapaCache.pintar 5.1% MapaCache.altura 1.8% MapaCache.carpeta 0.5% BorracheraCliente.antesHud 0.5% TrenMontanaRenderer.m_5523_ 0.5% TrenMontanaRenderer.shouldRender 0.5% TirolinaCliente.tick 0.5% Calamar.tick 0.5% BorracheraCliente.intensidad 0.5% CastigoCliente.tick 0.5%
+  perfil colocar (13 muestras, 53% en nativo): FlotaRenderer.m_6922_ 7.7% FlotaRenderer.render 7.7% RecreativaRenderer.render 7.7% CartelRecordsRenderer.render 7.7% RecreativaRenderer.m_6922_ 7.7% CartelRecordsRenderer.m_6922_ 7.7% CartelRecordsRenderer.tablon 7.7% CartelRecordsRenderer.textoL 7.7%
+  perfil sala (319 muestras, 46% en nativo): FutbolinRenderer.m_6922_ 8.5% FutbolinRenderer.render 8.5% BoleraRenderer.render 5.6% BoleraRenderer.m_6922_ 5.6% FeriaPiezas.modelo 5.3% RecreativaRenderer.m_6922_ 3.4% RecreativaRenderer.render 3.4% PantallaTextura.subir 2.8% PantallaTextura.actualizar 2.8% CartelRecordsRenderer.m_6922_ 1.9% CartelRecordsRenderer.render 1.9% CartelRecordsRenderer.tablon 1.6%
+  perfil mazmorra (315 muestras, 52% en nativo): TableroRenderer.render 11.4% TableroRenderer.m_6922_ 11.4% ArcadeScreen.m_88315_ 3.8% FutbolinRenderer.m_6922_ 3.5% FutbolinRenderer.render 3.5% CartelRecordsRenderer.m_6922_ 2.5% CartelRecordsRenderer.render 2.5% BoleraRenderer.m_6922_ 1.6% BoleraRenderer.render 1.6% CartelRecordsRenderer.tablon 1.6% RecreativaRenderer.m_6922_ 1.3% RecreativaRenderer.render 1.3%
+  perfil turbo (329 muestras, 50% en nativo): TableroRenderer.render 19.1% TableroRenderer.m_6922_ 19.1% FutbolinRenderer.m_6922_ 3.0% FutbolinRenderer.render 3.0% RecreativaRenderer.m_6922_ 2.4% RecreativaRenderer.render 2.4% CartelRecordsRenderer.m_6922_ 1.5% CartelRecordsRenderer.render 1.5% PantallaTextura.subir 1.2% PantallaTextura.actualizar 1.2% PocionesEventos.tickVivo 1.2% BoleraRenderer.m_6922_ 0.9%
+OK    perfil_fin
+OK    72_perfil_sala
+OK    laser_poner
+OK    laser_encender
+OK    80_laser_primera
+OK    laser_primera_quitar_hud
+  láser laser_primera: el punto sale a (-0.4, -0.9) px de la mira (55 píxeles rojos, imagen 854x480) · calculado (+0.1, -0.4) px, a 0.011 bloques de donde mira y a 0.036 del que ven los demás
+OK    laser_primera_medir
+OK    laser_fov
+OK    81_laser_fov105
+OK    laser_fov105_quitar_hud
+  láser laser_fov105: el punto sale a (-0.5, -0.6) px de la mira (11 píxeles rojos, imagen 854x480) · calculado (+0.1, -0.3) px, a 0.017 bloques de donde mira y a 0.023 del que ven los demás
+OK    laser_fov105_medir
+OK    laser_gigante
+  láser: de gigante, ojos a 4.86 bloques del suelo
+OK    82_laser_gigante
+OK    laser_gigante_quitar_hud
+  láser laser_gigante: el punto sale a (-0.7, -0.2) px de la mira (42 píxeles rojos, imagen 854x480) · calculado (-0.1, +0.2) px, a 0.009 bloques de donde mira y a 0.019 del que ven los demás
+OK    laser_gigante_medir
+OK    laser_normal
+OK    laser_fuera_poner
+OK    83_laser_desde_fuera
+OK    laser_desde_fuera_quitar_hud
+  láser laser_desde_fuera: el punto sale a (-0.5, -1.2) px de donde mira (38 píxeles rojos, imagen 854x480) · calculado (+0.4, -0.7) px, a 0.023 bloques de donde mira y a 0.014 del que ven los demás
+OK    laser_desde_fuera_medir
+OK    laser_fuera_quitar
+OK    84_laser_tercera
+OK    laser_fin
+OK    eco_poner
+OK    eco_hablador
+OK    eco_ruido
+OK    90_eco_activo
+  eco activo: niebla hasta 0.02 bloques · ondas 7, bloques 1226, entidades 4, fallos al dibujar 0 · imagen: 69% negra, luz media 30, 15718 px azulados, 45 px muy claros · hablo (solo ruido del micro): no
+OK    eco_medir
+OK    91_eco_tercera
+OK    eco_mirar_cielo
+OK    92_eco_cielo
+  eco mirando arriba (a mediodía): imagen: 83% negra, luz media 10, 145 px azulados, 45 px muy claros
+FALLO eco_medir_cielo: java.lang.IllegalStateException: se ve el sol a ciegas
+OK    eco_andar
+OK    94_eco_andando
+  eco andando: ondas de mis pasos 3, de los pasos del otro 3 · ondas 9, bloques 1586, entidades 3, fallos al dibujar 0
+OK    eco_medir_pasos
+OK    eco_quitar
+OK    93_eco_quitado
+  eco quitado: niebla hasta 192.0 bloques · ondas 0, bloques 0, entidades 0, fallos al dibujar 0 · imagen: 8% negra, luz media 80, 3414 px azulados, 33 px muy claros
+OK    eco_comprobar
+OK    eco_fin
+  cara propia (la de su modelo) guardada: sí
+OK    cerrar
+3 PASOS FALLARON
