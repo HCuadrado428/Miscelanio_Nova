@@ -160,6 +160,9 @@ public class Miscelanea {
             event.accept(ModItems.LANZACOHETES);
             event.accept(ModItems.COHETE);
             event.accept(ModItems.BALLESTA_REPETICION);
+            // ---- Escopeta de presión
+            event.accept(ModItems.ESCOPETA_PRESION);
+            for (var t : com.miscelanea.armasfuego.escopeta.TipoCartucho.values()) event.accept(t.item());
             for (int c = 0; c < com.miscelanea.laser.Laser.COLORES.length; c++) {
                 net.minecraft.world.item.ItemStack laser = new net.minecraft.world.item.ItemStack(com.miscelanea.laser.LaserRegistro.PUNTERO.get());
                 if (c > 0) laser.getOrCreateTag().putInt(com.miscelanea.laser.Laser.COLOR, c);

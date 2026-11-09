@@ -1,0 +1,6 @@
+{
+ "parent": "miscelanea:item/escopeta_presion_base",
+ "textures": {
+  "layer0": "miscelanea:item/escopeta_presion_expuesta_4"
+ }
+}

@@ -338,6 +338,7 @@ public final class PruebaCI {
         rendimiento();
         laser();
         eco();
+        escopeta();
         sin("cerrar", 10, () -> {
             mc.setScreen(null);
             RESUMEN.add("  cara propia (la de su modelo) guardada: " + (CarasCliente.tiene(mc.player.getUUID()) ? "sí" : "NO"));
@@ -955,6 +956,391 @@ public final class PruebaCI {
         if (obligatorio && !bien) throw new IllegalStateException("el punto del láser no cae donde debe (" + nombre + ")");
     }
 
+    // ------------------------------------------------------------------ escopeta de presión
+    private static boolean escAgachado;
+    private static net.minecraft.core.BlockPos escHoguera, escVela, escTierra;
+    private static UUID escHusk, escCerdo;
+    private static float escVida;
+    private static double escY;
+    private static Vec3 escCerdoPos;
+    private static int escCosas;
+
+    private static ServerPlayer escJugador() {
+        var srv = Minecraft.getInstance().getSingleplayerServer();
+        return srv.getPlayerList().getPlayer(Minecraft.getInstance().player.getUUID());
+    }
+
+    /** En el hilo del servidor, con el jugador de la prueba. */
+    private static void escServidor(java.util.function.Consumer<ServerPlayer> c) {
+        var srv = Minecraft.getInstance().getSingleplayerServer();
+        UUID id = Minecraft.getInstance().player.getUUID();
+        srv.execute(() -> {
+            ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+            if (sp != null) c.accept(sp);
+        });
+    }
+
+    private static net.minecraft.world.entity.Entity escEntidad(UUID id) {
+        return escJugador().serverLevel().getEntity(id);
+    }
+
+    private static void escApuntar(ServerPlayer sp, Vec3 a) {
+        Vec3 d = a.subtract(sp.getEyePosition());
+        float yaw = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
+        float pitch = (float) Math.toDegrees(-Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
+        sp.connection.teleport(sp.getX(), sp.getY(), sp.getZ(), yaw, pitch);
+    }
+
+    /** Pone la escopeta en la mano con esta presión y estos cartuchos en la tolva, y apunta a {@code a}. */
+    private static void escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho t, float presion, Vec3 a) {
+        escServidor(sp -> {
+            ItemStack s = sp.getMainHandItem();
+            com.miscelanea.armasfuego.escopeta.Presion.ponerTolva(s, t, t == null ? 0 : 16);
+            com.miscelanea.armasfuego.escopeta.Presion.ponerPresion(s, presion);
+            s.getOrCreateTag().remove(com.miscelanea.armasfuego.escopeta.Presion.DISPAROS);
+            if (a != null) escApuntar(sp, a);
+            if (escEntidad(escHusk) instanceof net.minecraft.world.entity.LivingEntity h) escVida = h.getHealth();
+        });
+    }
+
+    private static ItemStack escMano() {
+        return Minecraft.getInstance().player.getMainHandItem();
+    }
+
+    private static Vec3 escHuskPos() {
+        var h = escEntidad(escHusk);
+        if (h == null) throw new IllegalStateException("no está la diana (husk)");
+        return h.position().add(0, 1.0, 0);
+    }
+
+    private static void escopeta() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("esc_poner", 40, () -> {
+            mc.setScreen(null);
+            mc.options.hideGui = false;
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            escServidor(sp -> {
+                var l = sp.serverLevel();
+                var mira = net.minecraft.core.Direction.fromYRot(sp.getYRot());
+                var lado = mira.getClockWise();
+                var o = sp.blockPosition();
+                var aire = net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
+                for (var b : net.minecraft.core.BlockPos.betweenClosed(o.relative(lado, -9).relative(mira, -4).below(), o.relative(lado, 9).relative(mira, 12).above(18)))
+                    l.setBlock(b, b.getY() < o.getY() ? net.minecraft.world.level.block.Blocks.SMOOTH_STONE.defaultBlockState() : aire, 2);
+                for (int dx = -9; dx <= 9; dx++)
+                    for (int dy = 0; dy <= 6; dy++)
+                        l.setBlock(o.relative(mira, 12).relative(lado, dx).above(dy), net.minecraft.world.level.block.Blocks.SPRUCE_PLANKS.defaultBlockState(), 2);
+                l.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, new net.minecraft.world.phys.AABB(o).inflate(30), e -> !(e instanceof net.minecraft.world.entity.player.Player))
+                        .forEach(net.minecraft.world.entity.Entity::discard);
+                // la diana: un husk quieto (no se quema de día)
+                var h = net.minecraft.world.entity.EntityType.HUSK.create(l);
+                var ph = o.relative(mira, 6);
+                h.moveTo(ph.getX() + 0.5, ph.getY(), ph.getZ() + 0.5, mira.toYRot() + 180, 0);
+                h.setNoAi(true);
+                h.setPersistenceRequired();
+                h.setCustomName(net.minecraft.network.chat.Component.literal("Diana"));
+                l.addFreshEntity(h);
+                escHusk = h.getUUID();
+                // un cerdo para el soplido y el aspirado
+                var c = net.minecraft.world.entity.EntityType.PIG.create(l);
+                var pc = o.relative(mira, 5).relative(lado, 4);
+                c.moveTo(pc.getX() + 0.5, pc.getY(), pc.getZ() + 0.5, 0, 0);
+                c.setPersistenceRequired();
+                l.addFreshEntity(c);
+                escCerdo = c.getUUID();
+                // hoguera y vela apagadas
+                escHoguera = o.relative(mira, 5).relative(lado, -3);
+                escVela = escHoguera.relative(lado, -1);
+                l.setBlock(escHoguera, net.minecraft.world.level.block.Blocks.CAMPFIRE.defaultBlockState().setValue(net.minecraft.world.level.block.CampfireBlock.LIT, false), 3);
+                l.setBlock(escVela, net.minecraft.world.level.block.Blocks.CANDLE.defaultBlockState()
+                        .setValue(net.minecraft.world.level.block.CandleBlock.CANDLES, 4), 3);
+                // tierra de cultivo (3x3) para las semillas
+                escTierra = o.relative(mira, 4).relative(lado, -7).below();
+                for (int a = -1; a <= 1; a++)
+                    for (int b = -1; b <= 1; b++)
+                        l.setBlock(escTierra.relative(mira, a).relative(lado, b), net.minecraft.world.level.block.Blocks.FARMLAND.defaultBlockState()
+                                .setValue(net.minecraft.world.level.block.FarmBlock.MOISTURE, 7), 2);
+                sp.setGameMode(GameType.SURVIVAL);
+                sp.removeAllEffects();
+                sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.DAMAGE_RESISTANCE, 20 * 600, 4, false, false));
+                sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.SATURATION, 20 * 600, 0, false, false));
+                sp.setHealth(sp.getMaxHealth());
+                sp.getInventory().clearContent();
+                sp.getInventory().setItem(0, new ItemStack(com.miscelanea.registry.ModItems.ESCOPETA_PRESION.get()));
+                sp.getInventory().selected = 0;
+                sp.connection.teleport(o.getX() + 0.5, o.getY(), o.getZ() + 0.5, mira.toYRot(), 0F);
+            });
+        });
+        paso("120_escopeta_mano", 20, () -> {
+            if (!(escMano().getItem() instanceof com.miscelanea.armasfuego.escopeta.EscopetaPresionItem))
+                throw new IllegalStateException("no tengo la escopeta de presión en la mano");
+        });
+        // ---- bombear con el clic derecho mantenido
+        sin("esc_bombear", 10, () -> mantenerUso = true);
+        paso("121_bombeando", 25, () -> {});
+        sin("esc_soltar", 10, () -> {
+            mantenerUso = false;
+            mc.options.keyUse.setDown(false);
+        });
+        paso("122_tercera_persona", 20, () -> {
+            float pr = com.miscelanea.armasfuego.escopeta.Presion.presion(escMano());
+            RESUMEN.add(String.format("  escopeta: tras bombear ~2 s la presión es %.0f (zona %d)", pr, com.miscelanea.armasfuego.escopeta.Presion.zona(escMano())));
+            if (pr < 25) throw new IllegalStateException("bombeando no sube la presión (" + pr + ")");
+            mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
+        });
+        // ---- grava
+        sin("esc_grava", 10, () -> {
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.GRAVA, 100, escHuskPos());
+        });
+        paso("123_grava", 12, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
+        sin("esc_grava_chk", 5, () -> {
+            var h = (net.minecraft.world.entity.LivingEntity) escEntidad(escHusk);
+            ItemStack s = escJugador().getMainHandItem();
+            RESUMEN.add(String.format("  escopeta: grava a 6 bloques quita %.1f de vida a la diana; presión después %.0f; tolva %d",
+                    escVida - h.getHealth(), com.miscelanea.armasfuego.escopeta.Presion.presion(s), com.miscelanea.armasfuego.escopeta.Presion.tolvaN(s)));
+            if (escVida - h.getHealth() < 3) throw new IllegalStateException("la grava casi no hace daño");
+            if (com.miscelanea.armasfuego.escopeta.Presion.presion(s) > 0) throw new IllegalStateException("tras disparar sigue con presión");
+            if (com.miscelanea.armasfuego.escopeta.Presion.tolvaN(s) != 15) throw new IllegalStateException("no ha gastado un cartucho");
+            escServidor(sp -> h.setHealth(h.getMaxHealth()));
+        });
+        // ---- incendiario: a la diana y a la hoguera
+        sin("esc_fuego", 10, () -> escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.INCENDIARIO, 100, escHuskPos()));
+        paso("124_incendiario", 12, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
+        sin("esc_hoguera", 10, () -> {
+            if (!escEntidad(escHusk).isOnFire()) throw new IllegalStateException("el incendiario no prende a la diana");
+            escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.INCENDIARIO, 100, Vec3.atCenterOf(escHoguera).add(0, -0.25, 0));
+        });
+        paso("125_hoguera", 15, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
+        sin("esc_hoguera_chk", 5, () -> {
+            var l = escJugador().serverLevel();
+            boolean hog = l.getBlockState(escHoguera).getValue(net.minecraft.world.level.block.CampfireBlock.LIT);
+            boolean vel = l.getBlockState(escVela).getValue(net.minecraft.world.level.block.CandleBlock.LIT);
+            RESUMEN.add("  escopeta: incendiario → hoguera encendida " + hog + ", vela encendida " + vel);
+            if (!hog && !vel) throw new IllegalStateException("el incendiario no ha encendido ni la hoguera ni la vela");
+        });
+        // ---- escarcha: apaga a la diana, la congela y deja nieve en polvo en el suelo
+        sin("esc_escarcha", 5, () -> escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.ESCARCHA, 100, escHuskPos().add(0, -0.7, 0)));
+        paso("126_escarcha", 15, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
+        sin("esc_escarcha_chk", 5, () -> {
+            var h = escEntidad(escHusk);
+            int nieve = 0;
+            var l = escJugador().serverLevel();
+            for (var b : net.minecraft.core.BlockPos.betweenClosed(h.blockPosition().offset(-6, -1, -6), h.blockPosition().offset(6, 2, 6)))
+                if (l.getBlockState(b).is(net.minecraft.world.level.block.Blocks.POWDER_SNOW)) nieve++;
+            RESUMEN.add("  escopeta: escarcha → diana ardiendo " + h.isOnFire() + ", congelada " + h.getTicksFrozen() + " ticks, nieve en polvo " + nieve);
+            if (h.isOnFire()) throw new IllegalStateException("la escarcha no apaga el fuego");
+            if (h.getTicksFrozen() <= 0) throw new IllegalStateException("la escarcha no congela");
+            if (nieve == 0) throw new IllegalStateException("la escarcha no deja nieve en polvo");
+            escServidor(sp -> {
+                for (var b : net.minecraft.core.BlockPos.betweenClosed(h.blockPosition().offset(-6, -1, -6), h.blockPosition().offset(6, 2, 6)))
+                    if (l.getBlockState(b).is(net.minecraft.world.level.block.Blocks.POWDER_SNOW)) l.setBlock(b, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+                h.setTicksFrozen(0);
+            });
+        });
+        // ---- miel
+        sin("esc_miel", 5, () -> escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.MIEL, 100, escHuskPos()));
+        paso("127_miel", 12, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
+        sin("esc_miel_chk", 5, () -> {
+            var h = (net.minecraft.world.entity.LivingEntity) escEntidad(escHusk);
+            if (!h.hasEffect(com.miscelanea.registry.ModEffects.PRINGADO.get())) throw new IllegalStateException("la miel no pringa");
+            escServidor(sp -> h.setHealth(h.getMaxHealth()));
+        });
+        // ---- sal: sin daño
+        sin("esc_sal", 5, () -> escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.SAL, 100, escHuskPos()));
+        paso("128_sal", 12, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
+        sin("esc_sal_chk", 5, () -> {
+            var h = (net.minecraft.world.entity.LivingEntity) escEntidad(escHusk);
+            RESUMEN.add(String.format("  escopeta: sal → vida de la diana %.1f → %.1f", escVida, h.getHealth()));
+            if (h.getHealth() < escVida) throw new IllegalStateException("la sal hace daño");
+        });
+        // ---- semillas: siembra la tierra de cultivo
+        sin("esc_semillas", 5, () -> escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.SEMILLAS, 100, Vec3.atCenterOf(escTierra).add(0, 0.45, 0)));
+        paso("129_semillas", 15, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
+        sin("esc_semillas_chk", 5, () -> {
+            var l = escJugador().serverLevel();
+            int trigo = 0;
+            for (var b : net.minecraft.core.BlockPos.betweenClosed(escTierra.offset(-2, 1, -2), escTierra.offset(2, 1, 2)))
+                if (l.getBlockState(b).is(net.minecraft.world.level.block.Blocks.WHEAT)) trigo++;
+            RESUMEN.add("  escopeta: semillas → " + trigo + " matas de trigo sembradas");
+            if (trigo == 0) throw new IllegalStateException("las semillas no siembran");
+        });
+        // ---- confeti
+        sin("esc_confeti", 5, () -> escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.CONFETI, 100, escHuskPos()));
+        paso("130_confeti", 6, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
+        // ---- soplido (tolva vacía): empuja al cerdo
+        sin("esc_soplido", 10, () -> {
+            var c = escEntidad(escCerdo);
+            escCerdoPos = c.position();
+            escCargar(null, 90, c.position().add(0, 0.5, 0));
+        });
+        paso("131_soplido", 10, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
+        sin("esc_soplido_chk", 5, () -> {
+            double d = escEntidad(escCerdo).position().distanceTo(escCerdoPos);
+            RESUMEN.add(String.format("  escopeta: el soplido mueve al cerdo %.1f bloques", d));
+            if (d < 1.2) throw new IllegalStateException("el soplido no empuja al cerdo");
+        });
+        // ---- salto escopeta: mirando abajo con mucha presión
+        sin("esc_salto", 10, () -> {
+            escY = mc.player.getY();
+            escCargar(null, 100, null);
+            escServidor(sp -> sp.connection.teleport(sp.getX(), sp.getY(), sp.getZ(), sp.getYRot(), 89F));
+        });
+        sin("esc_salto_tercera", 2, () -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK));
+        paso("132_salto", 7, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
+        sin("esc_salto_chk", 40, () -> {
+            double sube = mc.player.getY() - escY;
+            RESUMEN.add(String.format("  escopeta: el salto escopeta sube %.1f bloques en 7 ticks", sube));
+            if (sube < 1.5) throw new IllegalStateException("el soplido hacia abajo con mucha presión no lanza");
+        });
+        // ---- frenar la caída: desde 14 bloques, soplido hacia abajo antes de llegar
+        sin("esc_caida", 14, () -> {
+            escCargar(null, 70, null);
+            escServidor(sp -> sp.connection.teleport(sp.getX(), sp.getY() + 14, sp.getZ(), sp.getYRot(), 89F));
+        });
+        sin("esc_frenar", 4, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
+        sin("esc_frenar_chk", 40, () -> {
+            float caida = escJugador().fallDistance;
+            RESUMEN.add(String.format("  escopeta: tras el soplido hacia abajo, velocidad %.2f y caída acumulada %.1f", mc.player.getDeltaMovement().y, caida));
+            if (caida > 3) throw new IllegalStateException("el soplido hacia abajo no frena la caída");
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+        });
+        // ---- aspirar (agachado): objetos tirados alrededor
+        sin("esc_tirar", 10, () -> escServidor(sp -> {
+            sp.connection.teleport(sp.getX(), sp.getY(), sp.getZ(), sp.getYRot(), 20F);
+            var l = sp.serverLevel();
+            for (int i = 0; i < 8; i++) {
+                double a = i * Math.PI / 4;
+                var it = new net.minecraft.world.entity.item.ItemEntity(l, sp.getX() + Math.cos(a) * 4.5, sp.getY() + 0.3, sp.getZ() + Math.sin(a) * 4.5,
+                        new ItemStack(net.minecraft.world.item.Items.COBBLESTONE, 4));
+                it.setPickUpDelay(10);
+                l.addFreshEntity(it);
+            }
+            escCosas = 0;
+        }));
+        sin("esc_aspirar", 10, () -> {
+            escAgachado = true;
+            mantenerUso = true;
+        });
+        paso("133_aspirar", 40, () -> {});
+        sin("esc_aspirar_chk", 5, () -> {
+            escAgachado = false;
+            mantenerUso = false;
+            mc.options.keyShift.setDown(false);
+            mc.options.keyUse.setDown(false);
+            int n = escJugador().getInventory().countItem(net.minecraft.world.item.Items.COBBLESTONE);
+            RESUMEN.add("  escopeta: aspirando se han recogido " + n + " de 32 piedras");
+            if (n < 16) throw new IllegalStateException("aspirar no trae los objetos");
+        });
+        // ---- revienta: bombear con la aguja en el tope
+        sin("esc_tope", 5, () -> escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.GRAVA, 99.5F, null));
+        sin("esc_reventar", 20, () -> mantenerUso = true);
+        paso("134_reventada", 15, () -> {
+            mantenerUso = false;
+            mc.options.keyUse.setDown(false);
+            int r = com.miscelanea.armasfuego.escopeta.Presion.reventada(escMano(), mc.level);
+            RESUMEN.add("  escopeta: reventada, humeando " + r + " ticks más; enfriamiento " + mc.player.getCooldowns().isOnCooldown(escMano().getItem()));
+            if (r <= 0) throw new IllegalStateException("pasándose de la roja no revienta");
+        });
+        // ---- válvula de seguridad: en el tope suelta el aire en vez de reventar
+        sin("esc_valvula", 5, () -> escServidor(sp -> {
+            ItemStack s = new ItemStack(com.miscelanea.registry.ModItems.ESCOPETA_PRESION.get());
+            s.enchant(com.miscelanea.registry.ModEnchantments.ESCOPETA_VALVULA.get(), 1);
+            s.enchant(com.miscelanea.registry.ModEnchantments.ESCOPETA_DOBLE_CAMARA.get(), 1);
+            com.miscelanea.armasfuego.escopeta.Presion.ponerPresion(s, 95);
+            sp.getInventory().setItem(0, s);
+        }));
+        sin("esc_valvula_bombear", 30, () -> mantenerUso = true);
+        sin("esc_valvula_chk", 5, () -> {
+            mantenerUso = false;
+            mc.options.keyUse.setDown(false);
+            ItemStack s = escMano();
+            float pr = com.miscelanea.armasfuego.escopeta.Presion.presion(s);
+            if (com.miscelanea.armasfuego.escopeta.Presion.reventada(s, mc.level) > 0) throw new IllegalStateException("con Válvula de seguridad revienta");
+            if (Math.abs(pr - com.miscelanea.armasfuego.escopeta.Presion.tope(s)) > 1.5) throw new IllegalStateException("la válvula no deja la presión en el tope (" + pr + ")");
+        });
+        // ---- doble cámara: dos disparos con una bombeada
+        sin("esc_doble", 5, () -> escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.GRAVA, 60, escHuskPos()));
+        sin("esc_doble_1", 15, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
+        sin("esc_doble_2", 15, () -> {
+            ItemStack s = escJugador().getMainHandItem();
+            if (com.miscelanea.armasfuego.escopeta.Presion.disparosQuedan(s) != 1) throw new IllegalStateException("con Doble cámara no queda un segundo disparo");
+            com.miscelanea.client.armasfuego.escopeta.EscopetaCliente.disparar();
+        });
+        sin("esc_doble_chk", 5, () -> {
+            ItemStack s = escJugador().getMainHandItem();
+            if (com.miscelanea.armasfuego.escopeta.Presion.presion(s) > 0 || com.miscelanea.armasfuego.escopeta.Presion.tolvaN(s) != 14)
+                throw new IllegalStateException("el segundo disparo de la Doble cámara no ha salido");
+        });
+        // ---- encantamientos, recetas, tolva, panal y hacha
+        sin("esc_encantamientos", 5, () -> {
+            var g = new ItemStack(com.miscelanea.registry.ModItems.ESCOPETA_PRESION.get());
+            var esp = new ItemStack(net.minecraft.world.item.Items.DIAMOND_SWORD);
+            var todos = java.util.List.of(com.miscelanea.registry.ModEnchantments.ESCOPETA_COMPRESOR.get(), com.miscelanea.registry.ModEnchantments.ESCOPETA_VALVULA.get(),
+                    com.miscelanea.registry.ModEnchantments.ESCOPETA_DOBLE_CAMARA.get(), com.miscelanea.registry.ModEnchantments.ESCOPETA_FUELLE.get(),
+                    com.miscelanea.registry.ModEnchantments.ESCOPETA_RECICLAJE.get());
+            for (var en : todos) {
+                if (!en.canEnchant(g)) throw new IllegalStateException(en.getDescriptionId() + " no vale para la escopeta");
+                if (en.canEnchant(esp)) throw new IllegalStateException(en.getDescriptionId() + " vale para una espada");
+            }
+            var mesa = net.minecraft.world.item.enchantment.EnchantmentHelper.getAvailableEnchantmentResults(30, g, false);
+            int salen = 0;
+            for (var en : todos) if (mesa.stream().anyMatch(i -> i.enchantment == en)) salen++;
+            RESUMEN.add("  escopeta: en la mesa a nivel 30 pueden salir " + salen + " de 5 encantamientos propios (" + mesa.size() + " en total)");
+            if (salen < 5) throw new IllegalStateException("no salen todos los encantamientos propios en la mesa");
+            if (todos.get(0).isCompatibleWith(todos.get(1))) throw new IllegalStateException("Compresor y Válvula de seguridad son compatibles");
+            g.enchant(todos.get(0), 2);
+            if (Math.abs(com.miscelanea.armasfuego.escopeta.Presion.tope(g) - 120) > 0.01) throw new IllegalStateException("Compresor II no sube el tope a 120");
+            // recetas
+            var rm = escJugador().serverLevel().getRecipeManager();
+            int recetas = 0;
+            for (String r : new String[]{"escopeta_presion", "escopeta_cartucho_grava", "escopeta_cartucho_incendiario", "escopeta_cartucho_escarcha",
+                    "escopeta_cartucho_miel", "escopeta_cartucho_sal", "escopeta_cartucho_semillas", "escopeta_cartucho_confeti"})
+                if (rm.byKey(new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, r)).isPresent()) recetas++;
+            if (recetas != 8) throw new IllegalStateException("faltan recetas de la escopeta (" + recetas + "/8)");
+            // tolva, panal y hacha (clic derecho en el inventario)
+            var p = escJugador();
+            ItemStack cart = new ItemStack(com.miscelanea.armasfuego.escopeta.TipoCartucho.MIEL.item(), 20);
+            com.miscelanea.armasfuego.escopeta.EscopetaPresionItem.usarEnInventario(g, cart, p, null);
+            if (com.miscelanea.armasfuego.escopeta.Presion.tolvaN(g) != 16 || cart.getCount() != 4) throw new IllegalStateException("la tolva no se carga bien");
+            com.miscelanea.armasfuego.escopeta.Presion.ponerOxido(g, 3);
+            com.miscelanea.armasfuego.escopeta.EscopetaPresionItem.usarEnInventario(g, new ItemStack(net.minecraft.world.item.Items.IRON_AXE), p, null);
+            if (com.miscelanea.armasfuego.escopeta.Presion.oxido(g) != 2) throw new IllegalStateException("el hacha no rasca el óxido");
+            com.miscelanea.armasfuego.escopeta.EscopetaPresionItem.usarEnInventario(g, new ItemStack(net.minecraft.world.item.Items.HONEYCOMB), p, null);
+            if (!com.miscelanea.armasfuego.escopeta.Presion.encerada(g)) throw new IllegalStateException("el panal no encera");
+        });
+        // ---- los cuatro estados del cobre y la aguja en la roja
+        sin("esc_estados", 10, () -> escServidor(sp -> {
+            for (int o = 0; o < 4; o++) {
+                ItemStack s = new ItemStack(com.miscelanea.registry.ModItems.ESCOPETA_PRESION.get());
+                com.miscelanea.armasfuego.escopeta.Presion.ponerOxido(s, o);
+                com.miscelanea.armasfuego.escopeta.Presion.ponerPresion(s, 20 + o * 25);
+                sp.getInventory().setItem(o, s);
+            }
+            for (var t : com.miscelanea.armasfuego.escopeta.TipoCartucho.values())
+                sp.getInventory().setItem(4 + t.ordinal(), new ItemStack(t.item(), 16));
+            ItemStack s = sp.getInventory().getItem(3);
+            com.miscelanea.armasfuego.escopeta.Presion.ponerTolva(s, com.miscelanea.armasfuego.escopeta.TipoCartucho.INCENDIARIO, 9);
+            com.miscelanea.armasfuego.escopeta.Presion.ponerPresion(s, 92);
+            sp.getInventory().selected = 3;
+            sp.connection.teleport(sp.getX(), sp.getY(), sp.getZ(), sp.getYRot(), 10F);
+        }));
+        paso("135_cobre_y_roja", 10, () -> {});
+        paso("136_inventario", 20, () -> mc.setScreen(new net.minecraft.client.gui.screens.inventory.InventoryScreen(mc.player)));
+        sin("esc_fin", 10, () -> {
+            mc.setScreen(null);
+            mantenerUso = false;
+            escAgachado = false;
+            mc.options.keyUse.setDown(false);
+            mc.options.keyShift.setDown(false);
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            escServidor(sp -> {
+                sp.removeAllEffects();
+                sp.setGameMode(GameType.CREATIVE);
+            });
+        });
+    }
+
     @SubscribeEvent
     public static void tick(TickEvent.ClientTickEvent e) {
         if (!ACTIVA || e.phase != TickEvent.Phase.END || terminada) return;
@@ -962,6 +1348,8 @@ public final class PruebaCI {
         if (mc.player == null || mc.level == null) return;
         // el puntero láser: el clic derecho mantenido
         if (mantenerUso) mc.options.keyUse.setDown(true);
+        // escopeta de presión: agachado (aspirar)
+        if (escAgachado) mc.options.keyShift.setDown(true);
         // ecolocalización: el jugador de mentira "habla" (como si llegara su audio del voicechat) y mi micro solo da ruido de fondo
         if (ecoAndando) {
             mc.options.keyUp.setDown(true);

@@ -321,5 +321,21 @@ public final class ModItems {
     public static final RegistryObject<Item> VENDA = ITEMS.register("venda",
             () -> new com.miscelanea.tortura.heridas.VendaItem(new Item.Properties().stacksTo(16)));
 
+    // ---- Escopeta de presión
+    public static final RegistryObject<Item> ESCOPETA_PRESION = ITEMS.register("escopeta_presion",
+            () -> new com.miscelanea.armasfuego.escopeta.EscopetaPresionItem(new Item.Properties().durability(350).rarity(Rarity.UNCOMMON)));
+    private static final java.util.Map<com.miscelanea.armasfuego.escopeta.TipoCartucho, RegistryObject<Item>> ESCOPETA_CARTUCHOS =
+            new java.util.EnumMap<>(com.miscelanea.armasfuego.escopeta.TipoCartucho.class);
+    static {
+        for (com.miscelanea.armasfuego.escopeta.TipoCartucho t : com.miscelanea.armasfuego.escopeta.TipoCartucho.values())
+            ESCOPETA_CARTUCHOS.put(t, ITEMS.register("escopeta_cartucho_" + t.id,
+                    () -> new com.miscelanea.armasfuego.escopeta.CartuchoPresionItem(t, new Item.Properties())));
+    }
+
+    public static Item escopetaCartucho(com.miscelanea.armasfuego.escopeta.TipoCartucho t) {
+        return ESCOPETA_CARTUCHOS.get(t).get();
+    }
+    // ---- fin escopeta de presión
+
     private ModItems() {}
 }
