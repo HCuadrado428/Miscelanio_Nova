@@ -1534,7 +1534,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 int z = qz == 0 ? 4 : 11;
                 for (int x = qx + 2; x <= qx + 4; x++) l.pon(x, f, z, escalon(Blocks.DARK_OAK_STAIRS, qz == 0 ? Direction.NORTH : Direction.SOUTH));
                 l.pon(qx + 1, f, z, d(Blocks.POTTED_FERN));
-                l.pon(qx + 5, f, z, d(Blocks.POTTED_AZALEA_BUSH));
+                l.pon(qx + 5, f, z, d(Blocks.POTTED_AZALEA));
             }
         }
         for (Direction dd : LADOS) {
@@ -1780,7 +1780,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
         }
         for (int[] m : new int[][]{{fx - 9, fz - 4}, {fx + 8, fz - 4}, {fx - 9, fz + 4}, {fx + 8, fz + 4}}) {
             l.pon(m[0], f, m[1], d(Blocks.POLISHED_ANDESITE));
-            l.pon(m[0], f + 1, m[1], d(Blocks.POTTED_AZALEA_BUSH));
+            l.pon(m[0], f + 1, m[1], d(Blocks.POTTED_AZALEA));
         }
     }
 
