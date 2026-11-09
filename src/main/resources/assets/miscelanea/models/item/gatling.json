@@ -5,7 +5,10 @@
   "particle": "miscelanea:item/gatling"
  },
  "base": {
-  "parent": "miscelanea:item/armas3d/gatling_3d"
+  "parent": "miscelanea:item/armas3d/gatling_3d",
+  "textures": {
+   "cobre": "miscelanea:item/armas3d/g_cobre_0"
+  }
  },
  "perspectives": {
   "gui": {
@@ -14,5 +17,25 @@
     "layer0": "miscelanea:item/gatling"
    }
   }
- }
+ },
+ "overrides": [
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.25
+   },
+   "model": "miscelanea:item/gatling_ox1"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.5
+   },
+   "model": "miscelanea:item/gatling_ox2"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.75
+   },
+   "model": "miscelanea:item/gatling_ox3"
+  }
+ ]
 }

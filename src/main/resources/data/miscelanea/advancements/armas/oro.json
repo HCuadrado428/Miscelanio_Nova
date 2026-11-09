@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/derringer",
+  "display": {
+    "icon": {
+      "item": "miscelanea:bala_oro"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.oro.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.oro.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "derringer_oro": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "derringer_oro"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

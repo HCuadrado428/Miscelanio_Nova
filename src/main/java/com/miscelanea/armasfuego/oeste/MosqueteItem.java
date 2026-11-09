@@ -51,27 +51,33 @@ public class MosqueteItem extends ArmaFuegoItem {
     }
 
     @Override
-    public int capacidad() {
+    public int capacidad(ItemStack s) {
         return 1;
     }
 
     @Override
-    public int ticksRecarga() {
-        return EquilibrioArmas.mosqueteRecarga();
+    public int ticksRecarga(ItemStack s) {
+        return Math.max(10, Math.round(EquilibrioArmas.mosqueteRecarga() * (1 - 0.2F * nivel(com.miscelanea.registry.ModEnchantments.MOSQUETE_BAQUETA, s))));
     }
 
     @Override
-    public boolean tieneMunicion(Player p) {
-        return !buscar(p, x -> x.is(ModItems.BOLA_MOSQUETE.get())).isEmpty() && !buscar(p, x -> x.is(Items.GUNPOWDER)).isEmpty();
+    protected boolean acepta(ItemStack m) {
+        return m.is(ModItems.BOLA_MOSQUETE.get()) || m.is(ModItems.METRALLA.get()) || m.is(ModItems.BOLA_CADENA.get());
     }
 
     @Override
-    protected int gastarMunicion(ServerPlayer p, ItemStack s) {
-        ItemStack b = buscar(p, x -> x.is(ModItems.BOLA_MOSQUETE.get())), pol = buscar(p, x -> x.is(Items.GUNPOWDER));
-        if (b.isEmpty() || pol.isEmpty()) return 0;
-        b.shrink(1);
-        pol.shrink(1);
+    protected net.minecraft.world.item.Item municionNormal() {
+        return ModItems.BOLA_MOSQUETE.get();
+    }
+
+    @Override
+    protected int polvora() {
         return 1;
+    }
+
+    @Override
+    protected boolean femenino() {
+        return false;
     }
 
     @Override
@@ -84,14 +90,10 @@ public class MosqueteItem extends ArmaFuegoItem {
         super.onUseTick(level, e, s, quedan);
         // la baqueta suena a mitad de la recarga
         int t = getUseDuration(s) - quedan;
-        if (!level.isClientSide && modo(s) == MODO_RECARGA && t == ticksRecarga() / 2)
+        if (!level.isClientSide && modo(s) == MODO_RECARGA && t == ticksRecarga(s) / 2)
             level.playSound(null, e.getX(), e.getY(), e.getZ(), ModSounds.MOSQUETE_BAQUETA.get(), SoundSource.PLAYERS, 0.8F, 1.3F);
     }
 
-    @Override
-    public ItemStack iconoMunicion() {
-        return new ItemStack(ModItems.BOLA_MOSQUETE.get());
-    }
 
     @Override
     protected SoundEvent sonidoRecarga() {
@@ -136,7 +138,7 @@ public class MosqueteItem extends ArmaFuegoItem {
         if (level.getGameTime() < s.getTag().getLong(CHISPA)) return;
         s.getTag().remove(CHISPA);
         if (!sel || p.getMainHandItem() != s) return;   // si se ha guardado, la cazoleta se apaga sola
-        if (!level.isClientSide && mojada(p)) {
+        if (!level.isClientSide && mojada(p) && nivel(com.miscelanea.registry.ModEnchantments.MOSQUETE_POLVORA_SECA, s) == 0) {
             ponerBalas(s, 0);
             level.playSound(null, p.getX(), p.getY(), p.getZ(), net.minecraft.sounds.SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 0.8F, 1.2F);
             p.displayClientMessage(Component.translatable("msg.miscelanea.armafuego.mojada").withStyle(ChatFormatting.AQUA), true);
@@ -154,7 +156,15 @@ public class MosqueteItem extends ArmaFuegoItem {
     @Override
     protected void disparar(ServerPlayer p, ItemStack s) {
         ServerLevel l = p.serverLevel();
-        tiro(p, EquilibrioArmas.mosqueteDano(), 64, 30, 0.6F, 0.012, 0.35F, DANO, false, null);
+        var tipo = tipoActual(s);
+        if (tipo == ModItems.METRALLA.get()) {
+            // metralla: siete perdigones en cono, de corto alcance (la de los piratas de Assassin's Creed IV)
+            for (int i = 0; i < 7; i++) tiro(p, 2.5F, 24, 6, 0.3F, 0.09, 0.2F, DANO, true, null);
+        } else if (tipo == ModItems.BOLA_CADENA.get()) {
+            cadena(p);
+        } else {
+            tiro(p, EquilibrioArmas.mosqueteDano(), 64, 30, 0.6F, 0.012, 0.35F, DANO, false, null);
+        }
         Vec3 b = boca(p, 1.4, 0.25, 0.15);
         efectos(l, p, b, ModSounds.MOSQUETE_DISPARO.get(), 5.0F, 0.95F, 0, false);
         // la nube de humo de la pólvora negra
@@ -170,13 +180,46 @@ public class MosqueteItem extends ArmaFuegoItem {
         LogrosMiscelanea.dar(p, "mosquete_disparo");
     }
 
+    /**
+     * Bola encadenada (la de Sea of Thieves para los mástiles): dos bolas unidas por una cadena que barren todo lo
+     * que haya cerca de la línea del tiro (hasta tres), lo ralentizan y lo derriban.
+     */
+    private void cadena(ServerPlayer p) {
+        ServerLevel l = p.serverLevel();
+        Vec3 ojo = p.getEyePosition(), dir = p.getViewVector(1F);
+        var fin = l.clip(new net.minecraft.world.level.ClipContext(ojo, ojo.add(dir.scale(40)), net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                net.minecraft.world.level.ClipContext.Fluid.NONE, p)).getLocation();
+        double largo = ojo.distanceTo(fin);
+        java.util.List<LivingEntity> dados = new java.util.ArrayList<>();
+        for (LivingEntity v : l.getEntitiesOfClass(LivingEntity.class, new net.minecraft.world.phys.AABB(ojo, fin).inflate(1.3), e -> e.isAlive() && e != p && !e.isSpectator())) {
+            Vec3 c = v.getBoundingBox().getCenter().subtract(ojo);
+            double a = c.dot(dir);
+            if (a < 0 || a > largo || c.subtract(dir.scale(a)).length() > 1.3 + v.getBbWidth() / 2) continue;
+            dados.add(v);
+        }
+        dados.sort(java.util.Comparator.comparingDouble(v -> v.distanceToSqr(p)));
+        int n = 0;
+        for (LivingEntity v : dados) {
+            if (n++ >= 3) break;
+            Balistica.herir(v, p, 9F, 0.35F, DANO, true);
+            v.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, 60, 1), p);
+            v.knockback(0.6, -dir.x, -dir.z);
+        }
+        for (int k = 1; k <= 8; k++) {
+            Vec3 q = ojo.lerp(fin, k / 9.0);
+            l.sendParticles(ParticleTypes.CRIT, q.x, q.y, q.z, 2, 0.4, 0.05, 0.4, 0);
+        }
+        l.playSound(null, p.getX(), p.getY(), p.getZ(), net.minecraft.sounds.SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS, 1.2F, 0.7F);
+        if (n >= 2) LogrosMiscelanea.dar(p, "mosquete_cadena");
+    }
+
     // ------------------------------------------------------------------ la bayoneta
 
     @Override
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack s) {
         if (slot != EquipmentSlot.MAINHAND) return super.getAttributeModifiers(slot, s);
         ImmutableMultimap.Builder<Attribute, AttributeModifier> b = ImmutableMultimap.builder();
-        b.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Bayoneta", EquilibrioArmas.mosqueteBayoneta() - 1, AttributeModifier.Operation.ADDITION));
+        b.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Bayoneta", EquilibrioArmas.mosqueteBayoneta() - 1 + 2 * nivel(com.miscelanea.registry.ModEnchantments.MOSQUETE_CARGA, s), AttributeModifier.Operation.ADDITION));
         b.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Bayoneta", -3.0, AttributeModifier.Operation.ADDITION));
         b.put(net.minecraftforge.common.ForgeMod.ENTITY_REACH.get(), new AttributeModifier(ALCANCE_ID, "Bayoneta", 1.5, AttributeModifier.Operation.ADDITION));
         return b.build();

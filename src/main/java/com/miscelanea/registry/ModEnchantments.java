@@ -74,5 +74,44 @@ public final class ModEnchantments {
             () -> new com.miscelanea.armasfuego.escopeta.EncantamientoEscopeta(com.miscelanea.armasfuego.escopeta.Presion.Encantamiento.RECICLAJE, Enchantment.Rarity.UNCOMMON, 3, 10, 12));
     // ---- fin escopeta de presión
 
+    // ---- Armas de fuego, segunda tanda: dos o tres encantamientos propios por arma (mesa y libros)
+    public static final EnchantmentCategory GATLING = EnchantmentCategory.create("MISCELANEA_GATLING", item -> item instanceof com.miscelanea.armasfuego.gatling.GatlingItem);
+    public static final RegistryObject<Enchantment> GATLING_REFRIGERACION = ENCHANTMENTS.register("gatling_refrigeracion",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, GATLING, 3, 8, 10));
+    public static final RegistryObject<Enchantment> GATLING_CINTA_LARGA = ENCHANTMENTS.register("gatling_cinta_larga",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, GATLING, 2, 10, 12));
+    public static final RegistryObject<Enchantment> GATLING_ENGRASADA = ENCHANTMENTS.register("gatling_engrasada",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.RARE, GATLING, 1, 15, 0));
+    public static final EnchantmentCategory WINCHESTER = EnchantmentCategory.create("MISCELANEA_WINCHESTER", item -> item instanceof com.miscelanea.armasfuego.oeste.WinchesterItem);
+    public static final RegistryObject<Enchantment> WINCHESTER_REPETICION = ENCHANTMENTS.register("winchester_repeticion",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, WINCHESTER, 3, 8, 10));
+    public static final RegistryObject<Enchantment> WINCHESTER_DEAD_EYE = ENCHANTMENTS.register("winchester_dead_eye",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.RARE, WINCHESTER, 1, 20, 0));
+    public static final RegistryObject<Enchantment> WINCHESTER_CARGA_RAPIDA = ENCHANTMENTS.register("winchester_carga_rapida",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.COMMON, WINCHESTER, 2, 5, 10));
+    public static final EnchantmentCategory DERRINGER = EnchantmentCategory.create("MISCELANEA_DERRINGER", item -> item instanceof com.miscelanea.armasfuego.oeste.DerringerItem);
+    public static final RegistryObject<Enchantment> DERRINGER_AS = ENCHANTMENTS.register("derringer_as",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, DERRINGER, 2, 10, 12));
+    public static final RegistryObject<Enchantment> DERRINGER_DOBLE = ENCHANTMENTS.register("derringer_doble",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.RARE, DERRINGER, 1, 18, 0));
+    public static final EnchantmentCategory THOMPSON = EnchantmentCategory.create("MISCELANEA_THOMPSON", item -> item instanceof com.miscelanea.armasfuego.oeste.ThompsonItem);
+    public static final RegistryObject<Enchantment> THOMPSON_CHICAGO = ENCHANTMENTS.register("thompson_chicago",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, THOMPSON, 2, 10, 12));
+    public static final RegistryObject<Enchantment> THOMPSON_COMPENSADOR = ENCHANTMENTS.register("thompson_compensador",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.COMMON, THOMPSON, 3, 5, 9));
+    public static final EnchantmentCategory MOSQUETE = EnchantmentCategory.create("MISCELANEA_MOSQUETE", item -> item instanceof com.miscelanea.armasfuego.oeste.MosqueteItem);
+    public static final RegistryObject<Enchantment> MOSQUETE_BAQUETA = ENCHANTMENTS.register("mosquete_baqueta",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.COMMON, MOSQUETE, 3, 5, 9));
+    public static final RegistryObject<Enchantment> MOSQUETE_POLVORA_SECA = ENCHANTMENTS.register("mosquete_polvora_seca",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.RARE, MOSQUETE, 1, 15, 0));
+    public static final RegistryObject<Enchantment> MOSQUETE_CARGA = ENCHANTMENTS.register("mosquete_carga",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, MOSQUETE, 2, 10, 10));
+    public static final EnchantmentCategory CANON = EnchantmentCategory.create("MISCELANEA_CANON", item -> item instanceof com.miscelanea.armasfuego.oeste.CanonManoItem);
+    public static final RegistryObject<Enchantment> CANON_MECHA_CORTA = ENCHANTMENTS.register("canon_mecha_corta",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, CANON, 2, 8, 12));
+    public static final RegistryObject<Enchantment> CANON_BIEN_FUNDIDO = ENCHANTMENTS.register("canon_bien_fundido",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.RARE, CANON, 1, 15, 0));
+    // ---- fin armas de fuego (segunda tanda)
+
     private ModEnchantments() {}
 }

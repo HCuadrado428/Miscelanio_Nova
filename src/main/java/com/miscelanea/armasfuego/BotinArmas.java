@@ -154,6 +154,8 @@ public class BotinArmas extends LootModifier {
             case THOMPSON -> {
                 // sale dentro de su estuche de violín, claro
                 ItemStack t = new ItemStack(ModItems.THOMPSON.get());
+                if (oxido > 0) com.miscelanea.armasfuego.comun.Cobre.ponerOxido(t, oxido);
+                encantar(t, r);
                 com.miscelanea.armasfuego.comun.ArmaFuegoItem.ponerBalas(t, 10 + r.nextInt(30));
                 l.add(new ItemStack(ModItems.CARGADOR_THOMPSON.get(), 1));
                 l.add(0, com.miscelanea.armasfuego.oeste.EstucheViolinItem.con(t));
@@ -181,6 +183,15 @@ public class BotinArmas extends LootModifier {
                 }
             }
         }
+        // las seis nuevas también salen algo oxidadas a veces (como las tres primeras)
+        if (oxido > 0 && a.ordinal() >= Arma.GATLING.ordinal()) com.miscelanea.armasfuego.comun.Cobre.ponerOxido(arma, oxido);
+        encantar(arma, r);
+        l.add(0, arma);
+        return l;
+    }
+
+    /** A veces, uno de sus encantamientos propios (los del mod que valgan para esa arma). */
+    private static void encantar(ItemStack arma, RandomSource r) {
         if (r.nextDouble() < ConfigServidor.botinEncantada()) {
             List<Enchantment> suyos = new ArrayList<>();
             for (var e : ForgeRegistries.ENCHANTMENTS.getEntries())
@@ -190,8 +201,6 @@ public class BotinArmas extends LootModifier {
                 arma.enchant(e, 1 + r.nextInt(e.getMaxLevel()));
             }
         }
-        l.add(0, arma);
-        return l;
     }
 
     @Override

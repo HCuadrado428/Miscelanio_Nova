@@ -5,7 +5,10 @@
   "particle": "miscelanea:item/canon_mano"
  },
  "base": {
-  "parent": "miscelanea:item/armas3d/canon_mano_3d_encendida"
+  "parent": "miscelanea:item/armas3d/canon_mano_3d_encendida",
+  "textures": {
+   "cobre": "miscelanea:item/armas3d/g_cobre_0"
+  }
  },
  "perspectives": {
   "gui": {

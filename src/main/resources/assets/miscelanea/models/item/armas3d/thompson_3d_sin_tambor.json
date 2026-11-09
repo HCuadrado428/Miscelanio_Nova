@@ -3,6 +3,7 @@
  "gui_light": "front",
  "ambientocclusion": false,
  "textures": {
+  "cobre": "miscelanea:item/armas3d/g_cobre_0",
   "hierro": "miscelanea:item/armas3d/g_hierro",
   "acero": "miscelanea:item/armas3d/g_acero",
   "laton": "miscelanea:item/armas3d/g_laton",
@@ -116,7 +117,7 @@
       13.5,
       6.85
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "east": {
      "uv": [
@@ -125,7 +126,7 @@
       10.7,
       6.85
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "west": {
      "uv": [
@@ -134,7 +135,7 @@
       10.7,
       6.85
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "up": {
      "uv": [
@@ -143,7 +144,7 @@
       13.5,
       13.85
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "down": {
      "uv": [
@@ -152,7 +153,7 @@
       13.5,
       13.85
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     }
    }
   },
@@ -855,7 +856,7 @@
       13.3,
       11.3
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "south": {
      "uv": [
@@ -864,7 +865,7 @@
       13.3,
       11.3
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "east": {
      "uv": [
@@ -873,7 +874,7 @@
       12.7,
       11.3
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "west": {
      "uv": [
@@ -882,7 +883,7 @@
       12.7,
       11.3
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "up": {
      "uv": [
@@ -891,7 +892,7 @@
       13.3,
       10.8
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "down": {
      "uv": [
@@ -900,7 +901,7 @@
       13.3,
       10.8
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     }
    }
   },

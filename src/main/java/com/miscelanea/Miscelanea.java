@@ -200,6 +200,16 @@ public class Miscelanea {
             event.accept(ModItems.MOSQUETE);
             event.accept(ModItems.BOLA_MOSQUETE);
             event.accept(ModItems.CANON_MANO);
+            for (var m : java.util.List.of(ModItems.BALA_PLATA, ModItems.BALA_DINAMITA, ModItems.CARTA_MARCADA, ModItems.BALA_ORO, ModItems.TAMBOR_TRAZADOR,
+                    ModItems.TAMBOR_AGUA, ModItems.CINTA_INCENDIARIA, ModItems.CINTA_PALOMITAS, ModItems.METRALLA, ModItems.BOLA_CADENA,
+                    ModItems.BOLANO_INCENDIARIO, ModItems.BOLANO_FUEGOS)) event.accept(m);
+            for (var en : java.util.List.of(ModEnchantments.GATLING_REFRIGERACION, ModEnchantments.GATLING_CINTA_LARGA, ModEnchantments.GATLING_ENGRASADA,
+                    ModEnchantments.WINCHESTER_REPETICION, ModEnchantments.WINCHESTER_DEAD_EYE, ModEnchantments.WINCHESTER_CARGA_RAPIDA,
+                    ModEnchantments.DERRINGER_AS, ModEnchantments.DERRINGER_DOBLE, ModEnchantments.THOMPSON_CHICAGO, ModEnchantments.THOMPSON_COMPENSADOR,
+                    ModEnchantments.MOSQUETE_BAQUETA, ModEnchantments.MOSQUETE_POLVORA_SECA, ModEnchantments.MOSQUETE_CARGA,
+                    ModEnchantments.CANON_MECHA_CORTA, ModEnchantments.CANON_BIEN_FUNDIDO))
+                event.accept(net.minecraft.world.item.EnchantedBookItem.createForEnchantment(
+                        new net.minecraft.world.item.enchantment.EnchantmentInstance(en.get(), en.get().getMaxLevel())));
             for (int c = 0; c < com.miscelanea.laser.Laser.COLORES.length; c++) {
                 net.minecraft.world.item.ItemStack laser = new net.minecraft.world.item.ItemStack(com.miscelanea.laser.LaserRegistro.PUNTERO.get());
                 if (c > 0) laser.getOrCreateTag().putInt(com.miscelanea.laser.Laser.COLOR, c);

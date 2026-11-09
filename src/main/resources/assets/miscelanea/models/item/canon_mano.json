@@ -5,7 +5,10 @@
   "particle": "miscelanea:item/canon_mano"
  },
  "base": {
-  "parent": "miscelanea:item/armas3d/canon_mano_3d"
+  "parent": "miscelanea:item/armas3d/canon_mano_3d",
+  "textures": {
+   "cobre": "miscelanea:item/armas3d/g_cobre_0"
+  }
  },
  "perspectives": {
   "gui": {
@@ -21,6 +24,45 @@
     "miscelanea:mecha": 1
    },
    "model": "miscelanea:item/canon_mano_encendida"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.25
+   },
+   "model": "miscelanea:item/canon_mano_ox1"
+  },
+  {
+   "predicate": {
+    "miscelanea:mecha": 1,
+    "miscelanea:oxido": 0.25
+   },
+   "model": "miscelanea:item/canon_mano_encendida_ox1"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.5
+   },
+   "model": "miscelanea:item/canon_mano_ox2"
+  },
+  {
+   "predicate": {
+    "miscelanea:mecha": 1,
+    "miscelanea:oxido": 0.5
+   },
+   "model": "miscelanea:item/canon_mano_encendida_ox2"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.75
+   },
+   "model": "miscelanea:item/canon_mano_ox3"
+  },
+  {
+   "predicate": {
+    "miscelanea:mecha": 1,
+    "miscelanea:oxido": 0.75
+   },
+   "model": "miscelanea:item/canon_mano_encendida_ox3"
   }
  ]
 }

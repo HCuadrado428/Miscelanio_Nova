@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "minecraft:leather"
+    },
+    {
+      "item": "miscelanea:palomitas"
+    },
+    {
+      "item": "miscelanea:palomitas"
+    },
+    {
+      "item": "miscelanea:palomitas"
+    }
+  ],
+  "result": {
+    "item": "miscelanea:cinta_palomitas",
+    "count": 1
+  }
+}

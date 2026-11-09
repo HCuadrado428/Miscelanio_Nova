@@ -5,7 +5,10 @@
   "particle": "miscelanea:item/winchester"
  },
  "base": {
-  "parent": "miscelanea:item/armas3d/winchester_3d_palanca"
+  "parent": "miscelanea:item/armas3d/winchester_3d_palanca",
+  "textures": {
+   "cobre": "miscelanea:item/armas3d/g_cobre_0"
+  }
  },
  "perspectives": {
   "gui": {

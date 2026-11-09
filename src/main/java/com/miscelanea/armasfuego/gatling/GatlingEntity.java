@@ -53,6 +53,10 @@ public class GatlingEntity extends Entity {
     private static final EntityDataAccessor<Integer> BALAS = SynchedEntityData.defineId(GatlingEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> ATASCO = SynchedEntityData.defineId(GatlingEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> RECARGA = SynchedEntityData.defineId(GatlingEntity.class, EntityDataSerializers.INT);
+    /** Fase del cobre (0..3), para dibujarla. */
+    private static final EntityDataAccessor<Integer> OXIDO = SynchedEntityData.defineId(GatlingEntity.class, EntityDataSerializers.INT);
+    /** La cinta que lleva puesta (normal, incendiaria o de palomitas). */
+    private String cinta = "";
 
     public static final float GIRO_LADO = 55F, ARRIBA = -35F, ABAJO = 30F;
     public static final int T_ATASCO = 100, T_RECARGA = 30;
@@ -76,6 +80,7 @@ public class GatlingEntity extends Entity {
         entityData.define(BALAS, 0);
         entityData.define(ATASCO, 0);
         entityData.define(RECARGA, 0);
+        entityData.define(OXIDO, 0);
     }
 
     public boolean girando() { return entityData.get(GIRANDO); }
@@ -83,6 +88,35 @@ public class GatlingEntity extends Entity {
     public int balas() { return entityData.get(BALAS); }
     public int atasco() { return entityData.get(ATASCO); }
     public int recarga() { return entityData.get(RECARGA); }
+    public int oxido() { return entityData.get(OXIDO); }
+
+    private int nivel(net.minecraftforge.registries.RegistryObject<net.minecraft.world.item.enchantment.Enchantment> e) {
+        return arma.isEmpty() ? 0 : ArmaFuegoItem.nivel(e, arma);
+    }
+
+    /** Balas de una cinta (Cinta larga: la mitad más por nivel). */
+    public int balasCinta() {
+        return Math.round(EquilibrioArmas.gatlingCinta() * (1 + 0.5F * nivel(com.miscelanea.registry.ModEnchantments.GATLING_CINTA_LARGA)));
+    }
+
+    public static boolean esCinta(ItemStack s) {
+        return s.is(ModItems.CINTA_GATLING.get()) || s.is(ModItems.CINTA_INCENDIARIA.get()) || s.is(ModItems.CINTA_PALOMITAS.get());
+    }
+
+    private void ponerCinta(ItemStack s) {
+        cinta = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(s.getItem()).toString();
+    }
+
+    private boolean cintaEs(net.minecraftforge.registries.RegistryObject<net.minecraft.world.item.Item> i) {
+        return cinta.equals(i.getId().toString());
+    }
+
+    /** Para la prueba del CI: poner la fase del cobre. */
+    public void ponerOxido(int o) {
+        if (arma.isEmpty()) arma = new ItemStack(ModItems.GATLING.get());
+        com.miscelanea.armasfuego.comun.Cobre.ponerOxido(arma, o);
+        entityData.set(OXIDO, com.miscelanea.armasfuego.comun.Cobre.oxido(arma));
+    }
 
     /** Para la prueba del CI (y comandos): poner el calor. */
     public void ponerCalor(float c) {
@@ -101,7 +135,9 @@ public class GatlingEntity extends Entity {
         if (t != null) {
             entityData.set(CALOR, t.getFloat(GatlingItem.CALOR));
             entityData.set(BALAS, t.getInt(GatlingItem.BALAS));
+            cinta = t.getString(GatlingItem.CINTA);
         }
+        entityData.set(OXIDO, com.miscelanea.armasfuego.comun.Cobre.oxido(arma));
     }
 
     /** El objeto con el estado de ahora (para recogerla). */
@@ -109,6 +145,7 @@ public class GatlingEntity extends Entity {
         ItemStack s = arma.isEmpty() ? new ItemStack(ModItems.GATLING.get()) : arma.copy();
         s.getOrCreateTag().putFloat(GatlingItem.CALOR, calor());
         s.getOrCreateTag().putInt(GatlingItem.BALAS, balas());
+        s.getOrCreateTag().putString(GatlingItem.CINTA, cinta);
         return s;
     }
 
@@ -129,7 +166,7 @@ public class GatlingEntity extends Entity {
         }
         Player p = tirador();
         boolean gira = girando() && p != null && atasco() == 0 && recarga() == 0;
-        velocidad = Mth.clamp(velocidad + (gira ? 0.1F : -0.07F), 0F, 1F);
+        velocidad = Mth.clamp(velocidad + (gira ? (nivel(com.miscelanea.registry.ModEnchantments.GATLING_ENGRASADA) > 0 ? 0.2F : 0.1F) : -0.07F), 0F, 1F);
         manivelaO = manivela;
         canonesO = canones;
         manivela += velocidad * 40F;
@@ -152,7 +189,7 @@ public class GatlingEntity extends Entity {
         if (recarga() > 0) {
             entityData.set(RECARGA, recarga() - 1);
             if (recarga() == 0) {
-                entityData.set(BALAS, EquilibrioArmas.gatlingCinta());
+                entityData.set(BALAS, balasCinta());
                 playSound(ModSounds.GATLING_CINTA.get(), 0.9F, 1.2F);
             }
         }
@@ -219,9 +256,13 @@ public class GatlingEntity extends Entity {
     private void disparar(ServerLevel l, Player p) {
         if (balas() <= 0) {
             // se acabó la cinta: mete otra de la mochila del que la gira
-            ItemStack cinta = ArmaFuegoItem.buscar(p, x -> x.is(ModItems.CINTA_GATLING.get()));
-            if (!cinta.isEmpty() || p.getAbilities().instabuild) {
-                if (!p.getAbilities().instabuild) cinta.shrink(1);
+            // de la misma que llevaba si hay; si no, cualquiera
+            String antes = cinta;
+            ItemStack c = ArmaFuegoItem.buscar(p, x -> esCinta(x) && net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(x.getItem()).toString().equals(antes));
+            if (c.isEmpty()) c = ArmaFuegoItem.buscar(p, GatlingEntity::esCinta);
+            if (!c.isEmpty() || p.getAbilities().instabuild) {
+                if (!c.isEmpty()) ponerCinta(c);
+                if (!p.getAbilities().instabuild) c.shrink(1);
                 entityData.set(RECARGA, T_RECARGA);
                 playSound(ModSounds.GATLING_CINTA.get(), 0.9F, 0.9F);
                 return;
@@ -235,15 +276,27 @@ public class GatlingEntity extends Entity {
         }
         if (!p.getAbilities().instabuild) entityData.set(BALAS, balas() - 1);
         float c = calor();
-        entityData.set(CALOR, c + EquilibrioArmas.gatlingCalor());
-        double disp = 0.025 + (c > 70 ? 0.03 : 0);
+        entityData.set(CALOR, c + EquilibrioArmas.gatlingCalor() * (1 - 0.2F * nivel(com.miscelanea.registry.ModEnchantments.GATLING_REFRIGERACION)));
+        double disp = 0.025 + (c > 70 ? 0.03 : 0) + com.miscelanea.armasfuego.comun.Cobre.DISPERSION[oxido()];
+        boolean fuego = cintaEs(ModItems.CINTA_INCENDIARIA), palomitas = cintaEs(ModItems.CINTA_PALOMITAS);
         Vec3 dir = Balistica.dispersar(mira(), disp, random);
         Vec3 boca = boca(1.45F);
         rafaga++;
-        Balistica.Tiro t = Balistica.trazar(l, p, pivote(), dir, EquilibrioArmas.gatlingAlcance(), boca, rafaga % 4 == 0 ? ParticleTypes.CRIT : null);
+        net.minecraft.core.particles.ParticleOptions estela = palomitas ? new net.minecraft.core.particles.ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.PALOMITAS.get()))
+                : fuego ? ParticleTypes.FLAME : rafaga % 4 == 0 ? ParticleTypes.CRIT : null;
+        Balistica.Tiro t = Balistica.trazar(l, p, pivote(), dir, EquilibrioArmas.gatlingAlcance(), boca, palomitas || fuego || rafaga % 2 == 0 ? estela : null);
         if (t.entidad() != null) {
-            float d = EquilibrioArmas.gatlingDano() * Balistica.caida(t.distancia(), 20, EquilibrioArmas.gatlingAlcance(), 0.6F);
-            Balistica.herir(t.entidad(), p, d, 0.1F, DANO, true);
+            LivingEntity v = t.entidad();
+            if (palomitas) {
+                // palomitas para el espectáculo: no hacen daño y al que le dan, le dan de comer
+                if (v instanceof Player pj) pj.getFoodData().eat(1, 0.1F);
+                l.sendParticles(new net.minecraft.core.particles.ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.PALOMITAS.get())), t.pos().x, t.pos().y, t.pos().z, 4, 0.15, 0.15, 0.15, 0.08);
+                if (p instanceof ServerPlayer sp) LogrosMiscelanea.dar(sp, "gatling_palomitas");
+            } else {
+                float d = EquilibrioArmas.gatlingDano() * Balistica.caida(t.distancia(), 20, EquilibrioArmas.gatlingAlcance(), 0.6F);
+                Balistica.herir(v, p, d, 0.1F, DANO, true);
+                if (fuego) v.setSecondsOnFire(3);
+            }
         }
         Balistica.impacto(l, p, t);
         // fogonazo, casquillo (sale por abajo a la derecha) y ruido
@@ -256,6 +309,11 @@ public class GatlingEntity extends Entity {
         l.playSound(null, boca.x, boca.y, boca.z, ModSounds.GATLING_DISPARO.get(), SoundSource.PLAYERS, 3.5F, 0.9F + random.nextFloat() * 0.2F);
         l.gameEvent(p, GameEvent.PROJECTILE_SHOOT, boca);
         if (p instanceof ServerPlayer sp && rafaga >= 40) LogrosMiscelanea.dar(sp, "gatling_rafaga");
+        // el cobre se oxida con el uso (una fase cada 400 balas, antes con lluvia)
+        if (!arma.isEmpty() && com.miscelanea.armasfuego.comun.Cobre.desgastar(arma, 400, isInWaterOrRain())) {
+            entityData.set(OXIDO, com.miscelanea.armasfuego.comun.Cobre.oxido(arma));
+            if (p instanceof ServerPlayer sp) com.miscelanea.armasfuego.comun.Cobre.avisar(sp, arma);
+        }
         // desgaste del arma (si se rompe, se acabó)
         if (!arma.isEmpty() && arma.isDamageableItem() && !p.getAbilities().instabuild && arma.hurt(1, random, p instanceof ServerPlayer sp ? sp : null)) {
             playSound(SoundEvents.ITEM_BREAK, 1.0F, 0.6F);
@@ -269,8 +327,10 @@ public class GatlingEntity extends Entity {
     @Override
     public InteractionResult interact(Player p, InteractionHand hand) {
         ItemStack h = p.getItemInHand(hand);
-        if (h.is(ModItems.CINTA_GATLING.get()) && balas() < EquilibrioArmas.gatlingCinta() && recarga() == 0) {
+        if (esCinta(h) && (balas() < balasCinta() || !net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(h.getItem()).toString().equals(cinta)) && recarga() == 0) {
             if (!level().isClientSide) {
+                ponerCinta(h);
+                entityData.set(BALAS, 0);
                 if (!p.getAbilities().instabuild) h.shrink(1);
                 entityData.set(RECARGA, T_RECARGA);
                 playSound(ModSounds.GATLING_CINTA.get(), 0.9F, 0.9F);
@@ -287,6 +347,17 @@ public class GatlingEntity extends Entity {
                 ((ServerLevel) level()).sendParticles(ParticleTypes.CLOUD, b.x, b.y, b.z, 20, 0.4, 0.3, 0.4, 0.05);
                 if (!p.getAbilities().instabuild) p.setItemInHand(hand, new ItemStack(Items.BUCKET));
                 if (p instanceof ServerPlayer sp) LogrosMiscelanea.dar(sp, "gatling_cubo");
+            }
+            return InteractionResult.sidedSuccess(level().isClientSide);
+        }
+        // panal / hacha: encerar o rascar el cobre de la Gatling plantada
+        if ((com.miscelanea.armasfuego.comun.Cobre.esPanal(h) || com.miscelanea.armasfuego.comun.Cobre.esHacha(h)) && !arma.isEmpty()) {
+            if (!level().isClientSide) {
+                Vec3 b = pivote();
+                boolean ok = com.miscelanea.armasfuego.comun.Cobre.esPanal(h) ? com.miscelanea.armasfuego.comun.Cobre.encerar(p, arma, h, b)
+                        : com.miscelanea.armasfuego.comun.Cobre.rascar(p, arma, h, b);
+                entityData.set(OXIDO, com.miscelanea.armasfuego.comun.Cobre.oxido(arma));
+                if (!ok) return InteractionResult.PASS;
             }
             return InteractionResult.sidedSuccess(level().isClientSide);
         }
@@ -404,6 +475,8 @@ public class GatlingEntity extends Entity {
         entityData.set(CALOR, t.getFloat("Calor"));
         entityData.set(BALAS, t.getInt("Balas"));
         if (t.contains("Arma")) arma = ItemStack.of(t.getCompound("Arma"));
+        cinta = t.getString("Cinta");
+        entityData.set(OXIDO, com.miscelanea.armasfuego.comun.Cobre.oxido(arma));
     }
 
     @Override
@@ -411,6 +484,7 @@ public class GatlingEntity extends Entity {
         t.putFloat("Calor", calor());
         t.putInt("Balas", balas());
         if (!arma.isEmpty()) t.put("Arma", arma.save(new CompoundTag()));
+        t.putString("Cinta", cinta);
     }
 
     @Override

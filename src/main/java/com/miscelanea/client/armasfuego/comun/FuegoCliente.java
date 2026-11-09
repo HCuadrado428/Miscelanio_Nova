@@ -80,8 +80,9 @@ public final class FuegoCliente {
         else if (arma instanceof ThompsonItem) {
             // ráfaga: cada bala sube un poco y tira hacia un lado (cuanto más larga, más se va)
             int n = ThompsonItem.rafagaN(s);
-            patada(0.55F + Math.min(0.6F, n * 0.03F), 1.4F, 0.45F);
-            p.setYRot(p.getYRot() + (p.getRandom().nextFloat() - 0.45F) * 1.1F);
+            float k = ThompsonItem.compensador(s);
+            patada((0.55F + Math.min(0.6F, n * 0.03F)) * k, 1.4F, 0.45F);
+            p.setYRot(p.getYRot() + (p.getRandom().nextFloat() - 0.45F) * 1.1F * k);
         } else if (arma instanceof MosqueteItem) patada(4.5F, 7F, 1.6F);
         else if (arma instanceof CanonManoItem) patada(6F, 10F, 2F);
         else patada(2F, 3F, 1F);
@@ -134,7 +135,7 @@ public final class FuegoCliente {
         // recarga: el arma baja y se ladea; cada paso, un empujoncito
         if (usando && (modo == ArmaFuegoItem.MODO_RECARGA || modo == ArmaFuegoItem.MODO_DESATASCO) && s.getItem() instanceof ArmaFuegoItem a) {
             float entra = Math.min(1F, tUso / 5F);
-            float paso = Math.max(1, a.ticksRecarga());
+            float paso = Math.max(1, a.ticksRecarga(s));
             float f = (tUso % paso) / paso;
             float golpe = Mth.sin(f * Mth.PI) * 0.6F;
             if (s.getItem() instanceof MosqueteItem || s.getItem() instanceof CanonManoItem) {
@@ -157,7 +158,7 @@ public final class FuegoCliente {
         // la palanca de la Winchester: a pie, el arma baja un poco; a caballo, un giro entero (spin-cock)
         if (s.getItem() instanceof WinchesterItem) {
             float d = ArmaFuegoItem.desdeDisparo(s, l, pt);
-            int pal = WinchesterItem.palanca(p);
+            int pal = WinchesterItem.palanca(p, s);
             if (d >= 0 && d < pal) {
                 float t = d / pal;
                 if (p.isPassenger()) {
@@ -221,7 +222,7 @@ public final class FuegoCliente {
         if (!(s.getItem() instanceof ArmaFuegoItem a)) return;
         int x = w / 2 + 12, y = h / 2 + 8;
         var f = mc.font;
-        int balas = ArmaFuegoItem.balas(s), cap = a.capacidad();
+        int balas = ArmaFuegoItem.balas(s), cap = a.capacidad(s);
         // balas: puntitos de latón si caben (hasta 12), si no el número
         if (cap <= 12) {
             for (int i = 0; i < cap; i++) {
@@ -236,14 +237,14 @@ public final class FuegoCliente {
         else if (balas == 0) g.drawString(f, Component.translatable("hud.miscelanea.armafuego.recarga"), x, y + 7, 0xFFAAAAAA, true);
         // barra de la recarga
         if (p.isUsingItem() && p.getUseItem() == s && ArmaFuegoItem.modo(s) != ArmaFuegoItem.MODO_RAFAGA) {
-            int paso = ArmaFuegoItem.modo(s) == ArmaFuegoItem.MODO_DESATASCO ? ArmaFuegoItem.T_DESATASCO : Math.max(1, a.ticksRecarga());
+            int paso = ArmaFuegoItem.modo(s) == ArmaFuegoItem.MODO_DESATASCO ? ArmaFuegoItem.T_DESATASCO : Math.max(1, a.ticksRecarga(s));
             float fr = ((p.getTicksUsingItem() + pt) % paso) / paso;
             g.fill(x, y + 17, x + 30, y + 19, 0x88000000);
             g.fill(x, y + 17, x + (int) (30 * fr), y + 19, 0xFFE0C060);
         }
         if (s.getItem() instanceof CanonManoItem && CanonManoItem.mecha(s) >= 0) {
             long q = CanonManoItem.mecha(s) - mc.level.getGameTime();
-            float fr = 1F - q / (float) com.miscelanea.armasfuego.comun.EquilibrioArmas.canonMecha();
+            float fr = 1F - q / (float) CanonManoItem.mechaTicks(s);
             g.fill(x, y + 17, x + 30, y + 19, 0x88000000);
             g.fill(x, y + 17, x + (int) (30 * Mth.clamp(fr, 0, 1)), y + 19, 0xFFFF7A20);
         }
@@ -258,7 +259,7 @@ public final class FuegoCliente {
         g.fill(x - 1, y - 1, x + 81, y + 5, 0xAA000000);
         g.fill(x, y, x + (int) (80 * c), y + 4, col);
         g.drawString(f, Component.translatable("hud.miscelanea.gatling.calor"), x, y - 11, 0xFFE0E0E0, true);
-        String b = gat.balas() + "/" + com.miscelanea.armasfuego.comun.EquilibrioArmas.gatlingCinta();
+        String b = gat.balas() + "/" + gat.balasCinta();
         g.drawString(f, b, x + 80 - f.width(b), y - 11, gat.balas() == 0 ? 0xFFFF5555 : 0xFFF0D080, true);
         if (gat.recarga() > 0) {
             Component t = Component.translatable("hud.miscelanea.gatling.recargando");

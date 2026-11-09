@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/gatling",
+  "display": {
+    "icon": {
+      "item": "miscelanea:cinta_palomitas"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.palomitas.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.palomitas.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "gatling_palomitas": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "gatling_palomitas"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

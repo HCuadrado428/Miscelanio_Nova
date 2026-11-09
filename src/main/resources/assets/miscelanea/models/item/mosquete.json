@@ -5,7 +5,10 @@
   "particle": "miscelanea:item/mosquete"
  },
  "base": {
-  "parent": "miscelanea:item/armas3d/mosquete_3d"
+  "parent": "miscelanea:item/armas3d/mosquete_3d",
+  "textures": {
+   "cobre": "miscelanea:item/armas3d/g_cobre_0"
+  }
  },
  "perspectives": {
   "gui": {
@@ -33,6 +36,87 @@
     "miscelanea:baqueta": 0.99
    },
    "model": "miscelanea:item/mosquete_3"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.25
+   },
+   "model": "miscelanea:item/mosquete_ox1"
+  },
+  {
+   "predicate": {
+    "miscelanea:baqueta": 0.3233333333333333,
+    "miscelanea:oxido": 0.25
+   },
+   "model": "miscelanea:item/mosquete_1_ox1"
+  },
+  {
+   "predicate": {
+    "miscelanea:baqueta": 0.6566666666666666,
+    "miscelanea:oxido": 0.25
+   },
+   "model": "miscelanea:item/mosquete_2_ox1"
+  },
+  {
+   "predicate": {
+    "miscelanea:baqueta": 0.99,
+    "miscelanea:oxido": 0.25
+   },
+   "model": "miscelanea:item/mosquete_3_ox1"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.5
+   },
+   "model": "miscelanea:item/mosquete_ox2"
+  },
+  {
+   "predicate": {
+    "miscelanea:baqueta": 0.3233333333333333,
+    "miscelanea:oxido": 0.5
+   },
+   "model": "miscelanea:item/mosquete_1_ox2"
+  },
+  {
+   "predicate": {
+    "miscelanea:baqueta": 0.6566666666666666,
+    "miscelanea:oxido": 0.5
+   },
+   "model": "miscelanea:item/mosquete_2_ox2"
+  },
+  {
+   "predicate": {
+    "miscelanea:baqueta": 0.99,
+    "miscelanea:oxido": 0.5
+   },
+   "model": "miscelanea:item/mosquete_3_ox2"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.75
+   },
+   "model": "miscelanea:item/mosquete_ox3"
+  },
+  {
+   "predicate": {
+    "miscelanea:baqueta": 0.3233333333333333,
+    "miscelanea:oxido": 0.75
+   },
+   "model": "miscelanea:item/mosquete_1_ox3"
+  },
+  {
+   "predicate": {
+    "miscelanea:baqueta": 0.6566666666666666,
+    "miscelanea:oxido": 0.75
+   },
+   "model": "miscelanea:item/mosquete_2_ox3"
+  },
+  {
+   "predicate": {
+    "miscelanea:baqueta": 0.99,
+    "miscelanea:oxido": 0.75
+   },
+   "model": "miscelanea:item/mosquete_3_ox3"
   }
  ]
 }

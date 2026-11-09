@@ -54,7 +54,7 @@ public final class FuegoClienteMod {
             ItemProperties.register(ModItems.WINCHESTER.get(), rl("palanca"), (s, l, en, seed) -> {
                 Level lv = nivel(l, en);
                 float d = ArmaFuegoItem.desdeDisparo(s, lv, 0);
-                int pal = en instanceof Player p ? WinchesterItem.palanca(p) : EquilibrioArmas.winchesterPalanca();
+                int pal = en instanceof Player p ? WinchesterItem.palanca(p, s) : EquilibrioArmas.winchesterPalanca();
                 return d >= 1 && d < pal * 0.6F ? 1F : 0F;
             });
             // Derringer: se ve en tercera persona solo justo después de disparar; abierta al recargar
@@ -72,6 +72,9 @@ public final class FuegoClienteMod {
                 int[] fr = {1, 2, 3, 2};
                 return fr[k] / 3F;
             });
+            // el cobre de las seis nuevas (0, 0,25, 0,5, 0,75, como el revólver)
+            for (var it : java.util.List.of(ModItems.GATLING, ModItems.WINCHESTER, ModItems.DERRINGER, ModItems.THOMPSON, ModItems.MOSQUETE, ModItems.CANON_MANO))
+                ItemProperties.register(it.get(), rl("oxido"), (s, l, en, seed) -> com.miscelanea.armasfuego.comun.Cobre.oxido(s) / 4F);
             // cañón: la mecha encendida
             ItemProperties.register(ModItems.CANON_MANO.get(), rl("mecha"), (s, l, en, seed) -> CanonManoItem.mecha(s) >= 0 ? 1F : 0F);
             // revólver: el tambor abierto un momento al meter cada bala
@@ -99,6 +102,7 @@ public final class FuegoClienteMod {
     @SubscribeEvent
     public static void modelos(ModelEvent.RegisterAdditional e) {
         for (ResourceLocation r : GatlingRenderer.TODOS) e.register(r);
+        for (ResourceLocation r : GatlingRenderer.CUERPOS) e.register(r);
     }
 
     @SubscribeEvent

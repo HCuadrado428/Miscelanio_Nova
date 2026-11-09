@@ -3,6 +3,7 @@
  "gui_light": "front",
  "ambientocclusion": false,
  "textures": {
+  "cobre": "miscelanea:item/armas3d/g_cobre_0",
   "hierro": "miscelanea:item/armas3d/g_hierro",
   "acero": "miscelanea:item/armas3d/g_acero",
   "laton": "miscelanea:item/armas3d/g_laton",
@@ -39,7 +40,7 @@
       6.0,
       11.6
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "south": {
      "uv": [
@@ -48,7 +49,7 @@
       6.0,
       11.6
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "east": {
      "uv": [
@@ -57,7 +58,7 @@
       14.4,
       11.6
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "west": {
      "uv": [
@@ -66,7 +67,7 @@
       14.4,
       11.6
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "up": {
      "uv": [
@@ -75,7 +76,7 @@
       6.0,
       14.4
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "down": {
      "uv": [
@@ -84,7 +85,7 @@
       6.0,
       14.4
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     }
    }
   },
@@ -116,7 +117,7 @@
       4.5,
       11.75
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "east": {
      "uv": [
@@ -125,7 +126,7 @@
       4.5,
       11.75
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "west": {
      "uv": [
@@ -134,7 +135,7 @@
       4.5,
       11.75
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "up": {
      "uv": [
@@ -143,7 +144,7 @@
       4.5,
       4.25
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "down": {
      "uv": [
@@ -152,7 +153,7 @@
       4.5,
       4.25
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     }
    }
   },
@@ -175,7 +176,7 @@
       13.9,
       8.1
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "south": {
      "uv": [
@@ -184,7 +185,7 @@
       13.9,
       8.1
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "east": {
      "uv": [
@@ -193,7 +194,7 @@
       12.7,
       8.1
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "west": {
      "uv": [
@@ -202,7 +203,7 @@
       12.7,
       8.1
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "up": {
      "uv": [
@@ -211,7 +212,7 @@
       13.9,
       5.7
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     },
     "down": {
      "uv": [
@@ -220,7 +221,7 @@
       13.9,
       5.7
      ],
-     "texture": "#hierro"
+     "texture": "#cobre"
     }
    }
   },

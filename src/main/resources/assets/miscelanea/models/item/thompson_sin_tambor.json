@@ -5,7 +5,10 @@
   "particle": "miscelanea:item/thompson"
  },
  "base": {
-  "parent": "miscelanea:item/armas3d/thompson_3d_sin_tambor"
+  "parent": "miscelanea:item/armas3d/thompson_3d_sin_tambor",
+  "textures": {
+   "cobre": "miscelanea:item/armas3d/g_cobre_0"
+  }
  },
  "perspectives": {
   "gui": {
