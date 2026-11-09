@@ -40,5 +40,20 @@ public final class ModEnchantments {
         return ENCHANTMENTS.register(modo.id(), () -> new ModoEnchantment(modo, ASPIRAFANTASMAS));
     }
 
+    // ---- Escopeta de presión
+    public static final EnchantmentCategory ESCOPETA_PRESION =
+            EnchantmentCategory.create("MISCELANEA_ESCOPETA_PRESION", item -> item instanceof com.miscelanea.armasfuego.escopeta.EscopetaPresionItem);
+    public static final RegistryObject<Enchantment> ESCOPETA_COMPRESOR = ENCHANTMENTS.register("escopeta_compresor",
+            () -> new com.miscelanea.armasfuego.escopeta.EncantamientoEscopeta(com.miscelanea.armasfuego.escopeta.Presion.Encantamiento.COMPRESOR, Enchantment.Rarity.UNCOMMON, 3, 10, 15));
+    public static final RegistryObject<Enchantment> ESCOPETA_VALVULA = ENCHANTMENTS.register("escopeta_valvula_seguridad",
+            () -> new com.miscelanea.armasfuego.escopeta.EncantamientoEscopeta(com.miscelanea.armasfuego.escopeta.Presion.Encantamiento.VALVULA, Enchantment.Rarity.RARE, 1, 20, 0));
+    public static final RegistryObject<Enchantment> ESCOPETA_DOBLE_CAMARA = ENCHANTMENTS.register("escopeta_doble_camara",
+            () -> new com.miscelanea.armasfuego.escopeta.EncantamientoEscopeta(com.miscelanea.armasfuego.escopeta.Presion.Encantamiento.DOBLE_CAMARA, Enchantment.Rarity.RARE, 1, 20, 0));
+    public static final RegistryObject<Enchantment> ESCOPETA_FUELLE = ENCHANTMENTS.register("escopeta_fuelle",
+            () -> new com.miscelanea.armasfuego.escopeta.EncantamientoEscopeta(com.miscelanea.armasfuego.escopeta.Presion.Encantamiento.FUELLE, Enchantment.Rarity.COMMON, 3, 5, 10));
+    public static final RegistryObject<Enchantment> ESCOPETA_RECICLAJE = ENCHANTMENTS.register("escopeta_reciclaje",
+            () -> new com.miscelanea.armasfuego.escopeta.EncantamientoEscopeta(com.miscelanea.armasfuego.escopeta.Presion.Encantamiento.RECICLAJE, Enchantment.Rarity.UNCOMMON, 3, 10, 12));
+    // ---- fin escopeta de presión
+
     private ModEnchantments() {}
 }

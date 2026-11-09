@@ -17,5 +17,8 @@ public final class ModEffects {
 
     public static final RegistryObject<MobEffect> UBERCARGA = EFFECTS.register("ubercarga", com.miscelanea.medigun.UberEffect::new);
 
+    // ---- Escopeta de presión: pringado de miel (no deja saltar)
+    public static final RegistryObject<MobEffect> PRINGADO = EFFECTS.register("pringado", com.miscelanea.armasfuego.escopeta.PringadoEffect::new);
+
     private ModEffects() {}
 }

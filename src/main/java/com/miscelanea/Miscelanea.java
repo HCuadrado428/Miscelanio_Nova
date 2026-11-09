@@ -171,6 +171,9 @@ public class Miscelanea {
                     ModEnchantments.REVOLVER_DESENFUNDE, ModEnchantments.REVOLVER_SENALERO))
                 event.accept(net.minecraft.world.item.EnchantedBookItem.createForEnchantment(
                         new net.minecraft.world.item.enchantment.EnchantmentInstance(en.get(), en.get().getMaxLevel())));
+            // ---- Escopeta de presión
+            event.accept(ModItems.ESCOPETA_PRESION);
+            for (var t : com.miscelanea.armasfuego.escopeta.TipoCartucho.values()) event.accept(t.item());
             for (int c = 0; c < com.miscelanea.laser.Laser.COLORES.length; c++) {
                 net.minecraft.world.item.ItemStack laser = new net.minecraft.world.item.ItemStack(com.miscelanea.laser.LaserRegistro.PUNTERO.get());
                 if (c > 0) laser.getOrCreateTag().putInt(com.miscelanea.laser.Laser.COLOR, c);

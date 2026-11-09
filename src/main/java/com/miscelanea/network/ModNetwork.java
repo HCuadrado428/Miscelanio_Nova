@@ -289,5 +289,11 @@ public final class ModNetwork {
                 .decoder(com.miscelanea.armasfuego.pistola.GirarPacket::new)
                 .consumerMainThread(com.miscelanea.armasfuego.pistola.GirarPacket::handle)
                 .add();
+        // ---- Escopeta de presión
+        CHANNEL.messageBuilder(com.miscelanea.armasfuego.escopeta.DispararPresionPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.armasfuego.escopeta.DispararPresionPacket::encode)
+                .decoder(com.miscelanea.armasfuego.escopeta.DispararPresionPacket::new)
+                .consumerMainThread(com.miscelanea.armasfuego.escopeta.DispararPresionPacket::handle)
+                .add();
     }
 }
