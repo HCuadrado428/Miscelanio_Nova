@@ -828,7 +828,7 @@ public final class PruebaCI {
     private static volatile net.minecraft.core.BlockPos piO;
     private static volatile net.minecraft.core.Direction piMira, piLado;
     private static volatile UUID piHusk;
-    private static volatile boolean piVigilaBrillo;
+    private static volatile boolean piVigilaBrillo, escVigilaMiel;
     private static final java.util.Map<String, Object> PI = new java.util.concurrent.ConcurrentHashMap<>();
     private static net.minecraftforge.common.util.FakePlayer piForastero;
 
@@ -1334,6 +1334,11 @@ public final class PruebaCI {
                 var h = lv.getEntity(piHusk);
                 if (h instanceof net.minecraft.world.entity.LivingEntity le && le.hasEffect(net.minecraft.world.effect.MobEffects.GLOWING)) PI.put("husk_brillo", true);
             }
+        }
+        if (escVigilaMiel && escHusk != null) {
+            for (var lv : e.getServer().getAllLevels())
+                if (lv.getEntity(escHusk) instanceof net.minecraft.world.entity.LivingEntity le && le.hasEffect(com.miscelanea.registry.ModEffects.PRINGADO.get()))
+                    PI.put("miel_visto", true);
         }
         for (Object[] t : listos) {
             ServerPlayer sp = e.getServer().getPlayerList().getPlayer((UUID) t[2]);
@@ -2413,11 +2418,18 @@ public final class PruebaCI {
             });
         });
         // ---- miel
-        sin("esc_miel", 5, () -> escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.MIEL, 100, escHuskPos()));
+        sin("esc_miel", 5, () -> {
+            // el pringado dura unos 6 s y con shaders (4 fotogramas por paso a 1-2 fps) se puede pasar antes de mirarlo:
+            // se vigila en cada tick del servidor
+            PI.remove("miel_visto");
+            escVigilaMiel = true;
+            escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.MIEL, 100, escHuskPos());
+        });
         paso("127_miel", 12, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
         sin("esc_miel_chk", 5, () -> {
             var h = (net.minecraft.world.entity.LivingEntity) escEntidad(escHusk);
-            if (!h.hasEffect(com.miscelanea.registry.ModEffects.PRINGADO.get())) throw new IllegalStateException("la miel no pringa");
+            escVigilaMiel = false;
+            if (!h.hasEffect(com.miscelanea.registry.ModEffects.PRINGADO.get()) && !PI.containsKey("miel_visto")) throw new IllegalStateException("la miel no pringa");
             escServidor(sp -> h.setHealth(h.getMaxHealth()));
         });
         // ---- sal: sin daño
