@@ -104,7 +104,8 @@ public class BalaRifle extends Projectile {
         baseTick();
         if (level().isClientSide) {
             // en el cliente la posición la manda el servidor cada tick; aquí solo la estela de la trazadora
-            if (tipo() == Rifle.TRAZADORA) {
+            // (el primer tramo no: sale de los ojos del tirador y con el zoom le taparía la mira)
+            if (tipo() == Rifle.TRAZADORA && tickCount > 1) {
                 Vec3 a = new Vec3(xo, yo, zo), b = position();
                 for (int i = 0; i < 4; i++) {
                     Vec3 q = a.lerp(b, i / 4.0);

@@ -97,6 +97,9 @@ public class GanchoTirolina extends Polea {
             soltar(jinete, Vec3.ZERO);
             return;
         }
+        // en vez del "pulsa Mayús para bajarte" de vanilla (aquí agacharse frena)
+        if (vida == 3 && jinete instanceof net.minecraft.world.entity.player.Player pl)
+            pl.displayClientMessage(net.minecraft.network.chat.Component.translatable("msg.miscelanea.rifle.colgado"), true);
         float mult = 1F + 0.25F * nivel;
         float t = t(), v = velocidad();
         Vec3 tan = Cuerda.tangente(a, b, t);

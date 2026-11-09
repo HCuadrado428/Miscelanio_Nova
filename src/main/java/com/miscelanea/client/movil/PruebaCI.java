@@ -826,7 +826,7 @@ public final class PruebaCI {
                 var golem = new net.minecraft.world.entity.animal.IronGolem(net.minecraft.world.entity.EntityType.IRON_GOLEM, l);
                 rifleGolem = poner.apply(golem, o.relative(mira, 26));
                 // sensor de sculk al lado del tirador
-                rifleSensor = o.relative(lado, 3);
+                rifleSensor = o.relative(lado, -3).relative(mira, -1);   // a la izquierda: los casquillos salen por la derecha
                 l.setBlock(rifleSensor, net.minecraft.world.level.block.Blocks.SCULK_SENSOR.defaultBlockState(), 3);
                 sp.setGameMode(GameType.SURVIVAL);
                 sp.removeAllEffects();
@@ -964,7 +964,6 @@ public final class PruebaCI {
         sin("rifle_silencio_espera", 15, () -> {});
         // bala de cuerda: desde lo alto de una torre hasta el suelo
         sin("rifle_torre", 30, () -> {
-            rifleComprobar();
             rifleUsar(false);
             rifleCuerdasAntes = rifleCuenta(com.miscelanea.registry.ModItems.BALA_CUERDA.get());
             rifleSrv(sp -> {
@@ -975,6 +974,7 @@ public final class PruebaCI {
                 sp.getInventory().setItem(3, ItemStack.EMPTY);
                 sp.connection.teleport(o.getX() + 0.5, o.getY() + 6, o.getZ() + 0.5, rifleMira.toYRot(), 20F);
             });
+            rifleComprobar();
         });
         sin("rifle_cuerda_cerrojo", 25, () -> {
             rifleCuerdasAntes = rifleCuenta(com.miscelanea.registry.ModItems.BALA_CUERDA.get());
@@ -1006,13 +1006,13 @@ public final class PruebaCI {
             rifleComprobar();
             rifleSalto = true;
         });
-        paso("149_colgado", 8, () -> {
+        paso("149_colgado", 3, () -> {
             rifleSalto = false;
             mc.options.keyJump.setDown(false);
             if (!(mc.player.getVehicle() instanceof com.miscelanea.armasfuego.rifle.GanchoTirolina))
                 throw new IllegalStateException("saltando debajo de la cuerda no se ha colgado");
         });
-        paso("150_bajando", 15, () -> {});
+        paso("150_bajando", 6, () -> {});
         sin("rifle_llegada", 100, () -> {});
         paso("151_abajo", 10, () -> {
             mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);

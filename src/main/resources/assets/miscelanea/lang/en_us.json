@@ -2797,5 +2797,6 @@
   "entity.miscelanea.gancho_tirolina": "Zipline Hook",
   "death.attack.miscelanea.rifle_disparo": "%1$s was shot down",
   "death.attack.miscelanea.rifle_disparo.player": "%1$s was sniped by %2$s",
-  "death.attack.miscelanea.rifle_disparo.item": "%1$s was sniped by %2$s using %3$s"
+  "death.attack.miscelanea.rifle_disparo.item": "%1$s was sniped by %2$s using %3$s",
+  "msg.miscelanea.rifle.colgado": "Sneak to brake; you let go at the bottom"
 }

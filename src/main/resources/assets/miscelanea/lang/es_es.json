@@ -2797,5 +2797,6 @@
   "entity.miscelanea.gancho_tirolina": "Gancho de tirolina",
   "death.attack.miscelanea.rifle_disparo": "%1$s fue abatido de un disparo",
   "death.attack.miscelanea.rifle_disparo.player": "%1$s fue abatido por %2$s desde lejos",
-  "death.attack.miscelanea.rifle_disparo.item": "%1$s fue abatido por %2$s con %3$s"
+  "death.attack.miscelanea.rifle_disparo.item": "%1$s fue abatido por %2$s con %3$s",
+  "msg.miscelanea.rifle.colgado": "Agachado frenas; al llegar abajo te sueltas"
 }
