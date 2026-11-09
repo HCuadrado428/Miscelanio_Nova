@@ -1401,7 +1401,7 @@ public final class PruebaCI {
             String l = logrosPurgatorio();
             RESUMEN.add("  purgatorio, logros tras recorrerlo: " + l);
             ServerPlayer sp = spPrueba();
-            for (String n : new String[]{"raiz", "pillado", "caida", "sin_pillar", "todas_zonas"})
+            for (String n : new String[]{"raiz", "pillado", "sin_pillar", "todas_zonas"})
                 if (!com.miscelanea.purgatorio.eventos.Logros.tiene(sp, n)) throw new IllegalStateException("no se ha dado el logro purgatorio/" + n);
             RESUMEN.add("  purgatorio, " + com.miscelanea.client.purgatorio.ExtrasCliente.estado());
         });
@@ -1613,6 +1613,18 @@ public final class PruebaCI {
             for (var ie : lista) b.append(' ').append(ie.getItem().getItem()).append(" en ").append(ie.blockPosition().toShortString());
             RESUMEN.add(b.toString());
             if (lista.isEmpty()) throw new IllegalStateException("en la caseta abierta no hay premio");
+        });
+        // caerse por un agujero del Mundo sin Texturas (de golpe por debajo del suelo, sin esperar a la caída: con shaders va lento)
+        sin("pex_caida", 30, () -> enServidor(sp -> {
+            var ag = com.miscelanea.purgatorio.Purgatorio.buscarAgujero();
+            if (ag == null) return;
+            com.miscelanea.purgatorio.Purgatorio.preparar(sp.serverLevel(), ag);
+            sp.teleportTo(ag.getX() + 0.5, -30, ag.getZ() + 0.5);
+        }));
+        sin("pex_caida_fin", 60, () -> {
+            boolean fuera = !com.miscelanea.purgatorio.Purgatorio.en(mc.level), ok = com.miscelanea.purgatorio.eventos.Logros.tiene(spPrueba(), "caida");
+            RESUMEN.add("  purgatorio, caerse por el agujero: fuera=" + fuera + ", logro " + (ok ? "sí" : "NO"));
+            enServidor(sp -> com.miscelanea.purgatorio.Purgatorio.entrar(sp, null));
         });
         // los logros: todos, y la pestaña del Purgatorio abierta para la foto
         sin("pex_logros", 10, () -> {
