@@ -112,6 +112,12 @@ public final class LiminalCliente {
         }
 
         @Override
+        public void render(AtrezoBE be, float pt, PoseStack ps, net.minecraft.client.renderer.MultiBufferSource buf, int luz, int overlay) {
+            dibujados++;
+            super.render(be, pt, ps, buf, luz, overlay);
+        }
+
+        @Override
         public int getViewDistance() {
             return 40;
         }
@@ -168,6 +174,9 @@ public final class LiminalCliente {
             default -> 0F;
         };
     }
+
+    /** Para la prueba: cuántas veces se ha dibujado algún atrezo con GeckoLib. */
+    public static long dibujados;
 
     /** Para la prueba: cuántos ecos han sonado. */
     public static int ecos;

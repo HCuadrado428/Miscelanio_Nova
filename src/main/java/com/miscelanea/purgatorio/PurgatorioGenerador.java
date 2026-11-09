@@ -1725,7 +1725,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
         }
         for (int x = x0; x <= x0 + 6; x++) l.pon(x, f + 3, zf, ((NumeradoBlock) ModBlocks.ROTULO_TIENDA.get()).con(rara ? 1 : rotulo));
         // un escaparate (una de cada cuatro): cristal, la luz de dentro encendida y maniquíes que te miran (cuando no miras)
-        if (!rara && hn(n, cx, cz, 235 + k) % 4 == 0) {
+        if (!rara && hn(n, cx, cz, 235 + k) % 7 == 0) {
             for (int x = x0 + 1; x <= x0 + 5; x++) {
                 l.pon(x, f, zf, d(Blocks.WHITE_CONCRETE));
                 for (int y = 1; y < 3; y++) l.pon(x, f + y, zf, unida(Blocks.GLASS_PANE, false, true));
@@ -1735,7 +1735,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
             Direction afuera = norte ? Direction.SOUTH : Direction.NORTH;
             long r = hn(n, cx, cz, 236 + k);
             for (int i = 0; i < 3; i++) {
-                if (i == 1 && r % 3 == 0) continue;
+                if (i == 1 && r % 3 != 0) continue;
                 l.ponBE(x0 + 1 + i * 2, f, zf - 2 * dz, com.miscelanea.purgatorio.liminal.LiminalRegistro.MANIQUI.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, afuera)
                         .setValue(com.miscelanea.purgatorio.liminal.Bloques.POSE, (int) ((r >> (4 + 2 * i)) % 3)));
             }

@@ -1763,7 +1763,15 @@ public final class PruebaCI {
                     var ch = mc.level.getChunkSource().getChunkNow((p.getX() >> 4) + cx, (p.getZ() >> 4) + cz);
                     if (ch != null) for (var be : ch.getBlockEntities().values()) if (be instanceof com.miscelanea.purgatorio.liminal.AtrezoBE) n++;
                 }
-            RESUMEN.add("  liminal, bloques-entidad del atrezo (GeckoLib) cargados en 7 x 7 chunks del centro comercial: " + n);
+            net.minecraft.world.level.block.entity.BlockEntity uno = null;
+            for (int cx = -1; cx <= 1 && uno == null; cx++)
+                for (int cz = -1; cz <= 1 && uno == null; cz++) {
+                    var ch = mc.level.getChunkSource().getChunkNow((p.getX() >> 4) + cx, (p.getZ() >> 4) + cz);
+                    if (ch != null) for (var be : ch.getBlockEntities().values()) if (be instanceof com.miscelanea.purgatorio.liminal.AtrezoBE) uno = be;
+                }
+            RESUMEN.add("  liminal, bloques-entidad del atrezo (GeckoLib) cargados en 7 x 7 chunks del centro comercial: " + n + ", dibujados hasta ahora "
+                    + com.miscelanea.client.purgatorio.LiminalCliente.dibujados + (uno == null ? "" : ", uno en " + uno.getBlockPos().toShortString() + " (" + mc.level.getBlockState(uno.getBlockPos()).getBlock()
+                    + ", renderer " + mc.getBlockEntityRenderDispatcher().getRenderer(uno) + ", quitado=" + uno.isRemoved() + ")"));
         });
         // un coche aparcado, de cerca
         sin("lim_coche_ir", 60, () -> {
@@ -1850,7 +1858,11 @@ public final class PruebaCI {
         // el ventilador del techo de la sala de espera
         sin("lim_ventilador_ir", 60, () -> {
             var b = com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.SALA);
-            lim[5] = cercano(b, 64, b.getY() + 3, b.getY() + 3, st -> st.is(com.miscelanea.purgatorio.liminal.LiminalRegistro.VENTILADOR.get()));
+            lim[5] = cercano(b, 80, b.getY() + 3, b.getY() + 3, st -> st.is(com.miscelanea.purgatorio.liminal.LiminalRegistro.VENTILADOR.get()));
+            for (int n = 0; n < 3 && lim[5] == null; n++) {
+                var g = com.miscelanea.purgatorio.Purgatorio.buscarGrande(com.miscelanea.purgatorio.PurgatorioPlano.Tipo.VESTIBULO);
+                if (g != null) lim[5] = new net.minecraft.core.BlockPos(g.x0() + 8, com.miscelanea.purgatorio.PurgatorioPlano.base(g.n()) + 7, g.z0() + 8);
+            }
             RESUMEN.add("  liminal, ventilador: " + (lim[5] == null ? "NINGUNO" : lim[5].toShortString()));
             if (lim[5] == null) throw new IllegalStateException("no hay ventiladores cerca");
             irMirando(lim[5].offset(-3, -3, -3), lim[5]);
