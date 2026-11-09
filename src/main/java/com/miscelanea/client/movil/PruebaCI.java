@@ -769,6 +769,7 @@ public final class PruebaCI {
             mc.gui.getChat().clearMessages(false);
             piSrv(sp -> {
                 var l = sp.serverLevel();
+                l.setWeatherParameters(6000, 0, false, false);   // sin lluvia: apaga el fuego y cambia la luz
                 var mira = net.minecraft.core.Direction.fromYRot(sp.getYRot());
                 var lado = mira.getClockWise();
                 var o = sp.blockPosition();
@@ -1243,6 +1244,7 @@ public final class PruebaCI {
             mc.options.hideGui = false;
             rifleSrv(sp -> {
                 var l = sp.serverLevel();
+                l.setWeatherParameters(6000, 0, false, false);   // sin lluvia: apaga el fuego y cambia la luz
                 var mira = net.minecraft.core.Direction.fromYRot(sp.getYRot());
                 var lado = mira.getClockWise();
                 var o = sp.blockPosition();
@@ -2030,6 +2032,7 @@ public final class PruebaCI {
             mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
             escServidor(sp -> {
                 var l = sp.serverLevel();
+                l.setWeatherParameters(6000, 0, false, false);   // sin lluvia: apaga el fuego y cambia la luz
                 var mira = net.minecraft.core.Direction.fromYRot(sp.getYRot());
                 var lado = mira.getClockWise();
                 var o = sp.blockPosition();
