@@ -1,0 +1,6 @@
+{
+ "parent": "miscelanea:item/rifle_base",
+ "textures": {
+  "layer0": "miscelanea:item/rifle_oxidado"
+ }
+}

@@ -1,0 +1,53 @@
+{
+ "parent": "miscelanea:item/rifle_base",
+ "textures": {
+  "layer0": "miscelanea:item/rifle"
+ },
+ "overrides": [
+  {
+   "predicate": {
+    "miscelanea:cerrojo": 1
+   },
+   "model": "miscelanea:item/rifle_cerrojo"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 1
+   },
+   "model": "miscelanea:item/rifle_expuesto"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 1,
+    "miscelanea:cerrojo": 1
+   },
+   "model": "miscelanea:item/rifle_expuesto_cerrojo"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 2
+   },
+   "model": "miscelanea:item/rifle_erosionado"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 2,
+    "miscelanea:cerrojo": 1
+   },
+   "model": "miscelanea:item/rifle_erosionado_cerrojo"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 3
+   },
+   "model": "miscelanea:item/rifle_oxidado"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 3,
+    "miscelanea:cerrojo": 1
+   },
+   "model": "miscelanea:item/rifle_oxidado_cerrojo"
+  }
+ ]
+}

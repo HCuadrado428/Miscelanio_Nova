@@ -24,6 +24,26 @@ public final class ModEnchantments {
     public static final RegistryObject<Enchantment> TURBO = register(Modo.TURBO);
     public static final RegistryObject<Enchantment> ALQUIMISTA = register(Modo.ALQUIMISTA);
 
+    // ---- Rifle
+    /** Solo para el rifle de catalejo. */
+    public static final EnchantmentCategory RIFLE =
+            EnchantmentCategory.create("MISCELANEA_RIFLE", item -> item instanceof com.miscelanea.armasfuego.rifle.RifleItem);
+    /** Mira quieta 2 s: el siguiente disparo va recto y hace más daño. */
+    public static final RegistryObject<Enchantment> RESPIRACION = ENCHANTMENTS.register("respiracion_contenida",
+            () -> new com.miscelanea.armasfuego.rifle.RifleEncantamiento(Enchantment.Rarity.UNCOMMON, 3, 10, 10, RIFLE));
+    /** La bala pasa por varios mobs y por bloques blandos. */
+    public static final RegistryObject<Enchantment> ATRAVESAR = ENCHANTMENTS.register("atravesar",
+            () -> new com.miscelanea.armasfuego.rifle.RifleEncantamiento(Enchantment.Rarity.RARE, 3, 5, 10, RIFLE));
+    /** Lo que se mira con la mira brilla un rato. */
+    public static final RegistryObject<Enchantment> OJO_HALCON = ENCHANTMENTS.register("ojo_halcon",
+            () -> new com.miscelanea.armasfuego.rifle.RifleEncantamiento(Enchantment.Rarity.UNCOMMON, 2, 12, 15, RIFLE));
+    /** Tirolinas más largas y más rápidas. */
+    public static final RegistryObject<Enchantment> TIROLINERO = ENCHANTMENTS.register("tirolinero",
+            () -> new com.miscelanea.armasfuego.rifle.RifleEncantamiento(Enchantment.Rarity.UNCOMMON, 3, 5, 9, RIFLE));
+    /** El disparo casi no hace ruido (ni lo notan el sculk ni el Warden). */
+    public static final RegistryObject<Enchantment> SILENCIADOR = ENCHANTMENTS.register("silenciador",
+            () -> new com.miscelanea.armasfuego.rifle.RifleEncantamiento(Enchantment.Rarity.RARE, 1, 20, 0, RIFLE));
+
     private static RegistryObject<Enchantment> register(Modo modo) {
         return ENCHANTMENTS.register(modo.id(), () -> new ModoEnchantment(modo, ASPIRAFANTASMAS));
     }

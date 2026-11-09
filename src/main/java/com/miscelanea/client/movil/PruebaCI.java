@@ -338,6 +338,7 @@ public final class PruebaCI {
         rendimiento();
         laser();
         eco();
+        rifle();
         sin("cerrar", 10, () -> {
             mc.setScreen(null);
             RESUMEN.add("  cara propia (la de su modelo) guardada: " + (CarasCliente.tiene(mc.player.getUUID()) ? "sí" : "NO"));
@@ -681,6 +682,364 @@ public final class PruebaCI {
         });
     }
 
+    // ------------------------------------------------------------------ rifle de catalejo (pasos 140-159)
+    private static volatile int rifleZ1 = -1, rifleZ2 = -1, rifleGolem = -1;
+    private static volatile net.minecraft.core.BlockPos rifleO, rifleSensor;
+    private static volatile net.minecraft.core.Direction rifleMira;
+    /** Lo que ha salido mal en una comprobación hecha en el hilo del servidor (se mira en el paso siguiente). */
+    private static volatile String rifleFallo;
+    private static boolean rifleSalto;
+    private static int rifleFotosAntes, rifleCuerdasAntes;
+
+    /** Algo en el hilo del servidor con el jugador. */
+    private static void rifleSrv(java.util.function.Consumer<ServerPlayer> c) {
+        Minecraft mc = Minecraft.getInstance();
+        var srv = mc.getSingleplayerServer();
+        UUID id = mc.player.getUUID();
+        srv.execute(() -> {
+            ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+            if (sp == null) return;
+            try {
+                c.accept(sp);
+            } catch (Throwable t) {
+                rifleFallo = t.toString();
+            }
+        });
+    }
+
+    private static void rifleComprobar() {
+        String f = rifleFallo;
+        rifleFallo = null;
+        if (f != null) throw new IllegalStateException(f);
+    }
+
+    /** Gira la vista del jugador para que mire a q. */
+    private static void rifleApuntar(Vec3 q) {
+        var p = Minecraft.getInstance().player;
+        Vec3 d = q.subtract(p.getEyePosition());
+        float yaw = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
+        float pitch = (float) Math.toDegrees(-Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
+        p.setYRot(yaw);
+        p.setXRot(pitch);
+        p.yRotO = yaw;
+        p.xRotO = pitch;
+        p.setYHeadRot(yaw);
+    }
+
+    private static net.minecraft.world.entity.Entity rifleEnte(int id) {
+        var e = Minecraft.getInstance().level.getEntity(id);
+        if (e == null) throw new IllegalStateException("no está la entidad " + id);
+        return e;
+    }
+
+    private static void rifleClic() {
+        var p = Minecraft.getInstance().player;
+        com.miscelanea.client.armasfuego.rifle.RifleCliente.clic(p, p.getMainHandItem());
+    }
+
+    private static void rifleUsar(boolean si) {
+        mantenerUso = si;
+        Minecraft.getInstance().options.keyUse.setDown(si);
+    }
+
+    private static int rifleCuenta(net.minecraft.world.item.Item i) {
+        var inv = Minecraft.getInstance().player.getInventory();
+        int n = 0;
+        for (int k = 0; k < inv.getContainerSize(); k++) if (inv.getItem(k).is(i)) n += inv.getItem(k).getCount();
+        return n;
+    }
+
+    /**
+     * El rifle de catalejo: cerrojo, mira (zoom del catalejo y telémetro en el HUD), disparo a la cabeza de un husk,
+     * al cuerpo de otro con armadura de diamante (la mitad del daño se salta la armadura), bala trazadora (brillo), foto
+     * con la mira a la galería del móvil, sensor de sculk con y sin Silenciador, bala de cuerda (tirolina: colgarse
+     * saltando, bajar y cortarla con tijeras), óxido del cobre (encerar y rascar) y encantamientos en la mesa.
+     */
+    private static void rifle() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("rifle_poner", 40, () -> {
+            mc.setScreen(null);
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            mc.options.hideGui = false;
+            rifleSrv(sp -> {
+                var l = sp.serverLevel();
+                var mira = net.minecraft.core.Direction.fromYRot(sp.getYRot());
+                var lado = mira.getClockWise();
+                var o = sp.blockPosition();
+                rifleO = o;
+                rifleMira = mira;
+                var aire = net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
+                var suelo = net.minecraft.world.level.block.Blocks.SMOOTH_STONE.defaultBlockState();
+                for (var b : net.minecraft.core.BlockPos.betweenClosed(o.relative(lado, -7).relative(mira, -3).below(), o.relative(lado, 7).relative(mira, 30).above(12)))
+                    l.setBlock(b, b.getY() < o.getY() ? suelo : aire, 2);
+                l.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, new net.minecraft.world.phys.AABB(o).inflate(40),
+                        e -> !(e instanceof net.minecraft.world.entity.player.Player)).forEach(net.minecraft.world.entity.Entity::discard);
+                // dianas: dos husks (no se queman al sol) y un gólem de hierro, quietos
+                java.util.function.BiFunction<net.minecraft.world.entity.Mob, net.minecraft.core.BlockPos, Integer> poner = (m, p) -> {
+                    m.moveTo(p.getX() + 0.5, p.getY(), p.getZ() + 0.5, mira.getOpposite().toYRot(), 0);
+                    m.setNoAi(true);
+                    m.setPersistenceRequired();
+                    l.addFreshEntity(m);
+                    return m.getId();
+                };
+                var z1 = new net.minecraft.world.entity.monster.Husk(net.minecraft.world.entity.EntityType.HUSK, l);
+                rifleZ1 = poner.apply(z1, o.relative(mira, 24).relative(lado, -3));
+                var z2 = new net.minecraft.world.entity.monster.Husk(net.minecraft.world.entity.EntityType.HUSK, l);
+                z2.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(net.minecraft.world.item.Items.DIAMOND_HELMET));
+                z2.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, new ItemStack(net.minecraft.world.item.Items.DIAMOND_CHESTPLATE));
+                rifleZ2 = poner.apply(z2, o.relative(mira, 24).relative(lado, 3));
+                var golem = new net.minecraft.world.entity.animal.IronGolem(net.minecraft.world.entity.EntityType.IRON_GOLEM, l);
+                rifleGolem = poner.apply(golem, o.relative(mira, 26));
+                // sensor de sculk al lado del tirador
+                rifleSensor = o.relative(lado, 3);
+                l.setBlock(rifleSensor, net.minecraft.world.level.block.Blocks.SCULK_SENSOR.defaultBlockState(), 3);
+                sp.setGameMode(GameType.SURVIVAL);
+                sp.removeAllEffects();
+                sp.setHealth(sp.getMaxHealth());
+                sp.getInventory().clearContent();
+                sp.getInventory().setItem(0, new ItemStack(com.miscelanea.registry.ModItems.RIFLE.get()));
+                sp.getInventory().setItem(1, new ItemStack(com.miscelanea.registry.ModItems.BALA_RIFLE.get(), 32));
+                sp.getInventory().setItem(2, new ItemStack(com.miscelanea.registry.ModItems.BALA_TRAZADORA.get(), 8));
+                sp.getInventory().setItem(3, new ItemStack(com.miscelanea.registry.ModItems.BALA_CUERDA.get(), 2));
+                sp.getInventory().setItem(4, new ItemStack(net.minecraft.world.item.Items.SHEARS));
+                sp.getInventory().setItem(8, new ItemStack(MovilRegistro.MOVIL.get()));
+                sp.getInventory().selected = 0;
+                sp.connection.teleport(o.getX() + 0.5, o.getY(), o.getZ() + 0.5, mira.toYRot(), 0F);
+            });
+        });
+        paso("140_rifle_mano", 20, () -> {
+            rifleComprobar();
+            mc.player.getInventory().selected = 0;
+            mc.gui.getChat().clearMessages(false);
+            if (!(mc.player.getMainHandItem().getItem() instanceof com.miscelanea.armasfuego.rifle.RifleItem)) throw new IllegalStateException("no tiene el rifle en la mano");
+        });
+        // primer clic: la recámara está vacía, así que acciona el cerrojo (y mete una bala)
+        paso("141_cerrojo", 5, RifleCI::clic);
+        sin("rifle_cargado", 25, () -> {});
+        paso("142_mira", 50, () -> {
+            if (!com.miscelanea.armasfuego.rifle.Rifle.lista(mc.player.getMainHandItem()))
+                throw new IllegalStateException("el cerrojo no ha metido la bala: " + mc.player.getMainHandItem().getTag());
+            var z = rifleEnte(rifleZ1);
+            rifleApuntar(new Vec3(z.getX(), z.getEyeY(), z.getZ()));
+            rifleUsar(true);
+        });
+        sin("rifle_disparo_cabeza", 15, () -> {
+            if (!mc.player.isScoping()) throw new IllegalStateException("no mira por el catalejo");
+            double d = com.miscelanea.client.armasfuego.rifle.RifleCliente.distancia;
+            RESUMEN.add(String.format("  rifle: telémetro %.1f m · %s · firme %s", d, com.miscelanea.client.armasfuego.rifle.RifleCliente.objetivo.getString(),
+                    com.miscelanea.client.armasfuego.rifle.RifleCliente.firme()));
+            if (d < 15 || d > 35) throw new IllegalStateException("el telémetro no marca la distancia al husk: " + d);
+            rifleClic();
+        });
+        sin("rifle_cabeza_comprobar", 2, () -> rifleSrv(sp -> {
+            var l = sp.serverLevel();
+            var z = l.getEntity(rifleZ1);
+            boolean muerto = z == null || !z.isAlive() || ((net.minecraft.world.entity.LivingEntity) z).getHealth() <= 0;
+            var st = l.getBlockState(rifleSensor);
+            var fase = net.minecraft.world.level.block.SculkSensorBlock.getPhase(st);
+            RESUMEN.add("  rifle: disparo a la cabeza → husk " + (muerto ? "muerto" : "vivo con " + ((net.minecraft.world.entity.LivingEntity) z).getHealth())
+                    + " · sensor de sculk " + fase);
+            if (!muerto) rifleFallo = "el disparo a la cabeza no ha matado al husk";
+            else if (fase != net.minecraft.world.level.block.state.properties.SculkSensorPhase.ACTIVE) rifleFallo = "el sensor de sculk no ha oído el disparo";
+        }));
+        sin("rifle_cerrojo2", 25, () -> {
+            rifleComprobar();
+            rifleClic();
+        });
+        sin("rifle_apunta_cuerpo", 50, () -> {
+            var z = rifleEnte(rifleZ2);
+            rifleApuntar(new Vec3(z.getX(), z.getY() + 1.0, z.getZ()));
+        });
+        sin("rifle_disparo_cuerpo", 15, RifleCI::clic);
+        sin("rifle_cuerpo_comprobar", 2, () -> rifleSrv(sp -> {
+            var z = (net.minecraft.world.entity.LivingEntity) sp.serverLevel().getEntity(rifleZ2);
+            float hp = z == null ? -1 : z.getHealth();
+            // 12 de daño: la mitad contra armadura 13 (diamante + la del husk) y la otra mitad sin armadura → le quedan
+            // unos 10,6 (sin perforar se quedaría en 12,3)
+            RESUMEN.add(String.format("  rifle: disparo al cuerpo del husk con diamante → le quedan %.2f de vida (esperado ~10,6; sin perforar 12,3)", hp));
+            if (hp < 9F || hp > 11.6F) rifleFallo = "el daño contra armadura no es el esperado (" + hp + ")";
+        }));
+        // trazadora: en la otra mano, el cerrojo la mete
+        sin("rifle_trazadora", 25, () -> {
+            rifleComprobar();
+            rifleSrv(sp -> {
+                sp.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, sp.getInventory().getItem(2).copy());
+                sp.getInventory().setItem(2, ItemStack.EMPTY);
+            });
+        });
+        sin("rifle_trazadora_cerrojo", 25, RifleCI::clic);
+        sin("rifle_apunta_golem", 50, () -> {
+            String rec = com.miscelanea.armasfuego.rifle.Rifle.recamara(mc.player.getMainHandItem());
+            if (!rec.endsWith("bala_trazadora")) throw new IllegalStateException("el cerrojo no ha metido la trazadora de la otra mano: " + rec);
+            var g = rifleEnte(rifleGolem);
+            rifleApuntar(new Vec3(g.getX(), g.getY() + 1.3, g.getZ()));
+        });
+        paso("143_trazadora", 2, RifleCI::clic);
+        paso("144_brillo", 30, () -> rifleUsar(false));
+        sin("rifle_brillo_comprobar", 2, () -> {
+            var g = (net.minecraft.world.entity.LivingEntity) rifleEnte(rifleGolem);
+            boolean brilla = g.isCurrentlyGlowing() || g.hasGlowingTag();
+            RESUMEN.add("  rifle: gólem tras la trazadora: brilla " + brilla + ", vida " + g.getHealth());
+            if (!brilla) throw new IllegalStateException("la trazadora no ha hecho brillar al gólem");
+        });
+        // foto con la mira: a la galería del móvil (lo lleva en el inventario)
+        sin("rifle_foto_mira", 30, () -> {
+            rifleFotosAntes = MovilCliente.FOTOS.size();
+            rifleUsar(true);
+        });
+        sin("rifle_foto", 30, com.miscelanea.client.armasfuego.rifle.RifleCliente::foto);
+        paso("145_foto", 5, () -> {
+            RESUMEN.add("  rifle: fotos " + com.miscelanea.client.armasfuego.rifle.RifleCliente.fotosHechas + " (" + com.miscelanea.client.armasfuego.rifle.RifleCliente.ultimaFoto
+                    + "), galería " + rifleFotosAntes + " → " + MovilCliente.FOTOS.size());
+            if (com.miscelanea.client.armasfuego.rifle.RifleCliente.fotosHechas == 0) throw new IllegalStateException("no se ha sacado la foto");
+            if (MovilCliente.FOTOS.size() <= rifleFotosAntes) throw new IllegalStateException("la foto no ha llegado a la galería del móvil");
+        });
+        paso("146_foto_galeria", 50, () -> {
+            rifleUsar(false);
+            MovilCliente.abrir(0);
+            MovilCliente.Foto f = MovilCliente.FOTOS.get(0);
+            abrirVista(new VistasFotos.Foto(MovilRed.FOTO_PROPIA, f.id(), f.ms()));
+        });
+        // Silenciador: el sensor de sculk no se entera
+        sin("rifle_silenciador", 60, () -> {
+            mc.setScreen(null);
+            rifleSrv(sp -> sp.getMainHandItem().enchant(com.miscelanea.registry.ModEnchantments.SILENCIADOR.get(), 1));
+            rifleClic();
+        });
+        sin("rifle_silencio_apunta", 45, () -> {
+            var o = rifleO;
+            rifleApuntar(Vec3.atCenterOf(o.relative(rifleMira, 20)).add(0, -0.5, 0));
+            rifleUsar(true);
+        });
+        sin("rifle_silencio_disparo", 10, () -> {
+            if (!com.miscelanea.armasfuego.rifle.Rifle.lista(mc.player.getMainHandItem())) throw new IllegalStateException("no hay bala para el disparo con silenciador");
+            rifleClic();
+        });
+        sin("rifle_silencio_comprobar", 2, () -> rifleSrv(sp -> {
+            var fase = net.minecraft.world.level.block.SculkSensorBlock.getPhase(sp.serverLevel().getBlockState(rifleSensor));
+            RESUMEN.add("  rifle: con Silenciador el sensor de sculk está " + fase);
+            if (fase == net.minecraft.world.level.block.state.properties.SculkSensorPhase.ACTIVE) rifleFallo = "el sensor de sculk ha oído el disparo con silenciador";
+        }));
+        // bala de cuerda: desde lo alto de una torre hasta el suelo
+        sin("rifle_torre", 30, () -> {
+            rifleComprobar();
+            rifleUsar(false);
+            rifleCuerdasAntes = rifleCuenta(com.miscelanea.registry.ModItems.BALA_CUERDA.get());
+            rifleSrv(sp -> {
+                var l = sp.serverLevel();
+                var o = rifleO;
+                for (int dy = 0; dy < 6; dy++) l.setBlock(o.above(dy), net.minecraft.world.level.block.Blocks.STONE_BRICKS.defaultBlockState(), 3);
+                sp.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, sp.getInventory().getItem(3).copy());
+                sp.getInventory().setItem(3, ItemStack.EMPTY);
+                sp.connection.teleport(o.getX() + 0.5, o.getY() + 6, o.getZ() + 0.5, rifleMira.toYRot(), 20F);
+            });
+        });
+        sin("rifle_cuerda_cerrojo", 25, () -> {
+            rifleCuerdasAntes = rifleCuenta(com.miscelanea.registry.ModItems.BALA_CUERDA.get());
+            rifleClic();
+        });
+        sin("rifle_cuerda_apunta", 10, () -> {
+            String rec = com.miscelanea.armasfuego.rifle.Rifle.recamara(mc.player.getMainHandItem());
+            if (!rec.endsWith("bala_cuerda")) throw new IllegalStateException("el cerrojo no ha metido la bala de cuerda: " + rec);
+            rifleApuntar(Vec3.atCenterOf(rifleO.relative(rifleMira, 18)).add(0, -0.5, 0));
+        });
+        paso("147_cuerda", 20, RifleCI::clic);
+        paso("148_cuerda_fuera", 20, () -> {
+            var l = com.miscelanea.client.armasfuego.rifle.TirolinasCliente.LINEAS;
+            if (l.size() != 1) throw new IllegalStateException("no se ha tendido la tirolina (" + l.size() + ")");
+            var x = l.get(0);
+            RESUMEN.add(String.format("  rifle: tirolina de %.1f bloques, de %.1f a %.1f de altura", x.a().distanceTo(x.b()), x.a().y, x.b().y));
+            mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK);
+            // que se guarda con el mundo: lo guardado y vuelto a cargar tiene las mismas tirolinas
+            rifleSrv(sp -> {
+                var d = com.miscelanea.armasfuego.rifle.Tirolinas.de(sp.serverLevel());
+                var t = d.save(new net.minecraft.nbt.CompoundTag());
+                var otra = com.miscelanea.armasfuego.rifle.Tirolinas.cargar(t);
+                if (!d.isDirty() || otra.lineas().size() != d.lineas().size() || !otra.lineas().get(0).b().equals(d.lineas().get(0).b()))
+                    rifleFallo = "la tirolina no se guarda bien con el mundo";
+            });
+        });
+        // saltar debajo de la cuerda: se agarra
+        sin("rifle_salta", 12, () -> {
+            rifleComprobar();
+            rifleSalto = true;
+        });
+        paso("149_colgado", 8, () -> {
+            rifleSalto = false;
+            mc.options.keyJump.setDown(false);
+            if (!(mc.player.getVehicle() instanceof com.miscelanea.armasfuego.rifle.GanchoTirolina))
+                throw new IllegalStateException("saltando debajo de la cuerda no se ha colgado");
+        });
+        paso("150_bajando", 15, () -> {});
+        sin("rifle_llegada", 100, () -> {});
+        paso("151_abajo", 10, () -> {
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            RESUMEN.add(String.format("  rifle: tras bajar está a %.1f del suelo, colgado: %s", mc.player.getY() - rifleO.getY(), mc.player.isPassenger()));
+            if (mc.player.isPassenger()) throw new IllegalStateException("no ha llegado abajo");
+            if (mc.player.getY() > rifleO.getY() + 3) throw new IllegalStateException("no ha bajado por la tirolina");
+        });
+        // cortarla con tijeras (clic derecho de verdad)
+        sin("rifle_tijeras", 10, () -> {
+            mc.player.getInventory().selected = 4;
+            var x = com.miscelanea.client.armasfuego.rifle.TirolinasCliente.LINEAS.get(0);
+            Vec3 ojo = mc.player.getEyePosition();
+            double t = com.miscelanea.armasfuego.rifle.Cuerda.cercano(x.a(), x.b(), ojo);
+            rifleApuntar(com.miscelanea.armasfuego.rifle.Cuerda.punto(x.a(), x.b(), t));
+        });
+        sin("rifle_cortar", 15, () -> net.minecraft.client.KeyMapping.click(mc.options.keyUse.getKey()));
+        paso("152_cortada", 10, () -> {
+            int n = rifleCuenta(com.miscelanea.registry.ModItems.BALA_CUERDA.get());
+            RESUMEN.add("  rifle: tirolinas tras las tijeras " + com.miscelanea.client.armasfuego.rifle.TirolinasCliente.LINEAS.size() + ", balas de cuerda " + rifleCuerdasAntes + " → " + n);
+            if (!com.miscelanea.client.armasfuego.rifle.TirolinasCliente.LINEAS.isEmpty()) throw new IllegalStateException("las tijeras no han cortado la tirolina");
+            if (n < rifleCuerdasAntes) throw new IllegalStateException("las tijeras no han devuelto la bala de cuerda");
+        });
+        // cobre oxidado: textura verdosa; encerar con panal y rascar con hacha
+        sin("rifle_oxido", 10, () -> {
+            mc.player.getInventory().selected = 0;
+            rifleSrv(sp -> {
+                sp.getInventory().selected = 0;
+                ItemStack r = sp.getInventory().getItem(0);
+                r.getOrCreateTag().putInt(com.miscelanea.armasfuego.rifle.Rifle.OXIDO, 2);
+                var item = r.getItem();
+                ItemStack panal = new ItemStack(net.minecraft.world.item.Items.HONEYCOMB, 2);
+                ItemStack hacha = new ItemStack(net.minecraft.world.item.Items.IRON_AXE);
+                var der = net.minecraft.world.inventory.ClickAction.SECONDARY;
+                boolean a = item.overrideOtherStackedOnMe(r, panal, null, der, sp, null) && com.miscelanea.armasfuego.rifle.Rifle.encerado(r) && panal.getCount() == 1;
+                boolean b = item.overrideOtherStackedOnMe(r, hacha, null, der, sp, null) && !com.miscelanea.armasfuego.rifle.Rifle.encerado(r);
+                boolean c = item.overrideOtherStackedOnMe(r, hacha, null, der, sp, null) && com.miscelanea.armasfuego.rifle.Rifle.oxido(r) == 1;
+                r.getOrCreateTag().putInt(com.miscelanea.armasfuego.rifle.Rifle.OXIDO, 2);
+                // encantamientos: en la mesa (nivel 30) y solo para el rifle
+                var mesa = net.minecraft.world.item.enchantment.EnchantmentHelper.getAvailableEnchantmentResults(30, new ItemStack(item), false);
+                java.util.Set<String> nuestros = new java.util.TreeSet<>();
+                for (var ei : mesa) {
+                    var k = net.minecraftforge.registries.ForgeRegistries.ENCHANTMENTS.getKey(ei.enchantment);
+                    if (k != null && k.getNamespace().equals(Miscelanea.MOD_ID)) nuestros.add(k.getPath());
+                }
+                boolean soloRifle = !com.miscelanea.registry.ModEnchantments.ATRAVESAR.get().canEnchant(new ItemStack(net.minecraft.world.item.Items.BOW))
+                        && com.miscelanea.registry.ModEnchantments.ATRAVESAR.get().canEnchant(new ItemStack(item));
+                RESUMEN.add("  rifle: encerar " + a + ", desencerar " + b + ", rascar " + c + " · en la mesa: " + nuestros + " · solo para el rifle " + soloRifle);
+                if (!a || !b || !c) rifleFallo = "encerar/rascar el cobre no ha ido bien";
+                else if (nuestros.size() < 4 || !soloRifle) rifleFallo = "los encantamientos del rifle no salen bien en la mesa";
+            });
+        });
+        paso("153_oxidado", 15, () -> {});
+        sin("rifle_fin", 5, () -> {
+            rifleComprobar();
+            rifleUsar(false);
+            rifleSalto = false;
+            mc.options.keyJump.setDown(false);
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            rifleSrv(sp -> sp.setGameMode(GameType.CREATIVE));
+        });
+    }
+
+    /** Atajos del rifle para los pasos (referencias a método). */
+    private static final class RifleCI {
+        static void clic() {
+            rifleClic();
+        }
+    }
+
     // ------------------------------------------------------------------ ecolocalización
     private static volatile float nieblaFin = -1;
     private static UUID ecoHabla;
@@ -962,6 +1321,7 @@ public final class PruebaCI {
         if (mc.player == null || mc.level == null) return;
         // el puntero láser: el clic derecho mantenido
         if (mantenerUso) mc.options.keyUse.setDown(true);
+        if (rifleSalto) mc.options.keyJump.setDown(true);
         // ecolocalización: el jugador de mentira "habla" (como si llegara su audio del voicechat) y mi micro solo da ruido de fondo
         if (ecoAndando) {
             mc.options.keyUp.setDown(true);

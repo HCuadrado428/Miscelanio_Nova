@@ -283,5 +283,16 @@ public final class ModNetwork {
                 .decoder(com.miscelanea.armas.BallestaRecargaPacket::new)
                 .consumerMainThread(com.miscelanea.armas.BallestaRecargaPacket::handle)
                 .add();
+        // ---- Rifle
+        CHANNEL.messageBuilder(com.miscelanea.armasfuego.rifle.RifleAccionPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.armasfuego.rifle.RifleAccionPacket::encode)
+                .decoder(com.miscelanea.armasfuego.rifle.RifleAccionPacket::new)
+                .consumerMainThread(com.miscelanea.armasfuego.rifle.RifleAccionPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.armasfuego.rifle.TirolinasPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(com.miscelanea.armasfuego.rifle.TirolinasPacket::encode)
+                .decoder(com.miscelanea.armasfuego.rifle.TirolinasPacket::new)
+                .consumerMainThread(com.miscelanea.armasfuego.rifle.TirolinasPacket::handle)
+                .add();
     }
 }
