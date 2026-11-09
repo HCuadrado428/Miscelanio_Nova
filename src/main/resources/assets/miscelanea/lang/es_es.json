@@ -2910,5 +2910,8 @@
   "death.attack.miscelanea.rifle_disparo": "%1$s fue abatido de un disparo",
   "death.attack.miscelanea.rifle_disparo.player": "%1$s fue abatido por %2$s desde lejos",
   "death.attack.miscelanea.rifle_disparo.item": "%1$s fue abatido por %2$s con %3$s",
-  "msg.miscelanea.rifle.colgado": "Agachado frenas; al llegar abajo te sueltas"
+  "msg.miscelanea.rifle.colgado": "Agachado frenas; al llegar abajo te sueltas",
+  "jei.miscelanea.info.revolver_botin": "El revólver de ruleta no se fabrica: se encuentra en los cofres de las aldeas, sobre todo en los del armero, el herrero de herramientas y el de armas (a veces también en las casas). Sale con unas cuantas balas y, de vez en cuando, algo oxidado o con uno de sus encantamientos. La munición sí se fabrica.",
+  "jei.miscelanea.info.escopeta_botin": "La escopeta de presión no se fabrica: se encuentra en los cofres de los barcos hundidos (provisiones, tesoro y mapas). Sale con algunos cartuchos y, de vez en cuando, algo oxidada o con uno de sus encantamientos. Los cartuchos sí se fabrican.",
+  "jei.miscelanea.info.rifle_botin": "El rifle de catalejo no se fabrica: se encuentra en los cofres de los puestos de saqueadores. Sale con unas cuantas balas y, de vez en cuando, algo oxidado o con uno de sus encantamientos. La munición y los casquillos sí se fabrican."
 }

@@ -2910,5 +2910,8 @@
   "death.attack.miscelanea.rifle_disparo": "%1$s was shot down",
   "death.attack.miscelanea.rifle_disparo.player": "%1$s was sniped by %2$s",
   "death.attack.miscelanea.rifle_disparo.item": "%1$s was sniped by %2$s using %3$s",
-  "msg.miscelanea.rifle.colgado": "Sneak to brake; you let go at the bottom"
+  "msg.miscelanea.rifle.colgado": "Sneak to brake; you let go at the bottom",
+  "jei.miscelanea.info.revolver_botin": "The roulette revolver can't be crafted: it is found in village chests, mostly the armorer's, toolsmith's and weaponsmith's (sometimes in houses too). It comes with a few bullets and, now and then, a bit oxidized or with one of its own enchantments. Its ammo can be crafted.",
+  "jei.miscelanea.info.escopeta_botin": "The pressure shotgun can't be crafted: it is found in shipwreck chests (supply, treasure and map). It comes with some shells and, now and then, a bit oxidized or with one of its own enchantments. Shells can be crafted.",
+  "jei.miscelanea.info.rifle_botin": "The spyglass rifle can't be crafted: it is found in pillager outpost chests. It comes with a few bullets and, now and then, a bit oxidized or with one of its own enchantments. Ammo and casings can be crafted."
 }

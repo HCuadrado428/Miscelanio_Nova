@@ -81,6 +81,10 @@ public class MiscelaneaJei implements IModPlugin {
         info(r, com.miscelanea.dream.DreamRegistro.ANILLO, "anillo_medianoche");
         info(r, com.miscelanea.glitch.GlitchRegistro.MUESTRA, "muestra_glitch");
         info(r, com.miscelanea.glitch.GlitchRegistro.FRASCO, "frasco_muestras");
+        // ---- armas de fuego: no se fabrican, se encuentran
+        info(r, ModItems.REVOLVER, "revolver_botin");
+        info(r, ModItems.ESCOPETA_PRESION, "escopeta_botin");
+        info(r, ModItems.RIFLE, "rifle_botin");
     }
 
     @Override

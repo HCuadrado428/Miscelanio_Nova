@@ -1599,6 +1599,61 @@ public final class PruebaCI {
                 sp.connection.teleport(o.getX() + 0.5, o.getY(), o.getZ() + 0.5, mira.toYRot(), 0F);
             });
         });
+        // las armas no se fabrican: salen en los cofres (puestos de saqueadores, barcos hundidos, aldeas)
+        sin("armas_botin", 10, () -> rifleSrv(sp -> {
+            var srv = sp.server;
+            var l = sp.serverLevel();
+            String[][] tablas = {{"chests/pillager_outpost", "rifle"}, {"chests/shipwreck_supply", "escopeta_presion"},
+                    {"chests/shipwreck_treasure", "escopeta_presion"}, {"chests/shipwreck_map", "escopeta_presion"},
+                    {"chests/village/village_weaponsmith", "revolver"}, {"chests/village/village_armorer", "revolver"},
+                    {"chests/village/village_toolsmith", "revolver"}, {"chests/village/village_plains_house", "revolver"},
+                    {"chests/simple_dungeon", "-"}};
+            java.util.Set<String> armas = java.util.Set.of("revolver", "rifle", "escopeta_presion");
+            StringBuilder sb = new StringBuilder(), mal = new StringBuilder();
+            int total = 200;
+            for (String[] t : tablas) {
+                var tabla = srv.getLootData().getLootTable(new net.minecraft.resources.ResourceLocation("minecraft", t[0]));
+                int n = 0, enc = 0, ox = 0, mun = 0;
+                for (int i = 0; i < total; i++) {
+                    var params = new net.minecraft.world.level.storage.loot.LootParams.Builder(l)
+                            .withParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.ORIGIN, sp.position())
+                            .create(net.minecraft.world.level.storage.loot.parameters.LootContextParamSets.CHEST);
+                    boolean salio = false;
+                    for (ItemStack it : tabla.getRandomItems(params)) {
+                        var k = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(it.getItem());
+                        if (k == null || !k.getNamespace().equals(Miscelanea.MOD_ID)) continue;
+                        if (armas.contains(k.getPath())) {
+                            if (!k.getPath().equals(t[1])) mal.append(k.getPath()).append(" en ").append(t[0]).append("; ");
+                            n++;
+                            salio = true;
+                            if (it.isEnchanted()) enc++;
+                            if (it.hasTag() && it.getTag().getInt("Oxido") > 0) ox++;
+                        } else if (salio) mun++;
+                    }
+                }
+                sb.append(String.format("%s %d/%d (encantadas %d, oxidadas %d)", t[0].replace("chests/", ""), n, total, enc, ox)).append(" · ");
+                if (!t[1].equals("-") && n == 0) mal.append("no sale en ").append(t[0]).append("; ");
+                if (!t[1].equals("-") && n > total * 0.45) mal.append("sale demasiado en ").append(t[0]).append("; ");
+                if (!t[1].equals("-") && n > 0 && mun == 0) mal.append("sale sin munición en ").append(t[0]).append("; ");
+            }
+            // y ya no hay receta que las fabrique (la munición sí)
+            int recMunicion = 0;
+            for (var r : srv.getRecipeManager().getRecipes()) {
+                var k = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(r.getResultItem(srv.registryAccess()).getItem());
+                if (k == null || !k.getNamespace().equals(Miscelanea.MOD_ID)) continue;
+                if (armas.contains(k.getPath())) mal.append("receta ").append(r.getId()).append("; ");
+                if (k.getPath().startsWith("revolver_") || k.getPath().startsWith("bala_") || k.getPath().startsWith("escopeta_cartucho_") || k.getPath().equals("casquillo_rifle")) recMunicion++;
+            }
+            sb.append("recetas de munición ").append(recMunicion);
+            if (recMunicion < 16) mal.append("faltan recetas de munición (").append(recMunicion).append("); ");
+            PI.put("botin", sb.toString());
+            PI.put("botin_mal", mal.toString());
+        }));
+        sin("armas_botin_comprobar", 4, () -> {
+            RESUMEN.add("  armas en cofres: " + PI.getOrDefault("botin", "(sin datos)"));
+            String mal = String.valueOf(PI.getOrDefault("botin_mal", "sin datos"));
+            if (!mal.isEmpty()) throw new IllegalStateException("botín de las armas: " + mal);
+        });
         // los modelos de mano son 3D (forge:separate_transforms) y el del inventario es el icono plano
         sin("armas3d_modelos", 4, () -> {
             var ir = mc.getItemRenderer();
@@ -2318,10 +2373,13 @@ public final class PruebaCI {
             // recetas
             var rm = escJugador().serverLevel().getRecipeManager();
             int recetas = 0;
-            for (String r : new String[]{"escopeta_presion", "escopeta_cartucho_grava", "escopeta_cartucho_incendiario", "escopeta_cartucho_escarcha",
+            for (String r : new String[]{"escopeta_cartucho_grava", "escopeta_cartucho_incendiario", "escopeta_cartucho_escarcha",
                     "escopeta_cartucho_miel", "escopeta_cartucho_sal", "escopeta_cartucho_semillas", "escopeta_cartucho_confeti"})
                 if (rm.byKey(new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, r)).isPresent()) recetas++;
-            if (recetas != 8) throw new IllegalStateException("faltan recetas de la escopeta (" + recetas + "/8)");
+            if (recetas != 7) throw new IllegalStateException("faltan recetas de los cartuchos (" + recetas + "/7)");
+            // la escopeta ya no se fabrica: sale en los barcos hundidos
+            if (rm.byKey(new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "escopeta_presion")).isPresent())
+                throw new IllegalStateException("la escopeta todavía tiene receta");
             // tolva, panal y hacha (clic derecho en el inventario)
             var p = escJugador();
             ItemStack cart = new ItemStack(com.miscelanea.armasfuego.escopeta.TipoCartucho.MIEL.item(), 20);
