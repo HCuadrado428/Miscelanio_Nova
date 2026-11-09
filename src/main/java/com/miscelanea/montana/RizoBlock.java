@@ -34,7 +34,27 @@ public class RizoBlock extends HorizontalDirectionalBlock implements EntityBlock
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext c) {
-        return defaultBlockState().setValue(FACING, c.getHorizontalDirection());
+        return defaultBlockState().setValue(FACING, Colocacion.dirRizo(c.getLevel(), c.getClickedPos(), c.getHorizontalDirection()));
+    }
+
+    /** Clic derecho con la mano vacía: lo gira. */
+    @Override
+    public net.minecraft.world.InteractionResult use(BlockState s, net.minecraft.world.level.Level l, BlockPos p, net.minecraft.world.entity.player.Player pl,
+                                                     net.minecraft.world.InteractionHand h, net.minecraft.world.phys.BlockHitResult hit) {
+        if (!pl.getItemInHand(h).isEmpty() || h != net.minecraft.world.InteractionHand.MAIN_HAND) return net.minecraft.world.InteractionResult.PASS;
+        if (l.isClientSide) return net.minecraft.world.InteractionResult.SUCCESS;
+        BlockState n = s.setValue(FACING, s.getValue(FACING).getClockWise());
+        l.setBlock(p, n, Block.UPDATE_ALL);
+        l.playSound(null, p, net.minecraft.sounds.SoundEvents.CHAIN_PLACE, net.minecraft.sounds.SoundSource.BLOCKS, 0.7F, 1.3F);
+        pl.displayClientMessage(net.minecraft.network.chat.Component.translatable("montana.miscelanea.pieza",
+                net.minecraft.network.chat.Component.translatable("block.miscelanea.rizo_montana"),
+                net.minecraft.network.chat.Component.translatable("montana.miscelanea.dir." + n.getValue(FACING).getSerializedName())), true);
+        return net.minecraft.world.InteractionResult.CONSUME;
+    }
+
+    @Override
+    public void appendHoverText(net.minecraft.world.item.ItemStack st, @javax.annotation.Nullable BlockGetter l, java.util.List<net.minecraft.network.chat.Component> t, net.minecraft.world.item.TooltipFlag f) {
+        t.add(net.minecraft.network.chat.Component.translatable("montana.miscelanea.ayuda.rizo").withStyle(net.minecraft.ChatFormatting.GRAY));
     }
 
     @Override

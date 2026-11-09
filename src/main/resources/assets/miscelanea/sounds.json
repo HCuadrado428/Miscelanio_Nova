@@ -2576,5 +2576,32 @@
         "stream": true
       }
     ]
+  },
+  "montana_traqueteo": {
+    "sounds": [
+      "miscelanea:montana_traqueteo"
+    ],
+    "subtitle": "subtitles.miscelanea.montana_traqueteo"
+  },
+  "montana_cadena": {
+    "sounds": [
+      "miscelanea:montana_cadena_1",
+      "miscelanea:montana_cadena_2"
+    ],
+    "subtitle": "subtitles.miscelanea.montana_cadena"
+  },
+  "montana_grito": {
+    "sounds": [
+      "miscelanea:montana_grito_1",
+      "miscelanea:montana_grito_2",
+      "miscelanea:montana_grito_3"
+    ],
+    "subtitle": "subtitles.miscelanea.montana_grito"
+  },
+  "montana_freno": {
+    "sounds": [
+      "miscelanea:montana_freno"
+    ],
+    "subtitle": "subtitles.miscelanea.montana_freno"
   }
 }

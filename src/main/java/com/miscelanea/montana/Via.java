@@ -250,6 +250,14 @@ public final class Via {
      * a true.
      */
     public static Sitio avanzar(BlockGetter l, Sitio s, double dist, @Nullable boolean[] tope) {
+        return avanzar(l, s, dist, tope, false);
+    }
+
+    /**
+     * Igual, pero si {@code pararEstacion} y yendo hacia delante se entra en una estación, se queda a la entrada de ella
+     * (así un tren rápido no se la salta de un tic a otro: la estación lo frena en el tic siguiente).
+     */
+    public static Sitio avanzar(BlockGetter l, Sitio s, double dist, @Nullable boolean[] tope, boolean pararEstacion) {
         Pieza p = s.pieza();
         double t = s.t();
         for (int vueltas = 0; vueltas < 64; vueltas++) {
@@ -261,6 +269,8 @@ public final class Via {
                     if (tope != null) tope[0] = true;
                     return new Sitio(p, 1);
                 }
+                if (pararEstacion && q.tipo() == ViaMontanaBlock.Tipo.ESTACION && p.tipo() != ViaMontanaBlock.Tipo.ESTACION)
+                    return new Sitio(q, 0);
                 dist = (nt - 1) * len;
                 p = q;
                 t = 0;
@@ -276,6 +286,33 @@ public final class Via {
             } else return new Sitio(p, nt);
         }
         return new Sitio(p, Mth.clamp(t, 0, 1));
+    }
+
+    /**
+     * Distancia a lo largo de la vía de {@code a} a {@code b} (positiva si b va delante), buscando como mucho
+     * {@code max} bloques hacia cada lado; NaN si no se encuentra (otra vía, o la vía ha cambiado).
+     */
+    public static double distancia(BlockGetter l, Sitio a, Sitio b, double max) {
+        if (a.pieza().pos().equals(b.pieza().pos())) return (b.t() - a.t()) * a.pieza().longitud();
+        // hacia delante
+        double d = (1 - a.t()) * a.pieza().longitud();
+        Pieza p = a.pieza();
+        for (int i = 0; i < 16 && d <= max; i++) {
+            p = siguiente(l, p);
+            if (p == null) break;
+            if (p.pos().equals(b.pieza().pos())) return d + b.t() * p.longitud();
+            d += p.longitud();
+        }
+        // hacia atrás
+        d = a.t() * a.pieza().longitud();
+        p = a.pieza();
+        for (int i = 0; i < 16 && d <= max; i++) {
+            p = anterior(l, p);
+            if (p == null) break;
+            if (p.pos().equals(b.pieza().pos())) return -(d + (1 - b.t()) * p.longitud());
+            d += p.longitud();
+        }
+        return Double.NaN;
     }
 
     /** El trozo que hay dentro del bloque (las bajadas también se reconocen desde arriba). */

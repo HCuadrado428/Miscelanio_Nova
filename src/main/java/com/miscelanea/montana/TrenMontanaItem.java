@@ -16,6 +16,8 @@ public class TrenMontanaItem extends Item {
         Level l = c.getLevel();
         Via.Pieza p = Via.buscar(l, c.getClickedPos());
         if (p == null) return InteractionResult.PASS;
+        // no se pone encima de otro tren
+        if (!l.getEntitiesOfClass(TrenMontana.class, new net.minecraft.world.phys.AABB(p.pos()).inflate(0.5)).isEmpty()) return InteractionResult.FAIL;
         if (l.isClientSide) return InteractionResult.SUCCESS;
         TrenMontana t = new TrenMontana(com.miscelanea.registry.ModEntities.TREN_MONTANA.get(), l);
         t.colocar(p.pos(), 0.5, 2);
@@ -27,5 +29,10 @@ public class TrenMontanaItem extends Item {
         l.addFreshEntity(t);
         if (c.getPlayer() == null || !c.getPlayer().getAbilities().instabuild) c.getItemInHand().shrink(1);
         return InteractionResult.CONSUME;
+    }
+
+    @Override
+    public void appendHoverText(net.minecraft.world.item.ItemStack st, @javax.annotation.Nullable Level l, java.util.List<net.minecraft.network.chat.Component> t, net.minecraft.world.item.TooltipFlag f) {
+        t.add(net.minecraft.network.chat.Component.translatable("montana.miscelanea.ayuda.tren").withStyle(net.minecraft.ChatFormatting.GRAY));
     }
 }

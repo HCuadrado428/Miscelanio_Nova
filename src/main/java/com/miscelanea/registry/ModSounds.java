@@ -249,6 +249,16 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> PURGADO_OYE = register("purgado_oye");
     public static final RegistryObject<SoundEvent> PURGADO_PURGA = register("purgado_purga");
 
+    // montaña rusa (2.0.0)
+    /** Traqueteo de las ruedas (en bucle; el tono sube con la velocidad). */
+    public static final RegistryObject<SoundEvent> MONTANA_TRAQUETEO = register("montana_traqueteo");
+    /** Clac-clac del trinquete de la cadena de subida. */
+    public static final RegistryObject<SoundEvent> MONTANA_CADENA = register("montana_cadena");
+    /** Los pasajeros gritando al empezar una bajada. */
+    public static final RegistryObject<SoundEvent> MONTANA_GRITO = register("montana_grito");
+    /** Frenazo (aletas de freno y estación). */
+    public static final RegistryObject<SoundEvent> MONTANA_FRENO = register("montana_freno");
+
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name,
                 () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Miscelanea.MOD_ID, name)));

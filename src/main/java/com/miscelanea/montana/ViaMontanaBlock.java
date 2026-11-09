@@ -25,11 +25,12 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
- * Vía de la montaña rusa. Va en la dirección en la que la pones (la de tu mirada) y tiene una forma: recta, curva a la
- * izquierda o a la derecha, subida o bajada; agachado y con la mano vacía se cambia la forma. Una bajada se pone un
- * bloque más abajo que la vía de la que viene (como las rampas de los raíles normales). Tipos: normal, con cadena (sube
- * los vagones despacio), estación (los para, espera a que suba la gente y los lanza) y freno (no deja pasar de una
- * velocidad). La geometría y la física están en {@link Via}.
+ * Vía de la montaña rusa. Tiene una dirección y una forma (recta, curva a la izquierda o a la derecha, subida o bajada)
+ * que coge sola al ponerla según la vía que haya al lado ({@link Colocacion}); con la mano vacía, clic derecho la gira y
+ * agachado le cambia la forma. Una bajada se pone un bloque más abajo que la vía de la que viene (como las rampas de los
+ * raíles normales). Tipos: normal, con cadena (sube los vagones despacio), estación (los para, espera a que suba la gente
+ * y los lanza; con redstone, sale ya) y freno (no deja pasar de una velocidad; con redstone, para el tren y lo retiene).
+ * La geometría y la física están en {@link Via}.
  */
 public class ViaMontanaBlock extends HorizontalDirectionalBlock {
     public enum Forma implements StringRepresentable {
@@ -69,9 +70,45 @@ public class ViaMontanaBlock extends HorizontalDirectionalBlock {
         };
     }
 
+    /** Lo que se decidió al colocar (en el servidor): la pieza de al lado que hay que girar o inclinar para unirla. */
+    private static BlockPos planPos, planOtroPos;
+    private static BlockState planOtro;
+    private static long planTick;
+
+    /**
+     * Al ponerla, coge sola la forma y la dirección que encajan con lo que hay alrededor, como los raíles: sigue a la vía
+     * que acaba en este bloque (si está un bloque más abajo, es una bajada), gira o inclina la vía suelta de al lado para
+     * unirse a ella (curva o subida) y se convierte en curva o subida si así enlaza con una vía que ya hay delante.
+     */
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext c) {
-        return defaultBlockState().setValue(FACING, c.getHorizontalDirection());
+        Level l = c.getLevel();
+        BlockPos pos = c.getClickedPos();
+        Colocacion.Plan p = Colocacion.planear(l, pos, c.getHorizontalDirection(), this::admite, tipo);
+        if (!l.isClientSide) {
+            planPos = p.otroPos() == null ? null : pos.immutable();
+            planOtroPos = p.otroPos();
+            planOtro = p.otro();
+            planTick = l.getGameTime();
+        }
+        return defaultBlockState().setValue(FACING, p.dir()).setValue(FORMA, p.forma()).setValue(POWERED, l.hasNeighborSignal(pos));
+    }
+
+    @Override
+    public void setPlacedBy(Level l, BlockPos pos, BlockState s, @javax.annotation.Nullable net.minecraft.world.entity.LivingEntity quien, net.minecraft.world.item.ItemStack st) {
+        super.setPlacedBy(l, pos, s, quien, st);
+        if (l.isClientSide || planPos == null || !planPos.equals(pos) || planTick != l.getGameTime()) return;
+        BlockState otro = l.getBlockState(planOtroPos);
+        if (otro.getBlock() == planOtro.getBlock() && otro.getValue(FACING) == planOtro.getValue(FACING))
+            l.setBlock(planOtroPos, planOtro, Block.UPDATE_ALL);
+        planPos = null;
+    }
+
+    @Override
+    public void appendHoverText(net.minecraft.world.item.ItemStack st, @javax.annotation.Nullable BlockGetter l, java.util.List<Component> t, net.minecraft.world.item.TooltipFlag f) {
+        String k = "montana.miscelanea.ayuda." + tipo.name().toLowerCase(java.util.Locale.ROOT);
+        t.add(Component.translatable(k).withStyle(net.minecraft.ChatFormatting.GRAY));
+        t.add(Component.translatable("montana.miscelanea.ayuda.colocar").withStyle(net.minecraft.ChatFormatting.DARK_GRAY));
     }
 
     @Override
@@ -85,16 +122,23 @@ public class ViaMontanaBlock extends HorizontalDirectionalBlock {
         return s.getValue(FORMA) == Forma.SUBIDA || s.getValue(FORMA) == Forma.BAJADA ? Shapes.empty() : PLANA;
     }
 
+    /** Con la mano vacía: clic derecho la gira; agachado, le cambia la forma. */
     @Override
     public InteractionResult use(BlockState s, Level l, BlockPos p, Player pl, InteractionHand h, BlockHitResult hit) {
-        if (!pl.isShiftKeyDown() || !pl.getItemInHand(h).isEmpty()) return InteractionResult.PASS;
+        if (!pl.getItemInHand(h).isEmpty() || h != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
         if (l.isClientSide) return InteractionResult.SUCCESS;
-        Forma[] fs = Forma.values();
-        Forma f = s.getValue(FORMA);
-        do f = fs[(f.ordinal() + 1) % fs.length]; while (!admite(f));
-        l.setBlock(p, s.setValue(FORMA, f), Block.UPDATE_ALL);
+        BlockState n;
+        if (pl.isShiftKeyDown()) {
+            Forma[] fs = Forma.values();
+            Forma f = s.getValue(FORMA);
+            do f = fs[(f.ordinal() + 1) % fs.length]; while (!admite(f));
+            n = s.setValue(FORMA, f);
+        } else n = s.setValue(FACING, s.getValue(FACING).getClockWise());
+        l.setBlock(p, n, Block.UPDATE_ALL);
         l.playSound(null, p, SoundEvents.CHAIN_PLACE, SoundSource.BLOCKS, 0.7F, 1.3F);
-        pl.displayClientMessage(Component.translatable("montana.miscelanea.forma." + f.getSerializedName()), true);
+        pl.displayClientMessage(Component.translatable("montana.miscelanea.pieza",
+                Component.translatable("montana.miscelanea.forma." + n.getValue(FORMA).getSerializedName()),
+                Component.translatable("montana.miscelanea.dir." + n.getValue(FACING).getSerializedName())), true);
         return InteractionResult.CONSUME;
     }
 
@@ -107,7 +151,7 @@ public class ViaMontanaBlock extends HorizontalDirectionalBlock {
 
     @Override
     public void neighborChanged(BlockState s, Level l, BlockPos p, Block b, BlockPos from, boolean mov) {
-        if (tipo != Tipo.ESTACION || l.isClientSide) return;
+        if ((tipo != Tipo.ESTACION && tipo != Tipo.FRENO) || l.isClientSide) return;
         boolean on = l.hasNeighborSignal(p);
         if (on != s.getValue(POWERED)) l.setBlock(p, s.setValue(POWERED, on), Block.UPDATE_CLIENTS);
     }

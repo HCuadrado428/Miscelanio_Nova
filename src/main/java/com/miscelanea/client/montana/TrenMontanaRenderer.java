@@ -64,16 +64,16 @@ public class TrenMontanaRenderer extends EntityRenderer<TrenMontana> {
 
     @Override
     public boolean shouldRender(TrenMontana e, Frustum f, double x, double y, double z) {
-        return e.shouldRender(x, y, z) && f.isVisible(e.getBoundingBox().inflate(2 + e.vagones() * TrenMontana.SEPARACION));
+        // la caja de la entidad ya abarca todos los vagones
+        return e.shouldRender(x, y, z) && f.isVisible(e.getBoundingBox().inflate(0.5));
     }
 
     @Override
     public void render(TrenMontana e, float yaw, float pt, PoseStack ps, MultiBufferSource buf, int luz) {
         Vec3 ojo = new Vec3(Mth.lerp(pt, e.xo, e.getX()), Mth.lerp(pt, e.yo, e.getY()), Mth.lerp(pt, e.zo, e.getZ()));
-        double adelanto = e.velocidad() * (pt - 1);
         VertexConsumer vc = buf.getBuffer(RenderType.entityCutoutNoCull(TEXTURA));
         for (int k = 0; k < e.vagones(); k++) {
-            Via.Sitio s = e.sitioVagon(k, adelanto);
+            Via.Sitio s = e.sitioDibujo(k, pt);
             if (s == null) continue;
             Vec3 p = s.punto();
             Vec3[] b = base(s);

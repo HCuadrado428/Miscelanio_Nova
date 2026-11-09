@@ -3,15 +3,19 @@ package com.miscelanea.client.montana;
 import com.miscelanea.Miscelanea;
 import com.miscelanea.montana.TrenMontana;
 import com.miscelanea.montana.Via;
+import com.miscelanea.registry.ModSounds;
+import net.minecraft.Util;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RenderGuiEvent;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -20,9 +24,10 @@ import net.minecraftforge.fml.common.Mod;
 import javax.annotation.Nullable;
 
 /**
- * La montaña rusa en el cliente: el traqueteo (un solo sonido en bucle por tren, que sube con la velocidad), y la cámara
- * de quien va montado, que se inclina en las curvas, mira hacia arriba y hacia abajo en las cuestas y da la vuelta
- * entera en el rizo. Son unas pocas cuentas por fotograma: nada que note un ordenador flojo.
+ * La montaña rusa en el cliente: el traqueteo (un solo sonido en bucle por tren, que sube con la velocidad), la cámara
+ * de quien va montado (gira con el vagón en las curvas, mira hacia arriba y hacia abajo en las cuestas y da la vuelta
+ * entera en el rizo), la cuenta atrás de la estación en la barra de acción y la foto de la bajada, que se guarda sola en
+ * la galería del móvil. Son unas pocas cuentas por fotograma: nada que note un ordenador flojo.
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
 public final class MontanaCliente {
@@ -41,7 +46,7 @@ public final class MontanaCliente {
         private final TrenMontana tren;
 
         Traqueteo(TrenMontana t) {
-            super(SoundEvents.MINECART_RIDING, SoundSource.NEUTRAL, SoundInstance.createUnseededRandom());
+            super(ModSounds.MONTANA_TRAQUETEO.get(), SoundSource.NEUTRAL, SoundInstance.createUnseededRandom());
             tren = t;
             looping = true;
             delay = 0;
@@ -66,9 +71,10 @@ public final class MontanaCliente {
             y = tren.getY();
             z = tren.getZ();
             float v = Math.abs(tren.velocidad());
-            if (v < 0.02F) volume = 0F;
-            else volume = Mth.clamp(0.15F + v * 0.6F, 0F, 0.9F);
-            pitch = Mth.clamp(0.6F + v * 0.6F, 0.6F, 1.6F);
+            float objetivo = v < 0.02F ? 0F : Mth.clamp(0.2F + v * 0.7F, 0F, 1F);
+            // sin saltos de volumen al arrancar y al parar
+            volume += (objetivo - volume) * 0.3F;
+            pitch = Mth.clamp(0.7F + v * 0.55F, 0.7F, 1.5F);
         }
     }
 
@@ -84,10 +90,8 @@ public final class MontanaCliente {
     public static void antesPasajero(net.minecraftforge.client.event.RenderLivingEvent.Pre<?, ?> e) {
         var le = e.getEntity();
         if (!(le.getVehicle() instanceof TrenMontana t)) return;
-        int i = t.getPassengers().indexOf(le);
-        if (i < 0) return;
         float pt = e.getPartialTick();
-        Via.Sitio s = t.sitioVagon(i / 2, t.velocidad() * (pt - 1));
+        Via.Sitio s = t.sitioDibujo(t.asiento(le) / 2, pt);
         if (s == null) return;
         Vec3[] b = TrenMontanaRenderer.base(s);
         Vec3 tg = b[0], up = b[1];
@@ -121,30 +125,53 @@ public final class MontanaCliente {
 
     @Nullable
     private static TrenMontana ultimo;
+    private static int cuentaAntes = -1;
+    @Nullable
+    private static Via.Clase claseAntes;
 
     /** El vagón gira en las curvas y el que va dentro gira con él (la cabeza la sigue moviendo libremente). */
     @SubscribeEvent
     public static void tick(TickEvent.ClientTickEvent e) {
         if (e.phase != TickEvent.Phase.END) return;
-        LocalPlayer p = Minecraft.getInstance().player;
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer p = mc.player;
         TrenMontana t = montado(p);
         if (t != ultimo) {
             ultimo = t;
-            if (t != null) t.giroTick();     // al subir no se gira: solo cuenta lo que gire a partir de ahora
+            cuentaAntes = -1;
+            claseAntes = null;
+            if (t != null) {
+                t.reiniciarGiro();
+                t.giroVagon(vagonDe(t, p));
+            }
             return;
         }
         if (t == null) return;
-        float d = t.giroTick();
+        int k = vagonDe(t, p);
+        float d = t.giroVagon(k);
         if (Math.abs(d) > 0.01F && Math.abs(d) < 120) {
             p.setYRot(p.getYRot() + d);
             p.yRotO += d;
         }
+        // cuenta atrás de la estación (en la barra de acción, no en el mundo)
+        int c = t.cuenta();
+        if (c != cuentaAntes) {
+            if (c > 0) mc.gui.setOverlayMessage(Component.translatable("montana.miscelanea.sale", c), false);
+            else if (cuentaAntes > 0) mc.gui.setOverlayMessage(Component.translatable("montana.miscelanea.sale_ya"), false);
+            cuentaAntes = c;
+        }
+        // la foto de la bajada: un poco después de empezar a caer
+        Via.Sitio s = t.sitioVagon(k);
+        Via.Clase cl = s == null ? null : s.pieza().clase();
+        if (cl == Via.Clase.BAJADA && claseAntes != Via.Clase.BAJADA && claseAntes != null && t.velocidad() > 0.15F
+                && Util.getMillis() - ultimaFoto > 25_000 && fotoFase == 0 && FotoMontana.puede(p)) fotoCuenta = 4;
+        claseAntes = cl;
+        if (fotoCuenta > 0 && --fotoCuenta == 0 && mc.screen == null) empezarFoto(mc);
     }
 
-    /** Asiento del jugador en el tren (0..vagones*2-1) → vagón. */
+    /** Asiento del jugador en el tren → vagón. */
     static int vagonDe(TrenMontana t, LocalPlayer p) {
-        int i = t.getPassengers().indexOf(p);
-        return Math.max(0, i) / 2;
+        return t.asiento(p) / 2;
     }
 
     @SubscribeEvent
@@ -153,8 +180,7 @@ public final class MontanaCliente {
         LocalPlayer p = mc.player;
         TrenMontana t = montado(p);
         if (t == null || !mc.options.getCameraType().isFirstPerson()) return;
-        float pt = (float) e.getPartialTick();
-        Via.Sitio s = t.sitioVagon(vagonDe(t, p), t.velocidad() * (pt - 1));
+        Via.Sitio s = t.sitioDibujo(vagonDe(t, p), (float) e.getPartialTick());
         if (s == null) return;
         Vec3[] base = TrenMontanaRenderer.base(s);
         Vec3 tg = base[0], up = base[1], der = base[2];
@@ -166,5 +192,60 @@ public final class MontanaCliente {
         float alabeo = (float) (Math.asin(Mth.clamp(up.dot(der), -1, 1)) * Mth.RAD_TO_DEG);
         e.setPitch(e.getPitch() + cabeceo);
         e.setRoll(e.getRoll() + alabeo);
+    }
+
+    // ------------------------------------------------------------------ foto de la bajada
+    private static long ultimaFoto = -100_000, flash;
+    private static int fotoCuenta, fotoFase, fotoFotogramas;
+    @Nullable
+    private static CameraType camAntes;
+
+    /** Se pone la cámara de frente (como la de las atracciones de verdad) y se pide la imagen al capturador del móvil. */
+    private static void empezarFoto(Minecraft mc) {
+        camAntes = mc.options.getCameraType();
+        mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
+        FotoMontana.pedir();
+        fotoFase = 1;
+        fotoFotogramas = 0;
+        ultimaFoto = Util.getMillis();
+    }
+
+    @SubscribeEvent
+    public static void fotograma(TickEvent.RenderTickEvent e) {
+        if (e.phase == TickEvent.Phase.START) {
+            // por si algún dibujo se canceló entre el Pre y el Post: que no se quede nada colgado
+            GIRADOS.clear();
+            if (fotoFase == 1) FotoMontana.pedir();
+            return;
+        }
+        if (fotoFase != 1 || ++fotoFotogramas < 2) return;
+        Minecraft mc = Minecraft.getInstance();
+        fotoFase = 0;
+        FotoMontana.sacar();
+        if (camAntes != null) mc.options.setCameraType(camAntes);
+        camAntes = null;
+        flash = Util.getMillis();
+    }
+
+    /** El fogonazo de la cámara de la atracción (tapa el cambio de cámara de un instante). */
+    @SubscribeEvent
+    public static void hud(RenderGuiEvent.Post e) {
+        long dt = Util.getMillis() - flash;
+        if (fotoFase == 1) dt = 0;
+        if (dt > 450) return;
+        int a = (int) (235 * (1 - dt / 450F));
+        var g = e.getGuiGraphics();
+        g.fill(0, 0, g.guiWidth(), g.guiHeight(), (a << 24) | 0xFFFFFF);
+    }
+
+    /** Para las pruebas: hace la foto de la bajada ya (si va montado). */
+    public static void pruebaFoto() {
+        Minecraft mc = Minecraft.getInstance();
+        if (montado(mc.player) != null && fotoFase == 0) empezarFoto(mc);
+    }
+
+    /** Para las pruebas: cuántas fotos de la montaña se han mandado a la galería. */
+    public static int fotosHechas() {
+        return FotoMontana.hechas;
     }
 }

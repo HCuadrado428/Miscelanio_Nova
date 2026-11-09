@@ -1019,6 +1019,8 @@ public final class PruebaCI {
                 sp.teleportTo(o.getX() + 0.5, o.getY() + 0.5, o.getZ() + 0.5);
                 sp.startRiding(t, true);
                 sp.setXRot(20);
+                // un móvil encima: la foto de la bajada va a su galería
+                sp.getInventory().setItem(8, new ItemStack(MovilRegistro.MOVIL.get()));
             });
         });
         sin("montana_circuito", 1, () -> {
@@ -1038,9 +1040,20 @@ public final class PruebaCI {
             RESUMEN.add(sb.toString());
             if (p == null) throw new IllegalStateException("el circuito no se cierra");
         });
+        // la cuenta atrás de la estación (sale sola a los 5 s con gente)
+        paso("30_montana_cuenta", 40, () -> {
+            var tren = mc.player.getVehicle() instanceof com.miscelanea.montana.TrenMontana tt ? tt : null;
+            if (tren == null) throw new IllegalStateException("no va montado en el tren");
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            RESUMEN.add("  estación: cuenta atrás " + tren.cuenta() + " s, v=" + tren.velocidad());
+        });
+        sin("montana_salida", 0, () -> {
+            hastaMax = 400;
+            hasta = () -> mc.player.getVehicle() instanceof com.miscelanea.montana.TrenMontana tt && tt.velocidad() > 0.05F;
+        });
         for (int i = 0; i < 16; i++) {
             int ii = i;
-            paso(String.format("%02d_montana_%02d", 30 + i / 10, i), 22, () -> {
+            paso(String.format("%02d_montana_%02d", 30 + i / 10, i), 18, () -> {
                 var tren = mc.player.getVehicle() instanceof com.miscelanea.montana.TrenMontana tt ? tt : null;
                 if (tren == null) throw new IllegalStateException("no va montado en el tren");
                 mc.options.setCameraType(ii % 3 == 2 ? net.minecraft.client.CameraType.FIRST_PERSON : net.minecraft.client.CameraType.THIRD_PERSON_BACK);
@@ -1048,12 +1061,46 @@ public final class PruebaCI {
                 String q = s == null ? "?" : s.pieza().clase().name() + (s.pieza().tipo() == com.miscelanea.montana.ViaMontanaBlock.Tipo.NORMAL ? "" : "/" + s.pieza().tipo());
                 MONTANA_VISTO.add(q);
                 RESUMEN.add(String.format("  tren %02d: %s y=%.1f v=%.2f", ii, q, tren.getY() - montanaO.getY(), tren.velocidad()));
+                // la barra de seguridad: agachado y en marcha no se baja
+                if (ii == 9 && Math.abs(tren.velocidad()) >= 0.05F) {
+                    var srv = mc.getSingleplayerServer();
+                    UUID id = mc.player.getUUID();
+                    srv.execute(() -> {
+                        ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                        if (sp == null || !(sp.getVehicle() instanceof com.miscelanea.montana.TrenMontana suyo)) return;
+                        sp.setShiftKeyDown(true);
+                        sp.stopRiding();
+                        boolean sigue = sp.isPassenger();
+                        sp.setShiftKeyDown(false);
+                        RESUMEN.add("  barra de seguridad (agachado en marcha): " + (sigue ? "sigue montado, bien" : "SE HA BAJADO, MAL"));
+                        if (!sigue) sp.startRiding(suyo, true);
+                    });
+                }
             });
         }
         sin("montana_fin", 5, () -> {
             mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
             RESUMEN.add("  montaña, trozos por los que ha pasado: " + MONTANA_VISTO);
             if (!MONTANA_VISTO.contains("RIZO") && MONTANA_VISTO.stream().noneMatch(x -> x.startsWith("CURVA"))) RESUMEN.add("  AVISO: el tren no llegó al rizo");
+            int fotos = com.miscelanea.client.montana.MontanaCliente.fotosHechas();
+            RESUMEN.add("  foto de la bajada: " + fotos + " mandada(s) a la galería");
+            if (fotos == 0) throw new IllegalStateException("no se ha hecho la foto de la bajada");
+            // guardar y cargar el tren en marcha (lo que se escribe en el mundo)
+            var srvl = mc.getSingleplayerServer().overworld();
+            for (var en : srvl.getEntitiesOfClass(com.miscelanea.montana.TrenMontana.class, new net.minecraft.world.phys.AABB(montanaO).inflate(40))) {
+                var tag = new net.minecraft.nbt.CompoundTag();
+                en.saveWithoutId(tag);
+                tag.putString("id", "miscelanea:tren_montana");
+                var copia = net.minecraft.world.entity.EntityType.create(tag, srvl).orElse(null);
+                if (!(copia instanceof com.miscelanea.montana.TrenMontana c2)) throw new IllegalStateException("el tren no se carga");
+                var s1 = en.sitio();
+                var s2 = c2.sitio();
+                boolean igual = s1 != null && s2 != null && s1.pieza().pos().equals(s2.pieza().pos()) && Math.abs(s1.t() - s2.t()) < 1e-4
+                        && c2.velocidad() == en.velocidad() && c2.vagones() == en.vagones();
+                RESUMEN.add(String.format("  guardar y cargar: v=%.2f, %d vagones, %s", c2.velocidad(), c2.vagones(), igual ? "igual" : "DISTINTO"));
+                if (!igual) throw new IllegalStateException("el tren guardado no sale igual al cargarlo");
+                break;
+            }
         });
         // pilares: se baja del tren y mira la subida desde un lado
         sin("montana_pilares_ir", 20, () -> {
@@ -1158,7 +1205,203 @@ public final class PruebaCI {
                 sp.onUpdateAbilities();
             });
         });
+        montanaPiezas();
     }
+
+    /** Pone una vía con el objeto (como un jugador) en o+rel mirando hacia mira. */
+    private static void ponerVia(ServerPlayer sp, net.minecraft.core.BlockPos rel, net.minecraft.core.Direction mira) {
+        var b = montanaO.offset(rel);
+        sp.setYRot(mira.toYRot());
+        sp.setYHeadRot(mira.toYRot());
+        var st = new ItemStack(com.miscelanea.registry.ModItems.VIA_MONTANA.get(), 8);
+        var hit = new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(b), net.minecraft.core.Direction.UP, b, false);
+        var ctx = new net.minecraft.world.item.context.BlockPlaceContext(sp.level(), sp, net.minecraft.world.InteractionHand.MAIN_HAND, st, hit);
+        ((net.minecraft.world.item.BlockItem) st.getItem()).place(ctx);
+    }
+
+    private static String forma(net.minecraft.world.level.Level l, net.minecraft.core.BlockPos rel) {
+        var s = l.getBlockState(montanaO.offset(rel));
+        if (!(s.getBlock() instanceof com.miscelanea.montana.ViaMontanaBlock)) return "nada";
+        return s.getValue(com.miscelanea.montana.ViaMontanaBlock.FORMA).getSerializedName() + "/" + s.getValue(com.miscelanea.montana.ViaMontanaBlock.FACING).getSerializedName();
+    }
+
+    /**
+     * Colocación automática (como los raíles: subida, bajada y curva al poner una vía junto a otra), las piezas y los vagones
+     * vistos de cerca, varios trenes en la misma vía y romper la vía bajo un tren.
+     */
+    private static void montanaPiezas() {
+        Minecraft mc = Minecraft.getInstance();
+        var N = net.minecraft.core.Direction.NORTH;
+        var E = net.minecraft.core.Direction.EAST;
+        sin("montana_colocar", 20, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                var l = sp.serverLevel();
+                java.util.function.Function<int[], net.minecraft.core.BlockPos> P = a -> new net.minecraft.core.BlockPos(a[0], a[1], a[2]);
+                ponerVia(sp, P.apply(new int[]{10, 0, 0}), N);
+                ponerVia(sp, P.apply(new int[]{10, 0, -1}), N);
+                ponerVia(sp, P.apply(new int[]{10, 1, -2}), N);     // más alta: la de antes se hace subida
+                ponerVia(sp, P.apply(new int[]{10, 0, -3}), N);     // más baja: bajada
+                ponerVia(sp, P.apply(new int[]{10, 0, -4}), N);
+                ponerVia(sp, P.apply(new int[]{11, 0, -4}), E);     // al lado: la de antes se hace curva
+                ponerVia(sp, P.apply(new int[]{12, 0, -4}), E);
+                String[] esperado = {"10,0,0=recta/north", "10,0,-1=subida/north", "10,1,-2=recta/north", "10,0,-3=bajada/north",
+                        "10,0,-4=curva_der/north", "11,0,-4=recta/east", "12,0,-4=recta/east"};
+                StringBuilder sb = new StringBuilder("  colocar solas:");
+                int mal = 0;
+                for (String e : esperado) {
+                    String[] kv = e.split("=");
+                    String[] c = kv[0].split(",");
+                    String f = forma(l, new net.minecraft.core.BlockPos(Integer.parseInt(c[0]), Integer.parseInt(c[1]), Integer.parseInt(c[2])));
+                    sb.append(' ').append(kv[0]).append('=').append(f);
+                    if (!f.equals(kv[1])) {
+                        sb.append("(MAL, debía ").append(kv[1]).append(')');
+                        mal++;
+                    }
+                }
+                // ¿se recorre de punta a punta?
+                var p = com.miscelanea.montana.Via.en(l, montanaO.offset(10, 0, 0));
+                int n = 0;
+                while (p != null && n < 20) {
+                    p = com.miscelanea.montana.Via.siguiente(l, p);
+                    n++;
+                }
+                sb.append(" · seguidas: ").append(n);
+                RESUMEN.add(sb.toString());
+                if (mal > 0 || n != 7) RESUMEN.add("  FALLO: la colocación automática no ha dado lo esperado");
+                // el escaparate: tres vagones parados en una recta, para verlos de cerca
+                var V = com.miscelanea.registry.ModBlocks.VIA_MONTANA.get();
+                for (int z = -4; z <= 2; z++)
+                    l.setBlock(montanaO.offset(7, 0, z), V.defaultBlockState().setValue(com.miscelanea.montana.ViaMontanaBlock.FACING, N), 3);
+                var t = new com.miscelanea.montana.TrenMontana(com.miscelanea.registry.ModEntities.TREN_MONTANA.get(), l);
+                t.colocar(montanaO.offset(7, 0, -3), 0.5, 3);
+                l.addFreshEntity(t);
+                var a = net.minecraft.world.entity.EntityType.VILLAGER.create(l);
+                if (a != null) {
+                    a.moveTo(t.getX(), t.getY(), t.getZ());
+                    a.setNoAi(true);
+                    a.setSilent(true);
+                    l.addFreshEntity(a);
+                    a.startRiding(t, true);
+                }
+                sp.getAbilities().mayfly = true;
+                sp.getAbilities().flying = true;
+                sp.onUpdateAbilities();
+                sp.teleportTo(montanaO.getX() + 4.6, montanaO.getY() + 1.9, montanaO.getZ() - 0.5);
+                sp.setYRot(-90);
+                sp.setYHeadRot(-90);
+                sp.setXRot(22);
+            });
+        });
+        paso("34_montana_vagones", 30, () -> {
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            mc.player.setYRot(-90);
+            mc.player.setXRot(22);
+        });
+        sin("montana_piezas_ir", 10, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp != null) sp.teleportTo(montanaO.getX() + 8.6, montanaO.getY() + 2.8, montanaO.getZ() + 1.6);
+            });
+        });
+        paso("35_montana_piezas", 30, () -> {
+            mc.player.setYRot(208);
+            mc.player.setXRot(38);
+        });
+        sin("montana_estacion_ir", 10, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp != null) sp.teleportTo(montanaO.getX() + 1.0, montanaO.getY() + 2.6, montanaO.getZ() + 2.8);
+            });
+        });
+        paso("36_montana_estacion", 30, () -> {
+            mc.player.setYRot(180);
+            mc.player.setXRot(50);
+        });
+        // varios trenes: otro tren por la recta de vuelta; no se pueden atravesar
+        sin("montana_dos_trenes", 2, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                // lo más lejos posible del que ya va dando vueltas
+                var otros = l.getEntitiesOfClass(com.miscelanea.montana.TrenMontana.class, new net.minecraft.world.phys.AABB(montanaO).inflate(30));
+                net.minecraft.core.BlockPos mejor = montanaO.offset(2, 0, -12);
+                double md = -1;
+                for (var c : new net.minecraft.core.BlockPos[]{montanaO.offset(2, 0, -6), montanaO.offset(2, 0, -12), montanaO.offset(2, 0, -18), montanaO.offset(0, 6, -8)}) {
+                    double d = 1e9;
+                    for (var o : otros) d = Math.min(d, o.position().distanceTo(net.minecraft.world.phys.Vec3.atCenterOf(c)));
+                    if (d > md) {
+                        md = d;
+                        mejor = c;
+                    }
+                }
+                var t = new com.miscelanea.montana.TrenMontana(com.miscelanea.registry.ModEntities.TREN_MONTANA.get(), l);
+                t.colocar(mejor, 0.5, 2);
+                t.lanzar(0.45);
+                l.addFreshEntity(t);
+            });
+            MONTANA_MIN[0] = 99;
+        });
+        for (int i = 0; i < 20; i++) {
+            sin("montana_dos_trenes_" + i, 10, () -> {
+                var l = mc.getSingleplayerServer().overworld();
+                var trenes = l.getEntitiesOfClass(com.miscelanea.montana.TrenMontana.class, new net.minecraft.world.phys.AABB(montanaO).inflate(30),
+                        x -> x.sitio() != null && x.sitio().pieza().pos().getX() - montanaO.getX() <= 3);
+                for (var a : trenes)
+                    for (var b : trenes) {
+                        if (a.getId() >= b.getId()) continue;
+                        for (int ka = 0; ka < a.vagones(); ka++)
+                            for (int kb = 0; kb < b.vagones(); kb++) {
+                                var sa = a.sitioVagon(ka);
+                                var sb = b.sitioVagon(kb);
+                                if (sa != null && sb != null) MONTANA_MIN[0] = Math.min(MONTANA_MIN[0], sa.punto().distanceTo(sb.punto()));
+                            }
+                    }
+                MONTANA_MIN[1] = trenes.size();
+            });
+        }
+        sin("montana_dos_trenes_fin", 1, () -> {
+            RESUMEN.add(String.format("  dos trenes en la vía (%d): lo más cerca que han estado dos vagones, %.2f bloques", (int) MONTANA_MIN[1], MONTANA_MIN[0]));
+            if (MONTANA_MIN[0] < 0.9) throw new IllegalStateException("dos trenes se han atravesado");
+        });
+        // romper la vía bajo el tren del escaparate: el tren se rompe y suelta su objeto
+        sin("montana_romper", 10, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                for (int z = -4; z <= 2; z++) l.setBlock(montanaO.offset(7, 0, z), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+            });
+        });
+        sin("montana_romper_fin", 1, () -> {
+            var l = mc.getSingleplayerServer().overworld();
+            var caja = new net.minecraft.world.phys.AABB(montanaO.offset(7, 0, -3)).inflate(3);
+            int trenes = l.getEntitiesOfClass(com.miscelanea.montana.TrenMontana.class, caja).size();
+            int objetos = l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, caja, x -> x.getItem().is(com.miscelanea.registry.ModItems.TREN_MONTANA.get())).size();
+            var ald = l.getEntitiesOfClass(net.minecraft.world.entity.npc.Villager.class, caja.inflate(3));
+            boolean bajado = ald.stream().noneMatch(net.minecraft.world.entity.Entity::isPassenger);
+            RESUMEN.add("  vía rota bajo el tren: " + trenes + " tren(es) quedan, " + objetos + " objeto(s) soltado(s), pasajero " + (bajado ? "bajado" : "MONTADO"));
+            if (trenes != 0 || objetos == 0 || !bajado) throw new IllegalStateException("al romper la vía el tren no se rompe bien");
+            ald.forEach(net.minecraft.world.entity.Entity::discard);
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                sp.getAbilities().flying = false;
+                sp.getAbilities().mayfly = sp.isCreative();
+                sp.onUpdateAbilities();
+            });
+        });
+    }
+
+    private static final double[] MONTANA_MIN = {99, 0};
 
     // ------------------------------------------------------------------ El Purgatorio (2.0.0)
     private static void irA(net.minecraft.core.BlockPos b, float yaw, float pitch) {
