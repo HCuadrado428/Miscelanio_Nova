@@ -58,7 +58,7 @@ public final class EquilibrioArmas {
         GATLING_DANO = b.comment("Gatling: daño de cada bala.").defineInRange("gatling_dano", 2.5, 0.0, 100.0);
         GATLING_CADENCIA = b.comment("Gatling: ticks entre balas con la manivela a toda velocidad.").defineInRange("gatling_cadencia", 2, 1, 40);
         GATLING_CINTA = b.comment("Gatling: balas de cada cinta.").defineInRange("gatling_cinta", 40, 1, 1000);
-        GATLING_CALOR = b.comment("Gatling: calor por bala (a 100 se atasca y quema).").defineInRange("gatling_calor", 4.0, 0.0, 100.0);
+        GATLING_CALOR = b.comment("Gatling: calor por bala (a 100 se atasca y quema).").defineInRange("gatling_calor", 3.5, 0.0, 100.0);
         GATLING_ENFRIADO = b.comment("Gatling: calor que pierde por tick (la mitad mientras dispara).").defineInRange("gatling_enfriado", 0.8, 0.0, 100.0);
         GATLING_ALCANCE = b.comment("Gatling: alcance en bloques.").defineInRange("gatling_alcance", 48.0, 4.0, 256.0);
 

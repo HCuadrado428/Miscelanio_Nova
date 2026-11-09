@@ -3002,7 +3002,7 @@ public final class PruebaCI {
             if (!hog && !vel) throw new IllegalStateException("el incendiario no ha encendido ni la hoguera ni la vela");
         });
         // ---- escarcha: apaga a la diana, la congela y deja nieve en polvo en el suelo
-        sin("esc_escarcha", 5, () -> escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.ESCARCHA, 100, escHuskPos().add(0, -0.7, 0)));
+        sin("esc_escarcha", 5, () -> escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.ESCARCHA, 100, escHuskPos().add(0, -0.9, 0)));   // a los pies: más perdigones al suelo (con shaders a veces no caía ninguno)
         paso("126_escarcha", 15, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
         sin("esc_escarcha_chk", 5, () -> {
             var h = escEntidad(escHusk);

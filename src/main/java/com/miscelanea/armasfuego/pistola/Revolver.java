@@ -396,7 +396,7 @@ public final class Revolver {
     private static void fogonazo(ServerLevel l, Vec3 b, Vec3 mira, boolean grande) {
         // un poco por delante de la boca: pegado a la cámara tapaba toda la pantalla
         Vec3 q = b.add(mira.scale(0.7));
-        l.sendParticles(ParticleTypes.FLASH, q.x, q.y, q.z, 1, 0, 0, 0, 0);
+        l.sendParticles(com.miscelanea.armasfuego.comun.ArmasFuegoRegistro.FOGONAZO.get(), q.x, q.y, q.z, grande ? 3 : 1, 0.02, 0.02, 0.02, 0);
         l.sendParticles(ParticleTypes.SMOKE, q.x, q.y, q.z, grande ? 5 : 2, 0.04, 0.04, 0.04, 0.01);
         if (grande) {
             l.sendParticles(ParticleTypes.FLAME, q.x, q.y, q.z, 2, 0.03, 0.03, 0.03, 0.02);

@@ -140,16 +140,16 @@ public final class FuegoCliente {
             if (s.getItem() instanceof MosqueteItem || s.getItem() instanceof CanonManoItem) {
                 // de pie, con la boca hacia arriba: la baqueta entra y sale
                 ps.translate(lado * -0.12F * entra, 0.05F * entra, 0.08F * entra);
-                ps.mulPose(Axis.XP.rotationDegrees(55F * entra));
-                ps.mulPose(Axis.ZP.rotationDegrees(lado * 12F * entra));
+                girar(ps, lado, Axis.XP.rotationDegrees(55F * entra));
+                girar(ps, lado, Axis.ZP.rotationDegrees(lado * 12F * entra));
                 ps.translate(0, -0.03F * golpe, 0);
             } else if (modo == ArmaFuegoItem.MODO_DESATASCO) {
                 ps.translate(0, -0.06F * entra + Mth.sin(tUso * 1.9F) * 0.015F, 0.02F * entra);
-                ps.mulPose(Axis.ZP.rotationDegrees(lado * 30F * entra));
+                girar(ps, lado, Axis.ZP.rotationDegrees(lado * 30F * entra));
             } else {
                 ps.translate(lado * -0.08F * entra, -0.1F * entra - 0.025F * golpe, 0.04F * entra);
-                ps.mulPose(Axis.ZP.rotationDegrees(lado * 28F * entra));
-                ps.mulPose(Axis.XP.rotationDegrees(-8F * entra + 4F * golpe));
+                girar(ps, lado, Axis.ZP.rotationDegrees(lado * 28F * entra));
+                girar(ps, lado, Axis.XP.rotationDegrees(-8F * entra + 4F * golpe));
             }
         }
         // la palanca de la Winchester: a pie, el arma baja un poco; a caballo, un giro entero (spin-cock)
@@ -160,12 +160,12 @@ public final class FuegoCliente {
                 float t = d / pal;
                 if (p.isPassenger()) {
                     ps.translate(0, 0.05F, -0.05F);
-                    ps.mulPose(Axis.XP.rotationDegrees(-360F * easeInOut(t)));
+                    girar(ps, lado, Axis.XP.rotationDegrees(-360F * easeInOut(t)));
                     ps.translate(0, -0.05F, 0.05F);
                 } else {
                     float k = Mth.sin(t * Mth.PI);
                     ps.translate(0, -0.05F * k, 0.02F * k);
-                    ps.mulPose(Axis.XP.rotationDegrees(6F * k));
+                    girar(ps, lado, Axis.XP.rotationDegrees(6F * k));
                 }
             }
         }
@@ -178,8 +178,18 @@ public final class FuegoCliente {
         float k = fadeMano() * manoPatada;
         if (k > 0) {
             ps.translate(0, 0.02F * k, 0.12F * k);
-            ps.mulPose(Axis.XP.rotationDegrees(7F * k));
+            girar(ps, lado, Axis.XP.rotationDegrees(7F * k));
         }
+    }
+
+    /**
+     * Gira alrededor de la mano: applyForgeHandTransform va antes de que vanilla lleve el arma a la mano, así que un
+     * giro a pelo sería alrededor de la cámara (y el arma se saldría de la pantalla).
+     */
+    public static void girar(PoseStack ps, int lado, org.joml.Quaternionf q) {
+        ps.translate(lado * 0.56F, -0.52F, -0.72F);
+        ps.mulPose(q);
+        ps.translate(lado * -0.56F, 0.52F, 0.72F);
     }
 
     private static float easeInOut(float t) {
@@ -191,7 +201,7 @@ public final class FuegoCliente {
         float k = fadeMano() * manoPatada;
         if (k > 0) {
             ps.translate(0, 0.02F * k, 0.12F * k);
-            ps.mulPose(Axis.XP.rotationDegrees(7F * k));
+            girar(ps, 1, Axis.XP.rotationDegrees(7F * k));
         }
     }
 
@@ -238,7 +248,8 @@ public final class FuegoCliente {
     }
 
     private static void hudGatling(GuiGraphics g, Minecraft mc, GatlingEntity gat, int w, int h) {
-        int x = w / 2 - 40, y = h - 58;
+        // debajo de la mira (abajo están el aviso de bajarse y los mensajes de la barra de acción)
+        int x = w / 2 - 40, y = h / 2 + 24;
         var f = mc.font;
         float c = gat.calor() / 100F;
         int col = c < 0.5F ? 0xFF5FD35F : c < 0.8F ? 0xFFE8C840 : 0xFFE84030;
@@ -247,10 +258,7 @@ public final class FuegoCliente {
         g.drawString(f, Component.translatable("hud.miscelanea.gatling.calor"), x, y - 11, 0xFFE0E0E0, true);
         String b = gat.balas() + "/" + com.miscelanea.armasfuego.comun.EquilibrioArmas.gatlingCinta();
         g.drawString(f, b, x + 80 - f.width(b), y - 11, gat.balas() == 0 ? 0xFFFF5555 : 0xFFF0D080, true);
-        if (gat.atasco() > 0) {
-            Component t = Component.translatable("hud.miscelanea.gatling.atascada");
-            g.drawString(f, t, w / 2 - f.width(t) / 2, y + 8, 0xFFFF6040, true);
-        } else if (gat.recarga() > 0) {
+        if (gat.recarga() > 0) {
             Component t = Component.translatable("hud.miscelanea.gatling.recargando");
             g.drawString(f, t, w / 2 - f.width(t) / 2, y + 8, 0xFFE0C060, true);
         }

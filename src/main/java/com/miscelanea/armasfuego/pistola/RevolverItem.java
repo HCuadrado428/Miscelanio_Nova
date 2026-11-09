@@ -204,7 +204,7 @@ public class RevolverItem extends Item {
                         float k = net.minecraft.util.Mth.sin(t / 12F * net.minecraft.util.Mth.PI);
                         int i = brazo == net.minecraft.world.entity.HumanoidArm.RIGHT ? 1 : -1;
                         ps.translate(i * -0.1F * k, 0.04F * k, 0);
-                        ps.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(i * 35F * k));
+                        com.miscelanea.client.armasfuego.comun.FuegoCliente.girar(ps, i, com.mojang.math.Axis.ZP.rotationDegrees(i * 35F * k));
                     }
                 }
                 com.miscelanea.client.armasfuego.comun.FuegoCliente.culatazo(ps);
