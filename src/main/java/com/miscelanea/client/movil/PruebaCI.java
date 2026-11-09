@@ -1520,7 +1520,7 @@ public final class PruebaCI {
         });
     }
 
-    // ------------------------------------------------------------------ las tres armas en 3D (pasos 160-172)
+    // ------------------------------------------------------------------ las tres armas en 3D (pasos 160-180)
     /**
      * Las tres armas de fuego en la mano con su modelo 3D: primera persona, tercera de frente y de espaldas, y el
      * inventario con todas las armas (las cuatro fases del cobre) y sus municiones (que siguen siendo iconos 2D).
@@ -1646,7 +1646,31 @@ public final class PruebaCI {
                 mc.options.hideGui = false;
             });
         }
-        paso("172_inventario_armas", 20, () -> {
+        // la escopeta con la aguja en cada zona y reventada (el manómetro del costado se ve en primera persona)
+        float[] presiones = {0F, 15F, 45F, 75F, 97F};
+        for (int a = 0; a < presiones.length; a++) {
+            final float pr = presiones[a];
+            paso((172 + a) + "_escopeta_presion_" + a, 12, () -> {
+                mc.player.getInventory().selected = 1;
+                mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+                rifleSrv(sp -> {
+                    ItemStack e = sp.getInventory().getItem(1);
+                    com.miscelanea.armasfuego.escopeta.Presion.ponerPresion(e, pr);
+                    RESUMEN.add("  escopeta 3D: presión " + pr + " → aguja " + com.miscelanea.armasfuego.escopeta.Presion.agujaModelo(e));
+                });
+            });
+        }
+        paso("177_escopeta_roja_3p_frente", 15, () -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT));
+        paso("178_escopeta_reventada", 12, () -> {
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            rifleSrv(sp -> {
+                ItemStack e = sp.getInventory().getItem(1);
+                com.miscelanea.armasfuego.escopeta.Presion.ponerPresion(e, 0F);
+                e.getOrCreateTag().putLong(com.miscelanea.armasfuego.escopeta.Presion.REVENTADA, sp.level().getGameTime() + 300);
+            });
+        });
+        sin("armas3d_escopeta_arreglar", 3, () -> rifleSrv(sp -> sp.getInventory().getItem(1).getOrCreateTag().remove(com.miscelanea.armasfuego.escopeta.Presion.REVENTADA)));
+        paso("180_inventario_armas", 20, () -> {
             mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
             mc.setScreen(new net.minecraft.client.gui.screens.inventory.InventoryScreen(mc.player));
         });
