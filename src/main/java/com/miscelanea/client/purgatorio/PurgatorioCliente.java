@@ -41,11 +41,11 @@ public final class PurgatorioCliente {
     static float[] colorNiebla(PurgatorioGenerador.Zona z) {
         return switch (z) {
             case FERIA -> new float[]{0.07F, 0.05F, 0.10F};
-            case SALA -> new float[]{0.10F, 0.10F, 0.085F};
+            case SALA -> new float[]{0.12F, 0.11F, 0.065F};
             case RECREATIVA -> new float[]{0.05F, 0.02F, 0.09F};
             case HOTEL -> new float[]{0.09F, 0.06F, 0.035F};
             case SIN_TEXTURA -> new float[]{0.0F, 0.0F, 0.0F};
-            case PISCINA -> new float[]{0.04F, 0.08F, 0.10F};
+            case PISCINA -> new float[]{0.035F, 0.085F, 0.105F};
             case APARCAMIENTO -> new float[]{0.06F, 0.07F, 0.06F};
             case COLEGIO -> new float[]{0.05F, 0.055F, 0.08F};
             case CENTRO -> new float[]{0.09F, 0.075F, 0.065F};

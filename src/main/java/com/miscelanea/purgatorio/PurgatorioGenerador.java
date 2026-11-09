@@ -439,37 +439,56 @@ public class PurgatorioGenerador extends ChunkGenerator {
 
     // ------------------------------------------------------------------ Sala de Espera
     /**
-     * Una sala de espera que no se acaba: baldosas, techo bajo con fluorescentes (alguno fundido), filas de sillas y
-     * tabiques con huecos. Hacia otras zonas siempre hay pared con una puerta.
+     * ¿Es este chunk de la Sala de Espera de los de las Backrooms (el nivel 0: papel pintado amarillo, moqueta húmeda y
+     * fluorescentes que zumban, sin nadie y sin muebles)? Más o menos seis de cada diez.
+     */
+    public static boolean backrooms(int n, int cx, int cz) {
+        return hn(n, cx, cz, 7) % 10 < 6 && !(zona(n, cx, cz) == Zona.SALA && raro(n, cx, cz) == 4);
+    }
+
+    /**
+     * Una sala de espera que no se acaba: baldosas, techo bajo con fluorescentes (alguno fundido), filas de sillas de
+     * plástico y tabiques con huecos; y, entre sala y sala, las Backrooms (ver {@link #backrooms}). Hacia otras zonas
+     * siempre hay pared con una puerta.
      */
     private static void sala(Lienzo l, int n, int f, int cx, int cz) {
+        if (backrooms(n, cx, cz)) {
+            backroomsChunk(l, n, f, cx, cz);
+            return;
+        }
         int techo = f + 4;
         // de vez en cuando, una sala vacía a oscuras con una sola silla, de cara a la pared, y una luz encima
         boolean rara = zona(n, cx, cz) == Zona.SALA && raro(n, cx, cz) == 4;
         BlockState suelo = ModBlocks.SUELO_SALA.get().defaultBlockState();
         BlockState placa = ModBlocks.TECHO_SALA.get().defaultBlockState();
-        BlockState luz = ModBlocks.FLUORESCENTE.get().defaultBlockState();
+        BlockState luz = ModBlocks.FLUORESCENTE.get().defaultBlockState(), parpadea = com.miscelanea.purgatorio.liminal.LiminalRegistro.FLUORESCENTE_PARPADEA.get().defaultBlockState();
         for (int x = 0; x < 16; x++)
             for (int z = 0; z < 16; z++) {
                 l.pon(x, f - 1, z, suelo);
                 l.pon(x, f - 2, z, d(Blocks.STONE));
                 boolean panel = x % 5 == 2 && z % 5 == 2;
-                boolean encendido = rara ? x == 12 && z == 2 : hn(n, cx * 16 + x, cz * 16 + z, 3) % 5 != 0;
-                l.pon(x, techo, z, panel ? luz.setValue(FluorescenteBlock.ENCENDIDO, encendido) : placa);
+                long r = hn(n, cx * 16 + x, cz * 16 + z, 3);
+                boolean encendido = rara ? x == 12 && z == 2 : r % 5 != 0;
+                l.pon(x, techo, z, panel ? (!rara && r % 11 == 3 ? parpadea : luz.setValue(FluorescenteBlock.ENCENDIDO, encendido)) : placa);
             }
+        BlockState silla = com.miscelanea.purgatorio.liminal.LiminalRegistro.SILLA_ESPERA.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.NORTH);
         if (rara) {
-            l.pon(12, f, 1, escalon(Blocks.QUARTZ_STAIRS, Direction.SOUTH));
+            l.pon(12, f, 1, silla.setValue(com.miscelanea.purgatorio.liminal.Bloques.COLOR4, 3));
         } else {
-            // sillas en filas mirando al norte, con pasillo en medio
+            // sillas de plástico en filas mirando al norte (cada fila de un color), con pasillo en medio
             int filas = (int) (hn(n, cx, cz, 4) % 3);
-            if (filas > 0)
+            if (filas > 0) {
+                int c = (int) (hn(n, cx, cz, 9) % 4);
                 for (int zr : new int[]{3, 11})
                     for (int x = 1; x < 15; x++) {
                         if (x == 7 || x == 8) continue;
-                        l.pon(x, f, zr, escalon(Blocks.QUARTZ_STAIRS, Direction.SOUTH));
-                        if (filas == 2) l.pon(x, f, zr + 2, escalon(Blocks.QUARTZ_STAIRS, Direction.SOUTH));
+                        l.pon(x, f, zr, silla.setValue(com.miscelanea.purgatorio.liminal.Bloques.COLOR4, c));
+                        if (filas == 2) l.pon(x, f, zr + 2, silla.setValue(com.miscelanea.purgatorio.liminal.Bloques.COLOR4, (c + 1) % 4));
                     }
-            else if (hn(n, cx, cz, 6) % 3 == 0) {
+                // y un ventilador de techo que da vueltas para nadie
+                if (hn(n, cx, cz, 10) % 2 == 0)
+                    l.ponBE(12, techo - 1, 12, com.miscelanea.purgatorio.liminal.LiminalRegistro.VENTILADOR.get().defaultBlockState().setValue(com.miscelanea.purgatorio.liminal.Bloques.LENTO, hn(n, cx, cz, 11) % 3 == 0));
+            } else if (hn(n, cx, cz, 6) % 3 == 0) {
                 // una escalera que no lleva a nada: cuatro escalones de dos de ancho que suben hasta el techo
                 for (int i = 0; i < 4; i++)
                     for (int z = 12; z <= 13; z++) {
@@ -478,9 +497,10 @@ public class PurgatorioGenerador extends ChunkGenerator {
                     }
                 for (int i = 0; i < 4; i++) l.pon(10 + i, f + i + 1, 14, unida(Blocks.IRON_BARS, false, true));
             } else {
-                // un mostrador de "turnos" con su planta
+                // un mostrador de "turnos" con su planta y la máquina de café
                 l.caja(5, f, 6, 10, f, 6, d(Blocks.SMOOTH_QUARTZ));
                 l.pon(5, f + 1, 6, d(Blocks.POTTED_BAMBOO));
+                maquina(l, f, 12, 1, Direction.SOUTH, hn(n, cx, cz, 12));
             }
         }
         // tabiques: hacia otras zonas siempre; entre salas, a veces (y en la sala rara, en los cuatro lados). Con hueco en
@@ -501,6 +521,85 @@ public class PurgatorioGenerador extends ChunkGenerator {
         for (int x : new int[]{0, 15})
             for (int z : new int[]{0, 15})
                 for (int y = 0; y < 4; y++) l.pon(x, f + y, z, d(Blocks.QUARTZ_PILLAR));
+    }
+
+    /**
+     * Las Backrooms (el nivel 0): moqueta mostaza húmeda, papel pintado amarillo, placas de techo y fluorescentes en
+     * rejilla (alguno fundido, alguno parpadeando y zumbando). Dentro de cada parcela, trozos de pared sueltos, esquinas
+     * y pilares al azar, sin sentido: un laberinto de habitaciones vacías. Las calles de en medio siguen libres (siempre
+     * se puede cruzar) y, muy de vez en cuando, algo que no pinta nada: una silla, una máquina, un cartel de suelo mojado.
+     */
+    private static void backroomsChunk(Lienzo l, int n, int f, int cx, int cz) {
+        int techo = f + 4;
+        BlockState moq = com.miscelanea.purgatorio.liminal.LiminalRegistro.MOQUETA_BACKROOMS.get().defaultBlockState(), pla = com.miscelanea.purgatorio.liminal.LiminalRegistro.TECHO_BACKROOMS.get().defaultBlockState();
+        BlockState pared = com.miscelanea.purgatorio.liminal.LiminalRegistro.PARED_BACKROOMS.get().defaultBlockState(), zoc = com.miscelanea.purgatorio.liminal.LiminalRegistro.PARED_BACKROOMS_ZOCALO.get().defaultBlockState();
+        BlockState luz = ModBlocks.FLUORESCENTE.get().defaultBlockState(), parpadea = com.miscelanea.purgatorio.liminal.LiminalRegistro.FLUORESCENTE_PARPADEA.get().defaultBlockState();
+        for (int x = 0; x < 16; x++)
+            for (int z = 0; z < 16; z++) {
+                l.pon(x, f - 1, z, moq);
+                l.pon(x, f - 2, z, d(Blocks.STONE));
+                boolean panel = (x % 4 == 1) && (z % 4 == 1);
+                long r = hn(n, cx * 16 + x, cz * 16 + z, 3);
+                l.pon(x, techo, z, panel ? (r % 9 == 4 ? parpadea : luz.setValue(FluorescenteBlock.ENCENDIDO, r % 7 != 0)) : pla);
+            }
+        // trozos de pared dentro de cada parcela (de 7 x 7): una raya, una L, un pilar o nada
+        for (int k = 0; k < 4; k++) {
+            if (ocupada(n, cx, cz, k)) continue;
+            int qx = PurgatorioPlano.PARCELAS[k][0], qz = PurgatorioPlano.PARCELAS[k][1];
+            long r = hn(n, cx, cz, 240 + k);
+            int t = (int) (r % 6);
+            int ax = qx + 1 + (int) ((r >> 4) % 5), az = qz + 1 + (int) ((r >> 8) % 5);
+            switch (t) {
+                case 0, 1 -> {
+                    // una pared recta de lado a lado de la parcela (con un hueco)
+                    boolean ejeX = ((r >> 12) & 1) == 0;
+                    int hueco = (int) ((r >> 13) % 7);
+                    for (int i = 0; i < 7; i++) {
+                        if (i == hueco || i == (hueco + 1) % 7) continue;
+                        int x = ejeX ? qx + i : ax, z = ejeX ? az : qz + i;
+                        for (int y = 0; y < 4; y++) l.pon(x, f + y, z, y == 0 ? zoc : pared);
+                    }
+                }
+                case 2 -> {
+                    // una esquina en L
+                    int lx = ((r >> 12) & 1) == 0 ? 1 : -1, lz = ((r >> 13) & 1) == 0 ? 1 : -1;
+                    for (int i = 0; i < 4; i++) {
+                        for (int y = 0; y < 4; y++) {
+                            int x1 = Math.max(qx, Math.min(qx + 6, ax + i * lx)), z1 = Math.max(qz, Math.min(qz + 6, az + i * lz));
+                            l.pon(x1, f + y, az, y == 0 ? zoc : pared);
+                            l.pon(ax, f + y, z1, y == 0 ? zoc : pared);
+                        }
+                    }
+                }
+                case 3 -> {
+                    // un pilar (de 1 o de 2 x 2)
+                    int w = ((r >> 12) & 1) == 0 ? 1 : 2;
+                    for (int x = ax; x < Math.min(qx + 7, ax + w); x++)
+                        for (int z = az; z < Math.min(qz + 7, az + w); z++)
+                            for (int y = 0; y < 4; y++) l.pon(x, f + y, z, y == 0 ? zoc : pared);
+                }
+                default -> {
+                }
+            }
+        }
+        // lo que no pinta nada (uno de cada cinco chunks)
+        long q = hn(n, cx, cz, 250);
+        if (q % 5 == 0 && !ocupada(n, cx, cz, 2)) {
+            int x = 1 + (int) ((q >> 4) % 5), z = 9 + (int) ((q >> 8) % 5);
+            if (l.libre(x, f, z)) switch ((int) ((q >> 12) % 4)) {
+                case 0 -> l.pon(x, f, z, com.miscelanea.purgatorio.liminal.LiminalRegistro.SILLA_ESPERA.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, LADOS[(int) ((q >> 16) & 3)]));
+                case 1 -> maquina(l, f, x, z, LADOS[(int) ((q >> 16) & 3)], q);
+                case 2 -> l.pon(x, f, z, com.miscelanea.purgatorio.liminal.LiminalRegistro.SENAL_MOJADO.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, LADOS[(int) ((q >> 16) & 3)]));
+                default -> l.pon(x, f, z, com.miscelanea.purgatorio.liminal.LiminalRegistro.CARRITO.get().defaultBlockState().setValue(com.miscelanea.purgatorio.liminal.Bloques.GIRADO, true));
+            }
+        }
+        // hacia otras zonas, pared amarilla con su puerta; entre chunks de sala, a veces
+        for (Direction dd : LADOS) {
+            int nx = cx + dd.getStepX(), nz = cz + dd.getStepZ();
+            boolean otra = zona(n, nx, nz) != Zona.SALA || PurgatorioPlano.grande(n, nx, nz) != null;
+            int bx = Math.min(cx, nx) * 2 + (dd.getAxis() == Direction.Axis.X ? 1 : 0), bz = Math.min(cz, nz);
+            if (otra || hn(n, bx, bz, 5) % 4 == 0) tabique(l, f, dd, 4, zoc, pared, 3, pared);
+        }
     }
 
     static final Direction[] LADOS = {Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
@@ -1073,7 +1172,8 @@ public class PurgatorioGenerador extends ChunkGenerator {
         for (int z = 9; z < D - 4; z += 4)
             for (int x = 3; x < W - 3; x++) {
                 if ((x & 15) == 7 || (x & 15) == 8 || x % 12 == 6) continue;
-                l.pon(x, f, z, escalon(Blocks.QUARTZ_STAIRS, Direction.SOUTH));
+                l.pon(x, f, z, com.miscelanea.purgatorio.liminal.LiminalRegistro.SILLA_ESPERA.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.NORTH)
+                        .setValue(com.miscelanea.purgatorio.liminal.Bloques.COLOR4, (int) (h(g.x0(), g.z0() + z, 612) % 4)));
             }
         // el panel de turnos en la pared del norte, apagado menos un número
         for (int x = 14; x <= 33; x++)
@@ -1155,6 +1255,9 @@ public class PurgatorioGenerador extends ChunkGenerator {
             for (int x = c[0] - 1; x <= c[0] + 1; x++) l.pon(x, f, c[1] + 2, escalon(Blocks.CRIMSON_STAIRS, Direction.NORTH));
             l.pon(c[0] - 2, f, c[1] + 2, d(Blocks.POTTED_FERN));
         }
+        // ventiladores de techo, despacio
+        for (int[] c : new int[][]{{8, 8}, {30, 8}, {28, 24}, {44, 26}})
+            l.ponBE(c[0], f + 7, c[1], com.miscelanea.purgatorio.liminal.LiminalRegistro.VENTILADOR.get().defaultBlockState().setValue(com.miscelanea.purgatorio.liminal.Bloques.LENTO, c[0] == 30));
         // dos lámparas de araña
         for (int[] c : new int[][]{{18, 16}, {40, 16}}) {
             l.pon(c[0], f + 7, c[1], d(Blocks.CHAIN));
@@ -1269,18 +1372,23 @@ public class PurgatorioGenerador extends ChunkGenerator {
             int qx = PurgatorioPlano.PARCELAS[k][0], qz = PurgatorioPlano.PARCELAS[k][1];
             if (ocupada(n, cx, cz, k)) continue;
             if (rara) {
-                if (k == 3) pileta(l, f, qx, qz, false, true);
+                if (k == 3) pileta(l, f, qx, qz, false, true, false, false);
                 continue;
             }
             int t = (int) (hn(n, cx, cz, 190 + k) % 10);
-            if (t < 6) pileta(l, f, qx, qz, hn(n, cx, cz, 195 + k) % 3 == 0, false);
+            long hp = hn(n, cx, cz, 195 + k);
+            // la mitad de las piscinas, llenas (agua de verdad: con shaders, refleja); las otras, vacías o con un dedo de agua
+            if (t < 6) pileta(l, f, qx, qz, hp % 3 == 0, false, hp % 2 == 1, hp % 5 < 2);
             else if (t < 8) gradas(l, f, qx, qz, qz == 0);
             else if (t == 8) socorrista(l, f, qx, qz);
             else {
-                // un banco del vestuario y una papelera
+                // un banco del vestuario, una papelera y la máquina de refrescos
                 for (int x = qx + 2; x <= qx + 4; x++) l.pon(x, f, qz + 3, d(Blocks.BIRCH_SLAB));
                 l.pon(qx + 5, f, qz + 3, d(Blocks.CAULDRON));
+                maquina(l, f, qx + 3, qz == 0 ? qz + 1 : qz + 5, qz == 0 ? Direction.SOUTH : Direction.NORTH, hp);
             }
+            // y el cartel de suelo mojado, de vez en cuando, en el borde
+            if (!rara && hp % 7 == 3) l.pon(qx + 6, f, qz == 0 ? qz + 1 : qz + 5, com.miscelanea.purgatorio.liminal.LiminalRegistro.SENAL_MOJADO.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, LADOS[(int) (hp >> 8 & 3)]));
         }
         for (Direction dd : LADOS) {
             int nx = cx + dd.getStepX(), nz = cz + dd.getStepZ();
@@ -1289,25 +1397,37 @@ public class PurgatorioGenerador extends ChunkGenerator {
         }
     }
 
-    /** Una piscina de 5 x 5 en la parcela: dos de hondo, el fondo azul con su raya, el borde y la escalerilla. */
-    private static void pileta(Lienzo l, int f, int qx, int qz, boolean agua, boolean flotador) {
+    /**
+     * Una piscina de 5 x 5 en la parcela: dos de hondo, el fondo azul con su raya, el borde y la escalerilla de acero.
+     * Llena: agua hasta el borde, focos sumergidos en las paredes y, a veces, un flotador que se mece (GeckoLib).
+     */
+    private static void pileta(Lienzo l, int f, int qx, int qz, boolean agua, boolean flotador, boolean llena, boolean conFlotador) {
         BlockState azul = ModBlocks.AZULEJO_PISCINA_AZUL.get().defaultBlockState(), raya = ModBlocks.AZULEJO_PISCINA_RAYA.get().defaultBlockState();
-        BlockState borde = ModBlocks.BORDE_PISCINA.get().defaultBlockState();
+        BlockState borde = ModBlocks.BORDE_PISCINA.get().defaultBlockState(), w = d(Blocks.WATER);
         for (int x = qx; x <= qx + 6; x++)
             for (int z = qz; z <= qz + 6; z++) {
                 boolean dentro = x > qx && x < qx + 6 && z > qz && z < qz + 6;
                 if (dentro) {
-                    l.pon(x, f - 1, z, AIRE);
-                    l.pon(x, f - 2, z, agua ? ModBlocks.AGUA_POCA.get().defaultBlockState() : AIRE);
+                    l.pon(x, f - 1, z, llena ? w : AIRE);
+                    l.pon(x, f - 2, z, llena ? w : agua ? ModBlocks.AGUA_POCA.get().defaultBlockState() : AIRE);
                     l.pon(x, f - 3, z, z == qz + 3 ? raya : azul);
                 } else {
                     l.pon(x, f - 1, z, borde);
                     l.pon(x, f - 2, z, azul);
                 }
             }
-        BlockState esc = Blocks.LADDER.defaultBlockState().setValue(net.minecraft.world.level.block.LadderBlock.FACING, Direction.SOUTH);
+        BlockState esc = com.miscelanea.purgatorio.liminal.LiminalRegistro.ESCALERILLA.get().defaultBlockState().setValue(net.minecraft.world.level.block.LadderBlock.FACING, Direction.SOUTH)
+                .setValue(net.minecraft.world.level.block.LadderBlock.WATERLOGGED, llena);
         l.pon(qx + 3, f - 2, qz + 1, esc);
-        l.pon(qx + 3, f - 1, qz + 1, esc);
+        l.pon(qx + 3, f - 1, qz + 1, esc.setValue(com.miscelanea.purgatorio.liminal.Bloques.ARRIBA, true));
+        if (llena) {
+            BlockState luz = com.miscelanea.purgatorio.liminal.LiminalRegistro.LUZ_PISCINA.get().defaultBlockState();
+            l.pon(qx + 1, f - 2, qz, luz.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.SOUTH));
+            l.pon(qx + 5, f - 2, qz + 6, luz.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.NORTH));
+            l.pon(qx, f - 2, qz + 4, luz.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.EAST));
+            l.pon(qx + 6, f - 2, qz + 2, luz.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.WEST));
+            if (conFlotador) l.ponBE(qx + 2 + (qz == 0 ? 2 : 0), f - 1, qz + 4, com.miscelanea.purgatorio.liminal.LiminalRegistro.FLOTADOR.get().defaultBlockState());
+        }
         if (flotador) {
             // el flotador en el fondo seco: un anillo rojo y blanco
             int i = 0;
@@ -1315,6 +1435,15 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 for (int z = -1; z <= 1; z++)
                     if (x != 0 || z != 0) l.pon(qx + 3 + x, f - 2, qz + 3 + z, d(i++ % 2 == 0 ? Blocks.RED_CARPET : Blocks.WHITE_CARPET));
         }
+    }
+
+    /** Una máquina expendedora de dos de alto (roja o azul) mirando a "mira". */
+    static void maquina(Lienzo l, int f, int x, int z, Direction mira, long r) {
+        if (!l.libre(x, f, z) || !l.libre(x, f + 1, z)) return;
+        BlockState m = com.miscelanea.purgatorio.liminal.LiminalRegistro.MAQUINA.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, mira)
+                .setValue(com.miscelanea.purgatorio.liminal.Bloques.COLOR2, (int) ((r >> 4) & 1));
+        l.pon(x, f, z, m);
+        l.pon(x, f + 1, z, m.setValue(com.miscelanea.purgatorio.liminal.Bloques.ARRIBA, true));
     }
 
     /** Gradas de tres filas, de espaldas a la calle. */
@@ -1328,14 +1457,11 @@ public class PurgatorioGenerador extends ChunkGenerator {
         }
     }
 
-    /** La silla alta del socorrista, vacía, con el flotador colgado. */
+    /** La silla alta del socorrista, vacía, con el flotador colgado, mirando a la calle. */
     private static void socorrista(Lienzo l, int f, int qx, int qz) {
         int x = qx + 3, z = qz + 3;
-        l.pon(x, f, z, d(Blocks.BIRCH_FENCE));
-        l.pon(x, f + 1, z, d(Blocks.BIRCH_FENCE));
-        l.pon(x, f + 2, z, escalon(Blocks.BIRCH_STAIRS, qz == 0 ? Direction.NORTH : Direction.SOUTH));
-        l.pon(x, f + 3, z + (qz == 0 ? -1 : 1), d(Blocks.WHITE_WOOL));
-        l.pon(x + 1, f, z, d(Blocks.RED_CARPET));
+        BlockState s = com.miscelanea.purgatorio.liminal.LiminalRegistro.SOCORRISTA.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, qz == 0 ? Direction.SOUTH : Direction.NORTH);
+        for (int y = 0; y < 3; y++) l.pon(x, f + y, z, s.setValue(com.miscelanea.purgatorio.liminal.Bloques.PARTE3, y));
         l.pon(x + 1, f, z + 1, d(Blocks.WHITE_CARPET));
     }
 
@@ -1353,18 +1479,32 @@ public class PurgatorioGenerador extends ChunkGenerator {
     private static void aparcamiento(Lienzo l, int n, int f, int cx, int cz) {
         boolean rara = zona(n, cx, cz) == Zona.APARCAMIENTO && raro(n, cx, cz) == 4;
         BlockState suelo = ModBlocks.SUELO_APARCAMIENTO.get().defaultBlockState(), raya = ModBlocks.SUELO_APARCAMIENTO_RAYA.get().defaultBlockState();
-        BlockState techo = ModBlocks.TECHO_APARCAMIENTO.get().defaultBlockState(), luz = ModBlocks.FLUORESCENTE.get().defaultBlockState();
+        BlockState techo = ModBlocks.TECHO_APARCAMIENTO.get().defaultBlockState();
+        BlockState tubo = com.miscelanea.purgatorio.liminal.LiminalRegistro.TUBO.get().defaultBlockState();
         for (int x = 0; x < 16; x++)
             for (int z = 0; z < 16; z++) {
                 boolean plaza = (x == 1 || x == 4 || x == 11 || x == 14) && (z >= 1 && z <= 4 || z >= 11 && z <= 14);
                 l.pon(x, f - 1, z, plaza ? raya : suelo);
                 l.pon(x, f - 2, z, d(Blocks.STONE));
-                boolean tubo = (x == 7 && z % 4 == 2) || (z == 7 && x % 4 == 2);
-                l.pon(x, f + 4, z, tubo ? luz.setValue(FluorescenteBlock.ENCENDIDO, !rara && hn(n, cx * 16 + x, cz * 16 + z, 3) % 4 != 0) : techo);
+                l.pon(x, f + 4, z, techo);
+                // los tubos fluorescentes colgados encima de las calles: casi todos encendidos, alguno fundido y alguno
+                // parpadeando (con su zumbido)
+                boolean t = (x == 7 && z % 4 == 2) || (z == 7 && x % 4 == 2);
+                if (t) {
+                    long r = hn(n, cx * 16 + x, cz * 16 + z, 3);
+                    int est = rara ? 1 : r % 4 == 0 ? 1 : r % 9 == 1 ? 2 : 0;
+                    l.pon(x, f + 3, z, tubo.setValue(com.miscelanea.purgatorio.liminal.Bloques.EJE, x == 7 ? Direction.Axis.Z : Direction.Axis.X)
+                            .setValue(com.miscelanea.purgatorio.liminal.Bloques.ESTADO, est));
+                }
             }
         l.pon(7, f - 1, 3, ModBlocks.SUELO_APARCAMIENTO_FLECHA.get().defaultBlockState());
         l.pon(8, f - 1, 12, ModBlocks.SUELO_APARCAMIENTO_FLECHA.get().defaultBlockState());
-        // columnas con su letra y su número (cada una distinta)
+        // tuberías por el techo (en uno de cada dos chunks), a lo largo de x por encima de los coches
+        if (hn(n, cx, cz, 205) % 2 == 0) {
+            BlockState tu = com.miscelanea.purgatorio.liminal.LiminalRegistro.TUBERIA.get().defaultBlockState();
+            for (int x = 0; x < 16; x++) l.pon(x, f + 3, 5, tu);
+        }
+        // columnas con su letra y su número (cada una distinta), y algún extintor
         var col = (NumeradoBlock) ModBlocks.COLUMNA_APARCAMIENTO.get();
         int[][] cols = {{4, 0}, {11, 0}, {4, 15}, {11, 15}};
         for (int i = 0; i < 4; i++) {
@@ -1373,14 +1513,20 @@ public class PurgatorioGenerador extends ChunkGenerator {
             l.pon(x, f + 1, z, col.con(cx * 2 + (x > 8 ? 1 : 0) + cz * 3 + (z > 8 ? 1 : 0)));
             l.pon(x, f + 2, z, col.con(cx * 2 + (x > 8 ? 1 : 0) + cz * 3 + (z > 8 ? 1 : 0)));
             l.pon(x, f + 3, z, ModBlocks.PARED_APARCAMIENTO.get().defaultBlockState());
+            if (hn(n, cx * 4 + i, cz, 206) % 3 == 0)
+                l.pon(x, f + 1, z == 0 ? 1 : 14, com.miscelanea.purgatorio.liminal.LiminalRegistro.EXTINTOR.get().defaultBlockState()
+                        .setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, z == 0 ? Direction.SOUTH : Direction.NORTH));
         }
-        // coches aparcados: en las cuatro plazas, más o menos la mitad
-        Block[] color = {Blocks.RED_CONCRETE, Blocks.BLUE_CONCRETE, Blocks.WHITE_CONCRETE, Blocks.BLACK_CONCRETE, Blocks.GRAY_CONCRETE, Blocks.YELLOW_CONCRETE, Blocks.LIGHT_BLUE_CONCRETE};
+        // coches aparcados: en las cuatro plazas, más o menos la mitad; en alguna plaza vacía, un carrito abandonado
         for (int k = 0; k < 4; k++) {
             if (ocupada(n, cx, cz, k)) continue;
             int x0 = k % 2 == 0 ? 2 : 12, z0 = k < 2 ? 1 : 11;
             long r = hn(n, cx, cz, 200 + k);
-            if (rara ? k == 3 : r % 10 < 6) coche(l, f, x0, z0, k >= 2, color[(int) ((r >> 8) % color.length)], rara && k == 3);
+            if (rara ? k == 3 : r % 10 < 6) coche(l, f, x0, z0, k >= 2, (int) ((r >> 8) % 8), (int) ((r >> 12) % 3 == 0 ? 1 : 0), rara && k == 3);
+            else if (!rara && r % 10 == 9)
+                l.pon(x0 + (int) ((r >> 16) & 1), f, z0 + 1 + (int) ((r >> 17) % 2), com.miscelanea.purgatorio.liminal.LiminalRegistro.CARRITO.get().defaultBlockState()
+                        .setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, LADOS[(int) ((r >> 18) & 3)])
+                        .setValue(com.miscelanea.purgatorio.liminal.Bloques.GIRADO, ((r >> 20) & 1) == 0));
         }
         for (Direction dd : LADOS) {
             int nx = cx + dd.getStepX(), nz = cz + dd.getStepZ();
@@ -1396,30 +1542,31 @@ public class PurgatorioGenerador extends ChunkGenerator {
     }
 
     /**
-     * Un coche aparcado de 2 x 4: la carrocería de un color, las ventanillas oscuras arriba (el capó y el maletero, más
-     * bajos), los faros y los pilotos (botones) y las ruedas (botones negros a los lados). Mira hacia la calle.
+     * Un coche aparcado de 2 x 4 (turismo o furgoneta, de un color de los ocho), una pieza de modelo por bloque, mirando
+     * a la calle. El del rincón raro lleva los faros encendidos y su haz de luz (2 x 2 bloques delante).
      */
-    private static void coche(Lienzo l, int f, int x0, int z0, boolean haciaNorte, Block color, boolean faros) {
+    private static void coche(Lienzo l, int f, int x0, int z0, boolean haciaNorte, int color, int modelo, boolean faros) {
         Direction delante = haciaNorte ? Direction.NORTH : Direction.SOUTH;
-        int zf = haciaNorte ? z0 : z0 + 3, zt = haciaNorte ? z0 + 3 : z0;
-        for (int x = x0; x <= x0 + 1; x++) {
-            for (int z = z0; z <= z0 + 3; z++) l.pon(x, f, z, d(color));
-            l.pon(x, f + 1, z0 + 1, d(Blocks.TINTED_GLASS));
-            l.pon(x, f + 1, z0 + 2, d(Blocks.TINTED_GLASS));
-            if (faros) l.pon(x, f, zf + 2 * delante.getStepZ(), Blocks.LIGHT.defaultBlockState().setValue(net.minecraft.world.level.block.LightBlock.LEVEL, 15));
-            l.pon(x, f, zf + delante.getStepZ(), faros ? Blocks.END_ROD.defaultBlockState().setValue(net.minecraft.world.level.block.EndRodBlock.FACING, delante)
-                    : Blocks.BIRCH_BUTTON.defaultBlockState()
-                    .setValue(net.minecraft.world.level.block.ButtonBlock.FACE, net.minecraft.world.level.block.state.properties.AttachFace.WALL)
-                    .setValue(net.minecraft.world.level.block.ButtonBlock.FACING, delante));
-            l.pon(x, f, zt - delante.getStepZ(), Blocks.CRIMSON_BUTTON.defaultBlockState()
-                    .setValue(net.minecraft.world.level.block.ButtonBlock.FACE, net.minecraft.world.level.block.state.properties.AttachFace.WALL)
-                    .setValue(net.minecraft.world.level.block.ButtonBlock.FACING, delante.getOpposite()));
-        }
-        for (int z : new int[]{z0, z0 + 3}) {
-            BlockState rueda = Blocks.POLISHED_BLACKSTONE_BUTTON.defaultBlockState()
-                    .setValue(net.minecraft.world.level.block.ButtonBlock.FACE, net.minecraft.world.level.block.state.properties.AttachFace.WALL);
-            l.pon(x0 - 1, f, z, rueda.setValue(net.minecraft.world.level.block.ButtonBlock.FACING, Direction.WEST));
-            l.pon(x0 + 2, f, z, rueda.setValue(net.minecraft.world.level.block.ButtonBlock.FACING, Direction.EAST));
+        BlockState base = com.miscelanea.purgatorio.liminal.LiminalRegistro.COCHE.get().defaultBlockState()
+                .setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, delante)
+                .setValue(com.miscelanea.purgatorio.liminal.Bloques.COLOR8, color).setValue(com.miscelanea.purgatorio.liminal.Bloques.MODELO, modelo)
+                .setValue(com.miscelanea.purgatorio.liminal.Bloques.FAROS, faros);
+        // el morro izquierdo (visto desde el asiento): hacia el norte, el de x0; hacia el sur, el de x0 + 1
+        BlockPos ancla = haciaNorte ? new BlockPos(x0, f, z0) : new BlockPos(x0 + 1, f, z0 + 3);
+        for (int i = 0; i < 2; i++)
+            for (int k = 0; k < 4; k++) {
+                BlockPos q = com.miscelanea.purgatorio.liminal.Bloques.Coche.pieza(ancla, delante, i, k);
+                l.pon(q.getX(), f, q.getZ(), base.setValue(com.miscelanea.purgatorio.liminal.Bloques.PARTE8, i + 2 * k));
+                l.pon(q.getX(), f + 1, q.getZ(), AIRE);
+            }
+        if (faros) {
+            BlockState haz = com.miscelanea.purgatorio.liminal.LiminalRegistro.HAZ_FAROS.get().defaultBlockState()
+                    .setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, delante);
+            for (int i = 0; i < 2; i++)
+                for (int k = 0; k < 2; k++) {
+                    BlockPos q = com.miscelanea.purgatorio.liminal.Bloques.Coche.pieza(ancla, delante, i, -1 - k);
+                    if (l.libre(q.getX(), f, q.getZ())) l.pon(q.getX(), f, q.getZ(), haz.setValue(com.miscelanea.purgatorio.liminal.Bloques.PARTE4, i + 2 * k));
+                }
         }
     }
 
@@ -1453,6 +1600,7 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 // un rincón del pasillo: taquillas en fila y un banco
                 for (int x = qx + 1; x <= qx + 5; x++) taquillas(l, f, x, qz == 0 ? qz + 1 : qz + 5, qz == 0 ? Direction.SOUTH : Direction.NORTH);
                 for (int x = qx + 2; x <= qx + 4; x++) l.pon(x, f, qz == 0 ? qz + 4 : qz + 2, d(Blocks.OAK_SLAB));
+                if (hn(n, cx, cz, 215 + k) % 2 == 0) maquina(l, f, qx == 0 ? 6 : 9, qz + 3, qx == 0 ? Direction.EAST : Direction.WEST, hn(n, cx, cz, 216 + k));
             }
         }
         BlockState zoc = ModBlocks.PARED_COLEGIO_ZOCALO.get().defaultBlockState(), pared = ModBlocks.PARED_COLEGIO.get().defaultBlockState();
@@ -1495,15 +1643,16 @@ public class PurgatorioGenerador extends ChunkGenerator {
         }
         l.pon(x0 + 3, f + 3, zb + dz, ModBlocks.RELOJ_PARADO.get().defaultBlockState().setValue(RelojParadoBlock.FACING, norte ? Direction.SOUTH : Direction.NORTH));
         // pupitres (tablero sobre el suelo) con su silla detrás, mirando a la pizarra; pasillo en medio, hasta la puerta
-        BlockState mesa = Blocks.SPRUCE_TRAPDOOR.defaultBlockState().setValue(TrapDoorBlock.HALF, Half.TOP);
-        Direction respaldo = norte ? Direction.SOUTH : Direction.NORTH;
+        Direction mira = norte ? Direction.NORTH : Direction.SOUTH;
+        BlockState mesa = com.miscelanea.purgatorio.liminal.LiminalRegistro.PUPITRE.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, mira);
+        BlockState silla = com.miscelanea.purgatorio.liminal.LiminalRegistro.SILLA_COLEGIO.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, mira);
         for (int fila = 0; fila < 2; fila++) {
             int zm = zb + dz * (2 + fila * 2), zs = zm + dz;
             for (int x : new int[]{x0 + 1, x0 + 2, x0 + 4, x0 + 5}) {
-                l.pon(x, f, zm, mesa);
+                // en el aula raro, todas las sillas subidas encima de los pupitres menos una
                 boolean bajada = !rara || (fila == 1 && x == x0 + 2);
-                if (bajada) l.pon(x, f, zs, escalon(Blocks.OAK_STAIRS, respaldo));
-                else l.pon(x, f + 1, zm, escalon(Blocks.OAK_STAIRS, respaldo).setValue(StairBlock.HALF, Half.TOP));
+                l.pon(x, f, zm, mesa.setValue(com.miscelanea.purgatorio.liminal.Bloques.SUBIDA, !bajada));
+                if (bajada) l.pon(x, f, zs, silla);
             }
         }
         // la luz del aula: apagada (o, en la rara, encendida justo encima de la silla que queda)
@@ -1541,7 +1690,14 @@ public class PurgatorioGenerador extends ChunkGenerator {
                 for (int x = qx + 2; x <= qx + 4; x++) l.pon(x, f, z, escalon(Blocks.DARK_OAK_STAIRS, qz == 0 ? Direction.NORTH : Direction.SOUTH));
                 l.pon(qx + 1, f, z, d(Blocks.POTTED_FERN));
                 l.pon(qx + 5, f, z, d(Blocks.POTTED_AZALEA));
+                long r = hn(n, cx, cz, 225 + k);
+                // un carrito que alguien dejó tirado y, contra la pared, la máquina de refrescos
+                if (r % 2 == 0) l.pon(qx + 2 + (int) ((r >> 3) % 3), f, qz == 0 ? 2 : 13, com.miscelanea.purgatorio.liminal.LiminalRegistro.CARRITO.get().defaultBlockState()
+                        .setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, LADOS[(int) ((r >> 5) & 3)]).setValue(com.miscelanea.purgatorio.liminal.Bloques.GIRADO, ((r >> 7) & 1) == 0));
+                maquina(l, f, qx + 3, qz == 0 ? 0 : 15, qz == 0 ? Direction.SOUTH : Direction.NORTH, r);
             }
+            // y en el pasillo, de vez en cuando, el cartel de suelo mojado (no choca: no corta el paso)
+            if (hn(n, cx, cz, 226 + k) % 9 == 0) l.pon(k % 2 == 0 ? 7 : 8, f, qz == 0 ? 2 : 13, com.miscelanea.purgatorio.liminal.LiminalRegistro.SENAL_MOJADO.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, LADOS[k]));
         }
         for (Direction dd : LADOS) {
             int nx = cx + dd.getStepX(), nz = cz + dd.getStepZ();
@@ -1568,6 +1724,23 @@ public class PurgatorioGenerador extends ChunkGenerator {
             l.pon(x, f + 5, zf, pared);
         }
         for (int x = x0; x <= x0 + 6; x++) l.pon(x, f + 3, zf, ((NumeradoBlock) ModBlocks.ROTULO_TIENDA.get()).con(rara ? 1 : rotulo));
+        // un escaparate (una de cada cuatro): cristal, la luz de dentro encendida y maniquíes que te miran (cuando no miras)
+        if (!rara && hn(n, cx, cz, 235 + k) % 4 == 0) {
+            for (int x = x0 + 1; x <= x0 + 5; x++) {
+                l.pon(x, f, zf, d(Blocks.WHITE_CONCRETE));
+                for (int y = 1; y < 3; y++) l.pon(x, f + y, zf, unida(Blocks.GLASS_PANE, false, true));
+                for (int z = Math.min(zb, zf) + 1; z < Math.max(zb, zf); z++) l.pon(x, f - 1, z, d(Blocks.SMOOTH_QUARTZ));
+            }
+            l.pon(x0 + 3, f + 4, zf - 2 * dz, Blocks.LIGHT.defaultBlockState().setValue(net.minecraft.world.level.block.LightBlock.LEVEL, 10));
+            Direction afuera = norte ? Direction.SOUTH : Direction.NORTH;
+            long r = hn(n, cx, cz, 236 + k);
+            for (int i = 0; i < 3; i++) {
+                if (i == 1 && r % 3 == 0) continue;
+                l.ponBE(x0 + 1 + i * 2, f, zf - 2 * dz, com.miscelanea.purgatorio.liminal.LiminalRegistro.MANIQUI.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, afuera)
+                        .setValue(com.miscelanea.purgatorio.liminal.Bloques.POSE, (int) ((r >> (4 + 2 * i)) % 3)));
+            }
+            return;
+        }
         if (rara) {
             // la tienda de teles: dos filas de teles encendidas sin señal en el fondo, mirando a la persiana, y la luz
             for (int x = x0 + 1; x <= x0 + 5; x++) {
@@ -1580,26 +1753,28 @@ public class PurgatorioGenerador extends ChunkGenerator {
     }
 
     /**
-     * Una escalera mecánica parada que sube hasta el techo y no lleva a ningún sitio. Los lados van en rampa (cuarzo liso
-     * con su escalón arriba, como el faldón de verdad) y encima la barandilla de cristal: de lejos se ve una pieza
-     * inclinada y fina, no un montón de bloques escalonados.
+     * Una escalera mecánica que sube hasta el techo y no lleva a ningún sitio (y sigue en marcha, para nadie). Lo que se
+     * ve es el modelo de GeckoLib del pie (los peldaños suben sin parar, el cristal, el pasamanos); los peldaños de
+     * verdad son invisibles (para pisar) y debajo, macizo invisible.
      */
     private static void escaleraMecanicaANada(Lienzo l, int f, int qx, boolean norte) {
-        Direction sube = norte ? Direction.NORTH : Direction.SOUTH;
-        BlockState esc = ModBlocks.ESCALERA_MECANICA.get().defaultBlockState().setValue(StairBlock.FACING, sube);
-        BlockState lado = d(Blocks.SMOOTH_QUARTZ), rampa = escalon(Blocks.SMOOTH_QUARTZ_STAIRS, sube), cristal = unida(Blocks.GLASS_PANE, true, false);
-        for (int i = 0; i < 6; i++) {
-            int z = norte ? 5 - i : 10 + i;
-            for (int x = qx + 2; x <= qx + 3; x++) {
-                for (int y = 0; y < i; y++) l.pon(x, f + y, z, d(Blocks.BLACK_CONCRETE));
-                l.pon(x, f + i, z, esc);
+        escaleraMecanica(l, f, norte ? qx + 2 : qx + 3, norte ? 5 : 10, norte ? Direction.NORTH : Direction.SOUTH, false);
+    }
+
+    /** Una escalera mecánica de seis peldaños (de bloque) con el pie en (x, z), que sube hacia "sube"; rellano = acaba en un piso. */
+    static void escaleraMecanica(Lienzo l, int f, int x, int z, Direction sube, boolean rellano) {
+        Direction otro = sube.getClockWise();
+        BlockState esc = com.miscelanea.purgatorio.liminal.LiminalRegistro.ESCALON.get().defaultBlockState().setValue(StairBlock.FACING, sube), oc = com.miscelanea.purgatorio.liminal.LiminalRegistro.OCULTO.get().defaultBlockState();
+        for (int i = 0; i < 6; i++)
+            for (int j = 0; j < 2; j++) {
+                int xx = x + sube.getStepX() * i + otro.getStepX() * j, zz = z + sube.getStepZ() * i + otro.getStepZ() * j;
+                for (int y = 0; y < i; y++) l.pon(xx, f + y, zz, oc);
+                if (i == 0 && j == 0)
+                    l.ponBE(xx, f, zz, com.miscelanea.purgatorio.liminal.LiminalRegistro.MOTOR.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, sube).setValue(com.miscelanea.purgatorio.liminal.Bloques.RELLANO, rellano));
+                else l.pon(xx, f + i, zz, esc);
+                // lo de encima del peldaño, libre (lo que hubiera)
+                for (int y = i + 1; y <= i + 2; y++) if (y < 6 || rellano) l.cambiar(xx, f + y, zz, AIRE);
             }
-            for (int x : new int[]{qx + 1, qx + 4}) {
-                for (int y = 0; y < i; y++) l.pon(x, f + y, z, lado);
-                l.pon(x, f + i, z, rampa);
-                if (i < 5) l.pon(x, f + i + 1, z, cristal);
-            }
-        }
     }
 
     // ------------------------------------------------------------------ salas grandes de las zonas nuevas
@@ -1621,19 +1796,30 @@ public class PurgatorioGenerador extends ChunkGenerator {
             for (int z = pz0 - 1; z <= pz1 + 1; z++) {
                 boolean dentro = x >= px0 && x <= px1 && z >= pz0 && z <= pz1;
                 if (dentro) {
-                    for (int y = 1; y <= 3; y++) l.pon(x, f - y, z, AIRE);
+                    // llena hasta el borde (la de las Poolrooms)
+                    for (int y = 1; y <= 3; y++) l.pon(x, f - y, z, d(Blocks.WATER));
                     l.pon(x, f - 4, z, (z - pz0) % 4 == 2 && x > px0 + 1 && x < px1 - 1 ? raya : azul);
-                    if (x > px1 - 12 && h(g.x0() + x, g.z0() + z, 610) % 7 != 0) l.pon(x, f - 3, z, ModBlocks.AGUA_POCA.get().defaultBlockState());
                 } else {
                     l.pon(x, f - 1, z, borde);
-                    l.pon(x, f - 2, z, azul);
+                    boolean foco = (x == px0 - 1 || x == px1 + 1) ? (z - pz0) % 6 == 3 : (z == pz0 - 1 || z == pz1 + 1) && (x - px0) % 6 == 3;
+                    l.pon(x, f - 2, z, foco ? com.miscelanea.purgatorio.liminal.LiminalRegistro.LUZ_PISCINA.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING,
+                            x == px0 - 1 ? Direction.EAST : x == px1 + 1 ? Direction.WEST : z == pz0 - 1 ? Direction.SOUTH : Direction.NORTH) : azul);
                     l.pon(x, f - 3, z, azul);
                 }
             }
         // escalerillas en las cuatro esquinas
         for (int[] e : new int[][]{{px0 + 1, pz0, 0}, {px1 - 1, pz0, 0}, {px0 + 1, pz1, 1}, {px1 - 1, pz1, 1}})
             for (int y = 1; y <= 3; y++)
-                l.pon(e[0], f - y, e[1], Blocks.LADDER.defaultBlockState().setValue(net.minecraft.world.level.block.LadderBlock.FACING, e[2] == 0 ? Direction.SOUTH : Direction.NORTH));
+                l.pon(e[0], f - y, e[1], com.miscelanea.purgatorio.liminal.LiminalRegistro.ESCALERILLA.get().defaultBlockState().setValue(net.minecraft.world.level.block.LadderBlock.FACING, e[2] == 0 ? Direction.SOUTH : Direction.NORTH)
+                        .setValue(net.minecraft.world.level.block.LadderBlock.WATERLOGGED, true).setValue(com.miscelanea.purgatorio.liminal.Bloques.ARRIBA, y == 1));
+        // flotadores a la deriva
+        for (int i = 0; i < 3; i++) {
+            long r = h(g.x0() + i, g.z0(), 611);
+            l.ponBE(px0 + 4 + (int) (r % (px1 - px0 - 8)), f - 1, pz0 + 2 + (int) ((r >> 8) % (pz1 - pz0 - 4)), com.miscelanea.purgatorio.liminal.LiminalRegistro.FLOTADOR.get().defaultBlockState());
+        }
+        // la silla del socorrista al lado de la parte honda
+        BlockState so = com.miscelanea.purgatorio.liminal.LiminalRegistro.SOCORRISTA.get().defaultBlockState().setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, Direction.NORTH);
+        for (int y = 0; y < 3; y++) l.pon(px1 - 6, f + y, pz1 + 2, so.setValue(com.miscelanea.purgatorio.liminal.Bloques.PARTE3, y));
         // poyetes de salida al oeste, uno por calle
         for (int z = pz0 + 2; z <= pz1 - 1; z += 4) {
             l.pon(px0 - 1, f, z, d(Blocks.SMOOTH_QUARTZ));
@@ -1748,20 +1934,10 @@ public class PurgatorioGenerador extends ChunkGenerator {
         }
         // las dos escaleras mecánicas paradas, de la planta a la entreplanta (6 escalones, hacia el norte)
         for (int ex : new int[]{14, 32}) {
-            for (int i = 0; i < 6; i++) {
-                int z = 17 - i;
-                for (int x = ex; x <= ex + 1; x++) {
-                    for (int y = 0; y < i; y++) l.pon(x, f + y, z, d(Blocks.BLACK_CONCRETE));
-                    l.pon(x, f + i, z, ModBlocks.ESCALERA_MECANICA.get().defaultBlockState().setValue(StairBlock.FACING, Direction.NORTH));
-                }
-                for (int x : new int[]{ex - 1, ex + 2}) {
-                    for (int y = 0; y <= i; y++) l.pon(x, f + y, z, d(Blocks.LIGHT_GRAY_CONCRETE));
-                    l.pon(x, f + i + 1, z, d(Blocks.BLACK_CONCRETE));
-                }
-            }
+            // en marcha (GeckoLib): el pie lleva el modelo entero
+            escaleraMecanica(l, f, ex, 17, Direction.NORTH, true);
             // el hueco de la barandilla donde llega
-            l.pon(ex, f + 6, 11, AIRE);
-            l.pon(ex + 1, f + 6, 11, AIRE);
+            for (int x = ex - 1; x <= ex + 2; x++) l.pon(x, f + 6, 11, AIRE);
         }
         // la fuente seca: el pilón redondo, el fondo con monedas y el surtidor de tres pisos
         int fx = W / 2, fz = D / 2 + 4;
