@@ -1185,6 +1185,9 @@ public final class PruebaCI {
         irA(desde, yaw, pitch);
     }
 
+    /** Dónde estaba antes de las pruebas del Purgatorio (al acabar se le devuelve ahí: lo de después se monta a su alrededor). */
+    private static volatile Vec3 antesPurgatorio;
+
     private static void purgatorio() {
         Minecraft mc = Minecraft.getInstance();
         sin("purgatorio_entrar", 60, () -> {
@@ -1197,6 +1200,7 @@ public final class PruebaCI {
                 if (sp.isPassenger()) com.miscelanea.montana.MontanaEventos.bajarSiOSi(sp);
                 sp.getInventory().setItem(0, ItemStack.EMPTY);
                 if (srv.getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION) == null) RESUMEN.add("  FALLO: no existe la dimensión del Purgatorio");
+                antesPurgatorio = sp.position();
                 com.miscelanea.purgatorio.Purgatorio.entrar(sp, "purgatorio.miscelanea.vacio");
             });
         });
@@ -1528,7 +1532,11 @@ public final class PruebaCI {
             mc.player.setXRot(0);
         });
         // jugador fantasma: uno quieto a 11 bloques (foto con su nombre), luego se le mira fijamente y se va
-        sin("pex_fantasma_ir", 40, () -> irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.SALA), 0, 0));
+        sin("pex_fantasma_ir", 40, () -> {
+            com.miscelanea.client.purgatorio.ExtrasCliente.sinSorpresas = true;
+            com.miscelanea.client.purgatorio.ExtrasCliente.quitarTodos();
+        });
+        sin("pex_fantasma_ir_2", 40, () -> irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.SALA), 0, 0));
         Vec3[] fan = new Vec3[1];
         sin("pex_fantasma_sale", 20, () -> {
             var l = mc.level;
@@ -1580,6 +1588,7 @@ public final class PruebaCI {
         sin("pex_fantasma_acercarse_fin", 2, () -> {
             int n = com.miscelanea.client.purgatorio.ExtrasCliente.fantasmas();
             RESUMEN.add("  purgatorio, fantasma al acercarse: quedan " + n);
+            com.miscelanea.client.purgatorio.ExtrasCliente.sinSorpresas = false;
             if (n != 0) throw new IllegalStateException("el fantasma no se ha ido al acercarse");
         });
         // pegarle a Herobrine (logro y, esta vez sí o sí, se le cae algo)
@@ -1697,6 +1706,9 @@ public final class PruebaCI {
             RESUMEN.add("  purgatorio, brújula fuera: " + (com.miscelanea.purgatorio.eventos.BrujulaSalidaItem.objetivo(b) == null ? "da vueltas" : "SIGUE APUNTANDO"));
             enServidor(sp -> {
                 for (int i = 0; i < 9; i++) sp.getInventory().setItem(i, ItemStack.EMPTY);
+                // de vuelta a donde estaba antes del Purgatorio (al salir tras caerse se puede acabar en otro sitio, sin cargar)
+                if (antesPurgatorio != null && !com.miscelanea.purgatorio.Purgatorio.en(sp.level()))
+                    sp.teleportTo(sp.serverLevel(), antesPurgatorio.x, antesPurgatorio.y, antesPurgatorio.z, sp.getYRot(), 0);
             });
         });
     }

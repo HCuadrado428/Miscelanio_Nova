@@ -98,6 +98,8 @@ public final class ExtrasCliente {
 
     // ------------------------------------------------------------------ estado
     private static int edad, proxChat = 1600, proxSonido = 900, proxFantasma = 500;
+    /** Para la prueba: que no salga ningún fantasma por su cuenta (se pisaría con los que saca ella). */
+    public static volatile boolean sinSorpresas;
     private static int siguienteId;
     private static int chats, sonidos, fantasmasVistos, fantasmasSalidos;
     private static Object nivel;
@@ -152,7 +154,7 @@ public final class ExtrasCliente {
         }
         if (--proxFantasma <= 0) {
             proxFantasma = 900 + r.nextInt(1500);
-            if (FANTASMAS.isEmpty() || (FANTASMAS.size() < 2 && r.nextInt(4) == 0)) aparecer(mc, r, null, null, false);
+            if (!sinSorpresas && (FANTASMAS.isEmpty() || (FANTASMAS.size() < 2 && r.nextInt(4) == 0))) aparecer(mc, r, null, null, false);
         }
         for (int i = FANTASMAS.size() - 1; i >= 0; i--)
             if (!FANTASMAS.get(i).tick(mc, r)) quitar(mc, FANTASMAS.remove(i));
@@ -488,6 +490,13 @@ public final class ExtrasCliente {
         FANTASMAS.add(f);
         fantasmasSalidos++;
         return true;
+    }
+
+    /** Para la prueba: fuera todos los fantasmas que haya (sin avisos ni logros). */
+    public static void quitarTodos() {
+        Minecraft mc = Minecraft.getInstance();
+        for (Fantasma f : FANTASMAS) quitar(mc, f);
+        FANTASMAS.clear();
     }
 
     /** Para la prueba: los fantasmas fijos ya se pueden ir (y dónde está el primero, o null). */
