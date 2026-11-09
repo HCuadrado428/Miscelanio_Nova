@@ -111,6 +111,7 @@ public class BengalaEntity extends Projectile {
         int suelo = l.getHeight(Heightmap.Types.MOTION_BLOCKING, aqui.getX(), aqui.getZ());
         if (suelo <= aqui.getY() && aqui.getY() - suelo < 40) {
             BlockPos abajo = new BlockPos(aqui.getX(), suelo, aqui.getZ());
+            if (!l.getBlockState(abajo).isAir() && !l.getBlockState(abajo).is(net.minecraft.world.level.block.Blocks.LIGHT)) abajo = abajo.above();   // hierba, flores...
             if (!abajo.equals(aqui)) LucesTemporales.poner(l, abajo, nivel, 12);
             if (senalero() && vida % 20 == 0) brillar(l, Vec3.atCenterOf(abajo), aqui);
         } else if (senalero() && vida % 20 == 0) {
@@ -121,7 +122,7 @@ public class BengalaEntity extends Projectile {
     /** Señalero: los que están en la luz brillan (se ven a través de las paredes). */
     private void brillar(ServerLevel l, Vec3 suelo, BlockPos aqui) {
         AABB caja = new AABB(suelo, suelo).inflate(12, 4, 12).minmax(new AABB(aqui).inflate(8));
-        for (LivingEntity e : l.getEntitiesOfClass(LivingEntity.class, caja, e -> e.isAlive() && !e.isSpectator()))
+        for (LivingEntity e : l.getEntitiesOfClass(LivingEntity.class, caja, e -> e.isAlive() && !e.isSpectator() && e != getOwner()))
             e.addEffect(new MobEffectInstance(MobEffects.GLOWING, 50, 0, false, false));
     }
 

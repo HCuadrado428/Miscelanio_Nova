@@ -52,6 +52,7 @@ public final class LucesTemporales extends SavedData {
                 d.setDirty();
                 return;
             }
+            if (st.getValue(LightBlock.LEVEL) != nivel) l.setBlock(pos, st.setValue(LightBlock.LEVEL, nivel), 3);
         } else {
             if (!st.isAir()) return;
             l.setBlock(pos, Blocks.LIGHT.defaultBlockState().setValue(LightBlock.LEVEL, nivel), 3);

@@ -130,7 +130,7 @@ public final class Revolver {
         Vec3 dir = mira.add(r.nextGaussian() * disp, r.nextGaussian() * disp, r.nextGaussian() * disp).normalize();
 
         // fogonazo, humo y ruido (los sensores de sculk y el warden lo oyen)
-        fogonazo(l, boca, c == Carga.FOGUEO);
+        fogonazo(l, boca, p.getViewVector(1.0F), c == Carga.FOGUEO);
         if (c == Carga.FOGUEO) {
             l.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.REVOLVER_FOGUEO.get(), SoundSource.PLAYERS, 6.0F, 0.95F + r.nextFloat() * 0.1F);
             l.gameEvent(p, GameEvent.EXPLODE, boca);
@@ -365,11 +365,16 @@ public final class Revolver {
         return ojo.add(mira.scale(0.8)).add(der.scale(0.3)).add(0, -0.22, 0);
     }
 
-    private static void fogonazo(ServerLevel l, Vec3 b, boolean grande) {
-        l.sendParticles(ParticleTypes.FLASH, b.x, b.y, b.z, 1, 0, 0, 0, 0);
-        l.sendParticles(ParticleTypes.SMOKE, b.x, b.y, b.z, grande ? 10 : 4, 0.06, 0.06, 0.06, 0.02);
-        l.sendParticles(ParticleTypes.FLAME, b.x, b.y, b.z, grande ? 6 : 2, 0.03, 0.03, 0.03, 0.04);
-        if (grande) l.sendParticles(ParticleTypes.LARGE_SMOKE, b.x, b.y, b.z, 6, 0.15, 0.15, 0.15, 0.03);
+    private static void fogonazo(ServerLevel l, Vec3 b, Vec3 mira, boolean grande) {
+        // un poco por delante de la boca: pegado a la cámara tapaba toda la pantalla
+        Vec3 q = b.add(mira.scale(0.7));
+        l.sendParticles(ParticleTypes.FLASH, q.x, q.y, q.z, 1, 0, 0, 0, 0);
+        l.sendParticles(ParticleTypes.SMOKE, q.x, q.y, q.z, grande ? 5 : 2, 0.04, 0.04, 0.04, 0.01);
+        if (grande) {
+            l.sendParticles(ParticleTypes.FLAME, q.x, q.y, q.z, 2, 0.03, 0.03, 0.03, 0.02);
+            Vec3 h = b.add(mira.scale(1.6));
+            l.sendParticles(ParticleTypes.LARGE_SMOKE, h.x, h.y, h.z, 3, 0.15, 0.15, 0.15, 0.01);
+        }
     }
 
     private static void estela(ServerLevel l, Vec3 a, Vec3 b) {

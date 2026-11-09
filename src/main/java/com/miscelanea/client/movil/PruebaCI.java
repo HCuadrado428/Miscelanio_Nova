@@ -911,7 +911,8 @@ public final class PruebaCI {
         sin("pistola_lejos_poner", 20, () -> {
             var bs = mc.level.getEntitiesOfClass(com.miscelanea.armasfuego.pistola.BengalaEntity.class, mc.player.getBoundingBox().inflate(48));
             Vec3 obj = bs.isEmpty() ? piPunto(10, 0, 12) : bs.get(0).position();
-            Vec3 pos = piPunto(-40, -12, 8);
+            Vec3 pos = piPunto(-36, -10, 34);
+            mc.options.hideGui = true;
             Vec3 d = obj.subtract(pos);
             float yRot = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
             float xRot = (float) Math.toDegrees(-Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
@@ -923,6 +924,7 @@ public final class PruebaCI {
         paso("107_bengala_lejos", 10, () -> {});
         sin("pistola_lejos_quitar", 6, () -> {
             mc.setCameraEntity(mc.player);
+            mc.options.hideGui = false;
             piApuntar(piPunto(6, 0, 1.3));
         });
         // ---- dardo de sedante
@@ -975,23 +977,28 @@ public final class PruebaCI {
             piApuntar(piPunto(9.6, -2, 0.05));
         });
         paso("110_iman", 6, piTiro());
-        sin("pistola_iman_espera", 50, () -> piSrv(sp -> {
+        sin("pistola_iman_espera", 50, () -> {});
+        sin("pistola_iman_ver", 4, () -> piSrv(sp -> {
             int oro = 0;
             for (ItemStack x : sp.getInventory().items) if (x.is(net.minecraft.world.item.Items.GOLD_INGOT) || x.is(net.minecraft.world.item.Items.EMERALD)) oro += x.getCount();
             PI.put("iman", oro);
         }));
         sin("pistola_iman_comprobar", 4, () -> {
-            piComprobar("bala imán: lo tirado viene volando hacia ti", (Integer) PI.getOrDefault("iman", 0) >= 4, PI.get("iman") + " objetos recogidos de 6");
             mc.player.setXRot(88);
             mc.player.xRotO = 88;
-            piSrv(sp -> PI.put("vida_sien", sp.getHealth()));
+            piSrv(sp -> {
+                sp.removeAllEffects();
+                sp.setHealth(sp.getMaxHealth());
+                PI.put("vida_sien", sp.getHealth());
+            });
+            piComprobar("bala imán: lo tirado viene volando hacia ti", (Integer) PI.getOrDefault("iman", 0) >= 4, PI.get("iman") + " objetos recogidos de 6");
         });
         // ---- ruleta rusa a la sien con fogueo
         paso("111_ruleta_sien", 4, piTiro());
         sin("pistola_sien_ver", 6, () -> piSrv(sp -> PI.put("sien", sp.isAlive() && sp.getHealth() >= (Float) PI.getOrDefault("vida_sien", 20F)
                 && sp.hasEffect(net.minecraft.world.effect.MobEffects.CONFUSION))));
         sin("pistola_sien_comprobar", 4, () -> {
-            piComprobar("ruleta a la sien con fogueo (vivo, mareado)", Boolean.TRUE.equals(PI.get("sien")), String.valueOf(PI.get("sien")));
+            boolean sien = Boolean.TRUE.equals(PI.get("sien"));
             piSrv(sp -> {
                 sp.removeAllEffects();
                 for (int i = 1; i <= 3; i++) sp.getInventory().setItem(i, piRevolver(i));
@@ -999,6 +1006,7 @@ public final class PruebaCI {
                 sp.getServer().overworld().setDayTime(6000);
             });
             piApuntar(piPunto(8, 2, 1.0));
+            piComprobar("ruleta a la sien con fogueo (vivo, mareado)", sien, String.valueOf(PI.get("sien")));
         });
         paso("112_oxidado", 10, () -> {});
         // ---- encerar con panal y rascar con hacha (en la otra mano, agachado + clic derecho)
