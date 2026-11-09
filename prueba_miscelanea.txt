@@ -1,0 +1,216 @@
+Prueba del móvil (Miscelánea)
+OK    preparar
+OK    00_mundo
+OK    01_inicio
+OK    02_camara
+OK    03_filtro_1
+OK    03_filtro_2
+OK    03_filtro_3
+OK    03_filtro_4
+OK    03_filtro_5
+OK    03_filtro_6
+OK    03_filtro_7
+OK    03_filtro_8
+OK    03_foto_gameboy
+OK    04_zoom
+OK    05_horizontal
+OK    vuelve_vertical
+OK    06_foto
+OK    espera_foto
+OK    07_temporizador
+OK    espera_temporizador
+OK    temporizador_fuera
+OK    08_flash
+OK    espera_flash
+OK    09_grabando
+OK    para_video
+OK    10_galeria
+  galería: 5 (la última es un vídeo de 3125 ms)
+OK    11_visor
+OK    12_llamada_grupo
+OK    13_llamada
+OK    14_entrante
+OK    15_manos_libres
+OK    16_teclado
+OK    17_ajustes
+OK    gramola_poner
+OK    20_gramola_menu
+OK    21_videoclip_hotel_inicio
+OK    22_videoclip_hotel_8s
+OK    23_videoclip_hotel_20s
+OK    24_tras_salir
+OK    gramola_otra
+OK    25_videoclip_disco
+OK    26_tras_salir_disco
+  pociones: red_mushroom=gigante brown_mushroom=enano echo_shard=ecolocalizacion ink_sac=niebla_viviente amethyst_shard=espejismo feather=helio snowball=ventilador wheat=borrachera cocoa_beans=tartamudeo
+OK    pociones
+OK    recorte_niveles
+  recorte: espada {net.minecraft.world.item.enchantment.DamageEnchantment@228f9324=5, net.minecraft.world.item.enchantment.DigDurabilityEnchantment@48701723=3, net.minecraft.world.item.enchantment.MendingEnchantment@49328c70=1} · peto {net.minecraft.world.item.enchantment.ProtectionEnchantment@4a979ec=4, net.minecraft.world.item.enchantment.ThornsEnchantment@6b967664=3} · libro {net.minecraft.world.item.enchantment.ProtectionEnchantment@4a979ec=4} · xp +200 · espada con durabilidad: true
+OK    perfil_vacio
+  rendimiento sin_sala: 7.1 fps · 86.6 ms/fotograma · bloques-entidad 0.61 ms · pantalla 0.00 ms (76 fotogramas)
+OK    perfil_sala
+  rendimiento: sala con 32 de 35 cosas
+  rendimiento colocar: 3.7 fps · 155.8 ms/fotograma · bloques-entidad 53.46 ms · pantalla 0.00 ms (4 fotogramas)
+OK    perfil_mirar
+  rendimiento sala: 15.1 fps · 56.1 ms/fotograma · bloques-entidad 5.54 ms · pantalla 0.00 ms (227 fotogramas)
+  rendimiento: 5 máquinas con partida retransmitida
+OK    perfil_jugar
+OK    70_perfil_mazmorra
+  rendimiento mazmorra: 17.1 fps · 49.0 ms/fotograma · bloques-entidad 3.89 ms · pantalla 1.69 ms (265 fotogramas)
+OK    perfil_turbo
+OK    71_perfil_turbo
+  rendimiento turbo: 18.1 fps · 46.4 ms/fotograma · bloques-entidad 3.68 ms · pantalla 0.91 ms (278 fotogramas)
+  perfil sin_sala (228 muestras, 38% en nativo): PocionesEventos.tickVivo 1.8% MapaCache.tick 1.3% MovilCliente.tick 1.3% AparatosCliente.hud 0.9% CastigoCliente.tick 0.9% TirolinaCliente.tick 0.9% FutbolinCliente.tick 0.4% EstaticaCliente.tick 0.4% MapaCache.altura 0.4% AparatosCliente.miradoPrincipal 0.4% Tamanos.pasos 0.4% Tamanos.pasosPorEfectos 0.4%
+  perfil colocar (38 muestras, 15% en nativo): ArcadeCliente.tick 5.3% CartelRecordsRenderer.textoIzq 2.6% FlotaBotones.de 2.6% PantallaTextura.subir 2.6% CartelRecordsRenderer.texto 2.6% PantallaTextura.<init> 2.6% FlotaRenderer.m_6922_ 2.6% GlitchPantalla.hud 2.6% DominoGeo.cadena 2.6% MapaCache.tick 2.6% PantallaTextura.actualizar 2.6% PocionesEventos.tickVivo 2.6%
+  perfil sala (274 muestras, 60% en nativo): RecreativaRenderer.m_6922_ 8.0% RecreativaRenderer.render 8.0% PantallaTextura.subir 6.6% PantallaTextura.actualizar 6.6% CartelRecordsRenderer.m_6922_ 2.9% CartelRecordsRenderer.render 2.9% CartelRecordsRenderer.tablon 2.2% FutbolinRenderer.m_6922_ 1.1% FutbolinRenderer.render 1.1% BoleraRenderer.render 0.7% FeriaPiezas.modelo 0.7% BoleraRenderer.m_6922_ 0.7%
+  perfil mazmorra (282 muestras, 63% en nativo): ArcadeScreen.m_88315_ 3.5% RecreativaRenderer.m_6922_ 3.2% RecreativaRenderer.render 3.2% PantallaTextura.subir 2.5% FutbolinRenderer.m_6922_ 2.5% FutbolinRenderer.render 2.5% PantallaTextura.actualizar 2.5% Mazmorra3D.dibujar 2.1% ArcadeScreen.pantalla 2.1% CartelRecordsRenderer.m_6922_ 2.1% CartelRecordsRenderer.render 2.1% BoleraRenderer.render 1.8%
+  perfil turbo (273 muestras, 65% en nativo): RecreativaRenderer.m_6922_ 5.1% RecreativaRenderer.render 5.1% PantallaTextura.subir 4.0% PantallaTextura.actualizar 4.0% CartelRecordsRenderer.m_6922_ 1.8% CartelRecordsRenderer.render 1.8% FutbolinRenderer.m_6922_ 1.5% FutbolinRenderer.render 1.5% ArcadeScreen.m_88315_ 1.5% CartelRecordsRenderer.tablon 1.5% FeriaPiezas.modelo 1.1% BoleraRenderer.render 0.7%
+OK    perfil_fin
+OK    72_perfil_sala
+OK    laser_poner
+OK    laser_encender
+OK    80_laser_primera
+OK    laser_primera_quitar_hud
+  láser laser_primera: el punto sale a (-0.9, -0.6) px de la mira (36 píxeles rojos, imagen 854x480) · calculado (-0.2, -0.1) px, a 0.007 bloques de donde mira y a 0.025 del que ven los demás
+OK    laser_primera_medir
+OK    laser_fov
+OK    81_laser_fov105
+OK    laser_fov105_quitar_hud
+  láser laser_fov105: el punto sale a (-0.7, -0.5) px de la mira (13 píxeles rojos, imagen 854x480) · calculado (-0.2, -0.1) px, a 0.011 bloques de donde mira y a 0.012 del que ven los demás
+OK    laser_fov105_medir
+OK    laser_gigante
+  láser: de gigante, ojos a 4.86 bloques del suelo
+OK    82_laser_gigante
+OK    laser_gigante_quitar_hud
+  láser laser_gigante: el punto sale a (-0.5, -0.4) px de la mira (28 píxeles rojos, imagen 854x480) · calculado (+0.1, +0.1) px, a 0.005 bloques de donde mira y a 0.020 del que ven los demás
+OK    laser_gigante_medir
+OK    laser_normal
+OK    laser_fuera_poner
+OK    83_laser_desde_fuera
+OK    laser_desde_fuera_quitar_hud
+  láser laser_desde_fuera: el punto sale a (-1.7, -0.4) px de donde mira (37 píxeles rojos, imagen 854x480) · calculado (-0.8, +0.0) px, a 0.024 bloques de donde mira y a 0.006 del que ven los demás
+OK    laser_desde_fuera_medir
+OK    laser_fuera_quitar
+OK    84_laser_tercera
+OK    laser_fin
+OK    eco_poner
+OK    eco_hablador
+OK    eco_ruido
+OK    90_eco_activo
+  eco activo: niebla hasta 0.02 bloques · ondas 7, bloques 621, entidades 2, fallos al dibujar 0 · imagen: 72% negra, luz media 26, 12533 px azulados, 28 px muy claros · hablo (solo ruido del micro): no
+OK    eco_medir
+OK    91_eco_tercera
+OK    eco_mirar_cielo
+OK    92_eco_cielo
+  eco mirando arriba (a mediodía): imagen: 83% negra, luz media 10, 375 px azulados, 28 px muy claros
+OK    eco_medir_cielo
+OK    eco_andar
+OK    94_eco_andando
+  eco andando: ondas de mis pasos 3, de los pasos del otro 3 · ondas 9, bloques 869, entidades 2, fallos al dibujar 0
+OK    eco_medir_pasos
+OK    eco_quitar
+OK    93_eco_quitado
+  eco quitado: niebla hasta 192.0 bloques · ondas 0, bloques 0, entidades 0, fallos al dibujar 0 · imagen: 3% negra, luz media 139, 29419 px azulados, 280 px muy claros
+OK    eco_comprobar
+OK    eco_fin
+OK    pistola_preparar
+OK    pistola_mirar
+OK    100_revolver_mano
+OK    pistola_agachar
+OK    pistola_cargar_0
+OK    pistola_cargar_1
+OK    pistola_mano_2
+OK    pistola_cargar_2
+OK    pistola_mano_3
+OK    pistola_cargar_3
+OK    pistola_mano_4
+OK    pistola_cargar_4
+OK    pistola_cargado
+  pistola: cargar 5 recámaras agachado (bala, bala, bengala, dardo, fogueo, vacía): [1, 1, 2, 3, 4, 0]
+OK    101_tambor_cargado
+OK    pistola_girar
+  pistola: girar el tambor (agachado + clic izquierdo): girado true, hace 4 ticks
+OK    102_ruleta_girando
+OK    pistola_ruleta_fin
+OK    pistola_enfunda
+OK    pistola_desenfunda
+OK    103_bala_desenfunde
+OK    pistola_bala_ver
+  pistola: bala con Desenfunde (crítico) al husk: le queda 7.916599 de 20
+OK    pistola_bala_comprobar
+OK    pistola_carambola_traza
+OK    104_carambola
+OK    pistola_carambola_ver
+  pistola: Carambola: rebota en la pared de cobre y da al husk: 1 rebote(s), da a husk; le queda 13.095201 de 20
+OK    pistola_carambola_comprobar
+OK    105_bengala_sale
+OK    pistola_bengala_sube
+OK    pistola_bengala_ver
+  pistola: bengala: sube, ilumina (bloques de luz) y con Señalero el husk brilla: 1 bengala(s) a 11.4 bloques de altura, 2 bloque(s) de luz, 2 apuntadas, husk brilla: true
+OK    106_bengala_noche
+OK    pistola_lejos_poner
+OK    107_bengala_lejos
+OK    pistola_lejos_quitar
+OK    108_dardo
+OK    pistola_dardo_ver
+  pistola: dardo de sedante (lentitud): true
+OK    pistola_dardo_comprobar
+OK    109_fogueo
+OK    pistola_fogueo_espera
+OK    pistola_fogueo_ver
+  pistola: fogueo: las vacas huyen: distancia total de las vacas 28.4 → 30.9
+FALLO pistola_fogueo_comprobar: java.lang.IllegalStateException: fogueo: las vacas huyen (distancia total de las vacas 28.4 → 30.9)
+OK    pistola_vacia
+OK    pistola_iman_poner
+  pistola: la recámara vacía hace clic y el tambor vuelve a la primera: [0, 0, 0, 0, 0, 0] pos 0
+OK    pistola_iman_apuntar
+OK    110_iman
+OK    pistola_iman_espera
+OK    pistola_iman_ver
+  pistola: bala imán: lo tirado viene volando hacia ti: 0 objetos recogidos de 6
+FALLO pistola_iman_comprobar: java.lang.IllegalStateException: bala imán: lo tirado viene volando hacia ti (0 objetos recogidos de 6)
+OK    111_ruleta_sien
+OK    pistola_sien_ver
+  pistola: ruleta a la sien con fogueo (vivo, mareado): true
+OK    pistola_sien_comprobar
+OK    112_oxidado
+OK    pistola_panal
+OK    pistola_agachar2
+OK    pistola_encerar
+OK    pistola_encerado
+OK    pistola_rascar1
+OK    pistola_rascar2
+OK    pistola_rascado
+  pistola: panal: encera: true
+  pistola: hacha: quita la cera y luego un paso de óxido: encerado false, óxido 2
+OK    pistola_cera_comprobar
+OK    113_tercera_frente
+OK    114_tercera_espalda
+  pistola: mesa de encantar: solo los suyos, Abanico y Desenfunde incompatibles, no valen para una espada: [revolver_abanico 1, revolver_carambola 1, revolver_carambola 2, revolver_desenfunde 1, revolver_senalero 1], incompatibles true, espada false
+OK    pistola_mesa
+OK    pistola_agachar3
+OK    pistola_abanico
+OK    115_abanico
+OK    pistola_abanico_ver
+  pistola: Abanico: vacía el tambor de golpe: 0 balas quedan
+OK    pistola_abanico_comprobar
+OK    pistola_duelo_poner
+OK    116_duelo_reto
+OK    pistola_duelo_acepta
+  pistola: duelo: acepta el reto: true
+OK    117_duelo_cuenta
+OK    pistola_duelo_antes
+OK    pistola_duelo_antes_ver
+  pistola: duelo: antes del ¡YA! no dispara: true
+OK    pistola_duelo_espera
+OK    118_duelo_ya
+OK    pistola_duelo_tiro
+  pistola: duelo: gana el primero que da: Offline
+OK    119_duelo_gana
+OK    pistola_apagar
+OK    pistola_luces_ver
+  pistola: la luz de la bengala se quita al apagarse: 0 en el mundo, 0 apuntadas
+OK    pistola_fin
+  cara propia (la de su modelo) guardada: sí
+OK    cerrar
+2 PASOS FALLARON
