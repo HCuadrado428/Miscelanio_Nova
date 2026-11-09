@@ -449,11 +449,11 @@ public final class Mordiscos {
         enviar(m, MordiscoPacket.Tipo.MORDISCO);
     }
 
-    /** Mantiene a la víctima delante de quien muerde, cara a cara. */
     private static int dur(int ticks, float f) {
         return Math.max(20, Math.round(ticks * f));
     }
 
+    /** Mantiene a la víctima delante de quien muerde, cara a cara. */
     private static void sujetar(Mordisco m) {
         LivingEntity p = m.mordedor, v = m.victima;
         float yawP = p instanceof Player ? p.getYRot() : p.yBodyRot;

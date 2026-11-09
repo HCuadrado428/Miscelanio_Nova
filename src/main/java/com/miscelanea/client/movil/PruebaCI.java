@@ -702,6 +702,18 @@ public final class PruebaCI {
         });
     }
 
+    /** Pone a la víctima delante, a un paso (como quien la agarra con el clic), y empieza a morder. */
+    private static void dMorder(ServerPlayer sp, UUID u) {
+        var v = dEnte(sp, u);
+        if (v == null) {
+            dOk = false;
+            return;
+        }
+        var f = net.minecraft.world.phys.Vec3.directionFromRotation(0, sp.getYRot()).scale(1.3);
+        v.teleportTo(sp.getX() + f.x, sp.getY(), sp.getZ() + f.z);
+        dOk = com.miscelanea.dream.Mordiscos.pruebaMorder(sp, v);
+    }
+
     @javax.annotation.Nullable
     private static net.minecraft.world.entity.LivingEntity dEnte(ServerPlayer sp, UUID u) {
         return u != null && sp.serverLevel().getEntity(u) instanceof net.minecraft.world.entity.LivingEntity le ? le : null;
@@ -749,6 +761,7 @@ public final class PruebaCI {
         Minecraft mc = Minecraft.getInstance();
         sin("dream_poner", 30, () -> {
             mc.setScreen(null);
+            mc.player.getInventory().selected = 8;
             mc.options.hideGui = false;
             mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
             servidor(sp -> {
@@ -771,7 +784,7 @@ public final class PruebaCI {
                 sp.getInventory().setItem(8, ItemStack.EMPTY);
                 sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.OFFHAND, ItemStack.EMPTY);
                 var h = new net.minecraft.world.entity.monster.Husk(net.minecraft.world.entity.EntityType.HUSK, l);
-                var hp = net.minecraft.world.phys.Vec3.atBottomCenterOf(o.relative(mira, 2));
+                var hp = net.minecraft.world.phys.Vec3.atBottomCenterOf(o.relative(mira, 4).relative(lado, 2));
                 h.moveTo(hp.x, hp.y, hp.z, mira.getOpposite().toYRot(), 0F);
                 h.setNoAi(true);
                 h.setPersistenceRequired();
@@ -811,23 +824,20 @@ public final class PruebaCI {
         paso("180_dream_ojos_otro", 10, () -> {});
         sin("dream_ojos_otro_ver", 1, () -> {
             int n = com.miscelanea.client.dream.OjosLayer.pruebaDibujados;
-            RESUMEN.add("  dream: ojos del otro (de noche) dibujados " + n + " veces · tengo el mordisco: " + mc.player.hasEffect(com.miscelanea.dream.DreamRegistro.MORDISCO.get()));
-            if (n <= 0) throw new IllegalStateException("no brillan los ojos del otro Dream en la oscuridad");
             mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
             if (dJugador != null) mc.level.removeEntity(DREAM_ID, net.minecraft.world.entity.Entity.RemovalReason.DISCARDED);
             dJugador = null;
             com.miscelanea.client.dream.OjosLayer.pruebaDibujados = 0;
+            RESUMEN.add("  dream: ojos del otro (de noche) dibujados " + n + " veces · tengo el mordisco: " + mc.player.hasEffect(com.miscelanea.dream.DreamRegistro.MORDISCO.get()));
+            if (n <= 0) throw new IllegalStateException("no brillan los ojos del otro Dream en la oscuridad");
         });
         paso("181_dream_ojos_propios", 10, () -> {});
         sin("dream_morder", 4, () -> {
             int n = com.miscelanea.client.dream.OjosLayer.pruebaDibujados;
+            mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK);
+            servidor(sp -> dMorder(sp, dHusk));
             RESUMEN.add("  dream: mis ojos (tercera persona) dibujados " + n + " veces");
             if (n <= 0) throw new IllegalStateException("no me brillan los ojos en la oscuridad");
-            mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK);
-            servidor(sp -> {
-                var h = dEnte(sp, dHusk);
-                dOk = h != null && com.miscelanea.dream.Mordiscos.pruebaMorder(sp, h);
-            });
         });
         paso("182_dream_mordisco", 40, () -> {
             if (!dOk) throw new IllegalStateException("no se ha podido empezar a morder al husk");
@@ -924,8 +934,7 @@ public final class PruebaCI {
                 sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(com.miscelanea.dream.DreamRegistro.INFECCION.get(), 20 * 60, 0));
                 com.miscelanea.dream.Mordiscos.pruebaSinEsperas();
                 com.miscelanea.dream.Mordiscos.pruebaUltimoDano = 0;
-                var a = dEnte(sp, dAldeano);
-                dOk = a != null && com.miscelanea.dream.Mordiscos.pruebaMorder(sp, a);
+                dMorder(sp, dAldeano);
             });
         });
         sin("dream_infectado_espera", 30, () -> {
@@ -948,8 +957,7 @@ public final class PruebaCI {
         sin("dream_sol_morder", 30, () -> servidor(sp -> {
             com.miscelanea.dream.Mordiscos.pruebaSinEsperas();
             com.miscelanea.dream.Mordiscos.pruebaUltimoDano = 0;
-            var h = dEnte(sp, dHusk);
-            dOk = h != null && com.miscelanea.dream.Mordiscos.pruebaMorder(sp, h);
+            dMorder(sp, dHusk);
         }));
         sin("dream_sol_leer", 3, () -> servidor(sp -> dLeer(sp, dHusk)));
         paso("188_dream_sol", 3, () -> {
