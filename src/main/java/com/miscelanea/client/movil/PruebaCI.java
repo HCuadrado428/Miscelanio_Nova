@@ -1453,9 +1453,12 @@ public final class PruebaCI {
             rifleComprobar();
             rifleSalto = true;
         });
-        paso("149_colgado", 3, () -> {
+        // se suelta el salto y se da tiempo a que llegue del servidor que va colgado (con shaders va a 2-4 fps)
+        sin("rifle_salta_soltar", 8, () -> {
             rifleSalto = false;
             mc.options.keyJump.setDown(false);
+        });
+        paso("149_colgado", 3, () -> {
             if (!(mc.player.getVehicle() instanceof com.miscelanea.armasfuego.rifle.GanchoTirolina))
                 throw new IllegalStateException("saltando debajo de la cuerda no se ha colgado");
         });
