@@ -1711,9 +1711,10 @@ public final class PruebaCI {
                 // de vuelta a donde estaba antes del Purgatorio (al salir tras caerse se puede acabar en otro sitio, sin cargar)
                 if (antesPurgatorio != null && !com.miscelanea.purgatorio.Purgatorio.en(sp.level()))
                     sp.teleportTo(sp.serverLevel(), antesPurgatorio.x, antesPurgatorio.y, antesPurgatorio.z, sp.getYRot(), 0);
-                // y a la hora de entonces: las pruebas del Purgatorio son largas y, si se hace de noche, los zombis se cuelan en las de después
+                // y a la hora de entonces, sin bichos alrededor: las pruebas del Purgatorio son largas y, mientras, se acercan
+                // zombis (de noche) y aldeanos que luego se meten en medio del láser o de la ecolocalización
                 if (horaAntesPurgatorio >= 0) sp.serverLevel().setDayTime(horaAntesPurgatorio);
-                sp.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.monster.Monster.class, sp.getBoundingBox().inflate(64)).forEach(net.minecraft.world.entity.Entity::discard);
+                sp.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.Mob.class, sp.getBoundingBox().inflate(80)).forEach(net.minecraft.world.entity.Entity::discard);
             });
         });
     }
