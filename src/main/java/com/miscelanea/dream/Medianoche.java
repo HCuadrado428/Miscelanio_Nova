@@ -109,6 +109,7 @@ public final class Medianoche {
             salida.putFloat("Yaw", yaw);
             salida.putFloat("Pitch", pitch);
             datos.put(TAG, salida);
+            com.miscelanea.logros.LogrosMiscelanea.dar(p, "medianoche");
         } else {
             destino = null;
             llegada = null;

@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/duelo",
+  "display": {
+    "icon": {
+      "item": "minecraft:egg"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.gallina.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.gallina.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "revolver_gallina": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "revolver_gallina"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 5
+  }
+}

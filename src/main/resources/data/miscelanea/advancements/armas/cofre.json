@@ -1,0 +1,66 @@
+{
+  "parent": "miscelanea:raiz",
+  "display": {
+    "icon": {
+      "item": "minecraft:chest"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.cofre.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.cofre.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "revolver": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:revolver"
+            ]
+          }
+        ]
+      }
+    },
+    "escopeta": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:escopeta_presion"
+            ]
+          }
+        ]
+      }
+    },
+    "rifle": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:rifle"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "revolver",
+      "escopeta",
+      "rifle"
+    ]
+  ],
+  "rewards": {
+    "experience": 10
+  }
+}

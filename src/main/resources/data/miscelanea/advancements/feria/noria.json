@@ -1,0 +1,33 @@
+{
+  "parent": "miscelanea:raiz",
+  "display": {
+    "icon": {
+      "item": "miscelanea:noria"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.feria.noria.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.feria.noria.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "montar": {
+      "trigger": "minecraft:started_riding",
+      "conditions": {
+        "player": {
+          "vehicle": {
+            "type": "miscelanea:cabina_noria"
+          }
+        }
+      }
+    }
+  },
+  "rewards": {
+    "experience": 5
+  }
+}

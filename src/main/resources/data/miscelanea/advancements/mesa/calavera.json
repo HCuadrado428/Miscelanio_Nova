@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:mesa/victoria",
+  "display": {
+    "icon": {
+      "item": "miscelanea:oca"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.mesa.calavera.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.mesa.calavera.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "oca_muerte": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "oca_muerte"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 5
+  }
+}

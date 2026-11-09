@@ -143,6 +143,7 @@ public class Polea extends Entity {
     }
 
     private void llegar(Entity jinete, boolean enB, float v) {
+        com.miscelanea.logros.LogrosMiscelanea.dar(jinete, "tirolina");
         soltando = true;
         jinete.stopRiding();
         soltando = false;

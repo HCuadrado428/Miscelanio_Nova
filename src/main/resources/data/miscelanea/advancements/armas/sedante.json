@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/cofre",
+  "display": {
+    "icon": {
+      "item": "miscelanea:revolver_dardo"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.sedante.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.sedante.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "revolver_sedante": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "revolver_sedante"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

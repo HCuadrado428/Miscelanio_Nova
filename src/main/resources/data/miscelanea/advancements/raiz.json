@@ -1,0 +1,23 @@
+{
+  "display": {
+    "icon": {
+      "item": "miscelanea:capsula_gacha"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.raiz.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.raiz.description"
+    },
+    "frame": "task",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false,
+    "background": "miscelanea:textures/gui/logros_fondo.png"
+  },
+  "criteria": {
+    "entrar": {
+      "trigger": "minecraft:tick"
+    }
+  }
+}

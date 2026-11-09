@@ -202,6 +202,20 @@ public class PistaBaileBlockEntity extends BlockEntity {
             if (o != null) ModNetwork.CHANNEL.send(PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(worldPosition)),
                     new BailePacket(BailePacket.EMPIEZA, worldPosition, o.getId(), 1, dificultad, c.id));
         }
+        // logros: a bailar (en la gramola, también los de fondo)
+        java.util.List<ServerPlayer> bailan = new java.util.ArrayList<>(java.util.List.of(sp));
+        if (gramola())
+            for (UUID u : extras) {
+                ServerPlayer o = level.getServer().getPlayerList().getPlayer(u);
+                if (o != null) bailan.add(o);
+            }
+        for (ServerPlayer o : bailan) {
+            com.miscelanea.logros.LogrosMiscelanea.dar(o, "baile");
+            if (gramola()) {
+                com.miscelanea.logros.LogrosMiscelanea.dar(o, "videoclip");
+                if (c.id.endsWith("weapon_of_choice")) com.miscelanea.logros.LogrosMiscelanea.dar(o, "walken");
+            }
+        }
     }
 
     /**

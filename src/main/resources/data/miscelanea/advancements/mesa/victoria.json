@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:raiz",
+  "display": {
+    "icon": {
+      "item": "miscelanea:domino"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.mesa.victoria.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.mesa.victoria.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "victoria": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "victoria"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

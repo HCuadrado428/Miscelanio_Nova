@@ -1,0 +1,30 @@
+{
+  "parent": "miscelanea:armas/sedante",
+  "display": {
+    "icon": {
+      "item": "miscelanea:revolver",
+      "nbt": "{Oxido:3}"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.encasquillado.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.encasquillado.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "revolver_encasquillado": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "revolver_encasquillado"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 5
+  }
+}

@@ -11,6 +11,14 @@ import net.minecraftforge.fml.common.Mod;
 public final class EscopetaEventos {
     private EscopetaEventos() {}
 
+    /** Roomba: recoger del suelo lo que ha traído aspirando (agachado y usando la escopeta). */
+    @SubscribeEvent
+    public static void recoger(net.minecraftforge.event.entity.player.PlayerEvent.ItemPickupEvent e) {
+        var p = e.getEntity();
+        if (p.isShiftKeyDown() && p.isUsingItem() && p.getUseItem().getItem() instanceof EscopetaPresionItem)
+            com.miscelanea.logros.LogrosMiscelanea.dar(p, "escopeta_aspirar");
+    }
+
     /** Pringado de miel: el salto se queda en nada (en el cliente del jugador también, porque el efecto se sincroniza). */
     @SubscribeEvent
     public static void salto(LivingEvent.LivingJumpEvent e) {

@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:movil/movil",
+  "display": {
+    "icon": {
+      "item": "miscelanea:cajero"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.movil.bizum.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.movil.bizum.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "bizum": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "bizum"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

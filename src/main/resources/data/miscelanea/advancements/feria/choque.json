@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:feria/noria",
+  "display": {
+    "icon": {
+      "item": "miscelanea:coche_choque"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.feria.choque.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.feria.choque.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "choque": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "choque"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

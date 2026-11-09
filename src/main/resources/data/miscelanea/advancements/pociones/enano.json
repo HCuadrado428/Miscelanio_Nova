@@ -1,0 +1,32 @@
+{
+  "parent": "miscelanea:pociones/gigante",
+  "display": {
+    "icon": {
+      "item": "minecraft:potion",
+      "nbt": "{Potion:\"miscelanea:enano\"}"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.pociones.enano.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.pociones.enano.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "efecto": {
+      "trigger": "minecraft:effects_changed",
+      "conditions": {
+        "effects": {
+          "miscelanea:enano": {}
+        }
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

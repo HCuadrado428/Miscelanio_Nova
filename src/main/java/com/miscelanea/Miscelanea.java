@@ -61,6 +61,8 @@ public class Miscelanea {
         event.enqueueWork(() -> {
             ModPotions.registerBrewingRecipes();
             ModNetwork.register();
+            // logros: el criterio propio miscelanea:accion
+            com.miscelanea.logros.LogrosMiscelanea.registrar();
         });
     }
 

@@ -105,7 +105,12 @@ public final class Revolver {
         Vec3 boca = boca(p);
         if (c == Carga.VACIA) {
             l.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.REVOLVER_VACIO.get(), SoundSource.PLAYERS, 0.8F, 0.9F + r.nextFloat() * 0.2F);
-            if (sien) p.displayClientMessage(Component.translatable("pistola.miscelanea.ruleta.vacia").withStyle(ChatFormatting.GREEN), true);
+            if (sien) {
+                p.displayClientMessage(Component.translatable("pistola.miscelanea.ruleta.vacia").withStyle(ChatFormatting.GREEN), true);
+                com.miscelanea.logros.LogrosMiscelanea.dar(p, "revolver_ruleta");
+                // con una de fogueo en el tambor también cuenta como ruleta «de broma»
+                for (int i = 0; i < 6; i++) if (Tambor.en(s, i) == Carga.FOGUEO) com.miscelanea.logros.LogrosMiscelanea.dar(p, "revolver_ruleta_fogueo");
+            }
             return true;
         }
         int ox = Tambor.oxido(s);
@@ -114,6 +119,7 @@ public final class Revolver {
             l.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.REVOLVER_VACIO.get(), SoundSource.PLAYERS, 0.9F, 0.7F);
             l.sendParticles(ParticleTypes.SMOKE, boca.x, boca.y, boca.z, 3, 0.03, 0.03, 0.03, 0.01);
             p.displayClientMessage(Component.translatable("pistola.miscelanea.encasquillado").withStyle(ChatFormatting.GOLD), true);
+            if (ox >= 1) com.miscelanea.logros.LogrosMiscelanea.dar(p, "revolver_encasquillado");
             return true;
         }
         Tambor.poner(s, pos, Carga.VACIA);
@@ -181,6 +187,7 @@ public final class Revolver {
             }
             case IMAN -> atraer(l, p, p.position());
             case FOGUEO -> {
+                com.miscelanea.logros.LogrosMiscelanea.dar(p, "revolver_ruleta_fogueo");
                 p.displayClientMessage(Component.translatable("pistola.miscelanea.ruleta.fogueo").withStyle(ChatFormatting.YELLOW), true);
                 p.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 80, 0, false, false));
             }
@@ -247,6 +254,7 @@ public final class Revolver {
                 case DARDO -> {
                     herir(v, p, DANO_DARDO * (critico ? CRITICO : 1F));
                     sedar(v);
+                    if (v != p) com.miscelanea.logros.LogrosMiscelanea.dar(p, "revolver_sedante");
                 }
                 case IMAN -> {
                     herir(v, p, DANO_IMAN * (critico ? CRITICO : 1F));

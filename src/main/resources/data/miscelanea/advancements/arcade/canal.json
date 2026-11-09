@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:arcade/pleno",
+  "display": {
+    "icon": {
+      "item": "miscelanea:pista_bolos"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.arcade.canal.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.arcade.canal.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "bolos_cero": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "bolos_cero"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 5
+  }
+}

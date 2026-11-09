@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:baile/videoclip",
+  "display": {
+    "icon": {
+      "item": "miscelanea:sofa"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.baile.walken.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.baile.walken.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "walken": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "walken"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

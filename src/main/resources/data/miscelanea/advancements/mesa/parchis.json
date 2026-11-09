@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:mesa/victoria",
+  "display": {
+    "icon": {
+      "item": "miscelanea:parchis"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.mesa.parchis.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.mesa.parchis.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "parchis_come": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "parchis_come"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

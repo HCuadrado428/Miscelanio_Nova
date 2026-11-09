@@ -127,6 +127,7 @@ public class Tirolinas extends SavedData {
         l.playSound(null, b.x, b.y, b.z, SoundEvents.LEASH_KNOT_PLACE, SoundSource.PLAYERS, 1.0F, 0.8F);
         l.playSound(null, a.x, a.y, a.z, SoundEvents.LEASH_KNOT_PLACE, SoundSource.PLAYERS, 1.0F, 1.0F);
         p.displayClientMessage(Component.translatable("msg.miscelanea.rifle.cuerda_lista", Math.round(largo)).withStyle(ChatFormatting.GREEN), true);
+        com.miscelanea.logros.LogrosMiscelanea.dar(p, "rifle_cuerda");
         enviar(l);
         return true;
     }
@@ -182,6 +183,7 @@ public class Tirolinas extends SavedData {
         g.preparar(x, (float) t, sentido);
         l.addFreshEntity(g);
         p.startRiding(g, true);
+        com.miscelanea.logros.LogrosMiscelanea.dar(p, "rifle_cuerda");
         l.playSound(null, q.x, q.y, q.z, SoundEvents.CHAIN_PLACE, SoundSource.PLAYERS, 0.8F, 1.3F);
     }
 

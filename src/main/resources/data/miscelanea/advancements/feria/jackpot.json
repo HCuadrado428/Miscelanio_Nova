@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:feria/noria",
+  "display": {
+    "icon": {
+      "item": "miscelanea:tragaperras"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.feria.jackpot.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.feria.jackpot.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "traga_gordo": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "traga_gordo"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 50
+  }
+}

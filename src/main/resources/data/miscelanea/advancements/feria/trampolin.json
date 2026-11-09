@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:feria/noria",
+  "display": {
+    "icon": {
+      "item": "miscelanea:trampolin"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.feria.trampolin.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.feria.trampolin.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "trampolin_truco": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "trampolin_truco"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

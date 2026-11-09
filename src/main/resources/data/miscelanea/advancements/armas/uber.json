@@ -1,0 +1,31 @@
+{
+  "parent": "miscelanea:armas/gambito",
+  "display": {
+    "icon": {
+      "item": "miscelanea:medigun"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.uber.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.uber.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "efecto": {
+      "trigger": "minecraft:effects_changed",
+      "conditions": {
+        "effects": {
+          "miscelanea:ubercarga": {}
+        }
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

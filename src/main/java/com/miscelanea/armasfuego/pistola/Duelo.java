@@ -127,6 +127,7 @@ public final class Duelo {
         RETOS.remove(b);
         a.sendSystemMessage(Component.translatable("pistola.miscelanea.duelo.rechazado", b.getDisplayName()).withStyle(ChatFormatting.GRAY));
         b.sendSystemMessage(Component.translatable("pistola.miscelanea.duelo.rechazas", a.getDisplayName()).withStyle(ChatFormatting.GRAY));
+        com.miscelanea.logros.LogrosMiscelanea.dar(b, "revolver_gallina");
     }
 
     private static void empezar(ServerPlayer a, ServerPlayer b) {
@@ -172,6 +173,7 @@ public final class Duelo {
             if (p.level() == tirador.level() && p.distanceToSqr(tirador) < 64 * 64) p.sendSystemMessage(aviso);
         if (!tirador.server.getPlayerList().getPlayers().contains(victima)) victima.sendSystemMessage(aviso);
         ganadorPrueba = tirador.getGameProfile().getName();
+        com.miscelanea.logros.LogrosMiscelanea.dar(tirador, "revolver_duelo");
     }
 
     /** Para la prueba automática: quién ganó el último duelo. */

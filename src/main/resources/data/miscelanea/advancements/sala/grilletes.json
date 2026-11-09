@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:sala/lazo",
+  "display": {
+    "icon": {
+      "item": "miscelanea:grilletes"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.sala.grilletes.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.sala.grilletes.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "grilletes": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "grilletes"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

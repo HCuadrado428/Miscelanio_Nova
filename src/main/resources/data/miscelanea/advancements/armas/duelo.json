@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/cofre",
+  "display": {
+    "icon": {
+      "item": "miscelanea:revolver_bala"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.duelo.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.duelo.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "revolver_duelo": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "revolver_duelo"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

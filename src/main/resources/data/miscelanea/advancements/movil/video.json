@@ -1,0 +1,30 @@
+{
+  "parent": "miscelanea:movil/foto",
+  "display": {
+    "icon": {
+      "item": "miscelanea:movil",
+      "nbt": "{Color:14703183}"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.movil.video.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.movil.video.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "video": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "video"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

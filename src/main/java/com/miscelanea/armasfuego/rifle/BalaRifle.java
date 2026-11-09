@@ -228,6 +228,7 @@ public class BalaRifle extends Projectile {
         boolean entra = RifleDano.golpear(e, this, dueno, d);
         ServerLevel sl = (ServerLevel) level();
         if (entra && e instanceof LivingEntity le) {
+            if (dueno instanceof ServerPlayer tirador && tirador.distanceTo(le) > 100) com.miscelanea.logros.LogrosMiscelanea.dar(tirador, "rifle_francotirador");
             Vec3 h = new Vec3(v.x, 0, v.z);
             if (h.lengthSqr() > 1e-6) le.knockback(0.35, -h.x, -h.z);
             if (tipo() == Rifle.TRAZADORA) le.addEffect(new MobEffectInstance(MobEffects.GLOWING, 200, 0, false, false), dueno);

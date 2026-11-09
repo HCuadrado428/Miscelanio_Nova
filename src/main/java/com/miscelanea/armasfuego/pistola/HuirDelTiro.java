@@ -83,8 +83,20 @@ public final class HuirDelTiro extends Goal {
     }
 
     private static void correr(PathfinderMob m, Vec3 desde) {
-        Vec3 lejos = DefaultRandomPos.getPosAway(m, 16, 7, desde);
-        if (lejos == null) lejos = LandRandomPos.getPosAway(m, 12, 7, desde);
-        if (lejos != null) m.getNavigation().moveTo(lejos.x, lejos.y, lejos.z, 2.0);
+        // varios intentos y se queda con el sitio más lejos del tiro: justo detrás del animal puede haber agua o una
+        // pared (getPosAway da null) y entonces se quedaba quieto aunque hubiera sitio hacia un lado
+        Vec3 mejor = null;
+        double dMejor = m.position().distanceToSqr(desde);
+        for (int i = 0; i < 8 && (mejor == null || i < 3); i++) {
+            Vec3 q = i % 3 == 0 ? DefaultRandomPos.getPosAway(m, 16, 7, desde)
+                    : i % 3 == 1 ? LandRandomPos.getPosAway(m, 12, 7, desde) : LandRandomPos.getPos(m, 12, 7);
+            if (q == null) continue;
+            double d = q.distanceToSqr(desde);
+            if (d > dMejor) {
+                dMejor = d;
+                mejor = q;
+            }
+        }
+        if (mejor != null) m.getNavigation().moveTo(mejor.x, mejor.y, mejor.z, 2.0);
     }
 }

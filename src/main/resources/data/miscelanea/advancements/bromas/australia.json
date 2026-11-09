@@ -1,0 +1,31 @@
+{
+  "parent": "miscelanea:bromas/uwu",
+  "display": {
+    "icon": {
+      "item": "miscelanea:espejo_reves"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.bromas.australia.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.bromas.australia.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "efecto": {
+      "trigger": "minecraft:effects_changed",
+      "conditions": {
+        "effects": {
+          "miscelanea:pantalla_reves": {}
+        }
+      }
+    }
+  },
+  "rewards": {
+    "experience": 5
+  }
+}

@@ -109,6 +109,7 @@ public final class DisparoPresion {
         sl.gameEvent(p, GameEvent.EXPLODE, m);
         p.stopUsingItem();
         p.hurt(DanoEscopeta.fuente(p, DanoEscopeta.REVENTON, p), 4.0F);
+        com.miscelanea.logros.LogrosMiscelanea.dar(p, "escopeta_reventon");
         Vec3 atras = p.getViewVector(1.0F).scale(-1.1).add(0, 0.35, 0);
         p.setDeltaMovement(p.getDeltaMovement().add(atras));
         p.connection.send(new ClientboundSetEntityMotionPacket(p));
@@ -345,6 +346,7 @@ public final class DisparoPresion {
                     if (sl.getBlockState(arriba).isAir()) {
                         sl.setBlockAndUpdate(arriba, Blocks.WHEAT.defaultBlockState());
                         sl.playSound(null, arriba, SoundEvents.CROP_PLANTED, SoundSource.BLOCKS, 0.8F, 1.0F);
+                        com.miscelanea.logros.LogrosMiscelanea.dar(p, "escopeta_semillas");
                         return 0;
                     }
                     crece = arriba;
@@ -420,6 +422,7 @@ public final class DisparoPresion {
         if (p.getXRot() > 50) {
             v = new Vec3(v.x + atras.x, Math.max(v.y, 0) + Math.max(atras.y, 0.15 + 0.3 * f), v.z + atras.z);
             p.fallDistance = 0;
+            if (f >= 0.6) com.miscelanea.logros.LogrosMiscelanea.dar(p, "escopeta_salto");   // el salto escopeta de verdad (no solo frenar la caída)
         } else {
             v = v.add(atras);
             if (atras.y > 0.2) p.fallDistance = 0;
