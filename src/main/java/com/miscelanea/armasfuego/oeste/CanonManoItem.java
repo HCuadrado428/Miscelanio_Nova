@@ -147,7 +147,7 @@ public class CanonManoItem extends ArmaFuegoItem {
                 LogrosMiscelanea.dar(sp, "polvora_mojada");
                 return;
             }
-            if (nivel(com.miscelanea.registry.ModEnchantments.CANON_BIEN_FUNDIDO, s) == 0 && p.getRandom().nextFloat() < EquilibrioArmas.canonRevienta()) {
+            if (nivel(com.miscelanea.registry.ModEnchantments.CANON_BIEN_FUNDIDO, s) == 0 && !EquilibrioArmas.sinAtascosPrueba && p.getRandom().nextFloat() < EquilibrioArmas.canonRevienta()) {
                 reventar(sp, s);
                 return;
             }
