@@ -1347,6 +1347,307 @@ public final class PruebaCI {
             if (!fuera) RESUMEN.add("  AVISO: el agujero no le ha sacado");
         });
         purgatorio2();
+        purgatorioExtras();
+    }
+
+    // ------------------------------------------------------------------ El Purgatorio: eventos, objetos purgados y logros (2.0.0)
+    private static ServerPlayer spPrueba() {
+        Minecraft mc = Minecraft.getInstance();
+        return mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
+    }
+
+    /** En el hilo del servidor, con el jugador. */
+    private static void enServidor(java.util.function.Consumer<ServerPlayer> c) {
+        Minecraft mc = Minecraft.getInstance();
+        var srv = mc.getSingleplayerServer();
+        UUID id = mc.player.getUUID();
+        srv.execute(() -> {
+            ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+            if (sp != null) c.accept(sp);
+        });
+    }
+
+    private static final String[] LOGROS_PURGATORIO = {"raiz", "todas_zonas", "rincones", "turno", "no_molestar", "pillado", "herobrine", "reloj",
+            "sin_pillar", "caida", "fantasma", "objeto_raro", "missingno"};
+
+    private static String logrosPurgatorio() {
+        ServerPlayer sp = spPrueba();
+        StringBuilder b = new StringBuilder();
+        for (String l : LOGROS_PURGATORIO)
+            b.append(l).append(com.miscelanea.purgatorio.eventos.Logros.tiene(sp, l) ? "=sí " : "=NO ");
+        b.append("(rincones:");
+        for (String c : new String[]{"sala", "recreativa", "feria", "hotel"})
+            b.append(' ').append(c).append(com.miscelanea.purgatorio.eventos.Logros.tiene(sp, "rincones", c) ? "=sí" : "=NO");
+        return b.append(')').toString();
+    }
+
+    private static void purgatorioExtras() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("pex_entrar", 60, () -> enServidor(sp -> {
+            com.miscelanea.purgatorio.Purgatorio.entrar(sp, null);
+            var inv = sp.getInventory();
+            for (int i = 0; i < 9; i++) inv.setItem(i, ItemStack.EMPTY);
+            inv.setItem(0, new ItemStack(com.miscelanea.purgatorio.eventos.ExtrasRegistro.BRUJULA.get()));
+            inv.setItem(1, new ItemStack(com.miscelanea.purgatorio.eventos.ExtrasRegistro.RELOJ.get()));
+            inv.setItem(2, new ItemStack(com.miscelanea.purgatorio.eventos.ExtrasRegistro.TIQUE.get(), 2));
+            inv.setItem(3, new ItemStack(com.miscelanea.purgatorio.eventos.ExtrasRegistro.LLAVE.get()));
+            inv.setItem(4, new ItemStack(com.miscelanea.purgatorio.eventos.ExtrasRegistro.FICHA_INFINITA.get()));
+            inv.setItem(5, new ItemStack(net.minecraft.world.item.Items.DIRT, 3));
+            inv.setItem(6, new ItemStack(com.miscelanea.purgatorio.eventos.ExtrasRegistro.MISSINGNO_ITEM.get(), 4));
+            inv.selected = 0;
+        }));
+        // lo que ya se ha ganado en las partes de antes (entrar, que te pille, caerse por el agujero, salir sin que te pille, zonas, rincones)
+        sin("pex_logros_antes", 2, () -> {
+            String l = logrosPurgatorio();
+            RESUMEN.add("  purgatorio, logros tras recorrerlo: " + l);
+            ServerPlayer sp = spPrueba();
+            for (String n : new String[]{"raiz", "pillado", "sin_pillar", "todas_zonas"})
+                if (!com.miscelanea.purgatorio.eventos.Logros.tiene(sp, n)) throw new IllegalStateException("no se ha dado el logro purgatorio/" + n);
+            RESUMEN.add("  purgatorio, " + com.miscelanea.client.purgatorio.ExtrasCliente.estado());
+        });
+        // brújula de salida
+        sin("pex_brujula_ir", 60, () -> irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.FERIA), 0, 10));
+        paso("4l_purgatorio_brujula", 30, () -> {
+            ServerPlayer sp = spPrueba();
+            ItemStack b = sp.getInventory().getItem(0);
+            var obj = com.miscelanea.purgatorio.eventos.BrujulaSalidaItem.objetivo(b);
+            var esperada = com.miscelanea.purgatorio.eventos.Salidas.cercana(sp.serverLevel(), sp.blockPosition(), false);
+            RESUMEN.add("  purgatorio, brújula de salida: apunta a " + (obj == null ? "NADA" : obj.toShortString()) + ", salida más cercana "
+                    + (esperada == null ? "?" : esperada.toShortString()) + " (en el cliente: " + com.miscelanea.purgatorio.eventos.BrujulaSalidaItem.objetivo(mc.player.getInventory().getItem(0)) + ")");
+            if (obj == null || esperada == null || obj.distSqr(esperada) > 16) throw new IllegalStateException("la brújula no apunta a la salida más cercana");
+        });
+        // reloj al revés: en A un rato, luego en B, y al usarlo vuelve a A
+        net.minecraft.core.BlockPos[] ab = new net.minecraft.core.BlockPos[2];
+        sin("pex_reloj_a", 50, () -> {
+            ab[0] = com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.SALA);
+            ab[1] = com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.RECREATIVA);
+            irA(ab[0], 0, 0);
+            enServidor(com.miscelanea.purgatorio.eventos.PurgatorioExtras::olvidarCamino);
+        });
+        sin("pex_reloj_b", 30, () -> irA(ab[1], 0, 0));
+        sin("pex_reloj_usar", 20, () -> enServidor(sp -> RESUMEN.add("  purgatorio, reloj al revés: usado=" + com.miscelanea.purgatorio.eventos.RelojRevesItem.usar(sp)
+                + " desde " + sp.blockPosition().toShortString())));
+        sin("pex_reloj_fin", 2, () -> {
+            ServerPlayer sp = spPrueba();
+            double d = Math.sqrt(sp.blockPosition().distSqr(ab[0]));
+            RESUMEN.add(String.format("  purgatorio, reloj al revés: ahora en %s, a %.1f bloques de donde estaba (A %s, B %s)", sp.blockPosition().toShortString(), d,
+                    ab[0].toShortString(), ab[1].toShortString()));
+            if (d > 3) throw new IllegalStateException("el reloj no le ha devuelto a donde estaba");
+        });
+        // tique de turno: a los 3 s, delante de la salida
+        sin("pex_tique", 90, () -> enServidor(sp -> {
+            sp.getInventory().selected = 2;
+            RESUMEN.add("  purgatorio, tique de turno: canjeado=" + com.miscelanea.purgatorio.eventos.TiqueTurnoItem.canjear(sp));
+        }));
+        paso("4m_purgatorio_tique_salida", 30, () -> {
+            ServerPlayer sp = spPrueba();
+            var puerta = com.miscelanea.purgatorio.eventos.Salidas.cercana(sp.serverLevel(), sp.blockPosition(), false);
+            double d = puerta == null ? 999 : Math.sqrt(sp.blockPosition().distSqr(puerta));
+            RESUMEN.add(String.format("  purgatorio, tique: le han llamado a %s, a %.1f bloques de la puerta %s", sp.blockPosition().toShortString(), d,
+                    puerta == null ? "?" : puerta.toShortString()));
+            if (d > 4) throw new IllegalStateException("el tique no le ha llevado a la salida");
+        });
+        // llave (No molestar) y ficha infinita
+        sin("pex_llave_ficha", 5, () -> enServidor(sp -> {
+            boolean ok = com.miscelanea.purgatorio.eventos.LlaveHabitacionItem.colgar(sp);
+            RESUMEN.add("  purgatorio, llave 404: colgada=" + ok + ", no molestar=" + com.miscelanea.purgatorio.eventos.PurgatorioExtras.noMolestar(sp));
+            sp.getInventory().selected = 4;
+            boolean f1 = com.miscelanea.arcade.RecreativaBlock.gastarFicha(sp), f2 = com.miscelanea.arcade.RecreativaBlock.gastarFicha(sp),
+                    f3 = com.miscelanea.arcade.RecreativaBlock.gastarFicha(sp);
+            RESUMEN.add("  purgatorio, ficha infinita: tres partidas " + f1 + " " + f2 + " " + f3 + ", quedan " + sp.getMainHandItem().getCount()
+                    + " " + sp.getMainHandItem().getItem());
+            if (!ok || !(f1 && f2 && f3) || sp.getMainHandItem().getCount() != 1) RESUMEN.add("  FALLO: llave o ficha infinita");
+        }));
+        sin("pex_llave_ficha_ver", 2, () -> {
+            ServerPlayer sp = spPrueba();
+            if (!com.miscelanea.purgatorio.eventos.PurgatorioExtras.noMolestar(sp)) throw new IllegalStateException("la llave no ha colgado el No molestar");
+            if (!(sp.getInventory().getItem(4).getItem() instanceof com.miscelanea.purgatorio.eventos.FichaInfinitaItem)) throw new IllegalStateException("la ficha infinita se ha gastado");
+        });
+        // MissingNo.: unos cuantos puestos (para la foto) y uno que llena el sexto hueco
+        sin("pex_missingno_ir", 40, () -> irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.SALA), 0, 20));
+        paso("4n_purgatorio_missingno", 30, () -> enServidor(sp -> {
+            var l = sp.serverLevel();
+            var b = sp.blockPosition();
+            for (int i = -1; i <= 1; i++) l.setBlockAndUpdate(b.offset(i, 0, 3), com.miscelanea.purgatorio.eventos.ExtrasRegistro.MISSINGNO.get().defaultBlockState());
+            l.setBlockAndUpdate(b.offset(0, 1, 3), com.miscelanea.purgatorio.eventos.ExtrasRegistro.MISSINGNO.get().defaultBlockState());
+            sp.getInventory().selected = 6;
+        }));
+        sin("pex_missingno", 10, () -> enServidor(sp -> {
+            var b = sp.blockPosition().offset(0, 1, 3);
+            int suma = com.miscelanea.purgatorio.eventos.MissingnoBlock.corromper(sp, sp.serverLevel(), b);
+            ItemStack sexto = sp.getInventory().getItem(5);
+            RESUMEN.add("  purgatorio, MissingNo.: +" + suma + " en el sexto hueco (" + sexto.getCount() + " " + sexto.getItem() + "), el bloque "
+                    + (sp.serverLevel().getBlockState(b).isAir() ? "se ha ido" : "SIGUE AHÍ"));
+            if (sexto.getCount() != 64 || !sp.serverLevel().getBlockState(b).isAir()) RESUMEN.add("  FALLO: el MissingNo. no ha hecho lo suyo");
+        }));
+        // objetos tirados con nombres raros: cuatro detrás de él; se gira a mirarlos y coge uno
+        sin("pex_raros_ir", 40, () -> irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.FERIA).offset(0, 0, -4), 0, 25));
+        sin("pex_raros", 20, () -> enServidor(sp -> {
+            StringBuilder b = new StringBuilder("  purgatorio, objetos raros tirados:");
+            for (int k : new int[]{0, 1, 2, 9}) {
+                var ie = com.miscelanea.purgatorio.eventos.PurgatorioExtras.tirarRaro(sp, k);
+                b.append(ie == null ? " NINGUNO" : " «" + ie.getItem().getHoverName().getString() + "» en " + ie.blockPosition().toShortString());
+            }
+            RESUMEN.add(b.toString());
+        }));
+        // para la foto: a tres bloques del primero, mirándolos
+        sin("pex_raros_mirar", 30, () -> enServidor(sp -> {
+            var l = sp.serverLevel();
+            var lista = l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, sp.getBoundingBox().inflate(16),
+                    ie -> ie.getItem().hasTag() && ie.getItem().getTag().getBoolean(com.miscelanea.purgatorio.eventos.ObjetosRaros.MARCA));
+            if (lista.isEmpty()) return;
+            var ie = lista.get(0);
+            for (int[] d : new int[][]{{-3, 0}, {3, 0}, {0, -3}, {0, 3}}) {
+                var q = com.miscelanea.purgatorio.eventos.PurgatorioExtras.libreCerca(l, ie.getBlockX() + d[0], ie.getBlockY(), ie.getBlockZ() + d[1], 0);
+                if (q == null) continue;
+                double dx = ie.getX() - (q.getX() + 0.5), dz = ie.getZ() - (q.getZ() + 0.5);
+                sp.teleportTo(l, q.getX() + 0.5, q.getY(), q.getZ() + 0.5, (float) Math.toDegrees(Math.atan2(-dx, dz)), 45);
+                return;
+            }
+        }));
+        paso("4o_purgatorio_objetos_raros", 10, () -> {});
+        sin("pex_raros_coger", 30, () -> enServidor(sp -> {
+            var l = sp.serverLevel();
+            var lista = l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, sp.getBoundingBox().inflate(16),
+                    ie -> ie.getItem().hasTag() && ie.getItem().getTag().getBoolean(com.miscelanea.purgatorio.eventos.ObjetosRaros.MARCA));
+            if (!lista.isEmpty()) sp.teleportTo(lista.get(0).getX(), lista.get(0).getY(), lista.get(0).getZ());
+            RESUMEN.add("  purgatorio, objetos raros en el suelo: " + lista.size());
+        }));
+        sin("pex_raros_cogido", 2, () -> {
+            boolean ok = com.miscelanea.purgatorio.eventos.Logros.tiene(spPrueba(), "objeto_raro");
+            RESUMEN.add("  purgatorio, ha cogido un objeto raro: " + (ok ? "sí" : "NO"));
+            if (!ok) throw new IllegalStateException("no se ha dado el logro de coger un objeto raro");
+        });
+        // chat corrupto y sonidos rotos
+        paso("4p_purgatorio_chat", 30, () -> {
+            var r = mc.player.getRandom();
+            for (int k : new int[]{0, 3, 7, 12, 15})
+                RESUMEN.add("  purgatorio, chat roto: " + com.miscelanea.client.purgatorio.ExtrasCliente.chatRoto(mc, r, k));
+            com.miscelanea.client.purgatorio.ExtrasCliente.sonidoRoto(mc, r, 2);
+            com.miscelanea.client.purgatorio.ExtrasCliente.sonidoRoto(mc, r, 9);
+            mc.player.setXRot(0);
+        });
+        // jugador fantasma: uno quieto a 11 bloques (foto con su nombre), luego se le mira fijamente y se va
+        sin("pex_fantasma_ir", 40, () -> irA(com.miscelanea.purgatorio.Purgatorio.buscar(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.SALA), 0, 0));
+        Vec3[] fan = new Vec3[1];
+        sin("pex_fantasma_sale", 20, () -> {
+            var l = mc.level;
+            var p = mc.player;
+            fan[0] = null;
+            for (int a = 0; a < 360 && fan[0] == null; a += 45)
+                for (double d = 12; d >= 9.5 && fan[0] == null; d -= 0.5) {
+                    double fx = p.getX() - Math.sin(Math.toRadians(a)) * d, fz = p.getZ() + Math.cos(Math.toRadians(a)) * d;
+                    var bp = net.minecraft.core.BlockPos.containing(fx, p.getY(), fz);
+                    if (!l.getBlockState(bp).getCollisionShape(l, bp).isEmpty() || !l.getBlockState(bp.above()).getCollisionShape(l, bp.above()).isEmpty()) continue;
+                    var bh = l.clip(new net.minecraft.world.level.ClipContext(p.getEyePosition(), new Vec3(fx, p.getY() + 1.5, fz), net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                            net.minecraft.world.level.ClipContext.Fluid.NONE, p));
+                    if (bh.getType() != net.minecraft.world.phys.HitResult.Type.MISS) continue;
+                    fan[0] = new Vec3(fx, p.getY(), fz);
+                    p.setYRot(a);
+                    p.setXRot(0);
+                }
+            if (fan[0] == null) throw new IllegalStateException("no hay sitio a la vista para el fantasma");
+            boolean ok = com.miscelanea.client.purgatorio.ExtrasCliente.aparecer(mc, p.getRandom(), fan[0], null, true);
+            RESUMEN.add("  purgatorio, jugador fantasma: sale=" + ok + " en " + net.minecraft.core.BlockPos.containing(fan[0]).toShortString() + ", "
+                    + com.miscelanea.client.purgatorio.ExtrasCliente.estado());
+            if (!ok) throw new IllegalStateException("no sale el jugador fantasma");
+        });
+        paso("4q_purgatorio_fantasma", 30, () -> {});
+        sin("pex_fantasma_mirar", 80, () -> {
+            // se le mira fijamente (el jugador no se mueve y lo tiene delante)
+            com.miscelanea.client.purgatorio.ExtrasCliente.soltarFijos();
+            var p = mc.player;
+            double dx = fan[0].x - p.getX(), dz = fan[0].z - p.getZ(), dy = fan[0].y + 1.5 - p.getEyeY();
+            p.setYRot((float) Math.toDegrees(Math.atan2(-dx, dz)));
+            p.setXRot((float) -Math.toDegrees(Math.atan2(dy, Math.sqrt(dx * dx + dz * dz))));
+        });
+        paso("4r_purgatorio_fantasma_ido", 20, () -> {
+            int n = com.miscelanea.client.purgatorio.ExtrasCliente.fantasmas();
+            boolean logro = com.miscelanea.purgatorio.eventos.Logros.tiene(spPrueba(), "fantasma");
+            RESUMEN.add("  purgatorio, fantasma tras mirarlo fijamente: quedan " + n + ", logro " + (logro ? "sí" : "NO") + ", "
+                    + com.miscelanea.client.purgatorio.ExtrasCliente.estado());
+            if (n != 0) throw new IllegalStateException("el fantasma no se ha ido al mirarlo");
+            if (!logro) throw new IllegalStateException("no se ha dado el logro de ver un fantasma");
+            // otro, que se va al acercarse
+            if (!com.miscelanea.client.purgatorio.ExtrasCliente.aparecer(mc, mc.player.getRandom(), fan[0], "Invitado_404", false))
+                throw new IllegalStateException("no sale el segundo fantasma");
+            mc.player.setYRot(mc.player.getYRot() + 180);
+        });
+        sin("pex_fantasma_acercarse", 10, () -> {
+            if (com.miscelanea.client.purgatorio.ExtrasCliente.fantasmas() != 1) throw new IllegalStateException("el segundo fantasma se ha ido antes de tiempo");
+            irA(net.minecraft.core.BlockPos.containing(fan[0]), 0, 0);
+        });
+        sin("pex_fantasma_acercarse_fin", 2, () -> {
+            int n = com.miscelanea.client.purgatorio.ExtrasCliente.fantasmas();
+            RESUMEN.add("  purgatorio, fantasma al acercarse: quedan " + n);
+            if (n != 0) throw new IllegalStateException("el fantasma no se ha ido al acercarse");
+        });
+        // pegarle a Herobrine (logro y, esta vez sí o sí, se le cae algo)
+        sin("pex_herobrine", 10, () -> enServidor(sp -> {
+            var l = sp.serverLevel();
+            var g = com.miscelanea.purgatorio.Habitantes.aparecer(l, sp.blockPosition().offset(2, 0, 0), com.miscelanea.purgatorio.Purgado.Variante.HEROBRINE);
+            if (g == null) g = com.miscelanea.purgatorio.Habitantes.aparecer(l, sp.blockPosition().offset(-2, 0, 0), com.miscelanea.purgatorio.Purgado.Variante.HEROBRINE);
+            if (g == null) {
+                RESUMEN.add("  FALLO: no sale Herobrine para pegarle");
+                return;
+            }
+            g.getPersistentData().putBoolean("MiscelaneaSueltaSiOSi", true);
+            sp.attack(g);
+            var caido = l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, g.getBoundingBox().inflate(12), ie -> ie.getAge() < 40);
+            RESUMEN.add("  purgatorio, pegarle a Herobrine: logro " + com.miscelanea.purgatorio.eventos.Logros.tiene(sp, "herobrine") + ", se le cae "
+                    + (caido.isEmpty() ? "NADA" : caido.get(0).getItem().getItem().toString()));
+            if (caido.isEmpty()) RESUMEN.add("  FALLO: a Herobrine no se le ha caído nada");
+            g.discard();
+        }));
+        // el premio de un rincón raro (la caseta abierta de la feria: la brújula)
+        sin("pex_rincon_ir", 50, () -> {
+            var b = com.miscelanea.purgatorio.Purgatorio.buscarRaro(com.miscelanea.purgatorio.PurgatorioGenerador.Zona.FERIA);
+            if (b == null) throw new IllegalStateException("no hay caseta abierta");
+            irMirando(b[0], b[1]);
+        });
+        paso("4s_purgatorio_rincon_premio", 20, () -> {
+            ServerPlayer sp = spPrueba();
+            var lista = sp.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, sp.getBoundingBox().inflate(24),
+                    ie -> ie.getItem().hasTag() && ie.getItem().getTag().contains("MiscelaneaRincon"));
+            StringBuilder b = new StringBuilder("  purgatorio, premios de rincones raros cerca:");
+            for (var ie : lista) b.append(' ').append(ie.getItem().getItem()).append(" en ").append(ie.blockPosition().toShortString());
+            RESUMEN.add(b.toString());
+            if (lista.isEmpty()) throw new IllegalStateException("en la caseta abierta no hay premio");
+        });
+        // caerse por un agujero del Mundo sin Texturas (de golpe por debajo del suelo, sin esperar a la caída: con shaders va lento)
+        sin("pex_caida", 30, () -> enServidor(sp -> {
+            var ag = com.miscelanea.purgatorio.Purgatorio.buscarAgujero();
+            if (ag == null) return;
+            com.miscelanea.purgatorio.Purgatorio.preparar(sp.serverLevel(), ag);
+            sp.teleportTo(ag.getX() + 0.5, -30, ag.getZ() + 0.5);
+        }));
+        sin("pex_caida_fin", 60, () -> {
+            boolean fuera = !com.miscelanea.purgatorio.Purgatorio.en(mc.level), ok = com.miscelanea.purgatorio.eventos.Logros.tiene(spPrueba(), "caida");
+            RESUMEN.add("  purgatorio, caerse por el agujero: fuera=" + fuera + ", logro " + (ok ? "sí" : "NO"));
+            enServidor(sp -> com.miscelanea.purgatorio.Purgatorio.entrar(sp, null));
+        });
+        // los logros: todos, y la pestaña del Purgatorio abierta para la foto
+        sin("pex_logros", 10, () -> {
+            String l = logrosPurgatorio();
+            RESUMEN.add("  purgatorio, logros al final: " + l);
+            if (l.contains("=NO")) throw new IllegalStateException("faltan logros del Purgatorio: " + l);
+            var ca = mc.player.connection.getAdvancements();
+            mc.setScreen(new net.minecraft.client.gui.screens.advancements.AdvancementsScreen(ca));
+            var raiz = ca.getAdvancements().get(new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "purgatorio/raiz"));
+            if (raiz != null) ca.setSelectedTab(raiz, true);
+        });
+        paso("4t_purgatorio_logros", 40, () -> {});
+        sin("pex_salir", 40, () -> {
+            mc.setScreen(null);
+            enServidor(com.miscelanea.purgatorio.Purgatorio::salir);
+        });
+        sin("pex_fuera", 2, () -> {
+            ItemStack b = spPrueba().getInventory().getItem(0);
+            RESUMEN.add("  purgatorio, brújula fuera: " + (com.miscelanea.purgatorio.eventos.BrujulaSalidaItem.objetivo(b) == null ? "da vueltas" : "SIGUE APUNTANDO"));
+            enServidor(sp -> {
+                for (int i = 0; i < 9; i++) sp.getInventory().setItem(i, ItemStack.EMPTY);
+            });
+        });
     }
 
     // ------------------------------------------------------------------ el Purgatorio, estructura nueva (2.0.0)

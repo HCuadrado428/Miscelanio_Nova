@@ -1,0 +1,28 @@
+{
+ "display": {
+  "icon": {
+   "item": "minecraft:barrier"
+  },
+  "title": {
+   "translate": "advancements.miscelanea.purgatorio.caida.title"
+  },
+  "description": {
+   "translate": "advancements.miscelanea.purgatorio.caida.description"
+  },
+  "frame": "task",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": false
+ },
+ "parent": "miscelanea:purgatorio/raiz",
+ "criteria": {
+  "caer": {
+   "trigger": "minecraft:impossible"
+  }
+ },
+ "requirements": [
+  [
+   "caer"
+  ]
+ ]
+}

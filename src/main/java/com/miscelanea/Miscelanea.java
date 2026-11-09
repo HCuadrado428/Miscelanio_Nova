@@ -51,6 +51,7 @@ public class Miscelanea {
         com.miscelanea.estatica.EstaticaRegistro.registrar(modBus);
         com.miscelanea.laser.LaserRegistro.registrar(modBus);
         com.miscelanea.movil.MovilRegistro.registrar(modBus);
+        com.miscelanea.purgatorio.eventos.ExtrasRegistro.registrar(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::creativeTabs);

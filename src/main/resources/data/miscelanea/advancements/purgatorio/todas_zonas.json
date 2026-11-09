@@ -1,0 +1,28 @@
+{
+ "display": {
+  "icon": {
+   "item": "miscelanea:brujula_salida"
+  },
+  "title": {
+   "translate": "advancements.miscelanea.purgatorio.todas_zonas.title"
+  },
+  "description": {
+   "translate": "advancements.miscelanea.purgatorio.todas_zonas.description"
+  },
+  "frame": "goal",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": false
+ },
+ "parent": "miscelanea:purgatorio/raiz",
+ "criteria": {
+  "todas": {
+   "trigger": "minecraft:impossible"
+  }
+ },
+ "requirements": [
+  [
+   "todas"
+  ]
+ ]
+}
