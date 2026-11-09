@@ -77,6 +77,15 @@ public final class ModItems {
     public static final RegistryObject<Item> BALLESTA_REPETICION = ITEMS.register("ballesta_repeticion",
             () -> new com.miscelanea.armas.BallestaItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
 
+    // ---- Pistola (revólver de ruleta de cobre y su munición)
+    public static final RegistryObject<Item> REVOLVER = ITEMS.register("revolver",
+            () -> new com.miscelanea.armasfuego.pistola.RevolverItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> REVOLVER_BALA = ITEMS.register("revolver_bala", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> REVOLVER_BENGALA = ITEMS.register("revolver_bengala", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> REVOLVER_DARDO = ITEMS.register("revolver_dardo", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> REVOLVER_FOGUEO = ITEMS.register("revolver_fogueo", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> REVOLVER_IMAN = ITEMS.register("revolver_iman", () -> new Item(new Item.Properties()));
+
     // ---- Kingdom Hearts
     public static final RegistryObject<Item> LLAVE_ESPADA = ITEMS.register("llave_espada",
             () -> new com.miscelanea.llave.LlaveEspadaItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));

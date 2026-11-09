@@ -160,6 +160,17 @@ public class Miscelanea {
             event.accept(ModItems.LANZACOHETES);
             event.accept(ModItems.COHETE);
             event.accept(ModItems.BALLESTA_REPETICION);
+            // ---- Pistola
+            event.accept(ModItems.REVOLVER);
+            event.accept(ModItems.REVOLVER_BALA);
+            event.accept(ModItems.REVOLVER_BENGALA);
+            event.accept(ModItems.REVOLVER_DARDO);
+            event.accept(ModItems.REVOLVER_FOGUEO);
+            event.accept(ModItems.REVOLVER_IMAN);
+            for (var en : java.util.List.of(ModEnchantments.REVOLVER_ABANICO, ModEnchantments.REVOLVER_CARAMBOLA,
+                    ModEnchantments.REVOLVER_DESENFUNDE, ModEnchantments.REVOLVER_SENALERO))
+                event.accept(net.minecraft.world.item.EnchantedBookItem.createForEnchantment(
+                        new net.minecraft.world.item.enchantment.EnchantmentInstance(en.get(), en.get().getMaxLevel())));
             for (int c = 0; c < com.miscelanea.laser.Laser.COLORES.length; c++) {
                 net.minecraft.world.item.ItemStack laser = new net.minecraft.world.item.ItemStack(com.miscelanea.laser.LaserRegistro.PUNTERO.get());
                 if (c > 0) laser.getOrCreateTag().putInt(com.miscelanea.laser.Laser.COLOR, c);

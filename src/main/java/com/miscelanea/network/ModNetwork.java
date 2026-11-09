@@ -283,5 +283,11 @@ public final class ModNetwork {
                 .decoder(com.miscelanea.armas.BallestaRecargaPacket::new)
                 .consumerMainThread(com.miscelanea.armas.BallestaRecargaPacket::handle)
                 .add();
+        // ---- Pistola
+        CHANNEL.messageBuilder(com.miscelanea.armasfuego.pistola.GirarPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.armasfuego.pistola.GirarPacket::encode)
+                .decoder(com.miscelanea.armasfuego.pistola.GirarPacket::new)
+                .consumerMainThread(com.miscelanea.armasfuego.pistola.GirarPacket::handle)
+                .add();
     }
 }
