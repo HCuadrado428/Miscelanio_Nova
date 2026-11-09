@@ -61,7 +61,11 @@ public class BotinArmas extends LootModifier {
         if (p.equals("chests/pillager_outpost")) return Arma.RIFLE;
         if (p.startsWith("chests/shipwreck_")) return Arma.ESCOPETA;
         if (p.startsWith("chests/village/") && probabilidad(id) > 0) return Arma.REVOLVER;
-        // ---- segunda tanda: cada una en una estructura distinta
+        return armaNueva(p);
+    }
+
+    /** Segunda tanda: cada una en una estructura distinta (sin mirar la probabilidad: la usa probabilidad()). */
+    private static Arma armaNueva(String p) {
         switch (p) {
             case "chests/desert_pyramid": return Arma.GATLING;
             case "chests/abandoned_mineshaft": return Arma.WINCHESTER;
@@ -80,7 +84,7 @@ public class BotinArmas extends LootModifier {
         String p = id.getPath();
         if (p.equals("chests/pillager_outpost")) return ConfigServidor.botinRifle();
         if (p.startsWith("chests/shipwreck_")) return ConfigServidor.botinEscopeta();
-        Arma a = arma(id);
+        Arma a = armaNueva(p);
         if (a != null) switch (a) {
             case GATLING: return com.miscelanea.armasfuego.comun.EquilibrioArmas.botinGatling();
             case WINCHESTER: return com.miscelanea.armasfuego.comun.EquilibrioArmas.botinWinchester();

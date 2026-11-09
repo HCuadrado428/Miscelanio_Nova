@@ -276,6 +276,16 @@ public final class FuegoCliente {
             patada(0F, 0.9F, 0F);
     }
 
+    /** El que va a los mandos de la Gatling: los dos brazos a los mandos (como con la ballesta cargada). */
+    @SubscribeEvent
+    public static void brazos(net.minecraftforge.client.event.RenderPlayerEvent.Pre e) {
+        if (e.getEntity().getVehicle() instanceof GatlingEntity) {
+            var m = e.getRenderer().getModel();
+            m.rightArmPose = HumanoidModel.ArmPose.CROSSBOW_HOLD;
+            m.leftArmPose = HumanoidModel.ArmPose.CROSSBOW_HOLD;
+        }
+    }
+
     /** Para la prueba del CI: girar la manivela sin el ratón. */
     public static boolean manivelaPrueba;
 

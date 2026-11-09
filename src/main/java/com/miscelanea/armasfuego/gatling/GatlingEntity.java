@@ -84,6 +84,11 @@ public class GatlingEntity extends Entity {
     public int atasco() { return entityData.get(ATASCO); }
     public int recarga() { return entityData.get(RECARGA); }
 
+    /** Para la prueba del CI (y comandos): poner el calor. */
+    public void ponerCalor(float c) {
+        entityData.set(CALOR, Math.max(0, Math.min(100, c)));
+    }
+
     public void ponerGirando(boolean g) {
         entityData.set(GIRANDO, g);
         if (!g) rafaga = 0;

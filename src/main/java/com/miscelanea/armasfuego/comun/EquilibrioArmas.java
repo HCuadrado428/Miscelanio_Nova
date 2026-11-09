@@ -124,7 +124,10 @@ public final class EquilibrioArmas {
         }
     }
 
-    public static float encasquilladoBase() { return (float) d(ENCASQUILLADO_BASE); }
+    /** La prueba del CI apaga los encasquillados al azar (si no, alguna comprobación fallaría una vez de cada cien). */
+    public static volatile boolean sinAtascosPrueba;
+
+    public static float encasquilladoBase() { return sinAtascosPrueba ? 0F : (float) d(ENCASQUILLADO_BASE); }
     public static float revolverDano() { return (float) d(REVOLVER_DANO); }
     public static int revolverEnfriamiento() { return i(REVOLVER_ENFRIAMIENTO); }
     public static float escopetaPerdigon() { return (float) d(ESCOPETA_PERDIGON); }

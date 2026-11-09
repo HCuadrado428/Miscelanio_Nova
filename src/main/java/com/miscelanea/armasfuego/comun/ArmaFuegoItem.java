@@ -177,6 +177,8 @@ public abstract class ArmaFuegoItem extends Item {
             return true;
         }
         if (level.isClientSide) {
+            // la hora del disparo también en el cliente: la palanca y el culatazo empiezan sin esperar al servidor
+            s.getOrCreateTag().putLong(DISPARO_T, level.getGameTime());
             com.miscelanea.client.armasfuego.comun.FuegoCliente.disparoLocal(this, s);
             return true;
         }
