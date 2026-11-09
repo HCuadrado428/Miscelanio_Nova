@@ -61,7 +61,7 @@ public final class DisparoPresion {
     private DisparoPresion() {}
 
     /** Daño de un perdigón de grava a fuerza 1 (100 de presión) y a quemarropa. */
-    public static final float DANO_PERDIGON = 1.4F;
+    public static final float DANO_PERDIGON = 1.6F;
 
     // ================================================================ bombear
 
@@ -176,7 +176,7 @@ public final class DisparoPresion {
         RandomSource r = p.getRandom();
         Vec3 ojo = p.getEyePosition(), mira = p.getViewVector(1.0F), boca = boca(p);
         float f = Math.min(fuerza, 1.3F);
-        double disp = 0.10 * (1 + 0.15 * Presion.oxido(s)) * (1.25 - 0.45 * f);
+        double disp = 0.075 * (1 + 0.15 * Presion.oxido(s)) * (1.3 - 0.5 * f);   // más presión, más agrupado
         double alcance = (6 + 20 * f) * t.alcance;
         Map<LivingEntity, float[]> golpes = new LinkedHashMap<>();   // daño, perdigones
         List<BlockHitResult> bloques = new ArrayList<>();
