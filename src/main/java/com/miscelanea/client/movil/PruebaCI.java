@@ -1185,7 +1185,11 @@ public final class PruebaCI {
         irA(desde, yaw, pitch);
     }
 
-    /** Dónde estaba antes de las pruebas del Purgatorio (al acabar se le devuelve ahí: lo de después se monta a su alrededor). */
+    /**
+     * Dónde estaba (y qué hora era) antes de la parte de los extras del Purgatorio, ya fuera tras las de la generación: al
+     * acabar se le devuelve ahí, que es donde se montan las pruebas de después (al salir tras caerse se puede acabar en
+     * otro sitio, y en lo que duran los extras se hace de noche).
+     */
     private static volatile Vec3 antesPurgatorio;
     private static volatile long horaAntesPurgatorio = -1;
 
@@ -1201,8 +1205,6 @@ public final class PruebaCI {
                 if (sp.isPassenger()) com.miscelanea.montana.MontanaEventos.bajarSiOSi(sp);
                 sp.getInventory().setItem(0, ItemStack.EMPTY);
                 if (srv.getLevel(com.miscelanea.purgatorio.Purgatorio.DIMENSION) == null) RESUMEN.add("  FALLO: no existe la dimensión del Purgatorio");
-                antesPurgatorio = sp.position();
-                horaAntesPurgatorio = sp.serverLevel().getDayTime();
                 com.miscelanea.purgatorio.Purgatorio.entrar(sp, "purgatorio.miscelanea.vacio");
             });
         });
@@ -1390,6 +1392,10 @@ public final class PruebaCI {
     private static void purgatorioExtras() {
         Minecraft mc = Minecraft.getInstance();
         sin("pex_entrar", 60, () -> enServidor(sp -> {
+            if (!com.miscelanea.purgatorio.Purgatorio.en(sp.level())) {
+                antesPurgatorio = sp.position();
+                horaAntesPurgatorio = sp.serverLevel().getDayTime();
+            }
             com.miscelanea.purgatorio.Purgatorio.entrar(sp, null);
             var inv = sp.getInventory();
             for (int i = 0; i < 9; i++) inv.setItem(i, ItemStack.EMPTY);
@@ -1708,7 +1714,7 @@ public final class PruebaCI {
             RESUMEN.add("  purgatorio, brújula fuera: " + (com.miscelanea.purgatorio.eventos.BrujulaSalidaItem.objetivo(b) == null ? "da vueltas" : "SIGUE APUNTANDO"));
             enServidor(sp -> {
                 for (int i = 0; i < 9; i++) sp.getInventory().setItem(i, ItemStack.EMPTY);
-                // de vuelta a donde estaba antes del Purgatorio (al salir tras caerse se puede acabar en otro sitio, sin cargar)
+                // de vuelta a donde estaba antes de los extras
                 if (antesPurgatorio != null && !com.miscelanea.purgatorio.Purgatorio.en(sp.level()))
                     sp.teleportTo(sp.serverLevel(), antesPurgatorio.x, antesPurgatorio.y, antesPurgatorio.z, sp.getYRot(), 0);
                 // y a la hora de entonces, sin bichos alrededor: las pruebas del Purgatorio son largas y, mientras, se acercan
