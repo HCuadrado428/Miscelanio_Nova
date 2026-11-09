@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:dream/esencia",
+  "display": {
+    "icon": {
+      "item": "miscelanea:diente"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.dream.mordisco.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.dream.mordisco.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "mordisco": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "mordisco"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

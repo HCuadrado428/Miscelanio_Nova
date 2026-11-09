@@ -114,6 +114,7 @@ public final class Deposito {
                     SoundEvents.BOTTLE_FILL, SoundSource.PLAYERS, 1.0F, 0.7F);
         }
         mob.discard();
+        com.miscelanea.logros.LogrosMiscelanea.dar(player, "aspirar");
         return true;
     }
 

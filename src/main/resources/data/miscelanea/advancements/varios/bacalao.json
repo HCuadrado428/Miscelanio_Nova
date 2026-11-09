@@ -1,0 +1,37 @@
+{
+  "parent": "miscelanea:varios/paella",
+  "display": {
+    "icon": {
+      "item": "miscelanea:paella",
+      "nbt": "{bacalao:1b}"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.varios.bacalao.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.varios.bacalao.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "tener": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "miscelanea:paella"
+            ],
+            "nbt": "{bacalao:1b}"
+          }
+        ]
+      }
+    }
+  },
+  "rewards": {
+    "experience": 5
+  }
+}

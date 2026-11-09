@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:dream/esencia",
+  "display": {
+    "icon": {
+      "item": "miscelanea:anillo_medianoche"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.dream.medianoche.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.dream.medianoche.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "medianoche": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "medianoche"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

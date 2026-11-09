@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:arcade/ficha",
+  "display": {
+    "icon": {
+      "item": "miscelanea:bola_bolos"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.arcade.pleno.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.arcade.pleno.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "bolos_pleno": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "bolos_pleno"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

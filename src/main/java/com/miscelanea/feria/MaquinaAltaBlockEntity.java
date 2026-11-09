@@ -353,6 +353,7 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
                             l.sendParticles(ParticleTypes.FIREWORK, c.x, c.y, c.z, 30, 0.3, 0.3, 0.3, 0.15);
                         }
                         if (p instanceof ServerPlayer sp) com.miscelanea.arcade.ArcadeRecords.registrar(sp, "traga", n);
+                        if (n >= 12) com.miscelanea.logros.LogrosMiscelanea.dar(p, "traga_gordo");
                         if (p != null) p.displayClientMessage(Component.translatable(n >= 12 ? "miscelanea.tragaperras.gordo" : "miscelanea.tragaperras.premio", n), true);
                     } else if (p != null) p.displayClientMessage(Component.translatable("miscelanea.tragaperras.nada"), true);
                 }
@@ -541,6 +542,7 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
             l.sendParticles(ParticleTypes.FIREWORK, c.x, c.y, c.z, 25, 0.3, 0.3, 0.3, 0.12);
             soltar(peluche(l), 0.3);
             FeriaJuice.confeti(l, c, 2);
+            com.miscelanea.logros.LogrosMiscelanea.dar(p, juego + "_gordo");
         } else if (puntos >= premio) {
             soltar(ChapaItem.de(l.random.nextInt(ChapaItem.ORO)), 0.3);
             FeriaJuice.confeti(l, mundo(0, 1.4, -0.5), 1);

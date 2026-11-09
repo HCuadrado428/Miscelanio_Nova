@@ -32,6 +32,7 @@ public class ChoquePacket {
         ServerPlayer p = ctx.get().getSender();
         if (p == null || !(p.level().getEntity(id) instanceof CocheChoque c) || c.getControllingPassenger() != p) return;
         float f = Math.max(0, Math.min(1, fuerza));
+        com.miscelanea.logros.LogrosMiscelanea.dar(p, "choque");
         p.level().playSound(p, c.getX(), c.getY(), c.getZ(), ModSounds.FE_CHOQUE.get(), SoundSource.NEUTRAL, Math.min(1, 0.3F + f * 2), 1F);
         p.serverLevel().sendParticles(ParticleTypes.ELECTRIC_SPARK, c.getX(), c.getY() + 0.5, c.getZ(), 6, 0.4, 0.1, 0.4, 0.05);
     }

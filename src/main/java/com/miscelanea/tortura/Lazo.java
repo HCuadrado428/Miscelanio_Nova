@@ -178,6 +178,7 @@ public final class Lazo {
         for (String k : CLAVES) d.remove(k);
         d.putInt("Lazo", ENLAZADO);
         d.putUUID("LazoCaptor", captor.getUUID());
+        com.miscelanea.logros.LogrosMiscelanea.dar(captor, "lazo");
         Cautivos.escribir(v, d);
         Tiron t = new Tiron(captor.getUUID(), Mth.clamp(captor.distanceTo(v), LARGO_MIN + 1, ALCANCE_MAX), fuerza(v));
         TIRONES.put(v.getUUID(), t);

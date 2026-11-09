@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:raiz",
+  "display": {
+    "icon": {
+      "item": "miscelanea:lazo"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.sala.lazo.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.sala.lazo.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "lazo": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "lazo"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

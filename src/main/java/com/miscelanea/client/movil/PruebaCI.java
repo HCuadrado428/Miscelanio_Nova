@@ -338,10 +338,118 @@ public final class PruebaCI {
         rendimiento();
         laser();
         eco();
+        logros();
         sin("cerrar", 10, () -> {
             mc.setScreen(null);
             RESUMEN.add("  cara propia (la de su modelo) guardada: " + (CarasCliente.tiene(mc.player.getUUID()) ? "sí" : "NO"));
         });
+    }
+
+    // ------------------------------------------------------------------ logros
+    /** Todos los logros de la pestaña de Miscelánea (data/miscelanea/advancements). */
+    private static final String[] LOGROS = ("raiz,movil/movil,movil/foto,movil/video,movil/minegram,movil/flash,movil/mensaje,movil/llamada,movil/videollamada,movil/sin_cobertura,movil/numero_oculto,movil/bizum,arcade/ficha,arcade/partida,arcade/record,arcade/pleno,arcade/canal,feria/noria,feria/choque,feria/tirolina,feria/trampolin,feria/campana,feria/jackpot,mesa/victoria,mesa/ajedrez,mesa/parchis,mesa/calavera,mesa/billar,mesa/futbolin,baile/pista,baile/videoclip,baile/walken,baile/nota_s,baile/nota_e,pociones/gigante,pociones/enano,pociones/borrachera,pociones/tartamudeo,pociones/ventilador,pociones/eco,pociones/laboratorio,pociones/fantasma,bromas/uwu,bromas/australia,bromas/estatica,sala/lazo,sala/grilletes,sala/engrilletado,sala/ganzua,sala/tomatazo,dream/esencia,dream/mordisco,dream/escapar,dream/veneno,dream/medianoche,armas/gambito,armas/laser,armas/hacha,armas/aspira,armas/uber,varios/paella,varios/bacalao,varios/ocarina").split(",");
+    /** Los que ya tienen que estar hechos por los pasos de antes de la prueba (móvil, cámara, vídeo, gramola, pociones). */
+    private static final String[] LOGROS_YA = {"raiz", "movil/movil", "movil/foto", "movil/video", "baile/pista", "baile/videoclip",
+            "pociones/eco", "pociones/gigante"};
+    /** Los que se dan aquí: por el criterio propio (miscelanea:accion), por un efecto y por tener un objeto con NBT. */
+    private static final String[] LOGROS_AQUI = {"sala/lazo", "movil/bizum", "feria/tirolina", "mesa/parchis", "pociones/borrachera",
+            "varios/paella", "varios/bacalao"};
+    private static volatile List<String> logrosHechos, logrosFaltan;
+    private static volatile int logrosCargados = -1;
+
+    /**
+     * Los logros: se mira por código que se cargan todos los de la pestaña y que no hay errores de sus JSON en el registro;
+     * que los pasos de antes ya han dado los suyos (foto, vídeo, baile, pociones…) y que se dan de verdad al hacer la
+     * acción (el criterio propio, un efecto y un objeto). Capturas del aviso al conseguirlos y de la pantalla de logros con
+     * la pestaña de Miscelánea abierta.
+     */
+    private static void logros() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("logros_cargados", 10, () -> {
+            mc.setScreen(null);
+            mc.options.hideGui = false;
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                List<String> faltan = new ArrayList<>();
+                int n = 0;
+                for (var a : srv.getAdvancements().getAllAdvancements())
+                    if (a.getId().getNamespace().equals(Miscelanea.MOD_ID)) n++;
+                for (String id : LOGROS)
+                    if (srv.getAdvancements().getAdvancement(new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, id)) == null) faltan.add(id);
+                logrosFaltan = faltan;
+                logrosCargados = n;
+            });
+        });
+        sin("logros_comprobar_carga", 1, () -> {
+            if (logrosFaltan == null) throw new IllegalStateException("el servidor no ha contestado");
+            // errores de los JSON en el registro (logs/latest.log)
+            List<String> errores = new ArrayList<>();
+            try {
+                for (String l : Files.readAllLines(new File(mc.gameDirectory, "logs/latest.log").toPath(), java.nio.charset.StandardCharsets.UTF_8)) {
+                    String b = l.toLowerCase(java.util.Locale.ROOT);
+                    if (b.contains("miscelanea") && b.contains("advancement") && (b.contains("error") || b.contains("couldn't") || b.contains("invalid")))
+                        errores.add(l.length() > 300 ? l.substring(0, 300) : l);
+                }
+            } catch (Exception ex) {
+                RESUMEN.add("  logros: no se pudo leer logs/latest.log: " + ex);
+            }
+            RESUMEN.add("  logros: " + logrosCargados + " cargados de la pestaña (se esperan " + LOGROS.length + ")"
+                    + (logrosFaltan.isEmpty() ? "" : " · faltan " + logrosFaltan) + (errores.isEmpty() ? " · sin errores en el registro" : ""));
+            for (String e : errores) RESUMEN.add("  logros, error en el registro: " + e);
+            if (!logrosFaltan.isEmpty() || logrosCargados != LOGROS.length) throw new IllegalStateException("no se cargan todos los logros");
+            if (!errores.isEmpty()) throw new IllegalStateException("errores al cargar los logros");
+        });
+        sin("logros_dar", 30, () -> {
+            mc.getToasts().clear();
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                com.miscelanea.logros.LogrosMiscelanea.dar(sp, "lazo");
+                com.miscelanea.logros.LogrosMiscelanea.dar(sp, "bizum");
+                com.miscelanea.logros.LogrosMiscelanea.dar(sp, "tirolina");
+                com.miscelanea.logros.LogrosMiscelanea.dar(sp.getUUID(), "parchis_come");
+                com.miscelanea.logros.LogrosMiscelanea.dar(sp, "accion_que_no_existe");
+                sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(com.miscelanea.voz.VozRegistro.BORRACHERA.get(), 200, 0));
+                sp.getInventory().setItem(8, com.miscelanea.cocina.PaellaItem.bacalao());
+            });
+        });
+        paso("95_logros_aviso", 20, () -> {});
+        sin("logros_mirar", 10, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                List<String> hechos = new ArrayList<>();
+                for (String l : LOGROS) {
+                    var a = srv.getAdvancements().getAdvancement(new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, l));
+                    if (a != null && sp.getAdvancements().getOrStartProgress(a).isDone()) hechos.add(l);
+                }
+                sp.removeEffect(com.miscelanea.voz.VozRegistro.BORRACHERA.get());
+                sp.getInventory().setItem(8, ItemStack.EMPTY);
+                logrosHechos = hechos;
+            });
+        });
+        sin("logros_comprobar", 1, () -> {
+            List<String> h = logrosHechos;
+            if (h == null) throw new IllegalStateException("el servidor no ha contestado");
+            RESUMEN.add("  logros conseguidos (" + h.size() + "): " + String.join(" ", h));
+            List<String> faltan = new ArrayList<>();
+            for (String l : LOGROS_YA) if (!h.contains(l)) faltan.add(l);
+            for (String l : LOGROS_AQUI) if (!h.contains(l)) faltan.add(l);
+            if (!h.contains("baile/walken")) RESUMEN.add("  AVISO logros: no ha salido el de Weapon of Choice (¿no llegó a empezar el videoclip del hotel?)");
+            if (!faltan.isEmpty()) throw new IllegalStateException("no se han dado: " + faltan);
+        });
+        paso("96_logros_pantalla", 30, () -> {
+            var ca = mc.player.connection.getAdvancements();
+            var raiz = ca.getAdvancements().get(new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "raiz"));
+            if (raiz == null) throw new IllegalStateException("el cliente no tiene la pestaña de Miscelánea");
+            ca.setSelectedTab(raiz, true);
+            mc.setScreen(new net.minecraft.client.gui.screens.advancements.AdvancementsScreen(ca));
+        });
+        sin("logros_fin", 5, () -> mc.setScreen(null));
     }
 
     // ------------------------------------------------------------------ rendimiento de la sala recreativa

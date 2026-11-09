@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/gambito",
+  "display": {
+    "icon": {
+      "item": "miscelanea:hacha_leviatan"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.hacha.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.hacha.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "hacha_atrapar": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "hacha_atrapar"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

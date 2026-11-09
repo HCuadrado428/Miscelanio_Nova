@@ -82,6 +82,7 @@ public final class MazoEventos {
         sl.playSound(null, c.x, c.y, c.z, caida > 5 ? ModSounds.MAZO_GOLPE_FUERTE.get() : ModSounds.MAZO_GOLPE.get(), SoundSource.PLAYERS, 1.6F, 1F);
         empujar(sl, c, 3.5, p, objetivo, 0.35);
         TemblorPacket.enviar(sl, c, 12, Math.min(2.5F, caida * 0.2F), 12);
+        com.miscelanea.logros.LogrosMiscelanea.dar(p, "gambito");
         // Ráfaga de viento II: te devuelve muy alto para encadenar otro golpe
         p.resetFallDistance();
         Vec3 v = p.getDeltaMovement();

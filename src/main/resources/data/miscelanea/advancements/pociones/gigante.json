@@ -1,0 +1,32 @@
+{
+  "parent": "miscelanea:raiz",
+  "display": {
+    "icon": {
+      "item": "minecraft:potion",
+      "nbt": "{Potion:\"miscelanea:gigante\"}"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.pociones.gigante.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.pociones.gigante.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "efecto": {
+      "trigger": "minecraft:effects_changed",
+      "conditions": {
+        "effects": {
+          "miscelanea:gigante": {}
+        }
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

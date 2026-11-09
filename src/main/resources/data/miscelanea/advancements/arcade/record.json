@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:arcade/partida",
+  "display": {
+    "icon": {
+      "item": "miscelanea:tablon_records"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.arcade.record.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.arcade.record.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "record": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "record"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 50
+  }
+}

@@ -67,6 +67,8 @@ public final class Grilletes {
         v.level().playSound(null, v.getX(), v.getY() + v.getBbHeight() * 0.5, v.getZ(), TorturaRegistro.GRILLETES_PONER.get(), SoundSource.PLAYERS, 1F, 1F);
         if (v instanceof Player pv)
             pv.sendSystemMessage(Component.translatable("msg.miscelanea.grilletes.puestos").withStyle(ChatFormatting.RED));
+        com.miscelanea.logros.LogrosMiscelanea.dar(captor, "grilletes");
+        com.miscelanea.logros.LogrosMiscelanea.dar(v, "engrilletado");
         captor.displayClientMessage(Component.translatable(conCadena ? "msg.miscelanea.grilletes.puestos_cadena" : "msg.miscelanea.grilletes.puestos_captor",
                 v.getDisplayName()).withStyle(ChatFormatting.GOLD), true);
         Cautivos.sincronizar(v);

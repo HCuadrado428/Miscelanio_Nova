@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:sala/lazo",
+  "display": {
+    "icon": {
+      "item": "miscelanea:ganzua"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.sala.ganzua.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.sala.ganzua.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "qte_ganzua": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "qte_ganzua"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}
