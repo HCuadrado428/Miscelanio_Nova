@@ -112,9 +112,10 @@ public final class LiminalCliente {
         }
 
         @Override
-        public void render(net.minecraft.world.level.block.entity.BlockEntity be, float pt, PoseStack ps, net.minecraft.client.renderer.MultiBufferSource buf, int luz, int overlay) {
+        public void preRender(PoseStack ps, AtrezoBE be, software.bernie.geckolib.cache.object.BakedGeoModel m, net.minecraft.client.renderer.MultiBufferSource buf,
+                              com.mojang.blaze3d.vertex.VertexConsumer vc, boolean re, float pt, int luz, int ov, float r, float g, float b, float a) {
             dibujados++;
-            super.render(be, pt, ps, buf, luz, overlay);
+            super.preRender(ps, be, m, buf, vc, re, pt, luz, ov, r, g, b, a);
         }
 
         @Override
