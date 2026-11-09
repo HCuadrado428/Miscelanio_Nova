@@ -355,6 +355,8 @@ public final class PruebaCI {
     private static final String[] LOGROS_AQUI = {"sala/lazo", "movil/bizum", "feria/tirolina", "mesa/parchis", "pociones/borrachera",
             "varios/paella", "varios/bacalao"};
     private static volatile List<String> logrosHechos, logrosFaltan;
+    /** Mientras se mide la imagen: fuera los avisos de logros. */
+    private static boolean sinAvisos;
     private static volatile int logrosCargados = -1;
 
     /**
@@ -401,6 +403,7 @@ public final class PruebaCI {
         });
         sin("logros_dar", 30, () -> {
             mc.getToasts().clear();
+            mc.gui.getChat().clearMessages(false);
             var srv = mc.getSingleplayerServer();
             UUID id = mc.player.getUUID();
             srv.execute(() -> {
@@ -446,8 +449,17 @@ public final class PruebaCI {
             var ca = mc.player.connection.getAdvancements();
             var raiz = ca.getAdvancements().get(new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "raiz"));
             if (raiz == null) throw new IllegalStateException("el cliente no tiene la pestaña de Miscelánea");
+            mc.getToasts().clear();
+            mc.gui.getChat().clearMessages(false);
             ca.setSelectedTab(raiz, true);
             mc.setScreen(new net.minecraft.client.gui.screens.advancements.AdvancementsScreen(ca));
+        });
+        // arrastrando con el ratón: la parte de arriba del árbol (el móvil, la recreativa…)
+        paso("97_logros_pantalla_arriba", 20, () -> {
+            if (!(mc.screen instanceof net.minecraft.client.gui.screens.advancements.AdvancementsScreen a)) throw new IllegalStateException("no está la pantalla de logros");
+            double x = a.width / 2.0, y = a.height / 2.0;
+            a.mouseDragged(x, y, 0, 0, 0);
+            a.mouseDragged(x, y, 0, 60, 400);
         });
         sin("logros_fin", 5, () -> mc.setScreen(null));
     }
@@ -808,6 +820,9 @@ public final class PruebaCI {
     private static void eco() {
         Minecraft mc = Minecraft.getInstance();
         sin("eco_poner", 30, () -> {
+            // sin avisos de logros (el de la ecolocalización sale ahora): son claros y estropean la medida del cielo
+            sinAvisos = true;
+            mc.gui.getChat().clearMessages(false);
             mc.setScreen(null);
             mc.options.hideGui = false;
             mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
@@ -938,6 +953,7 @@ public final class PruebaCI {
             if (ecoOscuros > 0.9) throw new IllegalStateException("la pantalla sigue negra al quitar el efecto");
         });
         sin("eco_fin", 5, () -> {
+            sinAvisos = false;
             if (ecoJugador != null) mc.level.removeEntity(ECO_ID, net.minecraft.world.entity.Entity.RemovalReason.DISCARDED);
             ecoJugador = null;
             var srv = mc.getSingleplayerServer();
@@ -1084,6 +1100,7 @@ public final class PruebaCI {
             com.miscelanea.client.pociones.EcoCliente.habla(ecoHabla, 0.3F);
             com.miscelanea.client.pociones.EcoCliente.hablaYo(0.01F);
         }
+        if (sinAvisos) mc.getToasts().clear();
         // que MC-Runtime-Test no dé la prueba por acabada mientras sigue esto
         if (mc.player.tickCount > 60) mc.player.tickCount = 60;
         if (++ticksEnMundo < 40) return;
