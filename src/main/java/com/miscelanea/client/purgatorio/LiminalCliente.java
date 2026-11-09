@@ -69,7 +69,7 @@ public final class LiminalCliente {
         private static ResourceLocation[] de(AtrezoBE a) {
             return RL.computeIfAbsent(a.tipo(), t -> new ResourceLocation[]{
                     new ResourceLocation(Miscelanea.MOD_ID, "geo/block/" + t + ".geo.json"),
-                    new ResourceLocation(Miscelanea.MOD_ID, "textures/block/liminal/" + t + ".png"),
+                    new ResourceLocation(Miscelanea.MOD_ID, "textures/geo/liminal/" + t + ".png"),
                     new ResourceLocation(Miscelanea.MOD_ID, "animations/block/" + t + ".animation.json")});
         }
 
@@ -112,7 +112,7 @@ public final class LiminalCliente {
         }
 
         @Override
-        public void render(AtrezoBE be, float pt, PoseStack ps, net.minecraft.client.renderer.MultiBufferSource buf, int luz, int overlay) {
+        public void render(net.minecraft.world.level.block.entity.BlockEntity be, float pt, PoseStack ps, net.minecraft.client.renderer.MultiBufferSource buf, int luz, int overlay) {
             dibujados++;
             super.render(be, pt, ps, buf, luz, overlay);
         }
