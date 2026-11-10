@@ -62,7 +62,7 @@ public class BolaCanonEntity extends ThrowableItemProjectile {
     public void tick() {
         super.tick();
         if (level().isClientSide && tickCount > 1) level().addParticle(ParticleTypes.SMOKE, getX(), getY(), getZ(), 0, 0, 0);
-        if (!level().isClientSide && tickCount > 200) discard();
+        if (!level().isClientSide && tickCount > 200 && !isNoGravity()) discard();
         if (level().isClientSide && saltarin() && tickCount % 3 == 0) level().addParticle(ParticleTypes.ITEM_SLIME, getX(), getY(), getZ(), 0, 0, 0);
     }
 

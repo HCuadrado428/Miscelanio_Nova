@@ -3363,5 +3363,6 @@
   "advancements.miscelanea.armas.castillo_arena.title": "Castillo de arena",
   "advancements.miscelanea.armas.castillo_arena.description": "Dispara un bloque que cae con el cañón de mano y que se quede donde da.",
   "advancements.miscelanea.armas.rebote.title": "Pájaros enfadados",
-  "advancements.miscelanea.armas.rebote.description": "Haz que un bolaño saltarín rebote tres veces. Los cerdos verdes tiemblan."
+  "advancements.miscelanea.armas.rebote.description": "Haz que un bolaño saltarín rebote tres veces. Los cerdos verdes tiemblan.",
+  "msg.miscelanea.armafuego.sin_balas": "No te queda munición para recargar"
 }

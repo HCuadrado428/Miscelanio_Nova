@@ -151,6 +151,12 @@ public class WinchesterItem extends ArmaFuegoItem {
         return 0xFFE0A548;
     }
 
+    /** Se mezclan: cualquier bala vale. */
+    @Override
+    protected boolean mismoTipo(ItemStack s) {
+        return false;
+    }
+
     /** Cualquier bala de la Winchester, de la que haya (primero la de la otra mano): se mezclan. */
     @Override
     public ItemStack elegir(Player p, ItemStack s) {

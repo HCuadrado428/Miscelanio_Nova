@@ -3363,5 +3363,6 @@
   "advancements.miscelanea.armas.castillo_arena.title": "Sandcastle",
   "advancements.miscelanea.armas.castillo_arena.description": "Fire a falling block from the hand cannon and have it land where it hits.",
   "advancements.miscelanea.armas.rebote.title": "Angry Birds",
-  "advancements.miscelanea.armas.rebote.description": "Make a bouncy cannonball bounce three times. The green pigs tremble."
+  "advancements.miscelanea.armas.rebote.description": "Make a bouncy cannonball bounce three times. The green pigs tremble.",
+  "msg.miscelanea.armafuego.sin_balas": "You have no ammo left to reload"
 }
