@@ -154,6 +154,7 @@ public class GatlingEntity extends Entity {
     /** Para la prueba del CI: poner las balas de la cinta. */
     public void ponerBalasPrueba(int n) {
         entityData.set(BALAS, n);
+        entityData.set(RECARGA, 0);
         if (cinta.isEmpty()) ponerCinta(new ItemStack(ModItems.CINTA_GATLING.get()));
     }
 

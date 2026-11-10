@@ -2211,7 +2211,7 @@ public final class PruebaCI {
             a2VigilaGatling = true;
             if (sp.getVehicle() instanceof com.miscelanea.armasfuego.gatling.GatlingEntity g) {
                 g.ponerBalasPrueba(g.balasCinta());
-                g.ponerCalor(97F);
+                g.ponerCalor(99F);
             }
         }));
         paso("204_gatling_al_rojo", 14, () -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK));
@@ -2842,6 +2842,14 @@ public final class PruebaCI {
         });
     }
 
+    /** La arena que hay alrededor (para ver si el tiro ha puesto más). */
+    private static int a2Arena(ServerPlayer sp) {
+        int n = 0;
+        for (var b : net.minecraft.core.BlockPos.betweenClosed(a2O.offset(-12, -1, -12), a2O.offset(12, 6, 12)))
+            if (sp.serverLevel().getBlockState(b).is(net.minecraft.world.level.block.Blocks.SAND)) n++;
+        return n;
+    }
+
     private static com.miscelanea.armasfuego.gatling.GatlingEntity a2Gat(ServerPlayer sp) {
         return a2Gat2 == null ? null : (com.miscelanea.armasfuego.gatling.GatlingEntity) sp.serverLevel().getEntity(a2Gat2);
     }
@@ -3072,14 +3080,15 @@ public final class PruebaCI {
             });
             a2Apuntar(a2Punto(8, 0, 1.2));
         });
-        sin("a2u_manga_sacar", 3, com.miscelanea.client.armasfuego.comun.FuegoCliente::sacarDeLaManga);
-        // el tiro enseguida (antes de la captura: con shaders, sacar una captura tarda más de un segundo)
+        // sacarla y el tiro seguidos (los paquetes llegan en orden: primero sale de la manga y luego dispara); con
+        // shaders, a pocos fps, unos pocos pasos ya eran más de un segundo del servidor
         sin("a2u_manga_tiro", 4, () -> {
-            piSrv(sp -> PI.put("manga", sp.getMainHandItem().getItem() instanceof com.miscelanea.armasfuego.oeste.DerringerItem
-                    && sp.getInventory().getItem(22).is(net.minecraft.world.item.Items.STICK)));
             a2Apuntar(a2Punto(8, 0, 1.2));
+            com.miscelanea.client.armasfuego.comun.FuegoCliente.sacarDeLaManga();
             piDisparar();
         });
+        sin("a2u_manga_mano", 2, () -> piSrv(sp -> PI.put("manga", sp.getMainHandItem().getItem() instanceof com.miscelanea.armasfuego.oeste.DerringerItem
+                && sp.getInventory().getItem(22).is(net.minecraft.world.item.Items.STICK))));
         paso("284_derringer_manga", 3, () -> {});
         sin("a2u_manga_ver", 2, () -> piSrv(sp -> PI.put("manga_logro", a2Logro(sp, "armas/derringer_manga"))));
         sin("a2u_manga_ok", 2, () -> a2Comprobar("la tecla de la manga saca la Derringer de golpe (y el tiro en menos de un segundo da el logro)",
@@ -3243,14 +3252,13 @@ public final class PruebaCI {
             c.getOrCreateTag().putString(com.miscelanea.armasfuego.comun.ArmaFuegoItem.TIPO, "minecraft:sand");
             a2Mano(c);
             a2Apuntar(a2Punto(6, -3, 0));
+            piSrv(sp -> PI.put("arena0", a2Arena(sp)));
         });
         sin("a2u_arena_mecha", 2, piTiro());
         sin("a2u_arena_vuela", 60, () -> a2Apuntar(a2Punto(6, -3, 0)));
         sin("a2u_arena_ver", 2, () -> piSrv(sp -> {
             var l = sp.serverLevel();
-            int arena = 0;
-            for (var b : net.minecraft.core.BlockPos.betweenClosed(a2O.offset(-12, -1, -12), a2O.offset(12, 6, 12)))
-                if (l.getBlockState(b).is(net.minecraft.world.level.block.Blocks.SAND)) arena++;
+            int arena = a2Arena(sp) - (PI.get("arena0") instanceof Integer i ? i : 0);
             int objetos = l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(a2O).inflate(14), e -> e.getItem().is(net.minecraft.world.item.Items.SAND)).size();
             PI.put("arena", arena);
             PI.put("arena_obj", objetos);
