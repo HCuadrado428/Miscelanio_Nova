@@ -832,7 +832,15 @@ public final class PruebaCI {
     private static volatile net.minecraft.core.BlockPos piO;
     private static volatile net.minecraft.core.Direction piMira, piLado;
     private static volatile UUID piHusk;
-    private static volatile boolean piVigilaBrillo, escVigilaMiel, a2VigilaGatling, escVigilaSalto, a2CongelaYunque;
+    private static volatile boolean piVigilaBrillo, escVigilaMiel, a2VigilaGatling, escVigilaSalto, a2CongelaYunque, a2VigilaNotas;
+
+    /** Las notitas del violín que se ven en el cliente: lo más que ha habido a la vez (se mira en cada tick). */
+    @SubscribeEvent
+    public static void a2NotasTick(TickEvent.ClientTickEvent e) {
+        if (!ACTIVA || e.phase != TickEvent.Phase.END || !a2VigilaNotas) return;
+        int n = a2Notas();
+        PI.merge("v_notas_max", n, (a, b) -> Math.max((Integer) a, (Integer) b));
+    }
     private static final java.util.Map<String, Object> PI = new java.util.concurrent.ConcurrentHashMap<>();
     private static net.minecraftforge.common.util.FakePlayer piForastero;
 
@@ -2854,6 +2862,21 @@ public final class PruebaCI {
         });
     }
 
+    /** Lo que pone ahora la barra de acción (encima del inventario), o "" si nada. */
+    private static String a2Aviso() {
+        var gui = Minecraft.getInstance().gui;
+        for (var f : net.minecraft.client.gui.Gui.class.getDeclaredFields()) {
+            if (f.getType() != net.minecraft.network.chat.Component.class || java.lang.reflect.Modifier.isStatic(f.getModifiers())) continue;
+            try {
+                f.setAccessible(true);
+                Object v = f.get(gui);
+                if (v instanceof net.minecraft.network.chat.Component c && !c.getString().isEmpty()) return c.getString();
+            } catch (Exception ignorada) {
+            }
+        }
+        return "";
+    }
+
     /** Las partículas de nota que hay ahora en el cliente (en el motor de partículas, también las que van a entrar). */
     @SuppressWarnings("unchecked")
     private static int a2Notas() {
@@ -3061,6 +3084,7 @@ public final class PruebaCI {
         });
         // ---------------------------------------------------------------- Winchester: depósito mezclado (la última que entra sale primero)
         sin("a2u_winchester", 8, () -> {
+            mc.gui.setOverlayMessage(net.minecraft.network.chat.Component.empty(), false);
             a2Mano(new ItemStack(com.miscelanea.registry.ModItems.WINCHESTER.get()));
             piSrv(sp -> {
                 var inv = sp.getInventory();
@@ -3083,9 +3107,14 @@ public final class PruebaCI {
                 PI.put("dep_logro", a2Logro(sp, "armas/winchester_mezcla"));
             });
         });
-        sin("a2u_winchester_dep_ok", 2, () -> a2Comprobar("la Winchester mezcla las balas en el depósito",
-                "[revolver_bala, bala_hielo, revolver_dardo, bala_plata, revolver_tiempo]".equals(PI.get("dep")) && Boolean.TRUE.equals(PI.get("dep_logro")),
-                "depósito " + PI.get("dep") + ", logro " + PI.get("dep_logro")));
+        sin("a2u_winchester_dep_ok", 2, () -> {
+            // y al acabar la carga (con el botón aún pulsado) no sale ningún «No llevas...» en la barra de acción
+            String aviso = a2Aviso();
+            a2Comprobar("la Winchester mezcla las balas en el depósito (y al acabar no avisa de munición)",
+                    "[revolver_bala, bala_hielo, revolver_dardo, bala_plata, revolver_tiempo]".equals(PI.get("dep")) && Boolean.TRUE.equals(PI.get("dep_logro"))
+                            && !aviso.startsWith("No llevas") && !aviso.startsWith("No te queda"),
+                    "depósito " + PI.get("dep") + ", logro " + PI.get("dep_logro") + ", aviso «" + aviso + "»");
+        });
         paso("283_winchester_hud", 6, () -> a2Apuntar(a2Punto(8, 0, 1.2)));
         sin("a2u_winchester_tiro", 6, piTiro());
         sin("a2u_winchester_tiro_ver", 2, () -> piSrv(sp -> {
@@ -3134,12 +3163,17 @@ public final class PruebaCI {
         // motor de partículas del cliente justo después y la captura va enseguida)
         sin("a2u_violin_1p", 2, () -> {
             a2Camara1p();
-            piSrv(sp -> sp.setXRot(-15F));
-            mc.player.setXRot(-15F);
+            piSrv(sp -> sp.setXRot(0F));
+            mc.player.setXRot(0F);
+            PI.remove("v_notas_max");
+            a2VigilaNotas = true;
             piDisparar();
         });
-        paso("285_violin_1p", 1, () -> PI.put("v_notas1p", a2Notas()));
+        paso("285_violin_1p", 1, () -> {});
         sin("a2u_violin_arriba", 3, () -> {
+            // las notitas que han llegado a verse en el cliente (se miran en cada tick: con shaders, a pocos fps, podían
+            // haber salido y acabado entre paso y paso)
+            PI.put("v_notas1p", PI.get("v_notas_max") instanceof Integer i ? i : 0);
             piSrv(sp -> sp.setXRot(-70F));
             mc.player.setXRot(-70F);
             piDisparar();
@@ -3147,13 +3181,18 @@ public final class PruebaCI {
         sin("a2u_violin_arriba_ver", 4, () -> PI.put("v_alta", com.miscelanea.armasfuego.oeste.EstucheViolinItem.ultimaNota));
         // en tercera persona (de frente), mirando abajo: grave, y la notita encima de la cabeza
         sin("a2u_violin_3p", 2, () -> {
+            PI.remove("v_notas_max");
             mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
             piSrv(sp -> sp.setXRot(40F));
             mc.player.setXRot(40F);
             piDisparar();
         });
-        paso("285_violin", 1, () -> PI.put("v_notas3p", a2Notas()));
-        sin("a2u_violin_ver", 4, () -> PI.put("v_baja", com.miscelanea.armasfuego.oeste.EstucheViolinItem.ultimaNota));
+        paso("285_violin", 1, () -> {});
+        sin("a2u_violin_ver", 4, () -> {
+            a2VigilaNotas = false;
+            PI.put("v_notas3p", PI.get("v_notas_max") instanceof Integer i ? i : 0);
+            PI.put("v_baja", com.miscelanea.armasfuego.oeste.EstucheViolinItem.ultimaNota);
+        });
         sin("a2u_violin_ok", 2, () -> {
             mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
             int n = com.miscelanea.armasfuego.oeste.EstucheViolinItem.tocadas - (PI.get("v0") instanceof Integer i ? i : 0);
@@ -3273,7 +3312,7 @@ public final class PruebaCI {
         paso("288_canon_yunque", 6, () -> {
             if (!(PI.get("arco_pos") instanceof Vec3 q)) throw new IllegalStateException("el yunque no ha salido del cañón");
             Vec3 lado = new Vec3(a2Lado.getStepX(), 0, a2Lado.getStepZ()), fr = new Vec3(a2Mira.getStepX(), 0, a2Mira.getStepZ());
-            a2VistaA(q.add(fr.scale(-1.5)), q.add(lado.scale(5.5)).add(fr.scale(-2.5)).add(0, -0.6, 0));
+            a2VistaA(q.add(fr.scale(-0.6)), q.add(lado.scale(2.6)).add(fr.scale(-1.4)).add(0, -0.4, 0));
         });
         sin("a2u_arco_sigue", 40, () -> {
             a2CongelaYunque = false;

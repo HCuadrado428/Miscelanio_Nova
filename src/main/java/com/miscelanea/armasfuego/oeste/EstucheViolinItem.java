@@ -77,10 +77,11 @@ public class EstucheViolinItem extends Item {
                 1.0F, tono);
         if (desafinado) l.playSound(null, p.getX(), p.getEyeY(), p.getZ(), ModSounds.VIOLIN_NOTA.get(), SoundSource.RECORDS, 0.5F, tono * 1.03F);
         // la notita de colores (el color, el de la nota, como el bloque musical): una encima de la cabeza (la ven los
-        // demás) y otra delante, junto al estuche (la ve también el que toca, en primera persona)
+        // demás) y otra delante, un poco por debajo de los ojos (sube al salir: así la ve también el que toca, en primera
+        // persona, en el centro de la vista)
         var m = p.getViewVector(1F);
         l.sendParticles(net.minecraft.core.particles.ParticleTypes.NOTE, p.getX(), p.getEyeY() + 0.7, p.getZ(), 0, n / 24.0, 0, 0, 1);
-        l.sendParticles(net.minecraft.core.particles.ParticleTypes.NOTE, p.getX() + m.x * 0.9, p.getEyeY() + m.y * 0.9 + 0.25, p.getZ() + m.z * 0.9, 0, n / 24.0, 0, 0, 1);
+        l.sendParticles(net.minecraft.core.particles.ParticleTypes.NOTE, p.getX() + m.x * 0.9, p.getEyeY() + m.y * 0.9 - 0.2, p.getZ() + m.z * 0.9, 0, n / 24.0, 0, 0, 1);
         l.gameEvent(p, net.minecraft.world.level.gameevent.GameEvent.NOTE_BLOCK_PLAY, p.position());
         tocadas++;
         ultimaNota = n;
