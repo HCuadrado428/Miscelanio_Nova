@@ -196,7 +196,7 @@ public abstract class ArmaFuegoItem extends Item {
     /** Probabilidad de que se encasquille un disparo (más cuanto más oxidado, como las tres primeras). */
     protected float probAtasco(Player p, ItemStack s) {
         if (EquilibrioArmas.sinAtascosPrueba) return 0F;
-        return EquilibrioArmas.encasquilladoBase() + Cobre.atasco(Cobre.oxido(s));
+        return EquilibrioArmas.encasquilladoBase() + Cobre.atascoDisparo(Cobre.oxido(s));
     }
 
     /** Sonido del paso de recarga. */

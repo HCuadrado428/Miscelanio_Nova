@@ -38,6 +38,11 @@ public final class Cobre {
         return EquilibrioArmas.oxidoAtasco(ox);
     }
 
+    /** El encasquillado de la fase al disparar (la prueba del CI los apaga). */
+    public static float atascoDisparo(int ox) {
+        return EquilibrioArmas.sinAtascosPrueba ? 0F : atasco(ox);
+    }
+
     /** Dispersión (radianes) que añade la fase. */
     public static double dispersion(int ox) {
         return EquilibrioArmas.oxidoDispersion(ox);

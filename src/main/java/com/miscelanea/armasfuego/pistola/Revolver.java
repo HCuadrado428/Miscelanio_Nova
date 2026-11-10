@@ -115,7 +115,7 @@ public final class Revolver {
             return true;
         }
         int ox = Tambor.oxido(s);
-        if (r.nextFloat() < com.miscelanea.armasfuego.comun.Cobre.atasco(ox) + com.miscelanea.armasfuego.comun.EquilibrioArmas.encasquilladoBase()) {
+        if (r.nextFloat() < com.miscelanea.armasfuego.comun.Cobre.atascoDisparo(ox) + com.miscelanea.armasfuego.comun.EquilibrioArmas.encasquilladoBase()) {
             // encasquillado: la bala se queda en su recámara
             l.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.REVOLVER_VACIO.get(), SoundSource.PLAYERS, 0.9F, 0.7F);
             l.sendParticles(ParticleTypes.SMOKE, boca.x, boca.y, boca.z, 3, 0.03, 0.03, 0.03, 0.01);

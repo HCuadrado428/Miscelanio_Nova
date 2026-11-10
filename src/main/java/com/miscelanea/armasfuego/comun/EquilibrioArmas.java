@@ -208,7 +208,7 @@ public final class EquilibrioArmas {
         return l.get(Math.max(0, Math.min(l.size() - 1, ox))).floatValue();
     }
 
-    public static float oxidoAtasco(int ox) { return sinAtascosPrueba ? 0F : fase(OX_ATASCO, ox); }
+    public static float oxidoAtasco(int ox) { return fase(OX_ATASCO, ox); }
     public static double oxidoDispersion(int ox) { return fase(OX_DISPERSION, ox); }
     public static float oxidoDano(int ox) { return fase(OX_DANO, ox); }
     public static float oxidoPerforacion(int ox) { return fase(OX_PERFORACION, ox); }

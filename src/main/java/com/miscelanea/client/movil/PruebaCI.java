@@ -3578,7 +3578,11 @@ public final class PruebaCI {
             PI.put("bay_rota0", b.getDamageValue());
             var orbe = new net.minecraft.world.entity.ExperienceOrb(sp.serverLevel(), sp.getX(), sp.getY() + 0.5, sp.getZ(), 30);
             sp.serverLevel().addFreshEntity(orbe);
-            if (z != null) z.setHealth(1F);
+            if (z != null) {
+                // a 1 de vida y apagado (si no, el fuego del primer golpe lo remataba antes que la bayoneta)
+                z.setHealth(1F);
+                z.clearFire();
+            }
         }));
         sin("a2o_bayoneta_remate", 26, () -> {});
         sin("a2o_bayoneta_golpe2", 6, () -> {

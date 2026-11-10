@@ -203,7 +203,7 @@ public final class Rifle {
         CompoundTag t = s.getOrCreateTag();
         int ox = oxido(s);
         // el cobre oxidado falla a veces: el cartucho no sale y hay que sacarlo con el cerrojo
-        if (p.getRandom().nextFloat() < com.miscelanea.armasfuego.comun.Cobre.atasco(ox) * 1.4F + com.miscelanea.armasfuego.comun.EquilibrioArmas.encasquilladoBase()) {
+        if (p.getRandom().nextFloat() < com.miscelanea.armasfuego.comun.Cobre.atascoDisparo(ox) * 1.4F + com.miscelanea.armasfuego.comun.EquilibrioArmas.encasquilladoBase()) {
             t.putBoolean(GASTADA, true);
             l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.DISPENSER_FAIL, SoundSource.PLAYERS, 0.8F, 1.4F);
             return;
