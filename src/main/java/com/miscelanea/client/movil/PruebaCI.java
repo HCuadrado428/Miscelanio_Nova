@@ -3173,6 +3173,7 @@ public final class PruebaCI {
                 ItemStack mq = new ItemStack(com.miscelanea.registry.ModItems.MOSQUETE.get());
                 com.miscelanea.armasfuego.oeste.MosqueteItem.ponerBayoneta(mq, new ItemStack(esp[k]));
                 marco.setItem(mq, false);
+                marco.setRotation(1);   // en diagonal: cabe entero y se ve la hoja
                 marco.addTag("a2u_bayoneta");
                 l.addFreshEntity(marco);
             }
