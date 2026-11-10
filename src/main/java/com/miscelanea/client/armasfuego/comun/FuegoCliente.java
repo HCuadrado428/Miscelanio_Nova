@@ -173,8 +173,6 @@ public final class FuegoCliente {
             }
         }
         // la mecha del cañón: tiembla mientras arde
-        if (s.getItem() instanceof MosqueteItem && (balas == 0 || p.isUsingItem() && p.getUseItem() == s && ArmaFuegoItem.modo(s) == ArmaFuegoItem.MODO_RECARGA))
-            hudMosquete(g, mc, p, a, s, x, y + 22, pt);
         if (s.getItem() instanceof CanonManoItem && CanonManoItem.mecha(s) >= 0) {
             float t = l.getGameTime() + pt;
             ps.translate(Mth.sin(t * 2.3F) * 0.006F, Mth.cos(t * 3.1F) * 0.006F, 0);
