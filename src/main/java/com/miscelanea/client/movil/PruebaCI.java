@@ -3189,7 +3189,8 @@ public final class PruebaCI {
             mc.player.setXRot(40F);
             piDisparar();
         });
-        paso("285_violin", 1, () -> {});
+        sin("a2u_violin_3p_otra", 2, () -> {});
+        paso("285_violin", 2, PruebaCI::piDisparar);
         sin("a2u_violin_ver", 4, () -> {
             a2VigilaNotas = false;
             PI.put("v_notas3p", PI.get("v_notas_max") instanceof Integer i ? i : 0);
@@ -3857,6 +3858,18 @@ public final class PruebaCI {
         // ---- escarcha: apaga a la diana, la congela y deja nieve en polvo en el suelo
         sin("esc_escarcha", 5, () -> escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.ESCARCHA, 100, escHuskPos().add(0, -0.9, 0)));   // a los pies: más perdigones al suelo (con shaders a veces no caía ninguno)
         paso("126_escarcha", 15, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
+        // si los perdigones no han dado a la diana (se reparten al azar; con mala suerte ardía aún), otro tiro
+        sin("esc_escarcha_otra", 5, () -> {
+            var h = escEntidad(escHusk);
+            if (h.isOnFire() || h.getTicksFrozen() <= 0) {
+                RESUMEN.add("  escopeta: el primer tiro de escarcha no ha dado bien; otro");
+                PI.put("escarcha_otra", true);
+                escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.ESCARCHA, 100, escHuskPos().add(0, -0.9, 0));
+            } else PI.remove("escarcha_otra");
+        });
+        sin("esc_escarcha_tiro2", 15, () -> {
+            if (Boolean.TRUE.equals(PI.get("escarcha_otra"))) com.miscelanea.client.armasfuego.escopeta.EscopetaCliente.disparar();
+        });
         sin("esc_escarcha_chk", 5, () -> {
             var h = escEntidad(escHusk);
             int nieve = 0;
