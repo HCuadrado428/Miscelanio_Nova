@@ -173,6 +173,8 @@ public final class FuegoCliente {
             }
         }
         // la mecha del cañón: tiembla mientras arde
+        if (s.getItem() instanceof MosqueteItem && (balas == 0 || p.isUsingItem() && p.getUseItem() == s && ArmaFuegoItem.modo(s) == ArmaFuegoItem.MODO_RECARGA))
+            hudMosquete(g, mc, p, a, s, x, y + 22, pt);
         if (s.getItem() instanceof CanonManoItem && CanonManoItem.mecha(s) >= 0) {
             float t = l.getGameTime() + pt;
             ps.translate(Mth.sin(t * 2.3F) * 0.006F, Mth.cos(t * 3.1F) * 0.006F, 0);
@@ -214,7 +216,8 @@ public final class FuegoCliente {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer p = mc.player;
         if (p == null || mc.options.hideGui || mc.level == null) return;
-        if (p.getVehicle() instanceof GatlingEntity gat) {
+        GatlingEntity gat = GatlingEntity.deJugador(p);
+        if (gat != null) {
             hudGatling(g, mc, gat, w, h);
             return;
         }
@@ -223,8 +226,11 @@ public final class FuegoCliente {
         int x = w / 2 + 12, y = h / 2 + 8;
         var f = mc.font;
         int balas = ArmaFuegoItem.balas(s), cap = a.capacidad(s);
-        // balas: puntitos de latón si caben (hasta 12), si no el número
-        if (cap <= 12) {
+        // balas: la Winchester, su depósito tubular con el color de cada bala; las demás, puntitos de latón si caben
+        // (hasta 12), si no el número
+        if (s.getItem() instanceof WinchesterItem) {
+            hudDeposito(g, s, cap, x, y);
+        } else if (cap <= 12) {
             for (int i = 0; i < cap; i++) {
                 int bx = x + i * 3;
                 g.fill(bx, y, bx + 2, y + 5, i < balas ? 0xFFD6A632 : 0x66403020);
@@ -242,11 +248,64 @@ public final class FuegoCliente {
             g.fill(x, y + 17, x + 30, y + 19, 0x88000000);
             g.fill(x, y + 17, x + (int) (30 * fr), y + 19, 0xFFE0C060);
         }
+        if (s.getItem() instanceof MosqueteItem && (balas == 0 || p.isUsingItem() && p.getUseItem() == s && ArmaFuegoItem.modo(s) == ArmaFuegoItem.MODO_RECARGA))
+            hudMosquete(g, mc, p, a, s, x, y + 22, pt);
         if (s.getItem() instanceof CanonManoItem && CanonManoItem.mecha(s) >= 0) {
             long q = CanonManoItem.mecha(s) - mc.level.getGameTime();
             float fr = 1F - q / (float) CanonManoItem.mechaTicks(s);
             g.fill(x, y + 17, x + 30, y + 19, 0x88000000);
             g.fill(x, y + 17, x + (int) (30 * Mth.clamp(fr, 0, 1)), y + 19, 0xFFFF7A20);
+        }
+    }
+
+    /**
+     * El depósito tubular de la Winchester junto a la mira: un tubo con cada bala de su color, la que va a salir
+     * (la última que entró) pegada a la mira y marcada encima; los huecos vacíos, oscuros.
+     */
+    private static void hudDeposito(GuiGraphics g, ItemStack s, int cap, int x, int y) {
+        java.util.List<net.minecraft.world.item.Item> dep = WinchesterItem.deposito(s);
+        int n = dep.size();
+        int ancho = cap * 3 + 1;
+        g.fill(x - 1, y - 1, x + ancho, y + 6, 0xAA1A1208);
+        g.fill(x - 1, y - 1, x + ancho, y, 0xAA5A4A30);
+        for (int i = 0; i < cap; i++) {
+            int bx = x + i * 3;
+            if (i < n) {
+                int c = WinchesterItem.color(dep.get(n - 1 - i));
+                g.fill(bx, y, bx + 2, y + 5, c);
+                g.fill(bx, y, bx + 2, y + 1, 0xFFFFFFFF & (c | 0xFF606060));
+            } else g.fill(bx, y + 1, bx + 2, y + 4, 0x55302418);
+        }
+        if (n > 0) {
+            // la siguiente: un triangulito blanco encima
+            g.fill(x, y - 4, x + 2, y - 3, 0xFFFFFFFF);
+            g.fill(x + 0, y - 3, x + 2, y - 2, 0xFFFFFFFF);
+            g.fill(x - 1, y - 5, x + 3, y - 4, 0xFFFFFFFF);
+        }
+    }
+
+    /** Los pasos de la recarga del mosquete (pólvora, bola, baqueta) con el que toca marcado y los hechos en verde. */
+    private static void hudMosquete(GuiGraphics g, Minecraft mc, LocalPlayer p, ArmaFuegoItem a, ItemStack s, int x, int y, float pt) {
+        boolean cargando = p.isUsingItem() && p.getUseItem() == s && ArmaFuegoItem.modo(s) == ArmaFuegoItem.MODO_RECARGA;
+        float fr = cargando ? Mth.clamp((p.getTicksUsingItem() + pt) / Math.max(1, a.ticksRecarga(s)), 0, 1) : 0;
+        int paso = cargando ? MosqueteItem.pasoRecarga(fr) : -1;
+        ItemStack[] iconos = {new ItemStack(net.minecraft.world.item.Items.GUNPOWDER), a.iconoMunicion(s), new ItemStack(net.minecraft.world.item.Items.STICK)};
+        for (int i = 0; i < 3; i++) {
+            int ix = x + i * 14;
+            int marco = i == paso ? 0xFFFFD040 : i < paso ? 0xFF50C050 : 0x66000000;
+            g.fill(ix - 1, y - 1, ix + 13, y + 13, marco);
+            g.fill(ix, y, ix + 12, y + 12, 0xAA101010);
+            g.pose().pushPose();
+            g.pose().translate(ix, y, 0);
+            g.pose().scale(0.75F, 0.75F, 1F);
+            g.renderItem(iconos[i], 0, 0);
+            g.pose().popPose();
+            if (i < 2) g.fill(ix + 13, y + 5, ix + 14, y + 7, 0x88FFFFFF);
+        }
+        // la baqueta: cuánto le queda al paso de ahora
+        if (paso >= 0) {
+            float dentro = fr * 3 - paso;
+            g.fill(x + paso * 14, y + 13, x + paso * 14 + (int) (12 * Mth.clamp(dentro, 0, 1)), y + 14, 0xFFFFD040);
         }
     }
 
@@ -276,15 +335,17 @@ public final class FuegoCliente {
         if (e.phase != TickEvent.Phase.END) return;
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer p = mc.player;
-        boolean en = p != null && p.getVehicle() instanceof GatlingEntity;
+        GatlingEntity gm = p == null ? null : GatlingEntity.deJugador(p);
+        boolean en = gm != null;
         boolean gira = en && mc.screen == null && (mc.options.keyUse.isDown() || manivelaPrueba);
         if (gira != girandoEnviado && (en || girandoEnviado)) {
             girandoEnviado = gira;
             if (p != null) ModNetwork.CHANNEL.sendToServer(new GatlingPacket(gira));
         }
         // la Gatling disparando: la cámara vibra un poco
-        if (en && p.getVehicle() instanceof GatlingEntity g && g.velocidad > 0.35F && g.girando() && g.balas() > 0 && g.atasco() == 0 && p.tickCount % 2 == 0)
+        if (en && gm.velocidad > 0.35F && gm.girando() && gm.balas() > 0 && gm.atasco() == 0 && p.tickCount % 2 == 0)
             patada(0F, 0.9F, 0F);
+        mangaTick(mc, p);
     }
 
     /** El que va a los mandos de la Gatling: los dos brazos a los mandos (como con la ballesta cargada). */
@@ -297,6 +358,22 @@ public final class FuegoCliente {
         }
     }
 
+    // ------------------------------------------------------------------ Derringer: la manga
+
+    /** La tecla de la manga (Opciones → Controles → Miscelánea; K por defecto). */
+    public static final net.minecraft.client.KeyMapping MANGA = new net.minecraft.client.KeyMapping("key.miscelanea.derringer_manga",
+            net.minecraftforge.client.settings.KeyConflictContext.IN_GAME, com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM,
+            org.lwjgl.glfw.GLFW.GLFW_KEY_K, com.miscelanea.client.combate.LlaveCliente.CATEGORIA);
+
+    private static void mangaTick(Minecraft mc, LocalPlayer p) {
+        while (MANGA.consumeClick()) if (p != null && mc.screen == null) sacarDeLaManga();
+    }
+
+    /** Pide sacar la Derringer de la manga (también lo usa la prueba). */
+    public static void sacarDeLaManga() {
+        ModNetwork.CHANNEL.sendToServer(new com.miscelanea.armasfuego.oeste.MangaPacket());
+    }
+
     /** Para la prueba del CI: girar la manivela sin el ratón. */
     public static boolean manivelaPrueba;
 
@@ -304,7 +381,7 @@ public final class FuegoCliente {
     @SubscribeEvent
     public static void clic(InputEvent.InteractionKeyMappingTriggered e) {
         LocalPlayer p = Minecraft.getInstance().player;
-        if (p != null && e.isUseItem() && p.getVehicle() instanceof GatlingEntity) {
+        if (p != null && e.isUseItem() && GatlingEntity.deJugador(p) != null) {
             e.setCanceled(true);
             e.setSwingHand(false);
         }

@@ -53,7 +53,7 @@ public abstract class ArmaFuegoItem extends Item {
     public static final int T_DESATASCO = 16;
 
     /** Cuándo se sacó el arma (para Desenfunde de la Derringer) y el último tick en que se vio en la mano. */
-    static final Map<UUID, Long> SACADO = new HashMap<>(), VISTO = new HashMap<>();
+    protected static final Map<UUID, Long> SACADO = new HashMap<>(), VISTO = new HashMap<>();
 
     protected ArmaFuegoItem(Properties p) {
         super(p);
@@ -326,12 +326,7 @@ public abstract class ArmaFuegoItem extends Item {
                         p.stopUsingItem();
                         return;
                     }
-                    int n = p.getAbilities().instabuild ? (recargaPorBala() ? 1 : capacidad(s)) : gastarMunicion((ServerPlayer) p, s);
-                    if (p.getAbilities().instabuild && !s.getOrCreateTag().contains(TIPO)) {
-                        ItemStack m = elegir(p, s);
-                        Item ti = m.isEmpty() ? municionNormal() : tipoDe(m);
-                        s.getOrCreateTag().putString(TIPO, net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(ti).toString());
-                    }
+                    int n = p.getAbilities().instabuild ? cargaCreativa((ServerPlayer) p, s) : gastarMunicion((ServerPlayer) p, s);
                     ponerBalas(s, Math.min(capacidad(s), balas(s) + n));
                     level.playSound(null, p.getX(), p.getY(), p.getZ(), sonidoRecarga(), SoundSource.PLAYERS, 0.8F, 0.95F + p.getRandom().nextFloat() * 0.1F);
                     alRecargar((ServerPlayer) p, s);
@@ -347,6 +342,16 @@ public abstract class ArmaFuegoItem extends Item {
             case MODO_RAFAGA -> rafaga(level, p, s, t);
             default -> {}
         }
+    }
+
+    /** Un paso de recarga en creativo (sin gastar nada): devuelve las balas que mete. */
+    protected int cargaCreativa(ServerPlayer p, ItemStack s) {
+        if (!s.getOrCreateTag().contains(TIPO)) {
+            ItemStack m = elegir(p, s);
+            Item ti = m.isEmpty() ? municionNormal() : tipoDe(m);
+            s.getOrCreateTag().putString(TIPO, net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(ti).toString());
+        }
+        return recargaPorBala() ? 1 : capacidad(s);
     }
 
     /** Lo que se hace al empezar a recargar (sonido de abrir, casquillos fuera...). */

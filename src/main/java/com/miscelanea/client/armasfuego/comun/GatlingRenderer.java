@@ -20,7 +20,8 @@ import net.minecraftforge.client.model.data.ModelData;
 /**
  * La Gatling plantada: cinco piezas (modelos JSON, los mismos materiales que en la mano) que se mueven en el
  * renderizador: el yugo gira con el tirador, el cuerpo cabecea, los seis cañones giran y la manivela da vueltas.
- * Con el calor, los cañones se ponen rojos y brillan.
+ * Con el calor, los cañones se ponen rojos y brillan. Sin nadie a los mandos (torreta), apunta hacia donde se dejó o
+ * hacia lo que sigue; montada en una vagoneta o un barco, sin el trípode.
  */
 public class GatlingRenderer extends EntityRenderer<GatlingEntity> {
     public static final ResourceLocation BASE = rl("base"), YUGO = rl("yugo"), CUERPO = rl("cuerpo"), CANONES = rl("canones"), MANIVELA = rl("manivela");
@@ -43,13 +44,25 @@ public class GatlingRenderer extends EntityRenderer<GatlingEntity> {
     public void render(GatlingEntity e, float yaw, float pt, PoseStack ps, MultiBufferSource buf, int luz) {
         float base = e.getYRot();
         Player p = e.tirador();
-        float gy = p != null ? Mth.rotLerp(pt, p.yRotO, p.getYRot()) : base;
-        float gx = p != null ? Mth.lerp(pt, p.xRotO, p.getXRot()) : 0;
+        float gy, gx;
+        if (p != null && e.aLosMandos()) {
+            gy = Mth.rotLerp(pt, p.yRotO, p.getYRot());
+            gx = Mth.lerp(pt, p.xRotO, p.getXRot());
+        } else if (p != null) {
+            // desde el barco: la vista del que lo lleva, limitada al giro del trípode
+            net.minecraft.world.phys.Vec3 m = e.mira();
+            gy = (float) Math.toDegrees(Math.atan2(-m.x, m.z));
+            gx = (float) Math.toDegrees(-Math.asin(Mth.clamp(m.y, -1, 1)));
+        } else {
+            // sola (torreta) o parada: hacia donde se quedó apuntando
+            gy = Mth.rotLerp(pt, e.apuntaYO, e.apuntaY());
+            gx = Mth.lerp(pt, e.apuntaXO, e.apuntaX());
+        }
         float calor = e.calor() / 100F;
         ps.pushPose();
         ps.mulPose(Axis.YP.rotationDegrees(180F - base));
         ps.translate(-0.5, 0, -0.5);
-        dibujar(ps, buf, BASE, luz, 1, 1, 1);
+        if (!e.isPassenger()) dibujar(ps, buf, BASE, luz, 1, 1, 1);   // en la vagoneta o el barco, sin el trípode
         // yugo: gira con el tirador
         ps.translate(0.5, 0, 0.5);
         ps.mulPose(Axis.YP.rotationDegrees(-Mth.wrapDegrees(gy - base)));

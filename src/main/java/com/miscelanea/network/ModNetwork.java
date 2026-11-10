@@ -312,5 +312,11 @@ public final class ModNetwork {
                 .decoder(com.miscelanea.armasfuego.gatling.GatlingPacket::new)
                 .consumerMainThread(com.miscelanea.armasfuego.gatling.GatlingPacket::handle)
                 .add();
+        // ---- Derringer: sacarla de la manga (al final: paquete nuevo)
+        CHANNEL.messageBuilder(com.miscelanea.armasfuego.oeste.MangaPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.armasfuego.oeste.MangaPacket::encode)
+                .decoder(com.miscelanea.armasfuego.oeste.MangaPacket::new)
+                .consumerMainThread(com.miscelanea.armasfuego.oeste.MangaPacket::handle)
+                .add();
     }
 }

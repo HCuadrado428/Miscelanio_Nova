@@ -33,6 +33,10 @@ import net.minecraftforge.common.Tags;
  * (un bloque de roca), clic derecho prende la mecha y un rato después (si sigue en la mano) sale el bolaño, que vuela
  * en parábola y estalla donde da (sin romper bloques, salvo que lo diga la config). Es tecnología punta... del siglo
  * XIV: a veces revienta en las manos, y con lluvia la pólvora se moja.
+ * <p>
+ * Además de roca, dispara bloques que caen (1.1.0): arena, grava, hormigón en polvo, yunques... El bolaño es entonces
+ * ese bloque: no estalla, sino que cae donde da y se queda, como un bloque que cae (si lo permiten la config
+ * {@code canon_coloca_bloques} y la protección del sitio; si no, cae como objeto). El yunque hace daño de yunque.
  */
 public class CanonManoItem extends ArmaFuegoItem {
     public static final ResourceKey<DamageType> DANO = Balistica.clave("canon_mano"), REVENTON = Balistica.clave("canon_mano_reventon");
@@ -55,7 +59,13 @@ public class CanonManoItem extends ArmaFuegoItem {
 
     @Override
     protected boolean acepta(ItemStack m) {
-        return piedra(m) || m.is(com.miscelanea.registry.ModItems.BOLANO_INCENDIARIO.get()) || m.is(com.miscelanea.registry.ModItems.BOLANO_FUEGOS.get());
+        return piedra(m) || cae(m) || m.is(com.miscelanea.registry.ModItems.BOLANO_INCENDIARIO.get()) || m.is(com.miscelanea.registry.ModItems.BOLANO_FUEGOS.get())
+                || m.is(com.miscelanea.registry.ModItems.BOLANO_SALTARIN.get());
+    }
+
+    /** ¿Es un bloque que cae? (arena, grava, hormigón en polvo, yunque...) */
+    public static boolean cae(ItemStack m) {
+        return m.getItem() instanceof net.minecraft.world.item.BlockItem bi && bi.getBlock() instanceof net.minecraft.world.level.block.FallingBlock;
     }
 
     @Override
@@ -180,7 +190,8 @@ public class CanonManoItem extends ArmaFuegoItem {
         var tipo = tipoActual(s);
         bola.setItem(new ItemStack(tipo));
         bola.setPos(b.x, b.y, b.z);
-        bola.shootFromRotation(p, p.getXRot(), p.getYRot(), 0F, 2.2F, 4.0F);
+        float v = 2.2F * (1 + 0.2F * nivel(com.miscelanea.registry.ModEnchantments.CANON_POLVORA_FINA, s));
+        bola.shootFromRotation(p, p.getXRot(), p.getYRot(), 0F, v, 4.0F);
         l.addFreshEntity(bola);
         efectos(l, p, b, ModSounds.CANON_DISPARO.get(), 6.0F, 0.9F, 0, false);
         Vec3 m = p.getViewVector(1F);

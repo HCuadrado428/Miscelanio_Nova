@@ -271,6 +271,8 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> CANON_MECHA = register("canon_mecha");
     public static final RegistryObject<SoundEvent> CANON_DISPARO = register("canon_disparo");
     public static final RegistryObject<SoundEvent> VIOLIN_DESAFINADO = register("violin_desafinado");
+    public static final RegistryObject<SoundEvent> VIOLIN_NOTA = register("violin_nota");
+    public static final RegistryObject<SoundEvent> ARPON = register("arpon");
     public static final RegistryObject<SoundEvent> RIFLE_CATALEJO_DISPARO = register("rifle_catalejo_disparo");
     public static final RegistryObject<SoundEvent> PRESION_DISPARO = register("presion_disparo");
     public static final RegistryObject<SoundEvent> TIEMPO_BALA = register("tiempo_bala");

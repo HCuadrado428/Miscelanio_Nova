@@ -38,7 +38,10 @@ public final class EquilibrioArmas {
     // ---- Cañón de mano
     private static ForgeConfigSpec.DoubleValue CANON_DANO, CANON_REVIENTA;
     private static ForgeConfigSpec.IntValue CANON_MECHA, CANON_RECARGA;
-    private static ForgeConfigSpec.BooleanValue CANON_ROMPE;
+    private static ForgeConfigSpec.BooleanValue CANON_ROMPE, CANON_COLOCA, GATLING_REDSTONE;
+    // ---- lo nuevo de 1.1.0 (utilidad, manga, violín, bayonetas, bloques)
+    private static ForgeConfigSpec.DoubleValue GATLING_TORRETA_ALCANCE, MOSQUETE_ARPON, CANON_YUNQUE, CANON_BLOQUE;
+    private static ForgeConfigSpec.IntValue WINCHESTER_HIELO, DERRINGER_MANGA, VIOLIN_ENFRIAMIENTO;
     // ---- botín
     private static ForgeConfigSpec.DoubleValue B_GATLING, B_WINCHESTER, B_DERRINGER, B_THOMPSON, B_MOSQUETE, B_CANON;
 
@@ -79,7 +82,8 @@ public final class EquilibrioArmas {
         THOMPSON_RECARGA = b.comment("Thompson: ticks para cambiar el tambor.").defineInRange("thompson_recarga", 40, 1, 400);
 
         MOSQUETE_DANO = b.comment("Mosquete: daño de la bola.").defineInRange("mosquete_dano", 15.0, 0.0, 100.0);
-        MOSQUETE_BAYONETA = b.comment("Mosquete: daño de la bayoneta (cuerpo a cuerpo, con más alcance).").defineInRange("mosquete_bayoneta", 7.0, 1.0, 100.0);
+        MOSQUETE_BAYONETA = b.comment("Mosquete: daño que la bayoneta añade al de la espada calada (con la de hierro, 6 + 1 = 7; cuerpo a cuerpo y con más alcance).",
+                "La durabilidad es la de la espada: se gasta la espada calada y, si se rompe, el mosquete se queda sin bayoneta.").defineInRange("mosquete_bayoneta_extra", 1.0, 0.0, 100.0);
         MOSQUETE_RECARGA = b.comment("Mosquete: ticks de recarga (pólvora, bola y baqueta).").defineInRange("mosquete_recarga", 70, 1, 600);
         MOSQUETE_MOJADO = b.comment("Mosquete y cañón: probabilidad de fallar con lluvia o en el agua (pólvora mojada).").defineInRange("polvora_mojada", 0.3, 0.0, 1.0);
 
@@ -88,6 +92,16 @@ public final class EquilibrioArmas {
         CANON_RECARGA = b.comment("Cañón de mano: ticks de recarga.").defineInRange("canon_recarga", 50, 1, 600);
         CANON_REVIENTA = b.comment("Cañón de mano: probabilidad de que reviente en las manos.").defineInRange("canon_revienta", 0.05, 0.0, 1.0);
         CANON_ROMPE = b.comment("Cañón de mano: el bolaño rompe bloques al estallar (no por defecto).").define("canon_rompe_bloques", false);
+        CANON_COLOCA = b.comment("Cañón de mano: los bloques que caen disparados (arena, grava, hormigón en polvo, yunque...) se quedan donde dan, como un",
+                "bloque que cae. Con false (para servidores) caen como objeto y no se coloca nada. También respeta la protección de cada sitio.").define("canon_coloca_bloques", true);
+        CANON_BLOQUE = b.comment("Cañón de mano: daño de un bloque que cae disparado (arena, grava...) respecto al del bolaño.").defineInRange("canon_bloque", 0.6, 0.0, 10.0);
+        CANON_YUNQUE = b.comment("Cañón de mano: daño de un yunque disparado (daño de yunque) respecto al del bolaño.").defineInRange("canon_yunque", 1.25, 0.0, 10.0);
+        GATLING_REDSTONE = b.comment("Gatling: con señal de redstone y nadie a los mandos, la manivela gira sola y dispara hacia donde apunta (torreta).").define("gatling_redstone", true);
+        GATLING_TORRETA_ALCANCE = b.comment("Gatling con Torreta: distancia a la que busca sola lo hostil.").defineInRange("gatling_torreta_alcance", 24.0, 2.0, 128.0);
+        WINCHESTER_HIELO = b.comment("Winchester: ticks que congela la bala de hielo.").defineInRange("winchester_hielo", 140, 0, 1200);
+        DERRINGER_MANGA = b.comment("Derringer: ticks de espera para volver a sacarla de la manga.").defineInRange("derringer_manga", 30, 0, 1200);
+        MOSQUETE_ARPON = b.comment("Mosquete: fuerza del tirón de la bola arpón.").defineInRange("mosquete_arpon", 1.4, 0.0, 5.0);
+        VIOLIN_ENFRIAMIENTO = b.comment("Estuche de violín: ticks entre nota y nota.").defineInRange("violin_enfriamiento", 3, 0, 40);
 
         b.comment("Dónde se encuentran las armas nuevas (probabilidad 0-1 en cada cofre; no tienen receta).").push("botin");
         B_GATLING = b.comment("Gatling: cofres de las pirámides del desierto.").defineInRange("gatling_piramide", 0.2, 0.0, 1.0);
@@ -167,6 +181,15 @@ public final class EquilibrioArmas {
     public static int canonRecarga() { return i(CANON_RECARGA); }
     public static float canonRevienta() { return (float) d(CANON_REVIENTA); }
     public static boolean canonRompe() { return b(CANON_ROMPE); }
+    public static boolean canonColoca() { return b(CANON_COLOCA); }
+    public static float canonBloque() { return (float) d(CANON_BLOQUE); }
+    public static float canonYunque() { return (float) d(CANON_YUNQUE); }
+    public static boolean gatlingRedstone() { return b(GATLING_REDSTONE); }
+    public static double gatlingTorretaAlcance() { return d(GATLING_TORRETA_ALCANCE); }
+    public static int winchesterHielo() { return i(WINCHESTER_HIELO); }
+    public static int derringerManga() { return i(DERRINGER_MANGA); }
+    public static float mosqueteArpon() { return (float) d(MOSQUETE_ARPON); }
+    public static int violinEnfriamiento() { return i(VIOLIN_ENFRIAMIENTO); }
 
     public static double botinGatling() { return d(B_GATLING); }
     public static double botinWinchester() { return d(B_WINCHESTER); }

@@ -336,7 +336,7 @@ public final class Revolver {
     }
 
     /** Bala de fogueo: los animales de alrededor salen corriendo (como cuando les pegas, pero sin pegarles). */
-    private static void asustar(ServerLevel l, ServerPlayer p) {
+    public static void asustar(ServerLevel l, ServerPlayer p) {
         for (PathfinderMob m : l.getEntitiesOfClass(PathfinderMob.class, p.getBoundingBox().inflate(20), e -> e instanceof Animal && e.isAlive())) {
             HuirDelTiro.asustar(m, p.position(), 100);   // 5 s corriendo lejos del tiro (antes los paseos le cambiaban el camino)
             if (m instanceof net.minecraft.world.entity.animal.horse.AbstractHorse h) h.makeMad();
@@ -344,7 +344,7 @@ public final class Revolver {
     }
 
     /** Bala imán: lo tirado alrededor del impacto va volando hacia el que disparó. */
-    private static void atraer(ServerLevel l, ServerPlayer p, Vec3 donde) {
+    public static void atraer(ServerLevel l, ServerPlayer p, Vec3 donde) {
         AABB caja = new AABB(donde, donde).inflate(6);
         int hasta = p.server.getTickCount() + 80;
         int n = 0;

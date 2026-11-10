@@ -2812,5 +2812,23 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.pintura_splat"
+  },
+  "violin_nota": {
+    "sounds": [
+      {
+        "name": "miscelanea:violin_nota",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.violin_nota"
+  },
+  "arpon": {
+    "sounds": [
+      {
+        "name": "miscelanea:arpon",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.arpon"
   }
 }

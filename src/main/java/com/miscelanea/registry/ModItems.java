@@ -409,6 +409,19 @@ public final class ModItems {
             () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> BOLANO_FUEGOS = ITEMS.register("bolano_fuegos",
             () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties().stacksTo(16)));
+    // la tercera munición especial de cada una (1.1.0)
+    public static final RegistryObject<Item> BALA_HIELO = ITEMS.register("bala_hielo",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties()));
+    public static final RegistryObject<Item> BALA_HUMO = ITEMS.register("bala_humo",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties()));
+    public static final RegistryObject<Item> TAMBOR_TINTA = ITEMS.register("tambor_tinta",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties().stacksTo(8)));
+    public static final RegistryObject<Item> CINTA_GUISANTES = ITEMS.register("cinta_guisantes",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> BOLA_ARPON = ITEMS.register("bola_arpon",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties()));
+    public static final RegistryObject<Item> BOLANO_SALTARIN = ITEMS.register("bolano_saltarin",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties().stacksTo(16)));
     // ---- fin armas de fuego (segunda tanda)
 
     private ModItems() {}
