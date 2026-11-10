@@ -832,7 +832,7 @@ public final class PruebaCI {
     private static volatile net.minecraft.core.BlockPos piO;
     private static volatile net.minecraft.core.Direction piMira, piLado;
     private static volatile UUID piHusk;
-    private static volatile boolean piVigilaBrillo, escVigilaMiel, a2VigilaGatling, escVigilaSalto, a2CongelaYunque, a2VigilaNotas;
+    private static volatile boolean piVigilaBrillo, escVigilaMiel, a2VigilaGatling, escVigilaSalto, a2CongelaYunque, a2VigilaNotas, escVigilaEscarcha;
 
     /** Las notitas del violín que se ven en el cliente: lo más que ha habido a la vez (se mira en cada tick). */
     @SubscribeEvent
@@ -1384,6 +1384,10 @@ public final class PruebaCI {
                     b.setDeltaMovement(Vec3.ZERO);
                     b.setNoGravity(true);
                 }
+        }
+        if (escVigilaEscarcha && escHusk != null) {
+            for (var lv : e.getServer().getAllLevels())
+                if (lv.getEntity(escHusk) instanceof net.minecraft.world.entity.LivingEntity le && le.getTicksFrozen() > 0) PI.put("escarcha_frio", le.getTicksFrozen());
         }
         if (escVigilaSalto) {
             for (ServerPlayer sp : e.getServer().getPlayerList().getPlayers())
@@ -3864,12 +3868,17 @@ public final class PruebaCI {
             if (!hog && !vel) throw new IllegalStateException("el incendiario no ha encendido ni la hoguera ni la vela");
         });
         // ---- escarcha: apaga a la diana, la congela y deja nieve en polvo en el suelo
-        sin("esc_escarcha", 5, () -> escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.ESCARCHA, 100, escHuskPos().add(0, -0.9, 0)));   // a los pies: más perdigones al suelo (con shaders a veces no caía ninguno)
+        sin("esc_escarcha", 5, () -> {
+            // lo congelado se va derritiendo (2 por tick): se vigila en cada tick si ha llegado a congelarse
+            PI.remove("escarcha_frio");
+            escVigilaEscarcha = true;
+            escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.ESCARCHA, 100, escHuskPos().add(0, -0.9, 0));   // a los pies: más perdigones al suelo (con shaders a veces no caía ninguno)
+        });
         paso("126_escarcha", 15, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
         // si los perdigones no han dado a la diana (se reparten al azar; con mala suerte ardía aún), otro tiro
         sin("esc_escarcha_otra", 5, () -> {
             var h = escEntidad(escHusk);
-            if (h.isOnFire() || h.getTicksFrozen() <= 0) {
+            if (h.isOnFire() || h.getTicksFrozen() <= 0 && !PI.containsKey("escarcha_frio")) {
                 RESUMEN.add("  escopeta: el primer tiro de escarcha no ha dado bien; otro");
                 PI.put("escarcha_otra", true);
                 escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.ESCARCHA, 100, escHuskPos().add(0, -0.9, 0));
@@ -3886,7 +3895,8 @@ public final class PruebaCI {
                 if (l.getBlockState(b).is(net.minecraft.world.level.block.Blocks.POWDER_SNOW)) nieve++;
             RESUMEN.add("  escopeta: escarcha → diana ardiendo " + h.isOnFire() + ", congelada " + h.getTicksFrozen() + " ticks, nieve en polvo " + nieve);
             if (h.isOnFire()) throw new IllegalStateException("la escarcha no apaga el fuego");
-            if (h.getTicksFrozen() <= 0) throw new IllegalStateException("la escarcha no congela");
+            escVigilaEscarcha = false;
+            if (h.getTicksFrozen() <= 0 && !PI.containsKey("escarcha_frio")) throw new IllegalStateException("la escarcha no congela");
             if (nieve == 0) throw new IllegalStateException("la escarcha no deja nieve en polvo");
             escServidor(sp -> {
                 for (var b : net.minecraft.core.BlockPos.betweenClosed(h.blockPosition().offset(-6, -1, -6), h.blockPosition().offset(6, 2, 6)))
