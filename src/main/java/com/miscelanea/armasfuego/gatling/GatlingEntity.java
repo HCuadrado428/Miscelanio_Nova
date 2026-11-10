@@ -452,7 +452,7 @@ public class GatlingEntity extends Entity {
         if (!creativo) entityData.set(BALAS, balas() - 1);
         float c = calor();
         entityData.set(CALOR, c + EquilibrioArmas.gatlingCalor() * (1 - 0.2F * nivel(com.miscelanea.registry.ModEnchantments.GATLING_REFRIGERACION)));
-        double disp = 0.025 + (c > 70 ? 0.03 : 0) + com.miscelanea.armasfuego.comun.Cobre.DISPERSION[oxido()];
+        double disp = 0.025 + (c > 70 ? 0.03 : 0) + com.miscelanea.armasfuego.comun.Cobre.dispersion(oxido());
         boolean fuego = cintaEs(ModItems.CINTA_INCENDIARIA), palomitas = cintaEs(ModItems.CINTA_PALOMITAS), guisantes = cintaEs(ModItems.CINTA_GUISANTES);
         Vec3 dir = Balistica.dispersar(mira(), disp, random);
         Vec3 boca = boca(1.45F);
@@ -468,11 +468,12 @@ public class GatlingEntity extends Entity {
                 l.sendParticles(new net.minecraft.core.particles.ItemParticleOption(ParticleTypes.ITEM, new ItemStack(ModItems.PALOMITAS.get())), t.pos().x, t.pos().y, t.pos().z, 4, 0.15, 0.15, 0.15, 0.08);
                 if (duenoP instanceof ServerPlayer sp) LogrosMiscelanea.dar(sp, "gatling_palomitas");
             } else {
-                float d = EquilibrioArmas.gatlingDano() * Balistica.caida(t.distancia(), 20, EquilibrioArmas.gatlingAlcance(), 0.6F);
+                float d = EquilibrioArmas.gatlingDano() * Balistica.caida(t.distancia(), 20, EquilibrioArmas.gatlingAlcance(), 0.6F)
+                        * com.miscelanea.armasfuego.comun.Cobre.dano(oxido());
                 boolean zombi = v instanceof net.minecraft.world.entity.monster.Zombie;
                 // la cinta de guisantes (la Gatling Pea de Plantas contra zombis): poco daño y mucho empujón... salvo a los zombis
                 if (guisantes) d *= zombi ? 2.5F : 0.5F;
-                Balistica.herir(v, quien, d, 0.1F, DANO, true);
+                Balistica.herir(v, quien, d, Math.min(1F, 0.1F + com.miscelanea.armasfuego.comun.Cobre.perforacion(oxido())), DANO, true);
                 if (fuego) v.setSecondsOnFire(3);
                 if (guisantes) {
                     Vec3 m0 = mira();
@@ -499,9 +500,10 @@ public class GatlingEntity extends Entity {
         if (p instanceof ServerPlayer sp && getVehicle() instanceof net.minecraft.world.entity.vehicle.AbstractMinecart) LogrosMiscelanea.dar(sp, "gatling_vagoneta");
         if (p instanceof ServerPlayer sp && getVehicle() instanceof net.minecraft.world.entity.vehicle.Boat) LogrosMiscelanea.dar(sp, "gatling_barco");
         // el cobre se oxida con el uso (una fase cada 400 balas, antes con lluvia)
-        if (!arma.isEmpty() && com.miscelanea.armasfuego.comun.Cobre.desgastar(arma, 400, isInWaterOrRain())) {
+        if (!arma.isEmpty()) {
+            int que = com.miscelanea.armasfuego.comun.Cobre.gastar(arma, 400, isInWaterOrRain());
             entityData.set(OXIDO, com.miscelanea.armasfuego.comun.Cobre.oxido(arma));
-            if (p instanceof ServerPlayer sp) com.miscelanea.armasfuego.comun.Cobre.avisar(sp, arma);
+            if (duenoP instanceof ServerPlayer sp) com.miscelanea.armasfuego.comun.Cobre.avisar(sp, arma, que);
         }
         // desgaste del arma (si se rompe, se acabó)
         if (!arma.isEmpty() && arma.isDamageableItem() && !creativo && arma.hurt(1, random, p instanceof ServerPlayer sp ? sp : null)) {

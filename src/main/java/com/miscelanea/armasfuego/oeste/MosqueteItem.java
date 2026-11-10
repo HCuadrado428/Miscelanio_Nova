@@ -27,6 +27,11 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentCategory;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.nbt.CompoundTag;
@@ -228,7 +233,8 @@ public class MosqueteItem extends ArmaFuegoItem {
         int n = 0;
         for (LivingEntity v : dados) {
             if (n++ >= 3) break;
-            Balistica.herir(v, p, 9F, 0.35F, DANO, true);
+            Balistica.herir(v, p, 9F * com.miscelanea.armasfuego.comun.Cobre.dano(p.getMainHandItem()),
+                    Math.min(1F, 0.35F + com.miscelanea.armasfuego.comun.Cobre.perforacion(p.getMainHandItem())), DANO, true);
             v.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, 60, 1), p);
             v.knockback(0.6, -dir.x, -dir.z);
         }
@@ -355,6 +361,60 @@ public class MosqueteItem extends ArmaFuegoItem {
         return b.build();
     }
 
+    // ------------------------------------------------------------------ los encantamientos de la espada calada
+
+    /**
+     * ¿Cuenta este encantamiento de la espada al atacar con la bayoneta? Todos los que actúan al golpear (Filo, Golpe,
+     * Perdición de los artrópodos, Aspecto ígneo, Empuje, Botín y los de otros mods) salvo Barrido (es una estocada).
+     * Irrompibilidad y Reparación van aparte, sobre el desgaste de la propia espada.
+     */
+    private static boolean pasa(Enchantment e) {
+        return e != Enchantments.SWEEPING_EDGE && e != Enchantments.UNBREAKING && e != Enchantments.MENDING && e.category != EnchantmentCategory.BREAKABLE;
+    }
+
+    @Override
+    public int getEnchantmentLevel(ItemStack s, Enchantment e) {
+        int propio = super.getEnchantmentLevel(s, e);
+        if (!pasa(e) || !s.hasTag() || !s.getTag().contains(BAYONETA)) return propio;
+        return Math.max(propio, EnchantmentHelper.getItemEnchantmentLevel(e, bayoneta(s)));
+    }
+
+    @Override
+    public java.util.Map<Enchantment, Integer> getAllEnchantments(ItemStack s) {
+        java.util.Map<Enchantment, Integer> m = super.getAllEnchantments(s);
+        if (!s.hasTag() || !s.getTag().contains(BAYONETA)) return m;
+        java.util.Map<Enchantment, Integer> todo = new java.util.LinkedHashMap<>(m);
+        bayoneta(s).getAllEnchantments().forEach((e, n) -> {
+            if (pasa(e)) todo.merge(e, n, Math::max);
+        });
+        return todo;
+    }
+
+    /** Brilla si la espada calada está encantada. */
+    @Override
+    public boolean isFoil(ItemStack s) {
+        return super.isFoil(s) || s.hasTag() && s.getTag().contains(BAYONETA) && bayoneta(s).isEnchanted();
+    }
+
+    /**
+     * Reparación de la espada calada: la experiencia que se recoge con el mosquete en la mano arregla la espada (2 de
+     * durabilidad por punto, como vanilla) antes de ir al jugador.
+     */
+    public static void reparar(net.minecraftforge.event.entity.player.PlayerXpEvent.PickupXp e) {
+        Player p = e.getEntity();
+        ItemStack s = p.getMainHandItem();
+        if (!(s.getItem() instanceof MosqueteItem) || !s.hasTag() || !s.getTag().contains(BAYONETA)) return;
+        ItemStack b = bayoneta(s);
+        if (!b.isDamaged() || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MENDING, b) <= 0) return;
+        int valor = e.getOrb().getValue();
+        int arregla = Math.min(valor * 2, b.getDamageValue());
+        if (arregla <= 0) return;
+        b.setDamageValue(b.getDamageValue() - arregla);
+        ponerBayoneta(s, b);
+        // lo gastado en arreglarla no llega al jugador (vanilla le da luego el orbe entero)
+        p.giveExperiencePoints(-Math.max(1, arregla / 2));
+    }
+
     @Override
     public boolean hurtEnemy(ItemStack s, LivingEntity v, LivingEntity a) {
         ItemStack bay = bayoneta(s);
@@ -366,7 +426,10 @@ public class MosqueteItem extends ArmaFuegoItem {
                 a.level().playSound(null, a.getX(), a.getY(), a.getZ(), net.minecraft.sounds.SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 0.8F, 1.2F);
             } else ponerBayoneta(s, bay);
         }
-        if (!v.isAlive() && a instanceof ServerPlayer p && !bay.isEmpty()) LogrosMiscelanea.dar(p, "mosquete_bayoneta");
+        if (!v.isAlive() && a instanceof ServerPlayer p && !bay.isEmpty()) {
+            LogrosMiscelanea.dar(p, "mosquete_bayoneta");
+            if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FIRE_ASPECT, bay) > 0) LogrosMiscelanea.dar(p, "bayoneta_ignea");
+        }
         return true;
     }
 
@@ -410,6 +473,12 @@ public class MosqueteItem extends ArmaFuegoItem {
         ItemStack b = bayoneta(s);
         l.add(b.isEmpty() ? Component.translatable("item.miscelanea.mosquete.bayoneta_no").withStyle(ChatFormatting.GRAY)
                 : Component.translatable("item.miscelanea.mosquete.bayoneta", b.getHoverName()).withStyle(ChatFormatting.GRAY));
+        // los encantamientos de la espada calada (Barrido no cuenta: es una estocada)
+        if (!b.isEmpty()) b.getAllEnchantments().forEach((e, n) -> {
+            MutableComponent x = Component.literal("  ").append(e.getFullname(n));
+            if (e == Enchantments.SWEEPING_EDGE) x = Component.literal("  ").append(Component.translatable("item.miscelanea.mosquete.no_barrido", e.getFullname(n)));
+            l.add(x.withStyle(e == Enchantments.SWEEPING_EDGE ? ChatFormatting.DARK_GRAY : ChatFormatting.LIGHT_PURPLE));
+        });
         super.appendHoverText(s, level, l, f);
         l.add(Component.translatable("item.miscelanea.mosquete.ayuda_bayoneta").withStyle(ChatFormatting.DARK_GRAY));
     }

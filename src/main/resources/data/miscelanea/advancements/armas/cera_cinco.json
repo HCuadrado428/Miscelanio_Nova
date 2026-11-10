@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/patina",
+  "display": {
+    "icon": {
+      "item": "minecraft:honeycomb"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.cera_cinco.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.cera_cinco.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "cera_cinco": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "cera_cinco"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

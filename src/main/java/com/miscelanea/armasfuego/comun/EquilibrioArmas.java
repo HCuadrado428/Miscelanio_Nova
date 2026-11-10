@@ -42,6 +42,9 @@ public final class EquilibrioArmas {
     // ---- lo nuevo de 1.1.0 (utilidad, manga, violín, bayonetas, bloques)
     private static ForgeConfigSpec.DoubleValue GATLING_TORRETA_ALCANCE, MOSQUETE_ARPON, CANON_YUNQUE, CANON_BLOQUE;
     private static ForgeConfigSpec.IntValue WINCHESTER_HIELO, DERRINGER_MANGA, VIOLIN_ENFRIAMIENTO;
+    // ---- el cobre de las nueve: lo que hace cada fase (nueva, expuesta, erosionada, oxidada) y lo que dura la cera
+    private static ForgeConfigSpec.ConfigValue<java.util.List<? extends Double>> OX_ATASCO, OX_DISPERSION, OX_DANO, OX_PERFORACION;
+    private static ForgeConfigSpec.IntValue CERA, CERA_AUTOMATICAS;
     // ---- botín
     private static ForgeConfigSpec.DoubleValue B_GATLING, B_WINCHESTER, B_DERRINGER, B_THOMPSON, B_MOSQUETE, B_CANON;
 
@@ -50,6 +53,17 @@ public final class EquilibrioArmas {
         b.comment("Armas de fuego: equilibrio (daño en puntos de vida: 2 = un corazón; tiempos en ticks: 20 = 1 s).",
                 "Ningún disparo suelto llega a 20 (la vida de un jugador). Las automáticas (Thompson y Gatling) se saltan la",
                 "ventana de invulnerabilidad: por eso su daño por bala es bajo.").push("armas_de_fuego_equilibrio");
+        b.comment("El cobre de las nueve armas: cada fase es un intercambio. Valores para [nueva, expuesta, erosionada, oxidada].",
+                "La nueva es precisa y fiable con el daño normal; la oxidada (cañón gastado y basto) se encasquilla y dispersa más, pero pega más y",
+                "perfora más armadura.").push("cobre");
+        java.util.function.Predicate<Object> num = o -> o instanceof Number;
+        OX_ATASCO = b.comment("Encasquillado que añade cada fase (0-1, sobre el de base).").defineList("encasquillado", java.util.List.of(0.0, 0.01, 0.025, 0.05), num);
+        OX_DISPERSION = b.comment("Dispersión que añade cada fase (radianes).").defineList("dispersion", java.util.List.of(0.0, 0.005, 0.011, 0.02), num);
+        OX_DANO = b.comment("Multiplicador del daño de cada fase.").defineList("dano", java.util.List.of(1.0, 1.05, 1.1, 1.15), num);
+        OX_PERFORACION = b.comment("Parte del daño que se salta la armadura que añade cada fase (0-1; 0,1 = 10 puntos).").defineList("perforacion", java.util.List.of(0.0, 0.03, 0.06, 0.1), num);
+        CERA = b.comment("Disparos que dura la cera de un panal (luego vuelve a oxidarse; volver a encerar la rellena).").defineInRange("cera_disparos", 200, 1, 100000);
+        CERA_AUTOMATICAS = b.comment("Lo mismo para la Gatling y la Thompson (disparan muchísimo más).").defineInRange("cera_disparos_automaticas", 1500, 1, 1000000);
+        b.pop();
         ENCASQUILLADO_BASE = b.comment("Probabilidad de que cualquier arma de fuego se encasquille en un disparo, aunque esté nueva (el óxido la sube).",
                 "Encasquillada: agachado + clic derecho para desatascarla (o el cerrojo/la palanca).").defineInRange("encasquillado_base", 0.01, 0.0, 1.0);
         REVOLVER_DANO = b.comment("Revólver: daño de la bala (antes 7). Desenfunde lo multiplica por 1,75.").defineInRange("revolver_dano", 6.5, 0.0, 100.0);
@@ -182,6 +196,24 @@ public final class EquilibrioArmas {
     public static float canonRevienta() { return (float) d(CANON_REVIENTA); }
     public static boolean canonRompe() { return b(CANON_ROMPE); }
     public static boolean canonColoca() { return b(CANON_COLOCA); }
+
+    private static float fase(ForgeConfigSpec.ConfigValue<java.util.List<? extends Double>> v, int ox) {
+        java.util.List<? extends Number> l;
+        try {
+            l = ConfigServidor.SPEC.isLoaded() ? v.get() : v.getDefault();
+        } catch (Exception e) {
+            l = v.getDefault();
+        }
+        if (l == null || l.isEmpty()) return 0F;
+        return l.get(Math.max(0, Math.min(l.size() - 1, ox))).floatValue();
+    }
+
+    public static float oxidoAtasco(int ox) { return fase(OX_ATASCO, ox); }
+    public static double oxidoDispersion(int ox) { return fase(OX_DISPERSION, ox); }
+    public static float oxidoDano(int ox) { return fase(OX_DANO, ox); }
+    public static float oxidoPerforacion(int ox) { return fase(OX_PERFORACION, ox); }
+    public static int cera() { return i(CERA); }
+    public static int ceraAutomaticas() { return i(CERA_AUTOMATICAS); }
     public static float canonBloque() { return (float) d(CANON_BLOQUE); }
     public static float canonYunque() { return (float) d(CANON_YUNQUE); }
     public static boolean gatlingRedstone() { return b(GATLING_REDSTONE); }

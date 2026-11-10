@@ -159,7 +159,8 @@ public final class DisparoPresion {
             s.getOrCreateTag().remove(Presion.DISPAROS);
         } else s.getOrCreateTag().putInt(Presion.DISPAROS, hechos);
         // el cobre se oxida con el uso (antes si se usa mojado)
-        if (!Presion.encerada(s) && ox < 3 && r.nextFloat() < (p.isInWaterOrRain() ? 1 / 15F : 1 / 45F)) Presion.ponerOxido(s, ox + 1);
+        if (Presion.encerada(s)) com.miscelanea.armasfuego.comun.Cobre.avisar(p, s, com.miscelanea.armasfuego.comun.Cobre.gastar(s, 45, false));
+        else if (ox < 3 && r.nextFloat() < (p.isInWaterOrRain() ? 1 / 15F : 1 / 45F)) Presion.ponerOxido(s, ox + 1);
         s.hurtAndBreak(1, p, x -> x.broadcastBreakEvent(EquipmentSlot.MAINHAND));
         p.getCooldowns().addCooldown(s.getItem(), t == null ? 6 : 10);
     }
@@ -203,7 +204,7 @@ public final class DisparoPresion {
                 double d = alcance - resto + o0.distanceTo(impacto);
                 float caida = d < 4 ? 1.0F : (float) Mth.clampedLerp(1.0, 0.3, (d - 4) / Math.max(1, alcance - 4));
                 float[] g = golpes.computeIfAbsent(v, k -> new float[3]);
-                g[0] += danoPerdigon() * f * t.dano * caida;
+                g[0] += danoPerdigon() * f * t.dano * caida * com.miscelanea.armasfuego.comun.Cobre.dano(s);
                 if (rebotado) g[2] = 1;
                 g[1] += 1;
             } else {

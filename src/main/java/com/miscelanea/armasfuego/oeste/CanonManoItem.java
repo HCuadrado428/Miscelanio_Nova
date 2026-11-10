@@ -189,6 +189,7 @@ public class CanonManoItem extends ArmaFuegoItem {
         BolaCanonEntity bola = new BolaCanonEntity(ModEntities.BOLA_CANON.get(), p, l);
         var tipo = tipoActual(s);
         bola.setItem(new ItemStack(tipo));
+        bola.ponerOxido(com.miscelanea.armasfuego.comun.Cobre.oxido(s));
         bola.setPos(b.x, b.y, b.z);
         float v = 2.2F * (1 + 0.2F * nivel(com.miscelanea.registry.ModEnchantments.CANON_POLVORA_FINA, s));
         bola.shootFromRotation(p, p.getXRot(), p.getYRot(), 0F, v, 4.0F);

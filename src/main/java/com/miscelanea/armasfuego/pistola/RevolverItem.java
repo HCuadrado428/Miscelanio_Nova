@@ -181,6 +181,7 @@ public class RevolverItem extends Item {
         }
         l.add(t);
         if (girado) l.add(Component.translatable("pistola.miscelanea.girado").withStyle(ChatFormatting.DARK_PURPLE, ChatFormatting.ITALIC));
+        com.miscelanea.armasfuego.comun.Cobre.tooltip(s, l);
         l.add(Component.translatable("pistola.miscelanea.ayuda1").withStyle(ChatFormatting.DARK_GRAY));
         l.add(Component.translatable("pistola.miscelanea.ayuda2").withStyle(ChatFormatting.DARK_GRAY));
         l.add(Component.translatable("pistola.miscelanea.ayuda3").withStyle(ChatFormatting.DARK_GRAY));

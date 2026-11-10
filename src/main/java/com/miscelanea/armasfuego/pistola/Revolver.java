@@ -74,7 +74,6 @@ public final class Revolver {
     public static final int ENFRIAMIENTO = 7, VENTANA_DESENFUNDE = 20, USOS_POR_OXIDO = 40;
     /** Dispersión (radianes, gaussiana) y probabilidad de que se encasquille, según el óxido. */
     private static final double[] DISPERSION = {0.006, 0.014, 0.026, 0.045};
-    private static final float[] ENCASQUILLA = {0F, 0.01F, 0.03F, 0.07F};
 
     // ------------------------------------------------------------------ estado en el servidor (no va al NBT)
     /** Cuándo se sacó el revólver (para Desenfunde) y el último tick en que se le vio en la mano. */
@@ -116,7 +115,7 @@ public final class Revolver {
             return true;
         }
         int ox = Tambor.oxido(s);
-        if (r.nextFloat() < ENCASQUILLA[ox] + com.miscelanea.armasfuego.comun.EquilibrioArmas.encasquilladoBase()) {
+        if (r.nextFloat() < com.miscelanea.armasfuego.comun.Cobre.atascoDisparo(ox) + com.miscelanea.armasfuego.comun.EquilibrioArmas.encasquilladoBase()) {
             // encasquillado: la bala se queda en su recámara
             l.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.REVOLVER_VACIO.get(), SoundSource.PLAYERS, 0.9F, 0.7F);
             l.sendParticles(ParticleTypes.SMOKE, boca.x, boca.y, boca.z, 3, 0.03, 0.03, 0.03, 0.01);
@@ -134,7 +133,7 @@ public final class Revolver {
             critico = sacado != null && ahora - sacado <= VENTANA_DESENFUNDE
                     && EncantamientoRevolver.nivel(ModEnchantments.REVOLVER_DESENFUNDE, s) > 0;
         }
-        double disp = critico ? 0 : DISPERSION[ox] + (abanico ? 0.10 : 0);
+        double disp = critico ? 0 : DISPERSION[0] + com.miscelanea.armasfuego.comun.Cobre.dispersion(ox) + (abanico ? 0.10 : 0);
         Vec3 mira = p.getViewVector(1.0F);
         Vec3 dir = mira.add(r.nextGaussian() * disp, r.nextGaussian() * disp, r.nextGaussian() * disp).normalize();
 
@@ -162,7 +161,7 @@ public final class Revolver {
                 // la bala imán se pega donde da (no rebota): con Carambola se iba rebotando lejos de lo tirado
                 int rebotes = c == Carga.IMAN ? 0 : EncantamientoRevolver.nivel(ModEnchantments.REVOLVER_CARAMBOLA, s);
                 Impacto im = trazar(l, p, p.getEyePosition(), dir, ALCANCE, rebotes, boca);
-                impactar(l, p, c, im, critico);
+                impactar(l, p, c, im, critico, s);
             }
             case BENGALA -> {
                 BengalaEntity b = new BengalaEntity(ModEntities.REVOLVER_BENGALA.get(), l);
@@ -242,14 +241,15 @@ public final class Revolver {
         return BuiltInRegistries.BLOCK.getKey(st.getBlock()).getPath().contains("copper");
     }
 
-    private static void impactar(ServerLevel l, ServerPlayer p, Carga c, Impacto im, boolean critico) {
+    private static void impactar(ServerLevel l, ServerPlayer p, Carga c, Impacto im, boolean critico, ItemStack s) {
         Vec3 q = im.pos();
         if (im.entidad() instanceof LivingEntity v) {
             if (v instanceof ServerPlayer otro) Duelo.impacto(p, otro);
             switch (c) {
                 case BALA -> {
-                    float d = com.miscelanea.armasfuego.comun.EquilibrioArmas.revolverDano() * (critico ? CRITICO : 1F);
-                    if (herir(v, p, d)) {
+                    // el cobre: el cañón gastado pega más y perfora más armadura
+                    float d = com.miscelanea.armasfuego.comun.EquilibrioArmas.revolverDano() * (critico ? CRITICO : 1F) * com.miscelanea.armasfuego.comun.Cobre.dano(s);
+                    if (herir(v, p, d, PERFORACION + com.miscelanea.armasfuego.comun.Cobre.perforacion(s))) {
                         Vec3 emp = v.position().subtract(p.position()).normalize();
                         v.knockback(0.25, -emp.x, -emp.z);
                     }
@@ -288,7 +288,12 @@ public final class Revolver {
      * etiqueta {@code minecraft:bypasses_armor}), en el mismo golpe y sin romper la ventana de invulnerabilidad.
      */
     public static boolean herir(LivingEntity v, Entity tirador, float total) {
-        float perf = total * PERFORACION;
+        return herir(v, tirador, total, PERFORACION);
+    }
+
+    /** Lo mismo con la parte que se salta la armadura que se pida (0..1). */
+    public static boolean herir(LivingEntity v, Entity tirador, float total, float perforacion) {
+        float perf = total * Math.min(1F, perforacion);
         if (!v.hurt(fuente(v, DISPARO, tirador), total - perf)) return false;
         if (perf > 0.001F && v.isAlive()) {
             LivingEntityGolpeAccessor acc = (LivingEntityGolpeAccessor) v;
@@ -417,7 +422,12 @@ public final class Revolver {
     // ------------------------------------------------------------------ cobre: óxido, cera y rascado
 
     private static void oxidar(ServerPlayer p, ItemStack s) {
-        if (Tambor.encerado(s) || Tambor.oxido(s) >= 3) return;
+        if (Tambor.encerado(s)) {
+            // con cera: se gasta un disparo de cera (y avisa cuando se acaba)
+            com.miscelanea.armasfuego.comun.Cobre.avisar(p, s, com.miscelanea.armasfuego.comun.Cobre.gastar(s, USOS_POR_OXIDO, false));
+            return;
+        }
+        if (Tambor.oxido(s) >= 3) return;
         var t = s.getOrCreateTag();
         int u = t.getInt(Tambor.USOS) + 1;
         if (u >= USOS_POR_OXIDO) {
@@ -431,14 +441,8 @@ public final class Revolver {
 
     /** Panal: encera (ya no se oxida). */
     public static boolean encerar(ServerPlayer p, ItemStack s, ItemStack panal) {
-        if (Tambor.encerado(s)) return false;
-        s.getOrCreateTag().putBoolean(Tambor.ENCERADO, true);
-        if (!p.getAbilities().instabuild) panal.shrink(1);
-        ServerLevel l = p.serverLevel();
-        l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.HONEYCOMB_WAX_ON, SoundSource.PLAYERS, 1.0F, 1.0F);
-        Vec3 b = boca(p);
-        l.sendParticles(ParticleTypes.WAX_ON, b.x, b.y, b.z, 8, 0.2, 0.2, 0.2, 0.5);
-        return true;
+        // la cera dura unos disparos; si aún queda, la rellena (como las otras ocho)
+        return com.miscelanea.armasfuego.comun.Cobre.encerar(p, s, panal, boca(p));
     }
 
     /** Hacha: quita la cera o, si no tiene, un paso de óxido (como los bloques de cobre). */
@@ -446,7 +450,7 @@ public final class Revolver {
         ServerLevel l = p.serverLevel();
         Vec3 b = boca(p);
         if (Tambor.encerado(s)) {
-            s.getOrCreateTag().remove(Tambor.ENCERADO);
+            com.miscelanea.armasfuego.comun.Cobre.ponerCera(s, 0);
             l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.AXE_WAX_OFF, SoundSource.PLAYERS, 1.0F, 1.0F);
             l.sendParticles(ParticleTypes.WAX_OFF, b.x, b.y, b.z, 8, 0.2, 0.2, 0.2, 0.5);
         } else if (Tambor.oxido(s) > 0) {

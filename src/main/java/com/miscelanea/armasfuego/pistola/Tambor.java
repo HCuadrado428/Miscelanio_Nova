@@ -97,6 +97,6 @@ public final class Tambor {
     }
 
     public static boolean encerado(ItemStack s) {
-        return s.hasTag() && s.getTag().getBoolean(ENCERADO);
+        return com.miscelanea.armasfuego.comun.Cobre.encerado(s);
     }
 }

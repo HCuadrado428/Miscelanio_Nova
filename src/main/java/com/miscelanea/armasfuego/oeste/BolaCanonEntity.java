@@ -40,6 +40,20 @@ import net.minecraft.world.phys.Vec3;
  */
 public class BolaCanonEntity extends ThrowableItemProjectile {
     private int rebotes;
+    /** La fase del cobre del cañón que la disparó (el cañón gastado pega más y perfora más). */
+    private int oxido;
+
+    public void ponerOxido(int o) {
+        oxido = o;
+    }
+
+    private float dano(float d) {
+        return d * com.miscelanea.armasfuego.comun.Cobre.dano(oxido);
+    }
+
+    private float perf(float p) {
+        return Math.min(1F, p + com.miscelanea.armasfuego.comun.Cobre.perforacion(oxido));
+    }
     public BolaCanonEntity(EntityType<? extends BolaCanonEntity> t, Level l) {
         super(t, l);
     }
@@ -121,13 +135,13 @@ public class BolaCanonEntity extends ThrowableItemProjectile {
         if (st != null && r.getEntity() instanceof LivingEntity v && level() instanceof ServerLevel) {
             // el bloque, de lleno: el yunque, con daño de yunque («¡bip, bip!»)
             if (yunque(st)) {
-                v.hurt(Balistica.fuente(v, DamageTypes.FALLING_ANVIL, this, getOwner()), EquilibrioArmas.canonDano() * EquilibrioArmas.canonYunque());
+                v.hurt(Balistica.fuente(v, DamageTypes.FALLING_ANVIL, this, getOwner()), dano(EquilibrioArmas.canonDano() * EquilibrioArmas.canonYunque()));
                 if (getOwner() instanceof net.minecraft.server.level.ServerPlayer sp) com.miscelanea.logros.LogrosMiscelanea.dar(sp, "canon_yunque");
-            } else Balistica.herir(v, getOwner(), EquilibrioArmas.canonDano() * EquilibrioArmas.canonBloque(), 0.2F, CanonManoItem.DANO, false);
+            } else Balistica.herir(v, getOwner(), dano(EquilibrioArmas.canonDano() * EquilibrioArmas.canonBloque()), perf(0.2F), CanonManoItem.DANO, false);
             return;
         }
         if (r.getEntity() instanceof LivingEntity v && level() instanceof ServerLevel) {
-            Balistica.herir(v, getOwner(), EquilibrioArmas.canonDano() * (fuegos() ? 0.35F : 1F), 0.3F, CanonManoItem.DANO, false);
+            Balistica.herir(v, getOwner(), dano(EquilibrioArmas.canonDano() * (fuegos() ? 0.35F : 1F)), perf(0.3F), CanonManoItem.DANO, false);
             if (incendiario()) v.setSecondsOnFire(6);
         }
     }
@@ -165,7 +179,7 @@ public class BolaCanonEntity extends ThrowableItemProjectile {
             double d = v.position().distanceTo(q);
             if (d > 2.5) continue;
             float k = (float) (1 - d / 2.5);
-            Balistica.herir(v, getOwner(), alrededor * k, 0.0F, CanonManoItem.DANO, false);
+            Balistica.herir(v, getOwner(), dano(alrededor * k), perf(0.0F), CanonManoItem.DANO, false);
             if (incendiario()) v.setSecondsOnFire(4);
             Vec3 emp = v.position().subtract(q).normalize().scale(0.6 * k);
             v.push(emp.x, 0.25 * k, emp.z);

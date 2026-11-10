@@ -21,17 +21,15 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Estuche de violín: guarda una Thompson (y nada más), y además es un violín de verdad. Clic derecho toca una nota,
- * como un bloque musical: la altura va con la vista (mirando arriba, aguda; abajo, grave; dos octavas). Con la
- * Thompson dentro suena desafinado (y es que no es un violín). Agachado + clic derecho lo abre y la Thompson pasa a la
- * mano (el estuche vacío, al inventario); con la Thompson en la otra mano, clic derecho la guarda. En el inventario,
- * como un saco: suelta la Thompson encima para guardarla, clic derecho con la mano vacía para sacarla. Al abrirlo
- * suena una nota desafinada: nadie ha tocado ese violín en su vida.
+ * Estuche de violín: guarda una Thompson (y nada más), y además es un violín de verdad. Con un arco en la otra mano,
+ * mantener clic derecho frota: la nota suena sostenida mientras se mantiene y cambia al mirar arriba o abajo (dos
+ * octavas, 25 notas como el bloque musical); el HUD enseña la nota que va a sonar, para afinar. Con la Thompson dentro
+ * suena desafinado (y es que no es un violín). Sin arco, clic derecho abre el estuche (la Thompson pasa a la mano) o lo
+ * cierra con ella dentro (con la Thompson en la otra mano); agachado + clic derecho saca la Thompson. En el inventario,
+ * como un saco: suelta la Thompson encima para guardarla, clic derecho con la mano vacía para sacarla.
  */
 public class EstucheViolinItem extends Item {
     public static final String ARMA = "Arma";
-    /** NBT: las notas distintas de la tirada de ahora (máscara de 25 bits) y cuándo sonó la última. */
-    public static final String NOTAS = "Notas", NOTA_T = "NotaT";
     /** Para la prueba: notas que se han tocado y la última. */
     public static volatile int tocadas, ultimaNota = -1;
 
@@ -61,6 +59,12 @@ public class EstucheViolinItem extends Item {
         if (p instanceof ServerPlayer sp) LogrosMiscelanea.dar(sp, "thompson_violin");
     }
 
+    /** Los nombres de las 25 notas (de Fa♯3 a Fa♯5, como el bloque musical). */
+    public static String nombreNota(int n) {
+        String[] k = {"F♯", "G", "G♯", "A", "A♯", "B", "C", "C♯", "D", "D♯", "E", "F"};
+        return k[Math.floorMod(n, 12)] + (3 + (n + 6) / 12);
+    }
+
     /** La nota (0..24, como el bloque musical) según la vista: mirando arriba del todo, la más aguda. */
     public static int nota(float xRot) {
         return Math.round(net.minecraft.util.Mth.clamp((90F - xRot) / 180F, 0F, 1F) * 24F);
@@ -85,33 +89,44 @@ public class EstucheViolinItem extends Item {
         l.gameEvent(p, net.minecraft.world.level.gameevent.GameEvent.NOTE_BLOCK_PLAY, p.position());
         tocadas++;
         ultimaNota = n;
-        // Paganini del Oeste: ocho notas distintas seguidas (sin parar más de 3 s) y afinado
-        var t = s.getOrCreateTag();
+        // Paganini del Oeste: ocho notas distintas seguidas con el arco (sin parar más de 3 s) y afinado
         long ahora = l.getGameTime();
-        int mask = ahora - t.getLong(NOTA_T) > 60 ? 0 : t.getInt(NOTAS);
+        long[] e = ARCO.computeIfAbsent(p.getUUID(), k -> new long[4]);
+        int mask = ahora - e[1] > 60 ? 0 : (int) e[2];
         mask |= 1 << n;
-        t.putInt(NOTAS, mask);
-        t.putLong(NOTA_T, ahora);
+        e[0] = n;
+        e[1] = ahora;
+        e[2] = mask;
         if (p instanceof ServerPlayer sp) {
             if (!desafinado && Integer.bitCount(mask) >= 8) LogrosMiscelanea.dar(sp, "violin_paganini");
             if (desafinado) LogrosMiscelanea.dar(sp, "thompson_violin");
         }
     }
 
+    /** ¿Lleva un arco en la otra mano? (con él, el estuche vacío se toca como un violín) */
+    public static boolean conArco(Player p, InteractionHand hand) {
+        InteractionHand otra = hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
+        return p.getItemInHand(otra).is(net.minecraft.world.item.Items.BOW);
+    }
+
+    /** Lo que se está tocando con el arco (la última nota y cuándo sonó), por jugador; no va en el NBT para no cortar el uso. */
+    private static final java.util.Map<java.util.UUID, long[]> ARCO = new java.util.HashMap<>();
+
+    public static void olvidar(java.util.UUID id) {
+        ARCO.remove(id);
+    }
+
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player p, InteractionHand hand) {
         ItemStack s = p.getItemInHand(hand);
         ItemStack arma = dentro(s);
-        InteractionHand otra0 = hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
-        boolean guardar = arma.isEmpty() && p.getItemInHand(otra0).getItem() instanceof ThompsonItem;
-        if (!guardar && !(p.isShiftKeyDown() && !arma.isEmpty())) {
-            // el violín
-            if (p.getCooldowns().isOnCooldown(this)) return InteractionResultHolder.fail(s);
+        // con el arco en la otra mano: se frota mientras se mantiene el clic (agachado, con la Thompson dentro, se saca)
+        if (conArco(p, hand) && !(p.isShiftKeyDown() && !arma.isEmpty())) {
+            p.startUsingItem(hand);
             if (!level.isClientSide) tocar(p, s);
-            p.getCooldowns().addCooldown(this, com.miscelanea.armasfuego.comun.EquilibrioArmas.violinEnfriamiento());
-            p.swing(hand);
-            return InteractionResultHolder.sidedSuccess(s, level.isClientSide);
+            return InteractionResultHolder.consume(s);
         }
+        // sin arco: clic derecho abre el estuche (y la Thompson pasa a la mano) o lo cierra con ella dentro
         if (!arma.isEmpty()) {
             if (!level.isClientSide) {
                 nota(p);
@@ -132,7 +147,39 @@ public class EstucheViolinItem extends Item {
             }
             return InteractionResultHolder.sidedSuccess(s, level.isClientSide);
         }
-        return InteractionResultHolder.pass(s);
+        // vacío y sin nada que guardar: se abre y se cierra (clac)
+        if (!level.isClientSide)
+            level.playSound(null, p.getX(), p.getY(), p.getZ(), net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_LEATHER, SoundSource.PLAYERS, 0.7F, 1.4F);
+        return InteractionResultHolder.sidedSuccess(s, level.isClientSide);
+    }
+
+    /** Frotando: la nota suena sostenida (se repite antes de apagarse) y cambia en cuanto se mira más arriba o abajo. */
+    @Override
+    public void onUseTick(Level level, net.minecraft.world.entity.LivingEntity e, ItemStack s, int quedan) {
+        if (level.isClientSide || !(e instanceof Player p)) return;
+        if (!conArco(p, p.getUsedItemHand())) {
+            p.stopUsingItem();
+            return;
+        }
+        long[] t = ARCO.get(p.getUUID());
+        long ahora = level.getGameTime();
+        int n = nota(p.getXRot());
+        if (t == null || t[0] != n || ahora - t[1] >= 14) tocar(p, s);
+    }
+
+    @Override
+    public int getUseDuration(ItemStack s) {
+        return 72000;
+    }
+
+    @Override
+    public net.minecraft.world.item.UseAnim getUseAnimation(ItemStack s) {
+        return net.minecraft.world.item.UseAnim.NONE;
+    }
+
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack a, ItemStack b, boolean cambio) {
+        return cambio || a.getItem() != b.getItem();
     }
 
     @Override

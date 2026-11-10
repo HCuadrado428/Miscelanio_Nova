@@ -196,7 +196,7 @@ public abstract class ArmaFuegoItem extends Item {
     /** Probabilidad de que se encasquille un disparo (más cuanto más oxidado, como las tres primeras). */
     protected float probAtasco(Player p, ItemStack s) {
         if (EquilibrioArmas.sinAtascosPrueba) return 0F;
-        return EquilibrioArmas.encasquilladoBase() + Cobre.ATASCO[Cobre.oxido(s)];
+        return EquilibrioArmas.encasquilladoBase() + Cobre.atascoDisparo(Cobre.oxido(s));
     }
 
     /** Sonido del paso de recarga. */
@@ -314,7 +314,7 @@ public abstract class ArmaFuegoItem extends Item {
         if (!p.getAbilities().instabuild) ponerBalas(s, balas(s) - 1);
         s.getOrCreateTag().putLong(DISPARO_T, level.getGameTime());
         disparar(sp, s);
-        if (Cobre.desgastar(s, usosPorFase(), p.isInWaterOrRain())) Cobre.avisar(sp, s);
+        Cobre.avisar(sp, s, Cobre.gastar(s, usosPorFase(), p.isInWaterOrRain()));
         if (s.isDamageableItem()) s.hurtAndBreak(1, p, x -> x.broadcastBreakEvent(EquipmentSlot.MAINHAND));
         return true;
     }
@@ -446,7 +446,11 @@ public abstract class ArmaFuegoItem extends Item {
     protected static Balistica.Tiro tiro(ServerPlayer p, float dano, double alcance, double desdeCaida, float minCaida, double disp,
                                          float perf, ResourceKey<DamageType> tipo, boolean rafaga, @Nullable ParticleOptions estela) {
         ServerLevel l = p.serverLevel();
-        disp += Cobre.DISPERSION[Cobre.oxido(p.getMainHandItem())];
+        // el cobre: más disperso cuanto más oxidado, pero el cañón gastado pega más y perfora más armadura
+        ItemStack arma = p.getMainHandItem();
+        disp += Cobre.dispersion(Cobre.oxido(arma));
+        dano *= Cobre.dano(arma);
+        perf = Math.min(1F, perf + Cobre.perforacion(arma));
         Vec3 dir = Balistica.dispersar(p.getViewVector(1.0F), disp, p.getRandom());
         Balistica.Tiro t = Balistica.trazar(l, p, p.getEyePosition(), dir, alcance, boca(p, 0.8, 0.3, 0.22), estela);
         if (t.entidad() != null) {
@@ -545,6 +549,7 @@ public abstract class ArmaFuegoItem extends Item {
     public void appendHoverText(ItemStack s, @Nullable Level level, List<Component> l, TooltipFlag f) {
         l.add(Component.translatable("msg.miscelanea.armafuego.balas", balas(s), capacidad(s), iconoMunicion(s).getHoverName()).withStyle(ChatFormatting.GOLD));
         l.add(Cobre.estado(s));
+        Cobre.tooltip(s, l);
         if (atascada(s)) l.add(Component.translatable("msg.miscelanea.armafuego.atascada").withStyle(ChatFormatting.RED));
         String id = getDescriptionId();
         l.add(Component.translatable(id + ".ayuda1").withStyle(ChatFormatting.GRAY));
