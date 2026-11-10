@@ -260,7 +260,10 @@ public abstract class ArmaFuegoItem extends Item {
             }
             if (llena(s) && !cambiaTipo(p, s) || !p.getAbilities().instabuild && !tieneMunicion(p, s)) {
                 // sin munición: se avisa, salvo si la recarga acaba de terminar (el botón seguía pulsado: nada que decir)
-                if (!level.isClientSide && !llena(s) && level.getGameTime() - t.getLong(FIN_CARGA) > 10) {
+                // (mientras se mantenga pulsado, el cliente lo repite cada pocos ticks: cada repetición alarga el silencio)
+                boolean recien = level.getGameTime() - t.getLong(FIN_CARGA) <= 10;
+                if (recien && !level.isClientSide) t.putLong(FIN_CARGA, level.getGameTime());
+                if (!level.isClientSide && !llena(s) && !recien) {
                     Component m = mismoTipo(s) ? Component.translatable("msg.miscelanea.armafuego.sin_municion", iconoMunicion(s).getHoverName())
                             : Component.translatable("msg.miscelanea.armafuego.sin_balas");
                     p.displayClientMessage(m.copy().withStyle(ChatFormatting.GRAY), true);

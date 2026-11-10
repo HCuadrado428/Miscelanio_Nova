@@ -3880,6 +3880,18 @@ public final class PruebaCI {
             escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.MIEL, 100, escHuskPos());
         });
         paso("127_miel", 12, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
+        // si ningún perdigón de miel ha dado (se reparten al azar), otro tiro
+        sin("esc_miel_otra", 5, () -> {
+            var h = (net.minecraft.world.entity.LivingEntity) escEntidad(escHusk);
+            if (!h.hasEffect(com.miscelanea.registry.ModEffects.PRINGADO.get()) && !PI.containsKey("miel_visto")) {
+                RESUMEN.add("  escopeta: el primer tiro de miel no ha pringado; otro");
+                PI.put("miel_otra", true);
+                escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.MIEL, 100, escHuskPos());
+            } else PI.remove("miel_otra");
+        });
+        sin("esc_miel_tiro2", 12, () -> {
+            if (Boolean.TRUE.equals(PI.get("miel_otra"))) com.miscelanea.client.armasfuego.escopeta.EscopetaCliente.disparar();
+        });
         sin("esc_miel_chk", 5, () -> {
             var h = (net.minecraft.world.entity.LivingEntity) escEntidad(escHusk);
             escVigilaMiel = false;
