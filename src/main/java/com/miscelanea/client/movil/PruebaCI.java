@@ -3153,23 +3153,19 @@ public final class PruebaCI {
             PI.put("bay", mal.toString());
             PI.put("bay_txt", "madera " + dM + ", diamante " + dD + ", netherita (espada) " + dN);
             PI.put("bay_logro", a2Logro(sp, "armas/bayoneta_netherita"));
-            // cuatro soportes de armadura con un mosquete cada uno (madera, oro, diamante, netherita) para verlas
+            // cuatro marcos en una pared con un mosquete cada uno (madera, oro, diamante, netherita): se ven de perfil
             net.minecraft.world.item.Item[] esp = {net.minecraft.world.item.Items.WOODEN_SWORD, net.minecraft.world.item.Items.GOLDEN_SWORD,
                     net.minecraft.world.item.Items.DIAMOND_SWORD, net.minecraft.world.item.Items.NETHERITE_SWORD};
             for (int k = 0; k < 4; k++) {
-                var a = net.minecraft.world.entity.EntityType.ARMOR_STAND.create(l);
-                Vec3 q = a2Punto(5, -3 + k * 1.6, 0);
-                a.moveTo(q.x, q.y, q.z, a2Mira.toYRot() + 180F + 90F, 0);
-                net.minecraft.nbt.CompoundTag t = new net.minecraft.nbt.CompoundTag();
-                a.addAdditionalSaveData(t);
-                t.putBoolean("ShowArms", true);
-                t.putBoolean("NoBasePlate", true);
-                a.readAdditionalSaveData(t);
+                var pared = a2O.relative(a2Mira, 4).relative(a2Lado, k - 2).above(1);
+                l.setBlock(pared, net.minecraft.world.level.block.Blocks.WHITE_CONCRETE.defaultBlockState(), 3);
+                var hueco = pared.relative(a2Mira.getOpposite());
+                var marco = new net.minecraft.world.entity.decoration.GlowItemFrame(l, hueco, a2Mira.getOpposite());
                 ItemStack mq = new ItemStack(com.miscelanea.registry.ModItems.MOSQUETE.get());
                 com.miscelanea.armasfuego.oeste.MosqueteItem.ponerBayoneta(mq, new ItemStack(esp[k]));
-                a.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, mq);
-                a.addTag("a2u_bayoneta");
-                l.addFreshEntity(a);
+                marco.setItem(mq, false);
+                marco.addTag("a2u_bayoneta");
+                l.addFreshEntity(marco);
             }
         }));
         paso("286_bayonetas", 10, () -> a2VistaA(a2Punto(5, -0.6, 1.2), a2Punto(1.2, -0.6, 1.8)));
@@ -3177,8 +3173,12 @@ public final class PruebaCI {
             a2Camara1p();
             a2Comprobar("bayoneta cambiable: en la mesa y en el inventario se cala y se quita, y el daño va con la espada",
                     "".equals(PI.get("bay")) && Boolean.TRUE.equals(PI.get("bay_logro")), PI.get("bay") + " " + PI.get("bay_txt") + ", logro " + PI.get("bay_logro"));
-            piSrv(sp -> sp.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.decoration.ArmorStand.class, new net.minecraft.world.phys.AABB(a2O).inflate(12),
-                    e -> e.getTags().contains("a2u_bayoneta")).forEach(net.minecraft.world.entity.Entity::discard));
+            piSrv(sp -> {
+                sp.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.decoration.ItemFrame.class, new net.minecraft.world.phys.AABB(a2O).inflate(12),
+                        e -> e.getTags().contains("a2u_bayoneta")).forEach(net.minecraft.world.entity.Entity::discard);
+                for (int k = 0; k < 4; k++)
+                    sp.serverLevel().setBlock(a2O.relative(a2Mira, 4).relative(a2Lado, k - 2).above(1), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+            });
         });
         // ---------------------------------------------------------------- mosquete: HUD de los pasos de la recarga
         sin("a2u_mosquete", 6, () -> {
