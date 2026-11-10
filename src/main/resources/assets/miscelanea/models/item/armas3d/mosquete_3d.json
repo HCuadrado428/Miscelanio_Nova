@@ -18,6 +18,7 @@
   "brasa": "miscelanea:item/armas3d/g_brasa",
   "tambor": "miscelanea:item/armas3d/g_tambor",
   "terciopelo": "miscelanea:item/armas3d/g_terciopelo",
+  "bayoneta": "miscelanea:item/armas3d/g_acero",
   "particle": "miscelanea:item/mosquete"
  },
  "elements": [
@@ -1296,7 +1297,7 @@
       5.55,
       15.9
      ],
-     "texture": "#acero"
+     "texture": "#bayoneta"
     },
     "south": {
      "uv": [
@@ -1305,7 +1306,7 @@
       5.55,
       15.9
      ],
-     "texture": "#acero"
+     "texture": "#bayoneta"
     },
     "east": {
      "uv": [
@@ -1314,7 +1315,7 @@
       6.25,
       15.9
      ],
-     "texture": "#acero"
+     "texture": "#bayoneta"
     },
     "west": {
      "uv": [
@@ -1323,7 +1324,7 @@
       6.25,
       15.9
      ],
-     "texture": "#acero"
+     "texture": "#bayoneta"
     },
     "up": {
      "uv": [
@@ -1332,7 +1333,7 @@
       5.55,
       12.1
      ],
-     "texture": "#acero"
+     "texture": "#bayoneta"
     },
     "down": {
      "uv": [
@@ -1341,7 +1342,7 @@
       5.55,
       12.1
      ],
-     "texture": "#acero"
+     "texture": "#bayoneta"
     }
    }
   },
@@ -1364,7 +1365,7 @@
       1.1,
       14.8
      ],
-     "texture": "#acero"
+     "texture": "#bayoneta"
     },
     "south": {
      "uv": [
@@ -1373,7 +1374,7 @@
       1.1,
       14.8
      ],
-     "texture": "#acero"
+     "texture": "#bayoneta"
     },
     "east": {
      "uv": [
@@ -1382,7 +1383,7 @@
       14.5,
       14.8
      ],
-     "texture": "#acero"
+     "texture": "#bayoneta"
     },
     "west": {
      "uv": [
@@ -1391,7 +1392,7 @@
       14.5,
       14.8
      ],
-     "texture": "#acero"
+     "texture": "#bayoneta"
     },
     "up": {
      "uv": [
@@ -1400,7 +1401,7 @@
       1.1,
       1.8
      ],
-     "texture": "#acero"
+     "texture": "#bayoneta"
     },
     "down": {
      "uv": [
@@ -1409,7 +1410,7 @@
       1.1,
       1.8
      ],
-     "texture": "#acero"
+     "texture": "#bayoneta"
     }
    }
   }

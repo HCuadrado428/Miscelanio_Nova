@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/violin",
+  "display": {
+    "icon": {
+      "item": "miscelanea:tambor_tinta"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.tinta.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.tinta.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "thompson_tinta": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "thompson_tinta"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

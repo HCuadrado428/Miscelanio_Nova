@@ -151,6 +151,12 @@ public class GatlingEntity extends Entity {
         entityData.set(OXIDO, com.miscelanea.armasfuego.comun.Cobre.oxido(arma));
     }
 
+    /** Para la prueba del CI: poner las balas de la cinta. */
+    public void ponerBalasPrueba(int n) {
+        entityData.set(BALAS, n);
+        if (cinta.isEmpty()) ponerCinta(new ItemStack(ModItems.CINTA_GATLING.get()));
+    }
+
     /** Para la prueba del CI (y comandos): poner el calor. */
     public void ponerCalor(float c) {
         entityData.set(CALOR, Math.max(0, Math.min(100, c)));

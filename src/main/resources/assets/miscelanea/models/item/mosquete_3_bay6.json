@@ -1,0 +1,22 @@
+{
+ "loader": "forge:separate_transforms",
+ "gui_light": "front",
+ "textures": {
+  "particle": "miscelanea:item/mosquete"
+ },
+ "base": {
+  "parent": "miscelanea:item/armas3d/mosquete_3d_3",
+  "textures": {
+   "cobre": "miscelanea:item/armas3d/cobre_0",
+   "bayoneta": "minecraft:block/netherite_block"
+  }
+ },
+ "perspectives": {
+  "gui": {
+   "parent": "minecraft:item/generated",
+   "textures": {
+    "layer0": "miscelanea:item/mosquete"
+   }
+  }
+ }
+}

@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/gatling_tolva",
+  "display": {
+    "icon": {
+      "item": "minecraft:redstone_torch"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.gatling_torreta.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.gatling_torreta.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "gatling_torreta": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "gatling_torreta"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}
