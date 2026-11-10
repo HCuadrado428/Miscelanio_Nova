@@ -2618,27 +2618,35 @@ public final class PruebaCI {
         });
         // texturas a 16 px por bloque, como las del revólver y el rifle (iconos, munición y materiales de los modelos)
         sin("a2c_texturas_16", 2, () -> {
+            // TODAS las de las armas de fuego y su munición (las nueve y todo lo suyo, también lo que se añada): iconos,
+            // materiales de los modelos (armas3d) y la bengala y la cuerda del rifle
             StringBuilder mal = new StringBuilder();
             int n = 0;
-            java.util.List<String> nombres = new java.util.ArrayList<>(List.of("estuche_violin", "bala_derringer", "bola_mosquete", "cinta_gatling",
-                    "cargador_thompson", "revolver_tiempo", "bala_pintura", "bala_pintura_punta", "bala_plata", "bala_dinamita", "bala_oro", "carta_marcada",
-                    "tambor_trazador", "tambor_agua", "cinta_incendiaria", "cinta_palomitas", "metralla", "bola_cadena", "bolano_incendiario", "bolano_fuegos"));
-            for (String r : List.of("gatling", "winchester", "derringer", "thompson", "mosquete", "canon_mano")) {
-                nombres.add(r);
-                for (int o = 1; o < 4; o++) nombres.add(r + "_ox" + o);
-            }
-            for (String m : List.of("g_acero", "g_madera", "g_cuero", "g_nacar", "g_mecha", "g_brasa", "g_terciopelo", "g_boca", "g_boca2", "g_tambor", "g_tolva"))
-                nombres.add("armas3d/" + m);
-            for (String t : nombres) {
-                var rl = new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "textures/item/" + t + ".png");
-                try (var in = mc.getResourceManager().open(rl); var img = com.mojang.blaze3d.platform.NativeImage.read(in)) {
-                    if (img.getWidth() != 16 || img.getHeight() != 16) mal.append(t).append(" ").append(img.getWidth()).append("x").append(img.getHeight()).append("; ");
+            String[] pref = {"revolver", "rifle", "escopeta_presion", "escopeta_cartucho", "bala_", "casquillo_rifle", "gatling", "winchester", "derringer",
+                    "thompson", "mosquete", "canon_mano", "estuche_violin", "cinta_", "cargador_thompson", "carta_marcada", "tambor_", "metralla",
+                    "bola_mosquete", "bola_cadena", "bola_arpon", "bolano_"};
+            var todas = mc.getResourceManager().listResources("textures", rl -> rl.getNamespace().equals(Miscelanea.MOD_ID) && rl.getPath().endsWith(".png"));
+            java.util.Set<String> vistas = new java.util.TreeSet<>();
+            for (var e : todas.entrySet()) {
+                String path = e.getKey().getPath();
+                String nombre = path.substring(path.lastIndexOf('/') + 1);
+                boolean arma = path.startsWith("textures/item/armas3d/") || path.equals("textures/entity/revolver_bengala.png") || path.equals("textures/entity/cuerda_rifle.png");
+                if (!arma && path.startsWith("textures/item/") && path.indexOf('/', "textures/item/".length()) < 0)
+                    for (String pr : pref) if (nombre.startsWith(pr)) { arma = true; break; }
+                if (!arma) continue;
+                vistas.add(nombre);
+                try (var in = e.getValue().open(); var img = com.mojang.blaze3d.platform.NativeImage.read(in)) {
+                    if (img.getWidth() != 16 || img.getHeight() != 16) mal.append(path).append(" ").append(img.getWidth()).append("x").append(img.getHeight()).append("; ");
                     n++;
                 } catch (Exception ex) {
-                    mal.append(t).append(" falta; ");
+                    mal.append(path).append(" no se lee; ");
                 }
             }
-            a2Comprobar("texturas de la segunda tanda a 16x16", mal.length() == 0, mal.length() == 0 ? n + " a 16x16" : mal.toString());
+            // que estén las de esta tanda (si no, la lista de arriba se habría quedado corta)
+            for (String x : List.of("bala_hielo.png", "bala_humo.png", "tambor_tinta.png", "cinta_guisantes.png", "bola_arpon.png", "bolano_saltarin.png",
+                    "g_acero.png", "winchester_ox3.png", "gatling_ox3.png", "revolver_bengala.png"))
+                if (!vistas.contains(x)) mal.append("no se ha mirado ").append(x).append("; ");
+            a2Comprobar("todas las texturas de las armas de fuego y su munición a 16x16", mal.length() == 0 && n >= 140, mal.length() == 0 ? n + " a 16x16" : mal.toString());
         });
         // los encantamientos propios: valen para su arma y no para una espada
         sin("a2c_encantamientos", 2, () -> {
