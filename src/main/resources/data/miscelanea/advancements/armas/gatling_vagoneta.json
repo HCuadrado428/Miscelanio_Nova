@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/gatling",
+  "display": {
+    "icon": {
+      "item": "minecraft:minecart"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.gatling_vagoneta.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.gatling_vagoneta.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "gatling_vagoneta": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "gatling_vagoneta"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 15
+  }
+}

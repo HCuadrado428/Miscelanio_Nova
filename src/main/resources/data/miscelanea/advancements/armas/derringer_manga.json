@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/derringer",
+  "display": {
+    "icon": {
+      "item": "miscelanea:derringer"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.derringer_manga.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.derringer_manga.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "derringer_manga": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "derringer_manga"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

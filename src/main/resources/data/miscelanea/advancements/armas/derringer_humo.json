@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/derringer",
+  "display": {
+    "icon": {
+      "item": "miscelanea:bala_humo"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.derringer_humo.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.derringer_humo.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "derringer_humo": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "derringer_humo"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

@@ -5,7 +5,10 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-/** Cliente → servidor: el que va a los mandos de la Gatling empieza o deja de girar la manivela (clic derecho mantenido). */
+/**
+ * Cliente → servidor: el que va a los mandos de la Gatling (o el que lleva el barco donde va montada) empieza o deja
+ * de girar la manivela (clic derecho mantenido).
+ */
 public class GatlingPacket {
     private final boolean girando;
 
@@ -23,6 +26,8 @@ public class GatlingPacket {
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
         var p = ctx.get().getSender();
-        if (p != null && p.getVehicle() instanceof GatlingEntity g) g.ponerGirando(girando);
+        if (p == null) return;
+        GatlingEntity g = GatlingEntity.deJugador(p);
+        if (g != null) g.ponerGirando(girando);
     }
 }

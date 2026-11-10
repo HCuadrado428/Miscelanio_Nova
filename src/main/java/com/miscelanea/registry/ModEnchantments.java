@@ -82,6 +82,9 @@ public final class ModEnchantments {
             () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, GATLING, 2, 10, 12));
     public static final RegistryObject<Enchantment> GATLING_ENGRASADA = ENCHANTMENTS.register("gatling_engrasada",
             () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.RARE, GATLING, 1, 15, 0));
+    /** Torreta (Portal): con redstone y nadie a los mandos, apunta sola a lo hostil que tenga delante. */
+    public static final RegistryObject<Enchantment> GATLING_TORRETA = ENCHANTMENTS.register("gatling_torreta",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.VERY_RARE, GATLING, 1, 20, 0));
     public static final EnchantmentCategory WINCHESTER = EnchantmentCategory.create("MISCELANEA_WINCHESTER", item -> item instanceof com.miscelanea.armasfuego.oeste.WinchesterItem);
     public static final RegistryObject<Enchantment> WINCHESTER_REPETICION = ENCHANTMENTS.register("winchester_repeticion",
             () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, WINCHESTER, 3, 8, 10));
@@ -89,16 +92,25 @@ public final class ModEnchantments {
             () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.RARE, WINCHESTER, 1, 20, 0));
     public static final RegistryObject<Enchantment> WINCHESTER_CARGA_RAPIDA = ENCHANTMENTS.register("winchester_carga_rapida",
             () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.COMMON, WINCHESTER, 2, 5, 10));
+    /** Depósito largo: 3 balas más por nivel. */
+    public static final RegistryObject<Enchantment> WINCHESTER_DEPOSITO = ENCHANTMENTS.register("winchester_deposito",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, WINCHESTER, 2, 8, 12));
     public static final EnchantmentCategory DERRINGER = EnchantmentCategory.create("MISCELANEA_DERRINGER", item -> item instanceof com.miscelanea.armasfuego.oeste.DerringerItem);
     public static final RegistryObject<Enchantment> DERRINGER_AS = ENCHANTMENTS.register("derringer_as",
             () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, DERRINGER, 2, 10, 12));
     public static final RegistryObject<Enchantment> DERRINGER_DOBLE = ENCHANTMENTS.register("derringer_doble",
             () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.RARE, DERRINGER, 1, 18, 0));
+    /** Prestidigitador: al sacarla de la manga, mete sola una bala si le falta. */
+    public static final RegistryObject<Enchantment> DERRINGER_PRESTIDIGITADOR = ENCHANTMENTS.register("derringer_prestidigitador",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.RARE, DERRINGER, 1, 15, 0));
     public static final EnchantmentCategory THOMPSON = EnchantmentCategory.create("MISCELANEA_THOMPSON", item -> item instanceof com.miscelanea.armasfuego.oeste.ThompsonItem);
     public static final RegistryObject<Enchantment> THOMPSON_CHICAGO = ENCHANTMENTS.register("thompson_chicago",
             () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, THOMPSON, 2, 10, 12));
     public static final RegistryObject<Enchantment> THOMPSON_COMPENSADOR = ENCHANTMENTS.register("thompson_compensador",
             () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.COMMON, THOMPSON, 3, 5, 9));
+    /** Gatillo fácil: dispara más deprisa (un 25 % más de balas por segundo por nivel). */
+    public static final RegistryObject<Enchantment> THOMPSON_GATILLO = ENCHANTMENTS.register("thompson_gatillo",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, THOMPSON, 2, 10, 12));
     public static final EnchantmentCategory MOSQUETE = EnchantmentCategory.create("MISCELANEA_MOSQUETE", item -> item instanceof com.miscelanea.armasfuego.oeste.MosqueteItem);
     public static final RegistryObject<Enchantment> MOSQUETE_BAQUETA = ENCHANTMENTS.register("mosquete_baqueta",
             () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.COMMON, MOSQUETE, 3, 5, 9));
@@ -106,11 +118,17 @@ public final class ModEnchantments {
             () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.RARE, MOSQUETE, 1, 15, 0));
     public static final RegistryObject<Enchantment> MOSQUETE_CARGA = ENCHANTMENTS.register("mosquete_carga",
             () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, MOSQUETE, 2, 10, 10));
+    /** Pedernal fino: la chispa prende antes y falla menos. */
+    public static final RegistryObject<Enchantment> MOSQUETE_PEDERNAL = ENCHANTMENTS.register("mosquete_pedernal",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, MOSQUETE, 2, 8, 12));
     public static final EnchantmentCategory CANON = EnchantmentCategory.create("MISCELANEA_CANON", item -> item instanceof com.miscelanea.armasfuego.oeste.CanonManoItem);
     public static final RegistryObject<Enchantment> CANON_MECHA_CORTA = ENCHANTMENTS.register("canon_mecha_corta",
             () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, CANON, 2, 8, 12));
     public static final RegistryObject<Enchantment> CANON_BIEN_FUNDIDO = ENCHANTMENTS.register("canon_bien_fundido",
             () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.RARE, CANON, 1, 15, 0));
+    /** Pólvora fina: el bolaño sale un 20 % más deprisa (llega más lejos) por nivel. */
+    public static final RegistryObject<Enchantment> CANON_POLVORA_FINA = ENCHANTMENTS.register("canon_polvora_fina",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, CANON, 2, 8, 12));
     // ---- fin armas de fuego (segunda tanda)
 
     private ModEnchantments() {}

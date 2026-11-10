@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/gatling",
+  "display": {
+    "icon": {
+      "item": "minecraft:oak_boat"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.gatling_barco.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.gatling_barco.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "gatling_barco": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "gatling_barco"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 15
+  }
+}

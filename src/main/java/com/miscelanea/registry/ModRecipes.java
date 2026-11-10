@@ -18,5 +18,8 @@ public final class ModRecipes {
     public static final RegistryObject<RecipeSerializer<com.miscelanea.tinta.TintaTinteRecipe>> TINTA_TINTE =
             SERIALIZERS.register("tinta_tinte", () -> new SimpleCraftingRecipeSerializer<>(com.miscelanea.tinta.TintaTinteRecipe::new));
 
+    public static final RegistryObject<RecipeSerializer<com.miscelanea.armasfuego.oeste.MosqueteBayonetaRecipe>> MOSQUETE_BAYONETA =
+            SERIALIZERS.register("mosquete_bayoneta", () -> new SimpleCraftingRecipeSerializer<>(com.miscelanea.armasfuego.oeste.MosqueteBayonetaRecipe::new));
+
     private ModRecipes() {}
 }

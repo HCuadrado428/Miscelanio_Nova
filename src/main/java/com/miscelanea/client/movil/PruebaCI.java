@@ -367,7 +367,7 @@ public final class PruebaCI {
 
     // ------------------------------------------------------------------ logros
     /** Todos los logros de la pestaña de Miscelánea (data/miscelanea/advancements). */
-    private static final String[] LOGROS = ("raiz,movil/movil,movil/foto,movil/video,movil/minegram,movil/flash,movil/mensaje,movil/llamada,movil/videollamada,movil/sin_cobertura,movil/numero_oculto,movil/bizum,arcade/ficha,arcade/partida,arcade/record,arcade/pleno,arcade/canal,feria/noria,feria/choque,feria/tirolina,feria/trampolin,feria/campana,feria/jackpot,mesa/victoria,mesa/ajedrez,mesa/parchis,mesa/calavera,mesa/billar,mesa/futbolin,baile/pista,baile/videoclip,baile/walken,baile/nota_s,baile/nota_e,pociones/gigante,pociones/enano,pociones/borrachera,pociones/tartamudeo,pociones/ventilador,pociones/eco,pociones/laboratorio,pociones/fantasma,bromas/uwu,bromas/australia,bromas/estatica,sala/lazo,sala/grilletes,sala/engrilletado,sala/ganzua,sala/tomatazo,dream/esencia,dream/mordisco,dream/escapar,dream/veneno,dream/medianoche,armas/gambito,armas/laser,armas/hacha,armas/aspira,armas/uber,armas/cofre,armas/ruleta,armas/ruleta_fogueo,armas/duelo,armas/gallina,armas/sedante,armas/encasquillado,armas/salto,armas/reventon,armas/granjero,armas/aspirar_piedras,armas/cuerda,armas/francotirador,armas/gatling,armas/gatling_calor,armas/gatling_cubo,armas/winchester,armas/winchester_giro,armas/derringer,armas/violin,armas/thompson_tambor,armas/mosquete,armas/bayoneta,armas/polvora_mojada,armas/canon,armas/canon_revienta,armas/tiempo_bala,armas/goma,armas/pintura,armas/atasco,armas/plata,armas/oro,armas/carta,armas/soaker,armas/palomitas,armas/cadena,armas/feria,armas/patina,armas/coleccionista,varios/paella,varios/bacalao,varios/ocarina").split(",");
+    private static final String[] LOGROS = ("raiz,movil/movil,movil/foto,movil/video,movil/minegram,movil/flash,movil/mensaje,movil/llamada,movil/videollamada,movil/sin_cobertura,movil/numero_oculto,movil/bizum,arcade/ficha,arcade/partida,arcade/record,arcade/pleno,arcade/canal,feria/noria,feria/choque,feria/tirolina,feria/trampolin,feria/campana,feria/jackpot,mesa/victoria,mesa/ajedrez,mesa/parchis,mesa/calavera,mesa/billar,mesa/futbolin,baile/pista,baile/videoclip,baile/walken,baile/nota_s,baile/nota_e,pociones/gigante,pociones/enano,pociones/borrachera,pociones/tartamudeo,pociones/ventilador,pociones/eco,pociones/laboratorio,pociones/fantasma,bromas/uwu,bromas/australia,bromas/estatica,sala/lazo,sala/grilletes,sala/engrilletado,sala/ganzua,sala/tomatazo,dream/esencia,dream/mordisco,dream/escapar,dream/veneno,dream/medianoche,armas/gambito,armas/laser,armas/hacha,armas/aspira,armas/uber,armas/cofre,armas/ruleta,armas/ruleta_fogueo,armas/duelo,armas/gallina,armas/sedante,armas/encasquillado,armas/salto,armas/reventon,armas/granjero,armas/aspirar_piedras,armas/cuerda,armas/francotirador,armas/gatling,armas/gatling_calor,armas/gatling_cubo,armas/winchester,armas/winchester_giro,armas/derringer,armas/violin,armas/thompson_tambor,armas/mosquete,armas/bayoneta,armas/polvora_mojada,armas/canon,armas/canon_revienta,armas/tiempo_bala,armas/goma,armas/pintura,armas/atasco,armas/plata,armas/oro,armas/carta,armas/soaker,armas/palomitas,armas/cadena,armas/feria,armas/patina,armas/gatling_tolva,armas/gatling_torreta,armas/gatling_vagoneta,armas/gatling_barco,armas/guisantes,armas/winchester_mezcla,armas/winchester_hielo,armas/derringer_manga,armas/derringer_humo,armas/paganini,armas/tinta,armas/bayoneta_netherita,armas/arpon,armas/yunque,armas/castillo_arena,armas/rebote,armas/coleccionista,varios/paella,varios/bacalao,varios/ocarina").split(",");
     /** Los que ya tienen que estar hechos por los pasos de antes de la prueba (móvil, cámara, vídeo, gramola, pociones). */
     private static final String[] LOGROS_YA = {"raiz", "movil/movil", "movil/foto", "movil/video", "baile/pista", "baile/videoclip",
             "pociones/eco", "pociones/gigante"};
@@ -832,7 +832,7 @@ public final class PruebaCI {
     private static volatile net.minecraft.core.BlockPos piO;
     private static volatile net.minecraft.core.Direction piMira, piLado;
     private static volatile UUID piHusk;
-    private static volatile boolean piVigilaBrillo, escVigilaMiel;
+    private static volatile boolean piVigilaBrillo, escVigilaMiel, a2VigilaGatling, escVigilaSalto;
     private static final java.util.Map<String, Object> PI = new java.util.concurrent.ConcurrentHashMap<>();
     private static net.minecraftforge.common.util.FakePlayer piForastero;
 
@@ -1065,9 +1065,16 @@ public final class PruebaCI {
         sin("pistola_bengala_ver", 4, () -> piSrv(sp -> {
             var l = sp.serverLevel();
             var bs = l.getEntitiesOfClass(com.miscelanea.armasfuego.pistola.BengalaEntity.class, new net.minecraft.world.phys.AABB(piO).inflate(40));
-            int luces = 0;
-            for (var b : net.minecraft.core.BlockPos.betweenClosed(piO.offset(-24, -2, -24), piO.offset(24, 24, 24)))
-                if (l.getBlockState(b).is(net.minecraft.world.level.block.Blocks.LIGHT)) luces++;
+            int luces = 0, luzCalculada = 0;
+            var junto = net.minecraft.core.BlockPos.containing(piPunto(7, 0, 0.5));
+            for (var b : net.minecraft.core.BlockPos.betweenClosed(piO.offset(-24, -2, -24), piO.offset(24, 24, 24))) {
+                var st = l.getBlockState(b);
+                if (st.is(net.minecraft.world.level.block.Blocks.LIGHT)) {
+                    luces++;
+                    // la luz que llega al husk (la del motor de luz va en otro hilo y a veces aún no estaba puesta)
+                    luzCalculada = Math.max(luzCalculada, st.getValue(net.minecraft.world.level.block.LightBlock.LEVEL) - b.distManhattan(junto));
+                }
+            }
             var h = piHusk(sp);
             piVigilaBrillo = false;
             boolean brilla = h != null && (h.hasEffect(net.minecraft.world.effect.MobEffects.GLOWING) || PI.containsKey("husk_brillo"));
@@ -1077,7 +1084,7 @@ public final class PruebaCI {
                     + ", " + luces + " bloque(s) de luz, " + com.miscelanea.armasfuego.pistola.LucesTemporales.cuantas(sp.server) + " apuntadas, husk brilla: "
                     + brilla + (brilla ? "" : donde));
             PI.put("bengala_ok", !bs.isEmpty() && luces >= 1 && brilla
-                    && l.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, net.minecraft.core.BlockPos.containing(piPunto(7, 0, 0.5))) >= 8);
+                    && Math.max(luzCalculada, l.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, junto)) >= 8);
         }));
         paso("106_bengala_noche", 10, () -> piComprobar("bengala: sube, ilumina (bloques de luz) y con Señalero el husk brilla",
                 Boolean.TRUE.equals(PI.get("bengala_ok")), String.valueOf(PI.get("bengala"))));
@@ -1354,6 +1361,14 @@ public final class PruebaCI {
                 if (h instanceof net.minecraft.world.entity.LivingEntity le && le.hasEffect(net.minecraft.world.effect.MobEffects.GLOWING)) PI.put("husk_brillo", true);
             }
         }
+        if (a2VigilaGatling && a2Gatling != null) {
+            for (var lv : e.getServer().getAllLevels())
+                if (lv.getEntity(a2Gatling) instanceof com.miscelanea.armasfuego.gatling.GatlingEntity g && g.atasco() > 0) PI.put("g_atasco_visto", g.atasco());
+        }
+        if (escVigilaSalto) {
+            for (ServerPlayer sp : e.getServer().getPlayerList().getPlayers())
+                PI.merge("salto_max", sp.getY(), (a, b) -> Math.max((Double) a, (Double) b));
+        }
         if (escVigilaMiel && escHusk != null) {
             for (var lv : e.getServer().getAllLevels())
                 if (lv.getEntity(escHusk) instanceof net.minecraft.world.entity.LivingEntity le && le.hasEffect(com.miscelanea.registry.ModEffects.PRINGADO.get()))
@@ -1584,8 +1599,15 @@ public final class PruebaCI {
         sin("rifle_silencio_disparo", 10, () -> {
             if (!com.miscelanea.armasfuego.rifle.Rifle.lista(mc.player.getMainHandItem())) throw new IllegalStateException("no hay bala para el disparo con silenciador");
             rifleSrv(sp -> {
-                var fase = net.minecraft.world.level.block.SculkSensorBlock.getPhase(sp.serverLevel().getBlockState(rifleSensor));
-                if (fase == net.minecraft.world.level.block.state.properties.SculkSensorPhase.ACTIVE) rifleFallo = "el sensor de sculk ya estaba activo antes del disparo con silenciador";
+                // si ya estaba activo o en reposo (por el catalejo, el cerrojo o el tiro de antes), se deja quieto antes
+                // del tiro: si no, un sensor ya activo hacía fallar la prueba sin que el disparo se oyera
+                var st = sp.serverLevel().getBlockState(rifleSensor);
+                var fase = net.minecraft.world.level.block.SculkSensorBlock.getPhase(st);
+                if (fase != net.minecraft.world.level.block.state.properties.SculkSensorPhase.INACTIVE) {
+                    RESUMEN.add("  rifle: el sensor de sculk estaba " + fase + " antes del tiro con silenciador; se pone quieto");
+                    sp.serverLevel().setBlock(rifleSensor, st.setValue(net.minecraft.world.level.block.SculkSensorBlock.PHASE,
+                            net.minecraft.world.level.block.state.properties.SculkSensorPhase.INACTIVE).setValue(net.minecraft.world.level.block.SculkSensorBlock.POWER, 0), 3);
+                }
             });
             rifleClic();
             rifleSrvTras(8, sp -> {
@@ -2183,12 +2205,20 @@ public final class PruebaCI {
         });
         // al rojo: se pone casi en 100 y sigue disparando
         sin("a2_gatling_calentar", 2, () -> piSrv(sp -> {
-            if (sp.getVehicle() instanceof com.miscelanea.armasfuego.gatling.GatlingEntity g) g.ponerCalor(90F);
+            // la cinta llena y casi al rojo: a veces se vaciaba la cinta (y recargaba) antes de llegar a 100; y con
+            // shaders el atasco (5 s) podía pasarse antes de mirarlo, así que se vigila en cada tick
+            PI.remove("g_atasco_visto");
+            a2VigilaGatling = true;
+            if (sp.getVehicle() instanceof com.miscelanea.armasfuego.gatling.GatlingEntity g) {
+                g.ponerBalasPrueba(g.balasCinta());
+                g.ponerCalor(99F);
+            }
         }));
         paso("204_gatling_al_rojo", 14, () -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK));
         sin("a2_gatling_atasco", 4, () -> piSrv(sp -> {
+            a2VigilaGatling = false;
             if (sp.getVehicle() instanceof com.miscelanea.armasfuego.gatling.GatlingEntity g) {
-                PI.put("g_atasco", g.atasco());
+                PI.put("g_atasco", Math.max(g.atasco(), PI.get("g_atasco_visto") instanceof Integer i ? i : 0));
                 PI.put("g_logro", a2Logro(sp, "armas/gatling_calor"));
             }
         }));
@@ -2330,8 +2360,11 @@ public final class PruebaCI {
         });
         paso("230_estuche_violin", 6, () -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT));
         paso("231_estuche_1p", 6, A2::camara1p);
+        // agachado + clic derecho lo abre (sin agacharse, el estuche es un violín)
+        sin("a2_estuche_agachar", 4, () -> mc.options.keyShift.setDown(true));
         sin("a2_estuche_abrir", 8, piTiro());
         sin("a2_estuche_ok", 2, () -> {
+            mc.options.keyShift.setDown(false);
             boolean t = mc.player.getMainHandItem().getItem() instanceof com.miscelanea.armasfuego.oeste.ThompsonItem;
             a2Comprobar("el estuche de violín se abre y la Thompson pasa a la mano", t, mc.player.getMainHandItem().toString());
             piApuntar(a2Punto(8, 0, 1.2));
@@ -2492,7 +2525,8 @@ public final class PruebaCI {
             }
             for (String m : List.of("cinta_gatling", "bala_derringer", "cargador_thompson", "bola_mosquete", "revolver_tiempo", "bala_pintura", "escopeta_cartucho_goma", "estuche_violin",
                     "bala_plata", "bala_dinamita", "carta_marcada", "bala_oro", "tambor_trazador", "tambor_agua", "cinta_incendiaria", "cinta_palomitas",
-                    "metralla", "bola_cadena", "bolano_incendiario", "bolano_fuegos"))
+                    "metralla", "bola_cadena", "bolano_incendiario", "bolano_fuegos", "bala_hielo", "bala_humo", "tambor_tinta", "cinta_guisantes",
+                    "bola_arpon", "bolano_saltarin"))
                 if (!mun.contains(m)) mal.append("sin receta: ").append(m).append("; ");
             PI.put("rec_mal", mal.toString());
         }));
@@ -2737,6 +2771,7 @@ public final class PruebaCI {
         paso("278_bolano_feria", 10, () -> {});
         sin("a2c_feria_ver", 4, () -> piSrv(sp -> PI.put("feria", a2Logro(sp, "armas/feria"))));
         sin("a2c_feria_ok", 2, () -> a2Comprobar("el bolaño de feria estalla en fuegos artificiales", Boolean.TRUE.equals(PI.get("feria")), String.valueOf(PI.get("feria"))));
+        armas2Utilidad();
         // las cuatro fases de las seis en el inventario (iconos)
         sin("a2c_fases_poner", 6, () -> {
             a2Camara1p();
@@ -2789,6 +2824,449 @@ public final class PruebaCI {
                 sp.setGameMode(GameType.CREATIVE);
             });
         });
+    }
+
+    private static volatile UUID a2Gat2, a2Vehiculo;
+    private static volatile net.minecraft.core.BlockPos a2Tolva, a2Piedra;
+
+    /** Apunta a {@code q} en el cliente y en el servidor a la vez (el servidor dispara con su vista). */
+    private static void a2Apuntar(Vec3 q) {
+        piApuntar(q);
+        piSrv(sp -> {
+            Vec3 d = q.subtract(sp.getEyePosition());
+            float y = (float) Math.toDegrees(Math.atan2(-d.x, d.z));
+            float x = (float) Math.toDegrees(-Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
+            sp.setYRot(y);
+            sp.setXRot(x);
+            sp.setYHeadRot(y);
+        });
+    }
+
+    /** La arena que hay alrededor (para ver si el tiro ha puesto más). */
+    private static int a2Arena(ServerPlayer sp) {
+        int n = 0;
+        for (var b : net.minecraft.core.BlockPos.betweenClosed(a2O.offset(-12, -1, -12), a2O.offset(12, 6, 12)))
+            if (sp.serverLevel().getBlockState(b).is(net.minecraft.world.level.block.Blocks.SAND)) n++;
+        return n;
+    }
+
+    private static com.miscelanea.armasfuego.gatling.GatlingEntity a2Gat(ServerPlayer sp) {
+        return a2Gat2 == null ? null : (com.miscelanea.armasfuego.gatling.GatlingEntity) sp.serverLevel().getEntity(a2Gat2);
+    }
+
+    /**
+     * Lo que hacen las seis además de disparar (1.1.0): la Gatling con tolva, de torreta con redstone y montada en
+     * vagoneta y en barco; el depósito mezclado de la Winchester y su HUD; la Derringer que sale de la manga; el violín;
+     * las bayonetas (mesa, inventario, daño y modelo); el HUD de los pasos del mosquete; y el cañón con un yunque y con
+     * arena (y sin poder construir, que no coloque).
+     */
+    private static void armas2Utilidad() {
+        Minecraft mc = Minecraft.getInstance();
+        // ---------------------------------------------------------------- Gatling: tolva
+        sin("a2u_gatling_tolva", 10, () -> {
+            a2Camara1p();
+            piSrv(sp -> {
+                var l = sp.serverLevel();
+                sp.getInventory().clearContent();
+                var g = com.miscelanea.registry.ModEntities.GATLING.get().create(l);
+                Vec3 q = a2Punto(1.5, -2, 0);
+                g.moveTo(q.x, q.y, q.z, a2Mira.toYRot(), 0);
+                ItemStack it = new ItemStack(com.miscelanea.registry.ModItems.GATLING.get());
+                it.enchant(com.miscelanea.registry.ModEnchantments.GATLING_TORRETA.get(), 1);
+                g.desde(it);
+                g.ponerDueno(sp);
+                g.apuntar(a2Mira.toYRot(), 0);
+                l.addFreshEntity(g);
+                a2Gat2 = g.getUUID();
+                // la tolva al lado (a la izquierda) con dos cintas
+                var b = g.blockPosition().relative(a2Lado.getOpposite());
+                l.setBlock(b, net.minecraft.world.level.block.Blocks.HOPPER.defaultBlockState(), 3);
+                if (l.getBlockEntity(b) instanceof net.minecraft.world.level.block.entity.HopperBlockEntity h)
+                    h.setItem(0, new ItemStack(com.miscelanea.registry.ModItems.CINTA_GATLING.get(), 2));
+                a2Tolva = b;
+            });
+        });
+        sin("a2u_tolva_espera", 50, () -> {});
+        sin("a2u_tolva_ver", 4, () -> piSrv(sp -> {
+            var g = a2Gat(sp);
+            int quedan = sp.serverLevel().getBlockEntity(a2Tolva) instanceof net.minecraft.world.level.block.entity.HopperBlockEntity h ? h.getItem(0).getCount() : -1;
+            PI.put("tolva", (g == null ? "sin gatling" : "balas " + g.balas() + ", recarga " + g.recarga()) + ", cintas en la tolva " + quedan);
+            PI.put("tolva_ok", g != null && (g.balas() > 0 || g.recarga() > 0) && quedan == 1);
+        }));
+        sin("a2u_tolva_ok", 2, () -> a2Comprobar("una tolva al lado le mete una cinta a la Gatling", Boolean.TRUE.equals(PI.get("tolva_ok")), String.valueOf(PI.get("tolva"))));
+        // ---------------------------------------------------------------- Gatling: torreta con redstone (con Torreta, busca al husk)
+        sin("a2u_redstone", 2, () -> {
+            a2Vida("tr0");
+            piSrv(sp -> {
+                var g = a2Gat(sp);
+                a2Piedra = g.blockPosition().relative(a2Lado);
+                sp.serverLevel().setBlock(a2Piedra, net.minecraft.world.level.block.Blocks.REDSTONE_BLOCK.defaultBlockState(), 3);
+            });
+        });
+        sin("a2u_redstone_espera", 16, () -> {});
+        paso("280_gatling_torreta_redstone", 10, () -> a2VistaA(a2Punto(4.5, -1, 0.9), a2Punto(2.2, 2.8, 2.0)));
+        sin("a2u_redstone_ver", 2, () -> {
+            a2Vida("tr1");
+            piSrv(sp -> {
+                var g = a2Gat(sp);
+                PI.put("tr_gira", g != null && g.girando());
+                PI.put("tr_logro", a2Logro(sp, "armas/gatling_torreta"));
+            });
+        });
+        sin("a2u_redstone_ok", 2, () -> a2Comprobar("con redstone y sin nadie, la Gatling gira sola y (con Torreta) le da al husk",
+                Boolean.TRUE.equals(PI.get("tr_gira")) && a2F("tr0") - a2F("tr1") > 2 && Boolean.TRUE.equals(PI.get("tr_logro")),
+                "gira " + PI.get("tr_gira") + ", el husk pierde " + (a2F("tr0") - a2F("tr1")) + ", logro " + PI.get("tr_logro")));
+        sin("a2u_redstone_quitar", 4, () -> {
+            a2Camara1p();
+            piSrv(sp -> {
+                var l = sp.serverLevel();
+                l.setBlock(a2Piedra, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+                l.setBlock(a2Tolva, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+                var g = a2Gat(sp);
+                if (g != null) g.discard();
+                var h = a2Ente(sp, a2Husk);
+                if (h != null) h.setHealth(h.getMaxHealth());
+            });
+        });
+        // ---------------------------------------------------------------- Gatling en una vagoneta
+        sin("a2u_vagoneta", 10, () -> piSrv(sp -> {
+            var l = sp.serverLevel();
+            var c = new net.minecraft.world.entity.vehicle.Minecart(l, 0, 0, 0);
+            Vec3 q = a2Punto(1, 2, 0);
+            c.moveTo(q.x, q.y, q.z, a2Mira.toYRot() - 90F, 0);
+            l.addFreshEntity(c);
+            a2Vehiculo = c.getUUID();
+            ItemStack gi = new ItemStack(com.miscelanea.registry.ModItems.GATLING.get());
+            gi.getOrCreateTag().putInt(com.miscelanea.armasfuego.gatling.GatlingItem.BALAS, 40);
+            gi.getOrCreateTag().putString(com.miscelanea.armasfuego.gatling.GatlingItem.CINTA, "miscelanea:cinta_gatling");
+            var g = com.miscelanea.armasfuego.comun.ArmasFuegoEventos.montar(sp, gi, c);
+            a2Gat2 = g.getUUID();
+        }));
+        sin("a2u_vagoneta_subir", 10, () -> piSrv(sp -> {
+            var g = a2Gat(sp);
+            PI.put("vag_montada", g != null && g.getVehicle() instanceof net.minecraft.world.entity.vehicle.AbstractMinecart);
+            if (g != null) sp.startRiding(g, true);
+        }));
+        sin("a2u_vagoneta_apuntar", 4, () -> {
+            a2Vida("vg0");
+            a2Apuntar(a2Punto(8, 0, 1.2));
+            com.miscelanea.client.armasfuego.comun.FuegoCliente.manivelaPrueba = true;
+        });
+        sin("a2u_vagoneta_tiros", 10, () -> a2Apuntar(a2Punto(8, 0, 1.2)));
+        paso("281_gatling_vagoneta", 8, () -> a2Vista(2.8, 1.0, 0.6));
+        sin("a2u_vagoneta_ver", 2, () -> {
+            com.miscelanea.client.armasfuego.comun.FuegoCliente.manivelaPrueba = false;
+            a2Vida("vg1");
+            piSrv(sp -> PI.put("vag_logro", a2Logro(sp, "armas/gatling_vagoneta")));
+        });
+        sin("a2u_vagoneta_ok", 2, () -> a2Comprobar("la Gatling se monta en una vagoneta y se dispara desde ella",
+                Boolean.TRUE.equals(PI.get("vag_montada")) && a2F("vg0") - a2F("vg1") > 2 && Boolean.TRUE.equals(PI.get("vag_logro")),
+                "montada " + PI.get("vag_montada") + ", el husk pierde " + (a2F("vg0") - a2F("vg1")) + ", logro " + PI.get("vag_logro")));
+        sin("a2u_vagoneta_bajar", 6, () -> {
+            a2Camara1p();
+            piSrv(sp -> {
+                sp.stopRiding();
+                var g = a2Gat(sp);
+                if (g != null) g.discard();
+                var c = sp.serverLevel().getEntity(a2Vehiculo);
+                if (c != null) c.discard();
+                var h = a2Ente(sp, a2Husk);
+                if (h != null) h.setHealth(h.getMaxHealth());
+                sp.connection.teleport(a2O.getX() + 0.5, a2O.getY(), a2O.getZ() + 0.5, a2Mira.toYRot(), 0F);
+            });
+        });
+        // ---------------------------------------------------------------- Gatling en un barco
+        sin("a2u_barco", 10, () -> piSrv(sp -> {
+            var l = sp.serverLevel();
+            var b = new net.minecraft.world.entity.vehicle.Boat(l, 0, 0, 0);
+            Vec3 q = a2Punto(1, 2, 0);
+            b.moveTo(q.x, q.y, q.z, a2Mira.toYRot(), 0);
+            l.addFreshEntity(b);
+            a2Vehiculo = b.getUUID();
+            ItemStack gi = new ItemStack(com.miscelanea.registry.ModItems.GATLING.get());
+            gi.getOrCreateTag().putInt(com.miscelanea.armasfuego.gatling.GatlingItem.BALAS, 40);
+            gi.getOrCreateTag().putString(com.miscelanea.armasfuego.gatling.GatlingItem.CINTA, "miscelanea:cinta_gatling");
+            var g = com.miscelanea.armasfuego.comun.ArmasFuegoEventos.montar(sp, gi, b);
+            a2Gat2 = g.getUUID();
+        }));
+        // el que lleva el barco se sube después: la Gatling se pasa al asiento de atrás
+        sin("a2u_barco_subir", 24, () -> piSrv(sp -> sp.startRiding(sp.serverLevel().getEntity(a2Vehiculo), true)));
+        sin("a2u_barco_apuntar", 4, () -> {
+            a2Vida("bc0");
+            piSrv(sp -> {
+                var b = sp.serverLevel().getEntity(a2Vehiculo);
+                PI.put("barco_orden", b == null ? "sin barco" : b.getPassengers().stream().map(e -> e.getType().toShortString()).toList().toString());
+                PI.put("barco_ok", b != null && b.getPassengers().size() == 2 && b.getPassengers().get(0) == sp);
+            });
+            a2Apuntar(a2Punto(8, 0, 1.2));
+            com.miscelanea.client.armasfuego.comun.FuegoCliente.manivelaPrueba = true;
+        });
+        sin("a2u_barco_tiros", 10, () -> a2Apuntar(a2Punto(8, 0, 1.2)));
+        paso("282_gatling_barco", 8, () -> a2Vista(2.8, 1.2, 0.8));
+        sin("a2u_barco_ver", 2, () -> {
+            com.miscelanea.client.armasfuego.comun.FuegoCliente.manivelaPrueba = false;
+            a2Vida("bc1");
+            piSrv(sp -> PI.put("barco_logro", a2Logro(sp, "armas/gatling_barco")));
+        });
+        sin("a2u_barco_ok", 2, () -> a2Comprobar("la Gatling va en el barco (atrás) y la dispara el que lo lleva",
+                Boolean.TRUE.equals(PI.get("barco_ok")) && a2F("bc0") - a2F("bc1") > 2 && Boolean.TRUE.equals(PI.get("barco_logro")),
+                "pasajeros " + PI.get("barco_orden") + ", el husk pierde " + (a2F("bc0") - a2F("bc1")) + ", logro " + PI.get("barco_logro")));
+        sin("a2u_barco_bajar", 6, () -> {
+            a2Camara1p();
+            piSrv(sp -> {
+                sp.stopRiding();
+                var g = a2Gat(sp);
+                if (g != null) g.discard();
+                var c = sp.serverLevel().getEntity(a2Vehiculo);
+                if (c != null) c.discard();
+                var h = a2Ente(sp, a2Husk);
+                if (h != null) {
+                    h.setHealth(h.getMaxHealth());
+                    h.removeAllEffects();
+                }
+                sp.connection.teleport(a2O.getX() + 0.5, a2O.getY(), a2O.getZ() + 0.5, a2Mira.toYRot(), 0F);
+            });
+        });
+        // ---------------------------------------------------------------- Winchester: depósito mezclado (la última que entra sale primero)
+        sin("a2u_winchester", 8, () -> {
+            a2Mano(new ItemStack(com.miscelanea.registry.ModItems.WINCHESTER.get()));
+            piSrv(sp -> {
+                var inv = sp.getInventory();
+                inv.setItem(9, new ItemStack(com.miscelanea.registry.ModItems.REVOLVER_BALA.get()));
+                inv.setItem(10, new ItemStack(com.miscelanea.registry.ModItems.BALA_HIELO.get()));
+                inv.setItem(11, new ItemStack(com.miscelanea.registry.ModItems.REVOLVER_DARDO.get()));
+                inv.setItem(12, new ItemStack(com.miscelanea.registry.ModItems.BALA_PLATA.get()));
+                inv.setItem(14, new ItemStack(com.miscelanea.registry.ModItems.REVOLVER_TIEMPO.get()));
+            });
+            mc.options.keyShift.setDown(true);
+        });
+        sin("a2u_winchester_cargar", 2, () -> rifleUsar(true));
+        sin("a2u_winchester_cargando", 56, () -> {});
+        sin("a2u_winchester_cargada", 4, () -> {
+            rifleUsar(false);
+            mc.options.keyShift.setDown(false);
+            piSrv(sp -> {
+                PI.put("dep", com.miscelanea.armasfuego.oeste.WinchesterItem.deposito(sp.getMainHandItem()).stream()
+                        .map(i -> net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(i).getPath()).toList().toString());
+                PI.put("dep_logro", a2Logro(sp, "armas/winchester_mezcla"));
+            });
+        });
+        sin("a2u_winchester_dep_ok", 2, () -> a2Comprobar("la Winchester mezcla las balas en el depósito",
+                "[revolver_bala, bala_hielo, revolver_dardo, bala_plata, revolver_tiempo]".equals(PI.get("dep")) && Boolean.TRUE.equals(PI.get("dep_logro")),
+                "depósito " + PI.get("dep") + ", logro " + PI.get("dep_logro")));
+        paso("283_winchester_hud", 6, () -> a2Apuntar(a2Punto(8, 0, 1.2)));
+        sin("a2u_winchester_tiro", 6, piTiro());
+        sin("a2u_winchester_tiro_ver", 2, () -> piSrv(sp -> {
+            var h = a2Ente(sp, a2Husk);
+            var dep = com.miscelanea.armasfuego.oeste.WinchesterItem.deposito(sp.getMainHandItem());
+            PI.put("dep2", dep.size() + ", la siguiente " + (dep.isEmpty() ? "-" : net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(dep.get(dep.size() - 1)).getPath()));
+            var ef = h == null ? null : h.getEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN);
+            PI.put("dep2_ok", dep.size() == 4 && dep.get(3) == com.miscelanea.registry.ModItems.BALA_PLATA.get() && ef != null && ef.getAmplifier() == 3);
+        }));
+        sin("a2u_winchester_tiro_ok", 2, () -> a2Comprobar("sale primero la última que entró (la de tiempo bala: ralentiza al husk)", Boolean.TRUE.equals(PI.get("dep2_ok")),
+                "quedan " + PI.get("dep2")));
+        // ---------------------------------------------------------------- Derringer: de la manga a la mano
+        sin("a2u_manga", 8, () -> {
+            a2Camara1p();
+            piSrv(sp -> {
+                var inv = sp.getInventory();
+                inv.clearContent();
+                inv.setItem(0, new ItemStack(net.minecraft.world.item.Items.STICK));
+                inv.setItem(22, a2Cargada(com.miscelanea.registry.ModItems.DERRINGER, 2));
+                inv.selected = 0;
+                sp.connection.send(new net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket(0));
+                var h = a2Ente(sp, a2Husk);
+                if (h != null) h.removeAllEffects();
+            });
+            a2Apuntar(a2Punto(8, 0, 1.2));
+        });
+        // sacarla y el tiro seguidos (los paquetes llegan en orden: primero sale de la manga y luego dispara); con
+        // shaders, a pocos fps, unos pocos pasos ya eran más de un segundo del servidor
+        sin("a2u_manga_tiro", 4, () -> {
+            a2Apuntar(a2Punto(8, 0, 1.2));
+            com.miscelanea.client.armasfuego.comun.FuegoCliente.sacarDeLaManga();
+            piDisparar();
+        });
+        sin("a2u_manga_mano", 2, () -> piSrv(sp -> PI.put("manga", sp.getMainHandItem().getItem() instanceof com.miscelanea.armasfuego.oeste.DerringerItem
+                && sp.getInventory().getItem(22).is(net.minecraft.world.item.Items.STICK))));
+        paso("284_derringer_manga", 3, () -> {});
+        sin("a2u_manga_ver", 2, () -> piSrv(sp -> PI.put("manga_logro", a2Logro(sp, "armas/derringer_manga"))));
+        sin("a2u_manga_ok", 2, () -> a2Comprobar("la tecla de la manga saca la Derringer de golpe (y el tiro en menos de un segundo da el logro)",
+                Boolean.TRUE.equals(PI.get("manga")) && Boolean.TRUE.equals(PI.get("manga_logro")), "en la mano " + PI.get("manga") + ", logro " + PI.get("manga_logro")));
+        // ---------------------------------------------------------------- el violín
+        sin("a2u_violin", 6, () -> {
+            a2Mano(new ItemStack(com.miscelanea.registry.ModItems.ESTUCHE_VIOLIN.get()));
+            PI.put("v0", com.miscelanea.armasfuego.oeste.EstucheViolinItem.tocadas);
+        });
+        sin("a2u_violin_arriba", 6, () -> {
+            piSrv(sp -> sp.setXRot(-70F));
+            mc.player.setXRot(-70F);
+            piDisparar();
+        });
+        sin("a2u_violin_arriba_ver", 2, () -> PI.put("v_alta", com.miscelanea.armasfuego.oeste.EstucheViolinItem.ultimaNota));
+        paso("285_violin", 6, () -> {
+            mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
+            piSrv(sp -> sp.setXRot(60F));
+            mc.player.setXRot(60F);
+            piDisparar();
+        });
+        sin("a2u_violin_ver", 2, () -> PI.put("v_baja", com.miscelanea.armasfuego.oeste.EstucheViolinItem.ultimaNota));
+        sin("a2u_violin_ok", 2, () -> {
+            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
+            int n = com.miscelanea.armasfuego.oeste.EstucheViolinItem.tocadas - (PI.get("v0") instanceof Integer i ? i : 0);
+            int alta = PI.get("v_alta") instanceof Integer i ? i : -1, baja = PI.get("v_baja") instanceof Integer i ? i : -1;
+            a2Comprobar("el estuche vacío toca notas: aguda mirando arriba, grave mirando abajo", n >= 2 && alta >= 18 && baja <= 6 && baja >= 0,
+                    n + " notas, arriba " + alta + ", abajo " + baja);
+        });
+        // ---------------------------------------------------------------- bayonetas: mesa, inventario, daño, modelo
+        sin("a2u_bayoneta", 4, () -> piSrv(sp -> {
+            StringBuilder mal = new StringBuilder();
+            var l = sp.serverLevel();
+            // mesa: mosquete sin bayoneta + espada de diamante
+            ItemStack sin = new ItemStack(com.miscelanea.registry.ModItems.MOSQUETE.get());
+            com.miscelanea.armasfuego.oeste.MosqueteItem.ponerBayoneta(sin, ItemStack.EMPTY);
+            var mesa = new net.minecraft.world.inventory.TransientCraftingContainer(sp.inventoryMenu, 3, 3);
+            mesa.setItem(0, sin.copy());
+            mesa.setItem(4, new ItemStack(net.minecraft.world.item.Items.DIAMOND_SWORD));
+            var rec = l.getRecipeManager().getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, mesa, l);
+            ItemStack con = rec.map(r -> r.assemble(mesa, l.registryAccess())).orElse(ItemStack.EMPTY);
+            if (com.miscelanea.armasfuego.oeste.MosqueteItem.material(con) != 5) mal.append("la mesa no cala la de diamante; ");
+            // mesa: el mosquete solo, se quita (y la espada se queda en la mesa)
+            var mesa2 = new net.minecraft.world.inventory.TransientCraftingContainer(sp.inventoryMenu, 3, 3);
+            mesa2.setItem(2, con.copy());
+            var rec2 = l.getRecipeManager().getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, mesa2, l);
+            ItemStack fuera = rec2.map(r -> r.assemble(mesa2, l.registryAccess())).orElse(ItemStack.EMPTY);
+            ItemStack queda = rec2.map(r -> r.getRemainingItems(mesa2).get(2)).orElse(ItemStack.EMPTY);
+            if (!fuera.is(com.miscelanea.registry.ModItems.MOSQUETE.get()) || com.miscelanea.armasfuego.oeste.MosqueteItem.tieneBayoneta(fuera) || !queda.is(net.minecraft.world.item.Items.DIAMOND_SWORD))
+                mal.append("la mesa no quita la bayoneta (").append(fuera).append(", queda ").append(queda).append("); ");
+            // inventario, como un saco: la de netherita encima; con la mano vacía, fuera
+            ItemStack m = sin.copy();
+            ItemStack[] cursor = {new ItemStack(net.minecraft.world.item.Items.NETHERITE_SWORD)};
+            net.minecraft.world.entity.SlotAccess acc = new net.minecraft.world.entity.SlotAccess() {
+                public ItemStack get() { return cursor[0]; }
+                public boolean set(ItemStack x) { cursor[0] = x; return true; }
+            };
+            var slot = sp.inventoryMenu.getSlot(9);
+            m.getItem().overrideOtherStackedOnMe(m, cursor[0], slot, net.minecraft.world.inventory.ClickAction.SECONDARY, sp, acc);
+            if (com.miscelanea.armasfuego.oeste.MosqueteItem.material(m) != 6 || !cursor[0].isEmpty()) mal.append("el inventario no cala la de netherita; ");
+            double dN = com.miscelanea.armasfuego.oeste.MosqueteItem.danoEspada(com.miscelanea.armasfuego.oeste.MosqueteItem.bayoneta(m));
+            m.getItem().overrideOtherStackedOnMe(m, ItemStack.EMPTY, slot, net.minecraft.world.inventory.ClickAction.SECONDARY, sp, acc);
+            if (com.miscelanea.armasfuego.oeste.MosqueteItem.tieneBayoneta(m) || !cursor[0].is(net.minecraft.world.item.Items.NETHERITE_SWORD)) mal.append("el inventario no la quita; ");
+            // el daño va con el material
+            ItemStack madera = sin.copy();
+            com.miscelanea.armasfuego.oeste.MosqueteItem.ponerBayoneta(madera, new ItemStack(net.minecraft.world.item.Items.WOODEN_SWORD));
+            double dM = 0, dD = 0;
+            for (var mod : madera.getAttributeModifiers(net.minecraft.world.entity.EquipmentSlot.MAINHAND).get(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE)) dM += mod.getAmount();
+            for (var mod : con.getAttributeModifiers(net.minecraft.world.entity.EquipmentSlot.MAINHAND).get(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE)) dD += mod.getAmount();
+            if (!(dD > dM + 2)) mal.append("el daño no va con la espada (madera ").append(dM).append(", diamante ").append(dD).append("); ");
+            PI.put("bay", mal.toString());
+            PI.put("bay_txt", "madera " + dM + ", diamante " + dD + ", netherita (espada) " + dN);
+            PI.put("bay_logro", a2Logro(sp, "armas/bayoneta_netherita"));
+            // cuatro marcos en una pared con un mosquete cada uno (madera, oro, diamante, netherita): se ven de perfil
+            net.minecraft.world.item.Item[] esp = {net.minecraft.world.item.Items.WOODEN_SWORD, net.minecraft.world.item.Items.GOLDEN_SWORD,
+                    net.minecraft.world.item.Items.DIAMOND_SWORD, net.minecraft.world.item.Items.NETHERITE_SWORD};
+            for (int k = 0; k < 4; k++) {
+                var pared = a2O.relative(a2Mira, 4).relative(a2Lado, k - 2).above(1);
+                l.setBlock(pared, net.minecraft.world.level.block.Blocks.WHITE_CONCRETE.defaultBlockState(), 3);
+                var hueco = pared.relative(a2Mira.getOpposite());
+                var marco = new net.minecraft.world.entity.decoration.GlowItemFrame(l, hueco, a2Mira.getOpposite());
+                ItemStack mq = new ItemStack(com.miscelanea.registry.ModItems.MOSQUETE.get());
+                com.miscelanea.armasfuego.oeste.MosqueteItem.ponerBayoneta(mq, new ItemStack(esp[k]));
+                marco.setItem(mq, false);
+                marco.setRotation(1);   // en diagonal: cabe entero y se ve la hoja
+                marco.addTag("a2u_bayoneta");
+                l.addFreshEntity(marco);
+            }
+        }));
+        paso("286_bayonetas", 10, () -> a2VistaA(a2Punto(5, -0.6, 1.2), a2Punto(1.2, -0.6, 1.8)));
+        sin("a2u_bayoneta_ok", 2, () -> {
+            a2Camara1p();
+            a2Comprobar("bayoneta cambiable: en la mesa y en el inventario se cala y se quita, y el daño va con la espada",
+                    "".equals(PI.get("bay")) && Boolean.TRUE.equals(PI.get("bay_logro")), PI.get("bay") + " " + PI.get("bay_txt") + ", logro " + PI.get("bay_logro"));
+            piSrv(sp -> {
+                sp.serverLevel().getEntitiesOfClass(net.minecraft.world.entity.decoration.ItemFrame.class, new net.minecraft.world.phys.AABB(a2O).inflate(12),
+                        e -> e.getTags().contains("a2u_bayoneta")).forEach(net.minecraft.world.entity.Entity::discard);
+                for (int k = 0; k < 4; k++)
+                    sp.serverLevel().setBlock(a2O.relative(a2Mira, 4).relative(a2Lado, k - 2).above(1), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+            });
+        });
+        // ---------------------------------------------------------------- mosquete: HUD de los pasos de la recarga
+        sin("a2u_mosquete", 6, () -> {
+            a2Mano(new ItemStack(com.miscelanea.registry.ModItems.MOSQUETE.get()));
+            piSrv(sp -> {
+                sp.getInventory().setItem(9, new ItemStack(com.miscelanea.registry.ModItems.BOLA_MOSQUETE.get(), 4));
+                sp.getInventory().setItem(10, new ItemStack(net.minecraft.world.item.Items.GUNPOWDER, 8));
+            });
+            mc.options.keyShift.setDown(true);
+        });
+        sin("a2u_mosquete_cargar", 2, () -> rifleUsar(true));
+        paso("287_mosquete_hud", 30, () -> {});
+        sin("a2u_mosquete_fin", 50, () -> {});
+        sin("a2u_mosquete_ver", 2, () -> {
+            rifleUsar(false);
+            mc.options.keyShift.setDown(false);
+            piSrv(sp -> PI.put("mq", com.miscelanea.armasfuego.comun.ArmaFuegoItem.balas(sp.getMainHandItem())));
+        });
+        sin("a2u_mosquete_ok", 2, () -> a2Comprobar("el mosquete se recarga por pasos (pólvora, bola y baqueta, en el HUD)",
+                Integer.valueOf(1).equals(PI.get("mq")) && com.miscelanea.armasfuego.oeste.MosqueteItem.pasoRecarga(0.1F) == 0
+                        && com.miscelanea.armasfuego.oeste.MosqueteItem.pasoRecarga(0.5F) == 1 && com.miscelanea.armasfuego.oeste.MosqueteItem.pasoRecarga(0.9F) == 2,
+                "balas " + PI.get("mq")));
+        // ---------------------------------------------------------------- cañón: un yunque (daño de yunque) y arena sin poder construir
+        sin("a2u_yunque", 6, () -> {
+            ItemStack c = new ItemStack(com.miscelanea.registry.ModItems.CANON_MANO.get());
+            com.miscelanea.armasfuego.comun.ArmaFuegoItem.ponerBalas(c, 1);
+            c.getOrCreateTag().putString(com.miscelanea.armasfuego.comun.ArmaFuegoItem.TIPO, "minecraft:anvil");
+            a2Mano(c);
+            a2Vida("yq0");
+            a2Apuntar(a2Punto(8, 0, 1.3));
+        });
+        sin("a2u_yunque_mecha", 2, piTiro());
+        sin("a2u_yunque_vuela", 30, () -> a2Apuntar(a2Punto(8, 0, 1.3)));
+        paso("288_canon_yunque", 10, () -> a2Vista(2.6, 2.6, 0.8));
+        sin("a2u_yunque_espera", 20, () -> {});
+        sin("a2u_yunque_ver", 2, () -> {
+            a2Vida("yq1");
+            piSrv(sp -> {
+                int yunques = 0;
+                var l = sp.serverLevel();
+                for (var b : net.minecraft.core.BlockPos.betweenClosed(a2O.offset(-12, -1, -12), a2O.offset(12, 6, 12)))
+                    if (l.getBlockState(b).getBlock() instanceof net.minecraft.world.level.block.AnvilBlock) {
+                        yunques++;
+                        l.setBlock(b, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+                    }
+                PI.put("yq_bloques", yunques);
+                PI.put("yq_logro", a2Logro(sp, "armas/yunque") && a2Logro(sp, "armas/castillo_arena"));
+            });
+        });
+        sin("a2u_yunque_ok", 2, () -> a2Comprobar("el cañón dispara un yunque: daño de yunque y se queda donde da", a2F("yq0") - a2F("yq1") > 5 && PI.get("yq_bloques") instanceof Integer n && n >= 1
+                && Boolean.TRUE.equals(PI.get("yq_logro")), "el husk pierde " + (a2F("yq0") - a2F("yq1")) + ", yunques colocados " + PI.get("yq_bloques") + ", logros " + PI.get("yq_logro")));
+        // sin poder construir (modo aventura): la arena no se coloca, cae como objeto
+        sin("a2u_arena", 6, () -> {
+            a2Camara1p();
+            piSrv(sp -> {
+                sp.setGameMode(GameType.ADVENTURE);
+                var h = a2Ente(sp, a2Husk);
+                if (h != null) h.setHealth(h.getMaxHealth());
+            });
+            ItemStack c = new ItemStack(com.miscelanea.registry.ModItems.CANON_MANO.get());
+            com.miscelanea.armasfuego.comun.ArmaFuegoItem.ponerBalas(c, 1);
+            c.getOrCreateTag().putString(com.miscelanea.armasfuego.comun.ArmaFuegoItem.TIPO, "minecraft:sand");
+            a2Mano(c);
+            a2Apuntar(a2Punto(6, -3, 0));
+            piSrv(sp -> PI.put("arena0", a2Arena(sp)));
+        });
+        sin("a2u_arena_mecha", 2, piTiro());
+        sin("a2u_arena_vuela", 60, () -> a2Apuntar(a2Punto(6, -3, 0)));
+        sin("a2u_arena_ver", 2, () -> piSrv(sp -> {
+            var l = sp.serverLevel();
+            int arena = a2Arena(sp) - (PI.get("arena0") instanceof Integer i ? i : 0);
+            int objetos = l.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, new net.minecraft.world.phys.AABB(a2O).inflate(14), e -> e.getItem().is(net.minecraft.world.item.Items.SAND)).size();
+            PI.put("arena", arena);
+            PI.put("arena_obj", objetos);
+            sp.setGameMode(GameType.SURVIVAL);
+        }));
+        sin("a2u_arena_ok", 2, () -> a2Comprobar("sin poder construir, el bloque disparado no se coloca (cae como objeto)",
+                Integer.valueOf(0).equals(PI.get("arena")) && PI.get("arena_obj") instanceof Integer n && n >= 1, "arena colocada " + PI.get("arena") + ", como objeto " + PI.get("arena_obj")));
     }
 
     /** Atajos para los pasos (referencias a método). */
@@ -3130,6 +3608,14 @@ public final class PruebaCI {
         });
     }
 
+    private static int escTrigo() {
+        var l = escJugador().serverLevel();
+        int trigo = 0;
+        for (var b : net.minecraft.core.BlockPos.betweenClosed(escTierra.offset(-2, 1, -2), escTierra.offset(2, 1, 2)))
+            if (l.getBlockState(b).is(net.minecraft.world.level.block.Blocks.WHEAT)) trigo++;
+        return trigo;
+    }
+
     private static ItemStack escMano() {
         return Minecraft.getInstance().player.getMainHandItem();
     }
@@ -3300,11 +3786,19 @@ public final class PruebaCI {
         }));
         sin("esc_semillas", 5, () -> escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.SEMILLAS, 100, Vec3.atCenterOf(escTierra).add(0, 0.45, 0)));
         paso("129_semillas", 15, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
+        sin("esc_semillas_otra", 5, () -> {
+            // los perdigones se reparten al azar y, a veces, ninguna semilla caía en la tierra de cultivo: otro tiro
+            if (escTrigo() == 0) {
+                RESUMEN.add("  escopeta: el primer tiro de semillas no ha sembrado; otro");
+                PI.put("semillas_otra", true);
+                escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.SEMILLAS, 100, Vec3.atCenterOf(escTierra).add(0, 0.45, 0));
+            } else PI.remove("semillas_otra");
+        });
+        sin("esc_semillas_tiro2", 15, () -> {
+            if (Boolean.TRUE.equals(PI.get("semillas_otra"))) com.miscelanea.client.armasfuego.escopeta.EscopetaCliente.disparar();
+        });
         sin("esc_semillas_chk", 5, () -> {
-            var l = escJugador().serverLevel();
-            int trigo = 0;
-            for (var b : net.minecraft.core.BlockPos.betweenClosed(escTierra.offset(-2, 1, -2), escTierra.offset(2, 1, 2)))
-                if (l.getBlockState(b).is(net.minecraft.world.level.block.Blocks.WHEAT)) trigo++;
+            int trigo = escTrigo();
             RESUMEN.add("  escopeta: semillas → " + trigo + " matas de trigo sembradas");
             if (trigo == 0) throw new IllegalStateException("las semillas no siembran");
         });
@@ -3333,13 +3827,17 @@ public final class PruebaCI {
         // ---- salto escopeta: mirando abajo con mucha presión
         sin("esc_salto", 10, () -> {
             escY = mc.player.getY();
+            PI.remove("salto_max");
+            escVigilaSalto = true;
             escCargar(null, 100, null);
             escServidor(sp -> sp.connection.teleport(sp.getX(), sp.getY(), sp.getZ(), sp.getYRot(), 89F));
         });
         sin("esc_salto_tercera", 2, () -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_BACK));
         paso("132_salto", 7, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
         sin("esc_salto_chk", 40, () -> {
-            double sube = mc.player.getY() - escY;
+            // lo más alto que ha llegado (con shaders, a pocos fps, a veces ya había bajado al mirarlo)
+            escVigilaSalto = false;
+            double sube = Math.max(mc.player.getY(), PI.get("salto_max") instanceof Double d ? d : -1e9) - escY;
             RESUMEN.add(String.format("  escopeta: el salto escopeta sube %.1f bloques en 7 ticks", sube));
             if (sube < 1.5) throw new IllegalStateException("el soplido hacia abajo con mucha presión no lanza");
         });

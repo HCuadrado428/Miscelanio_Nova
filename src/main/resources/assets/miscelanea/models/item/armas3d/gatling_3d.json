@@ -18,6 +18,7 @@
   "brasa": "miscelanea:item/armas3d/g_brasa",
   "tambor": "miscelanea:item/armas3d/g_tambor",
   "terciopelo": "miscelanea:item/armas3d/g_terciopelo",
+  "bayoneta": "miscelanea:item/armas3d/g_acero",
   "tolva": "miscelanea:item/armas3d/g_tolva",
   "particle": "miscelanea:item/gatling"
  },

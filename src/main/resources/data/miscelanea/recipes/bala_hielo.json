@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "miscelanea:revolver_bala"
+    },
+    {
+      "item": "miscelanea:revolver_bala"
+    },
+    {
+      "item": "miscelanea:revolver_bala"
+    },
+    {
+      "item": "miscelanea:revolver_bala"
+    },
+    {
+      "item": "minecraft:ice"
+    }
+  ],
+  "result": {
+    "item": "miscelanea:bala_hielo",
+    "count": 4
+  }
+}

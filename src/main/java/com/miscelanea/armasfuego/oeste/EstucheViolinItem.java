@@ -21,13 +21,19 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Estuche de violín: guarda una Thompson (y nada más). Clic derecho con él en la mano: lo abre y la Thompson pasa a
- * la mano (el estuche vacío, al inventario). Con la Thompson en la otra mano, clic derecho la guarda. En el
- * inventario, como un saco: suelta la Thompson encima para guardarla, clic derecho con la mano vacía para sacarla.
- * Cada vez que alguien lo abre suena una nota de violín desafinada: nadie ha tocado ese violín en su vida.
+ * Estuche de violín: guarda una Thompson (y nada más), y además es un violín de verdad. Clic derecho toca una nota,
+ * como un bloque musical: la altura va con la vista (mirando arriba, aguda; abajo, grave; dos octavas). Con la
+ * Thompson dentro suena desafinado (y es que no es un violín). Agachado + clic derecho lo abre y la Thompson pasa a la
+ * mano (el estuche vacío, al inventario); con la Thompson en la otra mano, clic derecho la guarda. En el inventario,
+ * como un saco: suelta la Thompson encima para guardarla, clic derecho con la mano vacía para sacarla. Al abrirlo
+ * suena una nota desafinada: nadie ha tocado ese violín en su vida.
  */
 public class EstucheViolinItem extends Item {
     public static final String ARMA = "Arma";
+    /** NBT: las notas distintas de la tirada de ahora (máscara de 25 bits) y cuándo sonó la última. */
+    public static final String NOTAS = "Notas", NOTA_T = "NotaT";
+    /** Para la prueba: notas que se han tocado y la última. */
+    public static volatile int tocadas, ultimaNota = -1;
 
     public EstucheViolinItem(Properties p) {
         super(p);
@@ -55,10 +61,52 @@ public class EstucheViolinItem extends Item {
         if (p instanceof ServerPlayer sp) LogrosMiscelanea.dar(sp, "thompson_violin");
     }
 
+    /** La nota (0..24, como el bloque musical) según la vista: mirando arriba del todo, la más aguda. */
+    public static int nota(float xRot) {
+        return Math.round(net.minecraft.util.Mth.clamp((90F - xRot) / 180F, 0F, 1F) * 24F);
+    }
+
+    /** Toca una nota (desafinada si la Thompson va dentro) con su notita de colores encima, como el bloque musical. */
+    private static void tocar(Player p, ItemStack s) {
+        int n = nota(p.getXRot());
+        boolean desafinado = !dentro(s).isEmpty();
+        float tono = (float) Math.pow(2.0, (n - 12) / 12.0);
+        if (desafinado) tono *= (float) Math.pow(2.0, (p.getRandom().nextBoolean() ? 1 : -1) * (0.35 + p.getRandom().nextFloat() * 0.4) / 12.0);
+        var l = (net.minecraft.server.level.ServerLevel) p.level();
+        l.playSound(null, p.getX(), p.getEyeY(), p.getZ(), desafinado ? ModSounds.VIOLIN_DESAFINADO.get() : ModSounds.VIOLIN_NOTA.get(), SoundSource.RECORDS,
+                1.0F, tono);
+        if (desafinado) l.playSound(null, p.getX(), p.getEyeY(), p.getZ(), ModSounds.VIOLIN_NOTA.get(), SoundSource.RECORDS, 0.5F, tono * 1.03F);
+        l.sendParticles(net.minecraft.core.particles.ParticleTypes.NOTE, p.getX(), p.getEyeY() + 0.6, p.getZ(), 0, n / 24.0, 0, 0, 1);
+        l.gameEvent(p, net.minecraft.world.level.gameevent.GameEvent.NOTE_BLOCK_PLAY, p.position());
+        tocadas++;
+        ultimaNota = n;
+        // Paganini del Oeste: ocho notas distintas seguidas (sin parar más de 3 s) y afinado
+        var t = s.getOrCreateTag();
+        long ahora = l.getGameTime();
+        int mask = ahora - t.getLong(NOTA_T) > 60 ? 0 : t.getInt(NOTAS);
+        mask |= 1 << n;
+        t.putInt(NOTAS, mask);
+        t.putLong(NOTA_T, ahora);
+        if (p instanceof ServerPlayer sp) {
+            if (!desafinado && Integer.bitCount(mask) >= 8) LogrosMiscelanea.dar(sp, "violin_paganini");
+            if (desafinado) LogrosMiscelanea.dar(sp, "thompson_violin");
+        }
+    }
+
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player p, InteractionHand hand) {
         ItemStack s = p.getItemInHand(hand);
         ItemStack arma = dentro(s);
+        InteractionHand otra0 = hand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
+        boolean guardar = arma.isEmpty() && p.getItemInHand(otra0).getItem() instanceof ThompsonItem;
+        if (!guardar && !(p.isShiftKeyDown() && !arma.isEmpty())) {
+            // el violín
+            if (p.getCooldowns().isOnCooldown(this)) return InteractionResultHolder.fail(s);
+            if (!level.isClientSide) tocar(p, s);
+            p.getCooldowns().addCooldown(this, com.miscelanea.armasfuego.comun.EquilibrioArmas.violinEnfriamiento());
+            p.swing(hand);
+            return InteractionResultHolder.sidedSuccess(s, level.isClientSide);
+        }
         if (!arma.isEmpty()) {
             if (!level.isClientSide) {
                 nota(p);
@@ -119,6 +167,7 @@ public class EstucheViolinItem extends Item {
         ItemStack arma = dentro(s);
         l.add(arma.isEmpty() ? Component.translatable("item.miscelanea.estuche_violin.vacio").withStyle(ChatFormatting.GRAY)
                 : Component.translatable("item.miscelanea.estuche_violin.lleva").withStyle(ChatFormatting.GOLD));
+        l.add(Component.translatable("item.miscelanea.estuche_violin.violin").withStyle(ChatFormatting.GRAY));
         l.add(Component.translatable("item.miscelanea.estuche_violin.ayuda").withStyle(ChatFormatting.DARK_GRAY));
     }
 }

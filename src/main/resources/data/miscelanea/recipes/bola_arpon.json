@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "miscelanea:bola_mosquete"
+    },
+    {
+      "item": "minecraft:lead"
+    },
+    {
+      "item": "minecraft:iron_nugget"
+    }
+  ],
+  "result": {
+    "item": "miscelanea:bola_arpon",
+    "count": 1
+  }
+}

@@ -46,7 +46,7 @@ public class ThompsonItem extends ArmaFuegoItem {
 
     @Override
     protected boolean acepta(ItemStack m) {
-        return m.is(ModItems.CARGADOR_THOMPSON.get()) || m.is(ModItems.TAMBOR_TRAZADOR.get()) || m.is(ModItems.TAMBOR_AGUA.get());
+        return m.is(ModItems.CARGADOR_THOMPSON.get()) || m.is(ModItems.TAMBOR_TRAZADOR.get()) || m.is(ModItems.TAMBOR_AGUA.get()) || m.is(ModItems.TAMBOR_TINTA.get());
     }
 
     @Override
@@ -109,7 +109,15 @@ public class ThompsonItem extends ArmaFuegoItem {
     @Override
     protected void rafaga(Level level, Player p, ItemStack s, int t) {
         int cad = EquilibrioArmas.thompsonCadencia();
-        if (t % cad != 0) return;
+        // Gatillo fácil: un 25 % más de balas por nivel (se van acumulando los ticks)
+        CompoundTag tg = s.getOrCreateTag();
+        float acum = (t == 0 ? cad : tg.getFloat("Acum")) + 1 + 0.25F * nivel(com.miscelanea.registry.ModEnchantments.THOMPSON_GATILLO, s);
+        if (acum < cad + 1) {
+            tg.putFloat("Acum", acum);
+            return;
+        }
+        acum -= cad;
+        tg.putFloat("Acum", acum);
         if (balas(s) <= 0 || atascada(s)) {
             intentar(level, p, s);   // clic
             p.stopUsingItem();
@@ -130,11 +138,12 @@ public class ThompsonItem extends ArmaFuegoItem {
         double disp = Math.min(0.09, 0.02 + 0.004 * n * compensador(s));
         double alcance = EquilibrioArmas.thompsonAlcance();
         Item tipo = tipoActual(s);
-        boolean agua = tipo == ModItems.TAMBOR_AGUA.get(), trazadora = tipo == ModItems.TAMBOR_TRAZADOR.get();
+        boolean agua = tipo == ModItems.TAMBOR_AGUA.get(), trazadora = tipo == ModItems.TAMBOR_TRAZADOR.get(), tinta = tipo == ModItems.TAMBOR_TINTA.get();
         // el tambor de agua (Super Soaker): no hace daño salvo a lo que no aguanta el agua, y apaga el fuego
-        float dano = agua ? 0F : EquilibrioArmas.thompsonDano();
+        float dano = agua ? 0F : EquilibrioArmas.thompsonDano() * (tinta ? 0.5F : 1F);
         var t = tiro(p, dano, alcance, 15, 0.6F, disp, 0.15F, DANO, true,
-                agua ? net.minecraft.core.particles.ParticleTypes.SPLASH : trazadora || n % 3 == 0 ? net.minecraft.core.particles.ParticleTypes.CRIT : null);
+                agua ? net.minecraft.core.particles.ParticleTypes.SPLASH : tinta ? net.minecraft.core.particles.ParticleTypes.SQUID_INK
+                        : trazadora || n % 3 == 0 ? net.minecraft.core.particles.ParticleTypes.CRIT : null);
         if (t.entidad() != null) {
             var v = t.entidad();
             if (trazadora) v.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.GLOWING, 60, 0, false, false), p);
@@ -151,6 +160,18 @@ public class ThompsonItem extends ArmaFuegoItem {
             }
         }
         if (agua) l.sendParticles(net.minecraft.core.particles.ParticleTypes.SPLASH, t.pos().x, t.pos().y, t.pos().z, 6, 0.15, 0.15, 0.15, 0.1);
+        if (tinta) {
+            // el tambor de tinta (Splatoon): ciega un momento y mancha de negro lo que se pueda teñir
+            l.sendParticles(net.minecraft.core.particles.ParticleTypes.SQUID_INK, t.pos().x, t.pos().y, t.pos().z, 4, 0.1, 0.1, 0.1, 0.05);
+            if (t.entidad() != null) {
+                t.entidad().addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.BLINDNESS, 40, 0), p);
+                LogrosMiscelanea.dar(p, "thompson_tinta");
+            } else if (t.bloque() != null) {
+                var bp = t.bloque().getBlockPos();
+                var nuevo = com.miscelanea.armasfuego.rifle.Pintura.tenido(l.getBlockState(bp), net.minecraft.world.item.DyeColor.BLACK.getId());
+                if (nuevo != null && p.mayBuild() && l.mayInteract(p, bp)) l.setBlock(bp, nuevo, 3);
+            }
+        }
         efectos(l, p, boca(p, 1.0, 0.25, 0.2), ModSounds.THOMPSON_DISPARO.get(), 3.0F, 0.95F, n % 2, true);
         LogrosMiscelanea.dar(p, "thompson_disparo");
         if (n >= EquilibrioArmas.thompsonCapacidad()) LogrosMiscelanea.dar(p, "thompson_tambor");

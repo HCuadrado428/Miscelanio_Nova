@@ -1,0 +1,22 @@
+{
+ "loader": "forge:separate_transforms",
+ "gui_light": "front",
+ "textures": {
+  "particle": "miscelanea:item/mosquete_ox3"
+ },
+ "base": {
+  "parent": "miscelanea:item/armas3d/mosquete_3d_2",
+  "textures": {
+   "cobre": "miscelanea:item/armas3d/cobre_3",
+   "bayoneta": "minecraft:block/gold_block"
+  }
+ },
+ "perspectives": {
+  "gui": {
+   "parent": "minecraft:item/generated",
+   "textures": {
+    "layer0": "miscelanea:item/mosquete_ox3"
+   }
+  }
+ }
+}

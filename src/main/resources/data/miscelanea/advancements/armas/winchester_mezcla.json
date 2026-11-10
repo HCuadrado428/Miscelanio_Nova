@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/winchester",
+  "display": {
+    "icon": {
+      "item": "miscelanea:revolver_bengala"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.winchester_mezcla.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.winchester_mezcla.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "winchester_mezcla": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "winchester_mezcla"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

@@ -75,6 +75,8 @@ public final class FuegoClienteMod {
             // el cobre de las seis nuevas (0, 0,25, 0,5, 0,75, como el revólver)
             for (var it : java.util.List.of(ModItems.GATLING, ModItems.WINCHESTER, ModItems.DERRINGER, ModItems.THOMPSON, ModItems.MOSQUETE, ModItems.CANON_MANO))
                 ItemProperties.register(it.get(), rl("oxido"), (s, l, en, seed) -> com.miscelanea.armasfuego.comun.Cobre.oxido(s) / 4F);
+            // mosquete: la hoja de la bayoneta (0 sin, 1 madera .. 6 netherita)
+            ItemProperties.register(ModItems.MOSQUETE.get(), rl("bayoneta"), (s, l, en, seed) -> com.miscelanea.armasfuego.oeste.MosqueteItem.material(s) / 10F);
             // cañón: la mecha encendida
             ItemProperties.register(ModItems.CANON_MANO.get(), rl("mecha"), (s, l, en, seed) -> CanonManoItem.mecha(s) >= 0 ? 1F : 0F);
             // revólver: el tambor abierto un momento al meter cada bala
@@ -108,6 +110,11 @@ public final class FuegoClienteMod {
     @SubscribeEvent
     public static void colores(RegisterColorHandlersEvent.Item e) {
         e.register((s, capa) -> capa == 1 ? Pintura.rgb(Pintura.color(s)) : 0xFFFFFFFF, ModItems.BALA_PINTURA.get());
+    }
+
+    @SubscribeEvent
+    public static void teclas(net.minecraftforge.client.event.RegisterKeyMappingsEvent e) {
+        e.register(FuegoCliente.MANGA);
     }
 
     @SubscribeEvent

@@ -27,6 +27,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.Tiers;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -38,12 +41,20 @@ import java.util.UUID;
  * pedernal enciende la cazoleta y un instante después sale el tiro con una nube de humo. La recarga es lenta
  * (pólvora, bola y baqueta, con su animación) y con lluvia o metido en el agua la pólvora se moja y a veces falla.
  * Cuerpo a cuerpo, la bayoneta hace de lanza (más alcance y daño, pero lenta).
+ * <p>
+ * La bayoneta se cambia (1.1.0): cualquier espada (de madera a netherita, y las de otros mods) se cala combinándola
+ * con el mosquete en la mesa de trabajo o en el inventario, como un saco (la espada encima del mosquete, clic
+ * derecho); el daño y la durabilidad son los de la espada (se gasta ella) y en el modelo se ve la hoja de su
+ * material. Con la mano vacía (clic derecho en el inventario) o sola en la mesa, se quita y se recupera la espada. La
+ * recarga tiene tres pasos que enseña el HUD: pólvora, bola y baqueta.
  */
 public class MosqueteItem extends ArmaFuegoItem {
     public static final ResourceKey<DamageType> DANO = Balistica.clave("mosquete_disparo");
     /** Hora del mundo en que sale el tiro (tras la chispa en la cazoleta). */
     public static final String CHISPA = "Chispa";
     public static final int RETARDO = 5;
+    /** NBT: la espada calada de bayoneta (si no hay ninguna, la de hierro de siempre) o que no lleva. */
+    public static final String BAYONETA = "Bayoneta", SIN_BAYONETA = "SinBayoneta";
     private static final UUID ALCANCE_ID = UUID.fromString("5c1b1e2a-7a2d-4f43-9d3e-6b9a2a0f4b11");
 
     public MosqueteItem(Properties p) {
@@ -88,10 +99,14 @@ public class MosqueteItem extends ArmaFuegoItem {
     @Override
     public void onUseTick(Level level, LivingEntity e, ItemStack s, int quedan) {
         super.onUseTick(level, e, s, quedan);
-        // la baqueta suena a mitad de la recarga
+        // cada paso suena: la pólvora al entrar, la bola al tercio y la baqueta a los dos tercios
         int t = getUseDuration(s) - quedan;
-        if (!level.isClientSide && modo(s) == MODO_RECARGA && t == ticksRecarga(s) / 2)
-            level.playSound(null, e.getX(), e.getY(), e.getZ(), ModSounds.MOSQUETE_BAQUETA.get(), SoundSource.PLAYERS, 0.8F, 1.3F);
+        int r = ticksRecarga(s);
+        if (!level.isClientSide && modo(s) == MODO_RECARGA) {
+            if (t == r / 3) level.playSound(null, e.getX(), e.getY(), e.getZ(), net.minecraft.sounds.SoundEvents.STONE_HIT, SoundSource.PLAYERS, 0.6F, 1.6F);
+            if (t == r * 2 / 3) level.playSound(null, e.getX(), e.getY(), e.getZ(), ModSounds.MOSQUETE_BAQUETA.get(), SoundSource.PLAYERS, 0.8F, 1.3F);
+            if (t == 2) level.playSound(null, e.getX(), e.getY(), e.getZ(), net.minecraft.sounds.SoundEvents.SAND_PLACE, SoundSource.PLAYERS, 0.5F, 1.4F);
+        }
     }
 
 
@@ -102,13 +117,23 @@ public class MosqueteItem extends ArmaFuegoItem {
 
     @Override
     protected int enfriamiento(Player p, ItemStack s) {
-        return RETARDO + 10;
+        return retardo(s) + 10;
     }
 
-    /** El pedernal en la cazoleta también puede fallar (fogonazo en la cazoleta): el triple de lo normal. */
+    /** El pedernal en la cazoleta también puede fallar (fogonazo en la cazoleta): el triple de lo normal (Pedernal fino: menos). */
     @Override
     protected float probAtasco(Player p, ItemStack s) {
-        return EquilibrioArmas.encasquilladoBase() * 3;
+        return EquilibrioArmas.encasquilladoBase() * 3 * (1 - 0.3F * nivel(com.miscelanea.registry.ModEnchantments.MOSQUETE_PEDERNAL, s));
+    }
+
+    /** Lo que tarda la chispa en prender la pólvora (Pedernal fino: menos). */
+    public static int retardo(ItemStack s) {
+        return Math.max(1, RETARDO - 2 * nivel(com.miscelanea.registry.ModEnchantments.MOSQUETE_PEDERNAL, s));
+    }
+
+    /** El paso de la recarga (0 pólvora, 1 bola, 2 baqueta) según lo que se lleva de ella (0..1). */
+    public static int pasoRecarga(float fr) {
+        return fr < 1F / 3F ? 0 : fr < 2F / 3F ? 1 : 2;
     }
 
     @Override
@@ -119,7 +144,7 @@ public class MosqueteItem extends ArmaFuegoItem {
             return InteractionResultHolder.fail(s);
         }
         // el pedernal pica: la cazoleta se enciende y el tiro sale RETARDO ticks después
-        s.getOrCreateTag().putLong(CHISPA, level.getGameTime() + RETARDO);
+        s.getOrCreateTag().putLong(CHISPA, level.getGameTime() + retardo(s));
         if (!level.isClientSide) {
             ServerLevel l = (ServerLevel) level;
             Vec3 c = boca(p, 0.45, 0.3, 0.2);
@@ -162,6 +187,8 @@ public class MosqueteItem extends ArmaFuegoItem {
             for (int i = 0; i < 7; i++) tiro(p, 2.5F, 24, 6, 0.3F, 0.09, 0.2F, DANO, true, null);
         } else if (tipo == ModItems.BOLA_CADENA.get()) {
             cadena(p);
+        } else if (tipo == ModItems.BOLA_ARPON.get()) {
+            arpon(p);
         } else {
             tiro(p, EquilibrioArmas.mosqueteDano(), 64, 30, 0.6F, 0.012, 0.35F, DANO, false, null);
         }
@@ -213,13 +240,116 @@ public class MosqueteItem extends ArmaFuegoItem {
         if (n >= 2) LogrosMiscelanea.dar(p, "mosquete_cadena");
     }
 
-    // ------------------------------------------------------------------ la bayoneta
+    /**
+     * Bola arpón (el arpón de Sea of Thieves): una cuerda que tira de lo que alcanza hacia ti (criaturas, barcos,
+     * vagonetas, objetos) o, si da en un bloque, tira de ti hacia él.
+     */
+    private void arpon(ServerPlayer p) {
+        ServerLevel l = p.serverLevel();
+        Vec3 ojo = p.getEyePosition(), dir = p.getViewVector(1F);
+        double alcance = 32;
+        var bh = l.clip(new net.minecraft.world.level.ClipContext(ojo, ojo.add(dir.scale(alcance)), net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                net.minecraft.world.level.ClipContext.Fluid.NONE, p));
+        Vec3 fin = bh.getLocation();
+        Entity montura = p.getVehicle();
+        var eh = net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(l, p, ojo, fin, new net.minecraft.world.phys.AABB(ojo, fin).inflate(1.0),
+                e -> e != p && e != montura && !e.isSpectator() && e.isPickable());
+        float f = EquilibrioArmas.mosqueteArpon();
+        Vec3 hasta = eh != null ? eh.getLocation() : fin;
+        if (eh != null) {
+            Entity e = eh.getEntity();
+            if (e instanceof LivingEntity v) Balistica.herir(v, p, 5F, 0.2F, DANO, false);
+            Vec3 hacia = p.position().subtract(e.position());
+            Vec3 vel = hacia.normalize().scale(Math.min(f, hacia.length() * 0.25 + 0.4)).add(0, 0.3, 0);
+            e.setDeltaMovement(vel);
+            e.hurtMarked = true;
+            LogrosMiscelanea.dar(p, "mosquete_arpon");
+        } else if (bh.getType() != net.minecraft.world.phys.HitResult.Type.MISS) {
+            Vec3 hacia = fin.subtract(p.position());
+            p.setDeltaMovement(hacia.normalize().scale(Math.min(f * 1.1, hacia.length() * 0.22 + 0.5)).add(0, 0.35, 0));
+            p.connection.send(new ClientboundSetEntityMotionPacket(p));
+            p.fallDistance = 0;
+            LogrosMiscelanea.dar(p, "mosquete_arpon");
+        }
+        var cuerda = new net.minecraft.core.particles.ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.LEAD));
+        int n = (int) Math.min(16, ojo.distanceTo(hasta) / 1.5);
+        for (int k = 1; k <= n; k++) {
+            Vec3 q = ojo.lerp(hasta, k / (double) (n + 1));
+            l.sendParticles(cuerda, q.x, q.y - 0.2, q.z, 1, 0, 0, 0, 0);
+        }
+        l.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.ARPON.get(), SoundSource.PLAYERS, 1.2F, 1.0F);
+    }
+
+    // ------------------------------------------------------------------ la bayoneta (cambiable)
+
+    /** ¿Vale como bayoneta? (cualquier espada, también las de otros mods) */
+    public static boolean esEspada(ItemStack x) {
+        return !x.isEmpty() && x.getItem() instanceof SwordItem;
+    }
+
+    public static boolean tieneBayoneta(ItemStack s) {
+        return !(s.hasTag() && s.getTag().getBoolean(SIN_BAYONETA));
+    }
+
+    /** La espada calada (la de hierro si es un mosquete de los de antes), o vacío si no lleva. */
+    public static ItemStack bayoneta(ItemStack s) {
+        if (!tieneBayoneta(s)) return ItemStack.EMPTY;
+        if (s.hasTag() && s.getTag().contains(BAYONETA)) return ItemStack.of(s.getTag().getCompound(BAYONETA));
+        return new ItemStack(Items.IRON_SWORD);
+    }
+
+    public static void ponerBayoneta(ItemStack s, ItemStack espada) {
+        CompoundTag t = s.getOrCreateTag();
+        if (espada.isEmpty()) {
+            t.remove(BAYONETA);
+            t.putBoolean(SIN_BAYONETA, true);
+        } else {
+            t.put(BAYONETA, espada.copyWithCount(1).save(new CompoundTag()));
+            t.remove(SIN_BAYONETA);
+        }
+    }
+
+    /** El material de la hoja (para el modelo): 0 sin bayoneta, 1 madera, 2 piedra, 3 hierro (y las raras), 4 oro, 5 diamante, 6 netherita. */
+    public static int material(ItemStack s) {
+        if (!tieneBayoneta(s)) return 0;
+        // se mira cada fotograma (el modelo en la mano): solo el id, sin rehacer el objeto entero
+        net.minecraft.world.item.Item it = Items.IRON_SWORD;
+        if (s.hasTag() && s.getTag().contains(BAYONETA)) {
+            var rl = net.minecraft.resources.ResourceLocation.tryParse(s.getTag().getCompound(BAYONETA).getString("id"));
+            if (rl != null) it = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(rl);
+        }
+        if (it instanceof SwordItem sw) {
+            var t = sw.getTier();
+            if (t == Tiers.WOOD) return 1;
+            if (t == Tiers.STONE) return 2;
+            if (t == Tiers.GOLD) return 4;
+            if (t == Tiers.DIAMOND) return 5;
+            if (t == Tiers.NETHERITE) return 6;
+        }
+        return 3;
+    }
+
+    /** El daño de la espada (lo que añade al puño). */
+    public static double danoEspada(ItemStack espada) {
+        double d = 0;
+        for (AttributeModifier m : espada.getAttributeModifiers(EquipmentSlot.MAINHAND).get(Attributes.ATTACK_DAMAGE))
+            if (m.getOperation() == AttributeModifier.Operation.ADDITION) d += m.getAmount();
+        return d;
+    }
 
     @Override
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack s) {
         if (slot != EquipmentSlot.MAINHAND) return super.getAttributeModifiers(slot, s);
         ImmutableMultimap.Builder<Attribute, AttributeModifier> b = ImmutableMultimap.builder();
-        b.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Bayoneta", EquilibrioArmas.mosqueteBayoneta() - 1 + 2 * nivel(com.miscelanea.registry.ModEnchantments.MOSQUETE_CARGA, s), AttributeModifier.Operation.ADDITION));
+        ItemStack bay = bayoneta(s);
+        if (bay.isEmpty()) {
+            // sin bayoneta: un culatazo
+            b.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Culata", 2.0, AttributeModifier.Operation.ADDITION));
+            b.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Culata", -3.0, AttributeModifier.Operation.ADDITION));
+            return b.build();
+        }
+        double d = danoEspada(bay) + EquilibrioArmas.mosqueteBayoneta() + 2 * nivel(com.miscelanea.registry.ModEnchantments.MOSQUETE_CARGA, s);
+        b.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Bayoneta", d, AttributeModifier.Operation.ADDITION));
         b.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Bayoneta", -3.0, AttributeModifier.Operation.ADDITION));
         b.put(net.minecraftforge.common.ForgeMod.ENTITY_REACH.get(), new AttributeModifier(ALCANCE_ID, "Bayoneta", 1.5, AttributeModifier.Operation.ADDITION));
         return b.build();
@@ -227,9 +357,61 @@ public class MosqueteItem extends ArmaFuegoItem {
 
     @Override
     public boolean hurtEnemy(ItemStack s, LivingEntity v, LivingEntity a) {
-        s.hurtAndBreak(1, a, x -> x.broadcastBreakEvent(EquipmentSlot.MAINHAND));
-        if (!v.isAlive() && a instanceof ServerPlayer p) LogrosMiscelanea.dar(p, "mosquete_bayoneta");
+        ItemStack bay = bayoneta(s);
+        if (bay.isEmpty()) s.hurtAndBreak(1, a, x -> x.broadcastBreakEvent(EquipmentSlot.MAINHAND));
+        else if (bay.isDamageableItem() && !(a instanceof Player pl && pl.getAbilities().instabuild)) {
+            // se gasta la espada calada; si se rompe, el mosquete se queda sin bayoneta
+            if (bay.hurt(1, a.getRandom(), a instanceof ServerPlayer sp ? sp : null)) {
+                ponerBayoneta(s, ItemStack.EMPTY);
+                a.level().playSound(null, a.getX(), a.getY(), a.getZ(), net.minecraft.sounds.SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 0.8F, 1.2F);
+            } else ponerBayoneta(s, bay);
+        }
+        if (!v.isAlive() && a instanceof ServerPlayer p && !bay.isEmpty()) LogrosMiscelanea.dar(p, "mosquete_bayoneta");
         return true;
+    }
+
+    /** Calar una espada (devuelve la que había). */
+    public static ItemStack calar(Player p, ItemStack s, ItemStack espada) {
+        ItemStack vieja = tieneBayoneta(s) ? bayoneta(s) : ItemStack.EMPTY;
+        ponerBayoneta(s, espada);
+        p.playSound(net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_IRON, 0.8F, 1.3F);
+        if (p instanceof ServerPlayer sp && material(s) == 6) LogrosMiscelanea.dar(sp, "mosquete_netherita");
+        return vieja;
+    }
+
+    /** En el inventario, como un saco: una espada encima la cala; con la mano vacía se quita (y el cobre, como siempre). */
+    @Override
+    public boolean overrideOtherStackedOnMe(ItemStack s, ItemStack otro, net.minecraft.world.inventory.Slot slot, net.minecraft.world.inventory.ClickAction a,
+                                            Player p, net.minecraft.world.entity.SlotAccess cursor) {
+        if (a == net.minecraft.world.inventory.ClickAction.SECONDARY && slot.allowModification(p)) {
+            if (esEspada(otro) && otro.getCount() == 1) {
+                ItemStack vieja = calar(p, s, otro);
+                cursor.set(vieja);
+                return true;
+            }
+            if (otro.isEmpty() && tieneBayoneta(s)) {
+                cursor.set(bayoneta(s));
+                ponerBayoneta(s, ItemStack.EMPTY);
+                p.playSound(net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_IRON, 0.8F, 0.9F);
+                return true;
+            }
+        }
+        return super.overrideOtherStackedOnMe(s, otro, slot, a, p, cursor);
+    }
+
+    @Override
+    public Component getName(ItemStack s) {
+        if (tieneBayoneta(s)) return super.getName(s);
+        return com.miscelanea.armasfuego.comun.Cobre.nombre(Component.translatable("item.miscelanea.mosquete.sin_bayoneta"), s, false);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack s, @javax.annotation.Nullable Level level, java.util.List<Component> l, net.minecraft.world.item.TooltipFlag f) {
+        ItemStack b = bayoneta(s);
+        l.add(b.isEmpty() ? Component.translatable("item.miscelanea.mosquete.bayoneta_no").withStyle(ChatFormatting.GRAY)
+                : Component.translatable("item.miscelanea.mosquete.bayoneta", b.getHoverName()).withStyle(ChatFormatting.GRAY));
+        super.appendHoverText(s, level, l, f);
+        l.add(Component.translatable("item.miscelanea.mosquete.ayuda_bayoneta").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     @Override

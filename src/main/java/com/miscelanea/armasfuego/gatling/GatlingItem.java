@@ -24,7 +24,8 @@ import java.util.function.Consumer;
 
 /**
  * La Gatling de manivela plegada, para llevarla a cuestas (pesa: no se dispara en la mano). Clic derecho encima de un
- * bloque la planta en su trípode mirando hacia donde miras. Guarda el calor y las balas que le queden.
+ * bloque la planta en su trípode mirando hacia donde miras; sobre una vagoneta vacía o un barco, la monta en él. Guarda el
+ * calor y las balas que le queden.
  */
 public class GatlingItem extends Item {
     public static final String CALOR = "Calor", BALAS = "Balas", CINTA = "Cinta";
@@ -46,6 +47,8 @@ public class GatlingItem extends Item {
         if (!l.noCollision(g, g.getBoundingBox())) return InteractionResult.FAIL;
         if (!l.isClientSide) {
             g.desde(c.getItemInHand());
+            g.ponerDueno(p);
+            g.apuntar(yaw, 0);
             l.addFreshEntity(g);
             l.playSound(null, q.x, q.y, q.z, SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 0.4F, 1.4F);
             l.gameEvent(p, GameEvent.ENTITY_PLACE, q);
