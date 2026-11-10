@@ -111,8 +111,10 @@ public class WinchesterItem extends ArmaFuegoItem {
                 if (it != null && it != Items.AIR) l.add(it);
             }
         }
-        // las de antes del depósito (o del botín): todas normales
-        while (l.size() < n) l.add(0, ModItems.REVOLVER_BALA.get());
+        // las de antes del depósito (o del botín): todas del tipo que dice el arma (o normales)
+        Item viejo = tipo(s);
+        if (viejo == null || viejo == Items.AIR || !esBala(new ItemStack(viejo))) viejo = ModItems.REVOLVER_BALA.get();
+        while (l.size() < n) l.add(0, viejo);
         while (l.size() > n) l.remove(0);
         return l;
     }

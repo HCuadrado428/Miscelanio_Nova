@@ -1065,9 +1065,16 @@ public final class PruebaCI {
         sin("pistola_bengala_ver", 4, () -> piSrv(sp -> {
             var l = sp.serverLevel();
             var bs = l.getEntitiesOfClass(com.miscelanea.armasfuego.pistola.BengalaEntity.class, new net.minecraft.world.phys.AABB(piO).inflate(40));
-            int luces = 0;
-            for (var b : net.minecraft.core.BlockPos.betweenClosed(piO.offset(-24, -2, -24), piO.offset(24, 24, 24)))
-                if (l.getBlockState(b).is(net.minecraft.world.level.block.Blocks.LIGHT)) luces++;
+            int luces = 0, luzCalculada = 0;
+            var junto = net.minecraft.core.BlockPos.containing(piPunto(7, 0, 0.5));
+            for (var b : net.minecraft.core.BlockPos.betweenClosed(piO.offset(-24, -2, -24), piO.offset(24, 24, 24))) {
+                var st = l.getBlockState(b);
+                if (st.is(net.minecraft.world.level.block.Blocks.LIGHT)) {
+                    luces++;
+                    // la luz que llega al husk (la del motor de luz va en otro hilo y a veces aún no estaba puesta)
+                    luzCalculada = Math.max(luzCalculada, st.getValue(net.minecraft.world.level.block.LightBlock.LEVEL) - b.distManhattan(junto));
+                }
+            }
             var h = piHusk(sp);
             piVigilaBrillo = false;
             boolean brilla = h != null && (h.hasEffect(net.minecraft.world.effect.MobEffects.GLOWING) || PI.containsKey("husk_brillo"));
@@ -1077,7 +1084,7 @@ public final class PruebaCI {
                     + ", " + luces + " bloque(s) de luz, " + com.miscelanea.armasfuego.pistola.LucesTemporales.cuantas(sp.server) + " apuntadas, husk brilla: "
                     + brilla + (brilla ? "" : donde));
             PI.put("bengala_ok", !bs.isEmpty() && luces >= 1 && brilla
-                    && l.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, net.minecraft.core.BlockPos.containing(piPunto(7, 0, 0.5))) >= 8);
+                    && Math.max(luzCalculada, l.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, junto)) >= 8);
         }));
         paso("106_bengala_noche", 10, () -> piComprobar("bengala: sube, ilumina (bloques de luz) y con Señalero el husk brilla",
                 Boolean.TRUE.equals(PI.get("bengala_ok")), String.valueOf(PI.get("bengala"))));
@@ -2353,8 +2360,11 @@ public final class PruebaCI {
         });
         paso("230_estuche_violin", 6, () -> mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT));
         paso("231_estuche_1p", 6, A2::camara1p);
+        // agachado + clic derecho lo abre (sin agacharse, el estuche es un violín)
+        sin("a2_estuche_agachar", 4, () -> mc.options.keyShift.setDown(true));
         sin("a2_estuche_abrir", 8, piTiro());
         sin("a2_estuche_ok", 2, () -> {
+            mc.options.keyShift.setDown(false);
             boolean t = mc.player.getMainHandItem().getItem() instanceof com.miscelanea.armasfuego.oeste.ThompsonItem;
             a2Comprobar("el estuche de violín se abre y la Thompson pasa a la mano", t, mc.player.getMainHandItem().toString());
             piApuntar(a2Punto(8, 0, 1.2));
@@ -3063,13 +3073,14 @@ public final class PruebaCI {
             a2Apuntar(a2Punto(8, 0, 1.2));
         });
         sin("a2u_manga_sacar", 3, com.miscelanea.client.armasfuego.comun.FuegoCliente::sacarDeLaManga);
-        paso("284_derringer_manga", 3, () -> piSrv(sp -> {
-            PI.put("manga", sp.getMainHandItem().getItem() instanceof com.miscelanea.armasfuego.oeste.DerringerItem && sp.getInventory().getItem(22).is(net.minecraft.world.item.Items.STICK));
-        }));
-        sin("a2u_manga_tiro", 6, () -> {
+        // el tiro enseguida (antes de la captura: con shaders, sacar una captura tarda más de un segundo)
+        sin("a2u_manga_tiro", 4, () -> {
+            piSrv(sp -> PI.put("manga", sp.getMainHandItem().getItem() instanceof com.miscelanea.armasfuego.oeste.DerringerItem
+                    && sp.getInventory().getItem(22).is(net.minecraft.world.item.Items.STICK)));
             a2Apuntar(a2Punto(8, 0, 1.2));
             piDisparar();
         });
+        paso("284_derringer_manga", 3, () -> {});
         sin("a2u_manga_ver", 2, () -> piSrv(sp -> PI.put("manga_logro", a2Logro(sp, "armas/derringer_manga"))));
         sin("a2u_manga_ok", 2, () -> a2Comprobar("la tecla de la manga saca la Derringer de golpe (y el tiro en menos de un segundo da el logro)",
                 Boolean.TRUE.equals(PI.get("manga")) && Boolean.TRUE.equals(PI.get("manga_logro")), "en la mano " + PI.get("manga") + ", logro " + PI.get("manga_logro")));

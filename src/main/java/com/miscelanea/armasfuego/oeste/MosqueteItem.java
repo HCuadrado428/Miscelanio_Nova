@@ -311,9 +311,14 @@ public class MosqueteItem extends ArmaFuegoItem {
 
     /** El material de la hoja (para el modelo): 0 sin bayoneta, 1 madera, 2 piedra, 3 hierro (y las raras), 4 oro, 5 diamante, 6 netherita. */
     public static int material(ItemStack s) {
-        ItemStack b = bayoneta(s);
-        if (b.isEmpty()) return 0;
-        if (b.getItem() instanceof SwordItem sw) {
+        if (!tieneBayoneta(s)) return 0;
+        // se mira cada fotograma (el modelo en la mano): solo el id, sin rehacer el objeto entero
+        net.minecraft.world.item.Item it = Items.IRON_SWORD;
+        if (s.hasTag() && s.getTag().contains(BAYONETA)) {
+            var rl = net.minecraft.resources.ResourceLocation.tryParse(s.getTag().getCompound(BAYONETA).getString("id"));
+            if (rl != null) it = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(rl);
+        }
+        if (it instanceof SwordItem sw) {
             var t = sw.getTier();
             if (t == Tiers.WOOD) return 1;
             if (t == Tiers.STONE) return 2;
