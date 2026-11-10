@@ -3169,7 +3169,9 @@ public final class PruebaCI {
             a2VigilaNotas = true;
             piDisparar();
         });
-        paso("285_violin_1p", 1, () -> {});
+        // otra nota justo antes de la foto (la notita dura 6 ticks)
+        sin("a2u_violin_1p_otra", 2, () -> {});
+        paso("285_violin_1p", 2, PruebaCI::piDisparar);
         sin("a2u_violin_arriba", 3, () -> {
             // las notitas que han llegado a verse en el cliente (se miran en cada tick: con shaders, a pocos fps, podían
             // haber salido y acabado entre paso y paso)
@@ -3312,7 +3314,7 @@ public final class PruebaCI {
         paso("288_canon_yunque", 6, () -> {
             if (!(PI.get("arco_pos") instanceof Vec3 q)) throw new IllegalStateException("el yunque no ha salido del cañón");
             Vec3 lado = new Vec3(a2Lado.getStepX(), 0, a2Lado.getStepZ()), fr = new Vec3(a2Mira.getStepX(), 0, a2Mira.getStepZ());
-            a2VistaA(q.add(fr.scale(-0.6)), q.add(lado.scale(2.6)).add(fr.scale(-1.4)).add(0, -0.4, 0));
+            a2VistaA(q, q.add(lado.scale(1.9)).add(fr.scale(-1.0)).add(0, -0.3, 0));
         });
         sin("a2u_arco_sigue", 40, () -> {
             a2CongelaYunque = false;

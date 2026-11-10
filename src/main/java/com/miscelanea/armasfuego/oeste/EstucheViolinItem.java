@@ -81,7 +81,7 @@ public class EstucheViolinItem extends Item {
         // persona, en el centro de la vista)
         var m = p.getViewVector(1F);
         l.sendParticles(net.minecraft.core.particles.ParticleTypes.NOTE, p.getX(), p.getEyeY() + 0.7, p.getZ(), 0, n / 24.0, 0, 0, 1);
-        l.sendParticles(net.minecraft.core.particles.ParticleTypes.NOTE, p.getX() + m.x * 0.9, p.getEyeY() + m.y * 0.9 - 0.2, p.getZ() + m.z * 0.9, 0, n / 24.0, 0, 0, 1);
+        l.sendParticles(net.minecraft.core.particles.ParticleTypes.NOTE, p.getX() + m.x * 1.4, p.getEyeY() + m.y * 1.4 - 0.25, p.getZ() + m.z * 1.4, 0, n / 24.0, 0, 0, 1);
         l.gameEvent(p, net.minecraft.world.level.gameevent.GameEvent.NOTE_BLOCK_PLAY, p.position());
         tocadas++;
         ultimaNota = n;
