@@ -2,13 +2,13 @@
  "credit": "miscelanea",
  "ambientocclusion": false,
  "textures": {
-  "cobre": "miscelanea:item/armas3d/g_cobre_0",
-  "hierro": "miscelanea:item/armas3d/g_hierro",
+  "cobre": "miscelanea:item/armas3d/cobre_0",
+  "hierro": "miscelanea:item/armas3d/hierro",
   "acero": "miscelanea:item/armas3d/g_acero",
-  "laton": "miscelanea:item/armas3d/g_laton",
-  "nogal": "miscelanea:item/armas3d/g_nogal",
+  "laton": "miscelanea:item/armas3d/laton",
+  "nogal": "miscelanea:item/armas3d/madera",
   "madera": "miscelanea:item/armas3d/g_madera",
-  "negro": "miscelanea:item/armas3d/g_negro",
+  "negro": "miscelanea:item/armas3d/negro",
   "cuero": "miscelanea:item/armas3d/g_cuero",
   "nacar": "miscelanea:item/armas3d/g_nacar",
   "mecha": "miscelanea:item/armas3d/g_mecha",
@@ -18,7 +18,7 @@
   "tambor": "miscelanea:item/armas3d/g_tambor",
   "terciopelo": "miscelanea:item/armas3d/g_terciopelo",
   "tolva": "miscelanea:item/armas3d/g_tolva",
-  "particle": "miscelanea:item/armas3d/g_laton"
+  "particle": "miscelanea:item/armas3d/laton"
  },
  "elements": [
   {

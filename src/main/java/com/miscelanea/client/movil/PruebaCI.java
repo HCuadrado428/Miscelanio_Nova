@@ -2562,6 +2562,30 @@ public final class PruebaCI {
                 if (mc.getModelManager().getModel(r) == mc.getModelManager().getMissingModel()) mal.append(r).append("; ");
             a2Comprobar("cuatro fases del cobre (modelos) en las seis armas y en la Gatling plantada", mal.length() == 0, mal.length() == 0 ? "todas" : mal.toString());
         });
+        // texturas a 16 px por bloque, como las del revólver y el rifle (iconos, munición y materiales de los modelos)
+        sin("a2c_texturas_16", 2, () -> {
+            StringBuilder mal = new StringBuilder();
+            int n = 0;
+            java.util.List<String> nombres = new java.util.ArrayList<>(List.of("estuche_violin", "bala_derringer", "bola_mosquete", "cinta_gatling",
+                    "cargador_thompson", "revolver_tiempo", "bala_pintura", "bala_pintura_punta", "bala_plata", "bala_dinamita", "bala_oro", "carta_marcada",
+                    "tambor_trazador", "tambor_agua", "cinta_incendiaria", "cinta_palomitas", "metralla", "bola_cadena", "bolano_incendiario", "bolano_fuegos"));
+            for (String r : List.of("gatling", "winchester", "derringer", "thompson", "mosquete", "canon_mano")) {
+                nombres.add(r);
+                for (int o = 1; o < 4; o++) nombres.add(r + "_ox" + o);
+            }
+            for (String m : List.of("g_acero", "g_madera", "g_cuero", "g_nacar", "g_mecha", "g_brasa", "g_terciopelo", "g_boca", "g_boca2", "g_tambor", "g_tolva"))
+                nombres.add("armas3d/" + m);
+            for (String t : nombres) {
+                var rl = new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "textures/item/" + t + ".png");
+                try (var in = mc.getResourceManager().open(rl); var img = com.mojang.blaze3d.platform.NativeImage.read(in)) {
+                    if (img.getWidth() != 16 || img.getHeight() != 16) mal.append(t).append(" ").append(img.getWidth()).append("x").append(img.getHeight()).append("; ");
+                    n++;
+                } catch (Exception ex) {
+                    mal.append(t).append(" falta; ");
+                }
+            }
+            a2Comprobar("texturas de la segunda tanda a 16x16", mal.length() == 0, mal.length() == 0 ? n + " a 16x16" : mal.toString());
+        });
         // los encantamientos propios: valen para su arma y no para una espada
         sin("a2c_encantamientos", 2, () -> {
             StringBuilder mal = new StringBuilder();

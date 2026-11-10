@@ -7,7 +7,7 @@
  "base": {
   "parent": "miscelanea:item/armas3d/gatling_3d",
   "textures": {
-   "cobre": "miscelanea:item/armas3d/g_cobre_0"
+   "cobre": "miscelanea:item/armas3d/cobre_0"
   }
  },
  "perspectives": {

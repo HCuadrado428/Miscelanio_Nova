@@ -7,7 +7,7 @@
  "base": {
   "parent": "miscelanea:item/armas3d/canon_mano_3d",
   "textures": {
-   "cobre": "miscelanea:item/armas3d/g_cobre_3"
+   "cobre": "miscelanea:item/armas3d/cobre_3"
   }
  },
  "perspectives": {

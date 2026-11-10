@@ -7,7 +7,7 @@
  "base": {
   "parent": "miscelanea:item/armas3d/derringer_3d_abierta_oculta",
   "textures": {
-   "cobre": "miscelanea:item/armas3d/g_cobre_3"
+   "cobre": "miscelanea:item/armas3d/cobre_3"
   }
  },
  "perspectives": {
