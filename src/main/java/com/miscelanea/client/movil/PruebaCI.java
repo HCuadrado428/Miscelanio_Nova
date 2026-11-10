@@ -832,7 +832,15 @@ public final class PruebaCI {
     private static volatile net.minecraft.core.BlockPos piO;
     private static volatile net.minecraft.core.Direction piMira, piLado;
     private static volatile UUID piHusk;
-    private static volatile boolean piVigilaBrillo, escVigilaMiel, a2VigilaGatling, escVigilaSalto;
+    private static volatile boolean piVigilaBrillo, escVigilaMiel, a2VigilaGatling, escVigilaSalto, a2CongelaYunque, a2VigilaNotas, escVigilaEscarcha;
+
+    /** Las notitas del violín que se ven en el cliente: lo más que ha habido a la vez (se mira en cada tick). */
+    @SubscribeEvent
+    public static void a2NotasTick(TickEvent.ClientTickEvent e) {
+        if (!ACTIVA || e.phase != TickEvent.Phase.END || !a2VigilaNotas) return;
+        int n = a2Notas();
+        PI.merge("v_notas_max", n, (a, b) -> Math.max((Integer) a, (Integer) b));
+    }
     private static final java.util.Map<String, Object> PI = new java.util.concurrent.ConcurrentHashMap<>();
     private static net.minecraftforge.common.util.FakePlayer piForastero;
 
@@ -1364,6 +1372,22 @@ public final class PruebaCI {
         if (a2VigilaGatling && a2Gatling != null) {
             for (var lv : e.getServer().getAllLevels())
                 if (lv.getEntity(a2Gatling) instanceof com.miscelanea.armasfuego.gatling.GatlingEntity g && g.atasco() > 0) PI.put("g_atasco_visto", g.atasco());
+        }
+        if (a2CongelaYunque) {
+            for (var lv : e.getServer().getAllLevels())
+                for (var b : lv.getEntities(net.minecraft.world.level.entity.EntityTypeTest.forClass(com.miscelanea.armasfuego.oeste.BolaCanonEntity.class),
+                        x -> x.getItem().is(net.minecraft.world.item.Items.ANVIL) && x.tickCount >= 3)) {
+                    if (!PI.containsKey("arco_pos")) {
+                        PI.put("arco_pos", b.position());
+                        PI.put("arco_vel", b.getDeltaMovement());
+                    }
+                    b.setDeltaMovement(Vec3.ZERO);
+                    b.setNoGravity(true);
+                }
+        }
+        if (escVigilaEscarcha && escHusk != null) {
+            for (var lv : e.getServer().getAllLevels())
+                if (lv.getEntity(escHusk) instanceof net.minecraft.world.entity.LivingEntity le && le.getTicksFrozen() > 0) PI.put("escarcha_frio", le.getTicksFrozen());
         }
         if (escVigilaSalto) {
             for (ServerPlayer sp : e.getServer().getPlayerList().getPlayers())
@@ -2598,27 +2622,35 @@ public final class PruebaCI {
         });
         // texturas a 16 px por bloque, como las del revólver y el rifle (iconos, munición y materiales de los modelos)
         sin("a2c_texturas_16", 2, () -> {
+            // TODAS las de las armas de fuego y su munición (las nueve y todo lo suyo, también lo que se añada): iconos,
+            // materiales de los modelos (armas3d) y la bengala y la cuerda del rifle
             StringBuilder mal = new StringBuilder();
             int n = 0;
-            java.util.List<String> nombres = new java.util.ArrayList<>(List.of("estuche_violin", "bala_derringer", "bola_mosquete", "cinta_gatling",
-                    "cargador_thompson", "revolver_tiempo", "bala_pintura", "bala_pintura_punta", "bala_plata", "bala_dinamita", "bala_oro", "carta_marcada",
-                    "tambor_trazador", "tambor_agua", "cinta_incendiaria", "cinta_palomitas", "metralla", "bola_cadena", "bolano_incendiario", "bolano_fuegos"));
-            for (String r : List.of("gatling", "winchester", "derringer", "thompson", "mosquete", "canon_mano")) {
-                nombres.add(r);
-                for (int o = 1; o < 4; o++) nombres.add(r + "_ox" + o);
-            }
-            for (String m : List.of("g_acero", "g_madera", "g_cuero", "g_nacar", "g_mecha", "g_brasa", "g_terciopelo", "g_boca", "g_boca2", "g_tambor", "g_tolva"))
-                nombres.add("armas3d/" + m);
-            for (String t : nombres) {
-                var rl = new net.minecraft.resources.ResourceLocation(Miscelanea.MOD_ID, "textures/item/" + t + ".png");
-                try (var in = mc.getResourceManager().open(rl); var img = com.mojang.blaze3d.platform.NativeImage.read(in)) {
-                    if (img.getWidth() != 16 || img.getHeight() != 16) mal.append(t).append(" ").append(img.getWidth()).append("x").append(img.getHeight()).append("; ");
+            String[] pref = {"revolver", "rifle", "escopeta_presion", "escopeta_cartucho", "bala_", "casquillo_rifle", "gatling", "winchester", "derringer",
+                    "thompson", "mosquete", "canon_mano", "estuche_violin", "cinta_", "cargador_thompson", "carta_marcada", "tambor_", "metralla",
+                    "bola_mosquete", "bola_cadena", "bola_arpon", "bolano_"};
+            var todas = mc.getResourceManager().listResources("textures", rl -> rl.getNamespace().equals(Miscelanea.MOD_ID) && rl.getPath().endsWith(".png"));
+            java.util.Set<String> vistas = new java.util.TreeSet<>();
+            for (var e : todas.entrySet()) {
+                String path = e.getKey().getPath();
+                String nombre = path.substring(path.lastIndexOf('/') + 1);
+                boolean arma = path.startsWith("textures/item/armas3d/") || path.equals("textures/entity/revolver_bengala.png") || path.equals("textures/entity/cuerda_rifle.png");
+                if (!arma && path.startsWith("textures/item/") && path.indexOf('/', "textures/item/".length()) < 0)
+                    for (String pr : pref) if (nombre.startsWith(pr)) { arma = true; break; }
+                if (!arma) continue;
+                vistas.add(nombre);
+                try (var in = e.getValue().open(); var img = com.mojang.blaze3d.platform.NativeImage.read(in)) {
+                    if (img.getWidth() != 16 || img.getHeight() != 16) mal.append(path).append(" ").append(img.getWidth()).append("x").append(img.getHeight()).append("; ");
                     n++;
                 } catch (Exception ex) {
-                    mal.append(t).append(" falta; ");
+                    mal.append(path).append(" no se lee; ");
                 }
             }
-            a2Comprobar("texturas de la segunda tanda a 16x16", mal.length() == 0, mal.length() == 0 ? n + " a 16x16" : mal.toString());
+            // que estén las de esta tanda (si no, la lista de arriba se habría quedado corta)
+            for (String x : List.of("bala_hielo.png", "bala_humo.png", "tambor_tinta.png", "cinta_guisantes.png", "bola_arpon.png", "bolano_saltarin.png",
+                    "g_acero.png", "winchester_ox3.png", "gatling_ox3.png", "revolver_bengala.png"))
+                if (!vistas.contains(x)) mal.append("no se ha mirado ").append(x).append("; ");
+            a2Comprobar("todas las texturas de las armas de fuego y su munición a 16x16", mal.length() == 0 && n >= 140, mal.length() == 0 ? n + " a 16x16" : mal.toString());
         });
         // los encantamientos propios: valen para su arma y no para una espada
         sin("a2c_encantamientos", 2, () -> {
@@ -2842,6 +2874,41 @@ public final class PruebaCI {
         });
     }
 
+    /** Lo que pone ahora la barra de acción (encima del inventario), o "" si nada. */
+    private static String a2Aviso() {
+        var gui = Minecraft.getInstance().gui;
+        for (var f : net.minecraft.client.gui.Gui.class.getDeclaredFields()) {
+            if (f.getType() != net.minecraft.network.chat.Component.class || java.lang.reflect.Modifier.isStatic(f.getModifiers())) continue;
+            try {
+                f.setAccessible(true);
+                Object v = f.get(gui);
+                if (v instanceof net.minecraft.network.chat.Component c && !c.getString().isEmpty()) return c.getString();
+            } catch (Exception ignorada) {
+            }
+        }
+        return "";
+    }
+
+    /** Las partículas de nota que hay ahora en el cliente (en el motor de partículas, también las que van a entrar). */
+    @SuppressWarnings("unchecked")
+    private static int a2Notas() {
+        var pe = Minecraft.getInstance().particleEngine;
+        int n = 0;
+        for (var f : pe.getClass().getDeclaredFields()) {
+            try {
+                if (java.lang.reflect.Modifier.isStatic(f.getModifiers())) continue;
+                f.setAccessible(true);
+                Object v = f.get(pe);
+                java.util.Collection<Object> grupos = v instanceof java.util.Map<?, ?> m ? (java.util.Collection<Object>) m.values()
+                        : v instanceof java.util.Collection<?> c ? java.util.List.of((Object) c) : java.util.List.of();
+                for (Object g : grupos)
+                    if (g instanceof java.util.Collection<?> c) for (Object o : c) if (o instanceof net.minecraft.client.particle.NoteParticle) n++;
+            } catch (Exception ignorada) {
+            }
+        }
+        return n;
+    }
+
     /** La arena que hay alrededor (para ver si el tiro ha puesto más). */
     private static int a2Arena(ServerPlayer sp) {
         int n = 0;
@@ -3029,6 +3096,7 @@ public final class PruebaCI {
         });
         // ---------------------------------------------------------------- Winchester: depósito mezclado (la última que entra sale primero)
         sin("a2u_winchester", 8, () -> {
+            mc.gui.setOverlayMessage(net.minecraft.network.chat.Component.empty(), false);
             a2Mano(new ItemStack(com.miscelanea.registry.ModItems.WINCHESTER.get()));
             piSrv(sp -> {
                 var inv = sp.getInventory();
@@ -3051,9 +3119,14 @@ public final class PruebaCI {
                 PI.put("dep_logro", a2Logro(sp, "armas/winchester_mezcla"));
             });
         });
-        sin("a2u_winchester_dep_ok", 2, () -> a2Comprobar("la Winchester mezcla las balas en el depósito",
-                "[revolver_bala, bala_hielo, revolver_dardo, bala_plata, revolver_tiempo]".equals(PI.get("dep")) && Boolean.TRUE.equals(PI.get("dep_logro")),
-                "depósito " + PI.get("dep") + ", logro " + PI.get("dep_logro")));
+        sin("a2u_winchester_dep_ok", 2, () -> {
+            // y al acabar la carga (con el botón aún pulsado) no sale ningún «No llevas...» en la barra de acción
+            String aviso = a2Aviso();
+            a2Comprobar("la Winchester mezcla las balas en el depósito (y al acabar no avisa de munición)",
+                    "[revolver_bala, bala_hielo, revolver_dardo, bala_plata, revolver_tiempo]".equals(PI.get("dep")) && Boolean.TRUE.equals(PI.get("dep_logro"))
+                            && !aviso.startsWith("No llevas") && !aviso.startsWith("No te queda"),
+                    "depósito " + PI.get("dep") + ", logro " + PI.get("dep_logro") + ", aviso «" + aviso + "»");
+        });
         paso("283_winchester_hud", 6, () -> a2Apuntar(a2Punto(8, 0, 1.2)));
         sin("a2u_winchester_tiro", 6, piTiro());
         sin("a2u_winchester_tiro_ver", 2, () -> piSrv(sp -> {
@@ -3098,25 +3171,51 @@ public final class PruebaCI {
             a2Mano(new ItemStack(com.miscelanea.registry.ModItems.ESTUCHE_VIOLIN.get()));
             PI.put("v0", com.miscelanea.armasfuego.oeste.EstucheViolinItem.tocadas);
         });
-        sin("a2u_violin_arriba", 6, () -> {
+        // en primera persona, mirando un poco arriba: la notita sale delante (la partícula dura 6 ticks: se cuenta en el
+        // motor de partículas del cliente justo después y la captura va enseguida)
+        sin("a2u_violin_1p", 2, () -> {
+            a2Camara1p();
+            piSrv(sp -> sp.setXRot(0F));
+            mc.player.setXRot(0F);
+            PI.remove("v_notas_max");
+            a2VigilaNotas = true;
+            piDisparar();
+        });
+        // otra nota justo antes de la foto (la notita dura 6 ticks)
+        sin("a2u_violin_1p_otra", 2, () -> {});
+        paso("285_violin_1p", 2, PruebaCI::piDisparar);
+        sin("a2u_violin_arriba", 3, () -> {
+            // las notitas que han llegado a verse en el cliente (se miran en cada tick: con shaders, a pocos fps, podían
+            // haber salido y acabado entre paso y paso)
+            PI.put("v_notas1p", PI.get("v_notas_max") instanceof Integer i ? i : 0);
             piSrv(sp -> sp.setXRot(-70F));
             mc.player.setXRot(-70F);
             piDisparar();
         });
-        sin("a2u_violin_arriba_ver", 2, () -> PI.put("v_alta", com.miscelanea.armasfuego.oeste.EstucheViolinItem.ultimaNota));
-        paso("285_violin", 6, () -> {
+        sin("a2u_violin_arriba_ver", 4, () -> PI.put("v_alta", com.miscelanea.armasfuego.oeste.EstucheViolinItem.ultimaNota));
+        // en tercera persona (de frente), mirando abajo: grave, y la notita encima de la cabeza
+        sin("a2u_violin_3p", 2, () -> {
+            PI.remove("v_notas_max");
             mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
-            piSrv(sp -> sp.setXRot(60F));
-            mc.player.setXRot(60F);
+            piSrv(sp -> sp.setXRot(40F));
+            mc.player.setXRot(40F);
             piDisparar();
         });
-        sin("a2u_violin_ver", 2, () -> PI.put("v_baja", com.miscelanea.armasfuego.oeste.EstucheViolinItem.ultimaNota));
+        sin("a2u_violin_3p_otra", 2, () -> {});
+        paso("285_violin", 2, PruebaCI::piDisparar);
+        sin("a2u_violin_ver", 4, () -> {
+            a2VigilaNotas = false;
+            PI.put("v_notas3p", PI.get("v_notas_max") instanceof Integer i ? i : 0);
+            PI.put("v_baja", com.miscelanea.armasfuego.oeste.EstucheViolinItem.ultimaNota);
+        });
         sin("a2u_violin_ok", 2, () -> {
             mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
             int n = com.miscelanea.armasfuego.oeste.EstucheViolinItem.tocadas - (PI.get("v0") instanceof Integer i ? i : 0);
             int alta = PI.get("v_alta") instanceof Integer i ? i : -1, baja = PI.get("v_baja") instanceof Integer i ? i : -1;
-            a2Comprobar("el estuche vacío toca notas: aguda mirando arriba, grave mirando abajo", n >= 2 && alta >= 18 && baja <= 6 && baja >= 0,
-                    n + " notas, arriba " + alta + ", abajo " + baja);
+            int p1 = PI.get("v_notas1p") instanceof Integer i ? i : -1, p3 = PI.get("v_notas3p") instanceof Integer i ? i : -1;
+            a2Comprobar("el estuche vacío toca notas (aguda mirando arriba, grave abajo) y salen sus notitas de colores en 1.ª y 3.ª persona",
+                    n >= 3 && alta >= 18 && baja <= 8 && baja >= 0 && p1 > 0 && p3 > 0,
+                    n + " notas, arriba " + alta + ", abajo " + baja + ", partículas de nota en 1.ª " + p1 + " y en 3.ª " + p3);
         });
         // ---------------------------------------------------------------- bayonetas: mesa, inventario, daño, modelo
         sin("a2u_bayoneta", 4, () -> piSrv(sp -> {
@@ -3211,6 +3310,42 @@ public final class PruebaCI {
                 Integer.valueOf(1).equals(PI.get("mq")) && com.miscelanea.armasfuego.oeste.MosqueteItem.pasoRecarga(0.1F) == 0
                         && com.miscelanea.armasfuego.oeste.MosqueteItem.pasoRecarga(0.5F) == 1 && com.miscelanea.armasfuego.oeste.MosqueteItem.pasoRecarga(0.9F) == 2,
                 "balas " + PI.get("mq")));
+        // ---------------------------------------------------------------- cañón: un yunque en el aire (en su parábola)
+        // tiro alto por encima del husk; cuando el yunque lleva unos ticks volando, se para en el aire para la captura
+        // (con shaders, a pocos fps, no se podía acertar el momento) y luego sigue su camino
+        sin("a2u_arco", 6, () -> {
+            ItemStack c = new ItemStack(com.miscelanea.registry.ModItems.CANON_MANO.get());
+            com.miscelanea.armasfuego.comun.ArmaFuegoItem.ponerBalas(c, 1);
+            c.getOrCreateTag().putString(com.miscelanea.armasfuego.comun.ArmaFuegoItem.TIPO, "minecraft:anvil");
+            a2Mano(c);
+            PI.remove("arco_pos");
+            a2CongelaYunque = true;
+            a2Apuntar(a2Punto(8, 0, 9));
+        });
+        sin("a2u_arco_mecha", 2, piTiro());
+        sin("a2u_arco_vuela", 50, () -> a2Apuntar(a2Punto(8, 0, 9)));
+        paso("288_canon_yunque", 6, () -> {
+            if (!(PI.get("arco_pos") instanceof Vec3 q)) throw new IllegalStateException("el yunque no ha salido del cañón");
+            Vec3 lado = new Vec3(a2Lado.getStepX(), 0, a2Lado.getStepZ()), fr = new Vec3(a2Mira.getStepX(), 0, a2Mira.getStepZ());
+            a2VistaA(q, q.add(lado.scale(1.9)).add(fr.scale(-1.0)).add(0, -0.3, 0));
+        });
+        sin("a2u_arco_sigue", 40, () -> {
+            a2CongelaYunque = false;
+            a2Camara1p();
+            piSrv(sp -> {
+                for (var b : sp.serverLevel().getEntitiesOfClass(com.miscelanea.armasfuego.oeste.BolaCanonEntity.class, new net.minecraft.world.phys.AABB(a2O).inflate(40))) {
+                    b.setNoGravity(false);
+                    if (PI.get("arco_vel") instanceof Vec3 v) b.setDeltaMovement(v);
+                }
+            });
+        });
+        sin("a2u_arco_limpiar", 2, () -> piSrv(sp -> {
+            var l = sp.serverLevel();
+            for (var b : net.minecraft.core.BlockPos.betweenClosed(a2O.offset(-20, -1, -20), a2O.offset(20, 8, 20)))
+                if (l.getBlockState(b).getBlock() instanceof net.minecraft.world.level.block.AnvilBlock) l.setBlock(b, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+            var h = a2Ente(sp, a2Husk);
+            if (h != null) h.setHealth(h.getMaxHealth());
+        }));
         // ---------------------------------------------------------------- cañón: un yunque (daño de yunque) y arena sin poder construir
         sin("a2u_yunque", 6, () -> {
             ItemStack c = new ItemStack(com.miscelanea.registry.ModItems.CANON_MANO.get());
@@ -3222,7 +3357,6 @@ public final class PruebaCI {
         });
         sin("a2u_yunque_mecha", 2, piTiro());
         sin("a2u_yunque_vuela", 30, () -> a2Apuntar(a2Punto(8, 0, 1.3)));
-        paso("288_canon_yunque", 10, () -> a2Vista(2.6, 2.6, 0.8));
         sin("a2u_yunque_espera", 20, () -> {});
         sin("a2u_yunque_ver", 2, () -> {
             a2Vida("yq1");
@@ -3734,8 +3868,25 @@ public final class PruebaCI {
             if (!hog && !vel) throw new IllegalStateException("el incendiario no ha encendido ni la hoguera ni la vela");
         });
         // ---- escarcha: apaga a la diana, la congela y deja nieve en polvo en el suelo
-        sin("esc_escarcha", 5, () -> escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.ESCARCHA, 100, escHuskPos().add(0, -0.9, 0)));   // a los pies: más perdigones al suelo (con shaders a veces no caía ninguno)
+        sin("esc_escarcha", 5, () -> {
+            // lo congelado se va derritiendo (2 por tick): se vigila en cada tick si ha llegado a congelarse
+            PI.remove("escarcha_frio");
+            escVigilaEscarcha = true;
+            escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.ESCARCHA, 100, escHuskPos().add(0, -0.9, 0));   // a los pies: más perdigones al suelo (con shaders a veces no caía ninguno)
+        });
         paso("126_escarcha", 15, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
+        // si los perdigones no han dado a la diana (se reparten al azar; con mala suerte ardía aún), otro tiro
+        sin("esc_escarcha_otra", 5, () -> {
+            var h = escEntidad(escHusk);
+            if (h.isOnFire() || h.getTicksFrozen() <= 0 && !PI.containsKey("escarcha_frio")) {
+                RESUMEN.add("  escopeta: el primer tiro de escarcha no ha dado bien; otro");
+                PI.put("escarcha_otra", true);
+                escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.ESCARCHA, 100, escHuskPos().add(0, -0.9, 0));
+            } else PI.remove("escarcha_otra");
+        });
+        sin("esc_escarcha_tiro2", 15, () -> {
+            if (Boolean.TRUE.equals(PI.get("escarcha_otra"))) com.miscelanea.client.armasfuego.escopeta.EscopetaCliente.disparar();
+        });
         sin("esc_escarcha_chk", 5, () -> {
             var h = escEntidad(escHusk);
             int nieve = 0;
@@ -3744,7 +3895,8 @@ public final class PruebaCI {
                 if (l.getBlockState(b).is(net.minecraft.world.level.block.Blocks.POWDER_SNOW)) nieve++;
             RESUMEN.add("  escopeta: escarcha → diana ardiendo " + h.isOnFire() + ", congelada " + h.getTicksFrozen() + " ticks, nieve en polvo " + nieve);
             if (h.isOnFire()) throw new IllegalStateException("la escarcha no apaga el fuego");
-            if (h.getTicksFrozen() <= 0) throw new IllegalStateException("la escarcha no congela");
+            escVigilaEscarcha = false;
+            if (h.getTicksFrozen() <= 0 && !PI.containsKey("escarcha_frio")) throw new IllegalStateException("la escarcha no congela");
             if (nieve == 0) throw new IllegalStateException("la escarcha no deja nieve en polvo");
             escServidor(sp -> {
                 for (var b : net.minecraft.core.BlockPos.betweenClosed(h.blockPosition().offset(-6, -1, -6), h.blockPosition().offset(6, 2, 6)))
@@ -3761,6 +3913,18 @@ public final class PruebaCI {
             escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.MIEL, 100, escHuskPos());
         });
         paso("127_miel", 12, com.miscelanea.client.armasfuego.escopeta.EscopetaCliente::disparar);
+        // si ningún perdigón de miel ha dado (se reparten al azar), otro tiro
+        sin("esc_miel_otra", 5, () -> {
+            var h = (net.minecraft.world.entity.LivingEntity) escEntidad(escHusk);
+            if (!h.hasEffect(com.miscelanea.registry.ModEffects.PRINGADO.get()) && !PI.containsKey("miel_visto")) {
+                RESUMEN.add("  escopeta: el primer tiro de miel no ha pringado; otro");
+                PI.put("miel_otra", true);
+                escCargar(com.miscelanea.armasfuego.escopeta.TipoCartucho.MIEL, 100, escHuskPos());
+            } else PI.remove("miel_otra");
+        });
+        sin("esc_miel_tiro2", 12, () -> {
+            if (Boolean.TRUE.equals(PI.get("miel_otra"))) com.miscelanea.client.armasfuego.escopeta.EscopetaCliente.disparar();
+        });
         sin("esc_miel_chk", 5, () -> {
             var h = (net.minecraft.world.entity.LivingEntity) escEntidad(escHusk);
             escVigilaMiel = false;

@@ -48,6 +48,8 @@ import java.util.function.Consumer;
  */
 public abstract class ArmaFuegoItem extends Item {
     public static final String BALAS = "Balas", ATASCO = "Atasco", MODO = "Modo", DISPARO_T = "DisparoT";
+    /** NBT: cuándo acabó la última recarga (para no avisar de que no queda munición justo al terminar). */
+    public static final String FIN_CARGA = "FinCarga";
     public static final int MODO_NADA = 0, MODO_RECARGA = 1, MODO_DESATASCO = 2, MODO_RAFAGA = 3;
     /** Lo que se tarda en desatascar (ticks con el clic mantenido). */
     public static final int T_DESATASCO = 16;
@@ -119,6 +121,14 @@ public abstract class ArmaFuegoItem extends Item {
     public static Item tipo(ItemStack s) {
         if (!s.hasTag() || !s.getTag().contains(TIPO)) return null;
         return net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(new net.minecraft.resources.ResourceLocation(s.getTag().getString(TIPO)));
+    }
+
+    /**
+     * ¿La recarga necesita la misma munición que la que hay dentro? (entonces el aviso dice cuál falta). Si está vacía,
+     * se cambia entera o se mezcla, vale cualquiera: el aviso es «no te quedan balas».
+     */
+    protected boolean mismoTipo(ItemStack s) {
+        return balas(s) > 0 && !cambiaEntera();
     }
 
     /** La munición que hay dentro (o la normal). */
@@ -249,8 +259,15 @@ public abstract class ArmaFuegoItem extends Item {
                 return InteractionResultHolder.consume(s);
             }
             if (llena(s) && !cambiaTipo(p, s) || !p.getAbilities().instabuild && !tieneMunicion(p, s)) {
-                if (!level.isClientSide && !llena(s))
-                    p.displayClientMessage(Component.translatable("msg.miscelanea.armafuego.sin_municion", iconoMunicion(s).getHoverName()).withStyle(ChatFormatting.GRAY), true);
+                // sin munición: se avisa, salvo si la recarga acaba de terminar (el botón seguía pulsado: nada que decir)
+                // (mientras se mantenga pulsado, el cliente lo repite cada pocos ticks: cada repetición alarga el silencio)
+                boolean recien = level.getGameTime() - t.getLong(FIN_CARGA) <= 10;
+                if (recien && !level.isClientSide) t.putLong(FIN_CARGA, level.getGameTime());
+                if (!level.isClientSide && !llena(s) && !recien) {
+                    Component m = mismoTipo(s) ? Component.translatable("msg.miscelanea.armafuego.sin_municion", iconoMunicion(s).getHoverName())
+                            : Component.translatable("msg.miscelanea.armafuego.sin_balas");
+                    p.displayClientMessage(m.copy().withStyle(ChatFormatting.GRAY), true);
+                }
                 return InteractionResultHolder.fail(s);
             }
             t.putInt(MODO, MODO_RECARGA);
@@ -323,6 +340,7 @@ public abstract class ArmaFuegoItem extends Item {
                 int paso = ticksRecarga(s);
                 if (t > 0 && t % paso == 0) {
                     if (llena(s) && !cambiaTipo(p, s) || !p.getAbilities().instabuild && !tieneMunicion(p, s)) {
+                        s.getOrCreateTag().putLong(FIN_CARGA, level.getGameTime());
                         p.stopUsingItem();
                         return;
                     }
@@ -330,7 +348,10 @@ public abstract class ArmaFuegoItem extends Item {
                     ponerBalas(s, Math.min(capacidad(s), balas(s) + n));
                     level.playSound(null, p.getX(), p.getY(), p.getZ(), sonidoRecarga(), SoundSource.PLAYERS, 0.8F, 0.95F + p.getRandom().nextFloat() * 0.1F);
                     alRecargar((ServerPlayer) p, s);
-                    if (!recargaPorBala() || llena(s)) p.stopUsingItem();
+                    if (!recargaPorBala() || llena(s) || !p.getAbilities().instabuild && !tieneMunicion(p, s)) {
+                        s.getOrCreateTag().putLong(FIN_CARGA, level.getGameTime());
+                        p.stopUsingItem();
+                    }
                 }
             }
             case MODO_DESATASCO -> {
