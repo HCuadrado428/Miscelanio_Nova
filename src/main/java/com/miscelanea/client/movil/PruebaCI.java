@@ -367,7 +367,7 @@ public final class PruebaCI {
 
     // ------------------------------------------------------------------ logros
     /** Todos los logros de la pestaña de Miscelánea (data/miscelanea/advancements). */
-    private static final String[] LOGROS = ("raiz,movil/movil,movil/foto,movil/video,movil/minegram,movil/flash,movil/mensaje,movil/llamada,movil/videollamada,movil/sin_cobertura,movil/numero_oculto,movil/bizum,arcade/ficha,arcade/partida,arcade/record,arcade/pleno,arcade/canal,feria/noria,feria/choque,feria/tirolina,feria/trampolin,feria/campana,feria/jackpot,mesa/victoria,mesa/ajedrez,mesa/parchis,mesa/calavera,mesa/billar,mesa/futbolin,baile/pista,baile/videoclip,baile/walken,baile/nota_s,baile/nota_e,pociones/gigante,pociones/enano,pociones/borrachera,pociones/tartamudeo,pociones/ventilador,pociones/eco,pociones/laboratorio,pociones/fantasma,bromas/uwu,bromas/australia,bromas/estatica,sala/lazo,sala/grilletes,sala/engrilletado,sala/ganzua,sala/tomatazo,dream/esencia,dream/mordisco,dream/escapar,dream/veneno,dream/medianoche,armas/gambito,armas/laser,armas/hacha,armas/aspira,armas/uber,armas/cofre,armas/ruleta,armas/ruleta_fogueo,armas/duelo,armas/gallina,armas/sedante,armas/encasquillado,armas/salto,armas/reventon,armas/granjero,armas/aspirar_piedras,armas/cuerda,armas/francotirador,armas/gatling,armas/gatling_calor,armas/gatling_cubo,armas/winchester,armas/winchester_giro,armas/derringer,armas/violin,armas/thompson_tambor,armas/mosquete,armas/bayoneta,armas/polvora_mojada,armas/canon,armas/canon_revienta,armas/tiempo_bala,armas/goma,armas/pintura,armas/atasco,armas/plata,armas/oro,armas/carta,armas/soaker,armas/palomitas,armas/cadena,armas/feria,armas/patina,armas/gatling_tolva,armas/gatling_torreta,armas/gatling_vagoneta,armas/gatling_barco,armas/guisantes,armas/winchester_mezcla,armas/winchester_hielo,armas/derringer_manga,armas/derringer_humo,armas/paganini,armas/tinta,armas/bayoneta_netherita,armas/arpon,armas/yunque,armas/castillo_arena,armas/rebote,armas/coleccionista,varios/paella,varios/bacalao,varios/ocarina").split(",");
+    private static final String[] LOGROS = ("raiz,movil/movil,movil/foto,movil/video,movil/minegram,movil/flash,movil/mensaje,movil/llamada,movil/videollamada,movil/sin_cobertura,movil/numero_oculto,movil/bizum,arcade/ficha,arcade/partida,arcade/record,arcade/pleno,arcade/canal,feria/noria,feria/choque,feria/tirolina,feria/trampolin,feria/campana,feria/jackpot,mesa/victoria,mesa/ajedrez,mesa/parchis,mesa/calavera,mesa/billar,mesa/futbolin,baile/pista,baile/videoclip,baile/walken,baile/nota_s,baile/nota_e,pociones/gigante,pociones/enano,pociones/borrachera,pociones/tartamudeo,pociones/ventilador,pociones/eco,pociones/laboratorio,pociones/fantasma,bromas/uwu,bromas/australia,bromas/estatica,sala/lazo,sala/grilletes,sala/engrilletado,sala/ganzua,sala/tomatazo,dream/esencia,dream/mordisco,dream/escapar,dream/veneno,dream/medianoche,armas/gambito,armas/laser,armas/hacha,armas/aspira,armas/uber,armas/cofre,armas/ruleta,armas/ruleta_fogueo,armas/duelo,armas/gallina,armas/sedante,armas/encasquillado,armas/salto,armas/reventon,armas/granjero,armas/aspirar_piedras,armas/cuerda,armas/francotirador,armas/gatling,armas/gatling_calor,armas/gatling_cubo,armas/winchester,armas/winchester_giro,armas/derringer,armas/violin,armas/thompson_tambor,armas/mosquete,armas/bayoneta,armas/polvora_mojada,armas/canon,armas/canon_revienta,armas/tiempo_bala,armas/goma,armas/pintura,armas/atasco,armas/plata,armas/oro,armas/carta,armas/soaker,armas/palomitas,armas/cadena,armas/feria,armas/patina,armas/gatling_tolva,armas/gatling_torreta,armas/gatling_vagoneta,armas/gatling_barco,armas/guisantes,armas/winchester_mezcla,armas/winchester_hielo,armas/derringer_manga,armas/derringer_humo,armas/paganini,armas/tinta,armas/bayoneta_netherita,armas/arpon,armas/yunque,armas/castillo_arena,armas/rebote,armas/cera_cinco,armas/bayoneta_ignea,armas/coleccionista,varios/paella,varios/bacalao,varios/ocarina").split(",");
     /** Los que ya tienen que estar hechos por los pasos de antes de la prueba (móvil, cámara, vídeo, gramola, pociones). */
     private static final String[] LOGROS_YA = {"raiz", "movil/movil", "movil/foto", "movil/video", "baile/pista", "baile/videoclip",
             "pociones/eco", "pociones/gigante"};
@@ -2804,6 +2804,7 @@ public final class PruebaCI {
         sin("a2c_feria_ver", 4, () -> piSrv(sp -> PI.put("feria", a2Logro(sp, "armas/feria"))));
         sin("a2c_feria_ok", 2, () -> a2Comprobar("el bolaño de feria estalla en fuegos artificiales", Boolean.TRUE.equals(PI.get("feria")), String.valueOf(PI.get("feria"))));
         armas2Utilidad();
+        armas2Cobre();
         // las cuatro fases de las seis en el inventario (iconos)
         sin("a2c_fases_poner", 6, () -> {
             a2Camara1p();
@@ -3166,56 +3167,70 @@ public final class PruebaCI {
         sin("a2u_manga_ver", 2, () -> piSrv(sp -> PI.put("manga_logro", a2Logro(sp, "armas/derringer_manga"))));
         sin("a2u_manga_ok", 2, () -> a2Comprobar("la tecla de la manga saca la Derringer de golpe (y el tiro en menos de un segundo da el logro)",
                 Boolean.TRUE.equals(PI.get("manga")) && Boolean.TRUE.equals(PI.get("manga_logro")), "en la mano " + PI.get("manga") + ", logro " + PI.get("manga_logro")));
-        // ---------------------------------------------------------------- el violín
+        // ---------------------------------------------------------------- el violín (con el arco en la otra mano)
         sin("a2u_violin", 6, () -> {
             a2Mano(new ItemStack(com.miscelanea.registry.ModItems.ESTUCHE_VIOLIN.get()));
+            piSrv(sp -> sp.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, ItemStack.EMPTY));
+        });
+        // sin arco: clic derecho no toca (abre y cierra el estuche)
+        sin("a2u_violin_sin_arco", 6, () -> {
+            PI.put("v_sin0", com.miscelanea.armasfuego.oeste.EstucheViolinItem.tocadas);
+            piDisparar();
+        });
+        sin("a2u_violin_arco", 4, () -> {
+            PI.put("v_sin1", com.miscelanea.armasfuego.oeste.EstucheViolinItem.tocadas);
+            piSrv(sp -> sp.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, new ItemStack(net.minecraft.world.item.Items.BOW)));
             PI.put("v0", com.miscelanea.armasfuego.oeste.EstucheViolinItem.tocadas);
         });
-        // en primera persona, mirando un poco arriba: la notita sale delante (la partícula dura 6 ticks: se cuenta en el
-        // motor de partículas del cliente justo después y la captura va enseguida)
+        // en primera persona, mirando al frente, frotando (clic mantenido): la notita sale delante y el HUD enseña la nota
         sin("a2u_violin_1p", 2, () -> {
             a2Camara1p();
             piSrv(sp -> sp.setXRot(0F));
             mc.player.setXRot(0F);
             PI.remove("v_notas_max");
             a2VigilaNotas = true;
-            piDisparar();
+            rifleUsar(true);
         });
-        // otra nota justo antes de la foto (la notita dura 6 ticks)
-        sin("a2u_violin_1p_otra", 2, () -> {});
-        paso("285_violin_1p", 2, PruebaCI::piDisparar);
-        sin("a2u_violin_arriba", 3, () -> {
+        sin("a2u_violin_1p_sostiene", 30, () -> {});
+        paso("285_violin_1p", 2, () -> {});
+        sin("a2u_violin_arriba", 4, () -> {
+            PI.put("v_media", com.miscelanea.armasfuego.oeste.EstucheViolinItem.ultimaNota);
+            PI.put("v_sostenidas", com.miscelanea.armasfuego.oeste.EstucheViolinItem.tocadas - (PI.get("v0") instanceof Integer i ? i : 0));
             // las notitas que han llegado a verse en el cliente (se miran en cada tick: con shaders, a pocos fps, podían
             // haber salido y acabado entre paso y paso)
             PI.put("v_notas1p", PI.get("v_notas_max") instanceof Integer i ? i : 0);
+            // mirando arriba sin soltar: la nota cambia sola (legato)
             piSrv(sp -> sp.setXRot(-70F));
             mc.player.setXRot(-70F);
-            piDisparar();
         });
-        sin("a2u_violin_arriba_ver", 4, () -> PI.put("v_alta", com.miscelanea.armasfuego.oeste.EstucheViolinItem.ultimaNota));
+        sin("a2u_violin_arriba_ver", 6, () -> PI.put("v_alta", com.miscelanea.armasfuego.oeste.EstucheViolinItem.ultimaNota));
         // en tercera persona (de frente), mirando abajo: grave, y la notita encima de la cabeza
         sin("a2u_violin_3p", 2, () -> {
             PI.remove("v_notas_max");
             mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
             piSrv(sp -> sp.setXRot(40F));
             mc.player.setXRot(40F);
-            piDisparar();
         });
-        sin("a2u_violin_3p_otra", 2, () -> {});
-        paso("285_violin", 2, PruebaCI::piDisparar);
+        sin("a2u_violin_3p_espera", 4, () -> {});
+        paso("285_violin", 2, () -> {});
         sin("a2u_violin_ver", 4, () -> {
             a2VigilaNotas = false;
+            rifleUsar(false);
             PI.put("v_notas3p", PI.get("v_notas_max") instanceof Integer i ? i : 0);
             PI.put("v_baja", com.miscelanea.armasfuego.oeste.EstucheViolinItem.ultimaNota);
         });
         sin("a2u_violin_ok", 2, () -> {
             mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
-            int n = com.miscelanea.armasfuego.oeste.EstucheViolinItem.tocadas - (PI.get("v0") instanceof Integer i ? i : 0);
-            int alta = PI.get("v_alta") instanceof Integer i ? i : -1, baja = PI.get("v_baja") instanceof Integer i ? i : -1;
+            int sinArco = (PI.get("v_sin1") instanceof Integer i ? i : 0) - (PI.get("v_sin0") instanceof Integer i ? i : 0);
+            int sost = PI.get("v_sostenidas") instanceof Integer i ? i : -1;
+            int media = PI.get("v_media") instanceof Integer i ? i : -1, alta = PI.get("v_alta") instanceof Integer i ? i : -1, baja = PI.get("v_baja") instanceof Integer i ? i : -1;
             int p1 = PI.get("v_notas1p") instanceof Integer i ? i : -1, p3 = PI.get("v_notas3p") instanceof Integer i ? i : -1;
-            a2Comprobar("el estuche vacío toca notas (aguda mirando arriba, grave abajo) y salen sus notitas de colores en 1.ª y 3.ª persona",
-                    n >= 3 && alta >= 18 && baja <= 8 && baja >= 0 && p1 > 0 && p3 > 0,
-                    n + " notas, arriba " + alta + ", abajo " + baja + ", partículas de nota en 1.ª " + p1 + " y en 3.ª " + p3);
+            a2Comprobar("con el arco, mantener clic derecho toca sostenido (la nota según la vista, cambia sin soltar) y salen las notitas; sin arco no toca",
+                    sinArco == 0 && sost >= 2 && media == 12 && alta >= 18 && baja <= 8 && baja >= 0 && p1 > 0 && p3 > 0
+                            && "F♯4".equals(com.miscelanea.armasfuego.oeste.EstucheViolinItem.nombreNota(12)) && "C4".equals(com.miscelanea.armasfuego.oeste.EstucheViolinItem.nombreNota(6)),
+                    "sin arco " + sinArco + ", sostenida " + sost + " veces, al frente " + media + " (" + com.miscelanea.armasfuego.oeste.EstucheViolinItem.nombreNota(Math.max(0, media)) + "), arriba " + alta
+                            + ", abajo " + baja + ", partículas en 1.ª " + p1 + " y en 3.ª " + p3);
+            piSrv(sp -> sp.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, ItemStack.EMPTY));
         });
         // ---------------------------------------------------------------- bayonetas: mesa, inventario, daño, modelo
         sin("a2u_bayoneta", 4, () -> piSrv(sp -> {
@@ -3401,6 +3416,194 @@ public final class PruebaCI {
         }));
         sin("a2u_arena_ok", 2, () -> a2Comprobar("sin poder construir, el bloque disparado no se coloca (cae como objeto)",
                 Integer.valueOf(0).equals(PI.get("arena")) && PI.get("arena_obj") instanceof Integer n && n >= 1, "arena colocada " + PI.get("arena") + ", como objeto " + PI.get("arena_obj")));
+    }
+
+    private static volatile UUID a2Diana;
+
+    /**
+     * El cobre como intercambio (la oxidada pega más que la nueva, y lo dice el tooltip), la cera que se gasta (y se
+     * rellena; la Gatling dura más), la bayoneta con los encantamientos de su espada (Filo, Aspecto ígneo, Botín,
+     * Reparación) y el logro de encerar cinco veces.
+     */
+    private static void armas2Cobre() {
+        Minecraft mc = Minecraft.getInstance();
+        // ---------------------------------------------------------------- la oxidada pega más que la nueva
+        sin("a2o_nueva", 6, () -> {
+            a2Camara1p();
+            a2Mano(a2Cargada(com.miscelanea.registry.ModItems.WINCHESTER, 3));
+            piSrv(sp -> {
+                var h = a2Ente(sp, a2Husk);
+                if (h != null) {
+                    h.setHealth(h.getMaxHealth());
+                    h.removeAllEffects();
+                }
+            });
+            a2Apuntar(a2Punto(8, 0, 1.2));
+        });
+        sin("a2o_nueva_vida", 2, () -> a2Vida("o0"));
+        sin("a2o_nueva_tiro", 6, () -> {
+            a2Apuntar(a2Punto(8, 0, 1.2));
+            piDisparar();
+        });
+        sin("a2o_nueva_ver", 2, () -> a2Vida("o1"));
+        sin("a2o_oxidada", 20, () -> {
+            ItemStack w = a2Cargada(com.miscelanea.registry.ModItems.WINCHESTER, 3);
+            com.miscelanea.armasfuego.comun.Cobre.ponerOxido(w, 3);
+            a2Mano(w);
+            a2Apuntar(a2Punto(8, 0, 1.2));
+        });
+        sin("a2o_oxidada_tiro", 6, () -> {
+            a2Apuntar(a2Punto(8, 0, 1.2));
+            piDisparar();
+        });
+        // la oxidada dispersa más: si el tiro no ha dado, otro (le quedan balas)
+        sin("a2o_oxidada_otra", 2, () -> a2Vida("o2"));
+        sin("a2o_oxidada_tiro2", 20, () -> {
+            if (a2F("o1") - a2F("o2") <= 0) {
+                RESUMEN.add("  armas2: el tiro de la Winchester oxidada no ha dado (dispersa más); otro");
+                a2Apuntar(a2Punto(8, 0, 1.2));
+                piDisparar();
+            }
+        });
+        sin("a2o_oxidada_ver", 2, () -> {
+            a2Vida("o3");
+            piSrv(sp -> {
+                List<net.minecraft.network.chat.Component> l = new java.util.ArrayList<>();
+                com.miscelanea.armasfuego.comun.Cobre.tooltip(sp.getMainHandItem(), l);
+                PI.put("o_tip", l.isEmpty() ? "" : l.get(0).getString());
+            });
+        });
+        sin("a2o_ok", 2, () -> {
+            float dn = a2F("o0") - a2F("o1"), dx = a2F("o1") - a2F("o3");
+            if (a2F("o1") - a2F("o2") <= 0 && dx > 0) dx = a2F("o2") - a2F("o3");
+            String tip = String.valueOf(PI.get("o_tip"));
+            a2Comprobar("el cobre es un intercambio: la oxidada pega más que la nueva (y se encasquilla y dispersa más), y el tooltip lo dice",
+                    dn > 0 && dx > dn * 1.08F && com.miscelanea.armasfuego.comun.Cobre.atasco(3) > com.miscelanea.armasfuego.comun.Cobre.atasco(0) && com.miscelanea.armasfuego.comun.Cobre.dispersion(3) > com.miscelanea.armasfuego.comun.Cobre.dispersion(0)
+                            && com.miscelanea.armasfuego.comun.Cobre.perforacion(3) > 0 && tip.contains("+15"),
+                    String.format("nueva %.2f, oxidada %.2f; tooltip «%s»", dn, dx, tip));
+        });
+        // ---------------------------------------------------------------- la cera se gasta
+        sin("a2o_cera", 6, () -> {
+            mc.gui.setOverlayMessage(net.minecraft.network.chat.Component.empty(), false);
+            piSrv(sp -> {
+                ItemStack w = a2Cargada(com.miscelanea.registry.ModItems.WINCHESTER, 6);
+                com.miscelanea.armasfuego.comun.Cobre.encerar(sp, w, new ItemStack(net.minecraft.world.item.Items.HONEYCOMB), null);
+                PI.put("cera0", com.miscelanea.armasfuego.comun.Cobre.cera(w, com.miscelanea.armasfuego.comun.Cobre.duracionCera(w)));
+                sp.getInventory().setItem(0, w);
+                // la Gatling (y la Thompson) duran más
+                ItemStack g = new ItemStack(com.miscelanea.registry.ModItems.GATLING.get());
+                com.miscelanea.armasfuego.comun.Cobre.encerar(sp, g, new ItemStack(net.minecraft.world.item.Items.HONEYCOMB), null);
+                PI.put("cera_g", com.miscelanea.armasfuego.comun.Cobre.cera(g, com.miscelanea.armasfuego.comun.Cobre.duracionCera(g)));
+            });
+            a2Apuntar(a2Punto(8, 0, 1.2));
+        });
+        sin("a2o_cera_tiro", 18, () -> piDisparar());
+        sin("a2o_cera_ver", 2, () -> piSrv(sp -> {
+            ItemStack w = sp.getMainHandItem();
+            PI.put("cera1", com.miscelanea.armasfuego.comun.Cobre.cera(w, com.miscelanea.armasfuego.comun.Cobre.duracionCera(w)));
+            // la última gota de cera
+            com.miscelanea.armasfuego.comun.Cobre.ponerCera(w, 1);
+        }));
+        sin("a2o_cera_fin", 18, () -> piDisparar());
+        sin("a2o_cera_fin_ver", 2, () -> {
+            PI.put("cera_aviso", a2Aviso());
+            piSrv(sp -> {
+                ItemStack w = sp.getMainHandItem();
+                PI.put("cera2", com.miscelanea.armasfuego.comun.Cobre.encerado(w));
+                // encerar cinco veces la misma arma
+                for (int k = 0; k < 5; k++) {
+                    com.miscelanea.armasfuego.comun.Cobre.ponerCera(w, 0);
+                    com.miscelanea.armasfuego.comun.Cobre.encerar(sp, w, new ItemStack(net.minecraft.world.item.Items.HONEYCOMB), null);
+                }
+                PI.put("cera_logro", a2Logro(sp, "armas/cera_cinco"));
+            });
+        });
+        sin("a2o_cera_ok", 2, () -> a2Comprobar("la cera dura N disparos (la Gatling más), al acabarse avisa y vuelve a oxidarse; encerar cinco veces da el logro",
+                Integer.valueOf(com.miscelanea.armasfuego.comun.EquilibrioArmas.cera()).equals(PI.get("cera0")) && Integer.valueOf(com.miscelanea.armasfuego.comun.EquilibrioArmas.ceraAutomaticas()).equals(PI.get("cera_g"))
+                        && PI.get("cera1") instanceof Integer c1 && PI.get("cera0") instanceof Integer c0 && c1 == c0 - 1
+                        && Boolean.FALSE.equals(PI.get("cera2")) && String.valueOf(PI.get("cera_aviso")).contains("cera") && Boolean.TRUE.equals(PI.get("cera_logro")),
+                "cera " + PI.get("cera0") + " → " + PI.get("cera1") + ", Gatling " + PI.get("cera_g") + ", al acabarse encerada " + PI.get("cera2")
+                        + " y aviso «" + PI.get("cera_aviso") + "», logro " + PI.get("cera_logro")));
+        // ---------------------------------------------------------------- bayoneta con los encantamientos de la espada
+        sin("a2o_bayoneta", 26, () -> piSrv(sp -> {
+            var l = sp.serverLevel();
+            var z = net.minecraft.world.entity.EntityType.ZOMBIE.create(l);
+            Vec3 q = a2Punto(2.6, 0, 0);
+            z.moveTo(q.x, q.y, q.z, a2Mira.toYRot() + 180, 0);
+            z.setNoAi(true);
+            z.setPersistenceRequired();
+            z.setSilent(true);
+            z.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(60);
+            z.setHealth(60);
+            // con casco: que no arda al sol (el fuego tiene que ser del Aspecto ígneo)
+            z.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(net.minecraft.world.item.Items.LEATHER_HELMET));
+            l.addFreshEntity(z);
+            a2Diana = z.getUUID();
+            ItemStack espada = new ItemStack(net.minecraft.world.item.Items.DIAMOND_SWORD);
+            espada.enchant(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS, 5);
+            espada.enchant(net.minecraft.world.item.enchantment.Enchantments.FIRE_ASPECT, 1);
+            espada.enchant(net.minecraft.world.item.enchantment.Enchantments.MOB_LOOTING, 2);
+            espada.enchant(net.minecraft.world.item.enchantment.Enchantments.SWEEPING_EDGE, 3);
+            espada.enchant(net.minecraft.world.item.enchantment.Enchantments.MENDING, 1);
+            espada.setDamageValue(200);
+            ItemStack m = new ItemStack(com.miscelanea.registry.ModItems.MOSQUETE.get());
+            com.miscelanea.armasfuego.oeste.MosqueteItem.ponerBayoneta(m, espada);
+            sp.getInventory().setItem(0, m);
+            sp.getInventory().selected = 0;
+            sp.connection.send(new net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket(0));
+            List<net.minecraft.network.chat.Component> tip = new java.util.ArrayList<>();
+            m.getItem().appendHoverText(m, l, tip, net.minecraft.world.item.TooltipFlag.NORMAL);
+            String t = String.join(" | ", tip.stream().map(net.minecraft.network.chat.Component::getString).toList());
+            PI.put("bay_tip", t);
+            PI.put("bay_brilla", m.isFoil());
+            PI.put("bay_botin", net.minecraft.world.item.enchantment.EnchantmentHelper.getMobLooting(sp));
+            PI.put("bay_barrido", net.minecraft.world.item.enchantment.EnchantmentHelper.getSweepingDamageRatio(sp));
+            PI.put("bay_vida0", z.getHealth());
+            a2Apuntar(z.getBoundingBox().getCenter());
+        }));
+        sin("a2o_bayoneta_golpe", 4, () -> {
+            var z = mc.level.getEntity(mc.level.getEntitiesOfClass(net.minecraft.world.entity.monster.Zombie.class, mc.player.getBoundingBox().inflate(6)).stream()
+                    .findFirst().map(net.minecraft.world.entity.Entity::getId).orElse(-1));
+            if (z != null) {
+                mc.gameMode.attack(mc.player, z);
+                mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+            }
+        });
+        sin("a2o_bayoneta_ver", 2, () -> piSrv(sp -> {
+            var z = (net.minecraft.world.entity.LivingEntity) sp.serverLevel().getEntity(a2Diana);
+            PI.put("bay_dano", z == null ? -1F : (Float) PI.get("bay_vida0") - z.getHealth());
+            PI.put("bay_fuego", z != null && z.isOnFire());
+            // la experiencia arregla la espada calada (Reparación)
+            ItemStack b = com.miscelanea.armasfuego.oeste.MosqueteItem.bayoneta(sp.getMainHandItem());
+            PI.put("bay_rota0", b.getDamageValue());
+            var orbe = new net.minecraft.world.entity.ExperienceOrb(sp.serverLevel(), sp.getX(), sp.getY() + 0.5, sp.getZ(), 30);
+            sp.serverLevel().addFreshEntity(orbe);
+            if (z != null) z.setHealth(1F);
+        }));
+        sin("a2o_bayoneta_remate", 26, () -> {});
+        sin("a2o_bayoneta_golpe2", 6, () -> {
+            var z = mc.level.getEntitiesOfClass(net.minecraft.world.entity.monster.Zombie.class, mc.player.getBoundingBox().inflate(6)).stream().findFirst().orElse(null);
+            if (z != null) {
+                mc.gameMode.attack(mc.player, z);
+                mc.player.swing(net.minecraft.world.InteractionHand.MAIN_HAND);
+            }
+        });
+        sin("a2o_bayoneta_ver2", 2, () -> piSrv(sp -> {
+            PI.put("bay_rota1", com.miscelanea.armasfuego.oeste.MosqueteItem.bayoneta(sp.getMainHandItem()).getDamageValue());
+            PI.put("bay_logro", a2Logro(sp, "armas/bayoneta_ignea"));
+            var z = sp.serverLevel().getEntity(a2Diana);
+            if (z != null) z.discard();
+        }));
+        sin("a2o_bayoneta_ok", 2, () -> {
+            float d = a2F("bay_dano");
+            String tip = String.valueOf(PI.get("bay_tip"));
+            int r0 = PI.get("bay_rota0") instanceof Integer i ? i : -1, r1 = PI.get("bay_rota1") instanceof Integer i ? i : -1;
+            a2Comprobar("la bayoneta usa los encantamientos de la espada (Filo, Aspecto ígneo, Botín, Reparación; Barrido no), brilla y los lista",
+                    d >= 10F && Boolean.TRUE.equals(PI.get("bay_fuego")) && Integer.valueOf(2).equals(PI.get("bay_botin")) && Float.valueOf(0F).equals(PI.get("bay_barrido"))
+                            && Boolean.TRUE.equals(PI.get("bay_brilla")) && tip.contains("Filo") && tip.contains("es una estocada") && r1 < r0 && Boolean.TRUE.equals(PI.get("bay_logro")),
+                    String.format("daño %.1f (diamante 8 + Filo V 3), arde %s, botín %s, barrido %s, brilla %s, desgaste %d → %d con la experiencia, logro %s; tooltip «%s»",
+                            d, PI.get("bay_fuego"), PI.get("bay_botin"), PI.get("bay_barrido"), PI.get("bay_brilla"), r0, r1, PI.get("bay_logro"), tip));
+        });
     }
 
     /** Atajos para los pasos (referencias a método). */

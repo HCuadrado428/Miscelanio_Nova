@@ -2,7 +2,7 @@
   "parent": "miscelanea:armas/violin",
   "display": {
     "icon": {
-      "item": "miscelanea:estuche_violin"
+      "item": "minecraft:bow"
     },
     "title": {
       "translate": "advancements.miscelanea.armas.paganini.title"

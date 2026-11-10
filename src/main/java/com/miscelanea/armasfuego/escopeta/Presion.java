@@ -113,8 +113,7 @@ public final class Presion {
     }
 
     public static boolean encerada(ItemStack s) {
-        CompoundTag t = tag(s);
-        return t != null && t.getBoolean(ENCERADA);
+        return com.miscelanea.armasfuego.comun.Cobre.encerado(s);
     }
 
     /** Ticks que le quedan humeando tras reventar (se guarda el tick del mundo en que acaba, para no tocar el NBT cada tick). */

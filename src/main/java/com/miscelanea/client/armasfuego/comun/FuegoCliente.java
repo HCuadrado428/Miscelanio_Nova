@@ -220,6 +220,14 @@ public final class FuegoCliente {
             return;
         }
         ItemStack s = p.getMainHandItem();
+        // el estuche de violín con el arco en la otra mano: la nota que va a sonar (para afinar)
+        for (InteractionHand mano : InteractionHand.values()) {
+            if (p.getItemInHand(mano).getItem() instanceof com.miscelanea.armasfuego.oeste.EstucheViolinItem
+                    && com.miscelanea.armasfuego.oeste.EstucheViolinItem.conArco(p, mano)) {
+                hudViolin(g, mc, p, w, h, pt);
+                return;
+            }
+        }
         if (!(s.getItem() instanceof ArmaFuegoItem a)) return;
         int x = w / 2 + 12, y = h / 2 + 8;
         var f = mc.font;
@@ -280,6 +288,27 @@ public final class FuegoCliente {
             g.fill(x + 0, y - 3, x + 2, y - 2, 0xFFFFFFFF);
             g.fill(x - 1, y - 5, x + 3, y - 4, 0xFFFFFFFF);
         }
+    }
+
+    /**
+     * El violín: un pentagrama pequeño junto a la mira con la nota que va a sonar (la que da la vista) y su nombre;
+     * mientras se frota, en amarillo.
+     */
+    private static void hudViolin(GuiGraphics g, Minecraft mc, LocalPlayer p, int w, int h, float pt) {
+        int n = com.miscelanea.armasfuego.oeste.EstucheViolinItem.nota(p.getViewXRot(pt));
+        boolean suena = p.isUsingItem() && p.getUseItem().getItem() instanceof com.miscelanea.armasfuego.oeste.EstucheViolinItem;
+        int x = w / 2 + 12, y = h / 2 - 9;
+        // cinco líneas (de 3 en 3 px) y la nota: cada nota sube medio paso (1 px de 2 por línea y espacio)
+        g.fill(x - 2, y - 4, x + 24, y + 18, 0x66000000);
+        for (int k = 0; k < 5; k++) g.fill(x, y + 2 + k * 3, x + 22, y + 3 + k * 3, 0xAAE8E8E8);
+        int ny = y + 16 - Math.round(n * 0.75F);
+        int col = suena ? 0xFFFFD040 : 0xFFFFFFFF;
+        g.fill(x + 8, ny, x + 12, ny + 2, col);
+        g.fill(x + 7, ny + 1, x + 8, ny + 2, col);
+        g.fill(x + 11, ny - 6, x + 12, ny, col);
+        if (n <= 1 || n >= 23) g.fill(x + 6, ny + 1, x + 14, ny + 2, 0xAAE8E8E8);   // línea adicional
+        String t = com.miscelanea.armasfuego.oeste.EstucheViolinItem.nombreNota(n);
+        g.drawString(mc.font, t, x + 26, y + 5, col, true);
     }
 
     /** Los pasos de la recarga del mosquete (pólvora, bola, baqueta) con el que toca marcado y los hechos en verde. */

@@ -237,7 +237,7 @@ public class WinchesterItem extends ArmaFuegoItem {
             if (tipo == ModItems.BALA_PLATA.get()) {
                 // plata: otro tanto contra los no muertos (con el brillo de la plata)
                 if (v != null && v.getMobType() == MobType.UNDEAD) {
-                    Balistica.herir(v, p, dano, 0.2F, DANO, true);
+                    Balistica.herir(v, p, dano * com.miscelanea.armasfuego.comun.Cobre.dano(s), Math.min(1F, 0.2F + com.miscelanea.armasfuego.comun.Cobre.perforacion(s)), DANO, true);
                     l.sendParticles(ParticleTypes.END_ROD, t.pos().x, t.pos().y, t.pos().z, 10, 0.2, 0.3, 0.2, 0.05);
                     if (!v.isAlive()) LogrosMiscelanea.dar(p, "winchester_plata");
                 }

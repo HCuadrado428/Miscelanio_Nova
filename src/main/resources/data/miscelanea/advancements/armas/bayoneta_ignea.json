@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/bayoneta",
+  "display": {
+    "icon": {
+      "item": "minecraft:blaze_powder"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.bayoneta_ignea.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.bayoneta_ignea.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "bayoneta_ignea": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "bayoneta_ignea"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}
