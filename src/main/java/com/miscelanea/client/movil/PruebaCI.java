@@ -3555,7 +3555,7 @@ public final class PruebaCI {
             m.getItem().appendHoverText(m, l, tip, net.minecraft.world.item.TooltipFlag.NORMAL);
             String t = String.join(" | ", tip.stream().map(net.minecraft.network.chat.Component::getString).toList());
             PI.put("bay_tip", t);
-            PI.put("bay_brilla", m.isFoil());
+            PI.put("bay_brilla", m.hasFoil());
             PI.put("bay_botin", net.minecraft.world.item.enchantment.EnchantmentHelper.getMobLooting(sp));
             PI.put("bay_barrido", net.minecraft.world.item.enchantment.EnchantmentHelper.getSweepingDamageRatio(sp));
             PI.put("bay_vida0", z.getHealth());
