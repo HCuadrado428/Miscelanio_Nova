@@ -233,6 +233,8 @@ public final class ModItems {
             () -> new com.miscelanea.feria.ChapaItem(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> PISTA_BOLOS = ITEMS.register("pista_bolos",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PISTA_BOLOS.get(), new Item.Properties()));
+    public static final RegistryObject<Item> BOLERA_FERIA = ITEMS.register("bolera_feria",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.BOLERA_FERIA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> BOLERA = ITEMS.register("bolera",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.BOLERA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> BOLA_BOLOS = ITEMS.register("bola_bolos",

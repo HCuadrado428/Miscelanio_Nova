@@ -264,8 +264,10 @@ public final class ModBlocks {
             () -> new com.miscelanea.bolos.BoleraBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.5F)
                     .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 6)));
     @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<Block> BOLERA_FERIA = BLOCKS.register("bolera_feria",
+            () -> new com.miscelanea.bolos.BoleraFeriaBlock(BlockBehaviour.Properties.copy(BOLERA.get())));
     public static final RegistryObject<BlockEntityType<com.miscelanea.bolos.BoleraBlockEntity>> BOLERA_BE = BLOCK_ENTITIES.register("bolera",
-            () -> BlockEntityType.Builder.of(com.miscelanea.bolos.BoleraBlockEntity::new, BOLERA.get()).build(null));
+            () -> BlockEntityType.Builder.of(com.miscelanea.bolos.BoleraBlockEntity::new, BOLERA.get(), BOLERA_FERIA.get()).build(null));
     public static final RegistryObject<Block> DIANA_DARDOS = BLOCKS.register("diana_dardos",
             () -> new com.miscelanea.dardos.DianaDardosBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(1.0F)
                     .sound(SoundType.WOOD).noOcclusion()));

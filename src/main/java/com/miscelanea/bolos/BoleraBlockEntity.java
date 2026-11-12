@@ -66,6 +66,11 @@ public class BoleraBlockEntity extends BlockEntity {
         super(com.miscelanea.registry.ModBlocks.BOLERA_BE.get(), p, s);
     }
 
+    /** Los bolos de feria son la misma calle con otras reglas: una ficha, tres bolas contra un solo rack y premio. */
+    public boolean feria() {
+        return getBlockState().getBlock() instanceof BoleraFeriaBlock;
+    }
+
     public Direction facing() {
         return getBlockState().getValue(BoleraBlock.FACING);
     }
@@ -90,12 +95,33 @@ public class BoleraBlockEntity extends BlockEntity {
         return dueno == null || dueno.distanceToSqr(Vec3.atCenterOf(worldPosition)) > 48 * 48;
     }
 
+    /** En los bolos de feria cada partida cuesta una ficha, como en los demás puestos. */
+    private boolean cobrarFicha(Player p) {
+        if (p.getAbilities().instabuild) return true;
+        var inv = p.getInventory();
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            ItemStack st = inv.getItem(i);
+            if (st.is(ModItems.FICHA.get())) {
+                st.shrink(1);
+                level.playSound(null, worldPosition, ModSounds.ARCADE_FICHA.get(), SoundSource.BLOCKS, 0.8F, 1F);
+                return true;
+            }
+        }
+        p.displayClientMessage(Component.translatable("miscelanea.maquina.ficha"), true);
+        return false;
+    }
+
     void nueva(Player p) {
         if (enJuego) return;
         if (!puedeEmpezar(p)) {
             p.displayClientMessage(Component.translatable("miscelanea.bolos.ocupada", nombre), true);
             return;
         }
+        if (feria() && jugador != null && p.getUUID().equals(jugador) && !terminada()) {
+            p.displayClientMessage(Component.translatable("miscelanea.bolos.nueva"), true);
+            return;
+        }
+        if (feria() && !cobrarFicha(p)) return;
         actividad = level.getGameTime();
         jugador = p.getUUID();
         nombre = p.getGameProfile().getName();
@@ -124,6 +150,7 @@ public class BoleraBlockEntity extends BlockEntity {
         if (enJuego) return false;
         if (jugador == null || terminada() || !p.getUUID().equals(jugador)) {
             if (!puedeEmpezar(p)) return false;
+            if (feria() && !cobrarFicha(p)) return false;
             jugador = p.getUUID();
             nombre = p.getGameProfile().getName();
             tiradas.clear();
@@ -234,20 +261,49 @@ public class BoleraBlockEntity extends BlockEntity {
             else if (tumbados == 0 && dePieAntes == N) com.miscelanea.logros.LogrosMiscelanea.dar(p, "bolos_cero");
         }
         for (int k = 0; k < N; k++) if (estado[k] == 1) estado[k] = 2;
-        if (terminada()) {
+        if (feria() && terminada()) {
+            finFeria(l, p);
+            rack();
+            // la partida se acaba del todo: la siguiente necesita otra ficha
+            jugador = null;
+            tiradas.clear();
+        } else if (terminada()) {
             int total = Marcador.total(tiradas);
             if (p != null) p.displayClientMessage(Component.translatable("miscelanea.bolos.fin", total).withStyle(ChatFormatting.GREEN), false);
             if (p instanceof net.minecraft.server.level.ServerPlayer sp) com.miscelanea.arcade.ArcadeRecords.registrar(sp, "bolos", total);
             for (Player o : l.getEntitiesOfClass(Player.class, new AABB(worldPosition).inflate(32)))
                 if (o != p) o.displayClientMessage(Component.translatable("miscelanea.bolos.fin_otro", nombre, total), false);
             rack();
-        } else if (Marcador.rackNuevo(tiradas)) rack();
+        } else if (!feria() && Marcador.rackNuevo(tiradas)) rack();
         dePieAntes = dePie();
         cambio();
     }
 
+    /** Fin de una partida de bolos de feria: se cuentan los bolos tirados con las tres bolas y se dan los premios. */
+    private void finFeria(ServerLevel l, @Nullable Player p) {
+        int tirados = N - dePie();
+        if (p == null) return;
+        p.displayClientMessage(Component.translatable("miscelanea.bolosferia.fin", tirados).withStyle(ChatFormatting.GREEN), false);
+        ItemStack premio = ItemStack.EMPTY;
+        if (tirados >= N) {
+            premio = new ItemStack(ModItems.PELUCHE.get());
+            CompoundTag est = new CompoundTag();
+            est.putString("color", String.valueOf(l.random.nextInt(4)));
+            premio.getOrCreateTag().put("BlockStateTag", est);
+            p.displayClientMessage(Component.translatable("miscelanea.tiro.premio_gordo"), false);
+        } else if (tirados >= 7) {
+            premio = new ItemStack(net.minecraft.world.item.Items.COOKIE, 3);
+            p.displayClientMessage(Component.translatable("miscelanea.tiro.premio"), false);
+        } else p.displayClientMessage(Component.translatable("miscelanea.bolosferia.otra"), false);
+        if (!premio.isEmpty() && !p.getInventory().add(premio)) p.drop(premio, false);
+        if (tirados >= 7) {
+            com.miscelanea.feria.FeriaJuice.confeti(l, mundo(0, 1.3, -0.2), tirados >= N ? 2 : 1);
+            l.playSound(null, worldPosition, ModSounds.FE_PREMIO.get(), SoundSource.BLOCKS, 0.9F, 1F);
+        }
+    }
+
     public boolean terminada() {
-        return Marcador.terminada(tiradas);
+        return feria() ? tiradas.size() >= 3 || dePie() == 0 : Marcador.terminada(tiradas);
     }
 
     void cambio() {

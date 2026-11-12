@@ -140,6 +140,7 @@ public class Miscelanea {
             event.accept(ModItems.TABLON_RECORDS);
             // bolera de salón recreativo
             event.accept(ModItems.BOLERA);
+            event.accept(ModItems.BOLERA_FERIA);
             event.accept(ModItems.PISTA_BOLOS);
             event.accept(ModItems.BOLA_BOLOS);
             // baile: la pista y la gramola de videoclip (como en el tablón de récords, son de la sala recreativa)
