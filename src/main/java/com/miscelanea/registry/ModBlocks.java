@@ -214,9 +214,12 @@ public final class ModBlocks {
     public static final RegistryObject<Block> CASETA_TIRO = BLOCKS.register("caseta_tiro",
             () -> new com.miscelanea.feria.CasetaTiroBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(2.0F)
                     .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 9)));
+    public static final RegistryObject<Block> CASETA_ARCO = BLOCKS.register("caseta_arco",
+            () -> new com.miscelanea.feria.CasetaArcoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(2.0F)
+                    .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 9)));
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.feria.CasetaTiroBlockEntity>> CASETA_TIRO_BE = BLOCK_ENTITIES.register("caseta_tiro",
-            () -> BlockEntityType.Builder.of(com.miscelanea.feria.CasetaTiroBlockEntity::new, CASETA_TIRO.get()).build(null));
+            () -> BlockEntityType.Builder.of(com.miscelanea.feria.CasetaTiroBlockEntity::new, CASETA_TIRO.get(), CASETA_ARCO.get()).build(null));
     public static final RegistryObject<Block> PELUCHE = BLOCKS.register("peluche",
             () -> new com.miscelanea.feria.PelucheBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOL).strength(0.5F)
                     .sound(SoundType.WOOL).noOcclusion()));

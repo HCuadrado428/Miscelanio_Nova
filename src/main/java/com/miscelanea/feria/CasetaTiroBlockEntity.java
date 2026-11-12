@@ -82,11 +82,17 @@ public class CasetaTiroBlockEntity extends BlockEntity {
         return k == (int) ((t / 300) % PATOS);
     }
 
+    /** La caseta de tiro con arco es el mismo bloque con otro mostrador: solo dianas, y valen 3. */
+    public boolean arco() {
+        return getBlockState().getBlock() instanceof CasetaArcoBlock;
+    }
+
     public int valor(int k, long t) {
-        return k < PATOS ? (dorado(k, t) ? 5 : 1) : 2;
+        return k < PATOS ? (dorado(k, t) ? 5 : 1) : arco() ? 3 : 2;
     }
 
     public boolean visible(int k, double t) {
+        if (k < PATOS && arco()) return false;
         return Math.abs(x(k, t)) < VISIBLE && t - caido[k] >= VUELVE;
     }
 
@@ -112,10 +118,12 @@ public class CasetaTiroBlockEntity extends BlockEntity {
         inicio = ahora;
         puntos = 0;
         java.util.Arrays.fill(caido, -10000);
-        // la caseta presta una escopeta (marcada como prestada: se recoge sola al acabar la partida)
-        if (!p.getInventory().hasAnyMatching(s2 -> s2.is(ModItems.ESCOPETA_CORCHO.get())))
+        // la caseta presta una escopeta, o un arco en la de tiro con arco (marcada como prestada: se recoge sola al acabar)
+        if (arco()) {
+            if (!p.getInventory().hasAnyMatching(s2 -> s2.is(ModItems.ARCO_FERIA.get()))) p.getInventory().add(ArcoFeriaItem.prestada());
+        } else if (!p.getInventory().hasAnyMatching(s2 -> s2.is(ModItems.ESCOPETA_CORCHO.get())))
             p.getInventory().add(EscopetaCorchoItem.prestada());
-        p.displayClientMessage(Component.translatable("miscelanea.tiro.empieza"), true);
+        p.displayClientMessage(Component.translatable(arco() ? "miscelanea.tiro.empieza_arco" : "miscelanea.tiro.empieza"), true);
         level.playSound(null, worldPosition, ModSounds.FE_ARRANCA.get(), SoundSource.BLOCKS, 0.6F, 1.4F);
         cambio();
     }
@@ -156,7 +164,10 @@ public class CasetaTiroBlockEntity extends BlockEntity {
         Player p = l.getPlayerByUUID(be.jugador);
         be.jugador = null;
         if (be.puntos > be.record) be.record = be.puntos;
-        if (p != null) EscopetaCorchoItem.devolver(p);
+        if (p != null) {
+            EscopetaCorchoItem.devolver(p);
+            ArcoFeriaItem.devolver(p);
+        }
         if (p != null) {
             p.displayClientMessage(Component.translatable("miscelanea.tiro.fin", be.puntos), false);
             if (p instanceof net.minecraft.server.level.ServerPlayer sp) com.miscelanea.arcade.ArcadeRecords.registrar(sp, "tiro", be.puntos);

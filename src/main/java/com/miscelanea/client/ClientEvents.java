@@ -51,6 +51,14 @@ public final class ClientEvents {
             com.miscelanea.client.armas.MazoAnim.init();
             event.enqueueWork(() -> net.minecraft.client.renderer.item.ItemProperties.register(com.miscelanea.registry.ModItems.CHAPA.get(),
                     new net.minecraft.resources.ResourceLocation(com.miscelanea.Miscelanea.MOD_ID, "chapa"), (st, l, e, s) -> com.miscelanea.feria.ChapaItem.dibujo(st) / 10F));
+            // arco de feria: tensado como el arco normal (los modelos usan "pull" y "pulling")
+            event.enqueueWork(() -> {
+                net.minecraft.client.renderer.item.ItemProperties.register(com.miscelanea.registry.ModItems.ARCO_FERIA.get(),
+                        new net.minecraft.resources.ResourceLocation("pull"), (st, l, e, s) -> e == null || e.getUseItem() != st ? 0F
+                                : (st.getUseDuration() - e.getUseItemRemainingTicks()) / 20F);
+                net.minecraft.client.renderer.item.ItemProperties.register(com.miscelanea.registry.ModItems.ARCO_FERIA.get(),
+                        new net.minecraft.resources.ResourceLocation("pulling"), (st, l, e, s) -> e != null && e.isUsingItem() && e.getUseItem() == st ? 1F : 0F);
+            });
             event.enqueueWork(() -> net.minecraft.client.renderer.item.ItemProperties.register(com.miscelanea.registry.ModItems.CANA.get(),
                     new net.minecraft.resources.ResourceLocation("cast"), (stack, level, ent, seed) -> {
                         if (!(ent instanceof net.minecraft.world.entity.player.Player pl)) return 0F;

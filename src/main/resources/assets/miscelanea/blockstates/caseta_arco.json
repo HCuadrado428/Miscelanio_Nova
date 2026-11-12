@@ -1,0 +1,20 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/caseta_tiro",
+   "y": 0
+  },
+  "facing=east": {
+   "model": "miscelanea:block/caseta_tiro",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/caseta_tiro",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/caseta_tiro",
+   "y": 270
+  }
+ }
+}

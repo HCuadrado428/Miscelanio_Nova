@@ -203,6 +203,10 @@ public final class ModItems {
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.SUSTO.get(), new Item.Properties()));
     public static final RegistryObject<Item> CASETA_TIRO = ITEMS.register("caseta_tiro",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.CASETA_TIRO.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> CASETA_ARCO = ITEMS.register("caseta_arco",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.CASETA_ARCO.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> ARCO_FERIA = ITEMS.register("arco_feria",
+            () -> new com.miscelanea.feria.ArcoFeriaItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> ESCOPETA_CORCHO = ITEMS.register("escopeta_corcho",
             () -> new com.miscelanea.feria.EscopetaCorchoItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> PELUCHE = ITEMS.register("peluche",

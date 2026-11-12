@@ -82,7 +82,7 @@ public class CasetaTiroRenderer implements BlockEntityRenderer<CasetaTiroBlockEn
         // filas de blancos (los patos cabecean, las dianas se balancean)
         for (int k = 0; k < BLANCOS; k++) {
             double x = CasetaTiroBlockEntity.x(k, t);
-            if (Math.abs(x) > VISIBLE) continue;
+            if (Math.abs(x) > VISIBLE || (k < PATOS && be.arco())) continue;
             float caida = t - be.caido[k];
             if (caida >= 8 && caida < VUELVE) continue;
             float giro = caida < 8 ? Math.min(1, caida / 5) * 85 : 0;
