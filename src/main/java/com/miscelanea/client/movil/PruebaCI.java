@@ -4332,24 +4332,6 @@ public final class PruebaCI {
         Minecraft mc = Minecraft.getInstance();
         var srv = mc.getSingleplayerServer();
         UUID id = mc.player.getUUID();
-    // ------------------------------------------------------------------ escopeta de presión
-    private static boolean escAgachado;
-    private static net.minecraft.core.BlockPos escHoguera, escVela, escTierra;
-    private static UUID escHusk, escCerdo;
-    private static float escVida;
-    private static double escY;
-    private static Vec3 escCerdoPos;
-    private static int escCosas;
-
-    private static ServerPlayer escJugador() {
-        var srv = Minecraft.getInstance().getSingleplayerServer();
-        return srv.getPlayerList().getPlayer(Minecraft.getInstance().player.getUUID());
-    }
-
-    /** En el hilo del servidor, con el jugador de la prueba. */
-    private static void escServidor(java.util.function.Consumer<ServerPlayer> c) {
-        var srv = Minecraft.getInstance().getSingleplayerServer();
-        UUID id = Minecraft.getInstance().player.getUUID();
         srv.execute(() -> {
             ServerPlayer sp = srv.getPlayerList().getPlayer(id);
             if (sp != null) c.accept(sp);
@@ -5398,6 +5380,32 @@ public final class PruebaCI {
             if (puestos < 2) throw new IllegalStateException("el mixin del aviso experimental no está puesto (" + puestos + " de 2)");
             if (encontrado && !creado[0]) throw new IllegalStateException("al crear un mundo sale el aviso experimental");
         });
+    }
+
+    // ------------------------------------------------------------------ escopeta de presión
+    private static boolean escAgachado;
+    private static net.minecraft.core.BlockPos escHoguera, escVela, escTierra;
+    private static UUID escHusk, escCerdo;
+    private static float escVida;
+    private static double escY;
+    private static Vec3 escCerdoPos;
+    private static int escCosas;
+
+    private static ServerPlayer escJugador() {
+        var srv = Minecraft.getInstance().getSingleplayerServer();
+        return srv.getPlayerList().getPlayer(Minecraft.getInstance().player.getUUID());
+    }
+
+    /** En el hilo del servidor, con el jugador de la prueba. */
+    private static void escServidor(java.util.function.Consumer<ServerPlayer> c) {
+        var srv = Minecraft.getInstance().getSingleplayerServer();
+        UUID id = Minecraft.getInstance().player.getUUID();
+        srv.execute(() -> {
+            ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+            if (sp != null) c.accept(sp);
+        });
+    }
+
     private static net.minecraft.world.entity.Entity escEntidad(UUID id) {
         return escJugador().serverLevel().getEntity(id);
     }
