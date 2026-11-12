@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "miscelanea:revolver_bala"
+    },
+    {
+      "item": "miscelanea:revolver_bala"
+    },
+    {
+      "item": "miscelanea:revolver_bala"
+    },
+    {
+      "item": "miscelanea:revolver_bala"
+    },
+    {
+      "item": "minecraft:quartz"
+    }
+  ],
+  "result": {
+    "item": "miscelanea:bala_plata",
+    "count": 4
+  }
+}

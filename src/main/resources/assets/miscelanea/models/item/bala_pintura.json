@@ -1,0 +1,7 @@
+{
+ "parent": "minecraft:item/generated",
+ "textures": {
+  "layer0": "miscelanea:item/bala_pintura",
+  "layer1": "miscelanea:item/bala_pintura_punta"
+ }
+}

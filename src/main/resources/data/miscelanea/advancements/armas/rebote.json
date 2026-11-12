@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/canon",
+  "display": {
+    "icon": {
+      "item": "miscelanea:bolano_saltarin"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.rebote.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.rebote.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "canon_rebote": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "canon_rebote"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

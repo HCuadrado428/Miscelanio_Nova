@@ -1,0 +1,70 @@
+{
+ "loader": "forge:separate_transforms",
+ "gui_light": "front",
+ "textures": {
+  "particle": "miscelanea:item/revolver"
+ },
+ "base": {
+  "parent": "miscelanea:item/armas3d/revolver_3d",
+  "textures": {
+   "cobre": "miscelanea:item/armas3d/cobre_0",
+   "tambor": "miscelanea:item/armas3d/tambor_frente_0",
+   "tambor_lado": "miscelanea:item/armas3d/tambor_lado_0"
+  }
+ },
+ "perspectives": {
+  "gui": {
+   "parent": "minecraft:item/generated",
+   "textures": {
+    "layer0": "miscelanea:item/revolver"
+   }
+  }
+ },
+ "overrides": [
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.25
+   },
+   "model": "miscelanea:item/revolver_expuesto"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.5
+   },
+   "model": "miscelanea:item/revolver_erosionado"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.75
+   },
+   "model": "miscelanea:item/revolver_oxidado"
+  },
+  {
+   "predicate": {
+    "miscelanea:abierto": 1
+   },
+   "model": "miscelanea:item/revolver_abierto"
+  },
+  {
+   "predicate": {
+    "miscelanea:abierto": 1,
+    "miscelanea:oxido": 0.25
+   },
+   "model": "miscelanea:item/revolver_expuesto_abierto"
+  },
+  {
+   "predicate": {
+    "miscelanea:abierto": 1,
+    "miscelanea:oxido": 0.5
+   },
+   "model": "miscelanea:item/revolver_erosionado_abierto"
+  },
+  {
+   "predicate": {
+    "miscelanea:abierto": 1,
+    "miscelanea:oxido": 0.75
+   },
+   "model": "miscelanea:item/revolver_oxidado_abierto"
+  }
+ ]
+}

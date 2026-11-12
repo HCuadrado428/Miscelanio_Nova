@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/violin",
+  "display": {
+    "icon": {
+      "item": "minecraft:bow"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.paganini.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.paganini.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "violin_paganini": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "violin_paganini"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

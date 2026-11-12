@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:baile/pista",
+  "display": {
+    "icon": {
+      "item": "miscelanea:taburete"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.baile.nota_e.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.baile.nota_e.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "baile_e": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "baile_e"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 5
+  }
+}

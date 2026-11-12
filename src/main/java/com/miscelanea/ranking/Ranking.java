@@ -288,6 +288,7 @@ public class Ranking extends SavedData {
         int pos = r.apuntar(cat, p.getUUID(), p.getGameProfile().getName(), puntos, false);
         if (pos == 0) return;
         r.enviar(p.server, cat);
+        if (pos == 1) com.miscelanea.logros.LogrosMiscelanea.dar(p, "record");
         if (pos == 1)
             p.server.getPlayerList().broadcastSystemMessage(Component.translatable("msg.miscelanea.arcade.record_mundial", p.getDisplayName(),
                     nombre(cat), puntos).withStyle(ChatFormatting.GOLD), false);

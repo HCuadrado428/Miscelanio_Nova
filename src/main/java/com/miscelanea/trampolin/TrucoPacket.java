@@ -34,6 +34,7 @@ public class TrucoPacket {
         ServerPlayer p = ctx.get().getSender();
         if (p != null) {
             TrucoPacket m = new TrucoPacket(p.getId(), Math.min(3, giros), Math.min(100, duracion));
+            if (giros > 0) com.miscelanea.logros.LogrosMiscelanea.dar(p, "trampolin_truco");
             ModNetwork.CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> p), m);
         } else {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.miscelanea.client.trampolin.TrampolinCliente.truco(entidad, giros, duracion));

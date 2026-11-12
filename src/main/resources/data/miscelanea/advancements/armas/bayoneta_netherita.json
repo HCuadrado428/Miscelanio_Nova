@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/bayoneta",
+  "display": {
+    "icon": {
+      "item": "minecraft:netherite_sword"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.bayoneta_netherita.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.bayoneta_netherita.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "mosquete_netherita": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "mosquete_netherita"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

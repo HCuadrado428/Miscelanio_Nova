@@ -1,0 +1,30 @@
+{
+  "parent": "miscelanea:movil/llamada",
+  "display": {
+    "icon": {
+      "item": "miscelanea:movil",
+      "nbt": "{Color:5030857}"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.movil.videollamada.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.movil.videollamada.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "videollamada": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "videollamada"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

@@ -198,6 +198,7 @@ public final class Banco {
         d.anotar(a, new BancoDatos.Movimiento(t, BancoDatos.M_RECIBIDO, p.getUUID(), yo, n, concepto));
         LOG.info("[Banco] Bizum {} -> {}: {} ({})", yo, otro.nombre, n, concepto);
         MovilServidor.aviso(p, "movil.miscelanea.aviso.bizum_ok", n + " → " + otro.nombre);
+        com.miscelanea.logros.LogrosMiscelanea.dar(p, "bizum");
         estado(p);
         ServerPlayer o = p.server.getPlayerList().getPlayer(a);
         if (o != null) {

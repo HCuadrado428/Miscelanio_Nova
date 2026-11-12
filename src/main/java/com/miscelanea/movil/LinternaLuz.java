@@ -150,7 +150,10 @@ public final class LinternaLuz {
             if (delante < 0.55 || mira < 0.3) continue;
             if (l.clip(new ClipContext(ojo, o.getEyePosition(), ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, p)).getType() != HitResult.Type.MISS) continue;
             float fuerza = (float) Math.min(1, (1.2 - dist / 20) * delante * mira * 1.4);
-            if (fuerza > 0.1F) MovilRed.aJugador(o, MovilRed.S_FLASH, b -> b.writeFloat(fuerza));
+            if (fuerza > 0.1F) {
+                MovilRed.aJugador(o, MovilRed.S_FLASH, b -> b.writeFloat(fuerza));
+                com.miscelanea.logros.LogrosMiscelanea.dar(p, "flash");
+            }
         }
     }
 

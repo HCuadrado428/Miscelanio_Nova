@@ -113,6 +113,7 @@ public final class Minegram {
         d.posts.put(id, x);
         d.setDirty();
         LOG.info("[Minegram] {} publica la foto #{}", MovilServidor.nombre(p), id);
+        com.miscelanea.logros.LogrosMiscelanea.dar(p, "minegram");
         MovilServidor.aviso(p, "movil.miscelanea.aviso.mg_publicado", "");
         // aviso a sus seguidores conectados
         for (ServerPlayer o : p.server.getPlayerList().getPlayers())

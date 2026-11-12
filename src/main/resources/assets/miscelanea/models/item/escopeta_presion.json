@@ -1,0 +1,203 @@
+{
+ "loader": "forge:separate_transforms",
+ "gui_light": "front",
+ "textures": {
+  "particle": "miscelanea:item/escopeta_presion_0"
+ },
+ "base": {
+  "parent": "miscelanea:item/armas3d/escopeta_3d",
+  "textures": {
+   "cobre": "miscelanea:item/armas3d/cobre_0",
+   "esfera": "miscelanea:item/armas3d/esfera_0"
+  }
+ },
+ "perspectives": {
+  "gui": {
+   "parent": "minecraft:item/generated",
+   "textures": {
+    "layer0": "miscelanea:item/escopeta_presion_0"
+   }
+  }
+ },
+ "overrides": [
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.0,
+    "miscelanea:escopeta_aguja": 0.25
+   },
+   "model": "miscelanea:item/escopeta_presion_1"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.0,
+    "miscelanea:escopeta_aguja": 0.5
+   },
+   "model": "miscelanea:item/escopeta_presion_2"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.0,
+    "miscelanea:escopeta_aguja": 0.75
+   },
+   "model": "miscelanea:item/escopeta_presion_3"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.0,
+    "miscelanea:escopeta_aguja": 1.0
+   },
+   "model": "miscelanea:item/escopeta_presion_4"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.0,
+    "miscelanea:escopeta_reventada": 1
+   },
+   "model": "miscelanea:item/escopeta_presion_reventada"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.333
+   },
+   "model": "miscelanea:item/escopeta_presion_expuesta_0"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.333,
+    "miscelanea:escopeta_aguja": 0.0
+   },
+   "model": "miscelanea:item/escopeta_presion_expuesta_0"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.333,
+    "miscelanea:escopeta_aguja": 0.25
+   },
+   "model": "miscelanea:item/escopeta_presion_expuesta_1"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.333,
+    "miscelanea:escopeta_aguja": 0.5
+   },
+   "model": "miscelanea:item/escopeta_presion_expuesta_2"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.333,
+    "miscelanea:escopeta_aguja": 0.75
+   },
+   "model": "miscelanea:item/escopeta_presion_expuesta_3"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.333,
+    "miscelanea:escopeta_aguja": 1.0
+   },
+   "model": "miscelanea:item/escopeta_presion_expuesta_4"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.333,
+    "miscelanea:escopeta_reventada": 1
+   },
+   "model": "miscelanea:item/escopeta_presion_expuesta_reventada"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.667
+   },
+   "model": "miscelanea:item/escopeta_presion_erosionada_0"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.667,
+    "miscelanea:escopeta_aguja": 0.0
+   },
+   "model": "miscelanea:item/escopeta_presion_erosionada_0"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.667,
+    "miscelanea:escopeta_aguja": 0.25
+   },
+   "model": "miscelanea:item/escopeta_presion_erosionada_1"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.667,
+    "miscelanea:escopeta_aguja": 0.5
+   },
+   "model": "miscelanea:item/escopeta_presion_erosionada_2"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.667,
+    "miscelanea:escopeta_aguja": 0.75
+   },
+   "model": "miscelanea:item/escopeta_presion_erosionada_3"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.667,
+    "miscelanea:escopeta_aguja": 1.0
+   },
+   "model": "miscelanea:item/escopeta_presion_erosionada_4"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 0.667,
+    "miscelanea:escopeta_reventada": 1
+   },
+   "model": "miscelanea:item/escopeta_presion_erosionada_reventada"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 1.0
+   },
+   "model": "miscelanea:item/escopeta_presion_oxidada_0"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 1.0,
+    "miscelanea:escopeta_aguja": 0.0
+   },
+   "model": "miscelanea:item/escopeta_presion_oxidada_0"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 1.0,
+    "miscelanea:escopeta_aguja": 0.25
+   },
+   "model": "miscelanea:item/escopeta_presion_oxidada_1"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 1.0,
+    "miscelanea:escopeta_aguja": 0.5
+   },
+   "model": "miscelanea:item/escopeta_presion_oxidada_2"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 1.0,
+    "miscelanea:escopeta_aguja": 0.75
+   },
+   "model": "miscelanea:item/escopeta_presion_oxidada_3"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 1.0,
+    "miscelanea:escopeta_aguja": 1.0
+   },
+   "model": "miscelanea:item/escopeta_presion_oxidada_4"
+  },
+  {
+   "predicate": {
+    "miscelanea:escopeta_oxido": 1.0,
+    "miscelanea:escopeta_reventada": 1
+   },
+   "model": "miscelanea:item/escopeta_presion_oxidada_reventada"
+  }
+ ]
+}

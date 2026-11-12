@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "miscelanea:estatica_pura",
-    "miscelanea:arma_verdadera"
+    "miscelanea:arma_verdadera",
+    "miscelanea:pistola_ruleta"
   ]
 }

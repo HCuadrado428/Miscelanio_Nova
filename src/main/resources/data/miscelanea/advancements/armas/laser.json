@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/gambito",
+  "display": {
+    "icon": {
+      "item": "miscelanea:puntero_laser"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.laser.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.laser.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "laser_gato": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "laser_gato"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

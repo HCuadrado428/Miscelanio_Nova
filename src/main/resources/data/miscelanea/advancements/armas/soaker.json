@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/violin",
+  "display": {
+    "icon": {
+      "item": "miscelanea:tambor_agua"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.soaker.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.soaker.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "thompson_agua": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "thompson_agua"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

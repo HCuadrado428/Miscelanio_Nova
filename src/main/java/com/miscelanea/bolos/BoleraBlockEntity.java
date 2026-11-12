@@ -230,6 +230,8 @@ public class BoleraBlockEntity extends BlockEntity {
         if (p != null) {
             String clave = pleno ? "miscelanea.bolos.pleno" : semipleno ? "miscelanea.bolos.semipleno" : tumbados == 0 ? "miscelanea.bolos.cero" : "miscelanea.bolos.tumbados";
             p.displayClientMessage(Component.translatable(clave, tumbados).withStyle(pleno ? ChatFormatting.GOLD : ChatFormatting.WHITE), true);
+            if (pleno) com.miscelanea.logros.LogrosMiscelanea.dar(p, "bolos_pleno");
+            else if (tumbados == 0 && dePieAntes == N) com.miscelanea.logros.LogrosMiscelanea.dar(p, "bolos_cero");
         }
         for (int k = 0; k < N; k++) if (estado[k] == 1) estado[k] = 2;
         if (terminada()) {

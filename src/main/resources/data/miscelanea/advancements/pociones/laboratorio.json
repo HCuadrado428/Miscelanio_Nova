@@ -1,0 +1,95 @@
+{
+  "parent": "miscelanea:pociones/gigante",
+  "display": {
+    "icon": {
+      "item": "miscelanea:caldero_mezclas"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.pociones.laboratorio.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.pociones.laboratorio.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "gigante": {
+      "trigger": "minecraft:effects_changed",
+      "conditions": {
+        "effects": {
+          "miscelanea:gigante": {}
+        }
+      }
+    },
+    "enano": {
+      "trigger": "minecraft:effects_changed",
+      "conditions": {
+        "effects": {
+          "miscelanea:enano": {}
+        }
+      }
+    },
+    "ecolocalizacion": {
+      "trigger": "minecraft:effects_changed",
+      "conditions": {
+        "effects": {
+          "miscelanea:ecolocalizacion": {}
+        }
+      }
+    },
+    "niebla_viviente": {
+      "trigger": "minecraft:effects_changed",
+      "conditions": {
+        "effects": {
+          "miscelanea:niebla_viviente": {}
+        }
+      }
+    },
+    "espejismo": {
+      "trigger": "minecraft:effects_changed",
+      "conditions": {
+        "effects": {
+          "miscelanea:espejismo": {}
+        }
+      }
+    },
+    "helio": {
+      "trigger": "minecraft:effects_changed",
+      "conditions": {
+        "effects": {
+          "miscelanea:helio": {}
+        }
+      }
+    },
+    "ventilador": {
+      "trigger": "minecraft:effects_changed",
+      "conditions": {
+        "effects": {
+          "miscelanea:ventilador": {}
+        }
+      }
+    },
+    "borrachera": {
+      "trigger": "minecraft:effects_changed",
+      "conditions": {
+        "effects": {
+          "miscelanea:borrachera": {}
+        }
+      }
+    },
+    "tartamudeo": {
+      "trigger": "minecraft:effects_changed",
+      "conditions": {
+        "effects": {
+          "miscelanea:tartamudeo": {}
+        }
+      }
+    }
+  },
+  "rewards": {
+    "experience": 100
+  }
+}

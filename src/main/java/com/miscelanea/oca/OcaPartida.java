@@ -231,6 +231,7 @@ public class OcaPartida {
             case "muerte" -> {
                 salto = 1;
                 anotar("muerte|" + j.nombre);
+                com.miscelanea.logros.LogrosMiscelanea.dar(j.uuid, "oca_muerte");
             }
             case "jardin" -> anotar("gana|" + j.nombre);
             default -> {

@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/mosquete",
+  "display": {
+    "icon": {
+      "item": "minecraft:gunpowder"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.polvora_mojada.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.polvora_mojada.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "polvora_mojada": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "polvora_mojada"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 5
+  }
+}

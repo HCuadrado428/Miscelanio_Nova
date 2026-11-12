@@ -18,6 +18,8 @@ public final class ConfigServidor {
     private static final ForgeConfigSpec.DoubleValue ESCOPETA_PERDIGON, COHETE, BFG_ESFERA, BFG_RAYO, BALLESTA_MULT,
             PORRA_DESCARGA, LANZATINTAS, RODILLO_GOLPE, MAZO_MULT, HACHA_MULT, LLAVE_MULT;
     private static final ForgeConfigSpec.DoubleValue PORRA_GOLPE_MULT, BFG_VORTICE_MULT, GRAVEDAD_MULT;
+    // ---- armas de fuego: dónde se encuentran (no se fabrican)
+    private static final ForgeConfigSpec.DoubleValue BOTIN_REVOLVER_HERREROS, BOTIN_REVOLVER_CASAS, BOTIN_ESCOPETA, BOTIN_RIFLE, BOTIN_ENCANTADA;
     // ---- puntero láser
     private static final ForgeConfigSpec.DoubleValue LASER_ALCANCE;
     private static final ForgeConfigSpec.BooleanValue LASER_GATOS, LASER_MOBS, LASER_DESLUMBRAR;
@@ -129,6 +131,15 @@ public final class ConfigServidor {
             ARMA_VERDADERO[a.ordinal()] = b.comment("Fracción del daño de " + a.id + " que se salta armadura y encantamientos de protección (daño verdadero).")
                     .defineInRange(a.id + "_verdadero", a.verdaderoDef, 0.0, 1.0);
         }
+        b.comment("Armas de fuego (revólver de ruleta, escopeta de presión y rifle de catalejo): no tienen receta, se encuentran en cofres.",
+                "Probabilidad (0-1) de que salga el arma en cada cofre; sale con algo de munición y a veces oxidada o encantada.").push("armas_de_fuego");
+        BOTIN_REVOLVER_HERREROS = b.comment("Revólver: cofres del armero, del herrero de herramientas y del de armas de las aldeas.")
+                .defineInRange("revolver_aldea_herreros", 0.25, 0.0, 1.0);
+        BOTIN_REVOLVER_CASAS = b.comment("Revólver: cofres de las casas de las aldeas.").defineInRange("revolver_aldea_casas", 0.06, 0.0, 1.0);
+        BOTIN_ESCOPETA = b.comment("Escopeta de presión: cofres de los barcos hundidos (provisiones, tesoro y mapas).").defineInRange("escopeta_barco_hundido", 0.2, 0.0, 1.0);
+        BOTIN_RIFLE = b.comment("Rifle de catalejo: cofres de los puestos de saqueadores.").defineInRange("rifle_puesto_saqueadores", 0.25, 0.0, 1.0);
+        BOTIN_ENCANTADA = b.comment("Probabilidad de que el arma encontrada lleve uno de sus encantamientos propios.").defineInRange("encantada", 0.25, 0.0, 1.0);
+        b.pop();
         b.pop();
 
         b.comment("Sala de juegos (aparatos de tortura).").push("tortura");
@@ -405,6 +416,8 @@ public final class ConfigServidor {
         com.miscelanea.movil.MovilConfig.definir(b);
         // ---- El Purgatorio: su sección vive en PurgatorioConfig
         com.miscelanea.purgatorio.PurgatorioConfig.definir(b);
+        // ---- armas de fuego: equilibrio (daño, cadencia, recarga...) y botín de las nuevas (sección propia)
+        com.miscelanea.armasfuego.comun.EquilibrioArmas.definir(b);
 
         SPEC = b.build();
     }
@@ -632,6 +645,13 @@ public final class ConfigServidor {
 
     // ------------------------------------------------------------------ puntero láser
     public static double laserAlcance() { return d(LASER_ALCANCE); }
+
+    // ---- armas de fuego: botín
+    public static double botinRevolverHerreros() { return d(BOTIN_REVOLVER_HERREROS); }
+    public static double botinRevolverCasas() { return d(BOTIN_REVOLVER_CASAS); }
+    public static double botinEscopeta() { return d(BOTIN_ESCOPETA); }
+    public static double botinRifle() { return d(BOTIN_RIFLE); }
+    public static double botinEncantada() { return d(BOTIN_ENCANTADA); }
     public static boolean laserGatos() { return b(LASER_GATOS); }
     public static boolean laserMobsMiran() { return b(LASER_MOBS); }
     public static boolean laserDeslumbrar() { return b(LASER_DESLUMBRAR); }

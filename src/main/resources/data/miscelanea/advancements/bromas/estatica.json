@@ -1,0 +1,31 @@
+{
+  "parent": "miscelanea:bromas/uwu",
+  "display": {
+    "icon": {
+      "item": "miscelanea:pocion_estatica"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.bromas.estatica.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.bromas.estatica.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "efecto": {
+      "trigger": "minecraft:effects_changed",
+      "conditions": {
+        "effects": {
+          "miscelanea:estatica": {}
+        }
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

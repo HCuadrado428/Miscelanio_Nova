@@ -109,6 +109,7 @@ public final class Qte {
         Sesion s = SESIONES.remove(p.getUUID());
         if (s == null) return;
         if (avisarCliente) ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> p), new QteFinPacket(s.id));
+        if (r.exito()) com.miscelanea.logros.LogrosMiscelanea.dar(p, "qte_" + s.tipo.name().toLowerCase(java.util.Locale.ROOT));
         try {
             s.cb.alTerminar(p, r);
         } catch (Exception e) {

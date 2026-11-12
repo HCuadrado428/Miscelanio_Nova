@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/canon",
+  "display": {
+    "icon": {
+      "item": "minecraft:sand"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.castillo_arena.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.castillo_arena.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "canon_arena": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "canon_arena"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:dream/esencia",
+  "display": {
+    "icon": {
+      "item": "miscelanea:venda"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.dream.escapar.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.dream.escapar.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "escapar_mordisco": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "escapar_mordisco"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

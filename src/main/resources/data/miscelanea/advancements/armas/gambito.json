@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:raiz",
+  "display": {
+    "icon": {
+      "item": "miscelanea:mazo_wemmbu"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.gambito.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.gambito.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "gambito": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "gambito"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}
