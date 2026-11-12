@@ -29,10 +29,11 @@
 13. [Sala de juegos](#sala-de-juegos)
 14. [Colección, pesca y tesoros](#colección-pesca-y-tesoros)
 15. [Casa, cocina y movimiento](#casa-cocina-y-movimiento)
-16. [Comandos](#comandos)
-17. [Configuración](#configuración)
-18. [Compatibilidad con otros mods](#compatibilidad-con-otros-mods)
-19. [Compilar desde el código](#compilar-desde-el-código)
+16. [El Purgatorio](#el-purgatorio)
+17. [Comandos](#comandos)
+18. [Configuración](#configuración)
+19. [Compatibilidad con otros mods](#compatibilidad-con-otros-mods)
+20. [Compilar desde el código](#compilar-desde-el-código)
 
 ---
 
@@ -138,6 +139,7 @@ Máquinas que funcionan con **fichas**. Hay recreativas sencillas, dobles para 2
 ## Feria
 
 - **Atracciones** en las que se puede montar: noria, tiovivo, pulpo, coches de choque, vagoneta de la bruja y caja de sustos.
+- **Montaña rusa:** vía (recta, curvas, subida y bajada; agáchate y clic con la mano vacía para cambiar la forma), vía de cadena que sube el tren, estación (el tren sale solo a los 5 s con gente, o con redstone), vía de freno y rizo de 4 bloques de alto. El tren lleva de 2 a 4 vagones de dos plazas (agáchate y clic con otro tren para añadir uno), cae por las cuestas con su peso, se inclina en las curvas y da la vuelta entera en el rizo. La barra de seguridad no deja bajarse en marcha. Debajo de la vía que va por el aire sale sola una columna de acero hasta el suelo.
 - **Puestos:** caseta de tiro con escopeta de corcho (la escopeta es prestada: se recoge sola al acabar), pesca de patitos, tómbola, máquina de gancho, tragaperras, gachapón, canastas, boxeo, martillo de fuerza, dardos, petanca, torre de bloques y churrería.
 - **Pizarra de récords de la feria:** una pizarra de tiza con marco de madera, banderines y repisa. Varias juntas forman una pizarra grande que enseña más juegos a la vez.
 - **Comida y ambiente:** algodón de azúcar, palomitas, churros y castillo de fuegos artificiales.
@@ -199,6 +201,26 @@ Cada arma tiene modelo, animaciones, sonidos y controles propios. Hacen bastante
 | **Lanzatintas y rodillo** | Combate con tinta |
 | **Puntero láser** | Apunta, deslumbra y vuelve locos a los gatos |
 | **Núcleo de error** *(creativo)* | Carga un aliento que corrompe bloques blandos |
+
+### Armas de fuego
+
+Nueve armas de la vida real, a lo Minecraft. **No se fabrican: se encuentran en cofres** (aldeas, barcos hundidos, puestos de saqueadores, pirámides, minas, mansiones, fortalezas, bastiones y tesoros enterrados). JEI dice dónde sale cada una y las probabilidades se cambian en la config del servidor. La munición sí se fabrica.
+
+| Arma | En pocas palabras |
+|---|---|
+| **Revólver de ruleta** | Seis recámaras que se cargan una a una con la munición que quieras; agachado + clic izquierdo gira el tambor. Retos de **duelo** a otro jugador |
+| **Rifle de catalejo** | Rifle de cerrojo con catalejo: mira de verdad, bala con caída, más daño en la cabeza y tirolinas con la bala de cuerda |
+| **Escopeta de presión** | Aire comprimido en vez de pólvora: se bombea, tiene manómetro y revienta si te pasas. Cartuchos de grava, escarcha, miel, sal, semillas y más |
+| **Gatling de manivela** | Se planta en su trípode; se calienta y se atasca. Hace de torreta con redstone |
+| **Winchester 1873** | Palanca, depósito de 12 balas mezclables que se cargan una a una; a caballo, la palanca se gira con una mano |
+| **Derringer** | Pistola de bolsillo: el as en la manga, que se saca con una tecla |
+| **Thompson con estuche de violín** | Ráfaga con mucho retroceso; el estuche es un violín que se toca con arco |
+| **Mosquete de chispa con bayoneta** | Mucho daño, recarga lenta y bayoneta con cualquier espada y sus encantamientos |
+| **Cañón de mano** | Dispara bolaños y bloques que caen; a veces revienta en las manos |
+
+- **Cobre que se oxida:** todas llevan piezas de cobre que pasan por cuatro fases con el uso. Oxidada, el arma se encasquilla y dispersa más, pero pega y perfora un poco más. Se encera con un panal (la cera se gasta) y se rasca con un hacha.
+- **Encantamientos propios** por arma (mesa y libros) y **munición especial** (bengalas, dardos de sedante, balas de plata, de hielo, de oro, de pintura...).
+- Ningún disparo suelto mata de un tiro a un jugador con la vida llena (salvo la ruleta rusa). Todos los valores de equilibrio están en la sección `armas_de_fuego_equilibrio` de la config.
 
 ---
 
@@ -296,6 +318,18 @@ Trampas y aparatos "de película de miedo", en versión graciosa: cepos, grillet
 - **Ocarina:** melodías que cambian la hora o el tiempo, o te llevan a casa.
 - **Tirolina:** dos postes unidos por cable, hasta 64 bloques.
 - **Trampolín.**
+
+---
+
+## El Purgatorio
+
+Adonde van los errores purgados: un espacio liminal, sin cielo y con niebla corta. Se llega colándose por una pared (a veces, al asfixiarte dentro de un bloque) o cayéndote del mapa, y se vuelve justo a donde estabas por una puerta con el cartel verde de SALIDA.
+
+- **Zonas:** Feria Cerrada, Sala de Espera (con Backrooms), Recreativa Infinita, Hotel del Videoclip, Piscina Vacía, Aparcamiento Subterráneo, Colegio de Noche, Centro Comercial Cerrado y Mundo sin Texturas. Tres pisos, salas grandes, ascensores del hotel, pasillos sin sentido y rincones raros. Cada zona tiene su ambiente sonoro.
+- **Habitantes:** no ven, pero oyen. Si hablas por el chat de voz, corres o andas cerca, van hacia ti y, si te pillan, te vuelven a purgar. No hacen daño.
+- **Objetos purgados:** brújula de salida, tiques de turno, llave de la habitación 404, ficha infinita, reloj al revés y el bloque MissingNo.
+- **Restos de errores:** mensajes de sistema rotos, sonidos del juego estropeados, objetos con nombres que no deberían tener y jugadores fantasma a lo lejos.
+- **Logros** propios y sección `[purgatorio]` en la config: se puede desactivar entero.
 
 ---
 
