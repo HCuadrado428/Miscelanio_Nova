@@ -15,8 +15,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Los habitantes del Espera ({@link Paciente}): cuántos hay, dónde salen y qué oyen. Lo que oyen se mira cada 5 tics
- * por jugador: si habla por el chat de voz (Simple Voice Chat, si está), se le oye a 22 bloques; corriendo, a 12;
+ * Los habitantes de La Espera ({@link Paciente}): cuántos hay, dónde salen y a quién van. Se mira cada 5 tics por
+ * jugador y solo cuenta la distancia: moverse, correr o hablar no te delata.
  * andando, a 4,5; agachado o quieto, nada. Cuántos hay lo dice la configuración ({@link EsperaConfig}: unos pocos
  * cerca de cada jugador y un tope para todo el Espera), y salen fuera de la vista (a dos o tres chunks, dentro de
  * la niebla). No se guardan con el mundo: si no hay nadie cerca, desaparecen.
@@ -46,30 +46,22 @@ public final class Habitantes {
     /** Cada tic del jugador en el Espera. */
     static void tick(ServerPlayer p) {
         if (p.isSpectator()) return;
-        if (p.tickCount % 5 == 0) escuchar(p);
+        if (p.tickCount % 5 == 0) detectar(p);
         if (p.tickCount % 200 == 37) poblar(p);
     }
 
-    static void escuchar(ServerPlayer p) {
-        // con el "No molestar" de la llave del hotel colgado no se le oye
+    /**
+     * A quién van los Pacientes. No oyen: no les importa si corres, si hablas o si vas agachado, solo lo cerca que
+     * estés. Así se puede jugar normal sin que moverse te castigue.
+     */
+    static void detectar(ServerPlayer p) {
+        // con el "No molestar" de la llave del hotel colgado, no te hacen caso
         if (com.miscelanea.espera.eventos.EsperaExtras.noMolestar(p)) return;
-        Vec3 ahora = p.position(), antes = ANTES.put(p.getUUID(), ahora);
-        double andado = antes == null ? 0 : Math.sqrt(Math.pow(ahora.x - antes.x, 2) + Math.pow(ahora.z - antes.z, 2));
-        if (andado > 8) andado = 0;            // se ha teletransportado (o le han recolocado): eso no hace ruido
-        double r;
-        boolean fuerte;
-        if (hablando(p.getUUID())) {
-            r = 22;
-            fuerte = true;
-        } else if (p.isSprinting() && andado > 0.5) {
-            r = 12;
-            fuerte = true;
-        } else if (!p.isShiftKeyDown() && andado > 0.25) {
-            r = 4.5;
-            fuerte = false;
-        } else return;
+        double r = EsperaConfig.alcanceHabitantes();
+        if (r <= 0) return;
+        Vec3 donde = p.position();
         for (Paciente g : p.serverLevel().getEntitiesOfClass(Paciente.class, p.getBoundingBox().inflate(r)))
-            if (g.distanceToSqr(p) < r * r) g.oye(ahora, fuerte);
+            if (g.distanceToSqr(p) < r * r) g.oye(donde, g.distanceToSqr(p) < r * r / 4);
     }
 
     /** Si hay pocos cerca, saca uno en el cruce de un chunk a dos o tres chunks (ya cargado y despejado). */

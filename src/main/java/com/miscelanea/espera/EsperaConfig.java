@@ -14,6 +14,7 @@ public final class EsperaConfig {
     private static ForgeConfigSpec.BooleanValue ACTIVADO, VACIO;
     private static ForgeConfigSpec.DoubleValue PARED;
     private static ForgeConfigSpec.IntValue POR_JUGADOR, MAX_TOTAL;
+    private static ForgeConfigSpec.DoubleValue ALCANCE;
 
     public static void definir(ForgeConfigSpec.Builder b) {
         b.comment("El Espera: la dimensión adonde van los errores pacientes (se llega colándose por una pared o cayéndose del mapa).").push("espera");
@@ -29,6 +30,8 @@ public final class EsperaConfig {
                 .defineInRange("habitantes_por_jugador", 2, 0, 8);
         MAX_TOTAL = b.comment("Habitantes como mucho en todo el Espera a la vez (sumando los de todos los jugadores).")
                 .defineInRange("max_habitantes", 12, 0, 64);
+        ALCANCE = b.comment("A cuántos bloques te notan los habitantes. No depende de si corres, hablas o vas agachado: solo de la distancia. 0 = no te notan nunca.")
+                .defineInRange("alcance_habitantes", 10.0D, 0.0D, 48.0D);
         b.pop();
     }
 
@@ -63,4 +66,5 @@ public final class EsperaConfig {
     public static boolean entrarAlCaer() { return leer(VACIO); }
     public static int habitantesPorJugador() { return leer(POR_JUGADOR); }
     public static int maxHabitantes() { return leer(MAX_TOTAL); }
+    public static double alcanceHabitantes() { return leer(ALCANCE); }
 }

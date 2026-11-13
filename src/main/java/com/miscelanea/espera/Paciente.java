@@ -25,11 +25,11 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 
 /**
- * Habitante del Espera. No ve nada: se guía por el oído. Si hablas por el chat de voz te oye desde lejos, si corres
- * desde menos, si andas solo de cerca y agachado no te oye. Cuando oye algo va hacia allí (con los brazos por delante,
+ * Habitante de La Espera. No ve nada: te nota si te acercas, sin importar si corres, hablas o vas agachado. Cuando te
+ * nota va hacia donde estabas (con los brazos por delante,
  * a tientas) y, si te alcanza, te "purga" otra vez: te quedas a oscuras un momento y apareces en otra parte del
  * Espera. No hace daño ni se le puede hacer (si le pegas, se descoloca y aparece un poco más allá).
- * Hay pocos (unos dos por jugador) y no piensan nada mientras no oyen nada: no cuestan.
+ * Hay pocos (unos dos por jugador) y no piensan nada mientras no te notan: no cuestan.
  */
 public class Paciente extends PathfinderMob {
     public enum Variante {HEROBRINE, SIN_TEXTURA, RELLENO}
