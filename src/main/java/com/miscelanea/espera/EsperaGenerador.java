@@ -71,6 +71,18 @@ public class EsperaGenerador extends ChunkGenerator {
     }
 
     // ------------------------------------------------------------------ atajos al plano
+    /**
+     * Una pizca de azar propia de cada mundo. Solo la usan los detalles (qué fluorescentes están fundidos y cosas
+     * así), nunca el trazado: La Espera tiene que seguir siendo la misma en todas partes, que de eso va. Como el
+     * cliente no la conoce, no puede decidir nada que él también calcule.
+     */
+    private static volatile long sal = 0L;
+
+    /** Como {@link #hn}, pero con la pizca de cada mundo mezclada. Solo para detalles. */
+    static long hs(int n, int a, int b, int c) {
+        return hn(n, a, b, c) ^ (sal * 0x9E3779B97F4A7C15L);
+    }
+
     static long h(int a, int b, int c) {
         return EsperaPlano.h(a, b, c);
     }
@@ -267,6 +279,7 @@ public class EsperaGenerador extends ChunkGenerator {
 
     @Override
     public CompletableFuture<ChunkAccess> fillFromNoise(Executor e, Blender bl, RandomState r, StructureManager sm, ChunkAccess c) {
+        if (sal == 0L) sal = r.legacyLevelSeed();
         Lienzo l = new Lienzo(c);
         int cx = c.getPos().x, cz = c.getPos().z;
         for (int n = 0; n < EsperaPlano.NIVELES; n++) {
@@ -661,7 +674,7 @@ public class EsperaGenerador extends ChunkGenerator {
                 l.pon(x, f - 1, z, moqueta);
                 l.pon(x, f - 2, z, d(Blocks.STONE));
                 boolean pasillo = x == 7 || x == 8 || z == 7 || z == 8;
-                boolean luz = !rara && pasillo && (x == 7 || z == 7) && ((x + z) % 4 == 2) && hn(n, cx * 16 + x, cz * 16 + z, 3) % 7 != 0;
+                boolean luz = !rara && pasillo && (x == 7 || z == 7) && ((x + z) % 4 == 2) && hs(n, cx * 16 + x, cz * 16 + z, 3) % 7 != 0;
                 l.pon(x, techo, z, d(luz ? ((x + z) % 8 == 2 ? Blocks.PEARLESCENT_FROGLIGHT : Blocks.VERDANT_FROGLIGHT) : Blocks.BLACK_CONCRETE));
             }
         if (rara) maquina(l, f, 11, 11, Direction.NORTH, 1);      // r = 1: viva, la primera de la lista
@@ -739,7 +752,7 @@ public class EsperaGenerador extends ChunkGenerator {
                 boolean pasillo = x == 7 || x == 8 || z == 7 || z == 8;
                 l.pon(x, f - 1, z, pasillo ? moqueta : d(Blocks.SPRUCE_PLANKS));
                 l.pon(x, f - 2, z, d(Blocks.STONE));
-                boolean luz = pasillo && (x == 7 || z == 7) && (x + z) % 5 == 2 && hn(n, cx * 16 + x, cz * 16 + z, 3) % 9 != 0;
+                boolean luz = pasillo && (x == 7 || z == 7) && (x + z) % 5 == 2 && hs(n, cx * 16 + x, cz * 16 + z, 3) % 9 != 0;
                 l.pon(x, techo, z, d(luz ? Blocks.OCHRE_FROGLIGHT : Blocks.SMOOTH_SANDSTONE));
             }
         for (int k = 0; k < 4; k++) {
@@ -1591,7 +1604,7 @@ public class EsperaGenerador extends ChunkGenerator {
                 l.pon(x, f - 1, z, pasillo ? terrazo : d(Blocks.OAK_PLANKS));
                 l.pon(x, f - 2, z, d(Blocks.STONE));
                 boolean tubo = pasillo && (x == 7 || z == 7) && (x + z) % 5 == 2;
-                l.pon(x, f + 4, z, tubo ? luz.setValue(FluorescenteBlock.ENCENDIDO, hn(n, cx * 16 + x, cz * 16 + z, 3) % 3 == 0) : placa);
+                l.pon(x, f + 4, z, tubo ? luz.setValue(FluorescenteBlock.ENCENDIDO, hs(n, cx * 16 + x, cz * 16 + z, 3) % 3 == 0) : placa);
             }
         boolean rara = zona(n, cx, cz) == Zona.COLEGIO && raro(n, cx, cz) == 0;
         for (int k = 0; k < 4; k++) {
