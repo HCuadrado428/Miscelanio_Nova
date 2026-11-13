@@ -78,6 +78,11 @@ public class EsperaGenerador extends ChunkGenerator {
      */
     private static volatile long sal = 0L;
 
+    /** La pone el servidor al entrar en la dimensión (ver {@link Espera}). */
+    public static void pizca(long semilla) {
+        if (sal == 0L) sal = semilla == 0L ? 1L : semilla;
+    }
+
     /** Como {@link #hn}, pero con la pizca de cada mundo mezclada. Solo para detalles. */
     static long hs(int n, int a, int b, int c) {
         return hn(n, a, b, c) ^ (sal * 0x9E3779B97F4A7C15L);
@@ -279,7 +284,6 @@ public class EsperaGenerador extends ChunkGenerator {
 
     @Override
     public CompletableFuture<ChunkAccess> fillFromNoise(Executor e, Blender bl, RandomState r, StructureManager sm, ChunkAccess c) {
-        if (sal == 0L) sal = r.legacyLevelSeed();
         Lienzo l = new Lienzo(c);
         int cx = c.getPos().x, cz = c.getPos().z;
         for (int n = 0; n < EsperaPlano.NIVELES; n++) {

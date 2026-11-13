@@ -147,6 +147,7 @@ public final class Espera {
 
     /** Lleva al jugador al Espera (guardando de dónde viene). */
     public static void entrar(ServerPlayer p, @Nullable String aviso) {
+        EsperaGenerador.pizca(p.server.overworld().getSeed());   // los detalles cambian de un mundo a otro
         ServerLevel dest = nivel(p);
         if (dest == null || en(p.level())) return;
         CompoundTag vuelta = new CompoundTag();
