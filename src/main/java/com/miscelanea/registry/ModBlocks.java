@@ -108,9 +108,16 @@ public final class ModBlocks {
     public static final RegistryObject<Block> PELUCHE = BLOCKS.register("peluche",
             () -> new com.miscelanea.feria.PelucheBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOL).strength(0.5F)
                     .sound(SoundType.WOOL).noOcclusion()));
-    public static final RegistryObject<Block> PELUCHE_AMIGO = BLOCKS.register("peluche_amigo",
-            () -> new com.miscelanea.feria.PelucheAmigoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOL).strength(0.5F)
-                    .sound(SoundType.WOOL).noOcclusion()));
+    static {
+        // un bloque por cada peluche de la lista (ver com.miscelanea.feria.Peluches)
+        for (int i = 0; i < com.miscelanea.feria.Peluches.NOMBRES.length; i++) {
+            final int indice = i;
+            com.miscelanea.feria.Peluches.BLOQUES.put(com.miscelanea.feria.Peluches.NOMBRES[i],
+                    BLOCKS.register(com.miscelanea.feria.Peluches.id(com.miscelanea.feria.Peluches.NOMBRES[i]),
+                            () -> new com.miscelanea.feria.PelucheAmigoBlock(BlockBehaviour.Properties.of()
+                                    .mapColor(MapColor.WOOL).strength(0.5F).sound(SoundType.WOOL).noOcclusion(), indice)));
+        }
+    }
     public static final RegistryObject<Block> ALGODONERA = BLOCKS.register("algodonera",
             () -> new com.miscelanea.feria.MaquinaFeriaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(2.0F)
                     .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 6), com.miscelanea.feria.MaquinaFeriaBlock.ALGODON));

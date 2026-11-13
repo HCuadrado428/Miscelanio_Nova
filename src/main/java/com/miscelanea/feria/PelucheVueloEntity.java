@@ -1,7 +1,6 @@
 package com.miscelanea.feria;
 
 import com.miscelanea.registry.ModEntities;
-import com.miscelanea.registry.ModItems;
 import com.miscelanea.registry.ModSounds;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
@@ -40,7 +39,7 @@ public class PelucheVueloEntity extends ThrowableItemProjectile {
 
     @Override
     protected Item getDefaultItem() {
-        return ModItems.PELUCHE_AMIGO.get();
+        return Peluches.OBJETOS.get(Peluches.NOMBRES[0]).get();
     }
 
     @Override
@@ -81,7 +80,8 @@ public class PelucheVueloEntity extends ThrowableItemProjectile {
     /** Se queda quieto: vuelve a ser un objeto en el suelo. */
     private void posar() {
         if (!level().isClientSide) {
-            spawnAtLocation(new ItemStack(ModItems.PELUCHE_AMIGO.get()));
+            ItemStack caido = getItem();
+            spawnAtLocation(caido.isEmpty() ? new ItemStack(getDefaultItem()) : caido.copyWithCount(1));
             discard();
         }
     }

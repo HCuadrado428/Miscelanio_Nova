@@ -306,8 +306,7 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
             ItemStack st;
             CompoundTag est = new CompoundTag();
             if (raro) {
-                st = new ItemStack(ModItems.PELUCHE_AMIGO.get());
-                est.putString("variante", String.valueOf(l.getRandom().nextInt(4)));
+                st = new ItemStack(Peluches.alAzar(l.getRandom()).get());
             } else {
                 st = new ItemStack(ModItems.PELUCHE.get());
                 est.putString("color", String.valueOf(pc[agarrado]));

@@ -36,8 +36,6 @@ public class PelucheAmigoBlock extends Block {
 
     /** Hacia dónde mira, en 16 pasos como las cabezas. */
     public static final IntegerProperty ROTACION = BlockStateProperties.ROTATION_16;
-    /** Cuál de los peluches es. */
-    public static final IntegerProperty VARIANTE = IntegerProperty.create("variante", 0, 3);
     /** Cuánto lo has apretado: a más cansancio, más grave suena. Se recupera solo. */
     public static final IntegerProperty CANSANCIO = IntegerProperty.create("cansancio", 0, 3);
 
@@ -45,17 +43,20 @@ public class PelucheAmigoBlock extends Block {
     /** Cada cuántos ticks descansa un punto de cansancio. */
     private static final int DESCANSO = 200;
 
-    public PelucheAmigoBlock(Properties p) {
+    /** Cuál de los peluches es: solo sirve para que cada uno chille en su tono. */
+    private final int indice;
+
+    public PelucheAmigoBlock(Properties p, int indice) {
         super(p);
+        this.indice = indice;
         registerDefaultState(stateDefinition.any()
                 .setValue(ROTACION, 0)
-                .setValue(VARIANTE, 0)
                 .setValue(CANSANCIO, 0));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) {
-        b.add(ROTACION, VARIANTE, CANSANCIO);
+        b.add(ROTACION, CANSANCIO);
     }
 
     @Nullable
@@ -79,7 +80,7 @@ public class PelucheAmigoBlock extends Block {
     /** Clic derecho: chilla. Cuanto más cansado, más grave. */
     private InteractionResult apretar(BlockState s, Level l, BlockPos p, Player j) {
         int cansancio = s.getValue(CANSANCIO);
-        float tono = 1.35F - cansancio * 0.18F + (s.getValue(VARIANTE) - 1.5F) * 0.06F;
+        float tono = 1.35F - cansancio * 0.18F + (indice % 4 - 1.5F) * 0.06F;
         l.playSound(null, p, ModSounds.FE_CUAC.get(), SoundSource.BLOCKS, 0.7F, tono);
         if (!l.isClientSide) {
             if (cansancio < 3) {

@@ -80,7 +80,6 @@ public class Miscelanea {
             event.accept(ModItems.CASETA_TIRO);
             event.accept(ModItems.ESCOPETA_CORCHO);
             event.accept(ModItems.PELUCHE);
-            event.accept(ModItems.PELUCHE_AMIGO);
             event.accept(ModItems.PESCA_PATITOS);
             event.accept(ModItems.CANA_PATITOS);
             event.accept(ModItems.TOMBOLA);
@@ -239,6 +238,12 @@ public class Miscelanea {
             // --- pociones (otros paquetes añaden aquí)
         }
         // ---- Varios
+        if (event.getTabKey() == ModTabs.PELUCHES.getKey()) {
+            // el osito de la feria y, detrás, los peluches de personas
+            event.accept(ModItems.PELUCHE);
+            for (String n : com.miscelanea.feria.Peluches.NOMBRES)
+                event.accept(com.miscelanea.feria.Peluches.OBJETOS.get(n).get());
+        }
         if (event.getTabKey() == ModTabs.VARIOS.getKey()) {
             event.accept(ModItems.ASPIRAFANTASMAS);
             event.accept(ModItems.MOCHILA);

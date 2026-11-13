@@ -25,8 +25,12 @@ import java.util.List;
  */
 public class PelucheAmigoItem extends BlockItem implements Equipable {
 
-    public PelucheAmigoItem(Block b, Properties p) {
+    /** Cuál de los peluches es, para que cada uno suene distinto. */
+    private final int indice;
+
+    public PelucheAmigoItem(Block b, Properties p, int indice) {
         super(b, p);
+        this.indice = indice;
     }
 
     @Override
@@ -46,9 +50,9 @@ public class PelucheAmigoItem extends BlockItem implements Equipable {
         if (j.isShiftKeyDown()) return swapWithEquipmentSlot(this, l, j, m);
         // de pie: lo lanza
         l.playSound(null, j.getX(), j.getY(), j.getZ(), ModSounds.FE_CUAC.get(), SoundSource.NEUTRAL,
-                0.6F, 1.4F);
+                0.6F, 1.4F + (indice % 4 - 1.5F) * 0.06F);
         if (!l.isClientSide) {
-            PelucheVueloEntity e = new PelucheVueloEntity(l, j, 0);
+            PelucheVueloEntity e = new PelucheVueloEntity(l, j, indice);
             e.setItem(st.copyWithCount(1));
             e.shootFromRotation(j, j.getXRot(), j.getYRot(), 0.0F, 0.7F, 1.0F);
             l.addFreshEntity(e);

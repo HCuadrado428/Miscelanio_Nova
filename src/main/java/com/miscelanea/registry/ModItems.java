@@ -187,8 +187,16 @@ public final class ModItems {
             () -> new com.miscelanea.feria.EscopetaCorchoItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> PELUCHE = ITEMS.register("peluche",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PELUCHE.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
-    public static final RegistryObject<Item> PELUCHE_AMIGO = ITEMS.register("peluche_amigo",
-            () -> new com.miscelanea.feria.PelucheAmigoItem(ModBlocks.PELUCHE_AMIGO.get(), new Item.Properties().rarity(Rarity.RARE)));
+    static {
+        for (int i = 0; i < com.miscelanea.feria.Peluches.NOMBRES.length; i++) {
+            final String n = com.miscelanea.feria.Peluches.NOMBRES[i];
+            final int indice = i;
+            com.miscelanea.feria.Peluches.OBJETOS.put(n, ITEMS.register(com.miscelanea.feria.Peluches.id(n),
+                    () -> new com.miscelanea.feria.PelucheAmigoItem(
+                            com.miscelanea.feria.Peluches.BLOQUES.get(n).get(),
+                            new Item.Properties().rarity(Rarity.RARE), indice)));
+        }
+    }
     public static final RegistryObject<Item> ALGODONERA = ITEMS.register("algodonera",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.ALGODONERA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> PALOMITERA = ITEMS.register("palomitera",

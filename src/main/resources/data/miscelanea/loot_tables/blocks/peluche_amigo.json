@@ -7,16 +7,7 @@
    "entries": [
     {
      "type": "minecraft:item",
-     "name": "miscelanea:peluche_amigo",
-     "functions": [
-      {
-       "function": "minecraft:copy_state",
-       "block": "miscelanea:peluche_amigo",
-       "properties": [
-        "variante"
-       ]
-      }
-     ]
+     "name": "miscelanea:peluche_amigo"
     }
    ],
    "conditions": [

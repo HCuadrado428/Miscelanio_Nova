@@ -54,8 +54,11 @@ public final class FeriaEventos {
 
     private static boolean llevaPeluche(ServerPlayer j) {
         for (ItemStack st : j.getInventory().items)
-            if (st.is(com.miscelanea.registry.ModItems.PELUCHE_AMIGO.get())) return true;
-        return j.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD)
-                .is(com.miscelanea.registry.ModItems.PELUCHE_AMIGO.get());
+            if (esPeluche(st)) return true;
+        return esPeluche(j.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD));
+    }
+
+    private static boolean esPeluche(ItemStack st) {
+        return !st.isEmpty() && st.getItem() instanceof PelucheAmigoItem;
     }
 }

@@ -2,641 +2,145 @@
  "multipart": [
   {
    "when": {
-    "variante": "0",
     "rotation": "0"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo0",
+    "model": "miscelanea:block/peluche_amigo",
     "y": 0
    }
   },
   {
    "when": {
-    "variante": "0",
     "rotation": "1"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo0",
+    "model": "miscelanea:block/peluche_amigo",
     "y": 22
    }
   },
   {
    "when": {
-    "variante": "0",
     "rotation": "2"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo0",
+    "model": "miscelanea:block/peluche_amigo",
     "y": 45
    }
   },
   {
    "when": {
-    "variante": "0",
     "rotation": "3"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo0",
+    "model": "miscelanea:block/peluche_amigo",
     "y": 67
    }
   },
   {
    "when": {
-    "variante": "0",
     "rotation": "4"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo0",
+    "model": "miscelanea:block/peluche_amigo",
     "y": 90
    }
   },
   {
    "when": {
-    "variante": "0",
     "rotation": "5"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo0",
+    "model": "miscelanea:block/peluche_amigo",
     "y": 112
    }
   },
   {
    "when": {
-    "variante": "0",
     "rotation": "6"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo0",
+    "model": "miscelanea:block/peluche_amigo",
     "y": 135
    }
   },
   {
    "when": {
-    "variante": "0",
     "rotation": "7"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo0",
+    "model": "miscelanea:block/peluche_amigo",
     "y": 157
    }
   },
   {
    "when": {
-    "variante": "0",
     "rotation": "8"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo0",
+    "model": "miscelanea:block/peluche_amigo",
     "y": 180
    }
   },
   {
    "when": {
-    "variante": "0",
     "rotation": "9"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo0",
+    "model": "miscelanea:block/peluche_amigo",
     "y": 202
    }
   },
   {
    "when": {
-    "variante": "0",
     "rotation": "10"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo0",
+    "model": "miscelanea:block/peluche_amigo",
     "y": 225
    }
   },
   {
    "when": {
-    "variante": "0",
     "rotation": "11"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo0",
+    "model": "miscelanea:block/peluche_amigo",
     "y": 247
    }
   },
   {
    "when": {
-    "variante": "0",
     "rotation": "12"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo0",
+    "model": "miscelanea:block/peluche_amigo",
     "y": 270
    }
   },
   {
    "when": {
-    "variante": "0",
     "rotation": "13"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo0",
+    "model": "miscelanea:block/peluche_amigo",
     "y": 292
    }
   },
   {
    "when": {
-    "variante": "0",
     "rotation": "14"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo0",
+    "model": "miscelanea:block/peluche_amigo",
     "y": 315
    }
   },
   {
    "when": {
-    "variante": "0",
     "rotation": "15"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo0",
-    "y": 337
-   }
-  },
-  {
-   "when": {
-    "variante": "1",
-    "rotation": "0"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo1",
-    "y": 0
-   }
-  },
-  {
-   "when": {
-    "variante": "1",
-    "rotation": "1"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo1",
-    "y": 22
-   }
-  },
-  {
-   "when": {
-    "variante": "1",
-    "rotation": "2"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo1",
-    "y": 45
-   }
-  },
-  {
-   "when": {
-    "variante": "1",
-    "rotation": "3"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo1",
-    "y": 67
-   }
-  },
-  {
-   "when": {
-    "variante": "1",
-    "rotation": "4"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo1",
-    "y": 90
-   }
-  },
-  {
-   "when": {
-    "variante": "1",
-    "rotation": "5"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo1",
-    "y": 112
-   }
-  },
-  {
-   "when": {
-    "variante": "1",
-    "rotation": "6"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo1",
-    "y": 135
-   }
-  },
-  {
-   "when": {
-    "variante": "1",
-    "rotation": "7"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo1",
-    "y": 157
-   }
-  },
-  {
-   "when": {
-    "variante": "1",
-    "rotation": "8"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo1",
-    "y": 180
-   }
-  },
-  {
-   "when": {
-    "variante": "1",
-    "rotation": "9"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo1",
-    "y": 202
-   }
-  },
-  {
-   "when": {
-    "variante": "1",
-    "rotation": "10"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo1",
-    "y": 225
-   }
-  },
-  {
-   "when": {
-    "variante": "1",
-    "rotation": "11"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo1",
-    "y": 247
-   }
-  },
-  {
-   "when": {
-    "variante": "1",
-    "rotation": "12"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo1",
-    "y": 270
-   }
-  },
-  {
-   "when": {
-    "variante": "1",
-    "rotation": "13"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo1",
-    "y": 292
-   }
-  },
-  {
-   "when": {
-    "variante": "1",
-    "rotation": "14"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo1",
-    "y": 315
-   }
-  },
-  {
-   "when": {
-    "variante": "1",
-    "rotation": "15"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo1",
-    "y": 337
-   }
-  },
-  {
-   "when": {
-    "variante": "2",
-    "rotation": "0"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo2",
-    "y": 0
-   }
-  },
-  {
-   "when": {
-    "variante": "2",
-    "rotation": "1"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo2",
-    "y": 22
-   }
-  },
-  {
-   "when": {
-    "variante": "2",
-    "rotation": "2"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo2",
-    "y": 45
-   }
-  },
-  {
-   "when": {
-    "variante": "2",
-    "rotation": "3"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo2",
-    "y": 67
-   }
-  },
-  {
-   "when": {
-    "variante": "2",
-    "rotation": "4"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo2",
-    "y": 90
-   }
-  },
-  {
-   "when": {
-    "variante": "2",
-    "rotation": "5"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo2",
-    "y": 112
-   }
-  },
-  {
-   "when": {
-    "variante": "2",
-    "rotation": "6"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo2",
-    "y": 135
-   }
-  },
-  {
-   "when": {
-    "variante": "2",
-    "rotation": "7"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo2",
-    "y": 157
-   }
-  },
-  {
-   "when": {
-    "variante": "2",
-    "rotation": "8"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo2",
-    "y": 180
-   }
-  },
-  {
-   "when": {
-    "variante": "2",
-    "rotation": "9"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo2",
-    "y": 202
-   }
-  },
-  {
-   "when": {
-    "variante": "2",
-    "rotation": "10"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo2",
-    "y": 225
-   }
-  },
-  {
-   "when": {
-    "variante": "2",
-    "rotation": "11"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo2",
-    "y": 247
-   }
-  },
-  {
-   "when": {
-    "variante": "2",
-    "rotation": "12"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo2",
-    "y": 270
-   }
-  },
-  {
-   "when": {
-    "variante": "2",
-    "rotation": "13"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo2",
-    "y": 292
-   }
-  },
-  {
-   "when": {
-    "variante": "2",
-    "rotation": "14"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo2",
-    "y": 315
-   }
-  },
-  {
-   "when": {
-    "variante": "2",
-    "rotation": "15"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo2",
-    "y": 337
-   }
-  },
-  {
-   "when": {
-    "variante": "3",
-    "rotation": "0"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo3",
-    "y": 0
-   }
-  },
-  {
-   "when": {
-    "variante": "3",
-    "rotation": "1"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo3",
-    "y": 22
-   }
-  },
-  {
-   "when": {
-    "variante": "3",
-    "rotation": "2"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo3",
-    "y": 45
-   }
-  },
-  {
-   "when": {
-    "variante": "3",
-    "rotation": "3"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo3",
-    "y": 67
-   }
-  },
-  {
-   "when": {
-    "variante": "3",
-    "rotation": "4"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo3",
-    "y": 90
-   }
-  },
-  {
-   "when": {
-    "variante": "3",
-    "rotation": "5"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo3",
-    "y": 112
-   }
-  },
-  {
-   "when": {
-    "variante": "3",
-    "rotation": "6"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo3",
-    "y": 135
-   }
-  },
-  {
-   "when": {
-    "variante": "3",
-    "rotation": "7"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo3",
-    "y": 157
-   }
-  },
-  {
-   "when": {
-    "variante": "3",
-    "rotation": "8"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo3",
-    "y": 180
-   }
-  },
-  {
-   "when": {
-    "variante": "3",
-    "rotation": "9"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo3",
-    "y": 202
-   }
-  },
-  {
-   "when": {
-    "variante": "3",
-    "rotation": "10"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo3",
-    "y": 225
-   }
-  },
-  {
-   "when": {
-    "variante": "3",
-    "rotation": "11"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo3",
-    "y": 247
-   }
-  },
-  {
-   "when": {
-    "variante": "3",
-    "rotation": "12"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo3",
-    "y": 270
-   }
-  },
-  {
-   "when": {
-    "variante": "3",
-    "rotation": "13"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo3",
-    "y": 292
-   }
-  },
-  {
-   "when": {
-    "variante": "3",
-    "rotation": "14"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo3",
-    "y": 315
-   }
-  },
-  {
-   "when": {
-    "variante": "3",
-    "rotation": "15"
-   },
-   "apply": {
-    "model": "miscelanea:block/peluche_amigo3",
+    "model": "miscelanea:block/peluche_amigo",
     "y": 337
    }
   }

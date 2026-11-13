@@ -1,8 +1,8 @@
 {
  "parent": "block/block",
  "textures": {
-  "p": "miscelanea:block/peluche_amigo1",
-  "particle": "miscelanea:block/peluche_amigo1"
+  "p": "miscelanea:block/peluche_amigo",
+  "particle": "miscelanea:block/peluche_amigo"
  },
  "elements": [
   {
