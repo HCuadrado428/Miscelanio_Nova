@@ -2524,5 +2524,31 @@
       "miscelanea:movil_tono_5"
     ],
     "subtitle": "subtitles.miscelanea.movil_tono"
+  },
+  "pel_chirrido": {
+    "sounds": [
+      "miscelanea:pel_chirrido1",
+      "miscelanea:pel_chirrido2",
+      "miscelanea:pel_chirrido3"
+    ],
+    "subtitle": "subtitles.miscelanea.pel_chirrido"
+  },
+  "pel_abrazo": {
+    "sounds": [
+      "miscelanea:pel_abrazo"
+    ],
+    "subtitle": "subtitles.miscelanea.pel_abrazo"
+  },
+  "pel_cansado": {
+    "sounds": [
+      "miscelanea:pel_cansado"
+    ],
+    "subtitle": "subtitles.miscelanea.pel_cansado"
+  },
+  "pel_pof": {
+    "sounds": [
+      "miscelanea:pel_pof"
+    ],
+    "subtitle": "subtitles.miscelanea.pel_pof"
   }
 }

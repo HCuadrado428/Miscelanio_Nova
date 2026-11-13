@@ -80,8 +80,11 @@ public class PeluchePersonaBlock extends Block {
     /** Clic derecho: chilla. Cuanto más cansado, más grave. */
     private InteractionResult apretar(BlockState s, Level l, BlockPos p, Player j) {
         int cansancio = s.getValue(CANSANCIO);
-        float tono = 1.35F - cansancio * 0.18F + (indice % 4 - 1.5F) * 0.06F;
-        l.playSound(null, p, ModSounds.FE_CUAC.get(), SoundSource.BLOCKS, 0.7F, tono);
+        float tono = 1.25F - cansancio * 0.12F + (indice % 4 - 1.5F) * 0.05F;
+        // cuando ya no puede mas, en vez de chillar se desinfla
+        boolean agotado = cansancio >= 3;
+        l.playSound(null, p, agotado ? ModSounds.PEL_CANSADO.get() : ModSounds.PEL_CHIRRIDO.get(),
+                SoundSource.BLOCKS, agotado ? 0.55F : 0.7F, agotado ? 0.95F + (indice % 3) * 0.04F : tono);
         if (!l.isClientSide) {
             if (cansancio < 3) {
                 l.setBlock(p, s.setValue(CANSANCIO, cansancio + 1), 3);
@@ -97,7 +100,8 @@ public class PeluchePersonaBlock extends Block {
 
     /** Agachado y clic derecho: lo abrazas. Sale un corazón y te quedas mejor un rato. */
     private InteractionResult abrazar(BlockState s, Level l, BlockPos p, Player j) {
-        l.playSound(null, p, ModSounds.FE_POP.get(), SoundSource.BLOCKS, 0.4F, 1.6F);
+        l.playSound(null, p, ModSounds.PEL_ABRAZO.get(), SoundSource.BLOCKS, 0.6F,
+                0.98F + (indice % 4) * 0.03F);
         if (!l.isClientSide) {
             if (l instanceof ServerLevel sl) {
                 sl.sendParticles(ParticleTypes.HEART, p.getX() + 0.5D, p.getY() + 1.1D, p.getZ() + 0.5D,

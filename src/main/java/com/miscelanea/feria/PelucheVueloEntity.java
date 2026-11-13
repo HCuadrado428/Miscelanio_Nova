@@ -48,8 +48,9 @@ public class PelucheVueloEntity extends ThrowableItemProjectile {
     }
 
     private void chilla(float volumen) {
-        float tono = 1.35F + (variante - 1.5F) * 0.06F - rebotes * 0.08F;
-        level().playSound(null, getX(), getY(), getZ(), ModSounds.FE_CUAC.get(), SoundSource.NEUTRAL, volumen, tono);
+        float tono = 1.3F + (variante - 1.5F) * 0.05F - rebotes * 0.07F;
+        level().playSound(null, getX(), getY(), getZ(), ModSounds.PEL_CHIRRIDO.get(), SoundSource.NEUTRAL,
+                volumen, tono);
     }
 
     @Override
@@ -79,6 +80,8 @@ public class PelucheVueloEntity extends ThrowableItemProjectile {
 
     /** Se queda quieto: vuelve a ser un objeto en el suelo. */
     private void posar() {
+        level().playSound(null, getX(), getY(), getZ(), ModSounds.PEL_POF.get(), SoundSource.NEUTRAL,
+                0.55F, 0.95F + (variante % 3) * 0.05F);
         if (!level().isClientSide) {
             ItemStack caido = getItem();
             spawnAtLocation(caido.isEmpty() ? new ItemStack(getDefaultItem()) : caido.copyWithCount(1));

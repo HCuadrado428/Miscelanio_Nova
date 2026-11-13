@@ -208,6 +208,10 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> PI_MUSICA = register("pi_musica");
     public static final RegistryObject<SoundEvent> FE_ALGODON = register("fe_algodon");
     public static final RegistryObject<SoundEvent> FE_POP = register("fe_pop");
+    public static final RegistryObject<SoundEvent> PEL_CHIRRIDO = register("pel_chirrido");
+    public static final RegistryObject<SoundEvent> PEL_ABRAZO = register("pel_abrazo");
+    public static final RegistryObject<SoundEvent> PEL_CANSADO = register("pel_cansado");
+    public static final RegistryObject<SoundEvent> PEL_POF = register("pel_pof");
     public static final RegistryObject<SoundEvent> FE_MASCLET = register("fe_masclet");
     public static final RegistryObject<SoundEvent> FE_MASCLET_FINAL = register("fe_masclet_final");
     public static final RegistryObject<SoundEvent> FE_TREN = register("fe_tren");

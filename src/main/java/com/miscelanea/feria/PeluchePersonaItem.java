@@ -40,7 +40,7 @@ public class PeluchePersonaItem extends BlockItem implements Equipable {
 
     @Override
     public SoundEvent getEquipSound() {
-        return SoundEvents.WOOL_PLACE;
+        return ModSounds.PEL_ABRAZO.get();
     }
 
     @Override
@@ -49,8 +49,8 @@ public class PeluchePersonaItem extends BlockItem implements Equipable {
         // agachado: se lo pone en la cabeza
         if (j.isShiftKeyDown()) return swapWithEquipmentSlot(this, l, j, m);
         // de pie: lo lanza
-        l.playSound(null, j.getX(), j.getY(), j.getZ(), ModSounds.FE_CUAC.get(), SoundSource.NEUTRAL,
-                0.6F, 1.4F + (indice % 4 - 1.5F) * 0.06F);
+        l.playSound(null, j.getX(), j.getY(), j.getZ(), ModSounds.PEL_CHIRRIDO.get(), SoundSource.NEUTRAL,
+                0.6F, 1.3F + (indice % 4 - 1.5F) * 0.05F);
         if (!l.isClientSide) {
             PelucheVueloEntity e = new PelucheVueloEntity(l, j, indice);
             e.setItem(st.copyWithCount(1));
