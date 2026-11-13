@@ -39,6 +39,8 @@ import java.util.UUID;
 public class MaquinaAltaBlockEntity extends BlockEntity {
     // ---- gancho
     public static final int PREMIOS = 7, MOVER = 400, BAJA = 22, CIERRA = 10, SUBE = 22, ABRE = 12;
+    /** Una de cada tantas veces, la garra saca un peluche de alguien en vez del osito. */
+    private static final int PELUCHE_RARO = 40;
     public static final float LIMITE = 0.33F, VEL_TRASLADO = 0.02F, TRAMPILLA_X = 0.28F, TRAMPILLA_Z = -0.28F;
     public static final float SUELO = 0.95F, ARRIBA = 1.72F;
     // ---- tragaperras: cereza, limón, campana, BAR, siete
@@ -299,15 +301,24 @@ public class MaquinaAltaBlockEntity extends BlockEntity {
             cambio();
         }
         if (t >= duraBajada() - ABRE + 4 && agarrado >= 0) {
-            ItemStack st = new ItemStack(ModItems.PELUCHE.get());
+            // de vez en cuando, muy de vez en cuando, la garra saca un peluche de alguien en vez del osito
+            boolean raro = l.getRandom().nextInt(PELUCHE_RARO) == 0;
+            ItemStack st;
             CompoundTag est = new CompoundTag();
-            est.putString("color", String.valueOf(pc[agarrado]));
+            if (raro) {
+                st = new ItemStack(ModItems.PELUCHE_AMIGO.get());
+                est.putString("variante", String.valueOf(l.getRandom().nextInt(4)));
+            } else {
+                st = new ItemStack(ModItems.PELUCHE.get());
+                est.putString("color", String.valueOf(pc[agarrado]));
+            }
             st.getOrCreateTag().put("BlockStateTag", est);
             soltar(st, 0.3);
             pc[agarrado] = -1;
             agarrado = -1;
-            l.playSound(null, worldPosition, ModSounds.FE_PREMIO.get(), SoundSource.BLOCKS, 1F, 1F);
-            FeriaJuice.confeti(l, mundo(0, 1.3, -0.55), 2);
+            l.playSound(null, worldPosition, raro ? ModSounds.FE_PREMIO_GORDO.get() : ModSounds.FE_PREMIO.get(),
+                    SoundSource.BLOCKS, 1F, 1F);
+            FeriaJuice.confeti(l, mundo(0, 1.3, -0.55), raro ? 6 : 2);
             Player p = jugador != null ? l.getPlayerByUUID(jugador) : null;
             if (p != null) p.displayClientMessage(Component.translatable("miscelanea.gancho.premio"), true);
             cambio();

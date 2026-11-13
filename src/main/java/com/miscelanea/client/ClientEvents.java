@@ -162,6 +162,7 @@ public final class ClientEvents {
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.PUESTO_FERIA_BE.get(), com.miscelanea.client.feria.PuestoFeriaRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.BOLA_PETANCA.get(), com.miscelanea.client.feria.BolaPetancaRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.BALON.get(), com.miscelanea.client.feria.BalonRenderer::new);
+            event.registerEntityRenderer(com.miscelanea.registry.ModEntities.PELUCHE_VUELO.get(), net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.BOLERA_BE.get(), com.miscelanea.client.bolos.BoleraRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TORRE_BE.get(), com.miscelanea.client.torre.TorreRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.MESA_CARTAS_BE.get(), com.miscelanea.client.cartas.MesaCartasRenderer::new);

@@ -108,6 +108,9 @@ public final class ModBlocks {
     public static final RegistryObject<Block> PELUCHE = BLOCKS.register("peluche",
             () -> new com.miscelanea.feria.PelucheBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOL).strength(0.5F)
                     .sound(SoundType.WOOL).noOcclusion()));
+    public static final RegistryObject<Block> PELUCHE_AMIGO = BLOCKS.register("peluche_amigo",
+            () -> new com.miscelanea.feria.PelucheAmigoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOL).strength(0.5F)
+                    .sound(SoundType.WOOL).noOcclusion()));
     public static final RegistryObject<Block> ALGODONERA = BLOCKS.register("algodonera",
             () -> new com.miscelanea.feria.MaquinaFeriaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(2.0F)
                     .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 6), com.miscelanea.feria.MaquinaFeriaBlock.ALGODON));

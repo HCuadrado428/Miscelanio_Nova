@@ -187,6 +187,8 @@ public final class ModItems {
             () -> new com.miscelanea.feria.EscopetaCorchoItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> PELUCHE = ITEMS.register("peluche",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.PELUCHE.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> PELUCHE_AMIGO = ITEMS.register("peluche_amigo",
+            () -> new com.miscelanea.feria.PelucheAmigoItem(ModBlocks.PELUCHE_AMIGO.get(), new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> ALGODONERA = ITEMS.register("algodonera",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.ALGODONERA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> PALOMITERA = ITEMS.register("palomitera",

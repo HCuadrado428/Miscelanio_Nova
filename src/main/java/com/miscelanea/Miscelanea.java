@@ -80,6 +80,7 @@ public class Miscelanea {
             event.accept(ModItems.CASETA_TIRO);
             event.accept(ModItems.ESCOPETA_CORCHO);
             event.accept(ModItems.PELUCHE);
+            event.accept(ModItems.PELUCHE_AMIGO);
             event.accept(ModItems.PESCA_PATITOS);
             event.accept(ModItems.CANA_PATITOS);
             event.accept(ModItems.TOMBOLA);

@@ -4,6 +4,10 @@ import com.miscelanea.Miscelanea;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -30,5 +34,28 @@ public final class FeriaEventos {
     /** Tics desde que empezó el juego de la máquina (cabe en un short). */
     static int golpeT(long ahora, MaquinaAltaBlockEntity be) {
         return (int) Math.max(0, Math.min(Short.MAX_VALUE, ahora - be.inicio));
+    }
+
+    /** Cada cuántos tics se mira si el jugador lleva su peluche. */
+    private static final int CADA = 100;
+
+    /**
+     * Con el peluche encima se duerme tranquilo: no salen fantasmas aunque lleves noches sin dormir. Se comprueba de
+     * vez en cuando, no en cada tic, porque hay que recorrer el inventario.
+     */
+    @SubscribeEvent
+    public static void peluchePorLaNoche(TickEvent.PlayerTickEvent e) {
+        if (e.phase != TickEvent.Phase.END || !(e.player instanceof ServerPlayer j)) return;
+        if (j.tickCount % CADA != 0) return;
+        if (!llevaPeluche(j)) return;
+        if (j.getStats().getValue(Stats.CUSTOM.get(Stats.TIME_SINCE_REST)) > 0)
+            j.getStats().setValue(j, Stats.CUSTOM.get(Stats.TIME_SINCE_REST), 0);
+    }
+
+    private static boolean llevaPeluche(ServerPlayer j) {
+        for (ItemStack st : j.getInventory().items)
+            if (st.is(com.miscelanea.registry.ModItems.PELUCHE_AMIGO.get())) return true;
+        return j.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD)
+                .is(com.miscelanea.registry.ModItems.PELUCHE_AMIGO.get());
     }
 }
