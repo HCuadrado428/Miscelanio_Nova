@@ -1,7 +1,9 @@
 package com.miscelanea.espera;
 
 import com.miscelanea.Miscelanea;
+import com.miscelanea.registry.ModSounds;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -88,6 +90,14 @@ public final class Espera {
             long ya = ((ServerLevel) l).getGameTime();
             if (dz != 0 && !p.isPassenger() && ya - BUCLE.getOrDefault(p.getUUID(), -100L) > 40) {
                 BUCLE.put(p.getUUID(), ya);
+                int vuelta = VUELTAS.merge(p.getUUID(), 1, Integer::sum);
+                if (vuelta >= VUELTAS_HASTA_SALIDA) {
+                    // el pasillo se cansa antes que tú: te deja salir
+                    abrirSalida((ServerLevel) l, p);
+                    VUELTAS.remove(p.getUUID());
+                } else {
+                    gastarPasillo((ServerLevel) l, p, vuelta);
+                }
                 p.connection.teleport(p.getX(), p.getY(), p.getZ() + dz, p.getYRot(), p.getXRot(), java.util.EnumSet.allOf(net.minecraft.world.entity.RelativeMovement.class));
             }
             ascensor(p);
@@ -136,6 +146,7 @@ public final class Espera {
         Habitantes.olvidar(e.getEntity().getUUID());
         VIAJES.remove(e.getEntity().getUUID());
         BUCLE.remove(e.getEntity().getUUID());
+        VUELTAS.remove(e.getEntity().getUUID());
     }
 
     /** Lleva al jugador al Espera (guardando de dónde viene). */
@@ -298,6 +309,10 @@ public final class Espera {
 
     /** Cuándo se le devolvió por última vez en el pasillo que vuelve (para no hacerlo dos veces seguidas). */
     private static final java.util.Map<java.util.UUID, Long> BUCLE = new java.util.concurrent.ConcurrentHashMap<>();
+    /** Cuántas vueltas lleva cada jugador en el pasillo que no se acaba. */
+    private static final java.util.Map<java.util.UUID, Integer> VUELTAS = new java.util.concurrent.ConcurrentHashMap<>();
+    /** A las tantas vueltas el pasillo se rinde y aparece una salida. */
+    private static final int VUELTAS_HASTA_SALIDA = 10;
     private static final java.util.Map<java.util.UUID, Viaje> VIAJES = new java.util.concurrent.ConcurrentHashMap<>();
 
     /**
@@ -523,5 +538,59 @@ public final class Espera {
                     if (Math.max(Math.abs(cx), Math.abs(cz)) == r && EsperaGenerador.salida(cx, cz))
                         return new BlockPos(cx * 16 + 3, EsperaGenerador.SUELO, cz * 16 + 6);
         return new BlockPos(8, EsperaGenerador.SUELO, 8);
+    }
+
+    /**
+     * Cada vuelta del pasillo lo deja un poco peor: se van fundiendo los fluorescentes de atrás y se abren solas las
+     * puertas que dan a la pared. No es decorado: son bloques que cambian de verdad y siguen así cuando vuelves.
+     */
+    private static void gastarPasillo(ServerLevel l, ServerPlayer p, int vuelta) {
+        BlockPos donde = p.blockPosition();
+        java.util.Random r = new java.util.Random(donde.asLong() * 31L + vuelta);
+        // a partir de la segunda vuelta se funde una luz del tramo que acabas de dejar atrás
+        if (vuelta >= 2) {
+            for (int intento = 0; intento < 12; intento++) {
+                BlockPos q = donde.offset(r.nextInt(3) - 1, 4, 2 + r.nextInt(18));
+                BlockState s = l.getBlockState(q);
+                if (s.is(com.miscelanea.registry.ModBlocks.FLUORESCENTE.get())
+                        && s.getValue(com.miscelanea.espera.FluorescenteBlock.ENCENDIDO)) {
+                    l.setBlock(q, s.setValue(com.miscelanea.espera.FluorescenteBlock.ENCENDIDO, false), 3);
+                    l.playSound(null, q, net.minecraft.sounds.SoundEvents.AMETHYST_BLOCK_BREAK,
+                            net.minecraft.sounds.SoundSource.BLOCKS, 0.4F, 2.0F);
+                    break;
+                }
+            }
+        }
+        // a partir de la cuarta, una de las puertas de los lados aparece abierta
+        if (vuelta >= 4) {
+            for (int intento = 0; intento < 12; intento++) {
+                BlockPos q = donde.offset(r.nextInt(5) - 2, 0, 2 + r.nextInt(18));
+                BlockState s = l.getBlockState(q);
+                if (s.getBlock() instanceof net.minecraft.world.level.block.DoorBlock
+                        && !s.getValue(net.minecraft.world.level.block.DoorBlock.OPEN)) {
+                    l.setBlock(q, s.setValue(net.minecraft.world.level.block.DoorBlock.OPEN, true), 3);
+                    l.playSound(null, q, net.minecraft.sounds.SoundEvents.WOODEN_DOOR_OPEN,
+                            net.minecraft.sounds.SoundSource.BLOCKS, 0.7F, 0.7F);
+                    break;
+                }
+            }
+        }
+        // y a partir de la sexta ya no estás solo
+        if (vuelta >= 6 && vuelta % 2 == 0)
+            Habitantes.aparecer(l, donde.offset(0, 0, 10 + (vuelta - 6)), null);
+    }
+
+    /** Tras muchas vueltas, al fondo del pasillo aparece una puerta de SALIDA. */
+    private static void abrirSalida(ServerLevel l, ServerPlayer p) {
+        BlockPos donde = p.blockPosition();
+        BlockState salida = com.miscelanea.registry.ModBlocks.PUERTA_SALIDA.get().defaultBlockState();
+        for (int dz = 3; dz < 10; dz++) {
+            BlockPos q = donde.offset(0, 0, dz);
+            if (!l.getBlockState(q).isAir()) continue;
+            l.setBlock(q, salida, 3);
+            l.playSound(null, q, ModSounds.PACIENTE_OYE.get(), net.minecraft.sounds.SoundSource.AMBIENT, 0.6F, 0.6F);
+            p.displayClientMessage(Component.translatable("espera.miscelanea.pasillo_cede"), true);
+            return;
+        }
     }
 }

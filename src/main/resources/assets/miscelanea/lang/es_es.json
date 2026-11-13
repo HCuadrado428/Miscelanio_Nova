@@ -2854,6 +2854,7 @@
  "espera.miscelanea.noclip": "Te has colado por la pared… y ya no estás donde estabas.",
  "espera.miscelanea.vacio": "Te has caído del mapa. Aquí acaban los errores borrados.",
  "espera.miscelanea.salida": "Has vuelto. Nadie se ha dado cuenta de que no estabas.",
+ "espera.miscelanea.pasillo_cede": "El pasillo se ha cansado antes que tú.",
  "block.miscelanea.sin_textura": "Bloque sin textura",
  "block.miscelanea.moqueta_recreativa": "Moqueta de recreativa",
  "block.miscelanea.recreativa_apagada": "Recreativa fundida",
