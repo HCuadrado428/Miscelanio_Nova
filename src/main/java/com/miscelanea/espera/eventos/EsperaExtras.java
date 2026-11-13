@@ -7,6 +7,7 @@ import com.miscelanea.espera.EsperaConfig;
 import com.miscelanea.espera.EsperaGenerador;
 import com.miscelanea.espera.EsperaPlano;
 import com.miscelanea.registry.ModSounds;
+import net.minecraft.network.chat.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.nbt.CompoundTag;
