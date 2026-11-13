@@ -2854,7 +2854,6 @@
  "espera.miscelanea.noclip": "You clipped through the wall… and you're not where you were.",
  "espera.miscelanea.vacio": "You fell off the map. This is where deleted errors end up.",
  "espera.miscelanea.salida": "You're back. Nobody noticed you were gone.",
- "espera.miscelanea.pasillo_cede": "The corridor gave up before you did.",
  "block.miscelanea.sin_textura": "Missing Texture Block",
  "block.miscelanea.moqueta_recreativa": "Arcade Carpet",
  "block.miscelanea.recreativa_apagada": "Dead Arcade Cabinet",

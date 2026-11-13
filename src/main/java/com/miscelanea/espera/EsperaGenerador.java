@@ -289,7 +289,7 @@ public class EsperaGenerador extends ChunkGenerator {
                 case COLEGIO -> colegio(l, n, f, cx, cz);
                 case CENTRO -> centro(l, n, f, cx, cz);
             }
-            if (EsperaPlano.salida(n, cx, cz)) puertaSalida(l, f, z);
+            if (EsperaPlano.salida(n, cx, cz)) puertaSalida(l, f, z, n, cx, cz);
             if (n == 0) contagio(l, f, cx, cz, z);
         }
         if (EsperaPlano.ascensor(cx, cz))
@@ -948,7 +948,7 @@ public class EsperaGenerador extends ChunkGenerator {
 
     // ------------------------------------------------------------------ salida
     /** Un marco de puerta suelto con el cartel verde de SALIDA encima: al cruzarlo se vuelve. */
-    private static void puertaSalida(Lienzo l, int f, Zona z) {
+    private static void puertaSalida(Lienzo l, int f, Zona z, int n, int cx, int cz) {
         BlockState marco = switch (z) {
             case FERIA -> d(Blocks.WHITE_CONCRETE);
             case SALA -> d(Blocks.QUARTZ_PILLAR);
@@ -960,21 +960,23 @@ public class EsperaGenerador extends ChunkGenerator {
             case COLEGIO -> ModBlocks.PARED_COLEGIO_ZOCALO.get().defaultBlockState();
             case CENTRO -> d(Blocks.SMOOTH_QUARTZ);
         };
-        int zz = 3;
+        // no siempre en el mismo rincón: cada chunk la pone en un sitio distinto, para que no se busque de memoria
+        int zz = 2 + (int) (EsperaPlano.hn(n, cx, cz, 23) % 12);
+        int xx = 2 + (int) (EsperaPlano.hn(n, cx, cz, 29) % 11);
         for (int y = 0; y < 4; y++) {
-            l.pon(1, f + y, zz, marco);
-            l.pon(5, f + y, zz, marco);
+            l.pon(xx - 2, f + y, zz, marco);
+            l.pon(xx + 2, f + y, zz, marco);
         }
-        l.caja(2, f + 3, zz, 4, f + 3, zz, marco);
-        l.caja(2, f, zz, 2, f + 2, zz, marco);
-        l.caja(4, f, zz, 4, f + 2, zz, marco);
+        l.caja(xx - 1, f + 3, zz, xx + 1, f + 3, zz, marco);
+        l.caja(xx - 1, f, zz, xx - 1, f + 2, zz, marco);
+        l.caja(xx + 1, f, zz, xx + 1, f + 2, zz, marco);
         BlockState puerta = ModBlocks.PUERTA_SALIDA.get().defaultBlockState();
-        l.pon(3, f, zz, puerta);
-        l.pon(3, f + 1, zz, puerta);
-        l.pon(3, f + 2, zz, ModBlocks.CARTEL_SALIDA.get().defaultBlockState());
+        l.pon(xx, f, zz, puerta);
+        l.pon(xx, f + 1, zz, puerta);
+        l.pon(xx, f + 2, zz, ModBlocks.CARTEL_SALIDA.get().defaultBlockState());
         // y despejado delante y detrás
         for (int zd : new int[]{zz - 1, zz + 1})
-            for (int x = 2; x <= 4; x++)
+            for (int x = xx - 1; x <= xx + 1; x++)
                 for (int y = 0; y < 3; y++) l.pon(x, f + y, zd, AIRE);
     }
 

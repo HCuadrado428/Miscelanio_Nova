@@ -91,13 +91,9 @@ public final class Espera {
             if (dz != 0 && !p.isPassenger() && ya - BUCLE.getOrDefault(p.getUUID(), -100L) > 40) {
                 BUCLE.put(p.getUUID(), ya);
                 int vuelta = VUELTAS.merge(p.getUUID(), 1, Integer::sum);
-                if (vuelta >= VUELTAS_HASTA_SALIDA) {
-                    // el pasillo se cansa antes que tú: te deja salir
-                    abrirSalida((ServerLevel) l, p);
-                    VUELTAS.remove(p.getUUID());
-                } else {
-                    gastarPasillo((ServerLevel) l, p, vuelta);
-                }
+                // en la primera vuelta el pasillo vuelve a estar entero: quien entre se lo encuentra nuevo
+                if (vuelta == 1) restaurarPasillo((ServerLevel) l, p);
+                else gastarPasillo((ServerLevel) l, p, vuelta);
                 p.connection.teleport(p.getX(), p.getY(), p.getZ() + dz, p.getYRot(), p.getXRot(), java.util.EnumSet.allOf(net.minecraft.world.entity.RelativeMovement.class));
             }
             ascensor(p);
@@ -311,8 +307,7 @@ public final class Espera {
     private static final java.util.Map<java.util.UUID, Long> BUCLE = new java.util.concurrent.ConcurrentHashMap<>();
     /** Cuántas vueltas lleva cada jugador en el pasillo que no se acaba. */
     private static final java.util.Map<java.util.UUID, Integer> VUELTAS = new java.util.concurrent.ConcurrentHashMap<>();
-    /** A las tantas vueltas el pasillo se rinde y aparece una salida. */
-    private static final int VUELTAS_HASTA_SALIDA = 10;
+
     private static final java.util.Map<java.util.UUID, Viaje> VIAJES = new java.util.concurrent.ConcurrentHashMap<>();
 
     /**
@@ -580,17 +575,31 @@ public final class Espera {
             Habitantes.aparecer(l, donde.offset(0, 0, 10 + (vuelta - 6)), null);
     }
 
-    /** Tras muchas vueltas, al fondo del pasillo aparece una puerta de SALIDA. */
-    private static void abrirSalida(ServerLevel l, ServerPlayer p) {
-        BlockPos donde = p.blockPosition();
-        BlockState salida = com.miscelanea.registry.ModBlocks.PUERTA_SALIDA.get().defaultBlockState();
-        for (int dz = 3; dz < 10; dz++) {
-            BlockPos q = donde.offset(0, 0, dz);
-            if (!l.getBlockState(q).isAir()) continue;
-            l.setBlock(q, salida, 3);
-            l.playSound(null, q, ModSounds.PACIENTE_OYE.get(), net.minecraft.sounds.SoundSource.AMBIENT, 0.6F, 0.6F);
-            p.displayClientMessage(Component.translatable("espera.miscelanea.pasillo_cede"), true);
-            return;
+    /**
+     * Deja el pasillo como nuevo: las luces encendidas y las puertas cerradas. Se hace cuando alguien entra, para que
+     * no se encuentre el desgaste del anterior. Si hay otro dentro no se toca, que si no le estropearíamos la vuelta.
+     */
+    private static void restaurarPasillo(ServerLevel l, ServerPlayer p) {
+        EsperaPlano.Grande g = EsperaPlano.grande(EsperaPlano.nivel(p.getY()),
+                p.blockPosition().getX() >> 4, p.blockPosition().getZ() >> 4);
+        if (g == null) return;
+        for (ServerPlayer otro : l.players()) {
+            if (otro == p) continue;
+            int ox = otro.blockPosition().getX(), oz = otro.blockPosition().getZ();
+            if (ox >= g.x0() && ox < g.x0() + g.w() * 16 && oz >= g.z0() && oz < g.z0() + g.d() * 16) return;
         }
+        int y = p.blockPosition().getY();
+        for (int x = g.x0(); x < g.x0() + g.w() * 16; x++)
+            for (int z = g.z0(); z < g.z0() + g.d() * 16; z++)
+                for (int dy = -1; dy <= 5; dy++) {
+                    BlockPos q = new BlockPos(x, y + dy, z);
+                    BlockState s = l.getBlockState(q);
+                    if (s.is(com.miscelanea.registry.ModBlocks.FLUORESCENTE.get())
+                            && !s.getValue(com.miscelanea.espera.FluorescenteBlock.ENCENDIDO))
+                        l.setBlock(q, s.setValue(com.miscelanea.espera.FluorescenteBlock.ENCENDIDO, true), 2);
+                    else if (s.getBlock() instanceof net.minecraft.world.level.block.DoorBlock
+                            && s.getValue(net.minecraft.world.level.block.DoorBlock.OPEN))
+                        l.setBlock(q, s.setValue(net.minecraft.world.level.block.DoorBlock.OPEN, false), 2);
+                }
     }
 }

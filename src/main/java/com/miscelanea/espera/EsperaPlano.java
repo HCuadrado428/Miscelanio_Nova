@@ -215,8 +215,19 @@ public final class EsperaPlano {
     }
 
     /** ¿Hay puerta de salida en este chunk de este piso? (más o menos una de cada 60). */
+    /**
+     * ¿Hay una puerta de SALIDA en este chunk? Arriba no hay ninguna: por mucho que se busque, del primer piso no se
+     * sale por una puerta. En el de en medio aparece una cada muchísimo, y abajo del todo es donde están casi todas.
+     * Bajar no es una opción: es el camino.
+     */
     public static boolean salida(int n, int cx, int cz) {
-        return hn(n, cx, cz, 7) % 60 == 0 && grande(n, cx, cz) == null;
+        if (grande(n, cx, cz) != null) return false;
+        int cada = switch (n) {
+            case 0 -> 0;        // el piso de arriba no tiene salidas
+            case 1 -> 220;
+            default -> 70;
+        };
+        return cada > 0 && hn(n, cx, cz, 7) % cada == 0;
     }
 
     /** Las cuatro parcelas de un chunk normal (esquina de cada una): 0 noroeste, 1 noreste, 2 suroeste, 3 sureste. */
