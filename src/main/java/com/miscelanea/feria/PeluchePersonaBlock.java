@@ -62,7 +62,9 @@ public class PeluchePersonaBlock extends Block {
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext c) {
-        int giro = Mth.floor((180.0F + c.getRotation()) * 16.0F / 360.0F + 0.5D) & 15;
+        // el peluche mira de frente a quien lo pone: su cara va en la cara norte del modelo, asi que
+        // el giro es directamente el del jugador (los estandartes llevan 180 porque miran al sur)
+        int giro = Mth.floor(c.getRotation() * 16.0F / 360.0F + 0.5D) & 15;
         return defaultBlockState().setValue(ROTACION, giro);
     }
 
