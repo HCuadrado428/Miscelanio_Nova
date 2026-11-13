@@ -100,14 +100,14 @@ public class PelucheVueloEntity extends ThrowableItemProjectile {
     }
 
     @Override
-    protected void addAdditionalSaveData(net.minecraft.nbt.CompoundTag t) {
+    public void addAdditionalSaveData(net.minecraft.nbt.CompoundTag t) {
         super.addAdditionalSaveData(t);
         t.putInt("rebotes", rebotes);
         t.putInt("variante", variante);
     }
 
     @Override
-    protected void readAdditionalSaveData(net.minecraft.nbt.CompoundTag t) {
+    public void readAdditionalSaveData(net.minecraft.nbt.CompoundTag t) {
         super.readAdditionalSaveData(t);
         rebotes = t.getInt("rebotes");
         variante = t.getInt("variante");

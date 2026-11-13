@@ -43,7 +43,7 @@ public class PelucheAmigoItem extends BlockItem implements Equipable {
     public InteractionResultHolder<ItemStack> use(Level l, Player j, InteractionHand m) {
         ItemStack st = j.getItemInHand(m);
         // agachado: se lo pone en la cabeza
-        if (j.isShiftKeyDown()) return Equipable.swapWithEquipmentSlot(this, l, j, m);
+        if (j.isShiftKeyDown()) return swapWithEquipmentSlot(this, l, j, m);
         // de pie: lo lanza
         l.playSound(null, j.getX(), j.getY(), j.getZ(), ModSounds.FE_CUAC.get(), SoundSource.NEUTRAL,
                 0.6F, 1.4F);
