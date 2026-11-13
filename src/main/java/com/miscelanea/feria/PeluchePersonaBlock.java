@@ -39,7 +39,7 @@ public class PeluchePersonaBlock extends Block {
     /** Cuánto lo has apretado: a más cansancio, más grave suena. Se recupera solo. */
     public static final IntegerProperty CANSANCIO = IntegerProperty.create("cansancio", 0, 3);
 
-    private static final VoxelShape FORMA = Block.box(3.0D, 0.0D, 4.0D, 13.0D, 14.0D, 12.0D);
+    private static final VoxelShape FORMA = Block.box(3.0D, 0.0D, 1.5D, 13.0D, 13.0D, 12.5D);
     /** Cada cuántos ticks descansa un punto de cansancio. */
     private static final int DESCANSO = 200;
 
