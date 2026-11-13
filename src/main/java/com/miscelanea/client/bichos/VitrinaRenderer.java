@@ -72,7 +72,9 @@ public class VitrinaRenderer implements BlockEntityRenderer<VitrinaBlockEntity> 
     private static void placa(VitrinaBlockEntity v, ItemStack s, PoseStack ps, MultiBufferSource buf, int luz) {
         // placa con el nombre en la cara frontal de la base
         var dir = v.getBlockState().getValue(HorizontalDirectionalBlock.FACING);
-        Component nombre = s.getItem() instanceof BichoItem || s.getItem() instanceof com.miscelanea.tesoros.FosilItem ? s.getHoverName() : Component.empty();
+        Component nombre = s.getItem() instanceof BichoItem || s.getItem() instanceof com.miscelanea.tesoros.FosilItem
+                || s.getItem() instanceof com.miscelanea.feria.PeluchePersonaItem
+                || s.is(com.miscelanea.registry.ModItems.PELUCHE.get()) ? s.getHoverName() : Component.empty();
         Font f = Minecraft.getInstance().font;
         ps.pushPose();
         ps.translate(0.5, 0.11, 0.5);
