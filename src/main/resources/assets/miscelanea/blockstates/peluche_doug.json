@@ -14,8 +14,8 @@
     "rotation": "1"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_doug",
-    "y": 22
+    "model": "miscelanea:block/peluche_doug_22",
+    "y": 0
    }
   },
   {
@@ -23,8 +23,8 @@
     "rotation": "2"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_doug",
-    "y": 45
+    "model": "miscelanea:block/peluche_doug_45",
+    "y": 0
    }
   },
   {
@@ -32,8 +32,8 @@
     "rotation": "3"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_doug",
-    "y": 67
+    "model": "miscelanea:block/peluche_doug_m22",
+    "y": 90
    }
   },
   {
@@ -50,8 +50,8 @@
     "rotation": "5"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_doug",
-    "y": 112
+    "model": "miscelanea:block/peluche_doug_22",
+    "y": 90
    }
   },
   {
@@ -59,8 +59,8 @@
     "rotation": "6"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_doug",
-    "y": 135
+    "model": "miscelanea:block/peluche_doug_45",
+    "y": 90
    }
   },
   {
@@ -68,8 +68,8 @@
     "rotation": "7"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_doug",
-    "y": 157
+    "model": "miscelanea:block/peluche_doug_m22",
+    "y": 180
    }
   },
   {
@@ -86,8 +86,8 @@
     "rotation": "9"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_doug",
-    "y": 202
+    "model": "miscelanea:block/peluche_doug_22",
+    "y": 180
    }
   },
   {
@@ -95,8 +95,8 @@
     "rotation": "10"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_doug",
-    "y": 225
+    "model": "miscelanea:block/peluche_doug_45",
+    "y": 180
    }
   },
   {
@@ -104,8 +104,8 @@
     "rotation": "11"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_doug",
-    "y": 247
+    "model": "miscelanea:block/peluche_doug_m22",
+    "y": 270
    }
   },
   {
@@ -122,8 +122,8 @@
     "rotation": "13"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_doug",
-    "y": 292
+    "model": "miscelanea:block/peluche_doug_22",
+    "y": 270
    }
   },
   {
@@ -131,8 +131,8 @@
     "rotation": "14"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_doug",
-    "y": 315
+    "model": "miscelanea:block/peluche_doug_45",
+    "y": 270
    }
   },
   {
@@ -140,8 +140,8 @@
     "rotation": "15"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_doug",
-    "y": 337
+    "model": "miscelanea:block/peluche_doug_m22",
+    "y": 0
    }
   }
  ]
