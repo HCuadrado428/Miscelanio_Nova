@@ -58,17 +58,17 @@ public class MarcoFotoRenderer implements BlockEntityRenderer<MarcoFotoBlockEnti
 
     private void cara(VertexConsumer vc, Matrix4f m, PoseStack ps, float x0, float y0, float x1, float y1,
                       int luz, int overlay) {
-        PoseStack.Pose p = ps.last();
-        punto(vc, m, p, x0, y0, 0F, 1F, luz, overlay);
-        punto(vc, m, p, x1, y0, 1F, 1F, luz, overlay);
-        punto(vc, m, p, x1, y1, 1F, 0F, luz, overlay);
-        punto(vc, m, p, x0, y1, 0F, 0F, luz, overlay);
+        org.joml.Matrix3f n = ps.last().normal();
+        punto(vc, m, n, x0, y0, 0F, 1F, luz, overlay);
+        punto(vc, m, n, x1, y0, 1F, 1F, luz, overlay);
+        punto(vc, m, n, x1, y1, 1F, 0F, luz, overlay);
+        punto(vc, m, n, x0, y1, 0F, 0F, luz, overlay);
     }
 
-    private void punto(VertexConsumer vc, Matrix4f m, PoseStack.Pose p, float x, float y, float u, float v,
+    private void punto(VertexConsumer vc, Matrix4f m, org.joml.Matrix3f n, float x, float y, float u, float v,
                        int luz, int overlay) {
         vc.vertex(m, x, y, 0F).color(255, 255, 255, 255).uv(u, v)
-                .overlayCoords(overlay).uv2(luz).normal(p, 0F, 0F, 1F).endVertex();
+                .overlayCoords(overlay).uv2(luz).normal(n, 0F, 0F, 1F).endVertex();
     }
 
     @Override
