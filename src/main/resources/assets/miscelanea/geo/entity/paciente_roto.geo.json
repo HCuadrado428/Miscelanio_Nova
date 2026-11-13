@@ -1,0 +1,391 @@
+{
+ "format_version": "1.12.0",
+ "minecraft:geometry": [
+  {
+   "description": {
+    "identifier": "geometry.paciente_roto",
+    "texture_width": 64,
+    "texture_height": 64,
+    "visible_bounds_width": 3,
+    "visible_bounds_height": 4,
+    "visible_bounds_offset": [
+     0,
+     1.6,
+     0
+    ]
+   },
+   "bones": [
+    {
+     "name": "raiz",
+     "pivot": [
+      0,
+      0,
+      0
+     ]
+    },
+    {
+     "name": "cadera",
+     "pivot": [
+      0,
+      15,
+      0
+     ],
+     "parent": "raiz"
+    },
+    {
+     "name": "cuerpo",
+     "pivot": [
+      0,
+      15,
+      0
+     ],
+     "parent": "cadera",
+     "rotation": [
+      9,
+      -4,
+      0
+     ],
+     "cubes": [
+      {
+       "origin": [
+        -3,
+        15,
+        -2
+       ],
+       "size": [
+        6,
+        7,
+        4
+       ],
+       "uv": [
+        42,
+        0
+       ],
+       "inflate": 0
+      },
+      {
+       "origin": [
+        -1.5,
+        21.5,
+        -1
+       ],
+       "size": [
+        5,
+        6,
+        3
+       ],
+       "uv": [
+        0,
+        17
+       ],
+       "inflate": 0
+      }
+     ]
+    },
+    {
+     "name": "cuello",
+     "pivot": [
+      0,
+      27,
+      0
+     ],
+     "parent": "cuerpo",
+     "cubes": [
+      {
+       "origin": [
+        -1,
+        27,
+        -1
+       ],
+       "size": [
+        2,
+        2,
+        2
+       ],
+       "uv": [
+        33,
+        0
+       ],
+       "inflate": 0
+      }
+     ]
+    },
+    {
+     "name": "cabeza",
+     "pivot": [
+      0,
+      31,
+      0
+     ],
+     "parent": "cuello",
+     "rotation": [
+      0,
+      13,
+      6
+     ],
+     "cubes": [
+      {
+       "origin": [
+        -4,
+        31.5,
+        -4
+       ],
+       "size": [
+        8,
+        8,
+        8
+       ],
+       "uv": [
+        0,
+        0
+       ],
+       "inflate": 0
+      }
+     ]
+    },
+    {
+     "name": "hombro_d",
+     "pivot": [
+      -3.5,
+      25,
+      0
+     ],
+     "parent": "cuerpo",
+     "rotation": [
+      2,
+      0,
+      5
+     ]
+    },
+    {
+     "name": "brazo_d",
+     "pivot": [
+      -3.5,
+      25,
+      0
+     ],
+     "parent": "hombro_d",
+     "cubes": [
+      {
+       "origin": [
+        -4.5,
+        15,
+        -1
+       ],
+       "size": [
+        2,
+        10,
+        2
+       ],
+       "uv": [
+        17,
+        17
+       ],
+       "inflate": 0
+      }
+     ]
+    },
+    {
+     "name": "codo_d",
+     "pivot": [
+      -3.5,
+      15,
+      0
+     ],
+     "parent": "brazo_d",
+     "rotation": [
+      -6,
+      0,
+      0
+     ]
+    },
+    {
+     "name": "antebrazo_d",
+     "pivot": [
+      -3.5,
+      15,
+      0
+     ],
+     "parent": "codo_d",
+     "cubes": [
+      {
+       "origin": [
+        -4.5,
+        5,
+        -1
+       ],
+       "size": [
+        2,
+        10,
+        2
+       ],
+       "uv": [
+        26,
+        17
+       ],
+       "inflate": 0
+      }
+     ]
+    },
+    {
+     "name": "mano_d",
+     "pivot": [
+      -3.5,
+      5,
+      0
+     ],
+     "parent": "antebrazo_d",
+     "cubes": [
+      {
+       "origin": [
+        -4.5,
+        3,
+        -1
+       ],
+       "size": [
+        2,
+        2,
+        2
+       ],
+       "uv": [
+        35,
+        17
+       ],
+       "inflate": 0
+      }
+     ]
+    },
+    {
+     "name": "hombro_i",
+     "pivot": [
+      3.5,
+      26,
+      0
+     ],
+     "parent": "cuerpo",
+     "rotation": [
+      0,
+      0,
+      -14
+     ]
+    },
+    {
+     "name": "brazo_i",
+     "pivot": [
+      3.5,
+      26,
+      0
+     ],
+     "parent": "hombro_i",
+     "cubes": [
+      {
+       "origin": [
+        2,
+        22,
+        -1.5
+       ],
+       "size": [
+        3,
+        4,
+        3
+       ],
+       "uv": [
+        44,
+        17
+       ],
+       "inflate": 0
+      }
+     ]
+    },
+    {
+     "name": "codo_i",
+     "pivot": [
+      3.5,
+      22,
+      0
+     ],
+     "parent": "brazo_i"
+    },
+    {
+     "name": "antebrazo_i",
+     "pivot": [
+      3.5,
+      22,
+      0
+     ],
+     "parent": "codo_i"
+    },
+    {
+     "name": "mano_i",
+     "pivot": [
+      3.5,
+      22,
+      0
+     ],
+     "parent": "antebrazo_i"
+    },
+    {
+     "name": "pierna_d",
+     "pivot": [
+      -2,
+      15,
+      0
+     ],
+     "parent": "cadera",
+     "cubes": [
+      {
+       "origin": [
+        -3,
+        0,
+        -1
+       ],
+       "size": [
+        2,
+        15,
+        2
+       ],
+       "uv": [
+        0,
+        30
+       ],
+       "inflate": 0
+      }
+     ]
+    },
+    {
+     "name": "pierna_i",
+     "pivot": [
+      2,
+      15,
+      0
+     ],
+     "parent": "cadera",
+     "rotation": [
+      0,
+      0,
+      -5
+     ],
+     "cubes": [
+      {
+       "origin": [
+        1.5,
+        0,
+        -0.5
+       ],
+       "size": [
+        1,
+        15,
+        1
+       ],
+       "uv": [
+        9,
+        30
+       ],
+       "inflate": 0
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

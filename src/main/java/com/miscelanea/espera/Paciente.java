@@ -1,6 +1,12 @@
 package com.miscelanea.espera;
 
 import com.miscelanea.registry.ModSounds;
+import software.bernie.geckolib.animatable.GeoEntity;
+import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.core.animation.AnimatableManager;
+import software.bernie.geckolib.core.animation.AnimationController;
+import software.bernie.geckolib.core.animation.RawAnimation;
+import software.bernie.geckolib.util.GeckoLibUtil;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -14,7 +20,9 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -31,7 +39,20 @@ import javax.annotation.Nullable;
  * Espera. No hace daño ni se le puede hacer (si le pegas, se descoloca y aparece un poco más allá).
  * Hay pocos (unos dos por jugador) y no piensan nada mientras no te notan: no cuestan.
  */
-public class Paciente extends PathfinderMob {
+public class Paciente extends PathfinderMob implements GeoEntity {
+    private static final RawAnimation ESPERA = RawAnimation.begin().thenLoop("animation.paciente.espera");
+    private static final RawAnimation ANDAR = RawAnimation.begin().thenLoop("animation.paciente.andar");
+    private static final RawAnimation BUSCAR = RawAnimation.begin().thenLoop("animation.paciente.buscar");
+    private static final RawAnimation PILLAR = RawAnimation.begin().thenPlay("animation.paciente.pillar");
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    /** Se pone a true un instante cuando atrapa a alguien, para que salte la animación de lanzarse. */
+    private int lanzandose = 0;
+
+    /** Que se lance a por el jugador (lo llama quien lo atrapa). */
+    public void lanzarse() {
+        lanzandose = 14;
+    }
+
     public enum Variante {HEROBRINE, SIN_TEXTURA, RELLENO}
 
     private static final EntityDataAccessor<Integer> VARIANTE = SynchedEntityData.defineId(Paciente.class, EntityDataSerializers.INT);
@@ -95,6 +116,7 @@ public class Paciente extends PathfinderMob {
     @Override
     protected void customServerAiStep() {
         super.customServerAiStep();
+        if (lanzandose > 0) lanzandose--;
         if (tickCount % 40 == 0 && (level().getNearestPlayer(this, 80) == null || !EsperaConfig.activado())) {
             discard();
             return;
@@ -166,6 +188,7 @@ public class Paciente extends PathfinderMob {
         l.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.PACIENTE_PURGA.get(), SoundSource.HOSTILE, 1.2F, 1F);
         l.sendParticles(ParticleTypes.SMOKE, getX(), getY() + 1, getZ(), 30, 0.3, 0.6, 0.3, 0.02);
         p.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 50, 0, false, false));
+        lanzarse();
         com.miscelanea.espera.eventos.EsperaExtras.pillado(p);   // logros
         Espera.recolocar(p);
         p.displayClientMessage(Component.translatable("espera.miscelanea.paciente"), true);
@@ -215,5 +238,38 @@ public class Paciente extends PathfinderMob {
     public void readAdditionalSaveData(CompoundTag t) {
         super.readAdditionalSaveData(t);
         entityData.set(VARIANTE, t.getInt("Variante"));
+    }
+
+    // ------------------------------------------------------------------ animación (GeckoLib)
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar c) {
+        c.add(new AnimationController<>(this, "cuerpo", 4, st -> {
+            if (lanzandose > 0) return st.setAndContinue(PILLAR);
+            double dx = getX() - xo, dz = getZ() - zo;
+            boolean moviendose = dx * dx + dz * dz > 2.0E-5;
+            if (cazando()) return st.setAndContinue(BUSCAR);
+            return st.setAndContinue(moviendose ? ANDAR : ESPERA);
+        }));
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return cache;
+    }
+
+    /** Cada cuerpo mide lo suyo: el alto llega a dos bloques y medio y el gordo no pasa de uno y medio. */
+    @Override
+    public EntityDimensions getDimensions(Pose p) {
+        return switch (variante()) {
+            case HEROBRINE -> EntityDimensions.scalable(0.6F, 2.5F);
+            case SIN_TEXTURA -> EntityDimensions.scalable(0.6F, 2.4F);
+            case RELLENO -> EntityDimensions.scalable(0.95F, 1.5F);
+        };
+    }
+
+    @Override
+    public void onSyncedDataUpdated(net.minecraft.network.syncher.EntityDataAccessor<?> dato) {
+        super.onSyncedDataUpdated(dato);
+        if (VARIANTE.equals(dato)) refreshDimensions();   // al saber cuál es, su caja cambia
     }
 }
