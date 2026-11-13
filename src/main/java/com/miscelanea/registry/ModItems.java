@@ -192,7 +192,7 @@ public final class ModItems {
             final String n = com.miscelanea.feria.Peluches.NOMBRES[i];
             final int indice = i;
             com.miscelanea.feria.Peluches.OBJETOS.put(n, ITEMS.register(com.miscelanea.feria.Peluches.id(n),
-                    () -> new com.miscelanea.feria.PelucheAmigoItem(
+                    () -> new com.miscelanea.feria.PeluchePersonaItem(
                             com.miscelanea.feria.Peluches.BLOQUES.get(n).get(),
                             new Item.Properties().rarity(Rarity.RARE), indice)));
         }

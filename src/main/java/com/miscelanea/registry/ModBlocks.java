@@ -114,7 +114,7 @@ public final class ModBlocks {
             final int indice = i;
             com.miscelanea.feria.Peluches.BLOQUES.put(com.miscelanea.feria.Peluches.NOMBRES[i],
                     BLOCKS.register(com.miscelanea.feria.Peluches.id(com.miscelanea.feria.Peluches.NOMBRES[i]),
-                            () -> new com.miscelanea.feria.PelucheAmigoBlock(BlockBehaviour.Properties.of()
+                            () -> new com.miscelanea.feria.PeluchePersonaBlock(BlockBehaviour.Properties.of()
                                     .mapColor(MapColor.WOOL).strength(0.5F).sound(SoundType.WOOL).noOcclusion(), indice)));
         }
     }

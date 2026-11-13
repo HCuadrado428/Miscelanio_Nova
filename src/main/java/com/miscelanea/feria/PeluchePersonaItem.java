@@ -23,12 +23,12 @@ import java.util.List;
 /**
  * El peluche en la mano. Clic derecho lo lanza (rebota y chilla); agachado te lo pones en la cabeza.
  */
-public class PelucheAmigoItem extends BlockItem implements Equipable {
+public class PeluchePersonaItem extends BlockItem implements Equipable {
 
     /** Cuál de los peluches es, para que cada uno suene distinto. */
     private final int indice;
 
-    public PelucheAmigoItem(Block b, Properties p, int indice) {
+    public PeluchePersonaItem(Block b, Properties p, int indice) {
         super(b, p);
         this.indice = indice;
     }

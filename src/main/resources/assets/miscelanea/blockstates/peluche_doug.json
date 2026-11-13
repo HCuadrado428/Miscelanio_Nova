@@ -5,7 +5,7 @@
     "rotation": "0"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo",
+    "model": "miscelanea:block/peluche_doug",
     "y": 0
    }
   },
@@ -14,7 +14,7 @@
     "rotation": "1"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo",
+    "model": "miscelanea:block/peluche_doug",
     "y": 22
    }
   },
@@ -23,7 +23,7 @@
     "rotation": "2"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo",
+    "model": "miscelanea:block/peluche_doug",
     "y": 45
    }
   },
@@ -32,7 +32,7 @@
     "rotation": "3"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo",
+    "model": "miscelanea:block/peluche_doug",
     "y": 67
    }
   },
@@ -41,7 +41,7 @@
     "rotation": "4"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo",
+    "model": "miscelanea:block/peluche_doug",
     "y": 90
    }
   },
@@ -50,7 +50,7 @@
     "rotation": "5"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo",
+    "model": "miscelanea:block/peluche_doug",
     "y": 112
    }
   },
@@ -59,7 +59,7 @@
     "rotation": "6"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo",
+    "model": "miscelanea:block/peluche_doug",
     "y": 135
    }
   },
@@ -68,7 +68,7 @@
     "rotation": "7"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo",
+    "model": "miscelanea:block/peluche_doug",
     "y": 157
    }
   },
@@ -77,7 +77,7 @@
     "rotation": "8"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo",
+    "model": "miscelanea:block/peluche_doug",
     "y": 180
    }
   },
@@ -86,7 +86,7 @@
     "rotation": "9"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo",
+    "model": "miscelanea:block/peluche_doug",
     "y": 202
    }
   },
@@ -95,7 +95,7 @@
     "rotation": "10"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo",
+    "model": "miscelanea:block/peluche_doug",
     "y": 225
    }
   },
@@ -104,7 +104,7 @@
     "rotation": "11"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo",
+    "model": "miscelanea:block/peluche_doug",
     "y": 247
    }
   },
@@ -113,7 +113,7 @@
     "rotation": "12"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo",
+    "model": "miscelanea:block/peluche_doug",
     "y": 270
    }
   },
@@ -122,7 +122,7 @@
     "rotation": "13"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo",
+    "model": "miscelanea:block/peluche_doug",
     "y": 292
    }
   },
@@ -131,7 +131,7 @@
     "rotation": "14"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo",
+    "model": "miscelanea:block/peluche_doug",
     "y": 315
    }
   },
@@ -140,7 +140,7 @@
     "rotation": "15"
    },
    "apply": {
-    "model": "miscelanea:block/peluche_amigo",
+    "model": "miscelanea:block/peluche_doug",
     "y": 337
    }
   }

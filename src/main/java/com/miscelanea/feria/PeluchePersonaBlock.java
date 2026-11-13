@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  * Peluche de una persona. A diferencia del osito de la caseta de tiro, este gira en 16 direcciones, chilla al apretarlo
  * y se cansa si abusas. Agachado se abraza.
  */
-public class PelucheAmigoBlock extends Block {
+public class PeluchePersonaBlock extends Block {
 
     /** Hacia dónde mira, en 16 pasos como las cabezas. */
     public static final IntegerProperty ROTACION = BlockStateProperties.ROTATION_16;
@@ -46,7 +46,7 @@ public class PelucheAmigoBlock extends Block {
     /** Cuál de los peluches es: solo sirve para que cada uno chille en su tono. */
     private final int indice;
 
-    public PelucheAmigoBlock(Properties p, int indice) {
+    public PeluchePersonaBlock(Properties p, int indice) {
         super(p);
         this.indice = indice;
         registerDefaultState(stateDefinition.any()

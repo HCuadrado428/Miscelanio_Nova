@@ -59,6 +59,6 @@ public final class FeriaEventos {
     }
 
     private static boolean esPeluche(ItemStack st) {
-        return !st.isEmpty() && st.getItem() instanceof PelucheAmigoItem;
+        return !st.isEmpty() && st.getItem() instanceof PeluchePersonaItem;
     }
 }
