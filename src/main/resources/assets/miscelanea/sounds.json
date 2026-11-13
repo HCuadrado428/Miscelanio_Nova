@@ -1,2628 +1,2642 @@
 {
-  "bromas_boing": {
-    "sounds": [
-      "miscelanea:bromas_boing"
-    ],
-    "subtitle": "subtitles.miscelanea.bromas_boing"
-  },
-  "bromas_uwu": {
-    "sounds": [
-      "miscelanea:bromas_uwu"
-    ],
-    "subtitle": "subtitles.miscelanea.bromas_uwu"
-  },
-  "aspirar": {
-    "sounds": [
-      {
-        "name": "miscelanea:aspirar",
-        "attenuation_distance": 16
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.aspirar"
-  },
-  "pitido": {
-    "sounds": [
-      "miscelanea:pitido"
-    ],
-    "subtitle": "subtitles.miscelanea.pitido"
-  },
-  "chispazo": {
-    "sounds": [
-      "miscelanea:chispazo"
-    ],
-    "subtitle": "subtitles.miscelanea.chispazo"
-  },
-  "descarga": {
-    "sounds": [
-      "miscelanea:descarga"
-    ],
-    "subtitle": "subtitles.miscelanea.descarga"
-  },
-  "medigun_rayo": {
-    "sounds": [
-      {
-        "name": "miscelanea:medigun_rayo",
-        "attenuation_distance": 16
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.medigun_rayo"
-  },
-  "medigun_conectar": {
-    "sounds": [
-      {
-        "name": "miscelanea:medigun_conectar",
-        "attenuation_distance": 16
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.medigun_conectar"
-  },
-  "uber_activar": {
-    "sounds": [
-      {
-        "name": "miscelanea:uber_activar",
-        "attenuation_distance": 32
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.uber_activar"
-  },
-  "uber_lista": {
-    "sounds": [
-      {
-        "name": "miscelanea:uber_lista",
-        "attenuation_distance": 8
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.uber_lista"
-  },
-  "uber_rebote": {
-    "sounds": [
-      {
-        "name": "miscelanea:uber_rebote",
-        "attenuation_distance": 16
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.uber_rebote"
-  },
-  "nucleo_carga": {
-    "sounds": [
-      {
-        "name": "miscelanea:nucleo_carga",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.nucleo_carga"
-  },
-  "nucleo_rayo": {
-    "sounds": [
-      {
-        "name": "miscelanea:nucleo_rayo",
-        "attenuation_distance": 48
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.nucleo_rayo"
-  },
-  "nucleo_fin": {
-    "sounds": [
-      {
-        "name": "miscelanea:nucleo_fin",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.nucleo_fin"
-  },
-  "escopeta_disparo": {
-    "sounds": [
-      {
-        "name": "miscelanea:escopeta_disparo",
-        "attenuation_distance": 48
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.escopeta_disparo"
-  },
-  "escopeta_recarga": {
-    "sounds": [
-      {
-        "name": "miscelanea:escopeta_recarga",
-        "attenuation_distance": 16
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.escopeta_recarga"
-  },
-  "gancho_lanzar": {
-    "sounds": [
-      {
-        "name": "miscelanea:gancho_lanzar",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.gancho_lanzar"
-  },
-  "gancho_enganchar": {
-    "sounds": [
-      {
-        "name": "miscelanea:gancho_enganchar",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.gancho_enganchar"
-  },
-  "lanzacohetes_disparo": {
-    "sounds": [
-      {
-        "name": "miscelanea:lanzacohetes_disparo",
-        "attenuation_distance": 48
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.lanzacohetes_disparo"
-  },
-  "lanzacohetes_recarga": {
-    "sounds": [
-      {
-        "name": "miscelanea:lanzacohetes_recarga",
-        "attenuation_distance": 16
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.lanzacohetes_recarga"
-  },
-  "cohete_explosion": {
-    "sounds": [
-      {
-        "name": "miscelanea:cohete_explosion",
-        "attenuation_distance": 64
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.cohete_explosion"
-  },
-  "llave_golpe": {
-    "sounds": [
-      {
-        "name": "miscelanea:llave_golpe",
-        "attenuation_distance": 16
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.llave_golpe"
-  },
-  "llave_impacto": {
-    "sounds": [
-      {
-        "name": "miscelanea:llave_impacto",
-        "attenuation_distance": 16
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.llave_impacto"
-  },
-  "llave_remate": {
-    "sounds": [
-      {
-        "name": "miscelanea:llave_remate",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.llave_remate"
-  },
-  "llave_lanzar": {
-    "sounds": [
-      {
-        "name": "miscelanea:llave_lanzar",
-        "attenuation_distance": 16
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.llave_lanzar"
-  },
-  "hechizo_piro": {
-    "sounds": [
-      {
-        "name": "miscelanea:hechizo_piro",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.hechizo_piro"
-  },
-  "hechizo_hielo": {
-    "sounds": [
-      {
-        "name": "miscelanea:hechizo_hielo",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.hechizo_hielo"
-  },
-  "hechizo_cura": {
-    "sounds": [
-      {
-        "name": "miscelanea:hechizo_cura",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.hechizo_cura"
-  },
-  "cerradura": {
-    "sounds": [
-      {
-        "name": "miscelanea:cerradura",
-        "attenuation_distance": 16
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.cerradura"
-  },
-  "hacha_golpe": {
-    "sounds": [
-      {
-        "name": "miscelanea:hacha_golpe",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.hacha_golpe"
-  },
-  "hacha_impacto": {
-    "sounds": [
-      {
-        "name": "miscelanea:hacha_impacto",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.hacha_impacto"
-  },
-  "hacha_lanzar": {
-    "sounds": [
-      {
-        "name": "miscelanea:hacha_lanzar",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.hacha_lanzar"
-  },
-  "hacha_volver": {
-    "sounds": [
-      {
-        "name": "miscelanea:hacha_volver",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.hacha_volver"
-  },
-  "hacha_atrapar": {
-    "sounds": [
-      {
-        "name": "miscelanea:hacha_atrapar",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.hacha_atrapar"
-  },
-  "escudo_bloqueo": {
-    "sounds": [
-      {
-        "name": "miscelanea:escudo_bloqueo",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.escudo_bloqueo"
-  },
-  "escudo_parry": {
-    "sounds": [
-      {
-        "name": "miscelanea:escudo_parry",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.escudo_parry"
-  },
-  "escudo_abrir": {
-    "sounds": [
-      {
-        "name": "miscelanea:escudo_abrir",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.escudo_abrir"
-  },
-  "runico": {
-    "sounds": [
-      {
-        "name": "miscelanea:runico",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.runico"
-  },
-  "escarcha": {
-    "sounds": [
-      {
-        "name": "miscelanea:escarcha",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.escarcha"
-  },
-  "punetazo": {
-    "sounds": [
-      {
-        "name": "miscelanea:punetazo",
-        "attenuation_distance": 24
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.punetazo"
-  },
-  "gb_mover": {
-    "sounds": [
-      "miscelanea:gb_mover"
-    ],
-    "subtitle": "subtitles.miscelanea.gb_mover"
-  },
-  "gb_girar": {
-    "sounds": [
-      "miscelanea:gb_girar"
-    ],
-    "subtitle": "subtitles.miscelanea.gb_girar"
-  },
-  "gb_linea": {
-    "sounds": [
-      "miscelanea:gb_linea"
-    ],
-    "subtitle": "subtitles.miscelanea.gb_linea"
-  },
-  "gb_comer": {
-    "sounds": [
-      "miscelanea:gb_comer"
-    ],
-    "subtitle": "subtitles.miscelanea.gb_comer"
-  },
-  "gb_punto": {
-    "sounds": [
-      "miscelanea:gb_punto"
-    ],
-    "subtitle": "subtitles.miscelanea.gb_punto"
-  },
-  "gb_rebote": {
-    "sounds": [
-      "miscelanea:gb_rebote"
-    ],
-    "subtitle": "subtitles.miscelanea.gb_rebote"
-  },
-  "gb_disparo": {
-    "sounds": [
-      "miscelanea:gb_disparo"
-    ],
-    "subtitle": "subtitles.miscelanea.gb_disparo"
-  },
-  "gb_explosion": {
-    "sounds": [
-      "miscelanea:gb_explosion"
-    ],
-    "subtitle": "subtitles.miscelanea.gb_explosion"
-  },
-  "gb_aleteo": {
-    "sounds": [
-      "miscelanea:gb_aleteo"
-    ],
-    "subtitle": "subtitles.miscelanea.gb_aleteo"
-  },
-  "gb_fin": {
-    "sounds": [
-      "miscelanea:gb_fin"
-    ],
-    "subtitle": "subtitles.miscelanea.gb_fin"
-  },
-  "gb_inicio": {
-    "sounds": [
-      "miscelanea:gb_inicio"
-    ],
-    "subtitle": "subtitles.miscelanea.gb_inicio"
-  },
-  "gb_musica": {
-    "sounds": [
-      {
-        "name": "miscelanea:gb_musica",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.gb_musica"
-  },
-  "ocarina_0": {
-    "sounds": [
-      "miscelanea:ocarina_0"
-    ],
-    "subtitle": "subtitles.miscelanea.ocarina"
-  },
-  "ocarina_1": {
-    "sounds": [
-      "miscelanea:ocarina_1"
-    ],
-    "subtitle": "subtitles.miscelanea.ocarina"
-  },
-  "ocarina_2": {
-    "sounds": [
-      "miscelanea:ocarina_2"
-    ],
-    "subtitle": "subtitles.miscelanea.ocarina"
-  },
-  "ocarina_3": {
-    "sounds": [
-      "miscelanea:ocarina_3"
-    ],
-    "subtitle": "subtitles.miscelanea.ocarina"
-  },
-  "ocarina_4": {
-    "sounds": [
-      "miscelanea:ocarina_4"
-    ],
-    "subtitle": "subtitles.miscelanea.ocarina"
-  },
-  "cancion_sol": {
-    "sounds": [
-      {
-        "name": "miscelanea:cancion_sol",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.cancion"
-  },
-  "cancion_luna": {
-    "sounds": [
-      {
-        "name": "miscelanea:cancion_luna",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.cancion"
-  },
-  "cancion_tormenta": {
-    "sounds": [
-      {
-        "name": "miscelanea:cancion_tormenta",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.cancion"
-  },
-  "cancion_despejar": {
-    "sounds": [
-      {
-        "name": "miscelanea:cancion_despejar",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.cancion"
-  },
-  "cancion_regreso": {
-    "sounds": [
-      {
-        "name": "miscelanea:cancion_regreso",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.cancion"
-  },
-  "ocarina_exito": {
-    "sounds": [
-      "miscelanea:ocarina_exito"
-    ],
-    "subtitle": "subtitles.miscelanea.ocarina_exito"
-  },
-  "arcade_ficha": {
-    "sounds": [
-      "miscelanea:arcade_ficha"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "arcade_musica": {
-    "sounds": [
-      {
-        "name": "miscelanea:arcade_musica",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.gb_musica"
-  },
-  "detector_pitido": {
-    "sounds": [
-      "miscelanea:detector_pitido"
-    ],
-    "subtitle": "subtitles.miscelanea.detector_pitido"
-  },
-  "tesoro": {
-    "sounds": [
-      "miscelanea:tesoro"
-    ],
-    "subtitle": "subtitles.miscelanea.tesoro"
-  },
-  "capsula_abrir": {
-    "sounds": [
-      "miscelanea:capsula_abrir"
-    ],
-    "subtitle": "subtitles.miscelanea.capsula_abrir"
-  },
-  "tirolina_zumbido": {
-    "sounds": [
-      "miscelanea:tirolina_zumbido"
-    ],
-    "subtitle": "subtitles.miscelanea.tirolina_zumbido"
-  },
-  "tirolina_enganchar": {
-    "sounds": [
-      "miscelanea:tirolina_enganchar"
-    ],
-    "subtitle": "subtitles.miscelanea.tirolina_enganchar"
-  },
-  "trampolin_boing": {
-    "sounds": [
-      "miscelanea:trampolin_boing"
-    ],
-    "subtitle": "subtitles.miscelanea.trampolin_boing"
-  },
-  "ch_disparo": {
-    "sounds": [
-      "miscelanea:ch_disparo"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "ch_metralla": {
-    "sounds": [
-      "miscelanea:ch_metralla"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "ch_cohete": {
-    "sounds": [
-      "miscelanea:ch_cohete"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "ch_explosion": {
-    "sounds": [
-      "miscelanea:ch_explosion"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "ch_granada": {
-    "sounds": [
-      "miscelanea:ch_granada"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "ch_salto": {
-    "sounds": [
-      "miscelanea:ch_salto"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "ch_rescate": {
-    "sounds": [
-      "miscelanea:ch_rescate"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "ch_arma": {
-    "sounds": [
-      "miscelanea:ch_arma"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "ch_muerte": {
-    "sounds": [
-      "miscelanea:ch_muerte"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "ch_golpe": {
-    "sounds": [
-      "miscelanea:ch_golpe"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "ch_jefe": {
-    "sounds": [
-      "miscelanea:ch_jefe"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "ch_musica": {
-    "sounds": [
-      {
-        "name": "miscelanea:ch_musica",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "mz_escopeta": {
-    "sounds": [
-      "miscelanea:mz_escopeta"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "mz_puerta": {
-    "sounds": [
-      "miscelanea:mz_puerta"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "mz_coger": {
-    "sounds": [
-      "miscelanea:mz_coger"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "mz_dolor": {
-    "sounds": [
-      "miscelanea:mz_dolor"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "mz_grunido": {
-    "sounds": [
-      "miscelanea:mz_grunido"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "mz_muere": {
-    "sounds": [
-      "miscelanea:mz_muere"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "mz_bola": {
-    "sounds": [
-      "miscelanea:mz_bola"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "mz_salida": {
-    "sounds": [
-      "miscelanea:mz_salida"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "mz_musica": {
-    "sounds": [
-      {
-        "name": "miscelanea:mz_musica",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "tc_choque": {
-    "sounds": [
-      "miscelanea:tc_choque"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "tc_derrape": {
-    "sounds": [
-      "miscelanea:tc_derrape"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "tc_punto": {
-    "sounds": [
-      "miscelanea:tc_punto"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "tc_turbo": {
-    "sounds": [
-      "miscelanea:tc_turbo"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "tc_meta": {
-    "sounds": [
-      "miscelanea:tc_meta"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "tc_cuenta": {
-    "sounds": [
-      "miscelanea:tc_cuenta"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "tc_musica": {
-    "sounds": [
-      {
-        "name": "miscelanea:tc_musica",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "lu_aire": {
-    "sounds": [
-      "miscelanea:lu_aire"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "lu_golpe": {
-    "sounds": [
-      "miscelanea:lu_golpe"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "lu_golpe2": {
-    "sounds": [
-      "miscelanea:lu_golpe2"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "lu_bloqueo": {
-    "sounds": [
-      "miscelanea:lu_bloqueo"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "lu_caida": {
-    "sounds": [
-      "miscelanea:lu_caida"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "lu_ko": {
-    "sounds": [
-      "miscelanea:lu_ko"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "lu_ronda": {
-    "sounds": [
-      "miscelanea:lu_ronda"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "lu_especial": {
-    "sounds": [
-      "miscelanea:lu_especial"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "lu_selec": {
-    "sounds": [
-      "miscelanea:lu_selec"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "lu_comer": {
-    "sounds": [
-      "miscelanea:lu_comer"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "lu_romper": {
-    "sounds": [
-      "miscelanea:lu_romper"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "lu_duelo": {
-    "sounds": [
-      {
-        "name": "miscelanea:lu_duelo",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "lu_barrio": {
-    "sounds": [
-      {
-        "name": "miscelanea:lu_barrio",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "cc_punto": {
-    "sounds": [
-      "miscelanea:cc_punto"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "cc_pila": {
-    "sounds": [
-      "miscelanea:cc_pila"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "cc_robot": {
-    "sounds": [
-      "miscelanea:cc_robot"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "cc_muerte": {
-    "sounds": [
-      "miscelanea:cc_muerte"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "cc_fruta": {
-    "sounds": [
-      "miscelanea:cc_fruta"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "cc_extra": {
-    "sounds": [
-      "miscelanea:cc_extra"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "cc_inicio": {
-    "sounds": [
-      "miscelanea:cc_inicio"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "cc_musica": {
-    "sounds": [
-      {
-        "name": "miscelanea:cc_musica",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "bi_choque": {
-    "sounds": [
-      "miscelanea:bi_choque"
-    ],
-    "subtitle": "subtitles.miscelanea.billar"
-  },
-  "bi_banda": {
-    "sounds": [
-      "miscelanea:bi_banda"
-    ],
-    "subtitle": "subtitles.miscelanea.billar"
-  },
-  "bi_tronera": {
-    "sounds": [
-      "miscelanea:bi_tronera"
-    ],
-    "subtitle": "subtitles.miscelanea.billar"
-  },
-  "bi_taco": {
-    "sounds": [
-      "miscelanea:bi_taco"
-    ],
-    "subtitle": "subtitles.miscelanea.billar"
-  },
-  "fu_golpe": {
-    "sounds": [
-      "miscelanea:fu_golpe"
-    ],
-    "subtitle": "subtitles.miscelanea.futbolin"
-  },
-  "fu_gol": {
-    "sounds": [
-      "miscelanea:fu_gol"
-    ],
-    "subtitle": "subtitles.miscelanea.futbolin"
-  },
-  "fu_silbato": {
-    "sounds": [
-      "miscelanea:fu_silbato"
-    ],
-    "subtitle": "subtitles.miscelanea.futbolin"
-  },
-  "ri_verbena": {
-    "sounds": [
-      {
-        "name": "miscelanea:ri_verbena",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "ri_neon": {
-    "sounds": [
-      {
-        "name": "miscelanea:ri_neon",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "ri_tormenta": {
-    "sounds": [
-      {
-        "name": "miscelanea:ri_tormenta",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "pb_musica": {
-    "sounds": [
-      {
-        "name": "miscelanea:pb_musica",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "pb_flipper": {
-    "sounds": [
-      "miscelanea:pb_flipper"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "pb_lanzar": {
-    "sounds": [
-      "miscelanea:pb_lanzar"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "pb_seta": {
-    "sounds": [
-      "miscelanea:pb_seta"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "pb_diana": {
-    "sounds": [
-      "miscelanea:pb_diana"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "pb_tirachinas": {
-    "sounds": [
-      "miscelanea:pb_tirachinas"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "pb_agujero": {
-    "sounds": [
-      "miscelanea:pb_agujero"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "pb_extra": {
-    "sounds": [
-      "miscelanea:pb_extra"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "pb_perder": {
-    "sounds": [
-      "miscelanea:pb_perder"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "db_musica": {
-    "sounds": [
-      {
-        "name": "miscelanea:db_musica",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "db_pierde": {
-    "sounds": [
-      "miscelanea:db_pierde"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "db_giro": {
-    "sounds": [
-      "miscelanea:db_giro"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "db_fija": {
-    "sounds": [
-      "miscelanea:db_fija"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "db_linea": {
-    "sounds": [
-      "miscelanea:db_linea"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "db_cuatro": {
-    "sounds": [
-      "miscelanea:db_cuatro"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "db_basura": {
-    "sounds": [
-      "miscelanea:db_basura"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "db_mover": {
-    "sounds": [
-      "miscelanea:db_mover"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "db_gana": {
-    "sounds": [
-      "miscelanea:db_gana"
-    ],
-    "subtitle": "subtitles.miscelanea.arcade_ficha"
-  },
-  "fe_arranca": {
-    "sounds": [
-      "miscelanea:fe_arranca"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_arranca"
-  },
-  "fe_para": {
-    "sounds": [
-      "miscelanea:fe_para"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_para"
-  },
-  "fe_noria": {
-    "sounds": [
-      "miscelanea:fe_noria"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_noria"
-  },
-  "fe_tiovivo": {
-    "sounds": [
-      "miscelanea:fe_tiovivo"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_tiovivo"
-  },
-  "fe_choque": {
-    "sounds": [
-      "miscelanea:fe_choque"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_choque"
-  },
-  "fe_bruja": {
-    "sounds": [
-      "miscelanea:fe_bruja"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_bruja"
-  },
-  "fe_huesos": {
-    "sounds": [
-      "miscelanea:fe_huesos"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_huesos"
-  },
-  "fe_trueno": {
-    "sounds": [
-      "miscelanea:fe_trueno"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_trueno"
-  },
-  "fe_fantasma": {
-    "sounds": [
-      "miscelanea:fe_fantasma"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_fantasma"
-  },
-  "fe_corcho": {
-    "sounds": [
-      "miscelanea:fe_corcho"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_corcho"
-  },
-  "fe_diana": {
-    "sounds": [
-      "miscelanea:fe_diana"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_diana"
-  },
-  "fe_tren": {
-    "sounds": [
-      "miscelanea:fe_tren"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_tren"
-  },
-  "fe_algodon": {
-    "sounds": [
-      "miscelanea:fe_algodon"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_algodon"
-  },
-  "fe_pop": {
-    "sounds": [
-      "miscelanea:fe_pop"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_pop"
-  },
-  "fe_masclet": {
-    "sounds": [
-      "miscelanea:fe_masclet"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_masclet"
-  },
-  "fe_masclet_final": {
-    "sounds": [
-      "miscelanea:fe_masclet_final"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_masclet_final"
-  },
-  "fe_gancho": {
-    "sounds": [
-      "miscelanea:fe_gancho"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_gancho"
-  },
-  "fe_gancho_musica": {
-    "sounds": [
-      "miscelanea:fe_gancho_musica"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_gancho_musica"
-  },
-  "fe_premio": {
-    "sounds": [
-      "miscelanea:fe_premio"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_premio"
-  },
-  "fe_premio_gordo": {
-    "sounds": [
-      "miscelanea:fe_premio_gordo"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_premio_gordo"
-  },
-  "fe_rodillos": {
-    "sounds": [
-      "miscelanea:fe_rodillos"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_rodillos"
-  },
-  "fe_rodillo_para": {
-    "sounds": [
-      "miscelanea:fe_rodillo_para"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_rodillo_para"
-  },
-  "fe_manivela": {
-    "sounds": [
-      "miscelanea:fe_manivela"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_manivela"
-  },
-  "fe_capsula": {
-    "sounds": [
-      "miscelanea:fe_capsula"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_capsula"
-  },
-  "fe_capsula_abre": {
-    "sounds": [
-      "miscelanea:fe_capsula_abre"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_capsula_abre"
-  },
-  "bo_bolo": {
-    "sounds": [
-      "miscelanea:bo_bolo"
-    ],
-    "subtitle": "subtitles.miscelanea.bo_bolo"
-  },
-  "bo_rueda": {
-    "sounds": [
-      "miscelanea:bo_rueda"
-    ],
-    "subtitle": "subtitles.miscelanea.bo_rueda"
-  },
-  "bo_pleno": {
-    "sounds": [
-      "miscelanea:bo_pleno"
-    ],
-    "subtitle": "subtitles.miscelanea.bo_pleno"
-  },
-  "da_clava": {
-    "sounds": [
-      "miscelanea:da_clava"
-    ],
-    "subtitle": "subtitles.miscelanea.da_clava"
-  },
-  "da_lanza": {
-    "sounds": [
-      "miscelanea:da_lanza"
-    ],
-    "subtitle": "subtitles.miscelanea.da_lanza"
-  },
-  "to_clac": {
-    "sounds": [
-      "miscelanea:to_clac"
-    ],
-    "subtitle": "subtitles.miscelanea.to_clac"
-  },
-  "to_derrumbe": {
-    "sounds": [
-      "miscelanea:to_derrumbe"
-    ],
-    "subtitle": "subtitles.miscelanea.to_derrumbe"
-  },
-  "co_chisporroteo": {
-    "sounds": [
-      "miscelanea:co_chisporroteo"
-    ],
-    "subtitle": "subtitles.miscelanea.co_chisporroteo"
-  },
-  "ca_barajar": {
-    "sounds": [
-      "miscelanea:ca_barajar"
-    ],
-    "subtitle": "subtitles.miscelanea.ca_barajar"
-  },
-  "ca_carta": {
-    "sounds": [
-      "miscelanea:ca_carta"
-    ],
-    "subtitle": "subtitles.miscelanea.ca_carta"
-  },
-  "ca_baza": {
-    "sounds": [
-      "miscelanea:ca_baza"
-    ],
-    "subtitle": "subtitles.miscelanea.ca_baza"
-  },
-  "fe_canasta": {
-    "sounds": [
-      "miscelanea:fe_canasta"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_canasta"
-  },
-  "fe_bote": {
-    "sounds": [
-      "miscelanea:fe_bote"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_bote"
-  },
-  "fe_punetazo": {
-    "sounds": [
-      "miscelanea:fe_punetazo"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_punetazo"
-  },
-  "fe_mazazo": {
-    "sounds": [
-      "miscelanea:fe_mazazo"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_mazazo"
-  },
-  "fe_campana": {
-    "sounds": [
-      "miscelanea:fe_campana"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_campana"
-  },
-  "ah_golpe": {
-    "sounds": [
-      "miscelanea:ah_golpe"
-    ],
-    "subtitle": "subtitles.miscelanea.ah_golpe"
-  },
-  "ah_banda": {
-    "sounds": [
-      "miscelanea:ah_banda"
-    ],
-    "subtitle": "subtitles.miscelanea.ah_banda"
-  },
-  "ah_gol": {
-    "sounds": [
-      "miscelanea:ah_gol"
-    ],
-    "subtitle": "subtitles.miscelanea.ah_gol"
-  },
-  "fe_bombo": {
-    "sounds": [
-      "miscelanea:fe_bombo"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_bombo"
-  },
-  "fe_cuac": {
-    "sounds": [
-      "miscelanea:fe_cuac"
-    ],
-    "subtitle": "subtitles.miscelanea.fe_cuac"
-  },
-  "pe_cae": {
-    "sounds": [
-      "miscelanea:pe_cae"
-    ],
-    "subtitle": "subtitles.miscelanea.pe_cae"
-  },
-  "pe_choque": {
-    "sounds": [
-      "miscelanea:pe_choque"
-    ],
-    "subtitle": "subtitles.miscelanea.pe_choque"
-  },
-  "pi_disparo": {
-    "sounds": [
-      "miscelanea:pi_disparo"
-    ],
-    "subtitle": "subtitles.miscelanea.pi_disparo"
-  },
-  "pi_recarga": {
-    "sounds": [
-      "miscelanea:pi_recarga"
-    ],
-    "subtitle": "subtitles.miscelanea.pi_recarga"
-  },
-  "pi_vacio": {
-    "sounds": [
-      "miscelanea:pi_vacio"
-    ],
-    "subtitle": "subtitles.miscelanea.pi_vacio"
-  },
-  "pi_impacto": {
-    "sounds": [
-      "miscelanea:pi_impacto"
-    ],
-    "subtitle": "subtitles.miscelanea.pi_impacto"
-  },
-  "pi_robot": {
-    "sounds": [
-      "miscelanea:pi_robot"
-    ],
-    "subtitle": "subtitles.miscelanea.pi_robot"
-  },
-  "pi_dano": {
-    "sounds": [
-      "miscelanea:pi_dano"
-    ],
-    "subtitle": "subtitles.miscelanea.pi_dano"
-  },
-  "pi_explosion": {
-    "sounds": [
-      "miscelanea:pi_explosion"
-    ],
-    "subtitle": "subtitles.miscelanea.pi_explosion"
-  },
-  "pi_musica": {
-    "sounds": [
-      "miscelanea:pi_musica"
-    ],
-    "subtitle": "subtitles.miscelanea.pi_musica"
-  },
-  "bfg_carga": {
-    "sounds": [
-      "miscelanea:bfg_carga"
-    ],
-    "subtitle": "subtitles.miscelanea.bfg_carga"
-  },
-  "bfg_disparo": {
-    "sounds": [
-      "miscelanea:bfg_disparo"
-    ],
-    "subtitle": "subtitles.miscelanea.bfg_disparo"
-  },
-  "bfg_zumbido": {
-    "sounds": [
-      "miscelanea:bfg_zumbido"
-    ],
-    "subtitle": "subtitles.miscelanea.bfg_zumbido"
-  },
-  "bfg_rayo": {
-    "sounds": [
-      "miscelanea:bfg_rayo"
-    ],
-    "subtitle": "subtitles.miscelanea.bfg_rayo"
-  },
-  "bfg_estallido": {
-    "sounds": [
-      "miscelanea:bfg_estallido"
-    ],
-    "subtitle": "subtitles.miscelanea.bfg_estallido"
-  },
-  "mazo_golpe": {
-    "sounds": [
-      "miscelanea:mazo_golpe"
-    ],
-    "subtitle": "subtitles.miscelanea.mazo_golpe"
-  },
-  "mazo_golpe_fuerte": {
-    "sounds": [
-      "miscelanea:mazo_golpe_fuerte"
-    ],
-    "subtitle": "subtitles.miscelanea.mazo_golpe_fuerte"
-  },
-  "viento_lanza": {
-    "sounds": [
-      "miscelanea:viento_lanza"
-    ],
-    "subtitle": "subtitles.miscelanea.viento_lanza"
-  },
-  "viento_rafaga": {
-    "sounds": [
-      "miscelanea:viento_rafaga"
-    ],
-    "subtitle": "subtitles.miscelanea.viento_rafaga"
-  },
-  "bfg_listo": {
-    "sounds": [
-      "miscelanea:bfg_listo"
-    ],
-    "subtitle": "subtitles.miscelanea.bfg_listo"
-  },
-  "bfg_vortice": {
-    "sounds": [
-      "miscelanea:bfg_vortice"
-    ],
-    "subtitle": "subtitles.miscelanea.bfg_vortice"
-  },
-  "mazo_lanzar": {
-    "sounds": [
-      "miscelanea:mazo_lanzar"
-    ],
-    "subtitle": "subtitles.miscelanea.mazo_lanzar"
-  },
-  "mazo_vuelve": {
-    "sounds": [
-      "miscelanea:mazo_vuelve"
-    ],
-    "subtitle": "subtitles.miscelanea.mazo_vuelve"
-  },
-  "mazo_sismo": {
-    "sounds": [
-      "miscelanea:mazo_sismo"
-    ],
-    "subtitle": "subtitles.miscelanea.mazo_sismo"
-  },
-  "mazo_cargado": {
-    "sounds": [
-      "miscelanea:mazo_cargado"
-    ],
-    "subtitle": "subtitles.miscelanea.mazo_cargado"
-  },
-  "qte_tic": {
-    "sounds": [
-      "miscelanea:qte_tic"
-    ],
-    "subtitle": "subtitles.miscelanea.qte_tic"
-  },
-  "qte_exito": {
-    "sounds": [
-      "miscelanea:qte_exito"
-    ],
-    "subtitle": "subtitles.miscelanea.qte_exito"
-  },
-  "qte_perfecto": {
-    "sounds": [
-      "miscelanea:qte_perfecto"
-    ],
-    "subtitle": "subtitles.miscelanea.qte_perfecto"
-  },
-  "qte_fallo": {
-    "sounds": [
-      "miscelanea:qte_fallo"
-    ],
-    "subtitle": "subtitles.miscelanea.qte_fallo"
-  },
-  "qte_pulsar": {
-    "sounds": [
-      "miscelanea:qte_pulsar"
-    ],
-    "subtitle": "subtitles.miscelanea.qte_pulsar"
-  },
-  "ganzua_rota": {
-    "sounds": [
-      "miscelanea:ganzua_rota"
-    ],
-    "subtitle": "subtitles.miscelanea.ganzua_rota"
-  },
-  "ganzua_girar": {
-    "sounds": [
-      "miscelanea:ganzua_girar"
-    ],
-    "subtitle": "subtitles.miscelanea.ganzua_girar"
-  },
-  "cerradura_abrir": {
-    "sounds": [
-      "miscelanea:cerradura_abrir"
-    ],
-    "subtitle": "subtitles.miscelanea.cerradura_abrir"
-  },
-  "trampa_tic": {
-    "sounds": [
-      "miscelanea:trampa_tic"
-    ],
-    "subtitle": "subtitles.miscelanea.trampa_tic"
-  },
-  "trampa_chasquido": {
-    "sounds": [
-      "miscelanea:trampa_chasquido"
-    ],
-    "subtitle": "subtitles.miscelanea.trampa_chasquido"
-  },
-  "trampa_poner": {
-    "sounds": [
-      "miscelanea:trampa_poner"
-    ],
-    "subtitle": "subtitles.miscelanea.trampa_poner"
-  },
-  "trampa_quitar": {
-    "sounds": [
-      "miscelanea:trampa_quitar"
-    ],
-    "subtitle": "subtitles.miscelanea.trampa_quitar"
-  },
-  "trampa_forcejeo": {
-    "sounds": [
-      "miscelanea:trampa_forcejeo"
-    ],
-    "subtitle": "subtitles.miscelanea.trampa_forcejeo"
-  },
-  "trampa_ejecucion": {
-    "sounds": [
-      "miscelanea:trampa_ejecucion"
-    ],
-    "subtitle": "subtitles.miscelanea.trampa_ejecucion"
-  },
-  "trampa_latido": {
-    "sounds": [
-      "miscelanea:trampa_latido"
-    ],
-    "subtitle": "subtitles.miscelanea.trampa_latido"
-  },
-  "grilletes_poner": {
-    "sounds": [
-      "miscelanea:grilletes_poner"
-    ],
-    "subtitle": "subtitles.miscelanea.grilletes_poner"
-  },
-  "grilletes_quitar": {
-    "sounds": [
-      "miscelanea:grilletes_quitar"
-    ],
-    "subtitle": "subtitles.miscelanea.grilletes_quitar"
-  },
-  "cadena_tintineo": {
-    "sounds": [
-      "miscelanea:cadena_tintineo"
-    ],
-    "subtitle": "subtitles.miscelanea.cadena_tintineo"
-  },
-  "caja_buscar": {
-    "sounds": [
-      "miscelanea:caja_buscar"
-    ],
-    "subtitle": "subtitles.miscelanea.caja_buscar"
-  },
-  "llave_encontrada": {
-    "sounds": [
-      "miscelanea:llave_encontrada"
-    ],
-    "subtitle": "subtitles.miscelanea.llave_encontrada"
-  },
-  "lazo_girar": {
-    "sounds": [
-      "miscelanea:lazo_girar"
-    ],
-    "subtitle": "subtitles.miscelanea.lazo_girar"
-  },
-  "lazo_lanzar": {
-    "sounds": [
-      "miscelanea:lazo_lanzar"
-    ],
-    "subtitle": "subtitles.miscelanea.lazo_lanzar"
-  },
-  "lazo_atrapar": {
-    "sounds": [
-      "miscelanea:lazo_atrapar"
-    ],
-    "subtitle": "subtitles.miscelanea.lazo_atrapar"
-  },
-  "lazo_tension": {
-    "sounds": [
-      "miscelanea:lazo_tension"
-    ],
-    "subtitle": "subtitles.miscelanea.lazo_tension"
-  },
-  "lazo_atar": {
-    "sounds": [
-      "miscelanea:lazo_atar"
-    ],
-    "subtitle": "subtitles.miscelanea.lazo_atar"
-  },
-  "lazo_romper": {
-    "sounds": [
-      "miscelanea:lazo_romper"
-    ],
-    "subtitle": "subtitles.miscelanea.lazo_romper"
-  },
-  "doncella_chirrido": {
-    "sounds": [
-      "miscelanea:doncella_chirrido"
-    ],
-    "subtitle": "subtitles.miscelanea.doncella_chirrido"
-  },
-  "doncella_cierre": {
-    "sounds": [
-      "miscelanea:doncella_cierre"
-    ],
-    "subtitle": "subtitles.miscelanea.doncella_cierre"
-  },
-  "doncella_pinchos": {
-    "sounds": [
-      "miscelanea:doncella_pinchos"
-    ],
-    "subtitle": "subtitles.miscelanea.doncella_pinchos"
-  },
-  "potro_carraca": {
-    "sounds": [
-      "miscelanea:potro_carraca"
-    ],
-    "subtitle": "subtitles.miscelanea.potro_carraca"
-  },
-  "potro_crujido": {
-    "sounds": [
-      "miscelanea:potro_crujido"
-    ],
-    "subtitle": "subtitles.miscelanea.potro_crujido"
-  },
-  "potro_conversion": {
-    "sounds": [
-      "miscelanea:potro_conversion"
-    ],
-    "subtitle": "subtitles.miscelanea.potro_conversion"
-  },
-  "silla_descarga": {
-    "sounds": [
-      "miscelanea:silla_descarga"
-    ],
-    "subtitle": "subtitles.miscelanea.silla_descarga"
-  },
-  "silla_palanca": {
-    "sounds": [
-      "miscelanea:silla_palanca"
-    ],
-    "subtitle": "subtitles.miscelanea.silla_palanca"
-  },
-  "silla_dial": {
-    "sounds": [
-      "miscelanea:silla_dial"
-    ],
-    "subtitle": "subtitles.miscelanea.silla_dial"
-  },
-  "hierro_chisporroteo": {
-    "sounds": [
-      "miscelanea:hierro_chisporroteo"
-    ],
-    "subtitle": "subtitles.miscelanea.hierro_chisporroteo"
-  },
-  "hierro_brasa": {
-    "sounds": [
-      "miscelanea:hierro_brasa"
-    ],
-    "subtitle": "subtitles.miscelanea.hierro_brasa"
-  },
-  "jaula_crujido": {
-    "sounds": [
-      "miscelanea:jaula_crujido"
-    ],
-    "subtitle": "subtitles.miscelanea.jaula_crujido"
-  },
-  "jaula_balanceo": {
-    "sounds": [
-      "miscelanea:jaula_balanceo"
-    ],
-    "subtitle": "subtitles.miscelanea.jaula_balanceo"
-  },
-  "jaula_cadena": {
-    "sounds": [
-      "miscelanea:jaula_cadena"
-    ],
-    "subtitle": "subtitles.miscelanea.jaula_cadena"
-  },
-  "jaula_rota": {
-    "sounds": [
-      "miscelanea:jaula_rota"
-    ],
-    "subtitle": "subtitles.miscelanea.jaula_rota"
-  },
-  "jaula_puerta": {
-    "sounds": [
-      "miscelanea:jaula_puerta"
-    ],
-    "subtitle": "subtitles.miscelanea.jaula_puerta"
-  },
-  "jaula_cerrojo": {
-    "sounds": [
-      "miscelanea:jaula_cerrojo"
-    ],
-    "subtitle": "subtitles.miscelanea.jaula_cerrojo"
-  },
-  "cepo_cerrar": {
-    "sounds": [
-      "miscelanea:cepo_cerrar"
-    ],
-    "subtitle": "subtitles.miscelanea.cepo_cerrar"
-  },
-  "cepo_abrir": {
-    "sounds": [
-      "miscelanea:cepo_abrir"
-    ],
-    "subtitle": "subtitles.miscelanea.cepo_abrir"
-  },
-  "tomate_lanzar": {
-    "sounds": [
-      "miscelanea:tomate_lanzar"
-    ],
-    "subtitle": "subtitles.miscelanea.tomate_lanzar"
-  },
-  "tomate_splat": {
-    "sounds": [
-      "miscelanea:tomate_splat"
-    ],
-    "subtitle": "subtitles.miscelanea.tomate_splat"
-  },
-  "huevo_splat": {
-    "sounds": [
-      "miscelanea:huevo_splat"
-    ],
-    "subtitle": "subtitles.miscelanea.huevo_splat"
-  },
-  "lluvia_tomates": {
-    "sounds": [
-      "miscelanea:lluvia_tomates"
-    ],
-    "subtitle": "subtitles.miscelanea.lluvia_tomates"
-  },
-  "esquiva": {
-    "sounds": [
-      "miscelanea:esquiva"
-    ],
-    "subtitle": "subtitles.miscelanea.esquiva"
-  },
-  "bola_arrastre": {
-    "sounds": [
-      "miscelanea:bola_arrastre"
-    ],
-    "subtitle": "subtitles.miscelanea.bola_arrastre"
-  },
-  "bola_golpe": {
-    "sounds": [
-      "miscelanea:bola_golpe"
-    ],
-    "subtitle": "subtitles.miscelanea.bola_golpe"
-  },
-  "bola_poner": {
-    "sounds": [
-      "miscelanea:bola_poner"
-    ],
-    "subtitle": "subtitles.miscelanea.bola_poner"
-  },
-  "sierra_serrar": {
-    "sounds": [
-      "miscelanea:sierra_serrar"
-    ],
-    "subtitle": "subtitles.miscelanea.sierra_serrar"
-  },
-  "cadena_rota": {
-    "sounds": [
-      "miscelanea:cadena_rota"
-    ],
-    "subtitle": "subtitles.miscelanea.cadena_rota"
-  },
-  "lavar": {
-    "sounds": [
-      "miscelanea:lavar"
-    ],
-    "subtitle": "subtitles.miscelanea.lavar"
-  },
-  "collar_pitido": {
-    "sounds": [
-      "miscelanea:collar_pitido"
-    ],
-    "subtitle": "subtitles.miscelanea.collar_pitido"
-  },
-  "collar_tono": {
-    "sounds": [
-      "miscelanea:collar_tono"
-    ],
-    "subtitle": "subtitles.miscelanea.collar_tono"
-  },
-  "collar_cerrar": {
-    "sounds": [
-      "miscelanea:collar_cerrar"
-    ],
-    "subtitle": "subtitles.miscelanea.collar_cerrar"
-  },
-  "collar_abrir": {
-    "sounds": [
-      "miscelanea:collar_abrir"
-    ],
-    "subtitle": "subtitles.miscelanea.collar_abrir"
-  },
-  "collar_estatica": {
-    "sounds": [
-      "miscelanea:collar_estatica"
-    ],
-    "subtitle": "subtitles.miscelanea.collar_estatica"
-  },
-  "collar_estallido": {
-    "sounds": [
-      "miscelanea:collar_estallido"
-    ],
-    "subtitle": "subtitles.miscelanea.collar_estallido"
-  },
-  "detonador_carga": {
-    "sounds": [
-      "miscelanea:detonador_carga"
-    ],
-    "subtitle": "subtitles.miscelanea.detonador_carga"
-  },
-  "gas_siseo": {
-    "sounds": [
-      "miscelanea:gas_siseo"
-    ],
-    "subtitle": "subtitles.miscelanea.gas_siseo"
-  },
-  "cerbatana": {
-    "sounds": [
-      "miscelanea:cerbatana"
-    ],
-    "subtitle": "subtitles.miscelanea.cerbatana"
-  },
-  "miedo_susurros": {
-    "sounds": [
-      "miscelanea:miedo_susurros1",
-      "miscelanea:miedo_susurros2",
-      "miscelanea:miedo_susurros3"
-    ],
-    "subtitle": "subtitles.miscelanea.miedo_susurros"
-  },
-  "miedo_latido": {
-    "sounds": [
-      "miscelanea:miedo_latido"
-    ],
-    "subtitle": "subtitles.miscelanea.miedo_latido"
-  },
-  "miedo_susto": {
-    "sounds": [
-      "miscelanea:miedo_susto"
-    ],
-    "subtitle": "subtitles.miscelanea.miedo_susto"
-  },
-  "miedo_zumbido": {
-    "sounds": [
-      "miscelanea:miedo_zumbido"
-    ],
-    "subtitle": "subtitles.miscelanea.miedo_zumbido"
-  },
-  "pendulo_silbido": {
-    "sounds": [
-      "miscelanea:pendulo_silbido"
-    ],
-    "subtitle": "subtitles.miscelanea.pendulo_silbido"
-  },
-  "pendulo_carraca": {
-    "sounds": [
-      "miscelanea:pendulo_carraca"
-    ],
-    "subtitle": "subtitles.miscelanea.pendulo_carraca"
-  },
-  "pendulo_tictac": {
-    "sounds": [
-      "miscelanea:pendulo_tictac"
-    ],
-    "subtitle": "subtitles.miscelanea.pendulo_tictac"
-  },
-  "pendulo_correa": {
-    "sounds": [
-      "miscelanea:pendulo_correa"
-    ],
-    "subtitle": "subtitles.miscelanea.pendulo_correa"
-  },
-  "pendulo_corte": {
-    "sounds": [
-      "miscelanea:pendulo_corte"
-    ],
-    "subtitle": "subtitles.miscelanea.pendulo_corte"
-  },
-  "pendulo_palanca": {
-    "sounds": [
-      "miscelanea:pendulo_palanca"
-    ],
-    "subtitle": "subtitles.miscelanea.pendulo_palanca"
-  },
-  "inmersion_chapuzon": {
-    "sounds": [
-      "miscelanea:inmersion_chapuzon"
-    ],
-    "subtitle": "subtitles.miscelanea.inmersion_chapuzon"
-  },
-  "inmersion_burbujas": {
-    "sounds": [
-      "miscelanea:inmersion_burbujas"
-    ],
-    "subtitle": "subtitles.miscelanea.inmersion_burbujas"
-  },
-  "inmersion_tos": {
-    "sounds": [
-      "miscelanea:inmersion_tos"
-    ],
-    "subtitle": "subtitles.miscelanea.inmersion_tos"
-  },
-  "inmersion_crujido": {
-    "sounds": [
-      "miscelanea:inmersion_crujido"
-    ],
-    "subtitle": "subtitles.miscelanea.inmersion_crujido"
-  },
-  "inmersion_goteo": {
-    "sounds": [
-      "miscelanea:inmersion_goteo"
-    ],
-    "subtitle": "subtitles.miscelanea.inmersion_goteo"
-  },
-  "miedo_final": {
-    "sounds": [
-      "miscelanea:miedo_final"
-    ],
-    "subtitle": "subtitles.miscelanea.miedo_final"
-  },
-  "miedo_respiracion": {
-    "sounds": [
-      "miscelanea:miedo_respiracion"
-    ],
-    "subtitle": "subtitles.miscelanea.miedo_respiracion"
-  },
-  "miedo_goteo": {
-    "sounds": [
-      "miscelanea:miedo_goteo1",
-      "miscelanea:miedo_goteo2",
-      "miscelanea:miedo_goteo3"
-    ],
-    "subtitle": "subtitles.miscelanea.miedo_goteo"
-  },
-  "miedo_manos": {
-    "sounds": [
-      "miscelanea:miedo_manos"
-    ],
-    "subtitle": "subtitles.miscelanea.miedo_manos"
-  },
-  "miedo_estridente": {
-    "sounds": [
-      "miscelanea:miedo_estridente"
-    ],
-    "subtitle": "subtitles.miscelanea.miedo_estridente"
-  },
-  "miedo_pitido": {
-    "sounds": [
-      "miscelanea:miedo_pitido"
-    ],
-    "subtitle": "subtitles.miscelanea.miedo_pitido"
-  },
-  "pociones_palmada": {
-    "sounds": [
-      {
-        "name": "miscelanea:pociones_palmada",
-        "volume": 0.9
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.pociones_palmada"
-  },
-  "pociones_berserk": {
-    "sounds": [
-      {
-        "name": "miscelanea:pociones_berserk",
-        "volume": 0.9
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.pociones_berserk"
-  },
-  "pociones_reventar": {
-    "sounds": [
-      {
-        "name": "miscelanea:pociones_reventar",
-        "volume": 0.9
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.pociones_reventar"
-  },
-  "pociones_sirena": {
-    "sounds": [
-      {
-        "name": "miscelanea:pociones_sirena",
-        "volume": 0.7
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.pociones_sirena"
-  },
-  "pociones_pisoton": {
-    "sounds": [
-      {
-        "name": "miscelanea:pociones_pisoton",
-        "volume": 0.9
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.pociones_pisoton"
-  },
-  "hipo": {
-    "sounds": [
-      "miscelanea:hipo"
-    ],
-    "subtitle": "subtitles.miscelanea.hipo"
-  },
-  "vomito": {
-    "sounds": [
-      "miscelanea:vomito"
-    ],
-    "subtitle": "subtitles.miscelanea.vomito"
-  },
-  "interrogatorio_pinzas": {
-    "sounds": [
-      "miscelanea:interrogatorio_pinzas"
-    ],
-    "subtitle": "subtitles.miscelanea.interrogatorio_pinzas"
-  },
-  "interrogatorio_llave": {
-    "sounds": [
-      "miscelanea:interrogatorio_llave"
-    ],
-    "subtitle": "subtitles.miscelanea.interrogatorio_llave"
-  },
-  "interrogatorio_diente": {
-    "sounds": [
-      "miscelanea:interrogatorio_diente"
-    ],
-    "subtitle": "subtitles.miscelanea.interrogatorio_diente"
-  },
-  "interrogatorio_grito": {
-    "sounds": [
-      "miscelanea:interrogatorio_grito"
-    ],
-    "subtitle": "subtitles.miscelanea.interrogatorio_grito"
-  },
-  "interrogatorio_jeringa": {
-    "sounds": [
-      "miscelanea:interrogatorio_jeringa"
-    ],
-    "subtitle": "subtitles.miscelanea.interrogatorio_jeringa"
-  },
-  "interrogatorio_jadeo": {
-    "sounds": [
-      "miscelanea:interrogatorio_jadeo"
-    ],
-    "subtitle": "subtitles.miscelanea.interrogatorio_jadeo"
-  },
-  "monitor_pitido": {
-    "sounds": [
-      "miscelanea:monitor_pitido"
-    ],
-    "subtitle": "subtitles.miscelanea.monitor_pitido"
-  },
-  "monitor_plano": {
-    "sounds": [
-      "miscelanea:monitor_plano"
-    ],
-    "subtitle": "subtitles.miscelanea.monitor_plano"
-  },
-  "maletin_abrir": {
-    "sounds": [
-      "miscelanea:maletin_abrir"
-    ],
-    "subtitle": "subtitles.miscelanea.maletin_abrir"
-  },
-  "colgado_cuerda": {
-    "sounds": [
-      "miscelanea:colgado_cuerda"
-    ],
-    "subtitle": "subtitles.miscelanea.colgado_cuerda"
-  },
-  "colgado_manivela": {
-    "sounds": [
-      "miscelanea:colgado_manivela"
-    ],
-    "subtitle": "subtitles.miscelanea.colgado_manivela"
-  },
-  "colgado_desatar": {
-    "sounds": [
-      "miscelanea:colgado_desatar"
-    ],
-    "subtitle": "subtitles.miscelanea.colgado_desatar"
-  },
-  "saw_juego": {
-    "sounds": [
-      "miscelanea:saw/saw_juego"
-    ],
-    "subtitle": "subtitles.miscelanea.saw_juego"
-  },
-  "saw_caja_llenar": {
-    "sounds": [
-      "miscelanea:saw/saw_caja_llenar"
-    ],
-    "subtitle": "subtitles.miscelanea.saw_caja_llenar"
-  },
-  "saw_caja_burbujas": {
-    "sounds": [
-      "miscelanea:saw/saw_caja_burbujas"
-    ],
-    "subtitle": "subtitles.miscelanea.saw_caja_burbujas"
-  },
-  "saw_caja_cuchillas": {
-    "sounds": [
-      "miscelanea:saw/saw_caja_cuchillas"
-    ],
-    "subtitle": "subtitles.miscelanea.saw_caja_cuchillas"
-  },
-  "saw_caja_vaciar": {
-    "sounds": [
-      "miscelanea:saw/saw_caja_vaciar"
-    ],
-    "subtitle": "subtitles.miscelanea.saw_caja_vaciar"
-  },
-  "saw_caja_abrir": {
-    "sounds": [
-      "miscelanea:saw/saw_caja_abrir"
-    ],
-    "subtitle": "subtitles.miscelanea.saw_caja_abrir"
-  },
-  "saw_tanque_palanca": {
-    "sounds": [
-      "miscelanea:saw/saw_tanque_palanca"
-    ],
-    "subtitle": "subtitles.miscelanea.saw_tanque_palanca"
-  },
-  "ballesta_disparo": {
-    "sounds": [
-      {
-        "name": "miscelanea:ballesta_disparo",
-        "attenuation_distance": 32
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.ballesta_disparo"
-  },
-  "laser_encender": {
-    "sounds": [
-      {
-        "name": "miscelanea:laser_encender",
-        "attenuation_distance": 12
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.laser_encender"
-  },
-  "laser_apagar": {
-    "sounds": [
-      {
-        "name": "miscelanea:laser_apagar",
-        "attenuation_distance": 12
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.laser_apagar"
-  },
-  "ballesta_palanca": {
-    "sounds": [
-      {
-        "name": "miscelanea:ballesta_palanca",
-        "attenuation_distance": 16
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.ballesta_palanca"
-  },
-  "ballesta_crujido": {
-    "sounds": [
-      {
-        "name": "miscelanea:ballesta_crujido",
-        "attenuation_distance": 12
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.ballesta_crujido"
-  },
-  "ballesta_virote": {
-    "sounds": [
-      {
-        "name": "miscelanea:ballesta_virote",
-        "attenuation_distance": 10
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.ballesta_virote"
-  },
-  "dream_mordisco": {
-    "sounds": [
-      {
-        "name": "miscelanea:dream_mordisco",
-        "volume": 1.0
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.dream_mordisco"
-  },
-  "dream_agarre": {
-    "sounds": [
-      {
-        "name": "miscelanea:dream_agarre",
-        "volume": 1.0
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.dream_agarre"
-  },
-  "caldero_verter": {
-    "sounds": [
-      {
-        "name": "miscelanea:caldero_verter",
-        "volume": 1.0
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.caldero_verter"
-  },
-  "caldero_burbujas": {
-    "sounds": [
-      {
-        "name": "miscelanea:caldero_burbujas",
-        "volume": 0.6
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.caldero_burbujas"
-  },
-  "anillo_carga": {
-    "sounds": [
-      {
-        "name": "miscelanea:anillo_carga",
-        "volume": 0.8
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.anillo_carga"
-  },
-  "anillo_salto": {
-    "sounds": [
-      {
-        "name": "miscelanea:anillo_salto",
-        "volume": 1.0
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.anillo_salto"
-  },
-  "glitch_estatica": {
-    "sounds": [
-      {
-        "name": "miscelanea:glitch_estatica1",
-        "volume": 0.8
-      },
-      {
-        "name": "miscelanea:glitch_estatica2",
-        "volume": 0.8
-      },
-      {
-        "name": "miscelanea:glitch_estatica3",
-        "volume": 0.8
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.glitch_estatica"
-  },
-  "glitch_siseo": {
-    "sounds": [
-      {
-        "name": "miscelanea:glitch_siseo",
-        "volume": 1.0
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.glitch_siseo"
-  },
-  "glitch_crujido": {
-    "sounds": [
-      {
-        "name": "miscelanea:glitch_crujido1",
-        "volume": 0.9
-      },
-      {
-        "name": "miscelanea:glitch_crujido2",
-        "volume": 0.9
-      },
-      {
-        "name": "miscelanea:glitch_crujido3",
-        "volume": 0.9
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.glitch_crujido"
-  },
-  "glitch_estallido": {
-    "sounds": [
-      {
-        "name": "miscelanea:glitch_estallido",
-        "volume": 1.0,
-        "attenuation_distance": 32
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.glitch_estallido"
-  },
-  "frasco_llenar": {
-    "sounds": [
-      {
-        "name": "miscelanea:frasco_llenar",
-        "volume": 0.9
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.frasco_llenar"
-  },
-  "miedo_golpe": {
-    "sounds": [
-      "miscelanea:miedo_golpe1",
-      "miscelanea:miedo_golpe2",
-      "miscelanea:miedo_golpe3"
-    ],
-    "subtitle": "subtitles.miscelanea.miedo_golpe"
-  },
-  "miedo_tension": {
-    "sounds": [
-      "miscelanea:miedo_tension"
-    ],
-    "subtitle": "subtitles.miscelanea.miedo_tension"
-  },
-  "miedo_rodea": {
-    "sounds": [
-      "miscelanea:miedo_rodea"
-    ],
-    "subtitle": "subtitles.miscelanea.miedo_rodea"
-  },
-  "miedo_disolver": {
-    "sounds": [
-      "miscelanea:miedo_disolver"
-    ],
-    "subtitle": "subtitles.miscelanea.miedo_disolver"
-  },
-  "miedo_inversion": {
-    "sounds": [
-      "miscelanea:miedo_inversion"
-    ],
-    "subtitle": "subtitles.miscelanea.miedo_inversion"
-  },
-  "estatica_bucle": {
-    "sounds": [
-      {
-        "name": "miscelanea:estatica_bucle",
-        "attenuation_distance": 12
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.estatica_bucle"
-  },
-  "estatica_propia": {
-    "sounds": [
-      "miscelanea:estatica_propia"
-    ],
-    "subtitle": "subtitles.miscelanea.estatica_propia"
-  },
-  "estatica_crujido": {
-    "sounds": [
-      "miscelanea:estatica_crujido1",
-      "miscelanea:estatica_crujido2",
-      "miscelanea:estatica_crujido3"
-    ],
-    "subtitle": "subtitles.miscelanea.estatica_crujido"
-  },
-  "estatica_estallido": {
-    "sounds": [
-      "miscelanea:estatica_estallido"
-    ],
-    "subtitle": "subtitles.miscelanea.estatica_estallido"
-  },
-  "estatica_parpadeo": {
-    "sounds": [
-      "miscelanea:estatica_parpadeo"
-    ],
-    "subtitle": "subtitles.miscelanea.estatica_parpadeo"
-  },
-  "estatica_chispa": {
-    "sounds": [
-      "miscelanea:estatica_chispa"
-    ],
-    "subtitle": "subtitles.miscelanea.estatica_chispa"
-  },
-  "estatica_pantalla": {
-    "sounds": [
-      "miscelanea:estatica_pantalla"
-    ],
-    "subtitle": "subtitles.miscelanea.estatica_pantalla"
-  },
-  "estatica_apagon": {
-    "sounds": [
-      "miscelanea:estatica_apagon"
-    ],
-    "subtitle": "subtitles.miscelanea.estatica_apagon"
-  },
-  "estatica_tentaculo": {
-    "sounds": [
-      "miscelanea:estatica_tentaculo"
-    ],
-    "subtitle": "subtitles.miscelanea.estatica_tentaculo"
-  },
-  "estatica_golpe": {
-    "sounds": [
-      "miscelanea:estatica_golpe"
-    ],
-    "subtitle": "subtitles.miscelanea.estatica_golpe"
-  },
-  "estatica_imitacion": {
-    "sounds": [
-      {
-        "name": "miscelanea:estatica_chispa",
-        "stream": true
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.estatica_imitacion"
-  },
-  "movil_tono_0": {
-    "sounds": [
-      "miscelanea:movil_tono_0"
-    ],
-    "subtitle": "subtitles.miscelanea.movil_tono"
-  },
-  "movil_tono_1": {
-    "sounds": [
-      "miscelanea:movil_tono_1"
-    ],
-    "subtitle": "subtitles.miscelanea.movil_tono"
-  },
-  "movil_tono_2": {
-    "sounds": [
-      "miscelanea:movil_tono_2"
-    ],
-    "subtitle": "subtitles.miscelanea.movil_tono"
-  },
-  "movil_vibrar": {
-    "sounds": [
-      "miscelanea:movil_vibrar"
-    ],
-    "subtitle": "subtitles.miscelanea.movil_vibrar"
-  },
-  "movil_mensaje": {
-    "sounds": [
-      "miscelanea:movil_mensaje"
-    ],
-    "subtitle": "subtitles.miscelanea.movil_mensaje"
-  },
-  "movil_obturador": {
-    "sounds": [
-      "miscelanea:movil_obturador"
-    ],
-    "subtitle": "subtitles.miscelanea.movil_obturador"
-  },
-  "movil_clic": {
-    "sounds": [
-      "miscelanea:movil_clic"
-    ],
-    "subtitle": "subtitles.miscelanea.movil_clic"
-  },
-  "movil_espera": {
-    "sounds": [
-      "miscelanea:movil_espera"
-    ],
-    "subtitle": "subtitles.miscelanea.movil_espera"
-  },
-  "movil_colgar": {
-    "sounds": [
-      "miscelanea:movil_colgar"
-    ],
-    "subtitle": "subtitles.miscelanea.movil_colgar"
-  },
-  "movil_alarma": {
-    "sounds": [
-      "miscelanea:movil_alarma"
-    ],
-    "subtitle": "subtitles.miscelanea.movil_alarma"
-  },
-  "movil_nota_voz": {
-    "sounds": [
-      {
-        "name": "miscelanea:movil_clic",
-        "stream": true
-      }
-    ]
-  },
-  "movil_tono_3": {
-    "sounds": [
-      "miscelanea:movil_tono_3"
-    ],
-    "subtitle": "subtitles.miscelanea.movil_tono"
-  },
-  "movil_tono_4": {
-    "sounds": [
-      "miscelanea:movil_tono_4"
-    ],
-    "subtitle": "subtitles.miscelanea.movil_tono"
-  },
-  "movil_tono_5": {
-    "sounds": [
-      "miscelanea:movil_tono_5"
-    ],
-    "subtitle": "subtitles.miscelanea.movil_tono"
-  },
-  "espera_feria": {
-    "sounds": [
-      {
-        "name": "miscelanea:espera/feria",
-        "stream": true
-      }
-    ]
-  },
-  "espera_sala": {
-    "sounds": [
-      {
-        "name": "miscelanea:espera/sala",
-        "stream": true
-      }
-    ]
-  },
-  "espera_recreativa": {
-    "sounds": [
-      {
-        "name": "miscelanea:espera/recreativa",
-        "stream": true
-      }
-    ]
-  },
-  "espera_sin_textura": {
-    "sounds": [
-      {
-        "name": "miscelanea:espera/sin_textura",
-        "stream": true
-      }
-    ]
-  },
-  "paciente_oye": {
-    "sounds": [
-      "miscelanea:espera/paciente_oye"
-    ],
-    "subtitle": "subtitles.miscelanea.paciente_oye"
-  },
-  "paciente_purga": {
-    "sounds": [
-      "miscelanea:espera/paciente_purga"
-    ],
-    "subtitle": "subtitles.miscelanea.paciente_purga"
-  },
-  "espera_hotel": {
-    "sounds": [
-      {
-        "name": "miscelanea:espera/hotel",
-        "stream": true
-      }
-    ]
-  },
-  "espera_tele": {
-    "sounds": [
-      {
-        "name": "miscelanea:espera/tele",
-        "attenuation_distance": 10
-      }
-    ],
-    "subtitle": "subtitles.miscelanea.espera_tele"
-  },
-  "espera_piscina": {
-    "sounds": [
-      {
-        "name": "miscelanea:espera/piscina",
-        "stream": true
-      }
-    ]
-  },
-  "espera_aparcamiento": {
-    "sounds": [
-      {
-        "name": "miscelanea:espera/aparcamiento",
-        "stream": true
-      }
-    ]
-  },
-  "espera_colegio": {
-    "sounds": [
-      {
-        "name": "miscelanea:espera/colegio",
-        "stream": true
-      }
-    ]
-  },
-  "espera_centro": {
-    "sounds": [
-      {
-        "name": "miscelanea:espera/centro",
-        "stream": true
-      }
-    ]
-  },
-  "espera_zumbido": {
-    "subtitle": "subtitulo.miscelanea.espera_zumbido",
-    "sounds": [
-      {"name": "miscelanea:espera/zumbido_1", "attenuation_distance": 10},
-      {"name": "miscelanea:espera/zumbido_2", "attenuation_distance": 10}
-    ]
-  }
+ "bromas_boing": {
+  "sounds": [
+   "miscelanea:bromas_boing"
+  ],
+  "subtitle": "subtitles.miscelanea.bromas_boing"
+ },
+ "bromas_uwu": {
+  "sounds": [
+   "miscelanea:bromas_uwu"
+  ],
+  "subtitle": "subtitles.miscelanea.bromas_uwu"
+ },
+ "aspirar": {
+  "sounds": [
+   {
+    "name": "miscelanea:aspirar",
+    "attenuation_distance": 16
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.aspirar"
+ },
+ "pitido": {
+  "sounds": [
+   "miscelanea:pitido"
+  ],
+  "subtitle": "subtitles.miscelanea.pitido"
+ },
+ "chispazo": {
+  "sounds": [
+   "miscelanea:chispazo"
+  ],
+  "subtitle": "subtitles.miscelanea.chispazo"
+ },
+ "descarga": {
+  "sounds": [
+   "miscelanea:descarga"
+  ],
+  "subtitle": "subtitles.miscelanea.descarga"
+ },
+ "medigun_rayo": {
+  "sounds": [
+   {
+    "name": "miscelanea:medigun_rayo",
+    "attenuation_distance": 16
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.medigun_rayo"
+ },
+ "medigun_conectar": {
+  "sounds": [
+   {
+    "name": "miscelanea:medigun_conectar",
+    "attenuation_distance": 16
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.medigun_conectar"
+ },
+ "uber_activar": {
+  "sounds": [
+   {
+    "name": "miscelanea:uber_activar",
+    "attenuation_distance": 32
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.uber_activar"
+ },
+ "uber_lista": {
+  "sounds": [
+   {
+    "name": "miscelanea:uber_lista",
+    "attenuation_distance": 8
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.uber_lista"
+ },
+ "uber_rebote": {
+  "sounds": [
+   {
+    "name": "miscelanea:uber_rebote",
+    "attenuation_distance": 16
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.uber_rebote"
+ },
+ "nucleo_carga": {
+  "sounds": [
+   {
+    "name": "miscelanea:nucleo_carga",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.nucleo_carga"
+ },
+ "nucleo_rayo": {
+  "sounds": [
+   {
+    "name": "miscelanea:nucleo_rayo",
+    "attenuation_distance": 48
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.nucleo_rayo"
+ },
+ "nucleo_fin": {
+  "sounds": [
+   {
+    "name": "miscelanea:nucleo_fin",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.nucleo_fin"
+ },
+ "escopeta_disparo": {
+  "sounds": [
+   {
+    "name": "miscelanea:escopeta_disparo",
+    "attenuation_distance": 48
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.escopeta_disparo"
+ },
+ "escopeta_recarga": {
+  "sounds": [
+   {
+    "name": "miscelanea:escopeta_recarga",
+    "attenuation_distance": 16
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.escopeta_recarga"
+ },
+ "gancho_lanzar": {
+  "sounds": [
+   {
+    "name": "miscelanea:gancho_lanzar",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.gancho_lanzar"
+ },
+ "gancho_enganchar": {
+  "sounds": [
+   {
+    "name": "miscelanea:gancho_enganchar",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.gancho_enganchar"
+ },
+ "lanzacohetes_disparo": {
+  "sounds": [
+   {
+    "name": "miscelanea:lanzacohetes_disparo",
+    "attenuation_distance": 48
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.lanzacohetes_disparo"
+ },
+ "lanzacohetes_recarga": {
+  "sounds": [
+   {
+    "name": "miscelanea:lanzacohetes_recarga",
+    "attenuation_distance": 16
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.lanzacohetes_recarga"
+ },
+ "cohete_explosion": {
+  "sounds": [
+   {
+    "name": "miscelanea:cohete_explosion",
+    "attenuation_distance": 64
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.cohete_explosion"
+ },
+ "llave_golpe": {
+  "sounds": [
+   {
+    "name": "miscelanea:llave_golpe",
+    "attenuation_distance": 16
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.llave_golpe"
+ },
+ "llave_impacto": {
+  "sounds": [
+   {
+    "name": "miscelanea:llave_impacto",
+    "attenuation_distance": 16
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.llave_impacto"
+ },
+ "llave_remate": {
+  "sounds": [
+   {
+    "name": "miscelanea:llave_remate",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.llave_remate"
+ },
+ "llave_lanzar": {
+  "sounds": [
+   {
+    "name": "miscelanea:llave_lanzar",
+    "attenuation_distance": 16
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.llave_lanzar"
+ },
+ "hechizo_piro": {
+  "sounds": [
+   {
+    "name": "miscelanea:hechizo_piro",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.hechizo_piro"
+ },
+ "hechizo_hielo": {
+  "sounds": [
+   {
+    "name": "miscelanea:hechizo_hielo",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.hechizo_hielo"
+ },
+ "hechizo_cura": {
+  "sounds": [
+   {
+    "name": "miscelanea:hechizo_cura",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.hechizo_cura"
+ },
+ "cerradura": {
+  "sounds": [
+   {
+    "name": "miscelanea:cerradura",
+    "attenuation_distance": 16
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.cerradura"
+ },
+ "hacha_golpe": {
+  "sounds": [
+   {
+    "name": "miscelanea:hacha_golpe",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.hacha_golpe"
+ },
+ "hacha_impacto": {
+  "sounds": [
+   {
+    "name": "miscelanea:hacha_impacto",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.hacha_impacto"
+ },
+ "hacha_lanzar": {
+  "sounds": [
+   {
+    "name": "miscelanea:hacha_lanzar",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.hacha_lanzar"
+ },
+ "hacha_volver": {
+  "sounds": [
+   {
+    "name": "miscelanea:hacha_volver",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.hacha_volver"
+ },
+ "hacha_atrapar": {
+  "sounds": [
+   {
+    "name": "miscelanea:hacha_atrapar",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.hacha_atrapar"
+ },
+ "escudo_bloqueo": {
+  "sounds": [
+   {
+    "name": "miscelanea:escudo_bloqueo",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.escudo_bloqueo"
+ },
+ "escudo_parry": {
+  "sounds": [
+   {
+    "name": "miscelanea:escudo_parry",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.escudo_parry"
+ },
+ "escudo_abrir": {
+  "sounds": [
+   {
+    "name": "miscelanea:escudo_abrir",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.escudo_abrir"
+ },
+ "runico": {
+  "sounds": [
+   {
+    "name": "miscelanea:runico",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.runico"
+ },
+ "escarcha": {
+  "sounds": [
+   {
+    "name": "miscelanea:escarcha",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.escarcha"
+ },
+ "punetazo": {
+  "sounds": [
+   {
+    "name": "miscelanea:punetazo",
+    "attenuation_distance": 24
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.punetazo"
+ },
+ "gb_mover": {
+  "sounds": [
+   "miscelanea:gb_mover"
+  ],
+  "subtitle": "subtitles.miscelanea.gb_mover"
+ },
+ "gb_girar": {
+  "sounds": [
+   "miscelanea:gb_girar"
+  ],
+  "subtitle": "subtitles.miscelanea.gb_girar"
+ },
+ "gb_linea": {
+  "sounds": [
+   "miscelanea:gb_linea"
+  ],
+  "subtitle": "subtitles.miscelanea.gb_linea"
+ },
+ "gb_comer": {
+  "sounds": [
+   "miscelanea:gb_comer"
+  ],
+  "subtitle": "subtitles.miscelanea.gb_comer"
+ },
+ "gb_punto": {
+  "sounds": [
+   "miscelanea:gb_punto"
+  ],
+  "subtitle": "subtitles.miscelanea.gb_punto"
+ },
+ "gb_rebote": {
+  "sounds": [
+   "miscelanea:gb_rebote"
+  ],
+  "subtitle": "subtitles.miscelanea.gb_rebote"
+ },
+ "gb_disparo": {
+  "sounds": [
+   "miscelanea:gb_disparo"
+  ],
+  "subtitle": "subtitles.miscelanea.gb_disparo"
+ },
+ "gb_explosion": {
+  "sounds": [
+   "miscelanea:gb_explosion"
+  ],
+  "subtitle": "subtitles.miscelanea.gb_explosion"
+ },
+ "gb_aleteo": {
+  "sounds": [
+   "miscelanea:gb_aleteo"
+  ],
+  "subtitle": "subtitles.miscelanea.gb_aleteo"
+ },
+ "gb_fin": {
+  "sounds": [
+   "miscelanea:gb_fin"
+  ],
+  "subtitle": "subtitles.miscelanea.gb_fin"
+ },
+ "gb_inicio": {
+  "sounds": [
+   "miscelanea:gb_inicio"
+  ],
+  "subtitle": "subtitles.miscelanea.gb_inicio"
+ },
+ "gb_musica": {
+  "sounds": [
+   {
+    "name": "miscelanea:gb_musica",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.gb_musica"
+ },
+ "ocarina_0": {
+  "sounds": [
+   "miscelanea:ocarina_0"
+  ],
+  "subtitle": "subtitles.miscelanea.ocarina"
+ },
+ "ocarina_1": {
+  "sounds": [
+   "miscelanea:ocarina_1"
+  ],
+  "subtitle": "subtitles.miscelanea.ocarina"
+ },
+ "ocarina_2": {
+  "sounds": [
+   "miscelanea:ocarina_2"
+  ],
+  "subtitle": "subtitles.miscelanea.ocarina"
+ },
+ "ocarina_3": {
+  "sounds": [
+   "miscelanea:ocarina_3"
+  ],
+  "subtitle": "subtitles.miscelanea.ocarina"
+ },
+ "ocarina_4": {
+  "sounds": [
+   "miscelanea:ocarina_4"
+  ],
+  "subtitle": "subtitles.miscelanea.ocarina"
+ },
+ "cancion_sol": {
+  "sounds": [
+   {
+    "name": "miscelanea:cancion_sol",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.cancion"
+ },
+ "cancion_luna": {
+  "sounds": [
+   {
+    "name": "miscelanea:cancion_luna",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.cancion"
+ },
+ "cancion_tormenta": {
+  "sounds": [
+   {
+    "name": "miscelanea:cancion_tormenta",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.cancion"
+ },
+ "cancion_despejar": {
+  "sounds": [
+   {
+    "name": "miscelanea:cancion_despejar",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.cancion"
+ },
+ "cancion_regreso": {
+  "sounds": [
+   {
+    "name": "miscelanea:cancion_regreso",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.cancion"
+ },
+ "ocarina_exito": {
+  "sounds": [
+   "miscelanea:ocarina_exito"
+  ],
+  "subtitle": "subtitles.miscelanea.ocarina_exito"
+ },
+ "arcade_ficha": {
+  "sounds": [
+   "miscelanea:arcade_ficha"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "arcade_musica": {
+  "sounds": [
+   {
+    "name": "miscelanea:arcade_musica",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.gb_musica"
+ },
+ "detector_pitido": {
+  "sounds": [
+   "miscelanea:detector_pitido"
+  ],
+  "subtitle": "subtitles.miscelanea.detector_pitido"
+ },
+ "tesoro": {
+  "sounds": [
+   "miscelanea:tesoro"
+  ],
+  "subtitle": "subtitles.miscelanea.tesoro"
+ },
+ "capsula_abrir": {
+  "sounds": [
+   "miscelanea:capsula_abrir"
+  ],
+  "subtitle": "subtitles.miscelanea.capsula_abrir"
+ },
+ "tirolina_zumbido": {
+  "sounds": [
+   "miscelanea:tirolina_zumbido"
+  ],
+  "subtitle": "subtitles.miscelanea.tirolina_zumbido"
+ },
+ "tirolina_enganchar": {
+  "sounds": [
+   "miscelanea:tirolina_enganchar"
+  ],
+  "subtitle": "subtitles.miscelanea.tirolina_enganchar"
+ },
+ "trampolin_boing": {
+  "sounds": [
+   "miscelanea:trampolin_boing"
+  ],
+  "subtitle": "subtitles.miscelanea.trampolin_boing"
+ },
+ "ch_disparo": {
+  "sounds": [
+   "miscelanea:ch_disparo"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "ch_metralla": {
+  "sounds": [
+   "miscelanea:ch_metralla"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "ch_cohete": {
+  "sounds": [
+   "miscelanea:ch_cohete"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "ch_explosion": {
+  "sounds": [
+   "miscelanea:ch_explosion"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "ch_granada": {
+  "sounds": [
+   "miscelanea:ch_granada"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "ch_salto": {
+  "sounds": [
+   "miscelanea:ch_salto"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "ch_rescate": {
+  "sounds": [
+   "miscelanea:ch_rescate"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "ch_arma": {
+  "sounds": [
+   "miscelanea:ch_arma"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "ch_muerte": {
+  "sounds": [
+   "miscelanea:ch_muerte"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "ch_golpe": {
+  "sounds": [
+   "miscelanea:ch_golpe"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "ch_jefe": {
+  "sounds": [
+   "miscelanea:ch_jefe"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "ch_musica": {
+  "sounds": [
+   {
+    "name": "miscelanea:ch_musica",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "mz_escopeta": {
+  "sounds": [
+   "miscelanea:mz_escopeta"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "mz_puerta": {
+  "sounds": [
+   "miscelanea:mz_puerta"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "mz_coger": {
+  "sounds": [
+   "miscelanea:mz_coger"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "mz_dolor": {
+  "sounds": [
+   "miscelanea:mz_dolor"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "mz_grunido": {
+  "sounds": [
+   "miscelanea:mz_grunido"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "mz_muere": {
+  "sounds": [
+   "miscelanea:mz_muere"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "mz_bola": {
+  "sounds": [
+   "miscelanea:mz_bola"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "mz_salida": {
+  "sounds": [
+   "miscelanea:mz_salida"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "mz_musica": {
+  "sounds": [
+   {
+    "name": "miscelanea:mz_musica",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "tc_choque": {
+  "sounds": [
+   "miscelanea:tc_choque"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "tc_derrape": {
+  "sounds": [
+   "miscelanea:tc_derrape"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "tc_punto": {
+  "sounds": [
+   "miscelanea:tc_punto"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "tc_turbo": {
+  "sounds": [
+   "miscelanea:tc_turbo"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "tc_meta": {
+  "sounds": [
+   "miscelanea:tc_meta"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "tc_cuenta": {
+  "sounds": [
+   "miscelanea:tc_cuenta"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "tc_musica": {
+  "sounds": [
+   {
+    "name": "miscelanea:tc_musica",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "lu_aire": {
+  "sounds": [
+   "miscelanea:lu_aire"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "lu_golpe": {
+  "sounds": [
+   "miscelanea:lu_golpe"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "lu_golpe2": {
+  "sounds": [
+   "miscelanea:lu_golpe2"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "lu_bloqueo": {
+  "sounds": [
+   "miscelanea:lu_bloqueo"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "lu_caida": {
+  "sounds": [
+   "miscelanea:lu_caida"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "lu_ko": {
+  "sounds": [
+   "miscelanea:lu_ko"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "lu_ronda": {
+  "sounds": [
+   "miscelanea:lu_ronda"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "lu_especial": {
+  "sounds": [
+   "miscelanea:lu_especial"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "lu_selec": {
+  "sounds": [
+   "miscelanea:lu_selec"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "lu_comer": {
+  "sounds": [
+   "miscelanea:lu_comer"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "lu_romper": {
+  "sounds": [
+   "miscelanea:lu_romper"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "lu_duelo": {
+  "sounds": [
+   {
+    "name": "miscelanea:lu_duelo",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "lu_barrio": {
+  "sounds": [
+   {
+    "name": "miscelanea:lu_barrio",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "cc_punto": {
+  "sounds": [
+   "miscelanea:cc_punto"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "cc_pila": {
+  "sounds": [
+   "miscelanea:cc_pila"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "cc_robot": {
+  "sounds": [
+   "miscelanea:cc_robot"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "cc_muerte": {
+  "sounds": [
+   "miscelanea:cc_muerte"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "cc_fruta": {
+  "sounds": [
+   "miscelanea:cc_fruta"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "cc_extra": {
+  "sounds": [
+   "miscelanea:cc_extra"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "cc_inicio": {
+  "sounds": [
+   "miscelanea:cc_inicio"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "cc_musica": {
+  "sounds": [
+   {
+    "name": "miscelanea:cc_musica",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "bi_choque": {
+  "sounds": [
+   "miscelanea:bi_choque"
+  ],
+  "subtitle": "subtitles.miscelanea.billar"
+ },
+ "bi_banda": {
+  "sounds": [
+   "miscelanea:bi_banda"
+  ],
+  "subtitle": "subtitles.miscelanea.billar"
+ },
+ "bi_tronera": {
+  "sounds": [
+   "miscelanea:bi_tronera"
+  ],
+  "subtitle": "subtitles.miscelanea.billar"
+ },
+ "bi_taco": {
+  "sounds": [
+   "miscelanea:bi_taco"
+  ],
+  "subtitle": "subtitles.miscelanea.billar"
+ },
+ "fu_golpe": {
+  "sounds": [
+   "miscelanea:fu_golpe"
+  ],
+  "subtitle": "subtitles.miscelanea.futbolin"
+ },
+ "fu_gol": {
+  "sounds": [
+   "miscelanea:fu_gol"
+  ],
+  "subtitle": "subtitles.miscelanea.futbolin"
+ },
+ "fu_silbato": {
+  "sounds": [
+   "miscelanea:fu_silbato"
+  ],
+  "subtitle": "subtitles.miscelanea.futbolin"
+ },
+ "ri_verbena": {
+  "sounds": [
+   {
+    "name": "miscelanea:ri_verbena",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "ri_neon": {
+  "sounds": [
+   {
+    "name": "miscelanea:ri_neon",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "ri_tormenta": {
+  "sounds": [
+   {
+    "name": "miscelanea:ri_tormenta",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "pb_musica": {
+  "sounds": [
+   {
+    "name": "miscelanea:pb_musica",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "pb_flipper": {
+  "sounds": [
+   "miscelanea:pb_flipper"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "pb_lanzar": {
+  "sounds": [
+   "miscelanea:pb_lanzar"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "pb_seta": {
+  "sounds": [
+   "miscelanea:pb_seta"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "pb_diana": {
+  "sounds": [
+   "miscelanea:pb_diana"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "pb_tirachinas": {
+  "sounds": [
+   "miscelanea:pb_tirachinas"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "pb_agujero": {
+  "sounds": [
+   "miscelanea:pb_agujero"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "pb_extra": {
+  "sounds": [
+   "miscelanea:pb_extra"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "pb_perder": {
+  "sounds": [
+   "miscelanea:pb_perder"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "db_musica": {
+  "sounds": [
+   {
+    "name": "miscelanea:db_musica",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "db_pierde": {
+  "sounds": [
+   "miscelanea:db_pierde"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "db_giro": {
+  "sounds": [
+   "miscelanea:db_giro"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "db_fija": {
+  "sounds": [
+   "miscelanea:db_fija"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "db_linea": {
+  "sounds": [
+   "miscelanea:db_linea"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "db_cuatro": {
+  "sounds": [
+   "miscelanea:db_cuatro"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "db_basura": {
+  "sounds": [
+   "miscelanea:db_basura"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "db_mover": {
+  "sounds": [
+   "miscelanea:db_mover"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "db_gana": {
+  "sounds": [
+   "miscelanea:db_gana"
+  ],
+  "subtitle": "subtitles.miscelanea.arcade_ficha"
+ },
+ "fe_arranca": {
+  "sounds": [
+   "miscelanea:fe_arranca"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_arranca"
+ },
+ "fe_para": {
+  "sounds": [
+   "miscelanea:fe_para"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_para"
+ },
+ "fe_noria": {
+  "sounds": [
+   "miscelanea:fe_noria"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_noria"
+ },
+ "fe_tiovivo": {
+  "sounds": [
+   "miscelanea:fe_tiovivo"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_tiovivo"
+ },
+ "fe_choque": {
+  "sounds": [
+   "miscelanea:fe_choque"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_choque"
+ },
+ "fe_bruja": {
+  "sounds": [
+   "miscelanea:fe_bruja"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_bruja"
+ },
+ "fe_huesos": {
+  "sounds": [
+   "miscelanea:fe_huesos"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_huesos"
+ },
+ "fe_trueno": {
+  "sounds": [
+   "miscelanea:fe_trueno"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_trueno"
+ },
+ "fe_fantasma": {
+  "sounds": [
+   "miscelanea:fe_fantasma"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_fantasma"
+ },
+ "fe_corcho": {
+  "sounds": [
+   "miscelanea:fe_corcho"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_corcho"
+ },
+ "fe_diana": {
+  "sounds": [
+   "miscelanea:fe_diana"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_diana"
+ },
+ "fe_tren": {
+  "sounds": [
+   "miscelanea:fe_tren"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_tren"
+ },
+ "fe_algodon": {
+  "sounds": [
+   "miscelanea:fe_algodon"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_algodon"
+ },
+ "fe_pop": {
+  "sounds": [
+   "miscelanea:fe_pop"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_pop"
+ },
+ "fe_masclet": {
+  "sounds": [
+   "miscelanea:fe_masclet"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_masclet"
+ },
+ "fe_masclet_final": {
+  "sounds": [
+   "miscelanea:fe_masclet_final"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_masclet_final"
+ },
+ "fe_gancho": {
+  "sounds": [
+   "miscelanea:fe_gancho"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_gancho"
+ },
+ "fe_gancho_musica": {
+  "sounds": [
+   "miscelanea:fe_gancho_musica"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_gancho_musica"
+ },
+ "fe_premio": {
+  "sounds": [
+   "miscelanea:fe_premio"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_premio"
+ },
+ "fe_premio_gordo": {
+  "sounds": [
+   "miscelanea:fe_premio_gordo"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_premio_gordo"
+ },
+ "fe_rodillos": {
+  "sounds": [
+   "miscelanea:fe_rodillos"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_rodillos"
+ },
+ "fe_rodillo_para": {
+  "sounds": [
+   "miscelanea:fe_rodillo_para"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_rodillo_para"
+ },
+ "fe_manivela": {
+  "sounds": [
+   "miscelanea:fe_manivela"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_manivela"
+ },
+ "fe_capsula": {
+  "sounds": [
+   "miscelanea:fe_capsula"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_capsula"
+ },
+ "fe_capsula_abre": {
+  "sounds": [
+   "miscelanea:fe_capsula_abre"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_capsula_abre"
+ },
+ "bo_bolo": {
+  "sounds": [
+   "miscelanea:bo_bolo"
+  ],
+  "subtitle": "subtitles.miscelanea.bo_bolo"
+ },
+ "bo_rueda": {
+  "sounds": [
+   "miscelanea:bo_rueda"
+  ],
+  "subtitle": "subtitles.miscelanea.bo_rueda"
+ },
+ "bo_pleno": {
+  "sounds": [
+   "miscelanea:bo_pleno"
+  ],
+  "subtitle": "subtitles.miscelanea.bo_pleno"
+ },
+ "da_clava": {
+  "sounds": [
+   "miscelanea:da_clava"
+  ],
+  "subtitle": "subtitles.miscelanea.da_clava"
+ },
+ "da_lanza": {
+  "sounds": [
+   "miscelanea:da_lanza"
+  ],
+  "subtitle": "subtitles.miscelanea.da_lanza"
+ },
+ "to_clac": {
+  "sounds": [
+   "miscelanea:to_clac"
+  ],
+  "subtitle": "subtitles.miscelanea.to_clac"
+ },
+ "to_derrumbe": {
+  "sounds": [
+   "miscelanea:to_derrumbe"
+  ],
+  "subtitle": "subtitles.miscelanea.to_derrumbe"
+ },
+ "co_chisporroteo": {
+  "sounds": [
+   "miscelanea:co_chisporroteo"
+  ],
+  "subtitle": "subtitles.miscelanea.co_chisporroteo"
+ },
+ "ca_barajar": {
+  "sounds": [
+   "miscelanea:ca_barajar"
+  ],
+  "subtitle": "subtitles.miscelanea.ca_barajar"
+ },
+ "ca_carta": {
+  "sounds": [
+   "miscelanea:ca_carta"
+  ],
+  "subtitle": "subtitles.miscelanea.ca_carta"
+ },
+ "ca_baza": {
+  "sounds": [
+   "miscelanea:ca_baza"
+  ],
+  "subtitle": "subtitles.miscelanea.ca_baza"
+ },
+ "fe_canasta": {
+  "sounds": [
+   "miscelanea:fe_canasta"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_canasta"
+ },
+ "fe_bote": {
+  "sounds": [
+   "miscelanea:fe_bote"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_bote"
+ },
+ "fe_punetazo": {
+  "sounds": [
+   "miscelanea:fe_punetazo"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_punetazo"
+ },
+ "fe_mazazo": {
+  "sounds": [
+   "miscelanea:fe_mazazo"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_mazazo"
+ },
+ "fe_campana": {
+  "sounds": [
+   "miscelanea:fe_campana"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_campana"
+ },
+ "ah_golpe": {
+  "sounds": [
+   "miscelanea:ah_golpe"
+  ],
+  "subtitle": "subtitles.miscelanea.ah_golpe"
+ },
+ "ah_banda": {
+  "sounds": [
+   "miscelanea:ah_banda"
+  ],
+  "subtitle": "subtitles.miscelanea.ah_banda"
+ },
+ "ah_gol": {
+  "sounds": [
+   "miscelanea:ah_gol"
+  ],
+  "subtitle": "subtitles.miscelanea.ah_gol"
+ },
+ "fe_bombo": {
+  "sounds": [
+   "miscelanea:fe_bombo"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_bombo"
+ },
+ "fe_cuac": {
+  "sounds": [
+   "miscelanea:fe_cuac"
+  ],
+  "subtitle": "subtitles.miscelanea.fe_cuac"
+ },
+ "pe_cae": {
+  "sounds": [
+   "miscelanea:pe_cae"
+  ],
+  "subtitle": "subtitles.miscelanea.pe_cae"
+ },
+ "pe_choque": {
+  "sounds": [
+   "miscelanea:pe_choque"
+  ],
+  "subtitle": "subtitles.miscelanea.pe_choque"
+ },
+ "pi_disparo": {
+  "sounds": [
+   "miscelanea:pi_disparo"
+  ],
+  "subtitle": "subtitles.miscelanea.pi_disparo"
+ },
+ "pi_recarga": {
+  "sounds": [
+   "miscelanea:pi_recarga"
+  ],
+  "subtitle": "subtitles.miscelanea.pi_recarga"
+ },
+ "pi_vacio": {
+  "sounds": [
+   "miscelanea:pi_vacio"
+  ],
+  "subtitle": "subtitles.miscelanea.pi_vacio"
+ },
+ "pi_impacto": {
+  "sounds": [
+   "miscelanea:pi_impacto"
+  ],
+  "subtitle": "subtitles.miscelanea.pi_impacto"
+ },
+ "pi_robot": {
+  "sounds": [
+   "miscelanea:pi_robot"
+  ],
+  "subtitle": "subtitles.miscelanea.pi_robot"
+ },
+ "pi_dano": {
+  "sounds": [
+   "miscelanea:pi_dano"
+  ],
+  "subtitle": "subtitles.miscelanea.pi_dano"
+ },
+ "pi_explosion": {
+  "sounds": [
+   "miscelanea:pi_explosion"
+  ],
+  "subtitle": "subtitles.miscelanea.pi_explosion"
+ },
+ "pi_musica": {
+  "sounds": [
+   "miscelanea:pi_musica"
+  ],
+  "subtitle": "subtitles.miscelanea.pi_musica"
+ },
+ "bfg_carga": {
+  "sounds": [
+   "miscelanea:bfg_carga"
+  ],
+  "subtitle": "subtitles.miscelanea.bfg_carga"
+ },
+ "bfg_disparo": {
+  "sounds": [
+   "miscelanea:bfg_disparo"
+  ],
+  "subtitle": "subtitles.miscelanea.bfg_disparo"
+ },
+ "bfg_zumbido": {
+  "sounds": [
+   "miscelanea:bfg_zumbido"
+  ],
+  "subtitle": "subtitles.miscelanea.bfg_zumbido"
+ },
+ "bfg_rayo": {
+  "sounds": [
+   "miscelanea:bfg_rayo"
+  ],
+  "subtitle": "subtitles.miscelanea.bfg_rayo"
+ },
+ "bfg_estallido": {
+  "sounds": [
+   "miscelanea:bfg_estallido"
+  ],
+  "subtitle": "subtitles.miscelanea.bfg_estallido"
+ },
+ "mazo_golpe": {
+  "sounds": [
+   "miscelanea:mazo_golpe"
+  ],
+  "subtitle": "subtitles.miscelanea.mazo_golpe"
+ },
+ "mazo_golpe_fuerte": {
+  "sounds": [
+   "miscelanea:mazo_golpe_fuerte"
+  ],
+  "subtitle": "subtitles.miscelanea.mazo_golpe_fuerte"
+ },
+ "viento_lanza": {
+  "sounds": [
+   "miscelanea:viento_lanza"
+  ],
+  "subtitle": "subtitles.miscelanea.viento_lanza"
+ },
+ "viento_rafaga": {
+  "sounds": [
+   "miscelanea:viento_rafaga"
+  ],
+  "subtitle": "subtitles.miscelanea.viento_rafaga"
+ },
+ "bfg_listo": {
+  "sounds": [
+   "miscelanea:bfg_listo"
+  ],
+  "subtitle": "subtitles.miscelanea.bfg_listo"
+ },
+ "bfg_vortice": {
+  "sounds": [
+   "miscelanea:bfg_vortice"
+  ],
+  "subtitle": "subtitles.miscelanea.bfg_vortice"
+ },
+ "mazo_lanzar": {
+  "sounds": [
+   "miscelanea:mazo_lanzar"
+  ],
+  "subtitle": "subtitles.miscelanea.mazo_lanzar"
+ },
+ "mazo_vuelve": {
+  "sounds": [
+   "miscelanea:mazo_vuelve"
+  ],
+  "subtitle": "subtitles.miscelanea.mazo_vuelve"
+ },
+ "mazo_sismo": {
+  "sounds": [
+   "miscelanea:mazo_sismo"
+  ],
+  "subtitle": "subtitles.miscelanea.mazo_sismo"
+ },
+ "mazo_cargado": {
+  "sounds": [
+   "miscelanea:mazo_cargado"
+  ],
+  "subtitle": "subtitles.miscelanea.mazo_cargado"
+ },
+ "qte_tic": {
+  "sounds": [
+   "miscelanea:qte_tic"
+  ],
+  "subtitle": "subtitles.miscelanea.qte_tic"
+ },
+ "qte_exito": {
+  "sounds": [
+   "miscelanea:qte_exito"
+  ],
+  "subtitle": "subtitles.miscelanea.qte_exito"
+ },
+ "qte_perfecto": {
+  "sounds": [
+   "miscelanea:qte_perfecto"
+  ],
+  "subtitle": "subtitles.miscelanea.qte_perfecto"
+ },
+ "qte_fallo": {
+  "sounds": [
+   "miscelanea:qte_fallo"
+  ],
+  "subtitle": "subtitles.miscelanea.qte_fallo"
+ },
+ "qte_pulsar": {
+  "sounds": [
+   "miscelanea:qte_pulsar"
+  ],
+  "subtitle": "subtitles.miscelanea.qte_pulsar"
+ },
+ "ganzua_rota": {
+  "sounds": [
+   "miscelanea:ganzua_rota"
+  ],
+  "subtitle": "subtitles.miscelanea.ganzua_rota"
+ },
+ "ganzua_girar": {
+  "sounds": [
+   "miscelanea:ganzua_girar"
+  ],
+  "subtitle": "subtitles.miscelanea.ganzua_girar"
+ },
+ "cerradura_abrir": {
+  "sounds": [
+   "miscelanea:cerradura_abrir"
+  ],
+  "subtitle": "subtitles.miscelanea.cerradura_abrir"
+ },
+ "trampa_tic": {
+  "sounds": [
+   "miscelanea:trampa_tic"
+  ],
+  "subtitle": "subtitles.miscelanea.trampa_tic"
+ },
+ "trampa_chasquido": {
+  "sounds": [
+   "miscelanea:trampa_chasquido"
+  ],
+  "subtitle": "subtitles.miscelanea.trampa_chasquido"
+ },
+ "trampa_poner": {
+  "sounds": [
+   "miscelanea:trampa_poner"
+  ],
+  "subtitle": "subtitles.miscelanea.trampa_poner"
+ },
+ "trampa_quitar": {
+  "sounds": [
+   "miscelanea:trampa_quitar"
+  ],
+  "subtitle": "subtitles.miscelanea.trampa_quitar"
+ },
+ "trampa_forcejeo": {
+  "sounds": [
+   "miscelanea:trampa_forcejeo"
+  ],
+  "subtitle": "subtitles.miscelanea.trampa_forcejeo"
+ },
+ "trampa_ejecucion": {
+  "sounds": [
+   "miscelanea:trampa_ejecucion"
+  ],
+  "subtitle": "subtitles.miscelanea.trampa_ejecucion"
+ },
+ "trampa_latido": {
+  "sounds": [
+   "miscelanea:trampa_latido"
+  ],
+  "subtitle": "subtitles.miscelanea.trampa_latido"
+ },
+ "grilletes_poner": {
+  "sounds": [
+   "miscelanea:grilletes_poner"
+  ],
+  "subtitle": "subtitles.miscelanea.grilletes_poner"
+ },
+ "grilletes_quitar": {
+  "sounds": [
+   "miscelanea:grilletes_quitar"
+  ],
+  "subtitle": "subtitles.miscelanea.grilletes_quitar"
+ },
+ "cadena_tintineo": {
+  "sounds": [
+   "miscelanea:cadena_tintineo"
+  ],
+  "subtitle": "subtitles.miscelanea.cadena_tintineo"
+ },
+ "caja_buscar": {
+  "sounds": [
+   "miscelanea:caja_buscar"
+  ],
+  "subtitle": "subtitles.miscelanea.caja_buscar"
+ },
+ "llave_encontrada": {
+  "sounds": [
+   "miscelanea:llave_encontrada"
+  ],
+  "subtitle": "subtitles.miscelanea.llave_encontrada"
+ },
+ "lazo_girar": {
+  "sounds": [
+   "miscelanea:lazo_girar"
+  ],
+  "subtitle": "subtitles.miscelanea.lazo_girar"
+ },
+ "lazo_lanzar": {
+  "sounds": [
+   "miscelanea:lazo_lanzar"
+  ],
+  "subtitle": "subtitles.miscelanea.lazo_lanzar"
+ },
+ "lazo_atrapar": {
+  "sounds": [
+   "miscelanea:lazo_atrapar"
+  ],
+  "subtitle": "subtitles.miscelanea.lazo_atrapar"
+ },
+ "lazo_tension": {
+  "sounds": [
+   "miscelanea:lazo_tension"
+  ],
+  "subtitle": "subtitles.miscelanea.lazo_tension"
+ },
+ "lazo_atar": {
+  "sounds": [
+   "miscelanea:lazo_atar"
+  ],
+  "subtitle": "subtitles.miscelanea.lazo_atar"
+ },
+ "lazo_romper": {
+  "sounds": [
+   "miscelanea:lazo_romper"
+  ],
+  "subtitle": "subtitles.miscelanea.lazo_romper"
+ },
+ "doncella_chirrido": {
+  "sounds": [
+   "miscelanea:doncella_chirrido"
+  ],
+  "subtitle": "subtitles.miscelanea.doncella_chirrido"
+ },
+ "doncella_cierre": {
+  "sounds": [
+   "miscelanea:doncella_cierre"
+  ],
+  "subtitle": "subtitles.miscelanea.doncella_cierre"
+ },
+ "doncella_pinchos": {
+  "sounds": [
+   "miscelanea:doncella_pinchos"
+  ],
+  "subtitle": "subtitles.miscelanea.doncella_pinchos"
+ },
+ "potro_carraca": {
+  "sounds": [
+   "miscelanea:potro_carraca"
+  ],
+  "subtitle": "subtitles.miscelanea.potro_carraca"
+ },
+ "potro_crujido": {
+  "sounds": [
+   "miscelanea:potro_crujido"
+  ],
+  "subtitle": "subtitles.miscelanea.potro_crujido"
+ },
+ "potro_conversion": {
+  "sounds": [
+   "miscelanea:potro_conversion"
+  ],
+  "subtitle": "subtitles.miscelanea.potro_conversion"
+ },
+ "silla_descarga": {
+  "sounds": [
+   "miscelanea:silla_descarga"
+  ],
+  "subtitle": "subtitles.miscelanea.silla_descarga"
+ },
+ "silla_palanca": {
+  "sounds": [
+   "miscelanea:silla_palanca"
+  ],
+  "subtitle": "subtitles.miscelanea.silla_palanca"
+ },
+ "silla_dial": {
+  "sounds": [
+   "miscelanea:silla_dial"
+  ],
+  "subtitle": "subtitles.miscelanea.silla_dial"
+ },
+ "hierro_chisporroteo": {
+  "sounds": [
+   "miscelanea:hierro_chisporroteo"
+  ],
+  "subtitle": "subtitles.miscelanea.hierro_chisporroteo"
+ },
+ "hierro_brasa": {
+  "sounds": [
+   "miscelanea:hierro_brasa"
+  ],
+  "subtitle": "subtitles.miscelanea.hierro_brasa"
+ },
+ "jaula_crujido": {
+  "sounds": [
+   "miscelanea:jaula_crujido"
+  ],
+  "subtitle": "subtitles.miscelanea.jaula_crujido"
+ },
+ "jaula_balanceo": {
+  "sounds": [
+   "miscelanea:jaula_balanceo"
+  ],
+  "subtitle": "subtitles.miscelanea.jaula_balanceo"
+ },
+ "jaula_cadena": {
+  "sounds": [
+   "miscelanea:jaula_cadena"
+  ],
+  "subtitle": "subtitles.miscelanea.jaula_cadena"
+ },
+ "jaula_rota": {
+  "sounds": [
+   "miscelanea:jaula_rota"
+  ],
+  "subtitle": "subtitles.miscelanea.jaula_rota"
+ },
+ "jaula_puerta": {
+  "sounds": [
+   "miscelanea:jaula_puerta"
+  ],
+  "subtitle": "subtitles.miscelanea.jaula_puerta"
+ },
+ "jaula_cerrojo": {
+  "sounds": [
+   "miscelanea:jaula_cerrojo"
+  ],
+  "subtitle": "subtitles.miscelanea.jaula_cerrojo"
+ },
+ "cepo_cerrar": {
+  "sounds": [
+   "miscelanea:cepo_cerrar"
+  ],
+  "subtitle": "subtitles.miscelanea.cepo_cerrar"
+ },
+ "cepo_abrir": {
+  "sounds": [
+   "miscelanea:cepo_abrir"
+  ],
+  "subtitle": "subtitles.miscelanea.cepo_abrir"
+ },
+ "tomate_lanzar": {
+  "sounds": [
+   "miscelanea:tomate_lanzar"
+  ],
+  "subtitle": "subtitles.miscelanea.tomate_lanzar"
+ },
+ "tomate_splat": {
+  "sounds": [
+   "miscelanea:tomate_splat"
+  ],
+  "subtitle": "subtitles.miscelanea.tomate_splat"
+ },
+ "huevo_splat": {
+  "sounds": [
+   "miscelanea:huevo_splat"
+  ],
+  "subtitle": "subtitles.miscelanea.huevo_splat"
+ },
+ "lluvia_tomates": {
+  "sounds": [
+   "miscelanea:lluvia_tomates"
+  ],
+  "subtitle": "subtitles.miscelanea.lluvia_tomates"
+ },
+ "esquiva": {
+  "sounds": [
+   "miscelanea:esquiva"
+  ],
+  "subtitle": "subtitles.miscelanea.esquiva"
+ },
+ "bola_arrastre": {
+  "sounds": [
+   "miscelanea:bola_arrastre"
+  ],
+  "subtitle": "subtitles.miscelanea.bola_arrastre"
+ },
+ "bola_golpe": {
+  "sounds": [
+   "miscelanea:bola_golpe"
+  ],
+  "subtitle": "subtitles.miscelanea.bola_golpe"
+ },
+ "bola_poner": {
+  "sounds": [
+   "miscelanea:bola_poner"
+  ],
+  "subtitle": "subtitles.miscelanea.bola_poner"
+ },
+ "sierra_serrar": {
+  "sounds": [
+   "miscelanea:sierra_serrar"
+  ],
+  "subtitle": "subtitles.miscelanea.sierra_serrar"
+ },
+ "cadena_rota": {
+  "sounds": [
+   "miscelanea:cadena_rota"
+  ],
+  "subtitle": "subtitles.miscelanea.cadena_rota"
+ },
+ "lavar": {
+  "sounds": [
+   "miscelanea:lavar"
+  ],
+  "subtitle": "subtitles.miscelanea.lavar"
+ },
+ "collar_pitido": {
+  "sounds": [
+   "miscelanea:collar_pitido"
+  ],
+  "subtitle": "subtitles.miscelanea.collar_pitido"
+ },
+ "collar_tono": {
+  "sounds": [
+   "miscelanea:collar_tono"
+  ],
+  "subtitle": "subtitles.miscelanea.collar_tono"
+ },
+ "collar_cerrar": {
+  "sounds": [
+   "miscelanea:collar_cerrar"
+  ],
+  "subtitle": "subtitles.miscelanea.collar_cerrar"
+ },
+ "collar_abrir": {
+  "sounds": [
+   "miscelanea:collar_abrir"
+  ],
+  "subtitle": "subtitles.miscelanea.collar_abrir"
+ },
+ "collar_estatica": {
+  "sounds": [
+   "miscelanea:collar_estatica"
+  ],
+  "subtitle": "subtitles.miscelanea.collar_estatica"
+ },
+ "collar_estallido": {
+  "sounds": [
+   "miscelanea:collar_estallido"
+  ],
+  "subtitle": "subtitles.miscelanea.collar_estallido"
+ },
+ "detonador_carga": {
+  "sounds": [
+   "miscelanea:detonador_carga"
+  ],
+  "subtitle": "subtitles.miscelanea.detonador_carga"
+ },
+ "gas_siseo": {
+  "sounds": [
+   "miscelanea:gas_siseo"
+  ],
+  "subtitle": "subtitles.miscelanea.gas_siseo"
+ },
+ "cerbatana": {
+  "sounds": [
+   "miscelanea:cerbatana"
+  ],
+  "subtitle": "subtitles.miscelanea.cerbatana"
+ },
+ "miedo_susurros": {
+  "sounds": [
+   "miscelanea:miedo_susurros1",
+   "miscelanea:miedo_susurros2",
+   "miscelanea:miedo_susurros3"
+  ],
+  "subtitle": "subtitles.miscelanea.miedo_susurros"
+ },
+ "miedo_latido": {
+  "sounds": [
+   "miscelanea:miedo_latido"
+  ],
+  "subtitle": "subtitles.miscelanea.miedo_latido"
+ },
+ "miedo_susto": {
+  "sounds": [
+   "miscelanea:miedo_susto"
+  ],
+  "subtitle": "subtitles.miscelanea.miedo_susto"
+ },
+ "miedo_zumbido": {
+  "sounds": [
+   "miscelanea:miedo_zumbido"
+  ],
+  "subtitle": "subtitles.miscelanea.miedo_zumbido"
+ },
+ "pendulo_silbido": {
+  "sounds": [
+   "miscelanea:pendulo_silbido"
+  ],
+  "subtitle": "subtitles.miscelanea.pendulo_silbido"
+ },
+ "pendulo_carraca": {
+  "sounds": [
+   "miscelanea:pendulo_carraca"
+  ],
+  "subtitle": "subtitles.miscelanea.pendulo_carraca"
+ },
+ "pendulo_tictac": {
+  "sounds": [
+   "miscelanea:pendulo_tictac"
+  ],
+  "subtitle": "subtitles.miscelanea.pendulo_tictac"
+ },
+ "pendulo_correa": {
+  "sounds": [
+   "miscelanea:pendulo_correa"
+  ],
+  "subtitle": "subtitles.miscelanea.pendulo_correa"
+ },
+ "pendulo_corte": {
+  "sounds": [
+   "miscelanea:pendulo_corte"
+  ],
+  "subtitle": "subtitles.miscelanea.pendulo_corte"
+ },
+ "pendulo_palanca": {
+  "sounds": [
+   "miscelanea:pendulo_palanca"
+  ],
+  "subtitle": "subtitles.miscelanea.pendulo_palanca"
+ },
+ "inmersion_chapuzon": {
+  "sounds": [
+   "miscelanea:inmersion_chapuzon"
+  ],
+  "subtitle": "subtitles.miscelanea.inmersion_chapuzon"
+ },
+ "inmersion_burbujas": {
+  "sounds": [
+   "miscelanea:inmersion_burbujas"
+  ],
+  "subtitle": "subtitles.miscelanea.inmersion_burbujas"
+ },
+ "inmersion_tos": {
+  "sounds": [
+   "miscelanea:inmersion_tos"
+  ],
+  "subtitle": "subtitles.miscelanea.inmersion_tos"
+ },
+ "inmersion_crujido": {
+  "sounds": [
+   "miscelanea:inmersion_crujido"
+  ],
+  "subtitle": "subtitles.miscelanea.inmersion_crujido"
+ },
+ "inmersion_goteo": {
+  "sounds": [
+   "miscelanea:inmersion_goteo"
+  ],
+  "subtitle": "subtitles.miscelanea.inmersion_goteo"
+ },
+ "miedo_final": {
+  "sounds": [
+   "miscelanea:miedo_final"
+  ],
+  "subtitle": "subtitles.miscelanea.miedo_final"
+ },
+ "miedo_respiracion": {
+  "sounds": [
+   "miscelanea:miedo_respiracion"
+  ],
+  "subtitle": "subtitles.miscelanea.miedo_respiracion"
+ },
+ "miedo_goteo": {
+  "sounds": [
+   "miscelanea:miedo_goteo1",
+   "miscelanea:miedo_goteo2",
+   "miscelanea:miedo_goteo3"
+  ],
+  "subtitle": "subtitles.miscelanea.miedo_goteo"
+ },
+ "miedo_manos": {
+  "sounds": [
+   "miscelanea:miedo_manos"
+  ],
+  "subtitle": "subtitles.miscelanea.miedo_manos"
+ },
+ "miedo_estridente": {
+  "sounds": [
+   "miscelanea:miedo_estridente"
+  ],
+  "subtitle": "subtitles.miscelanea.miedo_estridente"
+ },
+ "miedo_pitido": {
+  "sounds": [
+   "miscelanea:miedo_pitido"
+  ],
+  "subtitle": "subtitles.miscelanea.miedo_pitido"
+ },
+ "pociones_palmada": {
+  "sounds": [
+   {
+    "name": "miscelanea:pociones_palmada",
+    "volume": 0.9
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.pociones_palmada"
+ },
+ "pociones_berserk": {
+  "sounds": [
+   {
+    "name": "miscelanea:pociones_berserk",
+    "volume": 0.9
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.pociones_berserk"
+ },
+ "pociones_reventar": {
+  "sounds": [
+   {
+    "name": "miscelanea:pociones_reventar",
+    "volume": 0.9
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.pociones_reventar"
+ },
+ "pociones_sirena": {
+  "sounds": [
+   {
+    "name": "miscelanea:pociones_sirena",
+    "volume": 0.7
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.pociones_sirena"
+ },
+ "pociones_pisoton": {
+  "sounds": [
+   {
+    "name": "miscelanea:pociones_pisoton",
+    "volume": 0.9
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.pociones_pisoton"
+ },
+ "hipo": {
+  "sounds": [
+   "miscelanea:hipo"
+  ],
+  "subtitle": "subtitles.miscelanea.hipo"
+ },
+ "vomito": {
+  "sounds": [
+   "miscelanea:vomito"
+  ],
+  "subtitle": "subtitles.miscelanea.vomito"
+ },
+ "interrogatorio_pinzas": {
+  "sounds": [
+   "miscelanea:interrogatorio_pinzas"
+  ],
+  "subtitle": "subtitles.miscelanea.interrogatorio_pinzas"
+ },
+ "interrogatorio_llave": {
+  "sounds": [
+   "miscelanea:interrogatorio_llave"
+  ],
+  "subtitle": "subtitles.miscelanea.interrogatorio_llave"
+ },
+ "interrogatorio_diente": {
+  "sounds": [
+   "miscelanea:interrogatorio_diente"
+  ],
+  "subtitle": "subtitles.miscelanea.interrogatorio_diente"
+ },
+ "interrogatorio_grito": {
+  "sounds": [
+   "miscelanea:interrogatorio_grito"
+  ],
+  "subtitle": "subtitles.miscelanea.interrogatorio_grito"
+ },
+ "interrogatorio_jeringa": {
+  "sounds": [
+   "miscelanea:interrogatorio_jeringa"
+  ],
+  "subtitle": "subtitles.miscelanea.interrogatorio_jeringa"
+ },
+ "interrogatorio_jadeo": {
+  "sounds": [
+   "miscelanea:interrogatorio_jadeo"
+  ],
+  "subtitle": "subtitles.miscelanea.interrogatorio_jadeo"
+ },
+ "monitor_pitido": {
+  "sounds": [
+   "miscelanea:monitor_pitido"
+  ],
+  "subtitle": "subtitles.miscelanea.monitor_pitido"
+ },
+ "monitor_plano": {
+  "sounds": [
+   "miscelanea:monitor_plano"
+  ],
+  "subtitle": "subtitles.miscelanea.monitor_plano"
+ },
+ "maletin_abrir": {
+  "sounds": [
+   "miscelanea:maletin_abrir"
+  ],
+  "subtitle": "subtitles.miscelanea.maletin_abrir"
+ },
+ "colgado_cuerda": {
+  "sounds": [
+   "miscelanea:colgado_cuerda"
+  ],
+  "subtitle": "subtitles.miscelanea.colgado_cuerda"
+ },
+ "colgado_manivela": {
+  "sounds": [
+   "miscelanea:colgado_manivela"
+  ],
+  "subtitle": "subtitles.miscelanea.colgado_manivela"
+ },
+ "colgado_desatar": {
+  "sounds": [
+   "miscelanea:colgado_desatar"
+  ],
+  "subtitle": "subtitles.miscelanea.colgado_desatar"
+ },
+ "saw_juego": {
+  "sounds": [
+   "miscelanea:saw/saw_juego"
+  ],
+  "subtitle": "subtitles.miscelanea.saw_juego"
+ },
+ "saw_caja_llenar": {
+  "sounds": [
+   "miscelanea:saw/saw_caja_llenar"
+  ],
+  "subtitle": "subtitles.miscelanea.saw_caja_llenar"
+ },
+ "saw_caja_burbujas": {
+  "sounds": [
+   "miscelanea:saw/saw_caja_burbujas"
+  ],
+  "subtitle": "subtitles.miscelanea.saw_caja_burbujas"
+ },
+ "saw_caja_cuchillas": {
+  "sounds": [
+   "miscelanea:saw/saw_caja_cuchillas"
+  ],
+  "subtitle": "subtitles.miscelanea.saw_caja_cuchillas"
+ },
+ "saw_caja_vaciar": {
+  "sounds": [
+   "miscelanea:saw/saw_caja_vaciar"
+  ],
+  "subtitle": "subtitles.miscelanea.saw_caja_vaciar"
+ },
+ "saw_caja_abrir": {
+  "sounds": [
+   "miscelanea:saw/saw_caja_abrir"
+  ],
+  "subtitle": "subtitles.miscelanea.saw_caja_abrir"
+ },
+ "saw_tanque_palanca": {
+  "sounds": [
+   "miscelanea:saw/saw_tanque_palanca"
+  ],
+  "subtitle": "subtitles.miscelanea.saw_tanque_palanca"
+ },
+ "ballesta_disparo": {
+  "sounds": [
+   {
+    "name": "miscelanea:ballesta_disparo",
+    "attenuation_distance": 32
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.ballesta_disparo"
+ },
+ "laser_encender": {
+  "sounds": [
+   {
+    "name": "miscelanea:laser_encender",
+    "attenuation_distance": 12
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.laser_encender"
+ },
+ "laser_apagar": {
+  "sounds": [
+   {
+    "name": "miscelanea:laser_apagar",
+    "attenuation_distance": 12
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.laser_apagar"
+ },
+ "ballesta_palanca": {
+  "sounds": [
+   {
+    "name": "miscelanea:ballesta_palanca",
+    "attenuation_distance": 16
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.ballesta_palanca"
+ },
+ "ballesta_crujido": {
+  "sounds": [
+   {
+    "name": "miscelanea:ballesta_crujido",
+    "attenuation_distance": 12
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.ballesta_crujido"
+ },
+ "ballesta_virote": {
+  "sounds": [
+   {
+    "name": "miscelanea:ballesta_virote",
+    "attenuation_distance": 10
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.ballesta_virote"
+ },
+ "dream_mordisco": {
+  "sounds": [
+   {
+    "name": "miscelanea:dream_mordisco",
+    "volume": 1.0
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.dream_mordisco"
+ },
+ "dream_agarre": {
+  "sounds": [
+   {
+    "name": "miscelanea:dream_agarre",
+    "volume": 1.0
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.dream_agarre"
+ },
+ "caldero_verter": {
+  "sounds": [
+   {
+    "name": "miscelanea:caldero_verter",
+    "volume": 1.0
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.caldero_verter"
+ },
+ "caldero_burbujas": {
+  "sounds": [
+   {
+    "name": "miscelanea:caldero_burbujas",
+    "volume": 0.6
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.caldero_burbujas"
+ },
+ "anillo_carga": {
+  "sounds": [
+   {
+    "name": "miscelanea:anillo_carga",
+    "volume": 0.8
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.anillo_carga"
+ },
+ "anillo_salto": {
+  "sounds": [
+   {
+    "name": "miscelanea:anillo_salto",
+    "volume": 1.0
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.anillo_salto"
+ },
+ "glitch_estatica": {
+  "sounds": [
+   {
+    "name": "miscelanea:glitch_estatica1",
+    "volume": 0.8
+   },
+   {
+    "name": "miscelanea:glitch_estatica2",
+    "volume": 0.8
+   },
+   {
+    "name": "miscelanea:glitch_estatica3",
+    "volume": 0.8
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.glitch_estatica"
+ },
+ "glitch_siseo": {
+  "sounds": [
+   {
+    "name": "miscelanea:glitch_siseo",
+    "volume": 1.0
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.glitch_siseo"
+ },
+ "glitch_crujido": {
+  "sounds": [
+   {
+    "name": "miscelanea:glitch_crujido1",
+    "volume": 0.9
+   },
+   {
+    "name": "miscelanea:glitch_crujido2",
+    "volume": 0.9
+   },
+   {
+    "name": "miscelanea:glitch_crujido3",
+    "volume": 0.9
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.glitch_crujido"
+ },
+ "glitch_estallido": {
+  "sounds": [
+   {
+    "name": "miscelanea:glitch_estallido",
+    "volume": 1.0,
+    "attenuation_distance": 32
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.glitch_estallido"
+ },
+ "frasco_llenar": {
+  "sounds": [
+   {
+    "name": "miscelanea:frasco_llenar",
+    "volume": 0.9
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.frasco_llenar"
+ },
+ "miedo_golpe": {
+  "sounds": [
+   "miscelanea:miedo_golpe1",
+   "miscelanea:miedo_golpe2",
+   "miscelanea:miedo_golpe3"
+  ],
+  "subtitle": "subtitles.miscelanea.miedo_golpe"
+ },
+ "miedo_tension": {
+  "sounds": [
+   "miscelanea:miedo_tension"
+  ],
+  "subtitle": "subtitles.miscelanea.miedo_tension"
+ },
+ "miedo_rodea": {
+  "sounds": [
+   "miscelanea:miedo_rodea"
+  ],
+  "subtitle": "subtitles.miscelanea.miedo_rodea"
+ },
+ "miedo_disolver": {
+  "sounds": [
+   "miscelanea:miedo_disolver"
+  ],
+  "subtitle": "subtitles.miscelanea.miedo_disolver"
+ },
+ "miedo_inversion": {
+  "sounds": [
+   "miscelanea:miedo_inversion"
+  ],
+  "subtitle": "subtitles.miscelanea.miedo_inversion"
+ },
+ "estatica_bucle": {
+  "sounds": [
+   {
+    "name": "miscelanea:estatica_bucle",
+    "attenuation_distance": 12
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.estatica_bucle"
+ },
+ "estatica_propia": {
+  "sounds": [
+   "miscelanea:estatica_propia"
+  ],
+  "subtitle": "subtitles.miscelanea.estatica_propia"
+ },
+ "estatica_crujido": {
+  "sounds": [
+   "miscelanea:estatica_crujido1",
+   "miscelanea:estatica_crujido2",
+   "miscelanea:estatica_crujido3"
+  ],
+  "subtitle": "subtitles.miscelanea.estatica_crujido"
+ },
+ "estatica_estallido": {
+  "sounds": [
+   "miscelanea:estatica_estallido"
+  ],
+  "subtitle": "subtitles.miscelanea.estatica_estallido"
+ },
+ "estatica_parpadeo": {
+  "sounds": [
+   "miscelanea:estatica_parpadeo"
+  ],
+  "subtitle": "subtitles.miscelanea.estatica_parpadeo"
+ },
+ "estatica_chispa": {
+  "sounds": [
+   "miscelanea:estatica_chispa"
+  ],
+  "subtitle": "subtitles.miscelanea.estatica_chispa"
+ },
+ "estatica_pantalla": {
+  "sounds": [
+   "miscelanea:estatica_pantalla"
+  ],
+  "subtitle": "subtitles.miscelanea.estatica_pantalla"
+ },
+ "estatica_apagon": {
+  "sounds": [
+   "miscelanea:estatica_apagon"
+  ],
+  "subtitle": "subtitles.miscelanea.estatica_apagon"
+ },
+ "estatica_tentaculo": {
+  "sounds": [
+   "miscelanea:estatica_tentaculo"
+  ],
+  "subtitle": "subtitles.miscelanea.estatica_tentaculo"
+ },
+ "estatica_golpe": {
+  "sounds": [
+   "miscelanea:estatica_golpe"
+  ],
+  "subtitle": "subtitles.miscelanea.estatica_golpe"
+ },
+ "estatica_imitacion": {
+  "sounds": [
+   {
+    "name": "miscelanea:estatica_chispa",
+    "stream": true
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.estatica_imitacion"
+ },
+ "movil_tono_0": {
+  "sounds": [
+   "miscelanea:movil_tono_0"
+  ],
+  "subtitle": "subtitles.miscelanea.movil_tono"
+ },
+ "movil_tono_1": {
+  "sounds": [
+   "miscelanea:movil_tono_1"
+  ],
+  "subtitle": "subtitles.miscelanea.movil_tono"
+ },
+ "movil_tono_2": {
+  "sounds": [
+   "miscelanea:movil_tono_2"
+  ],
+  "subtitle": "subtitles.miscelanea.movil_tono"
+ },
+ "movil_vibrar": {
+  "sounds": [
+   "miscelanea:movil_vibrar"
+  ],
+  "subtitle": "subtitles.miscelanea.movil_vibrar"
+ },
+ "movil_mensaje": {
+  "sounds": [
+   "miscelanea:movil_mensaje"
+  ],
+  "subtitle": "subtitles.miscelanea.movil_mensaje"
+ },
+ "movil_obturador": {
+  "sounds": [
+   "miscelanea:movil_obturador"
+  ],
+  "subtitle": "subtitles.miscelanea.movil_obturador"
+ },
+ "movil_clic": {
+  "sounds": [
+   "miscelanea:movil_clic"
+  ],
+  "subtitle": "subtitles.miscelanea.movil_clic"
+ },
+ "movil_espera": {
+  "sounds": [
+   "miscelanea:movil_espera"
+  ],
+  "subtitle": "subtitles.miscelanea.movil_espera"
+ },
+ "movil_colgar": {
+  "sounds": [
+   "miscelanea:movil_colgar"
+  ],
+  "subtitle": "subtitles.miscelanea.movil_colgar"
+ },
+ "movil_alarma": {
+  "sounds": [
+   "miscelanea:movil_alarma"
+  ],
+  "subtitle": "subtitles.miscelanea.movil_alarma"
+ },
+ "movil_nota_voz": {
+  "sounds": [
+   {
+    "name": "miscelanea:movil_clic",
+    "stream": true
+   }
+  ]
+ },
+ "movil_tono_3": {
+  "sounds": [
+   "miscelanea:movil_tono_3"
+  ],
+  "subtitle": "subtitles.miscelanea.movil_tono"
+ },
+ "movil_tono_4": {
+  "sounds": [
+   "miscelanea:movil_tono_4"
+  ],
+  "subtitle": "subtitles.miscelanea.movil_tono"
+ },
+ "movil_tono_5": {
+  "sounds": [
+   "miscelanea:movil_tono_5"
+  ],
+  "subtitle": "subtitles.miscelanea.movil_tono"
+ },
+ "espera_feria": {
+  "sounds": [
+   {
+    "name": "miscelanea:espera/feria",
+    "stream": true
+   }
+  ]
+ },
+ "espera_sala": {
+  "sounds": [
+   {
+    "name": "miscelanea:espera/sala",
+    "stream": true
+   }
+  ]
+ },
+ "espera_recreativa": {
+  "sounds": [
+   {
+    "name": "miscelanea:espera/recreativa",
+    "stream": true
+   }
+  ]
+ },
+ "espera_sin_textura": {
+  "sounds": [
+   {
+    "name": "miscelanea:espera/sin_textura",
+    "stream": true
+   }
+  ]
+ },
+ "paciente_oye": {
+  "sounds": [
+   "miscelanea:espera/paciente_oye"
+  ],
+  "subtitle": "subtitles.miscelanea.paciente_oye"
+ },
+ "paciente_purga": {
+  "sounds": [
+   "miscelanea:espera/paciente_purga"
+  ],
+  "subtitle": "subtitles.miscelanea.paciente_purga"
+ },
+ "espera_hotel": {
+  "sounds": [
+   {
+    "name": "miscelanea:espera/hotel",
+    "stream": true
+   }
+  ]
+ },
+ "espera_tele": {
+  "sounds": [
+   {
+    "name": "miscelanea:espera/tele",
+    "attenuation_distance": 10
+   }
+  ],
+  "subtitle": "subtitles.miscelanea.espera_tele"
+ },
+ "espera_piscina": {
+  "sounds": [
+   {
+    "name": "miscelanea:espera/piscina",
+    "stream": true
+   }
+  ]
+ },
+ "espera_aparcamiento": {
+  "sounds": [
+   {
+    "name": "miscelanea:espera/aparcamiento",
+    "stream": true
+   }
+  ]
+ },
+ "espera_colegio": {
+  "sounds": [
+   {
+    "name": "miscelanea:espera/colegio",
+    "stream": true
+   }
+  ]
+ },
+ "espera_centro": {
+  "sounds": [
+   {
+    "name": "miscelanea:espera/centro",
+    "stream": true
+   }
+  ]
+ },
+ "espera_metro": {
+  "sounds": [
+   {
+    "name": "miscelanea:espera/metro",
+    "stream": true
+   }
+  ]
+ },
+ "espera_zumbido": {
+  "subtitle": "subtitulo.miscelanea.espera_zumbido",
+  "sounds": [
+   {
+    "name": "miscelanea:espera/zumbido_1",
+    "attenuation_distance": 10
+   },
+   {
+    "name": "miscelanea:espera/zumbido_2",
+    "attenuation_distance": 10
+   }
+  ]
+ }
 }

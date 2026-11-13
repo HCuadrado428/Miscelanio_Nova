@@ -251,6 +251,7 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> ESPERA_TELE = register("espera_tele");
     public static final RegistryObject<SoundEvent> ESPERA_PISCINA = register("espera_piscina");
     public static final RegistryObject<SoundEvent> ESPERA_APARCAMIENTO = register("espera_aparcamiento");
+    public static final RegistryObject<SoundEvent> ESPERA_METRO = register("espera_metro");
     public static final RegistryObject<SoundEvent> ESPERA_COLEGIO = register("espera_colegio");
     public static final RegistryObject<SoundEvent> ESPERA_CENTRO = register("espera_centro");
 

@@ -201,13 +201,12 @@ public final class EsperaCliente {
                 case APARCAMIENTO -> com.miscelanea.registry.ModSounds.ESPERA_APARCAMIENTO.get();
                 case COLEGIO -> com.miscelanea.registry.ModSounds.ESPERA_COLEGIO.get();
                 case CENTRO -> com.miscelanea.registry.ModSounds.ESPERA_CENTRO.get();
-                // el metro usa de momento el zumbido del aparcamiento: tunel, hormigon y ventilacion
-                case METRO -> com.miscelanea.registry.ModSounds.ESPERA_APARCAMIENTO.get();
+                case METRO -> com.miscelanea.registry.ModSounds.ESPERA_METRO.get();
             };
         }
 
         /** Volumen de cada bucle a tope: todos igualados (medidos en LUFS: feria -24,6, hotel -26,5, recreativa -21,3,
-         * sala -27, sin texturas -20,3, piscina -24,3, garaje -19, colegio -25,4 y centro comercial -19,9). */
+         * sala -27, sin texturas -20,3, piscina -24,3, garaje -19, colegio -25,4, centro comercial -19,9 y metro -23,1). */
         static float ganancia(EsperaGenerador.Zona z) {
             return switch (z) {
                 case FERIA -> 0.50F;
@@ -219,7 +218,7 @@ public final class EsperaCliente {
                 case APARCAMIENTO -> 0.26F;
                 case COLEGIO -> 0.55F;
                 case CENTRO -> 0.29F;
-                case METRO -> 0.34F;
+                case METRO -> 0.44F;
             };
         }
 
