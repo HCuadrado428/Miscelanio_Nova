@@ -2853,6 +2853,8 @@
  "espera.miscelanea.chat.15": "<???> %s",
  "espera.miscelanea.noclip": "Te has colado por la pared… y ya no estás donde estabas.",
  "espera.miscelanea.vacio": "Te has caído del mapa. Aquí acaban los errores borrados.",
+ "espera.miscelanea.te_llaman": "Han dicho un número. No has oído cuál.",
+ "espera.miscelanea.turno": "Te han llamado. Era tu turno.",
  "espera.miscelanea.salida": "Has vuelto. Nadie se ha dado cuenta de que no estabas.",
  "block.miscelanea.sin_textura": "Bloque sin textura",
  "block.miscelanea.moqueta_recreativa": "Moqueta de recreativa",

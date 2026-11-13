@@ -6,7 +6,9 @@ import com.miscelanea.espera.Espera;
 import com.miscelanea.espera.EsperaConfig;
 import com.miscelanea.espera.EsperaGenerador;
 import com.miscelanea.espera.EsperaPlano;
+import com.miscelanea.registry.ModSounds;
 import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
@@ -121,7 +123,11 @@ public final class EsperaExtras {
             d.addLast(new Huella(dim, p.position(), p.getYRot(), p.getXRot()));
             while (d.size() > 21) d.pollFirst();
         }
-        if (dim != Espera.DIMENSION) return;
+        if (dim != Espera.DIMENSION) {
+            esperarSentado(p, u);
+            return;
+        }
+        SENTADO.remove(u);
         ULTIMA_Y.put(u, p.getY());
         int[] turno = TURNOS.get(u);
         if (turno != null && p.tickCount >= turno[0]) {
@@ -390,5 +396,53 @@ public final class EsperaExtras {
             n.nombres.add(nombre);
         }
         return n;
+    }
+
+    /** Cuántos tics lleva cada uno quieto en una silla de espera, fuera de La Espera. */
+    private static final java.util.Map<UUID, int[]> SENTADO = new java.util.concurrent.ConcurrentHashMap<>();
+    /** Cuánto hay que esperar sin moverse para que te llamen: un minuto y medio. */
+    private static final int ESPERA_LARGA = 1800;
+
+    /**
+     * La forma de volver a propósito: sentarse en una silla de espera, fuera, y esperar de verdad. Hay que estarse
+     * quieto un minuto y medio, sin andar, sin saltar y sin mirar a otro lado. Nadie lo hace sin querer; de eso va.
+     */
+    private static void esperarSentado(ServerPlayer p, UUID u) {
+        if (!EsperaConfig.activado() || p.isSpectator() || p.getVehicle() != null) {
+            SENTADO.remove(u);
+            return;
+        }
+        // tiene que haber una silla de espera justo debajo o al lado
+        boolean silla = false;
+        BlockPos b = p.blockPosition();
+        for (BlockPos q : new BlockPos[]{b.below(), b, b.north(), b.south(), b.east(), b.west()})
+            if (p.level().getBlockState(q).is(com.miscelanea.espera.liminal.LiminalRegistro.SILLA_ESPERA.get())) {
+                silla = true;
+                break;
+            }
+        if (!silla) {
+            SENTADO.remove(u);
+            return;
+        }
+        int[] d = SENTADO.computeIfAbsent(u, k -> new int[]{0, 0, 0});
+        // quieto de verdad: ni moverse del bloque ni girar la cabeza
+        int giro = (int) p.getYRot();
+        if (d[1] != b.hashCode() || Math.abs(giro - d[2]) > 8) {
+            d[0] = 0;
+            d[1] = b.hashCode();
+            d[2] = giro;
+            return;
+        }
+        d[0]++;
+        // va avisando, para que se note que algo pasa y no parezca que está roto
+        if (d[0] == ESPERA_LARGA / 3)
+            p.playNotifySound(ModSounds.ESPERA_SALA.get(), SoundSource.AMBIENT, 0.25F, 1F);
+        else if (d[0] == ESPERA_LARGA * 2 / 3) {
+            p.playNotifySound(ModSounds.ESPERA_SALA.get(), SoundSource.AMBIENT, 0.5F, 0.85F);
+            p.displayClientMessage(Component.translatable("espera.miscelanea.te_llaman"), true);
+        } else if (d[0] >= ESPERA_LARGA) {
+            SENTADO.remove(u);
+            Espera.entrar(p, "espera.miscelanea.turno");
+        }
     }
 }

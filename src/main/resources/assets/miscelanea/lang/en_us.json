@@ -2853,6 +2853,8 @@
  "espera.miscelanea.chat.15": "<???> %s",
  "espera.miscelanea.noclip": "You clipped through the wall… and you're not where you were.",
  "espera.miscelanea.vacio": "You fell off the map. This is where deleted errors end up.",
+ "espera.miscelanea.te_llaman": "They called a number. You didn't catch which.",
+ "espera.miscelanea.turno": "They called you. It was your turn.",
  "espera.miscelanea.salida": "You're back. Nobody noticed you were gone.",
  "block.miscelanea.sin_textura": "Missing Texture Block",
  "block.miscelanea.moqueta_recreativa": "Arcade Carpet",
