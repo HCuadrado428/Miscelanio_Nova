@@ -1,0 +1,28 @@
+{
+ "display": {
+  "icon": {
+   "item": "minecraft:name_tag"
+  },
+  "title": {
+   "translate": "advancements.miscelanea.espera.objeto_raro.title"
+  },
+  "description": {
+   "translate": "advancements.miscelanea.espera.objeto_raro.description"
+  },
+  "frame": "task",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": false
+ },
+ "parent": "miscelanea:espera/raiz",
+ "criteria": {
+  "recoger": {
+   "trigger": "minecraft:impossible"
+  }
+ },
+ "requirements": [
+  [
+   "recoger"
+  ]
+ ]
+}

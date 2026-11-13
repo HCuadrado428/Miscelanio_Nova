@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 /**
- * El Purgatorio es una dimensión nueva, y Minecraft trata cualquier mundo con dimensiones que no son las de siempre
+ * El Espera es una dimensión nueva, y Minecraft trata cualquier mundo con dimensiones que no son las de siempre
  * como "experimental": al crearlo o al abrirlo saca un aviso de "configuración experimental" (y pregunta si hacer copia
  * de seguridad) cada vez. Aquí se salta ese aviso. Si en otra versión cambian los métodos, no pasa nada: simplemente
  * vuelve a salir el aviso (require = 0).

@@ -30,7 +30,7 @@ public class Miscelanea {
         ModEffects.EFFECTS.register(modBus);
         ModPotions.POTIONS.register(modBus);
         ModItems.ITEMS.register(modBus);
-        com.miscelanea.purgatorio.PurgatorioGenerador.GENERADORES.register(modBus);
+        com.miscelanea.espera.EsperaGenerador.GENERADORES.register(modBus);
         ModEntities.ENTITIES.register(modBus);
         ModSounds.SOUNDS.register(modBus);
         ModEnchantments.ENCHANTMENTS.register(modBus);
@@ -51,8 +51,8 @@ public class Miscelanea {
         com.miscelanea.estatica.EstaticaRegistro.registrar(modBus);
         com.miscelanea.laser.LaserRegistro.registrar(modBus);
         com.miscelanea.movil.MovilRegistro.registrar(modBus);
-        com.miscelanea.purgatorio.eventos.ExtrasRegistro.registrar(modBus);
-        com.miscelanea.purgatorio.liminal.LiminalRegistro.registrar(modBus);
+        com.miscelanea.espera.eventos.ExtrasRegistro.registrar(modBus);
+        com.miscelanea.espera.liminal.LiminalRegistro.registrar(modBus);
 
         modBus.addListener(this::commonSetup);
         modBus.addListener(this::creativeTabs);

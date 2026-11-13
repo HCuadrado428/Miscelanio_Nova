@@ -14,7 +14,7 @@ public final class MontanaEventos {
 
     private static boolean forzar;
 
-    /** Le baja aunque el tren vaya en marcha (para llevárselo a otra parte, p. ej. al Purgatorio). */
+    /** Le baja aunque el tren vaya en marcha (para llevárselo a otra parte, p. ej. al Espera). */
     public static void bajarSiOSi(net.minecraft.world.entity.Entity e) {
         forzar = true;
         try {

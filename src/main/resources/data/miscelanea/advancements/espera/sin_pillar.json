@@ -1,0 +1,28 @@
+{
+ "display": {
+  "icon": {
+   "item": "minecraft:oak_door"
+  },
+  "title": {
+   "translate": "advancements.miscelanea.espera.sin_pillar.title"
+  },
+  "description": {
+   "translate": "advancements.miscelanea.espera.sin_pillar.description"
+  },
+  "frame": "goal",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": false
+ },
+ "parent": "miscelanea:espera/raiz",
+ "criteria": {
+  "salir": {
+   "trigger": "minecraft:impossible"
+  }
+ },
+ "requirements": [
+  [
+   "salir"
+  ]
+ ]
+}

@@ -2525,104 +2525,104 @@
     ],
     "subtitle": "subtitles.miscelanea.movil_tono"
   },
-  "purgatorio_feria": {
+  "espera_feria": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/feria",
+        "name": "miscelanea:espera/feria",
         "stream": true
       }
     ]
   },
-  "purgatorio_sala": {
+  "espera_sala": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/sala",
+        "name": "miscelanea:espera/sala",
         "stream": true
       }
     ]
   },
-  "purgatorio_recreativa": {
+  "espera_recreativa": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/recreativa",
+        "name": "miscelanea:espera/recreativa",
         "stream": true
       }
     ]
   },
-  "purgatorio_sin_textura": {
+  "espera_sin_textura": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/sin_textura",
+        "name": "miscelanea:espera/sin_textura",
         "stream": true
       }
     ]
   },
-  "purgado_oye": {
+  "paciente_oye": {
     "sounds": [
-      "miscelanea:purgatorio/purgado_oye"
+      "miscelanea:espera/paciente_oye"
     ],
-    "subtitle": "subtitles.miscelanea.purgado_oye"
+    "subtitle": "subtitles.miscelanea.paciente_oye"
   },
-  "purgado_purga": {
+  "paciente_purga": {
     "sounds": [
-      "miscelanea:purgatorio/purgado_purga"
+      "miscelanea:espera/paciente_purga"
     ],
-    "subtitle": "subtitles.miscelanea.purgado_purga"
+    "subtitle": "subtitles.miscelanea.paciente_purga"
   },
-  "purgatorio_hotel": {
+  "espera_hotel": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/hotel",
+        "name": "miscelanea:espera/hotel",
         "stream": true
       }
     ]
   },
-  "purgatorio_tele": {
+  "espera_tele": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/tele",
+        "name": "miscelanea:espera/tele",
         "attenuation_distance": 10
       }
     ],
-    "subtitle": "subtitles.miscelanea.purgatorio_tele"
+    "subtitle": "subtitles.miscelanea.espera_tele"
   },
-  "purgatorio_piscina": {
+  "espera_piscina": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/piscina",
+        "name": "miscelanea:espera/piscina",
         "stream": true
       }
     ]
   },
-  "purgatorio_aparcamiento": {
+  "espera_aparcamiento": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/aparcamiento",
+        "name": "miscelanea:espera/aparcamiento",
         "stream": true
       }
     ]
   },
-  "purgatorio_colegio": {
+  "espera_colegio": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/colegio",
+        "name": "miscelanea:espera/colegio",
         "stream": true
       }
     ]
   },
-  "purgatorio_centro": {
+  "espera_centro": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/centro",
+        "name": "miscelanea:espera/centro",
         "stream": true
       }
     ]
   },
-  "purgatorio_zumbido": {
-    "subtitle": "subtitulo.miscelanea.purgatorio_zumbido",
+  "espera_zumbido": {
+    "subtitle": "subtitulo.miscelanea.espera_zumbido",
     "sounds": [
-      {"name": "miscelanea:purgatorio/zumbido_1", "attenuation_distance": 10},
-      {"name": "miscelanea:purgatorio/zumbido_2", "attenuation_distance": 10}
+      {"name": "miscelanea:espera/zumbido_1", "attenuation_distance": 10},
+      {"name": "miscelanea:espera/zumbido_2", "attenuation_distance": 10}
     ]
   }
 }

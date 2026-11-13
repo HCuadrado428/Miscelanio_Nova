@@ -1,0 +1,28 @@
+{
+ "display": {
+  "icon": {
+   "item": "miscelanea:reloj_reves"
+  },
+  "title": {
+   "translate": "advancements.miscelanea.espera.reloj.title"
+  },
+  "description": {
+   "translate": "advancements.miscelanea.espera.reloj.description"
+  },
+  "frame": "task",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": false
+ },
+ "parent": "miscelanea:espera/herobrine",
+ "criteria": {
+  "usar": {
+   "trigger": "minecraft:impossible"
+  }
+ },
+ "requirements": [
+  [
+   "usar"
+  ]
+ ]
+}

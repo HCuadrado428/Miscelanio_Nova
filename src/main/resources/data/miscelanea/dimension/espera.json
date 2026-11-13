@@ -1,0 +1,10 @@
+{
+  "type": "miscelanea:espera",
+  "generator": {
+    "type": "miscelanea:espera",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "miscelanea:espera"
+    }
+  }
+}

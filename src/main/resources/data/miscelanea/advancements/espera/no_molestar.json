@@ -1,0 +1,28 @@
+{
+ "display": {
+  "icon": {
+   "item": "miscelanea:llave_habitacion"
+  },
+  "title": {
+   "translate": "advancements.miscelanea.espera.no_molestar.title"
+  },
+  "description": {
+   "translate": "advancements.miscelanea.espera.no_molestar.description"
+  },
+  "frame": "task",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": false
+ },
+ "parent": "miscelanea:espera/rincones",
+ "criteria": {
+  "colgar": {
+   "trigger": "minecraft:impossible"
+  }
+ },
+ "requirements": [
+  [
+   "colgar"
+  ]
+ ]
+}

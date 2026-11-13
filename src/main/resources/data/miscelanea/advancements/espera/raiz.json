@@ -1,0 +1,28 @@
+{
+ "display": {
+  "icon": {
+   "item": "miscelanea:sin_textura"
+  },
+  "title": {
+   "translate": "advancements.miscelanea.espera.raiz.title"
+  },
+  "description": {
+   "translate": "advancements.miscelanea.espera.raiz.description"
+  },
+  "frame": "task",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": false,
+  "background": "miscelanea:textures/block/sin_textura.png"
+ },
+ "criteria": {
+  "entrar": {
+   "trigger": "minecraft:impossible"
+  }
+ },
+ "requirements": [
+  [
+   "entrar"
+  ]
+ ]
+}

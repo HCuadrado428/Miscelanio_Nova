@@ -1,0 +1,28 @@
+{
+ "display": {
+  "icon": {
+   "item": "miscelanea:missingno"
+  },
+  "title": {
+   "translate": "advancements.miscelanea.espera.missingno.title"
+  },
+  "description": {
+   "translate": "advancements.miscelanea.espera.missingno.description"
+  },
+  "frame": "task",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": false
+ },
+ "parent": "miscelanea:espera/objeto_raro",
+ "criteria": {
+  "sexto": {
+   "trigger": "minecraft:impossible"
+  }
+ },
+ "requirements": [
+  [
+   "sexto"
+  ]
+ ]
+}

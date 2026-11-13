@@ -1,0 +1,28 @@
+{
+ "display": {
+  "icon": {
+   "item": "minecraft:player_head"
+  },
+  "title": {
+   "translate": "advancements.miscelanea.espera.herobrine.title"
+  },
+  "description": {
+   "translate": "advancements.miscelanea.espera.herobrine.description"
+  },
+  "frame": "task",
+  "show_toast": true,
+  "announce_to_chat": true,
+  "hidden": true
+ },
+ "parent": "miscelanea:espera/pillado",
+ "criteria": {
+  "pegar": {
+   "trigger": "minecraft:impossible"
+  }
+ },
+ "requirements": [
+  [
+   "pegar"
+  ]
+ ]
+}

@@ -240,19 +240,19 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> GB_FIN = register("gb_fin");
     public static final RegistryObject<SoundEvent> GB_INICIO = register("gb_inicio");
     public static final RegistryObject<SoundEvent> GB_MUSICA = register("gb_musica");
-    // El Purgatorio (2.0.0): un ambiente en bucle por zona
-    public static final RegistryObject<SoundEvent> PURGATORIO_FERIA = register("purgatorio_feria");
-    public static final RegistryObject<SoundEvent> PURGATORIO_SALA = register("purgatorio_sala");
-    public static final RegistryObject<SoundEvent> PURGATORIO_RECREATIVA = register("purgatorio_recreativa");
-    public static final RegistryObject<SoundEvent> PURGATORIO_SIN_TEXTURA = register("purgatorio_sin_textura");
-    public static final RegistryObject<SoundEvent> PURGATORIO_HOTEL = register("purgatorio_hotel");
-    public static final RegistryObject<SoundEvent> PURGADO_OYE = register("purgado_oye");
-    public static final RegistryObject<SoundEvent> PURGADO_PURGA = register("purgado_purga");
-    public static final RegistryObject<SoundEvent> PURGATORIO_TELE = register("purgatorio_tele");
-    public static final RegistryObject<SoundEvent> PURGATORIO_PISCINA = register("purgatorio_piscina");
-    public static final RegistryObject<SoundEvent> PURGATORIO_APARCAMIENTO = register("purgatorio_aparcamiento");
-    public static final RegistryObject<SoundEvent> PURGATORIO_COLEGIO = register("purgatorio_colegio");
-    public static final RegistryObject<SoundEvent> PURGATORIO_CENTRO = register("purgatorio_centro");
+    // El Espera (2.0.0): un ambiente en bucle por zona
+    public static final RegistryObject<SoundEvent> ESPERA_FERIA = register("espera_feria");
+    public static final RegistryObject<SoundEvent> ESPERA_SALA = register("espera_sala");
+    public static final RegistryObject<SoundEvent> ESPERA_RECREATIVA = register("espera_recreativa");
+    public static final RegistryObject<SoundEvent> ESPERA_SIN_TEXTURA = register("espera_sin_textura");
+    public static final RegistryObject<SoundEvent> ESPERA_HOTEL = register("espera_hotel");
+    public static final RegistryObject<SoundEvent> PACIENTE_OYE = register("paciente_oye");
+    public static final RegistryObject<SoundEvent> PACIENTE_PURGA = register("paciente_purga");
+    public static final RegistryObject<SoundEvent> ESPERA_TELE = register("espera_tele");
+    public static final RegistryObject<SoundEvent> ESPERA_PISCINA = register("espera_piscina");
+    public static final RegistryObject<SoundEvent> ESPERA_APARCAMIENTO = register("espera_aparcamiento");
+    public static final RegistryObject<SoundEvent> ESPERA_COLEGIO = register("espera_colegio");
+    public static final RegistryObject<SoundEvent> ESPERA_CENTRO = register("espera_centro");
 
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name,

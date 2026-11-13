@@ -403,8 +403,8 @@ public final class ConfigServidor {
         LASER_DESLUMBRAR = b.comment("Apuntar a los ojos de un jugador que te mira le deslumbra un momento (solo un destello en su pantalla).").define("deslumbrar", true);
         b.pop();
         com.miscelanea.movil.MovilConfig.definir(b);
-        // ---- El Purgatorio: su sección vive en PurgatorioConfig
-        com.miscelanea.purgatorio.PurgatorioConfig.definir(b);
+        // ---- El Espera: su sección vive en EsperaConfig
+        com.miscelanea.espera.EsperaConfig.definir(b);
 
         SPEC = b.build();
     }
