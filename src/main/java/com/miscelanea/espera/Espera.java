@@ -503,6 +503,9 @@ public final class Espera {
                             case CENTRO -> {
                                 return new BlockPos[]{new BlockPos(bx + 3, f, bz + 8), new BlockPos(bx + 3, f + 1, bz + 1)};
                             }
+                            case METRO -> {
+                                return new BlockPos[]{new BlockPos(bx + 8, f, bz + 8), new BlockPos(bx + 2, f + 1, bz + 7)};
+                            }
                             default -> {
                                 return null;
                             }

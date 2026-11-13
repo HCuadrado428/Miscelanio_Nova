@@ -39,6 +39,9 @@
   },
   "centro": {
    "trigger": "minecraft:impossible"
+  },
+  "metro": {
+   "trigger": "minecraft:impossible"
   }
  },
  "requirements": [
@@ -65,6 +68,9 @@
   ],
   [
    "centro"
+  ],
+  [
+   "metro"
   ]
  ]
 }

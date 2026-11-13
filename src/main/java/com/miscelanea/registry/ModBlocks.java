@@ -148,6 +148,18 @@ public final class ModBlocks {
             () -> new com.miscelanea.espera.NumeradoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLUE).strength(1.5F, 6.0F).sound(SoundType.STONE)));
     public static final RegistryObject<Block> COLUMNA_APARCAMIENTO_BASE = BLOCKS.register("columna_aparcamiento_base",
             () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> PARED_METRO = BLOCKS.register("pared_metro",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.CLAY).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> PARED_METRO_FRANJA = BLOCKS.register("pared_metro_franja",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.CLAY).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> SUELO_METRO = BLOCKS.register("suelo_metro",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> BORDE_ANDEN = BLOCKS.register("borde_anden",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.TERRACOTTA_YELLOW).strength(1.5F, 6.0F).sound(SoundType.STONE)));
+    public static final RegistryObject<Block> VIA_METRO = BLOCKS.register("via_metro",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN).strength(1.5F, 6.0F).sound(SoundType.GRAVEL)));
+    public static final RegistryObject<Block> CHAPA_TREN = BLOCKS.register("chapa_tren",
+            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F, 6.0F).sound(SoundType.METAL)));
     public static final RegistryObject<Block> SUELO_COLEGIO = BLOCKS.register("suelo_colegio",
             () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.SAND).strength(1.5F, 6.0F).sound(SoundType.STONE)));
     public static final RegistryObject<Block> PARED_COLEGIO = BLOCKS.register("pared_colegio",

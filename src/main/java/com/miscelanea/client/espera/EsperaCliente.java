@@ -34,6 +34,7 @@ public final class EsperaCliente {
             case APARCAMIENTO -> 26;
             case COLEGIO -> 20;
             case CENTRO -> 30;
+            case METRO -> 22;
         };
     }
 
@@ -49,6 +50,7 @@ public final class EsperaCliente {
             case APARCAMIENTO -> new float[]{0.06F, 0.07F, 0.06F};
             case COLEGIO -> new float[]{0.05F, 0.055F, 0.08F};
             case CENTRO -> new float[]{0.09F, 0.075F, 0.065F};
+            case METRO -> new float[]{0.055F, 0.058F, 0.062F};
         };
     }
 
@@ -199,6 +201,8 @@ public final class EsperaCliente {
                 case APARCAMIENTO -> com.miscelanea.registry.ModSounds.ESPERA_APARCAMIENTO.get();
                 case COLEGIO -> com.miscelanea.registry.ModSounds.ESPERA_COLEGIO.get();
                 case CENTRO -> com.miscelanea.registry.ModSounds.ESPERA_CENTRO.get();
+                // el metro usa de momento el zumbido del aparcamiento: tunel, hormigon y ventilacion
+                case METRO -> com.miscelanea.registry.ModSounds.ESPERA_APARCAMIENTO.get();
             };
         }
 
@@ -215,6 +219,7 @@ public final class EsperaCliente {
                 case APARCAMIENTO -> 0.26F;
                 case COLEGIO -> 0.55F;
                 case CENTRO -> 0.29F;
+                case METRO -> 0.34F;
             };
         }
 
@@ -390,6 +395,14 @@ public final class EsperaCliente {
                     } else
                         // el timbre del recreo, ahogado, como si sonara en otro edificio
                         COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.NOTE_BLOCK_BELL.value(), x, y + 2, zz, 0.35F, 0.6F));
+                }
+                case METRO -> {
+                    if (tipo == 1)
+                        // un tren que pasa por otro tunel y no llega nunca a este anden
+                        COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.MINECART_INSIDE, x, y, zz, 0.5F, 0.6F));
+                    else
+                        // el aviso de que se cierran las puertas, de un tren que no esta
+                        COLA.add(new Susto(edad, net.minecraft.sounds.SoundEvents.NOTE_BLOCK_CHIME.value(), x, y + 1, zz, 0.45F, 1.5F));
                 }
                 case CENTRO -> {
                     if (tipo == 1)

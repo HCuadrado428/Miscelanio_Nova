@@ -190,6 +190,7 @@ public final class LiminalCliente {
             case PISCINA -> 1.0F;
             case APARCAMIENTO -> 0.85F;
             case CENTRO -> 0.75F;
+            case METRO -> 0.8F;
             case COLEGIO -> 0.5F;
             default -> 0F;
         };

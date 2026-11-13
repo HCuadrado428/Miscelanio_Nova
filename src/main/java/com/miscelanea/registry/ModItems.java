@@ -310,6 +310,12 @@ public final class ModItems {
     public static final RegistryObject<Item> COLUMNA_APARCAMIENTO = ITEMS.register("columna_aparcamiento", () -> new net.minecraft.world.item.BlockItem(ModBlocks.COLUMNA_APARCAMIENTO.get(), new Item.Properties().rarity(Rarity.COMMON)));
     public static final RegistryObject<Item> COLUMNA_APARCAMIENTO_BASE = ITEMS.register("columna_aparcamiento_base", () -> new net.minecraft.world.item.BlockItem(ModBlocks.COLUMNA_APARCAMIENTO_BASE.get(), new Item.Properties().rarity(Rarity.COMMON)));
     public static final RegistryObject<Item> SUELO_COLEGIO = ITEMS.register("suelo_colegio", () -> new net.minecraft.world.item.BlockItem(ModBlocks.SUELO_COLEGIO.get(), new Item.Properties().rarity(Rarity.COMMON)));
+    public static final RegistryObject<Item> PARED_METRO = ITEMS.register("pared_metro", () -> new net.minecraft.world.item.BlockItem(ModBlocks.PARED_METRO.get(), new Item.Properties()));
+    public static final RegistryObject<Item> PARED_METRO_FRANJA = ITEMS.register("pared_metro_franja", () -> new net.minecraft.world.item.BlockItem(ModBlocks.PARED_METRO_FRANJA.get(), new Item.Properties()));
+    public static final RegistryObject<Item> SUELO_METRO = ITEMS.register("suelo_metro", () -> new net.minecraft.world.item.BlockItem(ModBlocks.SUELO_METRO.get(), new Item.Properties()));
+    public static final RegistryObject<Item> BORDE_ANDEN = ITEMS.register("borde_anden", () -> new net.minecraft.world.item.BlockItem(ModBlocks.BORDE_ANDEN.get(), new Item.Properties()));
+    public static final RegistryObject<Item> VIA_METRO = ITEMS.register("via_metro", () -> new net.minecraft.world.item.BlockItem(ModBlocks.VIA_METRO.get(), new Item.Properties()));
+    public static final RegistryObject<Item> CHAPA_TREN = ITEMS.register("chapa_tren", () -> new net.minecraft.world.item.BlockItem(ModBlocks.CHAPA_TREN.get(), new Item.Properties()));
     public static final RegistryObject<Item> PARED_COLEGIO = ITEMS.register("pared_colegio", () -> new net.minecraft.world.item.BlockItem(ModBlocks.PARED_COLEGIO.get(), new Item.Properties().rarity(Rarity.COMMON)));
     public static final RegistryObject<Item> PARED_COLEGIO_ZOCALO = ITEMS.register("pared_colegio_zocalo", () -> new net.minecraft.world.item.BlockItem(ModBlocks.PARED_COLEGIO_ZOCALO.get(), new Item.Properties().rarity(Rarity.COMMON)));
     public static final RegistryObject<Item> TAQUILLA = ITEMS.register("taquilla", () -> new net.minecraft.world.item.BlockItem(ModBlocks.TAQUILLA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));

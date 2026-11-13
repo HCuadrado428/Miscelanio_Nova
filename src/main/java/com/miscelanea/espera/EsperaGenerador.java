@@ -59,7 +59,7 @@ public class EsperaGenerador extends ChunkGenerator {
     /** Primer bloque de aire sobre el suelo del piso de arriba. */
     public static final int SUELO = EsperaPlano.SUELO;
 
-    public enum Zona {FERIA, SALA, RECREATIVA, HOTEL, SIN_TEXTURA, PISCINA, APARCAMIENTO, COLEGIO, CENTRO}
+    public enum Zona {FERIA, SALA, RECREATIVA, HOTEL, SIN_TEXTURA, PISCINA, APARCAMIENTO, COLEGIO, CENTRO, METRO}
 
     public EsperaGenerador(BiomeSource b) {
         super(b);
@@ -179,6 +179,9 @@ public class EsperaGenerador extends ChunkGenerator {
             }
             case CENTRO -> {
                 return !ocupada(n, cx, cz, 0) && tiendaRara(n, cx, cz) ? 0 : -1;
+            }
+            case METRO -> {
+                return -1;   // el andén no tiene parcelas: es todo de una pieza
             }
             case FERIA -> {
                 for (int k = 0; k < 4; k++)
@@ -305,6 +308,7 @@ public class EsperaGenerador extends ChunkGenerator {
                 case APARCAMIENTO -> aparcamiento(l, n, f, cx, cz);
                 case COLEGIO -> colegio(l, n, f, cx, cz);
                 case CENTRO -> centro(l, n, f, cx, cz);
+                case METRO -> metro(l, n, f, cx, cz);
             }
             if (EsperaPlano.salida(n, cx, cz)) puertaSalida(l, f, z, n, cx, cz);
             if (n == 0) contagio(l, f, cx, cz, z);
@@ -929,6 +933,7 @@ public class EsperaGenerador extends ChunkGenerator {
             case APARCAMIENTO -> ModBlocks.SUELO_APARCAMIENTO.get().defaultBlockState();
             case COLEGIO -> ModBlocks.SUELO_COLEGIO.get().defaultBlockState();
             case CENTRO -> ModBlocks.SUELO_CENTRO.get().defaultBlockState();
+            case METRO -> ModBlocks.SUELO_METRO.get().defaultBlockState();
         };
     }
 
@@ -963,6 +968,83 @@ public class EsperaGenerador extends ChunkGenerator {
         }
     }
 
+    /**
+     * Un metro que no pasa. El andén va de lado a lado del chunk, con su raya amarilla en el borde, y las vías por
+     * debajo. En una de cada tres estaciones hay un tren parado con las puertas abiertas: se puede entrar, y dentro
+     * están los asientos y las barras. El panel de los próximos trenes no dice ninguno.
+     */
+    private static void metro(Lienzo l, int n, int f, int cx, int cz) {
+        BlockState anden = ModBlocks.SUELO_METRO.get().defaultBlockState();
+        BlockState raya = ModBlocks.BORDE_ANDEN.get().defaultBlockState();
+        BlockState via = ModBlocks.VIA_METRO.get().defaultBlockState();
+        BlockState azulejo = ModBlocks.PARED_METRO.get().defaultBlockState();
+        BlockState franja = ModBlocks.PARED_METRO_FRANJA.get().defaultBlockState();
+        BlockState chapa = ModBlocks.CHAPA_TREN.get().defaultBlockState();
+        BlockState luz = ModBlocks.FLUORESCENTE.get().defaultBlockState();
+        BlockState placa = ModBlocks.TECHO_SALA.get().defaultBlockState();
+        // el andén ocupa el centro del chunk y las vías van a los dos lados, más abajo
+        for (int x = 0; x < 16; x++)
+            for (int z = 0; z < 16; z++) {
+                boolean enVia = z < 4 || z > 11;
+                boolean borde = z == 4 || z == 11;
+                l.pon(x, f - 2, z, d(Blocks.STONE));
+                if (enVia) {
+                    // el foso: dos bloques por debajo del andén
+                    l.pon(x, f - 3, z, via);
+                    for (int y = -2; y < 0; y++) l.pon(x, f + y, z, AIRE);
+                } else {
+                    l.pon(x, f - 1, z, borde ? raya : anden);
+                }
+                boolean tubo = !enVia && z == 8 && x % 4 == 1;
+                l.pon(x, f + 5, z, tubo ? luz.setValue(FluorescenteBlock.ENCENDIDO,
+                        hs(n, cx * 16 + x, cz * 16 + z, 3) % 5 != 0) : placa);
+            }
+        // las paredes de azulejo al fondo de cada vía, con la franja azul a la altura de la vista
+        for (int x = 0; x < 16; x++)
+            for (int z : new int[]{0, 15})
+                for (int y = -2; y <= 4; y++)
+                    l.pon(x, f + y, z, y == 1 || y == 2 ? franja : azulejo);
+        // un tren parado en una de cada tres estaciones, con las puertas abiertas
+        if (hn(n, cx, cz, 61) % 3 == 0) tren(l, f, cx, cz, n, chapa, hn(n, cx, cz, 62) % 2 == 0 ? 1 : 12);
+        // un banco y una papelera en el andén
+        if (hn(n, cx, cz, 63) % 2 == 0) {
+            int bx = 3 + (int) (hn(n, cx, cz, 64) % 9);
+            for (int i = 0; i < 3; i++) l.pon(bx + i, f, 8, d(Blocks.SPRUCE_SLAB));
+        }
+        for (Direction dd : LADOS) {
+            int nx = cx + dd.getStepX(), nz = cz + dd.getStepZ();
+            if (zona(n, nx, nz) == Zona.METRO && EsperaPlano.grande(n, nx, nz) == null) continue;
+            tabique(l, f, dd, 5, azulejo, azulejo, 3, azulejo);
+        }
+    }
+
+    /** El vagón parado en la vía: chapa, ventanas, las puertas abiertas y dentro los asientos. */
+    private static void tren(Lienzo l, int f, int cx, int cz, int n, BlockState chapa, int z0) {
+        BlockState vidrio = d(Blocks.LIGHT_GRAY_STAINED_GLASS);
+        BlockState suelo = d(Blocks.POLISHED_ANDESITE);
+        for (int x = 0; x < 16; x++)
+            for (int z = z0; z < z0 + 3; z++) {
+                l.pon(x, f - 2, z, suelo);
+                for (int y = -1; y <= 2; y++) {
+                    boolean pared = z == z0 || z == z0 + 2;
+                    boolean puerta = pared && x % 7 == 3 && y <= 1;
+                    boolean ventana = pared && !puerta && y == 1;
+                    l.pon(x, f + y, z, pared ? (puerta ? AIRE : (ventana ? vidrio : chapa)) : AIRE);
+                }
+                l.pon(x, f + 3, z, chapa);
+            }
+        // los asientos corridos a los dos lados y las barras para agarrarse
+        for (int x = 1; x < 15; x++) {
+            if (x % 7 == 3) continue;             // delante de las puertas no hay asiento
+            l.pon(x, f - 1, z0 + 1, d(Blocks.BLUE_CONCRETE));
+        }
+        for (int x = 2; x < 15; x += 5) {
+            l.pon(x, f, z0 + 1, d(Blocks.IRON_BARS));
+            l.pon(x, f + 1, z0 + 1, d(Blocks.IRON_BARS));
+            l.pon(x, f + 2, z0 + 1, d(Blocks.IRON_BARS));
+        }
+    }
+
     // ------------------------------------------------------------------ salida
     /** Un marco de puerta suelto con el cartel verde de SALIDA encima: al cruzarlo se vuelve. */
     private static void puertaSalida(Lienzo l, int f, Zona z, int n, int cx, int cz) {
@@ -976,6 +1058,7 @@ public class EsperaGenerador extends ChunkGenerator {
             case APARCAMIENTO -> ModBlocks.COLUMNA_APARCAMIENTO_BASE.get().defaultBlockState();
             case COLEGIO -> ModBlocks.PARED_COLEGIO_ZOCALO.get().defaultBlockState();
             case CENTRO -> d(Blocks.SMOOTH_QUARTZ);
+            case METRO -> ModBlocks.PARED_METRO_FRANJA.get().defaultBlockState();
         };
         // no siempre en el mismo rincón: cada chunk la pone en un sitio distinto, para que no se busque de memoria
         int zz = 2 + (int) (EsperaPlano.hn(n, cx, cz, 23) % 12);
