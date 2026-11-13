@@ -9,6 +9,10 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -36,6 +40,8 @@ public final class Purgatorio {
 
     public static final ResourceKey<Level> DIMENSION = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(Miscelanea.MOD_ID, "purgatorio"));
     private static final String TAG = "miscelanea_purgatorio";
+    /** Inventario guardado de quien está dentro (vuelve al salir). */
+    private static final String INV = "miscelanea_purgatorio_inv";
     /** Lo lejos (en chunks) que se puede aparecer del centro. */
     private static final int RADIO = 120;
 
@@ -145,6 +151,7 @@ public final class Purgatorio {
             vuelta.putDouble("Z", p.getZ());
         }
         persistente(p).put(TAG, vuelta);
+        guardarInventario(p);
         soltar(p);
         Habitantes.olvidar(p.getUUID());
         BlockPos b = sitio(p);
@@ -194,6 +201,7 @@ public final class Purgatorio {
             dest = p.server.overworld();
             b = Vec3.atBottomCenterOf(dest.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, dest.getSharedSpawnPos()));
         }
+        devolverInventario(p);
         soltar(p);
         Habitantes.olvidar(p.getUUID());
         p.fallDistance = 0;
@@ -202,6 +210,47 @@ public final class Purgatorio {
         dest.playSound(null, b.x, b.y, b.z, SoundEvents.BEACON_ACTIVATE, SoundSource.AMBIENT, 1F, 1.4F);
         p.displayClientMessage(Component.translatable("purgatorio.miscelanea.salida"), true);
         Miscelanea.LOGGER.info("Purgatorio: sale {} a {} {}", p.getGameProfile().getName(), dest.dimension().location(), BlockPos.containing(b));
+    }
+
+    /** Al entrar: guarda todo el inventario (también armadura y mano izquierda) y lo vacía. */
+    static void guardarInventario(ServerPlayer p) {
+        CompoundTag datos = persistente(p);
+        if (datos.contains(INV)) return; // ya guardado: no se pisa, lo de dentro se queda como está
+        ListTag guardado = new ListTag();
+        p.getInventory().save(guardado);
+        datos.put(INV, guardado);
+        p.getInventory().clearContent();
+    }
+
+    /**
+     * Al salir: devuelve lo guardado al entrar. Lo que haya encontrado dentro se añade encima; lo que no quepa se suelta
+     * a los pies.
+     */
+    static void devolverInventario(ServerPlayer p) {
+        CompoundTag datos = persistente(p);
+        if (!datos.contains(INV)) return;
+        ListTag guardado = datos.getList(INV, Tag.TAG_COMPOUND);
+        datos.remove(INV);
+        Inventory inv = p.getInventory();
+        ListTag encontrado = new ListTag();
+        inv.save(encontrado);
+        inv.clearContent();
+        inv.load(guardado);
+        for (Tag t : encontrado) {
+            ItemStack s = ItemStack.of((CompoundTag) t);
+            if (s.isEmpty()) continue;
+            if (!inv.add(s) && !s.isEmpty()) p.drop(s, false);
+        }
+    }
+
+    /** Si murió dentro, al reaparecer (fuera) se le devuelve su inventario y se le quita la marca de dentro. */
+    @SubscribeEvent
+    public static void reaparecer(PlayerEvent.PlayerRespawnEvent e) {
+        if (!(e.getEntity() instanceof ServerPlayer p) || en(p.level())) return;
+        CompoundTag datos = persistente(p);
+        if (!datos.contains(INV)) return;
+        datos.remove(TAG);
+        devolverInventario(p);
     }
 
     /** Le baja de lo que lleve montado (también del tren de la montaña rusa) y le quita lo que lleve encima. */
