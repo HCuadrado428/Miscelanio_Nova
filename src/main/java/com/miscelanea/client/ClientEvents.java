@@ -145,6 +145,7 @@ public final class ClientEvents {
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.VORTICE.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.ONDA.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.MAZO_LANZADO.get(), com.miscelanea.client.armas.MazoLanzadoRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.MARCO_FOTO_BE.get(), com.miscelanea.client.movil.MarcoFotoRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.RECREATIVA_BE.get(), com.miscelanea.client.arcade.RecreativaRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.CARTEL_RECORDS_BE.get(), com.miscelanea.client.arcade.CartelRecordsRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.BILLAR_BE.get(), com.miscelanea.client.mesas.BillarRenderer::new);

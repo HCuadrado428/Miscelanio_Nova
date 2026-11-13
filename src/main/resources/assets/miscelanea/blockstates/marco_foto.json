@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/marco_foto"
+  },
+  "facing=south": {
+   "model": "miscelanea:block/marco_foto",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/marco_foto",
+   "y": 270
+  },
+  "facing=east": {
+   "model": "miscelanea:block/marco_foto",
+   "y": 90
+  }
+ }
+}

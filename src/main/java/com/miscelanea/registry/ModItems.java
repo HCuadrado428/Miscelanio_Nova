@@ -197,6 +197,7 @@ public final class ModItems {
                             new Item.Properties().rarity(Rarity.RARE), indice)));
         }
     }
+    public static final RegistryObject<Item> MARCO_FOTO = ITEMS.register("marco_foto", () -> new net.minecraft.world.item.BlockItem(ModBlocks.MARCO_FOTO.get(), new Item.Properties()));
     public static final RegistryObject<Item> ALGODONERA = ITEMS.register("algodonera",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.ALGODONERA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> PALOMITERA = ITEMS.register("palomitera",

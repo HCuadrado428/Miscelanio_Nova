@@ -118,6 +118,13 @@ public final class ModBlocks {
                                     .mapColor(MapColor.WOOL).strength(0.5F).sound(SoundType.WOOL).noOcclusion(), indice)));
         }
     }
+    public static final RegistryObject<Block> MARCO_FOTO = BLOCKS.register("marco_foto",
+            () -> new com.miscelanea.movil.MarcoFotoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD)
+                    .strength(0.6F).sound(SoundType.WOOD).noOcclusion()));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.movil.MarcoFotoBlockEntity>> MARCO_FOTO_BE =
+            BLOCK_ENTITIES.register("marco_foto",
+                    () -> BlockEntityType.Builder.of(com.miscelanea.movil.MarcoFotoBlockEntity::new, MARCO_FOTO.get()).build(null));
     public static final RegistryObject<Block> ALGODONERA = BLOCKS.register("algodonera",
             () -> new com.miscelanea.feria.MaquinaFeriaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(2.0F)
                     .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 6), com.miscelanea.feria.MaquinaFeriaBlock.ALGODON));

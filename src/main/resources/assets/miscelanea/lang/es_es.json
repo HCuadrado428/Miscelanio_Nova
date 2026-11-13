@@ -2767,5 +2767,10 @@
  "miscelanea.sedante.resiste": "Te sacudes el sueño de encima",
  "miscelanea.sedante.dormido": "Te quedas frito",
  "miscelanea.sedante.despiertas": "¡Te despiertas de golpe!",
- "hud.miscelanea.sedante.dormido": "Dormido · te despiertas en %s s"
+ "hud.miscelanea.sedante.dormido": "Dormido · te despiertas en %s s",
+ "block.miscelanea.marco_foto": "Marco de fotos",
+ "marco.miscelanea.hace_falta_movil": "Hace falta el móvil en la mano para elegir la foto.",
+ "marco.miscelanea.sin_fotos": "No tienes ninguna foto en la galería.",
+ "marco.miscelanea.no_cabe": "No se ha podido poner esa foto.",
+ "marco.miscelanea.puesta": "Foto %s de %s."
 }

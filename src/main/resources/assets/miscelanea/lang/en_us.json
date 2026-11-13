@@ -2767,5 +2767,10 @@
  "miscelanea.sedante.resiste": "You shake off the drowsiness",
  "miscelanea.sedante.dormido": "You pass out",
  "miscelanea.sedante.despiertas": "You wake up with a jolt!",
- "hud.miscelanea.sedante.dormido": "Asleep · you wake up in %s s"
+ "hud.miscelanea.sedante.dormido": "Asleep · you wake up in %s s",
+ "block.miscelanea.marco_foto": "Picture Frame",
+ "marco.miscelanea.hace_falta_movil": "You need the phone in hand to choose the photo.",
+ "marco.miscelanea.sin_fotos": "You have no photos in your gallery.",
+ "marco.miscelanea.no_cabe": "That photo could not be placed.",
+ "marco.miscelanea.puesta": "Photo %s of %s."
 }
