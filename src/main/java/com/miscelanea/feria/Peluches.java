@@ -19,7 +19,7 @@ public final class Peluches {
 
     /** Los peluches que existen. El orden es el que sale en la pestaña del creativo. */
     public static final String[] NOMBRES = {
-            "doug", "nikki", "aaron", "nova", "yayi",
+            "doug", "nikki", "aaron", "nova", "yayi", "cloud",
     };
 
     /** Bloques ya registrados, por nombre. Lo rellena ModBlocks al arrancar. */
