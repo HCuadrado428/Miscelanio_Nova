@@ -1,0 +1,516 @@
+Prueba del móvil (Miscelánea)
+OK    preparar
+OK    00_mundo
+OK    01_inicio
+OK    02_camara
+OK    03_filtro_1
+OK    03_filtro_2
+OK    03_filtro_3
+OK    03_filtro_4
+OK    03_filtro_5
+OK    03_filtro_6
+OK    03_filtro_7
+OK    03_filtro_8
+OK    03_foto_gameboy
+OK    04_zoom
+OK    05_horizontal
+OK    vuelve_vertical
+OK    06_foto
+OK    espera_foto
+OK    07_temporizador
+OK    espera_temporizador
+OK    temporizador_fuera
+OK    08_flash
+OK    espera_flash
+OK    09_grabando
+OK    para_video
+OK    10_galeria
+  galería: 5 (la última es un vídeo de 3125 ms)
+OK    11_visor
+OK    12_llamada_grupo
+OK    13_llamada
+OK    14_entrante
+OK    15_manos_libres
+OK    16_teclado
+OK    17_ajustes
+OK    gramola_poner
+OK    20_gramola_menu
+OK    21_videoclip_hotel_inicio
+OK    22_videoclip_hotel_8s
+OK    23_videoclip_hotel_20s
+OK    24_tras_salir
+OK    gramola_otra
+OK    25_videoclip_disco
+OK    26_tras_salir_disco
+  pociones: red_mushroom=gigante brown_mushroom=enano echo_shard=ecolocalizacion ink_sac=niebla_viviente amethyst_shard=espejismo feather=helio snowball=ventilador wheat=borrachera cocoa_beans=tartamudeo
+OK    pociones
+OK    montana_construir
+  montaña: RRSSSSSSRBBBBBBRRRCCRRRRRRRRRRRRRRRRRRRRRRRCCCC (47 trozos, cerrado)
+OK    montana_circuito
+  tren 00: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_00
+  tren 01: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_01
+  tren 02: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_02
+  tren 03: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_03
+  tren 04: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_04
+  tren 05: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_05
+  tren 06: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_06
+  tren 07: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_07
+  tren 08: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_08
+  tren 09: RECTA/ESTACION y=0.2 v=0.00
+OK    30_montana_09
+  tren 10: RECTA/ESTACION y=0.2 v=0.00
+OK    31_montana_10
+  tren 11: RECTA/ESTACION y=0.2 v=0.00
+OK    31_montana_11
+  tren 12: RECTA/ESTACION y=0.2 v=0.00
+OK    31_montana_12
+  tren 13: SUBIDA/CADENA y=1.6 v=0.12
+OK    31_montana_13
+  tren 14: SUBIDA/CADENA y=3.6 v=0.12
+OK    31_montana_14
+  tren 15: SUBIDA/CADENA y=5.4 v=0.12
+OK    31_montana_15
+  montaña, trozos por los que ha pasado: [RECTA/ESTACION, SUBIDA/CADENA]
+  AVISO: el tren no llegó al rizo
+OK    montana_fin
+OK    montana_pilares_ir
+  montaña: 19 bloques de pilar debajo de la vía
+OK    32_montana_pilares
+OK    montana_rizo_ir
+  rizo: 1 tren(es) cerca; jugador en minecraft:overworld
+OK    montana_rizo_espera
+OK    33_montana_rizo_00
+  rizo 1: RIZO 0, 0, -16 y=2.1 v=0.50, 2 montados
+OK    33_montana_rizo_01
+  rizo 2: RECTA 2, 0, -16 y=0.2 v=0.62, 2 montados
+OK    33_montana_rizo_02
+  rizo 3: RECTA 2, 0, -7 y=0.2 v=0.60, 2 montados
+OK    33_montana_rizo_03
+  rizo 4: RECTA 2, 0, 1 y=0.2 v=0.31, 2 montados
+OK    33_montana_rizo_04
+  rizo 5: RECTA 0, 0, 0 y=0.2 v=0.05, 2 montados
+OK    33_montana_rizo_05
+  rizo 6: RECTA 0, 0, 0 y=0.2 v=0.00, 2 montados
+OK    33_montana_rizo_06
+  rizo 7: RECTA 0, 0, 0 y=0.2 v=0.00, 2 montados
+OK    33_montana_rizo_07
+  rizo 8: RECTA 0, 0, 0 y=0.2 v=0.00, 2 montados
+OK    33_montana_rizo_08
+  rizo 9: RECTA 0, 0, 0 y=0.2 v=0.00, 2 montados
+OK    33_montana_rizo_09
+  rizo 10: RECTA 0, 0, 0 y=0.2 v=0.00, 2 montados
+OK    33_montana_rizo_10
+  rizo 11: RECTA 0, 0, 0 y=0.2 v=0.00, 2 montados
+OK    33_montana_rizo_11
+  montaña, trozos (con el rizo): [RECTA/ESTACION, SUBIDA/CADENA, RIZO, RECTA]
+OK    montana_rizo_fin
+OK    espera_entrar
+OK    espera_feria_ir
+OK    40_espera_feria
+OK    41_espera_feria_2
+OK    espera_habitante
+  espera, habitante: sale en 8, 64, 17
+OK    49_espera_habitantes
+  habitantes 0: HEROBRINE a 5.5 (cazando) SIN_TEXTURA a 11.2 RELLENO a 13.0
+OK    49_espera_habitante_0
+  habitantes 1: HEROBRINE a 2.8 (cazando) SIN_TEXTURA a 11.2 RELLENO a 13.0
+OK    49_espera_habitante_1
+  habitantes 2: HEROBRINE a 1.2 (cazando) SIN_TEXTURA a 11.2 RELLENO a 13.0
+OK    49_espera_habitante_2
+  habitantes 3: HEROBRINE a 1.2 (cazando) SIN_TEXTURA a 11.2 RELLENO a 13.0
+OK    49_espera_habitante_3
+OK    espera_habitante_fin
+  espera, habitante: el jugador está a 0 bloques de donde estaba (NO le ha pillado)
+  AVISO: el habitante no ha pillado al jugador
+OK    espera_habitante_mira
+OK    espera_sala_ir
+OK    42_espera_sala
+OK    43_espera_sala_2
+OK    espera_recreativa_ir
+OK    45_espera_recreativa
+  espera, recreativa: 94 fundidas, 18 vivas (18 con bloque-entidad), ambiente: RECREATIVA=0.36 sustos=5
+OK    46_espera_recreativa_2
+OK    espera_hotel_ir
+OK    4a_espera_hotel
+  espera, hotel: ambiente HOTEL=0.60 sustos=5
+OK    4b_espera_hotel_2
+OK    espera_hotel_cuarto
+OK    4c_espera_hotel_cuarto
+OK    espera_sin_textura_ir
+OK    47_espera_sin_textura
+  espera, sin texturas: ambiente SIN_TEXTURA=0.33 sustos=5
+OK    48_espera_sin_textura_2
+OK    espera_salida_ir
+OK    44_espera_salida
+OK    espera_cruzar
+  espera (servidor): jugador en miscelanea:espera 8, 64, 5, bloque de la puerta: Block{minecraft:air}
+  espera: zona del origen FERIA, salida en BlockPos{x=8, y=64, z=8}, ha salido por la puerta: NO
+  espera: no ha salido a la primera (le habrá pillado un habitante por el camino): otra vez
+OK    espera_fuera
+OK    espera_cruzar_2
+FALLO espera_fuera_2: java.lang.IllegalStateException: la puerta de salida no le ha sacado
+  espera: agujero del Mundo sin Texturas en BlockPos{x=-84, y=64, z=-125}
+OK    espera_agujero
+OK    4d_espera_agujero
+OK    espera_agujero_caer
+  espera: ha salido por el agujero: sí (y=67)
+OK    espera_agujero_fuera
+OK    espera2_entrar
+  espera, mapa (3 pisos, 129 x 129 chunks): FERIA=3644 SALA=7056 RECREATIVA=4843 HOTEL=6503 SIN_TEXTURA=1974 PISCINA=5798 APARCAMIENTO=9739 COLEGIO=5437 CENTRO=4929 METRO=0 · salas grandes 387, escaleras 2161, ascensores 319, salidas 270
+OK    espera3_mapa
+OK    espera3_arriba_ir
+OK    50_espera_desde_arriba
+OK    espera3_arriba_fin
+  espera, piso 1: -24, 48, -24 HOTEL
+OK    espera3_piso1_ir
+  espera, piso 1: el jugador está a y=48, niebla 20.0, ambiente HOTEL=0.60 sustos=8 tele=-31, 49, -28
+OK    51_espera_piso1
+  espera, piso 2: -8, 32, 8 HOTEL
+OK    espera3_piso2_ir
+  espera, piso 2: el jugador está a y=32, niebla 20.0, ambiente HOTEL=0.60 sustos=8
+OK    51_espera_piso2
+  espera, escalera del piso 0 al 1: chunk -1, 0 (FERIA -> PISCINA)
+OK    espera3_escalera_ir
+OK    52_espera_escalera_arriba
+OK    espera3_escalera_tunel
+OK    53_espera_escalera_tunel
+OK    espera3_escalera_abajo
+OK    54_espera_escalera_abajo
+  espera, bajar la escalera andando: 19 pasos
+OK    espera3_escalera_andar
+  espera, ascensor en el chunk -1, -1, piso 2
+OK    espera3_ascensor_ir
+OK    55_espera_ascensor_fuera
+OK    espera3_ascensor_dentro
+OK    56_espera_ascensor
+  espera, botonera: block.miscelanea.botonera
+OK    espera3_ascensor_viaje
+  espera, ascensor: del piso 2 al 1 (y=48.0), movido en x/z 0.00, 0.00, zona al salir PISCINA
+OK    espera3_ascensor_llega
+OK    57_espera_ascensor_otro_piso
+  espera, sala grande PABELLON: piso 0, chunks -4, 8 (3 x 3)
+OK    ir_58_espera_pabellon
+OK    58_espera_pabellon
+OK    ir_58_espera_pabellon_2
+OK    58_espera_pabellon_2
+  espera, sala grande SALA_ENORME: piso 1, chunks 10, -4 (3 x 3)
+OK    ir_59_espera_sala_enorme
+OK    59_espera_sala_enorme
+OK    ir_59_espera_sala_enorme_2
+OK    59_espera_sala_enorme_2
+  espera, sala grande VESTIBULO: piso 0, chunks 3, -6 (3 x 2)
+OK    ir_5a_espera_vestibulo
+OK    5a_espera_vestibulo
+OK    ir_5a_espera_vestibulo_2
+OK    5a_espera_vestibulo_2
+  espera, pasillo que vuelve: piso 0, chunks 1, 8 (SALA)
+OK    espera3_bucle_ir
+OK    5b_espera_bucle
+OK    espera3_bucle_andar
+  espera, pasillo que vuelve: puesto a 29,5 de la entrada, ahora a 9.5 (ha vuelto 20 atrás)
+OK    espera3_bucle_mira
+OK    5c_espera_bucle_vuelta
+  espera, puerta que da a la pared: 3, 64, -39
+OK    espera3_puerta_pared_ir
+OK    espera3_puerta_pared_abrir
+OK    5d_espera_puerta_pared
+  espera, zona nueva PISCINA: -104, 64, -24 (piso 0)
+OK    ir_60_espera_piscina
+  espera, 60_espera_piscina: niebla 26.0, ambiente PISCINA=0.48 sustos=9
+OK    60_espera_piscina
+OK    60_espera_piscina_2
+  espera, rincón raro de PISCINA: -4, 64, -168
+OK    ir_60_espera_piscina_raro
+  espera, rincón raro de PISCINA: mira a block.miscelanea.azulejo_piscina_raya, ambiente PISCINA=0.48 sustos=10
+OK    60_espera_piscina_raro
+  espera, sala grande PISCINA_OLIMPICA: piso 0, chunks 8, 2
+OK    ir_60_espera_piscina_grande
+OK    60_espera_piscina_grande
+OK    ir_60_espera_piscina_grande_2
+OK    60_espera_piscina_grande_2
+  espera, zona nueva APARCAMIENTO: 8, 48, 24 (piso 1)
+OK    ir_61_espera_aparcamiento
+  espera, 61_espera_aparcamiento: niebla 26.0, ambiente APARCAMIENTO=0.26 sustos=10 tele=1, 49, 36
+OK    61_espera_aparcamiento
+OK    61_espera_aparcamiento_2
+  espera, rincón raro de APARCAMIENTO: 77, 48, 86
+OK    ir_61_espera_aparcamiento_raro
+  espera, rincón raro de APARCAMIENTO: mira a block.miscelanea.haz_faros, ambiente APARCAMIENTO=0.26 sustos=10
+OK    61_espera_aparcamiento_raro
+  espera, zona nueva COLEGIO: -40, 64, 8 (piso 0)
+OK    ir_62_espera_colegio
+  espera, 62_espera_colegio: niebla 20.0, ambiente COLEGIO=0.55 sustos=10
+OK    62_espera_colegio
+OK    62_espera_colegio_2
+  espera, rincón raro de COLEGIO: -77, 64, -11
+OK    ir_62_espera_colegio_raro
+  espera, rincón raro de COLEGIO: mira a block.miscelanea.pizarra, ambiente COLEGIO=0.55 sustos=10
+OK    62_espera_colegio_raro
+  espera, sala grande GIMNASIO: piso 0, chunks 8, 8
+OK    ir_62_espera_colegio_grande
+OK    62_espera_colegio_grande
+OK    ir_62_espera_colegio_grande_2
+OK    62_espera_colegio_grande_2
+  espera, zona nueva CENTRO: -88, 64, 104 (piso 0)
+OK    ir_63_espera_centro
+  espera, 63_espera_centro: niebla 30.0, ambiente CENTRO=0.29 sustos=10
+OK    63_espera_centro
+OK    63_espera_centro_2
+  espera, rincón raro de CENTRO: -125, 64, 136
+OK    ir_63_espera_centro_raro
+  espera, rincón raro de CENTRO: mira a block.miscelanea.tele_sin_senal, ambiente CENTRO=0.29 sustos=10 tele=-125, 65, 129
+OK    63_espera_centro_raro
+  espera, sala grande ATRIO: piso 0, chunks -13, 3
+OK    ir_63_espera_centro_grande
+OK    63_espera_centro_grande
+OK    ir_63_espera_centro_grande_2
+OK    63_espera_centro_grande_2
+  espera, andando desde el piso 0 (8, 64, 8) hasta una salida: 177 pasos (0.2 s)
+  espera, andando desde el piso 1 (-72, 48, -72) hasta una salida: 93 pasos (0.0 s)
+  espera, andando desde el piso 2 (8, 32, 8) hasta una salida: 80 pasos (0.0 s)
+OK    espera3_alcanzable
+OK    espera3_fin
+  espera, rincón raro de SALA: 28, 64, -92
+OK    ir_4e_espera_sala_silla
+  espera, 4e_espera_sala_silla: mira a block.miscelanea.silla_espera, niebla 24.1, ambiente SALA=0.62 CENTRO=0.00 sustos=11
+OK    4e_espera_sala_silla
+  espera, rincón raro de RECREATIVA: 59, 64, 118
+OK    ir_4f_espera_recreativa_una
+  espera, 4f_espera_recreativa_una: mira a block.miscelanea.recreativa_astro, niebla 22.0, ambiente RECREATIVA=0.36 sustos=15
+OK    4f_espera_recreativa_una
+  espera, rincón raro de FERIA: -20, 64, -26
+OK    ir_4g_espera_caseta_peluche
+  espera, 4g_espera_caseta_peluche: mira a block.miscelanea.peluche, niebla 34.0, ambiente FERIA=0.50 sustos=19
+OK    4g_espera_caseta_peluche
+  espera, rincón raro de HOTEL: -2, 65, -63
+OK    ir_4h_espera_hotel_tele
+  espera, 4h_espera_hotel_tele: mira a block.miscelanea.tele_sin_senal, niebla 20.1, ambiente HOTEL=0.60 sustos=22 tele=-2, 65, -60
+OK    4h_espera_hotel_tele
+  espera, tras los sustos: HOTEL=0.60 sustos=26 tele=-2, 65, -60
+OK    espera_sustos
+  espera, costura FERIA -> SALA: 57, 64, -8
+OK    ir_4i_espera_costura_feria_sala
+  espera, 4i_espera_costura_feria_sala: niebla 33.9, ambiente FERIA=0.50 sustos=26
+OK    4i_espera_costura_feria_sala
+  espera, costura SIN_TEXTURA -> HOTEL: 121, 64, -136
+OK    ir_4j_espera_costura_sin_textura
+  espera, 4j_espera_costura_sin_textura: niebla 30.0, ambiente SIN_TEXTURA=0.33 sustos=26
+OK    4j_espera_costura_sin_textura
+  espera, costura FERIA -> SIN_TEXTURA: -151, 64, 328
+OK    ir_4k_espera_costura_feria_sin_textura
+  espera, 4k_espera_costura_feria_sin_textura: niebla 34.0, ambiente FERIA=0.50 sustos=26
+OK    4k_espera_costura_feria_sin_textura
+  espera, niebla antes de cruzar: 34.0
+OK    espera_niebla_cruza
+  espera, niebla a los 3 tics de cruzar: 30.7 (fundiéndose)
+OK    espera_niebla_cruza_2
+  espera, niebla a los 3 s: 24.0 (sala: 24)
+OK    espera_niebla_cruza_3
+OK    espera_cuantos
+  espera, habitantes ahora: 0 (tope por jugador 2, total 12)
+OK    espera_muro
+OK    espera_muro_salir
+  espera, salir tras colarse por un muro: en minecraft:overworld 19, 71, -13 (fuera del muro)
+OK    espera_muro_fuera
+OK    espera_config_entrar
+  espera, configuración: activado=true, pared=0.12, vacío=true, dentro=true
+OK    espera_config_apagar
+  espera, desactivado: le ha sacado
+OK    espera_config_fuera
+  aviso experimental: localvar$zbk000$miscelanea$sinAvisoAlAbrir localvar$zbk000$miscelanea$sinAvisoAlCrear al crear: sin aviso
+OK    espera_aviso_experimental
+OK    pex_entrar
+  espera, logros tras recorrerlo: raiz=sí todas_zonas=NO rincones=NO turno=NO no_molestar=NO pillado=NO herobrine=NO reloj=NO sin_pillar=sí caida=sí fantasma=NO objeto_raro=NO missingno=NO (rincones: sala=sí recreativa=sí feria=sí hotel=sí piscina=sí aparcamiento=sí colegio=sí centro=sí)
+FALLO pex_logros_antes: java.lang.IllegalStateException: no se ha dado el logro espera/pillado
+OK    pex_brujula_ir
+  espera, brújula de salida: apunta a NADA, salida más cercana ? (en el cliente: null)
+FALLO 4l_espera_brujula: java.lang.IllegalStateException: la brújula no apunta a la salida más cercana
+OK    pex_reloj_a
+OK    pex_reloj_b
+OK    pex_reloj_usar
+  espera, reloj al revés: usado=true desde 72, 64, -8
+  espera, reloj al revés: ahora en 72, 64, -8, a 0.0 bloques de donde estaba (A 72, 64, -8, B -56, 64, -56)
+OK    pex_reloj_fin
+OK    pex_tique
+  espera, tique de turno: canjeado=true
+  espera, tique: le han llamado a 72, 64, -8, a 999.0 bloques de la puerta ?
+FALLO 4m_espera_tique_salida: java.lang.IllegalStateException: el tique no le ha llevado a la salida
+OK    pex_llave_ficha
+  espera, llave 404: colgada=true, no molestar=true
+  espera, ficha infinita: tres partidas true true true, quedan 1 ficha_infinita
+OK    pex_llave_ficha_ver
+OK    pex_missingno_ir
+OK    4n_espera_missingno
+OK    pex_missingno
+  espera, MissingNo.: +61 en el sexto hueco (64 dirt), el bloque se ha ido
+OK    pex_raros_ir
+OK    pex_raros
+  espera, objetos raros tirados: «Espada (1) (copia) final_FINAL» en 6, 64, -3 «item.minecraft.missingno» en -2, 64, -1 «Nuevo documento de texto (3).txt» en 16, 64, -2 «Copia de seguridad de Steve» en 8, 64, -7
+OK    pex_raros_mirar
+OK    4o_espera_objetos_raros
+OK    pex_raros_coger
+  espera, objetos raros en el suelo: 3
+  espera, ha cogido un objeto raro: sí
+OK    pex_raros_cogido
+  espera, chat roto: MissingNo se ha unido a la partida
+  espera, chat roto: <SinNombre> no encue@tro la salida
+  espera, chat roto: [Servidor] Guardan█o el mu¿do... 404 %
+  espera, chat roto: java.lannng.NullPointerException: Cannot invoke "Salida.abrir()" because "this.salida" is null
+  espera, chat roto: <???> Offline
+OK    4p_espera_chat
+OK    pex_fantasma_ir
+OK    pex_fantasma_ir_2
+  espera, jugador fantasma: sale=true en 72, 64, 4, fantasmas=1 (salidos 2, vistos 0), chat roto=6, sonidos rotos=6, nombres=0 (inventados)
+OK    pex_fantasma_sale
+OK    4q_espera_fantasma
+OK    pex_fantasma_mirar
+  espera, fantasma tras mirarlo fijamente: quedan 0, logro sí, fantasmas=0 (salidos 2, vistos 1), chat roto=6, sonidos rotos=6, nombres=0 (inventados)
+OK    4r_espera_fantasma_ido
+OK    pex_fantasma_acercarse
+  espera, fantasma al acercarse: quedan 0
+OK    pex_fantasma_acercarse_fin
+OK    pex_herobrine
+  espera, pegarle a Herobrine: logro true, se le cae brujula_salida
+OK    pex_rincon_ir
+  espera, premios de rincones raros cerca: brujula_salida en -20, 64, -20
+OK    4s_espera_rincon_premio
+OK    pex_premio_PISCINA
+  espera, premio del rincón raro de PISCINA (piso 0, sitio -4, 62, -164): brujula_salida en -4, 62, -164
+OK    pex_premio_PISCINA_ver
+OK    pex_premio_APARCAMIENTO
+  espera, premio del rincón raro de APARCAMIENTO (piso 1, sitio 76, 48, 88): tique_turno en 76, 48, 88
+OK    4u_espera_premio_coche
+OK    pex_premio_COLEGIO
+  espera, premio del rincón raro de COLEGIO (piso 0, sitio -77, 64, -15): reloj_reves en -77, 64, -15
+OK    pex_premio_COLEGIO_ver
+OK    pex_premio_CENTRO
+  espera, premio del rincón raro de CENTRO (piso 0, sitio -125, 64, 131): missingno en -125, 64, 131
+OK    4v_espera_premio_teles
+  espera, escalera mecánica suelta: -94, 66, 99
+OK    pex_escalera_mecanica_ir
+OK    4w_espera_escalera_mecanica
+  liminal, bloques-entidad del atrezo (GeckoLib) cargados en 7 x 7 chunks del centro comercial: 51, dibujados hasta ahora 3846, uno en -94, 64, 101 (Block{miscelanea:escalera_mecanica_motor}, renderer com.miscelanea.client.espera.LiminalCliente$AtrezoRenderer@718f7b4c, quitado=false)
+OK    6a_liminal_escalera_en_marcha
+  liminal, coche aparcado: 3, 48, 20
+OK    lim_coche_ir
+OK    6b_liminal_coche
+OK    lim_coche_2
+OK    6c_liminal_coche_diagonal
+  liminal, maniquí: -95, 64, 115
+OK    lim_maniqui_ir
+OK    6d_liminal_maniquies
+OK    lim_maniqui_mirar_atras
+OK    lim_maniqui_volver
+  liminal, maniquí: miraba a 180, ahora a 158 (se ha girado 1 veces; maniquíes vistos 13, tics 777)
+OK    6e_liminal_maniqui_te_mira
+  liminal, flotador en una piscina llena: -115, 63, -12
+OK    lim_piscina_ir
+  liminal, piscina: ecos de pasos 0 (sin tarjeta de sonido no suena nada)
+OK    6f_liminal_piscina_llena
+  liminal, Backrooms: 88, 64, 40
+OK    lim_backrooms_ir
+OK    6g_liminal_backrooms
+OK    lim_backrooms_2
+OK    6h_liminal_backrooms_2
+  liminal, pupitre: -43, 64, 11
+OK    lim_aula_ir
+OK    6i_liminal_aula
+  liminal, ventilador: -4, 67, -84
+OK    lim_ventilador_ir
+OK    6j_liminal_ventilador
+  liminal, máquina expendedora: -84, 64, 127
+OK    lim_maquina_ir
+OK    6k_liminal_maquina
+  liminal, máquina usada: CONSUME, agotada=true
+OK    lim_faros_ir
+OK    6l_liminal_faros
+OK    pex_caida
+  espera, caerse por el agujero: fuera=true, logro sí
+OK    pex_caida_fin
+  espera, logros al final: raiz=sí todas_zonas=NO rincones=NO turno=NO no_molestar=sí pillado=NO herobrine=sí reloj=sí sin_pillar=sí caida=sí fantasma=sí objeto_raro=sí missingno=sí (rincones: sala=sí recreativa=sí feria=sí hotel=sí piscina=sí aparcamiento=sí colegio=sí centro=sí)
+FALLO pex_logros: java.lang.IllegalStateException: faltan logros del Espera: raiz=sí todas_zonas=NO rincones=NO turno=NO no_molestar=sí pillado=NO herobrine=sí reloj=sí sin_pillar=sí caida=sí fantasma=sí objeto_raro=sí missingno=sí (rincones: sala=sí recreativa=sí feria=sí hotel=sí piscina=sí aparcamiento=sí colegio=sí centro=sí)
+OK    4t_espera_logros
+OK    pex_salir
+  espera, brújula fuera: da vueltas
+OK    pex_fuera
+OK    recorte_niveles
+  recorte: espada {net.minecraft.world.item.enchantment.DamageEnchantment@cc0d4a4=5, net.minecraft.world.item.enchantment.DigDurabilityEnchantment@3a1efbb8=3, net.minecraft.world.item.enchantment.MendingEnchantment@201a8464=1} · peto {net.minecraft.world.item.enchantment.ProtectionEnchantment@78e4e7c6=4, net.minecraft.world.item.enchantment.ThornsEnchantment@5b11c774=3} · libro {net.minecraft.world.item.enchantment.ProtectionEnchantment@78e4e7c6=4} · xp +200 · espada con durabilidad: true
+OK    perfil_vacio
+  rendimiento sin_sala: 2.9 fps · 206.2 ms/fotograma · bloques-entidad 14.36 ms · pantalla 0.00 ms (33 fotogramas)
+OK    perfil_sala
+  rendimiento: sala con 32 de 35 cosas
+  rendimiento colocar: 3.3 fps · 254.8 ms/fotograma · bloques-entidad 18.82 ms · pantalla 0.00 ms (4 fotogramas)
+OK    perfil_mirar
+  rendimiento sala: 5.4 fps · 164.8 ms/fotograma · bloques-entidad 10.11 ms · pantalla 0.00 ms (80 fotogramas)
+  rendimiento: 5 máquinas con partida retransmitida
+OK    perfil_jugar
+OK    70_perfil_mazmorra
+  rendimiento mazmorra: 5.8 fps · 154.0 ms/fotograma · bloques-entidad 3.69 ms · pantalla 2.67 ms (94 fotogramas)
+OK    perfil_turbo
+OK    71_perfil_turbo
+  rendimiento turbo: 6.2 fps · 146.3 ms/fotograma · bloques-entidad 3.33 ms · pantalla 1.40 ms (97 fotogramas)
+  perfil sin_sala (277 muestras, 23% en nativo): RizoRenderer.render 7.9% RizoRenderer.m_6922_ 7.9% RizoRenderer.v 7.9% RizoRenderer.tubo 7.6% BichoRenderer.render 6.5% BichoRenderer.m_7392_ 6.5% MapaCache.tick 4.0% MovilCliente.tick 4.0% MapaCache.pintar 4.0% MapaCache.altura 1.1% TrampolinCliente.tick 0.7% HachaCliente.hacha 0.4%
+  perfil colocar (21 muestras, 57% en nativo): BichoRenderer.render 4.8% RecreativaRenderer.render 4.8% Pantalla.rect 4.8% RecreativaRenderer.m_6922_ 4.8% ArcadeCliente.tick 4.8% PantallaTextura.subir 4.8% PantallaTextura.actualizar 4.8% BillarRenderer.m_6922_ 4.8% BichoRenderer.m_7392_ 4.8% BillarRenderer.render 4.8%
+  perfil sala (287 muestras, 55% en nativo): PantallaTextura.subir 5.2% PantallaTextura.actualizar 5.2% RecreativaRenderer.m_6922_ 5.2% RecreativaRenderer.render 5.2% BichoRenderer.render 3.8% BichoRenderer.m_7392_ 3.8% RizoRenderer.render 0.7% RizoRenderer.m_6922_ 0.7% AirHockeyRenderer.render 0.7% ImperioRenderer.m_6922_ 0.7% RizoRenderer.v 0.7% ImperioRenderer.render 0.7%
+  perfil mazmorra (301 muestras, 63% en nativo): PantallaTextura.subir 3.3% PantallaTextura.actualizar 3.0% RecreativaRenderer.m_6922_ 3.0% RecreativaRenderer.render 3.0% ArcadeScreen.m_88315_ 2.3% BichoRenderer.render 2.3% BichoRenderer.m_7392_ 2.3% CartelRecordsRenderer.q 1.0% PocionesEventos.tickVivo 1.0% ArcadeScreen.paso 1.0% CartelRecordsRenderer.m_6922_ 1.0% CartelRecordsRenderer.tablon 1.0%
+  perfil turbo (289 muestras, 62% en nativo): PantallaTextura.subir 2.4% PantallaTextura.actualizar 2.4% RecreativaRenderer.m_6922_ 2.4% RecreativaRenderer.render 2.4% BichoRenderer.render 2.1% BichoRenderer.m_7392_ 2.1% ArcadeScreen.m_88315_ 1.0% CartelRecordsRenderer.m_6922_ 1.0% CartelRecordsRenderer.tablon 1.0% CartelRecordsRenderer.render 1.0% RizoRenderer.render 0.7% RizoRenderer.m_6922_ 0.7%
+OK    perfil_fin
+OK    72_perfil_sala
+OK    laser_poner
+OK    laser_encender
+OK    80_laser_primera
+OK    laser_primera_quitar_hud
+  láser laser_primera: el punto sale a (+0.2, -0.4) px de la mira (231 píxeles rojos, imagen 854x480) · calculado (+0.1, +0.4) px, a 0.012 bloques de donde mira y a 0.033 del que ven los demás
+OK    laser_primera_medir
+OK    laser_fov
+OK    81_laser_fov105
+OK    laser_fov105_quitar_hud
+  láser laser_fov105: el punto sale a (-0.5, +0.2) px de la mira (51 píxeles rojos, imagen 854x480) · calculado (+0.0, -0.0) px, a 0.001 bloques de donde mira y a 0.029 del que ven los demás
+OK    laser_fov105_medir
+OK    laser_gigante
+  láser: de gigante, ojos a 4.86 bloques del suelo
+OK    82_laser_gigante
+OK    laser_gigante_quitar_hud
+  láser laser_gigante: el punto sale a (+0.1, -0.9) px de la mira (89 píxeles rojos, imagen 854x480) · calculado (-0.1, -0.2) px, a 0.007 bloques de donde mira y a 0.022 del que ven los demás
+OK    laser_gigante_medir
+OK    laser_normal
+OK    laser_fuera_poner
+OK    83_laser_desde_fuera
+OK    laser_desde_fuera_quitar_hud
+  láser laser_desde_fuera: el punto sale a (-2.7, -0.3) px de donde mira (154 píxeles rojos, imagen 854x480) · calculado (-0.6, +0.4) px, a 0.021 bloques de donde mira y a 0.007 del que ven los demás
+OK    laser_desde_fuera_medir
+OK    laser_fuera_quitar
+OK    84_laser_tercera
+OK    laser_fin
+OK    eco_poner
+OK    eco_hablador
+OK    eco_ruido
+OK    90_eco_activo
+  eco activo: niebla hasta 0.02 bloques · ondas 7, bloques 1293, entidades 3, fallos al dibujar 0 · imagen: 49% negra, luz media 65, 38712 px azulados, 20 px muy claros · hablo (solo ruido del micro): no
+OK    eco_medir
+OK    91_eco_tercera
+OK    eco_mirar_cielo
+OK    92_eco_cielo
+  eco mirando arriba (a mediodía): imagen: 83% negra, luz media 10, 136 px azulados, 28 px muy claros
+OK    eco_medir_cielo
+OK    eco_andar
+OK    94_eco_andando
+  eco andando: ondas de mis pasos 4, de los pasos del otro 4 · ondas 11, bloques 1292, entidades 4, fallos al dibujar 0
+OK    eco_medir_pasos
+OK    eco_quitar
+OK    93_eco_quitado
+  eco quitado: niebla hasta 192.0 bloques · ondas 0, bloques 0, entidades 0, fallos al dibujar 0 · imagen: 23% negra, luz media 33, 666 px azulados, 16 px muy claros
+OK    eco_comprobar
+OK    eco_fin
+  cara propia (la de su modelo) guardada: sí
+OK    cerrar
+5 PASOS FALLARON
