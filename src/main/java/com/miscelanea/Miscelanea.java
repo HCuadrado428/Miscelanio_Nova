@@ -221,6 +221,7 @@ public class Miscelanea {
             event.accept(ModItems.MAZO_WEMMBU);
             event.accept(ModItems.LLAVE_ESPADA);
             event.accept(ModItems.HACHA_LEVIATAN);
+            event.accept(ModItems.HACHA_SANGRE);
             event.accept(ModItems.MEDIGUN);
             event.accept(ModItems.MOCHILA_MEDICA);
         }

@@ -104,6 +104,8 @@ public final class ModItems {
     // ---- God of War
     public static final RegistryObject<Item> HACHA_LEVIATAN = ITEMS.register("hacha_leviatan",
             () -> new com.miscelanea.hacha.HachaItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
+    public static final RegistryObject<Item> HACHA_SANGRE = ITEMS.register("hacha_sangre",
+            () -> new com.miscelanea.sangre.HachaSangreItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant()));
     /** Solo para dibujar el escudo plegable de Kratos en el brazo. */
     public static final RegistryObject<Item> ESCUDO_GUARDIAN = ITEMS.register("escudo_guardian",
             () -> new com.miscelanea.hacha.EscudoItem(new Item.Properties().stacksTo(1)));
