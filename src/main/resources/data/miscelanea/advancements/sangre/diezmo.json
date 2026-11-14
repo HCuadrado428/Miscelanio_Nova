@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:sangre/cobradora",
+  "display": {
+    "icon": {
+      "item": "minecraft:ghast_tear"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.sangre.diezmo.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.sangre.diezmo.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "hacha_sangre_diezmo": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "hacha_sangre_diezmo"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 50
+  }
+}

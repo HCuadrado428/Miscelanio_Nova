@@ -18,6 +18,7 @@ import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
+import com.miscelanea.registry.ModSounds;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.constant.DataTickets;
@@ -54,6 +55,9 @@ public class HachaSangreItem extends AxeItem implements GeoItem {
     private static final RawAnimation QUIETA = RawAnimation.begin().thenLoop("animation.hacha_sangre.quieta");
     private static final RawAnimation LATE = RawAnimation.begin().thenLoop("animation.hacha_sangre.late");
     private static final RawAnimation LLENA = RawAnimation.begin().thenLoop("animation.hacha_sangre.llena");
+    private static final RawAnimation GOLPE = RawAnimation.begin().thenPlay("animation.hacha_sangre.golpe");
+    private static final RawAnimation SIEGA = RawAnimation.begin().thenPlay("animation.hacha_sangre.siega");
+    private static final RawAnimation DIEZMO = RawAnimation.begin().thenPlay("animation.hacha_sangre.diezmo");
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public HachaSangreItem(Properties p) {
@@ -88,6 +92,12 @@ public class HachaSangreItem extends AxeItem implements GeoItem {
         t.putInt(SECA, 0);
     }
 
+    /** Lanza una animacion del hacha en todos los clientes que la ven. */
+    private void animar(ItemStack s, LivingEntity quien, String cual) {
+        if (quien.level() instanceof ServerLevel sl)
+            triggerAnim(quien, GeoItem.getOrAssignId(s, sl), "hacha_sangre", cual);
+    }
+
     // ---------------------------------------------------------------- pegar
     @Override
     public boolean hurtEnemy(ItemStack s, LivingEntity victima, LivingEntity quien) {
@@ -106,10 +116,21 @@ public class HachaSangreItem extends AxeItem implements GeoItem {
             if (!victima.isAlive() && quien instanceof Player p) {
                 p.heal(8.0F);
                 t.putInt(SANGRE, DEPOSITO);
+                com.miscelanea.logros.LogrosMiscelanea.dar(p, "hacha_sangre_diezmo");
             }
         }
 
         beber(s, fase >= 1 ? 2 : 1, dano);
+        animar(s, quien, "golpe");
+        float lleno = sangre(s) / (float) DEPOSITO;
+        l.playSound(null, victima.blockPosition(), ModSounds.HS_TRAGO.get(), SoundSource.PLAYERS,
+                0.7F, 0.85F + lleno * 0.4F);
+        if (fase(s) > fase && quien instanceof Player p) {        // acaba de despertar una fase
+            p.displayClientMessage(Component.translatable("hacha_sangre.miscelanea.despierta",
+                    Component.translatable(getDescriptionId() + ".fase" + fase(s))).withStyle(ChatFormatting.DARK_RED), false);
+            l.playSound(null, p.blockPosition(), ModSounds.HS_LATIDO.get(), SoundSource.PLAYERS, 1.0F, 0.7F);
+            com.miscelanea.logros.LogrosMiscelanea.dar(p, "hacha_sangre_fase" + fase(s));
+        }
 
         if (l instanceof ServerLevel sl) {
             sl.sendParticles(ParticleTypes.FALLING_LAVA, victima.getX(), victima.getY(0.7), victima.getZ(),
@@ -132,6 +153,7 @@ public class HachaSangreItem extends AxeItem implements GeoItem {
         c.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 1));
         c.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 0));
         l.addFreshEntity(c);
+        l.playSound(null, victima.blockPosition(), ModSounds.HS_CHARCO.get(), SoundSource.PLAYERS, 0.8F, 0.95F);
     }
 
     // ---------------------------------------------------------------- clic derecho
@@ -153,8 +175,8 @@ public class HachaSangreItem extends AxeItem implements GeoItem {
             if (!l.isClientSide) {
                 j.hurt(j.damageSources().magic(), 4.0F);
                 t.putBoolean(COBRO, true);
-                l.playSound(null, j.blockPosition(), net.minecraft.sounds.SoundEvents.PLAYER_ATTACK_SWEEP,
-                        SoundSource.PLAYERS, 0.8F, 0.6F);
+                animar(s, j, "diezmo");
+                l.playSound(null, j.blockPosition(), ModSounds.HS_DIEZMO.get(), SoundSource.PLAYERS, 0.9F, 1.0F);
                 j.displayClientMessage(Component.translatable("hacha_sangre.miscelanea.diezmo").withStyle(ChatFormatting.RED), true);
             }
             return InteractionResultHolder.sidedSuccess(s, l.isClientSide);
@@ -186,8 +208,9 @@ public class HachaSangreItem extends AxeItem implements GeoItem {
                         j.getZ() + Math.sin(a) * r * 0.6, 1, 0.0, 0.0, 0.0, 0.0);
             }
         }
-        l.playSound(null, j.blockPosition(), net.minecraft.sounds.SoundEvents.PLAYER_ATTACK_SWEEP,
-                SoundSource.PLAYERS, 1.0F, 0.5F);
+        animar(s, j, "siega");
+        l.playSound(null, j.blockPosition(), ModSounds.HS_SIEGA.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
+        com.miscelanea.logros.LogrosMiscelanea.dar(j, "hacha_sangre_siega");
         j.getCooldowns().addCooldown(this, 60);
     }
 
@@ -197,6 +220,13 @@ public class HachaSangreItem extends AxeItem implements GeoItem {
         if (l.isClientSide || !s.hasTag()) return;
         CompoundTag t = s.getTag();
         if (fase(s) < 1 || t.getInt(SANGRE) <= 0) return;
+        // el corazon se oye latir en la mano, mas rapido cuanta mas sangre lleva
+        if (mano && e instanceof Player p) {
+            int ritmo = Math.max(18, 56 - t.getInt(SANGRE) * 2);
+            if (p.tickCount % ritmo == 0)
+                l.playSound(null, p.blockPosition(), ModSounds.HS_LATIDO.get(), SoundSource.PLAYERS,
+                        0.28F + t.getInt(SANGRE) * 0.012F, 0.95F);
+        }
         int seco = t.getInt(SECA) + 1;
         if (seco >= OLVIDO) {
             t.putInt(SANGRE, Math.max(0, t.getInt(SANGRE) - 1));
@@ -236,7 +266,7 @@ public class HachaSangreItem extends AxeItem implements GeoItem {
             if (s == null || fase(s) == 0) return state.setAndContinue(QUIETA);
             if (sangre(s) >= DEPOSITO) return state.setAndContinue(LLENA);
             return state.setAndContinue(LATE);
-        }));
+        }).triggerableAnim("golpe", GOLPE).triggerableAnim("siega", SIEGA).triggerableAnim("diezmo", DIEZMO));
     }
 
     @Override

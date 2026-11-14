@@ -2856,5 +2856,35 @@
       }
     ],
     "subtitle": "subtitles.miscelanea.arpon"
+  },
+  "hs_latido": {
+    "sounds": [
+      "miscelanea:hs_latido"
+    ],
+    "subtitle": "subtitles.miscelanea.hs_latido"
+  },
+  "hs_trago": {
+    "sounds": [
+      "miscelanea:hs_trago"
+    ],
+    "subtitle": "subtitles.miscelanea.hs_trago"
+  },
+  "hs_siega": {
+    "sounds": [
+      "miscelanea:hs_siega"
+    ],
+    "subtitle": "subtitles.miscelanea.hs_siega"
+  },
+  "hs_diezmo": {
+    "sounds": [
+      "miscelanea:hs_diezmo"
+    ],
+    "subtitle": "subtitles.miscelanea.hs_diezmo"
+  },
+  "hs_charco": {
+    "sounds": [
+      "miscelanea:hs_charco"
+    ],
+    "subtitle": "subtitles.miscelanea.hs_charco"
   }
 }

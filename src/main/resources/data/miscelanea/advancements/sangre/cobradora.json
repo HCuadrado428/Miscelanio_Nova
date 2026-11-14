@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:sangre/sedienta",
+  "display": {
+    "icon": {
+      "item": "miscelanea:hacha_sangre"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.sangre.cobradora.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.sangre.cobradora.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "hacha_sangre_fase2": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "hacha_sangre_fase2"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 25
+  }
+}

@@ -212,6 +212,11 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> PEL_ABRAZO = register("pel_abrazo");
     public static final RegistryObject<SoundEvent> PEL_CANSADO = register("pel_cansado");
     public static final RegistryObject<SoundEvent> PEL_POF = register("pel_pof");
+    public static final RegistryObject<SoundEvent> HS_LATIDO = register("hs_latido");
+    public static final RegistryObject<SoundEvent> HS_TRAGO = register("hs_trago");
+    public static final RegistryObject<SoundEvent> HS_SIEGA = register("hs_siega");
+    public static final RegistryObject<SoundEvent> HS_DIEZMO = register("hs_diezmo");
+    public static final RegistryObject<SoundEvent> HS_CHARCO = register("hs_charco");
     public static final RegistryObject<SoundEvent> FE_MASCLET = register("fe_masclet");
     public static final RegistryObject<SoundEvent> FE_MASCLET_FINAL = register("fe_masclet_final");
     public static final RegistryObject<SoundEvent> FE_TREN = register("fe_tren");
