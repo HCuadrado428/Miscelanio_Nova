@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/gatling",
+  "display": {
+    "icon": {
+      "item": "miscelanea:cinta_guisantes"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.guisantes.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.guisantes.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "gatling_guisantes": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "gatling_guisantes"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 15
+  }
+}

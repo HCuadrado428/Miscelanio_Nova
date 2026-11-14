@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/encasquillado",
+  "display": {
+    "icon": {
+      "item": "minecraft:iron_nugget"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.atasco.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.atasco.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "armafuego_atasco": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "armafuego_atasco"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 5
+  }
+}

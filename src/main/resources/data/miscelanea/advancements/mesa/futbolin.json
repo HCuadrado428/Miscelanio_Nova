@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:mesa/victoria",
+  "display": {
+    "icon": {
+      "item": "miscelanea:futbolin"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.mesa.futbolin.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.mesa.futbolin.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "victoria_futbolin": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "victoria_futbolin"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

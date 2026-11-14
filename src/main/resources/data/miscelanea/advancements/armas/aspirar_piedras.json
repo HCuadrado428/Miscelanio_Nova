@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/granjero",
+  "display": {
+    "icon": {
+      "item": "minecraft:cobblestone"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.aspirar_piedras.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.aspirar_piedras.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "escopeta_aspirar": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "escopeta_aspirar"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

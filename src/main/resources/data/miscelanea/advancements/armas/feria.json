@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/canon",
+  "display": {
+    "icon": {
+      "item": "miscelanea:bolano_fuegos"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.feria.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.feria.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "canon_fuegos": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "canon_fuegos"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

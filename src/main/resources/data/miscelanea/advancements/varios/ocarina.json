@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:varios/paella",
+  "display": {
+    "icon": {
+      "item": "miscelanea:ocarina"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.varios.ocarina.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.varios.ocarina.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "ocarina_tormenta": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "ocarina_tormenta"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

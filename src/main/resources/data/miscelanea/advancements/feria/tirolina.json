@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:feria/noria",
+  "display": {
+    "icon": {
+      "item": "miscelanea:poste_tirolina"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.feria.tirolina.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.feria.tirolina.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "tirolina": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "tirolina"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

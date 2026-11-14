@@ -1,0 +1,33 @@
+{
+  "parent": "miscelanea:raiz",
+  "display": {
+    "icon": {
+      "item": "miscelanea:esencia_dream"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.dream.esencia.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.dream.esencia.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "tomar": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": [
+            "miscelanea:esencia_dream"
+          ]
+        }
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/cofre",
+  "display": {
+    "icon": {
+      "item": "miscelanea:revolver"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.ruleta.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.ruleta.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "revolver_ruleta": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "revolver_ruleta"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

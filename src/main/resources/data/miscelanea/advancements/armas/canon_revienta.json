@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/canon",
+  "display": {
+    "icon": {
+      "item": "minecraft:fire_charge"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.canon_revienta.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.canon_revienta.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "canon_revienta": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "canon_revienta"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

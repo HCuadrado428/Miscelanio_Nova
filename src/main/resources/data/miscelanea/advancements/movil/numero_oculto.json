@@ -1,0 +1,30 @@
+{
+  "parent": "miscelanea:movil/llamada",
+  "display": {
+    "icon": {
+      "item": "miscelanea:movil",
+      "nbt": "{Color:1973790}"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.movil.numero_oculto.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.movil.numero_oculto.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "numero_oculto": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "numero_oculto"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

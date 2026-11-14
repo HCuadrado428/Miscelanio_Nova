@@ -1,0 +1,33 @@
+{
+  "parent": "miscelanea:dream/mordisco",
+  "display": {
+    "icon": {
+      "item": "miscelanea:veneno_dream"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.dream.veneno.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.dream.veneno.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "criteria": {
+    "tomar": {
+      "trigger": "minecraft:consume_item",
+      "conditions": {
+        "item": {
+          "items": [
+            "miscelanea:veneno_dream"
+          ]
+        }
+      }
+    }
+  },
+  "rewards": {
+    "experience": 5
+  }
+}

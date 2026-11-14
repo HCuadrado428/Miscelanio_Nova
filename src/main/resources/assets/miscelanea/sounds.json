@@ -2550,5 +2550,311 @@
       "miscelanea:pel_pof"
     ],
     "subtitle": "subtitles.miscelanea.pel_pof"
+  },
+  "revolver_disparo": {
+    "sounds": [
+      {
+        "name": "miscelanea:revolver_disparo",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.revolver_disparo"
+  },
+  "revolver_fogueo": {
+    "sounds": [
+      {
+        "name": "miscelanea:revolver_fogueo",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.revolver_fogueo"
+  },
+  "revolver_rebote": {
+    "sounds": [
+      {
+        "name": "miscelanea:revolver_rebote",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.revolver_rebote"
+  },
+  "revolver_ruleta": {
+    "sounds": [
+      {
+        "name": "miscelanea:revolver_ruleta",
+        "attenuation_distance": 12
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.revolver_ruleta"
+  },
+  "revolver_vacio": {
+    "sounds": [
+      {
+        "name": "miscelanea:revolver_vacio",
+        "attenuation_distance": 10
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.revolver_vacio"
+  },
+  "revolver_cargar": {
+    "sounds": [
+      {
+        "name": "miscelanea:revolver_cargar",
+        "attenuation_distance": 8
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.revolver_cargar"
+  },
+  "revolver_amartillar": {
+    "sounds": [
+      {
+        "name": "miscelanea:revolver_amartillar",
+        "attenuation_distance": 10
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.revolver_amartillar"
+  },
+  "revolver_duelo": {
+    "sounds": [
+      {
+        "name": "miscelanea:revolver_duelo",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.revolver_duelo"
+  },
+  "winchester_disparo": {
+    "sounds": [
+      {
+        "name": "miscelanea:winchester_disparo",
+        "attenuation_distance": 64
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.winchester_disparo"
+  },
+  "derringer_disparo": {
+    "sounds": [
+      {
+        "name": "miscelanea:derringer_disparo",
+        "attenuation_distance": 40
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.derringer_disparo"
+  },
+  "thompson_disparo": {
+    "sounds": [
+      {
+        "name": "miscelanea:thompson_disparo",
+        "attenuation_distance": 56
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.thompson_disparo"
+  },
+  "gatling_disparo": {
+    "sounds": [
+      {
+        "name": "miscelanea:gatling_disparo",
+        "attenuation_distance": 64
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.gatling_disparo"
+  },
+  "mosquete_disparo": {
+    "sounds": [
+      {
+        "name": "miscelanea:mosquete_disparo",
+        "attenuation_distance": 80
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.mosquete_disparo"
+  },
+  "canon_disparo": {
+    "sounds": [
+      {
+        "name": "miscelanea:canon_disparo",
+        "attenuation_distance": 96
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.canon_disparo"
+  },
+  "rifle_catalejo_disparo": {
+    "sounds": [
+      {
+        "name": "miscelanea:rifle_catalejo_disparo",
+        "attenuation_distance": 96
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.rifle_catalejo_disparo"
+  },
+  "presion_disparo": {
+    "sounds": [
+      {
+        "name": "miscelanea:presion_disparo",
+        "attenuation_distance": 32
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.presion_disparo"
+  },
+  "winchester_palanca": {
+    "sounds": [
+      {
+        "name": "miscelanea:winchester_palanca",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.winchester_palanca"
+  },
+  "winchester_cargar": {
+    "sounds": [
+      {
+        "name": "miscelanea:winchester_cargar",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.winchester_cargar"
+  },
+  "derringer_abrir": {
+    "sounds": [
+      {
+        "name": "miscelanea:derringer_abrir",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.derringer_abrir"
+  },
+  "thompson_tambor": {
+    "sounds": [
+      {
+        "name": "miscelanea:thompson_tambor",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.thompson_tambor"
+  },
+  "mosquete_baqueta": {
+    "sounds": [
+      {
+        "name": "miscelanea:mosquete_baqueta",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.mosquete_baqueta"
+  },
+  "mosquete_cazoleta": {
+    "sounds": [
+      {
+        "name": "miscelanea:mosquete_cazoleta",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.mosquete_cazoleta"
+  },
+  "canon_mecha": {
+    "sounds": [
+      {
+        "name": "miscelanea:canon_mecha",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.canon_mecha"
+  },
+  "armafuego_atasco": {
+    "sounds": [
+      {
+        "name": "miscelanea:armafuego_atasco",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.armafuego_atasco"
+  },
+  "casquillo_suelo": {
+    "sounds": [
+      {
+        "name": "miscelanea:casquillo_suelo",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.casquillo_suelo"
+  },
+  "gatling_manivela": {
+    "sounds": [
+      {
+        "name": "miscelanea:gatling_manivela",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.gatling_manivela"
+  },
+  "gatling_vapor": {
+    "sounds": [
+      {
+        "name": "miscelanea:gatling_vapor",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.gatling_vapor"
+  },
+  "gatling_cinta": {
+    "sounds": [
+      {
+        "name": "miscelanea:gatling_cinta",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.gatling_cinta"
+  },
+  "violin_desafinado": {
+    "sounds": [
+      {
+        "name": "miscelanea:violin_desafinado",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.violin_desafinado"
+  },
+  "tiempo_bala": {
+    "sounds": [
+      {
+        "name": "miscelanea:tiempo_bala",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.tiempo_bala"
+  },
+  "goma_rebote": {
+    "sounds": [
+      {
+        "name": "miscelanea:goma_rebote",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.goma_rebote"
+  },
+  "pintura_splat": {
+    "sounds": [
+      {
+        "name": "miscelanea:pintura_splat",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.pintura_splat"
+  },
+  "violin_nota": {
+    "sounds": [
+      {
+        "name": "miscelanea:violin_nota",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.violin_nota"
+  },
+  "arpon": {
+    "sounds": [
+      {
+        "name": "miscelanea:arpon",
+        "attenuation_distance": 24
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.arpon"
   }
 }

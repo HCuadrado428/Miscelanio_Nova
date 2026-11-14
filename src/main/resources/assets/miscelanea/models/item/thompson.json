@@ -1,0 +1,68 @@
+{
+ "loader": "forge:separate_transforms",
+ "gui_light": "front",
+ "textures": {
+  "particle": "miscelanea:item/thompson"
+ },
+ "base": {
+  "parent": "miscelanea:item/armas3d/thompson_3d",
+  "textures": {
+   "cobre": "miscelanea:item/armas3d/cobre_0"
+  }
+ },
+ "perspectives": {
+  "gui": {
+   "parent": "minecraft:item/generated",
+   "textures": {
+    "layer0": "miscelanea:item/thompson"
+   }
+  }
+ },
+ "overrides": [
+  {
+   "predicate": {
+    "miscelanea:sin_tambor": 1
+   },
+   "model": "miscelanea:item/thompson_sin_tambor"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.25
+   },
+   "model": "miscelanea:item/thompson_ox1"
+  },
+  {
+   "predicate": {
+    "miscelanea:sin_tambor": 1,
+    "miscelanea:oxido": 0.25
+   },
+   "model": "miscelanea:item/thompson_sin_tambor_ox1"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.5
+   },
+   "model": "miscelanea:item/thompson_ox2"
+  },
+  {
+   "predicate": {
+    "miscelanea:sin_tambor": 1,
+    "miscelanea:oxido": 0.5
+   },
+   "model": "miscelanea:item/thompson_sin_tambor_ox2"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.75
+   },
+   "model": "miscelanea:item/thompson_ox3"
+  },
+  {
+   "predicate": {
+    "miscelanea:sin_tambor": 1,
+    "miscelanea:oxido": 0.75
+   },
+   "model": "miscelanea:item/thompson_sin_tambor_ox3"
+  }
+ ]
+}

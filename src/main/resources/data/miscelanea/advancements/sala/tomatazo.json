@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:sala/lazo",
+  "display": {
+    "icon": {
+      "item": "miscelanea:tomate_podrido"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.sala.tomatazo.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.sala.tomatazo.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "tomatazo": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "tomatazo"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

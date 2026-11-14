@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:feria/noria",
+  "display": {
+    "icon": {
+      "item": "miscelanea:martillo_fuerza"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.feria.campana.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.feria.campana.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "martillo_gordo": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "martillo_gordo"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

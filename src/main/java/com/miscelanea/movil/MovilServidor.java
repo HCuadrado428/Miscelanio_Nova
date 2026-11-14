@@ -402,6 +402,7 @@ public final class MovilServidor {
         }
         if (texto.isEmpty() && adj < 0) return;
         difundir(p, c, new MovilDatos.Mensaje(++c.sec, p.getUUID(), System.currentTimeMillis(), texto, adj, -1, clipMs, new byte[0]));
+        com.miscelanea.logros.LogrosMiscelanea.dar(p, "mensaje");
     }
 
     /** Añade el mensaje (ya con su número) al chat, recorta el historial y se lo manda a los miembros conectados. */
@@ -473,6 +474,7 @@ public final class MovilServidor {
         d.setDirty();
         p.level().playSound(p, p.getX(), p.getY(), p.getZ(), MovilRegistro.OBTURADOR.get(), SoundSource.PLAYERS, 0.6F, 1.0F);
         enviarFotos(p);
+        com.miscelanea.logros.LogrosMiscelanea.dar(p, "foto");
     }
 
     static void enviarFotos(ServerPlayer p) {

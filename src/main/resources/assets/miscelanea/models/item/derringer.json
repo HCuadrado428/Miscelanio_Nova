@@ -1,0 +1,126 @@
+{
+ "loader": "forge:separate_transforms",
+ "gui_light": "front",
+ "textures": {
+  "particle": "miscelanea:item/derringer"
+ },
+ "base": {
+  "parent": "miscelanea:item/armas3d/derringer_3d_oculta",
+  "textures": {
+   "cobre": "miscelanea:item/armas3d/cobre_0"
+  }
+ },
+ "perspectives": {
+  "gui": {
+   "parent": "minecraft:item/generated",
+   "textures": {
+    "layer0": "miscelanea:item/derringer"
+   }
+  }
+ },
+ "overrides": [
+  {
+   "predicate": {
+    "miscelanea:visible": 1
+   },
+   "model": "miscelanea:item/derringer_visible"
+  },
+  {
+   "predicate": {
+    "miscelanea:abierta": 1
+   },
+   "model": "miscelanea:item/derringer_abierta"
+  },
+  {
+   "predicate": {
+    "miscelanea:abierta": 1,
+    "miscelanea:visible": 1
+   },
+   "model": "miscelanea:item/derringer_abierta_visible"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.25
+   },
+   "model": "miscelanea:item/derringer_ox1"
+  },
+  {
+   "predicate": {
+    "miscelanea:visible": 1,
+    "miscelanea:oxido": 0.25
+   },
+   "model": "miscelanea:item/derringer_visible_ox1"
+  },
+  {
+   "predicate": {
+    "miscelanea:abierta": 1,
+    "miscelanea:oxido": 0.25
+   },
+   "model": "miscelanea:item/derringer_abierta_ox1"
+  },
+  {
+   "predicate": {
+    "miscelanea:abierta": 1,
+    "miscelanea:visible": 1,
+    "miscelanea:oxido": 0.25
+   },
+   "model": "miscelanea:item/derringer_abierta_visible_ox1"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.5
+   },
+   "model": "miscelanea:item/derringer_ox2"
+  },
+  {
+   "predicate": {
+    "miscelanea:visible": 1,
+    "miscelanea:oxido": 0.5
+   },
+   "model": "miscelanea:item/derringer_visible_ox2"
+  },
+  {
+   "predicate": {
+    "miscelanea:abierta": 1,
+    "miscelanea:oxido": 0.5
+   },
+   "model": "miscelanea:item/derringer_abierta_ox2"
+  },
+  {
+   "predicate": {
+    "miscelanea:abierta": 1,
+    "miscelanea:visible": 1,
+    "miscelanea:oxido": 0.5
+   },
+   "model": "miscelanea:item/derringer_abierta_visible_ox2"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.75
+   },
+   "model": "miscelanea:item/derringer_ox3"
+  },
+  {
+   "predicate": {
+    "miscelanea:visible": 1,
+    "miscelanea:oxido": 0.75
+   },
+   "model": "miscelanea:item/derringer_visible_ox3"
+  },
+  {
+   "predicate": {
+    "miscelanea:abierta": 1,
+    "miscelanea:oxido": 0.75
+   },
+   "model": "miscelanea:item/derringer_abierta_ox3"
+  },
+  {
+   "predicate": {
+    "miscelanea:abierta": 1,
+    "miscelanea:visible": 1,
+    "miscelanea:oxido": 0.75
+   },
+   "model": "miscelanea:item/derringer_abierta_visible_ox3"
+  }
+ ]
+}

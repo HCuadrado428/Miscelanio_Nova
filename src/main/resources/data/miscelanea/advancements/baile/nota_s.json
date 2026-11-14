@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:baile/pista",
+  "display": {
+    "icon": {
+      "item": "miscelanea:cartel_records"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.baile.nota_s.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.baile.nota_s.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "baile_s": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "baile_s"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 50
+  }
+}

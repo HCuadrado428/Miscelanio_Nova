@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/cofre",
+  "display": {
+    "icon": {
+      "item": "miscelanea:bala_cuerda"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.cuerda.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.cuerda.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "rifle_cuerda": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "rifle_cuerda"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

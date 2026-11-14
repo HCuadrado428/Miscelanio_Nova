@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/gatling_calor",
+  "display": {
+    "icon": {
+      "item": "minecraft:water_bucket"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.gatling_cubo.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.gatling_cubo.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "gatling_cubo": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "gatling_cubo"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

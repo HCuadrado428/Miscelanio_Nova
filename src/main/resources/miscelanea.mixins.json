@@ -6,7 +6,8 @@
   "refmap": "miscelanea.refmap.json",
   "mixins": [
     "LivingEntityAireMixin",
-    "LivingEntityGolpeAccessor"
+    "LivingEntityGolpeAccessor",
+    "RiflePlayerMixin"
   ],
   "client": [
     "CameraMixin",

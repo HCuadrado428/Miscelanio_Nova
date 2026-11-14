@@ -1,0 +1,68 @@
+{
+ "loader": "forge:separate_transforms",
+ "gui_light": "front",
+ "textures": {
+  "particle": "miscelanea:item/winchester"
+ },
+ "base": {
+  "parent": "miscelanea:item/armas3d/winchester_3d",
+  "textures": {
+   "cobre": "miscelanea:item/armas3d/cobre_0"
+  }
+ },
+ "perspectives": {
+  "gui": {
+   "parent": "minecraft:item/generated",
+   "textures": {
+    "layer0": "miscelanea:item/winchester"
+   }
+  }
+ },
+ "overrides": [
+  {
+   "predicate": {
+    "miscelanea:palanca": 1
+   },
+   "model": "miscelanea:item/winchester_palanca"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.25
+   },
+   "model": "miscelanea:item/winchester_ox1"
+  },
+  {
+   "predicate": {
+    "miscelanea:palanca": 1,
+    "miscelanea:oxido": 0.25
+   },
+   "model": "miscelanea:item/winchester_palanca_ox1"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.5
+   },
+   "model": "miscelanea:item/winchester_ox2"
+  },
+  {
+   "predicate": {
+    "miscelanea:palanca": 1,
+    "miscelanea:oxido": 0.5
+   },
+   "model": "miscelanea:item/winchester_palanca_ox2"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.75
+   },
+   "model": "miscelanea:item/winchester_ox3"
+  },
+  {
+   "predicate": {
+    "miscelanea:palanca": 1,
+    "miscelanea:oxido": 0.75
+   },
+   "model": "miscelanea:item/winchester_palanca_ox3"
+  }
+ ]
+}

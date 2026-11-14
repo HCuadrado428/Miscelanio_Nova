@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/violin",
+  "display": {
+    "icon": {
+      "item": "miscelanea:cargador_thompson"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.thompson_tambor.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.thompson_tambor.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "thompson_tambor": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "thompson_tambor"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

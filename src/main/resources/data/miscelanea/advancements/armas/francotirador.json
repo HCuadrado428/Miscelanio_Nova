@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/cuerda",
+  "display": {
+    "icon": {
+      "item": "miscelanea:rifle"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.francotirador.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.francotirador.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "rifle_francotirador": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "rifle_francotirador"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 30
+  }
+}

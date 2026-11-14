@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/cofre",
+  "display": {
+    "icon": {
+      "item": "miscelanea:escopeta_presion"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.salto.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.salto.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "escopeta_salto": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "escopeta_salto"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

@@ -67,6 +67,7 @@ public class BailePacket {
                     if (max > 0 && puntos > 0) {
                         int nota = Math.max(0, Math.min(5, b));
                         com.miscelanea.ranking.Ranking.mejor(p, com.miscelanea.ranking.Ranking.categoriaPista(be.ultima(), be.ultimaDif()), puntos);
+                        com.miscelanea.logros.LogrosMiscelanea.dar(p, "baile_" + "sabcde".charAt(nota));
                         p.serverLevel().players().stream().filter(o -> o.distanceToSqr(p) < 32 * 32).forEach(o ->
                                 o.displayClientMessage(Component.translatable("baile.miscelanea.resultado", p.getDisplayName(), puntos,
                                         "SABCDE".substring(nota, nota + 1)).withStyle(ChatFormatting.LIGHT_PURPLE), false));
@@ -92,6 +93,7 @@ public class BailePacket {
                 if (max > 0 && puntos > 0) {
                     int nota = Math.max(0, Math.min(5, b));
                     com.miscelanea.ranking.Ranking.mejor(p, com.miscelanea.ranking.Ranking.categoriaPista(id, dif), puntos);
+                    com.miscelanea.logros.LogrosMiscelanea.dar(p, "baile_" + "sabcde".charAt(nota));
                     p.serverLevel().players().stream().filter(o -> o.distanceToSqr(p) < 32 * 32).forEach(o ->
                             o.displayClientMessage(Component.translatable("baile.miscelanea.resultado", p.getDisplayName(), puntos,
                                     "SABCDE".substring(nota, nota + 1)).withStyle(ChatFormatting.LIGHT_PURPLE), false));

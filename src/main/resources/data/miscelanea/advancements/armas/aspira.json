@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/gambito",
+  "display": {
+    "icon": {
+      "item": "miscelanea:aspirafantasmas"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.aspira.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.aspira.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "aspirar": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "aspirar"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

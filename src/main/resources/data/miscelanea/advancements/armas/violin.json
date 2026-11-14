@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/cofre",
+  "display": {
+    "icon": {
+      "item": "miscelanea:estuche_violin"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.violin.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.violin.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "thompson_violin": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "thompson_violin"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

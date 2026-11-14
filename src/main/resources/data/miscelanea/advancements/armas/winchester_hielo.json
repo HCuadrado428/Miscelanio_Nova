@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/winchester",
+  "display": {
+    "icon": {
+      "item": "miscelanea:bala_hielo"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.winchester_hielo.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.winchester_hielo.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "winchester_hielo": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "winchester_hielo"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

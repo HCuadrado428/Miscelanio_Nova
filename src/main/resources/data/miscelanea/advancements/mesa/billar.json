@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:mesa/victoria",
+  "display": {
+    "icon": {
+      "item": "miscelanea:billar"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.mesa.billar.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.mesa.billar.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "victoria_billar": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "victoria_billar"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

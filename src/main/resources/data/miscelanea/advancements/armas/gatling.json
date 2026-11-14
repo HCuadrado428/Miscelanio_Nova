@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/cofre",
+  "display": {
+    "icon": {
+      "item": "miscelanea:gatling"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.gatling.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.gatling.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "gatling_rafaga": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "gatling_rafaga"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

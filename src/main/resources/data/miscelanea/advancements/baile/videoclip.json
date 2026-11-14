@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:baile/pista",
+  "display": {
+    "icon": {
+      "item": "miscelanea:gramola"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.baile.videoclip.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.baile.videoclip.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "videoclip": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "videoclip"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

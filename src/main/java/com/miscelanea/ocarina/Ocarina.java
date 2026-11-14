@@ -86,6 +86,7 @@ public final class Ocarina {
     }
 
     private static void efecto(ServerPlayer p, Cancion c) {
+        com.miscelanea.logros.LogrosMiscelanea.dar(p, "ocarina_" + c.id);
         ServerLevel l = p.serverLevel();
         p.displayClientMessage(Component.translatable("msg.miscelanea.ocarina." + c.id).withStyle(ChatFormatting.GOLD), true);
         l.sendParticles(ParticleTypes.END_ROD, p.getX(), p.getY() + 1, p.getZ(), 40, 0.6, 0.9, 0.6, 0.05);

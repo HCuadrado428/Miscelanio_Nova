@@ -81,6 +81,44 @@ public class MiscelaneaJei implements IModPlugin {
         info(r, com.miscelanea.dream.DreamRegistro.ANILLO, "anillo_medianoche");
         info(r, com.miscelanea.glitch.GlitchRegistro.MUESTRA, "muestra_glitch");
         info(r, com.miscelanea.glitch.GlitchRegistro.FRASCO, "frasco_muestras");
+        // ---- armas de fuego: no se fabrican, se encuentran
+        info(r, ModItems.REVOLVER, "revolver_botin");
+        info(r, ModItems.ESCOPETA_PRESION, "escopeta_botin");
+        info(r, ModItems.RIFLE, "rifle_botin");
+        info(r, ModItems.GATLING, "gatling_botin");
+        info(r, ModItems.WINCHESTER, "winchester_botin");
+        info(r, ModItems.DERRINGER, "derringer_botin");
+        info(r, ModItems.THOMPSON, "thompson_botin");
+        info(r, ModItems.MOSQUETE, "mosquete_botin");
+        info(r, ModItems.CANON_MANO, "canon_botin");
+        // ---- lo que hacen además de disparar (1.1.0)
+        info(r, ModItems.GATLING, "gatling_utilidad");
+        info(r, ModItems.WINCHESTER, "winchester_deposito");
+        info(r, ModItems.DERRINGER, "derringer_manga");
+        info(r, ModItems.ESTUCHE_VIOLIN, "estuche_violin");
+        info(r, ModItems.MOSQUETE, "mosquete_bayoneta");
+        info(r, ModItems.CANON_MANO, "canon_bloques");
+        // la bayoneta del mosquete en la mesa: una receta de ejemplo por espada vanilla (y la de quitarla)
+        java.util.List<net.minecraft.world.item.crafting.CraftingRecipe> bay = new java.util.ArrayList<>();
+        net.minecraft.world.item.Item[] espadas = {Items.WOODEN_SWORD, Items.STONE_SWORD, Items.IRON_SWORD, Items.GOLDEN_SWORD, Items.DIAMOND_SWORD, Items.NETHERITE_SWORD};
+        for (net.minecraft.world.item.Item e : espadas) {
+            ItemStack sin = new ItemStack(ModItems.MOSQUETE.get());
+            com.miscelanea.armasfuego.oeste.MosqueteItem.ponerBayoneta(sin, ItemStack.EMPTY);
+            ItemStack con = new ItemStack(ModItems.MOSQUETE.get());
+            com.miscelanea.armasfuego.oeste.MosqueteItem.ponerBayoneta(con, new ItemStack(e));
+            var id = new ResourceLocation(Miscelanea.MOD_ID, "jei/mosquete_bayoneta_" + net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(e).getPath());
+            bay.add(new net.minecraft.world.item.crafting.ShapelessRecipe(id, "mosquete_bayoneta", net.minecraft.world.item.crafting.CraftingBookCategory.EQUIPMENT, con,
+                    net.minecraft.core.NonNullList.of(net.minecraft.world.item.crafting.Ingredient.EMPTY,
+                            net.minecraft.world.item.crafting.Ingredient.of(sin), net.minecraft.world.item.crafting.Ingredient.of(e))));
+        }
+        ItemStack con = new ItemStack(ModItems.MOSQUETE.get());
+        com.miscelanea.armasfuego.oeste.MosqueteItem.ponerBayoneta(con, new ItemStack(Items.DIAMOND_SWORD));
+        ItemStack sin = new ItemStack(ModItems.MOSQUETE.get());
+        com.miscelanea.armasfuego.oeste.MosqueteItem.ponerBayoneta(sin, ItemStack.EMPTY);
+        bay.add(new net.minecraft.world.item.crafting.ShapelessRecipe(new ResourceLocation(Miscelanea.MOD_ID, "jei/mosquete_quitar_bayoneta"), "mosquete_bayoneta",
+                net.minecraft.world.item.crafting.CraftingBookCategory.EQUIPMENT, sin,
+                net.minecraft.core.NonNullList.of(net.minecraft.world.item.crafting.Ingredient.EMPTY, net.minecraft.world.item.crafting.Ingredient.of(con))));
+        r.addRecipes(mezz.jei.api.constants.RecipeTypes.CRAFTING, bay);
     }
 
     @Override

@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "miscelanea:pistola_disparo",
+    "miscelanea:pistola_perforante",
+    "miscelanea:rifle_disparo",
+    "miscelanea:rifle_perforante",
+    "miscelanea:gatling_disparo",
+    "miscelanea:winchester_disparo",
+    "miscelanea:derringer_disparo",
+    "miscelanea:thompson_disparo",
+    "miscelanea:mosquete_disparo",
+    "miscelanea:armafuego_perforante",
+    "miscelanea:canon_mano"
+  ]
+}

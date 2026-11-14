@@ -114,6 +114,7 @@ public class PunteroLaserItem extends Item {
                 Vec3 h = new Vec3(p.x - g.getX(), 0, p.z - g.getZ());
                 h = h.lengthSqr() < 1e-4 ? Vec3.ZERO : h.normalize().scale(Math.min(0.45, 0.2 + d * 0.12));
                 g.setDeltaMovement(h.x, 0.38 + g.getRandom().nextDouble() * 0.12, h.z);
+                com.miscelanea.logros.LogrosMiscelanea.dar(e, "laser_gato");
                 g.hasImpulse = true;
                 g.getNavigation().stop();
                 if (g.getRandom().nextInt(3) == 0)

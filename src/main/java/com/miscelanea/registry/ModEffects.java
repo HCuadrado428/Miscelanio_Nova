@@ -20,6 +20,8 @@ public final class ModEffects {
     /** Dormido con el sedante de suavis (solo marca; lo demás lo hace {@link com.miscelanea.sedante.Sedante}). */
     public static final RegistryObject<MobEffect> SEDADO = EFFECTS.register("sedado",
             () -> new MobEffect(net.minecraft.world.effect.MobEffectCategory.HARMFUL, 0x6B4FA0) {});
+    // ---- Escopeta de presión: pringado de miel (no deja saltar)
+    public static final RegistryObject<MobEffect> PRINGADO = EFFECTS.register("pringado", com.miscelanea.armasfuego.escopeta.PringadoEffect::new);
 
     private ModEffects() {}
 }

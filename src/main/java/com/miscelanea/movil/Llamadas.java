@@ -182,6 +182,7 @@ public final class Llamadas {
         ServerPlayer otro = s.getPlayerList().getPlayer(otroId);
         if (otro == null || !MovilServidor.tieneMovil(otro)) {
             MovilServidor.aviso(yo, "movil.miscelanea.aviso.no_disponible", nombreOtro);
+            com.miscelanea.logros.LogrosMiscelanea.dar(yo, "sin_cobertura");
             MovilDatos d = MovilServidor.datos(s);
             long ahora = System.currentTimeMillis();
             d.registrar(yo.getUUID(), new MovilDatos.Registro(otroId, ahora, MovilDatos.R_SIN_RESPUESTA, 0, video));
@@ -198,6 +199,7 @@ public final class Llamadas {
         }
         if (!cobertura(yo, otro)) {
             MovilServidor.aviso(yo, "movil.miscelanea.aviso.sin_cobertura", nombreOtro);
+            com.miscelanea.logros.LogrosMiscelanea.dar(yo, "sin_cobertura");
             return;
         }
         Llamada l = new Llamada(yo.getUUID(), video && MovilConfig.video(), oculto, -1, "", s.getTickCount());
@@ -302,6 +304,12 @@ public final class Llamadas {
         recalcularVoz();
         enviarTodos(s, l);
         if (antes != null) enviarTodos(s, antes);
+        // logros: ya hablan (el que coge y los que ya estaban dentro)
+        for (UUID v : l.dentro) {
+            com.miscelanea.logros.LogrosMiscelanea.dar(s, v, "llamada");
+            if (l.video) com.miscelanea.logros.LogrosMiscelanea.dar(s, v, "videollamada");
+        }
+        if (l.oculto) com.miscelanea.logros.LogrosMiscelanea.dar(yo, "numero_oculto");
     }
 
     private static void rechazar(MinecraftServer s, UUID u, Llamada l) {

@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/derringer",
+  "display": {
+    "icon": {
+      "item": "miscelanea:carta_marcada"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.carta.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.carta.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "derringer_carta": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "derringer_carta"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}
