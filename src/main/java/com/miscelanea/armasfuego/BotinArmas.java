@@ -1,5 +1,16 @@
 package com.miscelanea.armasfuego;
 
+import com.google.common.base.Suppliers;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraftforge.common.loot.IGlobalLootModifier;
+import net.minecraftforge.common.loot.LootModifier;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
+import java.util.function.Supplier;
 import com.miscelanea.ConfigServidor;
 import com.miscelanea.Miscelanea;
 import com.miscelanea.registry.ModItems;
@@ -24,10 +35,22 @@ import java.util.List;
  * </ul>
  * Salen con algo de munición, a veces algo oxidadas y a veces con uno de sus encantamientos propios.
  */
-public class BotinArmas {
-    // Copper Slug: el modificador de botín es de cada cargador (Forge: Global Loot Modifier en el módulo forge;
-    // Fabric: LootTableEvents); aquí queda lo común: qué arma sale dónde, con qué probabilidad y con qué.
-    public static void registrar(net.minecraftforge.eventbus.api.IEventBus bus) {}
+public class BotinArmas extends LootModifier {
+    public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> SERIALIZERS =
+            DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, Miscelanea.MOD_ID);
+
+    public static final Supplier<Codec<BotinArmas>> CODEC = Suppliers.memoize(
+            () -> RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, BotinArmas::new)));
+
+    public static final RegistryObject<Codec<BotinArmas>> TIPO = SERIALIZERS.register("armas_fuego", CODEC);
+
+    public static void registrar(IEventBus bus) {
+        SERIALIZERS.register(bus);
+    }
+
+    public BotinArmas(LootItemCondition[] condiciones) {
+        super(condiciones);
+    }
 
     public enum Arma {REVOLVER, ESCOPETA, RIFLE, GATLING, WINCHESTER, DERRINGER, THOMPSON, MOSQUETE, CANON, CERBATANA, LANZALLAMAS, RESONANCIA, ARPONERA}
 
@@ -89,6 +112,12 @@ public class BotinArmas {
             if (n.endsWith("_house")) return ConfigServidor.botinRevolverCasas();
         }
         return 0;
+    }
+
+    @Override
+    protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> botin, LootContext ctx) {
+        botin.addAll(aplicar(ctx.getQueriedLootTableId(), ctx.getRandom()));
+        return botin;
     }
 
     /** Lo que se añade al abrir un cofre de la tabla {@code id} (casi siempre nada). */
