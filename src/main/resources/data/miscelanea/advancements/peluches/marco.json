@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:raiz",
+  "display": {
+    "icon": {
+      "item": "miscelanea:marco_foto"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.peluches.marco.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.peluches.marco.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "marco_foto": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "marco_foto"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 20
+  }
+}

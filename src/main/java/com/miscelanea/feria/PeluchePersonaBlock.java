@@ -91,7 +91,7 @@ public class PeluchePersonaBlock extends Block {
             if (cansancio < 3) {
                 l.setBlock(p, s.setValue(CANSANCIO, cansancio + 1), 3);
                 l.scheduleTick(p, this, DESCANSO);
-            }
+            } else com.miscelanea.logros.LogrosMiscelanea.dar(j, "peluche_agotado");
             if (l instanceof ServerLevel sl) {
                 sl.sendParticles(ParticleTypes.NOTE, p.getX() + 0.5D, p.getY() + 1.0D, p.getZ() + 0.5D,
                         1, 0.2D, 0.0D, 0.2D, 0.0D);
@@ -110,6 +110,7 @@ public class PeluchePersonaBlock extends Block {
                         3, 0.25D, 0.1D, 0.25D, 0.0D);
             }
             j.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 0, true, false, true));
+            com.miscelanea.logros.LogrosMiscelanea.dar(j, "peluche_abrazo");
             // un abrazo también descansa al peluche
             if (s.getValue(CANSANCIO) > 0) l.setBlock(p, s.setValue(CANSANCIO, 0), 3);
         }

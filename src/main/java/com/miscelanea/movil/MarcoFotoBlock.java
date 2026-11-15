@@ -95,6 +95,7 @@ public class MarcoFotoBlock extends Block implements EntityBlock {
             return InteractionResult.CONSUME;
         }
         be.poner(copia, siguiente);
+        com.miscelanea.logros.LogrosMiscelanea.dar(sp, "marco_foto");
         l.playSound(null, p, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 0.8F, 1.1F);
         j.displayClientMessage(Component.translatable("marco.miscelanea.puesta", siguiente + 1, galeria.size()), true);
         return InteractionResult.CONSUME;

@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:raiz",
+  "display": {
+    "icon": {
+      "item": "miscelanea:peluche_doug"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.peluches.abrazo.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.peluches.abrazo.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "peluche_abrazo": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "peluche_abrazo"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 15
+  }
+}

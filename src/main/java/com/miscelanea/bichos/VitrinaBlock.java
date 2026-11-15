@@ -94,6 +94,7 @@ public class VitrinaBlock extends BaseEntityBlock {
                 if (!sp.getAbilities().instabuild) mano.shrink(1);
                 sp.displayClientMessage(Component.translatable("msg.miscelanea.expuesto", mano.getHoverName()).withStyle(ChatFormatting.GRAY), false);
                 level.playSound(null, pos, SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.BLOCKS, 0.7F, 1.0F);
+                com.miscelanea.logros.LogrosMiscelanea.dar(sp, "peluche_vitrina");
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
         }

@@ -62,7 +62,7 @@
 
 ## Primeros pasos
 
-- Todo el contenido está en **8 pestañas del creativo**: Feria y atracciones, Sala recreativa, Juegos de mesa, Armas y combate, Sala de juegos, Pociones y efectos, Bromas y Varios.
+- Todo el contenido está en **9 pestañas del creativo**: Feria y atracciones, Sala recreativa, Juegos de mesa, Armas y combate, Sala de juegos, Pociones y efectos, Bromas, Peluches y Varios.
 - **Teclas con preferencia:** mientras usas un arma o poder del mod, sus teclas solo hacen lo suyo aunque otro mod use la misma tecla (por ejemplo, R para recargar la ballesta no recarga los sombreadores, y V para fijar objetivo con la Llave Espada o el Hacha Leviatán no abre el chat de voz). Las teclas de Minecraft y la rueda del ratón siguen funcionando. Fuera de ese momento, la tecla es de todos.
 - **Bloques solo de creativo** (las máquinas, atracciones y aparatos que no tienen receta): en supervivencia son **irrompibles**, ni se pican ni los vuela una explosión. En creativo se quitan normal. La lista es la etiqueta `miscelanea:solo_creativo`.
 - Las teclas propias están en **Opciones → Controles → Miscelánea** y se pueden cambiar todas. Si algo no responde, mira que su tecla no choque con otra.
@@ -199,6 +199,7 @@ Cada arma tiene modelo, animaciones, sonidos y controles propios. Hacen bastante
 | **Lanzatintas y rodillo** | Combate con tinta |
 | **Puntero láser** | Apunta, deslumbra y vuelve locos a los gatos |
 | **Núcleo de error** *(creativo)* | Carga un aliento que corrompe bloques blandos |
+| **Hacha de sangre** *(creativo)* | Bebe de lo que golpea y despierta en cuatro fases: guarda sangre y suelta la Siega (giro que corta a todos), cobra el Diezmo (pagas vida y el golpe vale por tres), deja charcos que te curan y, al final, el Diezmo sale gratis de vez en cuando. Tiene sus encantamientos (Sed, Coágulo y Hemorragia) y su sección `hacha_sangre` en la config |
 
 ---
 
@@ -278,7 +279,7 @@ Inofensivas pero molestas. Mejor acordarlas con el grupo antes de usarlas.
 
 ## Sala de juegos
 
-Trampas y aparatos "de película de miedo", en versión graciosa: cepos, grilletes, jaulas, la caja de agua, el péndulo, la silla de inmersión, la silla de interrogatorio y más. Muchos tienen su minijuego para escapar (ganzúa, alicates, sierra...), y al que está en el cepo se le pueden tirar tomates y huevos podridos. Es para rol y hay que acordarlo con quien participe. El administrador puede desactivar partes en la configuración.
+Trampas y aparatos "de película de miedo", en versión graciosa: cepos, grilletes, jaulas, la caja de agua, el péndulo, la silla de inmersión, la silla de interrogatorio y más. Muchos tienen su minijuego para escapar (ganzúa, alicates, sierra...), y al que está en el cepo se le pueden tirar tomates y huevos podridos. Es para rol y hay que acordarlo con quien participe. Incluye la **jeringuilla de sedante**: se hace con suavis seco y un poco de agua, marea a quien pincha (con un forcejeo para no dormirse, más difícil por la espalda) y, si no lo aguanta, lo deja dormido en el suelo medio minuto. El administrador puede desactivar partes en la configuración.
 
 ---
 
@@ -288,6 +289,8 @@ Trampas y aparatos "de película de miedo", en versión graciosa: cepos, grillet
 - **Bichopedia:** lo que has encontrado y dónde vive cada criatura.
 - **Vitrina del museo, acuario y terrario:** para exponer la colección.
 - **Detector de metales:** fósiles, mosquito en ámbar, tesoros y cápsulas del tiempo con notas.
+- **Peluches de personas** (pestaña «Peluches»): un bloque por persona que chilla al apretarlo y se cansa, se abraza agachado, se lanza y rebota y se lleva de gorro. Con uno encima no salen fantasmas. También se exponen en la vitrina.
+- **Marco de fotos:** un bloque de pared que enseña una foto de tu galería del móvil; con el móvil en la mano se van pasando (agachado, hacia atrás) y lo ve todo el mundo.
 
 ## Casa, cocina y movimiento
 

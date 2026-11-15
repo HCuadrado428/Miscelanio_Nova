@@ -322,7 +322,7 @@ public class HachaSangreItem extends AxeItem implements GeoItem {
 
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if (r == null) r = new com.miscelanea.client.armas.ArmaGeoRenderer<>("hacha_sangre", true);
+                if (r == null) r = new com.miscelanea.client.armas.HachaSangreRenderer();
                 return r;
             }
         });

@@ -58,6 +58,7 @@ public class PeluchePersonaItem extends BlockItem implements Equipable {
             l.addFreshEntity(e);
         }
         j.awardStat(net.minecraft.stats.Stats.ITEM_USED.get(this));
+        if (!l.isClientSide) com.miscelanea.logros.LogrosMiscelanea.dar(j, "peluche_lanzado");
         if (!j.getAbilities().instabuild) st.shrink(1);
         return InteractionResultHolder.sidedSuccess(st, l.isClientSide());
     }
