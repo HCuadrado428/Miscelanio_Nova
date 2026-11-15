@@ -1,0 +1,110 @@
+{
+ "credit": "miscelanea",
+ "ambientocclusion": false,
+ "textures": {
+  "culote": "miscelanea:item/armas3d/culote_tinte",
+  "particle": "miscelanea:item/armas3d/culote_tinte"
+ },
+ "elements": [
+  {
+   "name": "culote",
+   "from": [
+    -0.3,
+    -0.3,
+    0
+   ],
+   "to": [
+    0.3,
+    0.3,
+    0.4
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      0,
+      0,
+      4,
+      4
+     ],
+     "texture": "#culote",
+     "tintindex": 0
+    },
+    "south": {
+     "uv": [
+      0,
+      0,
+      4,
+      4
+     ],
+     "texture": "#culote",
+     "tintindex": 0
+    },
+    "east": {
+     "uv": [
+      0,
+      0,
+      4,
+      4
+     ],
+     "texture": "#culote",
+     "tintindex": 0
+    },
+    "west": {
+     "uv": [
+      0,
+      0,
+      4,
+      4
+     ],
+     "texture": "#culote",
+     "tintindex": 0
+    },
+    "up": {
+     "uv": [
+      0,
+      0,
+      4,
+      4
+     ],
+     "texture": "#culote",
+     "tintindex": 0
+    },
+    "down": {
+     "uv": [
+      0,
+      0,
+      4,
+      4
+     ],
+     "texture": "#culote",
+     "tintindex": 0
+    }
+   }
+  },
+  {
+   "name": "piston",
+   "from": [
+    -0.12,
+    -0.12,
+    0.4
+   ],
+   "to": [
+    0.12,
+    0.12,
+    0.42
+   ],
+   "faces": {
+    "south": {
+     "uv": [
+      7,
+      7,
+      9,
+      9
+     ],
+     "texture": "#culote",
+     "tintindex": 0
+    }
+   }
+  }
+ ]
+}

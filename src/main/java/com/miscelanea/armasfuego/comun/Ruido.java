@@ -81,6 +81,7 @@ public final class Ruido {
      * se salta el aviso por azar (para las pruebas).
      */
     public static void alertar(ServerLevel l, Player quien, Vec3 pos, double radio, boolean seguro) {
+        radio *= com.miscelanea.ropa.Ropa.ruido(quien);   // la ropa de bandido se oye menos
         if (!ConfigServidor.ruido() || radio < 4 || quien.isSpectator()) return;
         long t = l.getGameTime();
         if (!seguro) {

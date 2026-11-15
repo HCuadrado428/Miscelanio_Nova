@@ -16,8 +16,4 @@ public class MunicionItem extends Item {
         super(p);
     }
 
-    @Override
-    public void appendHoverText(ItemStack s, @Nullable Level l, List<Component> lista, TooltipFlag f) {
-        lista.add(Component.translatable(getDescriptionId() + ".ayuda").withStyle(ChatFormatting.GRAY));
-    }
 }

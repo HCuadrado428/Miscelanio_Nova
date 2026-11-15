@@ -182,6 +182,11 @@ public class CanonManoItem extends ArmaFuegoItem {
         LogrosMiscelanea.dar(p, "canon_revienta");
     }
 
+    /** Velocidad con la que sale el bolaño (la mira dibuja con ella la parábola). */
+    public static float velocidad(ItemStack s) {
+        return 2.2F * (1 + 0.2F * nivel(com.miscelanea.registry.ModEnchantments.CANON_POLVORA_FINA, s));
+    }
+
     @Override
     protected void disparar(ServerPlayer p, ItemStack s) {
         ServerLevel l = p.serverLevel();
@@ -191,14 +196,14 @@ public class CanonManoItem extends ArmaFuegoItem {
         bola.setItem(new ItemStack(tipo));
         bola.ponerOxido(com.miscelanea.armasfuego.comun.Cobre.oxido(s));
         bola.setPos(b.x, b.y, b.z);
-        float v = 2.2F * (1 + 0.2F * nivel(com.miscelanea.registry.ModEnchantments.CANON_POLVORA_FINA, s));
-        bola.shootFromRotation(p, p.getXRot(), p.getYRot(), 0F, v, 4.0F);
+        bola.shootFromRotation(p, p.getXRot(), p.getYRot(), 0F, velocidad(s), (float) (4.0 * com.miscelanea.armasfuego.comun.Apuntar.dispersion(p) * com.miscelanea.armasfuego.comun.Accesorios.dispersion(s)));
         l.addFreshEntity(bola);
         efectos(l, p, b, ModSounds.CANON_DISPARO.get(), 6.0F, 0.9F, 0, false);
         Vec3 m = p.getViewVector(1F);
         for (int i = 0; i < 7; i++) {
             Vec3 q = b.add(m.scale(0.3 + i * 0.3));
-            l.sendParticles(ParticleTypes.LARGE_SMOKE, q.x, q.y, q.z, 1, 0.15 + i * 0.03, 0.12, 0.15 + i * 0.03, 0.004);
+            // la mitad, humo de hoguera: dura mucho más y sube despacio, así que la nube de pólvora negra se queda un rato
+            l.sendParticles(i % 2 == 0 ? ParticleTypes.CAMPFIRE_COSY_SMOKE : ParticleTypes.LARGE_SMOKE, q.x, q.y, q.z, 1, 0.15 + i * 0.03, 0.12, 0.15 + i * 0.03, 0.004);
         }
         l.sendParticles(ParticleTypes.FLAME, b.x, b.y, b.z, 5, 0.08, 0.08, 0.08, 0.04);
         p.setDeltaMovement(p.getDeltaMovement().add(m.scale(-0.35)));

@@ -87,10 +87,7 @@ public class GatlingItem extends Item {
         int balas = s.hasTag() ? s.getTag().getInt(BALAS) : 0;
         float calor = s.hasTag() ? s.getTag().getFloat(CALOR) : 0;
         l.add(Component.translatable("item.miscelanea.gatling.balas", balas, EquilibrioArmas.gatlingCinta()).withStyle(ChatFormatting.GOLD));
-        l.add(com.miscelanea.armasfuego.comun.Cobre.estado(s));
-        com.miscelanea.armasfuego.comun.Cobre.tooltip(s, l);
         if (calor > 1) l.add(Component.translatable("item.miscelanea.gatling.calor", Math.round(calor)).withStyle(ChatFormatting.RED));
-        for (int i = 1; i <= 3; i++) l.add(Component.translatable("item.miscelanea.gatling.ayuda" + i).withStyle(ChatFormatting.GRAY));
     }
 
     @Override

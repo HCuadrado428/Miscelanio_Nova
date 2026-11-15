@@ -1,28 +1,17 @@
 package com.miscelanea.armasfuego;
 
-import com.google.common.base.Suppliers;
 import com.miscelanea.ConfigServidor;
 import com.miscelanea.Miscelanea;
 import com.miscelanea.registry.ModItems;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.level.storage.loot.LootContext;
-import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraftforge.common.loot.IGlobalLootModifier;
-import net.minecraftforge.common.loot.LootModifier;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Las armas de fuego no se fabrican: se encuentran explorando. Un Global Loot Modifier (data/miscelanea/loot_modifiers/
@@ -35,24 +24,12 @@ import java.util.function.Supplier;
  * </ul>
  * Salen con algo de munición, a veces algo oxidadas y a veces con uno de sus encantamientos propios.
  */
-public class BotinArmas extends LootModifier {
-    public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> SERIALIZERS =
-            DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, Miscelanea.MOD_ID);
+public class BotinArmas {
+    // Copper Slug: el modificador de botín es de cada cargador (Forge: Global Loot Modifier en el módulo forge;
+    // Fabric: LootTableEvents); aquí queda lo común: qué arma sale dónde, con qué probabilidad y con qué.
+    public static void registrar(net.minecraftforge.eventbus.api.IEventBus bus) {}
 
-    public static final Supplier<Codec<BotinArmas>> CODEC = Suppliers.memoize(
-            () -> RecordCodecBuilder.create(inst -> codecStart(inst).apply(inst, BotinArmas::new)));
-
-    public static final RegistryObject<Codec<BotinArmas>> TIPO = SERIALIZERS.register("armas_fuego", CODEC);
-
-    public static void registrar(IEventBus bus) {
-        SERIALIZERS.register(bus);
-    }
-
-    public BotinArmas(LootItemCondition[] condiciones) {
-        super(condiciones);
-    }
-
-    public enum Arma {REVOLVER, ESCOPETA, RIFLE, GATLING, WINCHESTER, DERRINGER, THOMPSON, MOSQUETE, CANON}
+    public enum Arma {REVOLVER, ESCOPETA, RIFLE, GATLING, WINCHESTER, DERRINGER, THOMPSON, MOSQUETE, CANON, CERBATANA, LANZALLAMAS, RESONANCIA, ARPONERA}
 
     /** Qué arma puede salir en esa tabla de botín (null: ninguna). */
     public static Arma arma(ResourceLocation id) {
@@ -73,6 +50,13 @@ public class BotinArmas extends LootModifier {
             case "chests/woodland_mansion": return Arma.THOMPSON;
             case "chests/stronghold_corridor":
             case "chests/stronghold_crossing": return Arma.MOSQUETE;
+            case "chests/jungle_temple":
+            case "chests/jungle_temple_dispenser": return Arma.CERBATANA;
+            case "chests/nether_bridge": return Arma.LANZALLAMAS;
+            case "chests/ancient_city":
+            case "chests/ancient_city_ice_box": return Arma.RESONANCIA;
+            case "chests/underwater_ruin_big":
+            case "chests/underwater_ruin_small": return Arma.ARPONERA;
             case "chests/bastion_other":
             case "chests/bastion_bridge": return Arma.CANON;
             default: return null;
@@ -92,6 +76,10 @@ public class BotinArmas extends LootModifier {
             case THOMPSON: return com.miscelanea.armasfuego.comun.EquilibrioArmas.botinThompson();
             case MOSQUETE: return com.miscelanea.armasfuego.comun.EquilibrioArmas.botinMosquete();
             case CANON: return com.miscelanea.armasfuego.comun.EquilibrioArmas.botinCanon();
+            case CERBATANA: return com.miscelanea.armasfuego.comun.EquilibrioArmas.botinCerbatana();
+            case LANZALLAMAS: return com.miscelanea.armasfuego.comun.EquilibrioArmas.botinLanzallamas();
+            case RESONANCIA: return com.miscelanea.armasfuego.comun.EquilibrioArmas.botinResonancia();
+            case ARPONERA: return com.miscelanea.armasfuego.comun.EquilibrioArmas.botinArponera();
             default: break;
         }
         if (p.startsWith("chests/village/")) {
@@ -103,15 +91,24 @@ public class BotinArmas extends LootModifier {
         return 0;
     }
 
-    @Override
-    protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> botin, LootContext ctx) {
-        ResourceLocation id = ctx.getQueriedLootTableId();
+    /** Lo que se añade al abrir un cofre de la tabla {@code id} (casi siempre nada). */
+    public static List<ItemStack> aplicar(ResourceLocation id, RandomSource r) {
+        ObjectArrayList<ItemStack> botin = new ObjectArrayList<>();
+        granadas(id, r, botin);
         Arma a = arma(id);
         if (a == null) return botin;
-        RandomSource r = ctx.getRandom();
         if (r.nextDouble() >= probabilidad(id)) return botin;
         botin.addAll(generar(a, r));
         return botin;
+    }
+
+    /** Granadas sueltas (1 a 3, de un tipo al azar) en los puestos de saqueadores, las minas abandonadas y las mazmorras. */
+    private static void granadas(ResourceLocation id, RandomSource r, List<ItemStack> botin) {
+        String p = id.getPath();
+        if (!p.equals("chests/pillager_outpost") && !p.equals("chests/abandoned_mineshaft") && !p.equals("chests/simple_dungeon")) return;
+        if (r.nextDouble() >= ConfigServidor.granadaBotin()) return;
+        var tipos = List.of(ModItems.GRANADA_HUMO, ModItems.GRANADA_METRALLA, ModItems.GRANADA_MIEL);
+        botin.add(new ItemStack(tipos.get(r.nextInt(tipos.size())).get(), 1 + r.nextInt(3)));
     }
 
     /** El arma (un poco oxidada a veces, y a veces encantada) y algo de su munición. */
@@ -170,6 +167,29 @@ public class BotinArmas extends LootModifier {
                 arma = new ItemStack(ModItems.CANON_MANO.get());
                 l.add(new ItemStack(net.minecraft.world.item.Items.GUNPOWDER, 4 + r.nextInt(5)));
             }
+            case ARPONERA -> {
+                arma = new ItemStack(ModItems.ARPONERA.get());
+                com.miscelanea.armasfuego.comun.ArmaFuegoItem.ponerBalas(arma, 1);
+                l.add(new ItemStack(ModItems.ARPON_COBRE.get(), 2 + r.nextInt(4)));
+            }
+            case RESONANCIA -> {
+                arma = new ItemStack(ModItems.RESONANCIA.get());
+                com.miscelanea.armasfuego.comun.ArmaFuegoItem.ponerBalas(arma, r.nextInt(3));
+                l.add(new ItemStack(net.minecraft.world.item.Items.ECHO_SHARD, 1 + r.nextInt(3)));
+            }
+            case LANZALLAMAS -> {
+                arma = new ItemStack(ModItems.LANZALLAMAS.get());
+                com.miscelanea.armasfuego.comun.ArmaFuegoItem.ponerBalas(arma, 20 + r.nextInt(40));
+                l.add(new ItemStack(ModItems.BIDON_COMBUSTIBLE.get(), 1 + r.nextInt(2)));
+                l.add(new ItemStack(net.minecraft.world.item.Items.BLAZE_POWDER, 2 + r.nextInt(4)));
+            }
+            case CERBATANA -> {
+                arma = new ItemStack(ModItems.CERBATANA.get());
+                com.miscelanea.armasfuego.comun.ArmaFuegoItem.ponerBalas(arma, 1);
+                l.add(new ItemStack(ModItems.DARDO_CERBATANA.get(), 4 + r.nextInt(5)));
+                if (r.nextFloat() < 0.6F) l.add(new ItemStack(ModItems.DARDO_VENENO.get(), 2 + r.nextInt(4)));
+                if (r.nextFloat() < 0.4F) l.add(new ItemStack(ModItems.DARDO_SOMNIFERO.get(), 1 + r.nextInt(3)));
+            }
             default -> {
                 arma = new ItemStack(ModItems.RIFLE.get());
                 if (oxido > 0) arma.getOrCreateTag().putInt(com.miscelanea.armasfuego.rifle.Rifle.OXIDO, oxido);
@@ -201,10 +221,5 @@ public class BotinArmas extends LootModifier {
                 arma.enchant(e, 1 + r.nextInt(e.getMaxLevel()));
             }
         }
-    }
-
-    @Override
-    public Codec<? extends IGlobalLootModifier> codec() {
-        return CODEC.get();
     }
 }

@@ -28,7 +28,8 @@ import java.util.function.Consumer;
 /**
  * Revólver de ruleta de cobre. Controles (con el revólver en la mano principal):
  * <ul>
- *   <li>Clic derecho: dispara la recámara que toca (mirando al suelo del todo, te apuntas a la sien: ruleta rusa).</li>
+ *   <li>Clic izquierdo: dispara la recámara que toca (mirando al suelo del todo, te apuntas a la sien: ruleta rusa).</li>
+ *   <li>Mantener clic derecho: apuntar (la mira enseña la bala que toca, salvo en la ruleta rusa).</li>
  *   <li>Agachado + clic derecho con munición en la otra mano: la mete en la siguiente recámara vacía.</li>
  *   <li>Agachado + clic derecho con un panal / un hacha en la otra mano: encerar / rascar el óxido.</li>
  *   <li>Agachado + clic derecho (sin nada de eso) con Abanico: vacía el tambor muy deprisa.</li>
@@ -48,7 +49,7 @@ public class RevolverItem extends Item {
         ItemStack s = p.getItemInHand(hand);
         if (hand != InteractionHand.MAIN_HAND) return InteractionResultHolder.pass(s);
         ItemStack otra = p.getOffhandItem();
-        if (p.isShiftKeyDown()) {
+        if (p.isShiftKeyDown() && !com.miscelanea.armasfuego.comun.Apuntar.apuntando(p)) {
             if (Carga.de(otra) != null) {
                 if (!level.isClientSide) Revolver.cargar((ServerPlayer) p, s, otra);
                 p.getCooldowns().addCooldown(this, 4);
@@ -68,14 +69,20 @@ public class RevolverItem extends Item {
                 return InteractionResultHolder.consume(s);
             }
         }
-        if (level.getGameTime() - Tambor.giroT(s) < Tambor.GIRO_TICKS) return InteractionResultHolder.fail(s);
+        // sin agacharse, el clic derecho es apuntar (lo lleva el cliente): aquí solo se evita usar lo de la otra mano
+        return InteractionResultHolder.consume(s);
+    }
+
+    /** El gatillo (clic izquierdo): dispara la recámara que toca. Lo llama el cliente en su lado y el servidor al llegar el paquete. */
+    public void gatillo(Level level, Player p, ItemStack s) {
+        if (p.isUsingItem() || p.getMainHandItem() != s || p.getCooldowns().isOnCooldown(this)) return;
+        if (level.getGameTime() - Tambor.giroT(s) < Tambor.GIRO_TICKS) return;
         if (level.isClientSide) {
-            if (Tambor.siguiente(s) != Carga.VACIA) com.miscelanea.client.armasfuego.comun.FuegoCliente.patada(2.5F, 3F, 1F);   // retroceso en la mira
+            if (Tambor.siguiente(s) != Carga.VACIA) com.miscelanea.client.armasfuego.comun.FuegoCliente.patadaArma(2.5F, 3F, 1F);   // retroceso en la mira
         } else {
             Revolver.disparar((ServerPlayer) p, s, false);
         }
         p.getCooldowns().addCooldown(this, com.miscelanea.armasfuego.comun.EquilibrioArmas.revolverEnfriamiento());
-        return InteractionResultHolder.consume(s);
     }
 
     @Override
@@ -181,10 +188,6 @@ public class RevolverItem extends Item {
         }
         l.add(t);
         if (girado) l.add(Component.translatable("pistola.miscelanea.girado").withStyle(ChatFormatting.DARK_PURPLE, ChatFormatting.ITALIC));
-        com.miscelanea.armasfuego.comun.Cobre.tooltip(s, l);
-        l.add(Component.translatable("pistola.miscelanea.ayuda1").withStyle(ChatFormatting.DARK_GRAY));
-        l.add(Component.translatable("pistola.miscelanea.ayuda2").withStyle(ChatFormatting.DARK_GRAY));
-        l.add(Component.translatable("pistola.miscelanea.ayuda3").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     @Override
@@ -192,12 +195,16 @@ public class RevolverItem extends Item {
         consumer.accept(new IClientItemExtensions() {
             @Override
             public net.minecraft.client.model.HumanoidModel.ArmPose getArmPose(LivingEntity entity, InteractionHand hand, ItemStack stack) {
+                // apuntando se coge con las dos manos, al frente
+                if (hand == InteractionHand.MAIN_HAND && entity instanceof Player pl && com.miscelanea.armasfuego.comun.Apuntar.apuntando(pl))
+                    return com.miscelanea.client.armasfuego.comun.Apuntado.POSE;
                 return com.miscelanea.client.armasfuego.pistola.PistolaCliente.POSE;
             }
 
             @Override
             public boolean applyForgeHandTransform(com.mojang.blaze3d.vertex.PoseStack ps, net.minecraft.client.player.LocalPlayer pl,
                                                    net.minecraft.world.entity.HumanoidArm brazo, ItemStack st, float pt, float equip, float swing) {
+                com.miscelanea.client.armasfuego.comun.Apuntado.alinear(ps, brazo == net.minecraft.world.entity.HumanoidArm.RIGHT ? 1 : -1, st, pt);
                 // al meter una bala: el revólver se ladea con el tambor abierto (recarga animada)
                 if (st.hasTag()) {
                     float t = pl.level().getGameTime() - st.getTag().getLong(Revolver.CARGA_T) + pt;

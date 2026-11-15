@@ -19,9 +19,4 @@ public class CartuchoPresionItem extends Item {
         this.tipo = tipo;
     }
 
-    @Override
-    public void appendHoverText(ItemStack s, @Nullable Level level, List<Component> l, TooltipFlag f) {
-        l.add(Component.translatable("item.miscelanea.escopeta_cartucho_" + tipo.id + ".ayuda").withStyle(ChatFormatting.GRAY));
-        l.add(Component.translatable("item.miscelanea.escopeta_cartucho.cargar").withStyle(ChatFormatting.DARK_GRAY));
-    }
 }

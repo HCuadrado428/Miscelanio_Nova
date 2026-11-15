@@ -287,6 +287,24 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> TIEMPO_BALA = register("tiempo_bala");
     public static final RegistryObject<SoundEvent> GOMA_REBOTE = register("goma_rebote");
     public static final RegistryObject<SoundEvent> PINTURA_SPLAT = register("pintura_splat");
+    // ---- sonidos nuevos: el silenciador de verdad, lo que hacen los mobs armados, el eco de interior y la versión lejana de cada disparo
+    public static final RegistryObject<SoundEvent> SILENCIADOR_DISPARO = register("silenciador_disparo");
+    public static final RegistryObject<SoundEvent> MOB_MONTAR = register("mob_montar");
+    public static final RegistryObject<SoundEvent> MOB_CHISPA = register("mob_chispa");
+    public static final RegistryObject<SoundEvent> MOB_CLIC_SECO = register("mob_clic_seco");
+    public static final RegistryObject<SoundEvent> ECO_INTERIOR = register("eco_interior");
+    private static final java.util.Map<String, RegistryObject<SoundEvent>> LEJOS = new java.util.HashMap<>();
+    static {
+        for (String n : new String[]{"revolver_disparo", "rifle_catalejo_disparo", "presion_disparo", "gatling_disparo", "winchester_disparo",
+                "derringer_disparo", "thompson_disparo", "mosquete_disparo", "canon_disparo"})
+            LEJOS.put(n, register(n + "_lejos"));
+    }
+
+    /** La versión lejana (apagada y con eco) de un disparo, o null si ese sonido no la tiene. */
+    public static SoundEvent lejos(SoundEvent s) {
+        RegistryObject<SoundEvent> r = LEJOS.get(s.getLocation().getPath());
+        return r == null ? null : r.get();
+    }
 
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name,

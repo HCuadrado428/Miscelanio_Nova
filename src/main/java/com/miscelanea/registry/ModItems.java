@@ -442,5 +442,53 @@ public final class ModItems {
             () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties().stacksTo(16)));
     // ---- fin armas de fuego (segunda tanda)
 
+    // ---- Cerbatana de cobre (templos de la jungla) y sus dardos
+    public static final RegistryObject<Item> CERBATANA = ITEMS.register("cerbatana",
+            () -> new com.miscelanea.armasfuego.selva.CerbatanaItem(new Item.Properties().durability(250).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> DARDO_CERBATANA = ITEMS.register("dardo_cerbatana",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties()));
+    public static final RegistryObject<Item> DARDO_VENENO = ITEMS.register("dardo_veneno",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties()));
+    public static final RegistryObject<Item> DARDO_SOMNIFERO = ITEMS.register("dardo_somnifero",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties()));
+
+    // ---- Lanzallamas de cobre (fortalezas del Nether) y su bidón
+    public static final RegistryObject<Item> LANZALLAMAS = ITEMS.register("lanzallamas",
+            () -> new com.miscelanea.armasfuego.nether.LanzallamasItem(new Item.Properties().durability(400).rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> BIDON_COMBUSTIBLE = ITEMS.register("bidon_combustible",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties().stacksTo(8)));
+
+    // ---- Pistola de resonancia (ciudades antiguas): funciona con fragmentos de eco
+    public static final RegistryObject<Item> RESONANCIA = ITEMS.register("resonancia",
+            () -> new com.miscelanea.armasfuego.ciudad.ResonanciaItem(new Item.Properties().durability(300).rarity(Rarity.RARE)));
+
+    // ---- Arponera de cobre (ruinas submarinas) y su arpón
+    public static final RegistryObject<Item> ARPONERA = ITEMS.register("arponera",
+            () -> new com.miscelanea.armasfuego.oceano.ArponeraItem(new Item.Properties().durability(300).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> ARPON_COBRE = ITEMS.register("arpon_cobre",
+            () -> new com.miscelanea.armasfuego.comun.MunicionItem(new Item.Properties()));
+
+    /** Granadas de cobre: humo, metralla y pegamento (miel). */
+    public static final RegistryObject<Item> GRANADA_HUMO = ITEMS.register("granada_humo",
+            () -> new com.miscelanea.armasfuego.granada.GranadaItem(com.miscelanea.armasfuego.granada.TipoGranada.HUMO, new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> GRANADA_METRALLA = ITEMS.register("granada_metralla",
+            () -> new com.miscelanea.armasfuego.granada.GranadaItem(com.miscelanea.armasfuego.granada.TipoGranada.METRALLA, new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> GRANADA_MIEL = ITEMS.register("granada_miel",
+            () -> new com.miscelanea.armasfuego.granada.GranadaItem(com.miscelanea.armasfuego.granada.TipoGranada.MIEL, new Item.Properties().stacksTo(16)));
+
+    // ---- Ropa cosmética: dos juegos (vaquero y bandido), de cuero y con otro aspecto
+    public static final RegistryObject<Item> SOMBRERO_VAQUERO = ropa("sombrero_vaquero", com.miscelanea.ropa.Ropa.VAQUERO, ArmorItem.Type.HELMET);
+    public static final RegistryObject<Item> CHALECO_VAQUERO = ropa("chaleco_vaquero", com.miscelanea.ropa.Ropa.VAQUERO, ArmorItem.Type.CHESTPLATE);
+    public static final RegistryObject<Item> CHAPARRERAS_VAQUERO = ropa("chaparreras_vaquero", com.miscelanea.ropa.Ropa.VAQUERO, ArmorItem.Type.LEGGINGS);
+    public static final RegistryObject<Item> BOTAS_VAQUERO = ropa("botas_vaquero", com.miscelanea.ropa.Ropa.VAQUERO, ArmorItem.Type.BOOTS);
+    public static final RegistryObject<Item> SOMBRERO_BANDIDO = ropa("sombrero_bandido", com.miscelanea.ropa.Ropa.BANDIDO, ArmorItem.Type.HELMET);
+    public static final RegistryObject<Item> PONCHO_BANDIDO = ropa("poncho_bandido", com.miscelanea.ropa.Ropa.BANDIDO, ArmorItem.Type.CHESTPLATE);
+    public static final RegistryObject<Item> PANTALON_BANDIDO = ropa("pantalon_bandido", com.miscelanea.ropa.Ropa.BANDIDO, ArmorItem.Type.LEGGINGS);
+    public static final RegistryObject<Item> BOTAS_BANDIDO = ropa("botas_bandido", com.miscelanea.ropa.Ropa.BANDIDO, ArmorItem.Type.BOOTS);
+
+    private static RegistryObject<Item> ropa(String id, com.miscelanea.ropa.Ropa material, ArmorItem.Type tipo) {
+        return ITEMS.register(id, () -> new ArmorItem(material, tipo, new Item.Properties()));
+    }
+
     private ModItems() {}
 }

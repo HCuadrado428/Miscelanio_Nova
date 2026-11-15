@@ -112,5 +112,10 @@ public final class ModEntities {
             () -> EntityType.Builder.<com.miscelanea.armasfuego.oeste.BolaCanonEntity>of(com.miscelanea.armasfuego.oeste.BolaCanonEntity::new, MobCategory.MISC)
                     .sized(0.4F, 0.4F).clientTrackingRange(8).updateInterval(1).noSummon().build("bola_canon"));
 
+    // ---- Granadas de cobre
+    public static final RegistryObject<EntityType<com.miscelanea.armasfuego.granada.GranadaEntity>> GRANADA = ENTITIES.register("granada",
+            () -> EntityType.Builder.<com.miscelanea.armasfuego.granada.GranadaEntity>of(com.miscelanea.armasfuego.granada.GranadaEntity::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F).clientTrackingRange(8).updateInterval(2).build("granada"));
+
     private ModEntities() {}
 }

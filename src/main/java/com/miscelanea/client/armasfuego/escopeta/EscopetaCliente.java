@@ -111,6 +111,7 @@ public final class EscopetaCliente {
 
     public static boolean mano(PoseStack ps, LocalPlayer pl, HumanoidArm brazo, ItemStack s, float pt, float equip) {
         if (!pl.isUsingItem() || pl.getUseItem() != s) {
+            com.miscelanea.client.armasfuego.comun.Inspeccion.aplicar(ps, brazo == HumanoidArm.RIGHT ? 1 : -1, s, pt);
             com.miscelanea.client.armasfuego.comun.FuegoCliente.culatazo(ps);
             return false;
         }

@@ -29,6 +29,15 @@ public final class EquilibrioArmas {
     private static ForgeConfigSpec.IntValue WINCHESTER_CAPACIDAD, WINCHESTER_PALANCA, WINCHESTER_RECARGA;
     // ---- Derringer
     private static ForgeConfigSpec.DoubleValue DERRINGER_DANO, DERRINGER_ALCANCE, DERRINGER_DESENFUNDE;
+    // ---- Cerbatana
+    private static ForgeConfigSpec.DoubleValue CERBATANA_DANO, CERBATANA_ALCANCE;
+    // ---- Lanzallamas
+    private static ForgeConfigSpec.DoubleValue LANZALLAMAS_DANO, LANZALLAMAS_ALCANCE;
+    private static ForgeConfigSpec.IntValue LANZALLAMAS_CAPACIDAD;
+    // ---- Pistola de resonancia
+    private static ForgeConfigSpec.DoubleValue RESONANCIA_DANO, RESONANCIA_ALCANCE;
+    // ---- Arponera
+    private static ForgeConfigSpec.DoubleValue ARPONERA_DANO, ARPONERA_ALCANCE, ARPONERA_TIRON;
     // ---- Thompson
     private static ForgeConfigSpec.DoubleValue THOMPSON_DANO, THOMPSON_ALCANCE;
     private static ForgeConfigSpec.IntValue THOMPSON_CADENCIA, THOMPSON_CAPACIDAD, THOMPSON_RECARGA;
@@ -45,8 +54,10 @@ public final class EquilibrioArmas {
     // ---- el cobre de las nueve: lo que hace cada fase (nueva, expuesta, erosionada, oxidada) y lo que dura la cera
     private static ForgeConfigSpec.ConfigValue<java.util.List<? extends Double>> OX_ATASCO, OX_DISPERSION, OX_DANO, OX_PERFORACION;
     private static ForgeConfigSpec.IntValue CERA, CERA_AUTOMATICAS;
+    // ---- apuntar (clic derecho mantenido; todas menos la escopeta de presión)
+    private static ForgeConfigSpec.DoubleValue APUNTAR_DISPERSION, APUNTAR_FOV, APUNTAR_LENTITUD;
     // ---- botín
-    private static ForgeConfigSpec.DoubleValue B_GATLING, B_WINCHESTER, B_DERRINGER, B_THOMPSON, B_MOSQUETE, B_CANON;
+    private static ForgeConfigSpec.DoubleValue B_GATLING, B_WINCHESTER, B_DERRINGER, B_THOMPSON, B_MOSQUETE, B_CANON, B_CERBATANA, B_LANZALLAMAS, B_RESONANCIA, B_ARPONERA;
 
     /** Lo llama ConfigServidor al final (su propia sección). */
     public static void definir(ForgeConfigSpec.Builder b) {
@@ -64,13 +75,19 @@ public final class EquilibrioArmas {
         CERA = b.comment("Disparos que dura la cera de un panal (luego vuelve a oxidarse; volver a encerar la rellena).").defineInRange("cera_disparos", 200, 1, 100000);
         CERA_AUTOMATICAS = b.comment("Lo mismo para la Gatling y la Thompson (disparan muchísimo más).").defineInRange("cera_disparos_automaticas", 1500, 1, 1000000);
         b.pop();
+        b.comment("Apuntar: mantener el clic derecho con un arma en la mano (todas menos la escopeta de presión, que dispara solo desde la cadera).",
+                "El rifle apunta con su catalejo (su zoom es el del catalejo) y solo usa la dispersión de aquí.").push("apuntado");
+        APUNTAR_DISPERSION = b.comment("Por cuánto se multiplica la dispersión al apuntar (1 = igual que desde la cadera; 0,4 = un 60 % menos).").defineInRange("dispersion", 0.4, 0.0, 1.0);
+        APUNTAR_FOV = b.comment("Por cuánto se multiplica el campo de visión al apuntar (1 = sin zoom; 0,8 = se cierra un 20 %).").defineInRange("fov", 0.8, 0.3, 1.0);
+        APUNTAR_LENTITUD = b.comment("Cuánto más lento se anda apuntando (0 = igual; 0,35 = un 35 % más lento).").defineInRange("lentitud", 0.35, 0.0, 0.9);
+        b.pop();
         ENCASQUILLADO_BASE = b.comment("Probabilidad de que cualquier arma de fuego se encasquille en un disparo, aunque esté nueva (el óxido la sube).",
                 "Encasquillada: agachado + clic derecho para desatascarla (o el cerrojo/la palanca).").defineInRange("encasquillado_base", 0.01, 0.0, 1.0);
         REVOLVER_DANO = b.comment("Revólver: daño de la bala (antes 7). Desenfunde lo multiplica por 1,75.").defineInRange("revolver_dano", 6.5, 0.0, 100.0);
-        REVOLVER_ENFRIAMIENTO = b.comment("Revólver: ticks entre disparos (antes 7).").defineInRange("revolver_enfriamiento", 8, 1, 100);
-        ESCOPETA_PERDIGON = b.comment("Escopeta de presión: daño de cada perdigón de grava a 100 de presión (10 perdigones).").defineInRange("escopeta_perdigon", 1.6, 0.0, 100.0);
+        REVOLVER_ENFRIAMIENTO = b.comment("Revólver: ticks entre disparos (10 = la ventana de invulnerabilidad: cuentan todos los tiros).").defineInRange("revolver_enfriamiento", 10, 1, 100);
+        ESCOPETA_PERDIGON = b.comment("Escopeta de presión: daño de cada perdigón de grava a 100 de presión (10 perdigones).").defineInRange("escopeta_perdigon", 1.5, 0.0, 100.0);
         RIFLE_DANO = b.comment("Rifle de catalejo: daño de la bala (antes 12; con la respiración contenida, hasta x1,25).").defineInRange("rifle_dano", 9.0, 0.0, 100.0);
-        RIFLE_CABEZA = b.comment("Rifle de catalejo: multiplicador en la cabeza (antes 1,75).").defineInRange("rifle_cabeza", 1.6, 1.0, 10.0);
+        RIFLE_CABEZA = b.comment("Rifle de catalejo: multiplicador en la cabeza (con 1,5 ni el cañón oxidado con Respiración III mata de un tiro).").defineInRange("rifle_cabeza", 1.5, 1.0, 10.0);
 
         GATLING_DANO = b.comment("Gatling: daño de cada bala.").defineInRange("gatling_dano", 2.5, 0.0, 100.0);
         GATLING_CADENCIA = b.comment("Gatling: ticks entre balas con la manivela a toda velocidad.").defineInRange("gatling_cadencia", 2, 1, 40);
@@ -89,7 +106,7 @@ public final class EquilibrioArmas {
         DERRINGER_ALCANCE = b.comment("Derringer: alcance en bloques.").defineInRange("derringer_alcance", 20.0, 2.0, 128.0);
         DERRINGER_DESENFUNDE = b.comment("Derringer: multiplicador del primer tiro justo al sacarla (truco de tahúr).").defineInRange("derringer_desenfunde", 1.4, 1.0, 5.0);
 
-        THOMPSON_DANO = b.comment("Thompson: daño de cada bala.").defineInRange("thompson_dano", 2.0, 0.0, 100.0);
+        THOMPSON_DANO = b.comment("Thompson: daño de cada bala.").defineInRange("thompson_dano", 1.6, 0.0, 100.0);
         THOMPSON_ALCANCE = b.comment("Thompson: alcance en bloques.").defineInRange("thompson_alcance", 40.0, 4.0, 256.0);
         THOMPSON_CADENCIA = b.comment("Thompson: ticks entre balas.").defineInRange("thompson_cadencia", 2, 1, 40);
         THOMPSON_CAPACIDAD = b.comment("Thompson: balas del cargador de tambor.").defineInRange("thompson_capacidad", 50, 1, 500);
@@ -118,10 +135,28 @@ public final class EquilibrioArmas {
         VIOLIN_ENFRIAMIENTO = b.comment("Estuche de violín: ticks entre nota y nota.").defineInRange("violin_enfriamiento", 3, 0, 40);
 
         b.comment("Dónde se encuentran las armas nuevas (probabilidad 0-1 en cada cofre; no tienen receta).").push("botin");
+        CERBATANA_DANO = b.comment("Cerbatana: daño del dardo normal (el de veneno hace el 70 % y el somnífero el 35 %).").defineInRange("cerbatana_dano", 3.0, 0.0, 100.0);
+        CERBATANA_ALCANCE = b.comment("Cerbatana: alcance en bloques.").defineInRange("cerbatana_alcance", 40.0, 2.0, 128.0);
+
+        LANZALLAMAS_DANO = b.comment("Lanzallamas: daño de cada pulsación de llama (sale cada 2 ticks) a todo lo que cae en el cono, además de prenderlo.").defineInRange("lanzallamas_dano", 1.5, 0.0, 100.0);
+        LANZALLAMAS_ALCANCE = b.comment("Lanzallamas: alcance del chorro en bloques.").defineInRange("lanzallamas_alcance", 7.0, 2.0, 32.0);
+        LANZALLAMAS_CAPACIDAD = b.comment("Lanzallamas: pulsaciones de llama que da un bidón (cada una gasta una; 2 ticks).").defineInRange("lanzallamas_capacidad", 100, 10, 1000);
+
+        RESONANCIA_DANO = b.comment("Pistola de resonancia: daño de la onda a todo lo que cruza (la armadura casi no la frena; atraviesa bloques).").defineInRange("resonancia_dano", 9.0, 0.0, 100.0);
+        RESONANCIA_ALCANCE = b.comment("Pistola de resonancia: alcance de la onda en bloques.").defineInRange("resonancia_alcance", 24.0, 2.0, 128.0);
+
+        ARPONERA_DANO = b.comment("Arponera: daño del arpón a una criatura (tira de ella hacia ti).").defineInRange("arponera_dano", 8.0, 0.0, 100.0);
+        ARPONERA_ALCANCE = b.comment("Arponera: alcance de la cuerda en bloques.").defineInRange("arponera_alcance", 36.0, 2.0, 128.0);
+        ARPONERA_TIRON = b.comment("Arponera: fuerza del tirón (bajo el agua, x1,6).").defineInRange("arponera_tiron", 1.8, 0.2, 5.0);
+
         B_GATLING = b.comment("Gatling: cofres de las pirámides del desierto.").defineInRange("gatling_piramide", 0.2, 0.0, 1.0);
         B_WINCHESTER = b.comment("Winchester: cofres de las minas abandonadas (vagonetas con cofre).").defineInRange("winchester_mina", 0.1, 0.0, 1.0);
         B_DERRINGER = b.comment("Derringer: cofres de los tesoros enterrados.").defineInRange("derringer_tesoro", 0.35, 0.0, 1.0);
         B_THOMPSON = b.comment("Thompson (en su estuche de violín): cofres de las mansiones del bosque.").defineInRange("thompson_mansion", 0.4, 0.0, 1.0);
+        B_CERBATANA = b.comment("Cerbatana: cofres de los templos de la jungla.").defineInRange("cerbatana_templo", 0.3, 0.0, 1.0);
+        B_LANZALLAMAS = b.comment("Lanzallamas: cofres de las fortalezas del Nether.").defineInRange("lanzallamas_fortaleza", 0.25, 0.0, 1.0);
+        B_RESONANCIA = b.comment("Pistola de resonancia: cofres de las ciudades antiguas.").defineInRange("resonancia_ciudad", 0.3, 0.0, 1.0);
+        B_ARPONERA = b.comment("Arponera: cofres de las ruinas submarinas.").defineInRange("arponera_ruinas", 0.3, 0.0, 1.0);
         B_MOSQUETE = b.comment("Mosquete: cofres de los pasillos y cruces de las fortalezas.").defineInRange("mosquete_fortaleza", 0.15, 0.0, 1.0);
         B_CANON = b.comment("Cañón de mano: cofres de los bastiones (otros y puente).").defineInRange("canon_bastion", 0.15, 0.0, 1.0);
         b.pop();
@@ -156,6 +191,9 @@ public final class EquilibrioArmas {
     public static volatile boolean sinAtascosPrueba;
 
     public static float encasquilladoBase() { return sinAtascosPrueba ? 0F : (float) d(ENCASQUILLADO_BASE); }
+    public static double apuntarDispersion() { return d(APUNTAR_DISPERSION); }
+    public static float apuntarFov() { return (float) d(APUNTAR_FOV); }
+    public static double apuntarLentitud() { return d(APUNTAR_LENTITUD); }
     public static float revolverDano() { return (float) d(REVOLVER_DANO); }
     public static int revolverEnfriamiento() { return i(REVOLVER_ENFRIAMIENTO); }
     public static float escopetaPerdigon() { return (float) d(ESCOPETA_PERDIGON); }
@@ -177,6 +215,16 @@ public final class EquilibrioArmas {
 
     public static float derringerDano() { return (float) d(DERRINGER_DANO); }
     public static double derringerAlcance() { return d(DERRINGER_ALCANCE); }
+    public static float cerbatanaDano() { return (float) d(CERBATANA_DANO); }
+    public static double cerbatanaAlcance() { return d(CERBATANA_ALCANCE); }
+    public static float lanzallamasDano() { return (float) d(LANZALLAMAS_DANO); }
+    public static double lanzallamasAlcance() { return d(LANZALLAMAS_ALCANCE); }
+    public static int lanzallamasCapacidad() { return i(LANZALLAMAS_CAPACIDAD); }
+    public static float resonanciaDano() { return (float) d(RESONANCIA_DANO); }
+    public static double resonanciaAlcance() { return d(RESONANCIA_ALCANCE); }
+    public static float arponeraDano() { return (float) d(ARPONERA_DANO); }
+    public static double arponeraAlcance() { return d(ARPONERA_ALCANCE); }
+    public static float arponeraTiron() { return (float) d(ARPONERA_TIRON); }
     public static float derringerDesenfunde() { return (float) d(DERRINGER_DESENFUNDE); }
 
     public static float thompsonDano() { return (float) d(THOMPSON_DANO); }
@@ -228,5 +276,9 @@ public final class EquilibrioArmas {
     public static double botinDerringer() { return d(B_DERRINGER); }
     public static double botinThompson() { return d(B_THOMPSON); }
     public static double botinMosquete() { return d(B_MOSQUETE); }
+    public static double botinCerbatana() { return d(B_CERBATANA); }
+    public static double botinLanzallamas() { return d(B_LANZALLAMAS); }
+    public static double botinResonancia() { return d(B_RESONANCIA); }
+    public static double botinArponera() { return d(B_ARPONERA); }
     public static double botinCanon() { return d(B_CANON); }
 }

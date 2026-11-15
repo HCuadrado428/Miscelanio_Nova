@@ -2886,5 +2886,131 @@
       "miscelanea:hs_charco"
     ],
     "subtitle": "subtitles.miscelanea.hs_charco"
+  },
+  "silenciador_disparo": {
+    "sounds": [
+      {
+        "name": "miscelanea:silenciador_disparo",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.silenciador_disparo"
+  },
+  "mob_montar": {
+    "sounds": [
+      {
+        "name": "miscelanea:mob_montar",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.mob_montar"
+  },
+  "mob_chispa": {
+    "sounds": [
+      {
+        "name": "miscelanea:mob_chispa",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.mob_chispa"
+  },
+  "mob_clic_seco": {
+    "sounds": [
+      {
+        "name": "miscelanea:mob_clic_seco",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.mob_clic_seco"
+  },
+  "eco_interior": {
+    "sounds": [
+      {
+        "name": "miscelanea:eco_interior",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.eco_interior"
+  },
+  "revolver_disparo_lejos": {
+    "sounds": [
+      {
+        "name": "miscelanea:revolver_disparo_lejos",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.revolver_disparo_lejos"
+  },
+  "rifle_catalejo_disparo_lejos": {
+    "sounds": [
+      {
+        "name": "miscelanea:rifle_catalejo_disparo_lejos",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.rifle_catalejo_disparo_lejos"
+  },
+  "presion_disparo_lejos": {
+    "sounds": [
+      {
+        "name": "miscelanea:presion_disparo_lejos",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.presion_disparo_lejos"
+  },
+  "gatling_disparo_lejos": {
+    "sounds": [
+      {
+        "name": "miscelanea:gatling_disparo_lejos",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.gatling_disparo_lejos"
+  },
+  "winchester_disparo_lejos": {
+    "sounds": [
+      {
+        "name": "miscelanea:winchester_disparo_lejos",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.winchester_disparo_lejos"
+  },
+  "derringer_disparo_lejos": {
+    "sounds": [
+      {
+        "name": "miscelanea:derringer_disparo_lejos",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.derringer_disparo_lejos"
+  },
+  "thompson_disparo_lejos": {
+    "sounds": [
+      {
+        "name": "miscelanea:thompson_disparo_lejos",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.thompson_disparo_lejos"
+  },
+  "mosquete_disparo_lejos": {
+    "sounds": [
+      {
+        "name": "miscelanea:mosquete_disparo_lejos",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.mosquete_disparo_lejos"
+  },
+  "canon_disparo_lejos": {
+    "sounds": [
+      {
+        "name": "miscelanea:canon_disparo_lejos",
+        "attenuation_distance": 16
+      }
+    ],
+    "subtitle": "subtitles.miscelanea.canon_disparo_lejos"
   }
 }

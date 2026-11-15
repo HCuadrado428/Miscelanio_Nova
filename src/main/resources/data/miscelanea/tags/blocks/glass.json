@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:impermeable",
+    {"id": "#forge:glass", "required": false},
+    {"id": "#c:glass_blocks", "required": false},
+    {"id": "#c:glass", "required": false}
+  ]
+}

@@ -22,6 +22,10 @@ public final class ConfigServidor {
     private static final ForgeConfigSpec.DoubleValue BOTIN_REVOLVER_HERREROS, BOTIN_REVOLVER_CASAS, BOTIN_ESCOPETA, BOTIN_RIFLE, BOTIN_ENCANTADA;
     // ---- ruido de los disparos
     private static final ForgeConfigSpec.BooleanValue RUIDO_ACTIVADO, RUIDO_ASUSTA;
+    private static final ForgeConfigSpec.BooleanValue MOBS_ACTIVADO, MOBS_TACTICA, GRANADA_ROMPE, ROPA_PERKS;
+    private static final ForgeConfigSpec.DoubleValue ROPA_PRECISION, ROPA_PRECISION_EXTRA, ROPA_RECARGA, ROPA_RECARGA_EXTRA, ROPA_OXIDO, ROPA_RUIDO, ROPA_RUIDO_EXTRA, ROPA_AHORRO, ROPA_AHORRO_EXTRA;
+    private static final ForgeConfigSpec.IntValue MOBS_ALERTA, MOBS_CADENCIA;
+    private static final ForgeConfigSpec.DoubleValue MOBS_PROB, MOBS_PROB_CAPITAN, MOBS_DANO, MOBS_SUELTA, MOBS_FALLO, GRANADA_BOTIN;
     private static final ForgeConfigSpec.DoubleValue RUIDO_MULT, RUIDO_SILENCIADOR;
     // ---- puntero láser
     private static final ForgeConfigSpec.DoubleValue LASER_ALCANCE;
@@ -149,6 +153,37 @@ public final class ConfigServidor {
         RUIDO_MULT = b.comment("Multiplica la distancia a la que se oyen todas las armas (1 = normal, 0,5 = la mitad, 2 = el doble).").defineInRange("distancia", 1.0, 0.0, 4.0);
         RUIDO_SILENCIADOR = b.comment("Qué fracción de su distancia se oye un arma con Silenciador (0,15 = casi nada).").defineInRange("silenciador", 0.15, 0.0, 1.0);
         RUIDO_ASUSTA = b.comment("Si los animales y aldeanos que oyen un disparo echan a correr.").define("asusta_animales", true);
+        b.pop();
+
+        b.comment("Mobs con armas: algunos saqueadores salen con una Winchester y disparan de verdad.").push("mobs_armados");
+        MOBS_ACTIVADO = b.comment("Apagar esto deja a todos los mobs como en vanilla.").define("activado", true);
+        MOBS_PROB = b.comment("Probabilidad (0-1) de que un saqueador salga armado.").defineInRange("probabilidad_saqueador", 0.05, 0.0, 1.0);
+        MOBS_PROB_CAPITAN = b.comment("Lo mismo para el capitán de la patrulla (el del estandarte).").defineInRange("probabilidad_capitan", 0.3, 0.0, 1.0);
+        MOBS_DANO = b.comment("Daño de cada bala de un mob (2 = un corazón).").defineInRange("dano", 4.0, 0.0, 40.0);
+        MOBS_CADENCIA = b.comment("Ticks entre disparo y disparo de un mob (20 = 1 s).").defineInRange("cadencia", 40, 5, 400);
+        MOBS_FALLO = b.comment("Cuánto fallan: multiplica la dispersión de los mobs (0 = no fallan nunca, 1 = normal, 2 = fallan el doble).").defineInRange("fallo", 1.0, 0.0, 5.0);
+        MOBS_SUELTA = b.comment("Probabilidad (0-1) de que suelte el arma al morir.").defineInRange("suelta", 0.1, 0.0, 1.0);
+        MOBS_TACTICA = b.comment("Táctica de los saqueadores armados: se cubren tras un bloque (sobre todo para recargar), se asoman a disparar y, si son varios, uno flanquea.").define("tactica", true);
+        MOBS_ALERTA = b.comment("Bloques a los que los mobs armados oyen un disparo y acuden (0 = no acuden).").defineInRange("alerta", 24, 0, 64);
+        b.pop();
+
+        b.comment("Ropa de vaquero y de bandido: ventajas con las armas de fuego. Cada pieza suma y el juego completo da un extra.",
+                "Vaquero: puntería, recarga rápida y cobre que se oxida despacio. Bandido: menos ruido y a veces no se gasta la bala.").push("ropa");
+        ROPA_PERKS = b.comment("Apagar esto deja la ropa como pura estética.").define("activado", true);
+        ROPA_PRECISION = b.comment("Vaquero: lo que baja la dispersión cada pieza (0,04 = un 4 %).").defineInRange("vaquero_punteria_pieza", 0.04, 0.0, 0.25);
+        ROPA_PRECISION_EXTRA = b.comment("Vaquero: extra si lleva el juego completo.").defineInRange("vaquero_punteria_conjunto", 0.06, 0.0, 0.5);
+        ROPA_RECARGA = b.comment("Vaquero: lo que acorta la recarga cada pieza.").defineInRange("vaquero_recarga_pieza", 0.05, 0.0, 0.25);
+        ROPA_RECARGA_EXTRA = b.comment("Vaquero: extra de recarga con el juego completo.").defineInRange("vaquero_recarga_conjunto", 0.05, 0.0, 0.5);
+        ROPA_OXIDO = b.comment("Vaquero: lo que retrasa el óxido del cobre cada pieza (0,1 = un 10 % más de disparos por fase).").defineInRange("vaquero_oxido_pieza", 0.1, 0.0, 0.2);
+        ROPA_RUIDO = b.comment("Bandido: lo que baja la distancia a la que se oyen sus disparos cada pieza.").defineInRange("bandido_ruido_pieza", 0.1, 0.0, 0.2);
+        ROPA_RUIDO_EXTRA = b.comment("Bandido: extra de sigilo con el juego completo.").defineInRange("bandido_ruido_conjunto", 0.1, 0.0, 0.4);
+        ROPA_AHORRO = b.comment("Bandido: probabilidad por pieza de que un disparo no gaste bala (armas con depósito: Winchester, Thompson, Derringer, mosquete, cañón y Gatling).").defineInRange("bandido_ahorro_pieza", 0.03, 0.0, 0.1);
+        ROPA_AHORRO_EXTRA = b.comment("Bandido: extra de probabilidad con el juego completo.").defineInRange("bandido_ahorro_conjunto", 0.05, 0.0, 0.3);
+        b.pop();
+
+        b.comment("Granadas de cobre (humo, metralla y pegamento).").push("granadas");
+        GRANADA_ROMPE = b.comment("La de metralla rompe bloques como el TNT (apagado: hiere y empuja, pero no rompe nada).").define("metralla_rompe_bloques", false);
+        GRANADA_BOTIN = b.comment("Probabilidad (0-1) de encontrar granadas en los cofres de puestos de saqueadores, minas abandonadas y mazmorras.").defineInRange("botin", 0.2, 0.0, 1.0);
         b.pop();
 
         b.comment("Sala de juegos (aparatos de tortura).").push("tortura");
@@ -663,6 +698,27 @@ public final class ConfigServidor {
     public static double botinEscopeta() { return d(BOTIN_ESCOPETA); }
     public static double botinRifle() { return d(BOTIN_RIFLE); }
     public static double botinEncantada() { return d(BOTIN_ENCANTADA); }
+    public static boolean ropaPerks() { return b(ROPA_PERKS); }
+    public static double ropaPrecision() { return d(ROPA_PRECISION); }
+    public static double ropaPrecisionExtra() { return d(ROPA_PRECISION_EXTRA); }
+    public static double ropaRecarga() { return d(ROPA_RECARGA); }
+    public static double ropaRecargaExtra() { return d(ROPA_RECARGA_EXTRA); }
+    public static double ropaOxido() { return d(ROPA_OXIDO); }
+    public static double ropaRuido() { return d(ROPA_RUIDO); }
+    public static double ropaRuidoExtra() { return d(ROPA_RUIDO_EXTRA); }
+    public static double ropaAhorro() { return d(ROPA_AHORRO); }
+    public static double ropaAhorroExtra() { return d(ROPA_AHORRO_EXTRA); }
+    public static boolean mobsArmados() { return b(MOBS_ACTIVADO); }
+    public static double mobsProb() { return d(MOBS_PROB); }
+    public static double mobsProbCapitan() { return d(MOBS_PROB_CAPITAN); }
+    public static float mobsDano() { return (float) d(MOBS_DANO); }
+    public static int mobsCadencia() { return i(MOBS_CADENCIA); }
+    public static double mobsFallo() { return d(MOBS_FALLO); }
+    public static float mobsSuelta() { return (float) d(MOBS_SUELTA); }
+    public static boolean mobsTactica() { return b(MOBS_TACTICA); }
+    public static int mobsAlerta() { return i(MOBS_ALERTA); }
+    public static boolean granadaRompe() { return b(GRANADA_ROMPE); }
+    public static double granadaBotin() { return d(GRANADA_BOTIN); }
     public static boolean ruido() { return b(RUIDO_ACTIVADO); }
     public static boolean ruidoAsusta() { return b(RUIDO_ASUSTA); }
     public static double ruidoMultiplicador() { return d(RUIDO_MULT); }

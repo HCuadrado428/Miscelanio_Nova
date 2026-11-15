@@ -65,9 +65,13 @@ public final class ModEnchantments {
     /** Tirolinas más largas y más rápidas. */
     public static final RegistryObject<Enchantment> TIROLINERO = ENCHANTMENTS.register("tirolinero",
             () -> new com.miscelanea.armasfuego.rifle.RifleEncantamiento(Enchantment.Rarity.UNCOMMON, 3, 5, 9, RIFLE));
-    /** El disparo casi no hace ruido (ni lo notan el sculk ni el Warden). */
+    /** Las armas a las que se les puede poner un silenciador (se ve el silenciador en el cañón). */
+    public static final EnchantmentCategory SILENCIABLE = net.minecraft.world.item.enchantment.EnchantmentCategory.create("MISCELANEA_SILENCIABLE",
+            item -> item instanceof com.miscelanea.armasfuego.rifle.RifleItem || item instanceof com.miscelanea.armasfuego.oeste.DerringerItem
+                    || item instanceof com.miscelanea.armasfuego.oeste.WinchesterItem || item instanceof com.miscelanea.armasfuego.oeste.ThompsonItem);
+    /** El disparo casi no hace ruido (ni lo notan el sculk ni el Warden): rifle, Derringer, Winchester y Thompson. */
     public static final RegistryObject<Enchantment> SILENCIADOR = ENCHANTMENTS.register("silenciador",
-            () -> new com.miscelanea.armasfuego.rifle.RifleEncantamiento(Enchantment.Rarity.RARE, 1, 20, 0, RIFLE));
+            () -> new com.miscelanea.armasfuego.rifle.RifleEncantamiento(Enchantment.Rarity.RARE, 1, 20, 0, SILENCIABLE));
 
     private static RegistryObject<Enchantment> register(Modo modo) {
         return ENCHANTMENTS.register(modo.id(), () -> new ModoEnchantment(modo, ASPIRAFANTASMAS));
@@ -145,5 +149,26 @@ public final class ModEnchantments {
             () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, CANON, 2, 8, 12));
     // ---- fin armas de fuego (segunda tanda)
 
+    // ---- Apuntar (clic derecho): para las armas que apuntan con el modificador (no el rifle, que tiene su catalejo)
+    public static final EnchantmentCategory APUNTAR = net.minecraft.world.item.enchantment.EnchantmentCategory.create("MISCELANEA_APUNTAR",
+            item -> item instanceof com.miscelanea.armasfuego.comun.ArmaFuegoItem || item instanceof com.miscelanea.armasfuego.pistola.RevolverItem);
+    /** Pulso firme: apuntando, dispersa menos y se anda menos lento. */
+    public static final RegistryObject<Enchantment> PULSO_FIRME = ENCHANTMENTS.register("pulso_firme",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, APUNTAR, 2, 10, 12));
+
     private ModEnchantments() {}
+
+    // ---- piezas de cobre que se ven en el arma (el accesorio es el encantamiento): una por arma que no tenía una
+    /** Cañón largo (revólver): cañón más largo, disparos más juntos. */
+    public static final RegistryObject<Enchantment> CANON_LARGO = ENCHANTMENTS.register("revolver_canon_largo",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, REVOLVER, 1, 12, 0));
+    /** Estrangulador (escopeta de presión): los perdigones salen más juntos. */
+    public static final RegistryObject<Enchantment> ESCOPETA_ESTRANGULADOR = ENCHANTMENTS.register("escopeta_estrangulador",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, ESCOPETA_PRESION, 1, 12, 0));
+    /** Mira de cobre (mosquete): puntería más fina. */
+    public static final RegistryObject<Enchantment> MOSQUETE_MIRA = ENCHANTMENTS.register("mosquete_mira",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, MOSQUETE, 1, 12, 0));
+    /** Ánima rayada (cañón de mano): la bola sale mucho más recta. */
+    public static final RegistryObject<Enchantment> CANON_ANIMA = ENCHANTMENTS.register("canon_anima",
+            () -> new com.miscelanea.armasfuego.comun.EncantamientoFuego(Enchantment.Rarity.UNCOMMON, CANON, 1, 12, 0));
 }

@@ -7,7 +7,7 @@
  "base": {
   "parent": "miscelanea:item/armas3d/escopeta_3d",
   "textures": {
-   "cobre": "miscelanea:item/armas3d/cobre_3",
+   "cobre": "miscelanea:item/armas3d/p_cobre_3",
    "esfera": "miscelanea:item/armas3d/esfera_2"
   }
  },

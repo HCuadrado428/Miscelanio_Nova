@@ -7,7 +7,7 @@
  "base": {
   "parent": "miscelanea:item/armas3d/rifle_3d_cerrojo",
   "textures": {
-   "cobre": "miscelanea:item/armas3d/cobre_0"
+   "cobre": "miscelanea:item/armas3d/p_cobre_0"
   }
  },
  "perspectives": {

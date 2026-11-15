@@ -357,7 +357,9 @@ public class MosqueteItem extends ArmaFuegoItem {
         double d = danoEspada(bay) + EquilibrioArmas.mosqueteBayoneta() + 2 * nivel(com.miscelanea.registry.ModEnchantments.MOSQUETE_CARGA, s);
         b.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Bayoneta", d, AttributeModifier.Operation.ADDITION));
         b.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Bayoneta", -3.0, AttributeModifier.Operation.ADDITION));
-        b.put(net.minecraftforge.common.ForgeMod.ENTITY_REACH.get(), new AttributeModifier(ALCANCE_ID, "Bayoneta", 1.5, AttributeModifier.Operation.ADDITION));
+        // Copper Slug: en Fabric 1.20.1 no hay atributo de alcance (la bayoneta no llega más lejos)
+        var alcance = net.minecraftforge.common.ForgeMod.ENTITY_REACH.get();
+        if (alcance != null) b.put(alcance, new AttributeModifier(ALCANCE_ID, "Bayoneta", 1.5, AttributeModifier.Operation.ADDITION));
         return b.build();
     }
 
@@ -480,7 +482,6 @@ public class MosqueteItem extends ArmaFuegoItem {
             l.add(x.withStyle(e == Enchantments.SWEEPING_EDGE ? ChatFormatting.DARK_GRAY : ChatFormatting.LIGHT_PURPLE));
         });
         super.appendHoverText(s, level, l, f);
-        l.add(Component.translatable("item.miscelanea.mosquete.ayuda_bayoneta").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     @Override

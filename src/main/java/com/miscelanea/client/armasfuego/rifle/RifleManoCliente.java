@@ -26,6 +26,7 @@ public class RifleManoCliente implements IClientItemExtensions {
     @Override
     public boolean applyForgeHandTransform(PoseStack ps, LocalPlayer p, HumanoidArm brazo, ItemStack s, float pt, float equipar, float golpe) {
         int lado = brazo == HumanoidArm.RIGHT ? 1 : -1;
+        com.miscelanea.client.armasfuego.comun.Inspeccion.aplicar(ps, lado, s, pt);
         // cerrojo: el arma se ladea y baja un poco mientras la mano tira de la palanca
         int c = Rifle.cerrojo(s);
         if (c > 0) {

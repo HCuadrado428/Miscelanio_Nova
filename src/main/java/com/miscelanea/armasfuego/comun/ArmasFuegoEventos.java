@@ -61,6 +61,15 @@ public final class ArmasFuegoEventos {
         return g;
     }
 
+    /** El que apunta y cambia de objeto deja de apuntar. */
+    @SubscribeEvent
+    public static void tick(net.minecraftforge.event.TickEvent.ServerTickEvent e) {
+        if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
+        Apuntar.tick(e.getServer());
+        ArmaFuegoItem.tickRafagas(e.getServer());
+        MobsArmados.tick(e.getServer());
+    }
+
     /** Reparación en la espada calada del mosquete. */
     @SubscribeEvent
     public static void xp(net.minecraftforge.event.entity.player.PlayerXpEvent.PickupXp e) {

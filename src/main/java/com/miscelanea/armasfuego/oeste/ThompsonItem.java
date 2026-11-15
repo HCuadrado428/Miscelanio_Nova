@@ -20,7 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 /**
- * Thompson «Tommy gun» de los años 20 con cargador de tambor. Manteniendo el clic derecho dispara en ráfaga: cuanto
+ * Thompson «Tommy gun» de los años 20 con cargador de tambor. Manteniendo el clic izquierdo dispara en ráfaga: cuanto
  * más larga, más sube y más dispersa (el retroceso se nota en la vista). El tambor se cambia entero (agachado +
  * mantener clic derecho con un cargador de tambor encima). Se guarda en un estuche de violín, claro.
  */
@@ -100,14 +100,13 @@ public class ThompsonItem extends ArmaFuegoItem {
     @Override
     protected InteractionResultHolder<ItemStack> apretarGatillo(Level level, Player p, ItemStack s) {
         CompoundTag t = s.getOrCreateTag();
-        t.putInt(MODO, MODO_RAFAGA);
         t.putInt(RAFAGA, 0);
-        p.startUsingItem(net.minecraft.world.InteractionHand.MAIN_HAND);
+        empezarRafaga(p);
         return InteractionResultHolder.consume(s);
     }
 
     @Override
-    protected void rafaga(Level level, Player p, ItemStack s, int t) {
+    public void rafaga(Level level, Player p, ItemStack s, int t) {
         int cad = EquilibrioArmas.thompsonCadencia();
         // Gatillo fácil: un 25 % más de balas por nivel (se van acumulando los ticks)
         CompoundTag tg = s.getOrCreateTag();
@@ -120,7 +119,7 @@ public class ThompsonItem extends ArmaFuegoItem {
         tg.putFloat("Acum", acum);
         if (balas(s) <= 0 || atascada(s)) {
             intentar(level, p, s);   // clic
-            p.stopUsingItem();
+            soltarGatillo(p);
             return;
         }
         intentar(level, p, s);

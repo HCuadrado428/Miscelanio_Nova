@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    " X ",
+    "CPC",
+    " C "
+  ],
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "P": {
+      "item": "minecraft:gunpowder"
+    },
+    "X": {
+      "item": "minecraft:honey_bottle"
+    }
+  },
+  "result": {
+    "item": "miscelanea:granada_miel",
+    "count": 2
+  }
+}

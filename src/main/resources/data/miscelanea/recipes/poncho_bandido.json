@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "R R",
+    "LLL",
+    "LLL"
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "R": {
+      "item": "minecraft:red_wool"
+    }
+  },
+  "result": {
+    "item": "miscelanea:poncho_bandido",
+    "count": 1
+  }
+}
