@@ -500,8 +500,10 @@ public final class MovilServidor {
             MovilDatos.Perfil yo = datos(p.server).perfil(p.getUUID(), nombre(p));
             if (yo.fotos.stream().anyMatch(f -> f.id() == id)) img = Fotos.leer(Fotos.propia(p.server, p.getUUID(), id));
         } else if (tipo == MovilRed.FOTO_ADJUNTA) {
-            boolean puede = false;
+            // las copias de los marcos de fotos las ve cualquiera; las demás, solo quien esté en el chat donde se mandaron
+            boolean puede = datos(p.server).marcos.contains(id);
             for (MovilDatos.Chat c : datos(p.server).chatsDe(p.getUUID())) {
+                if (puede) break;
                 for (MovilDatos.Mensaje m : c.msgs)
                     if (m.adjunto() == id) {
                         puede = true;

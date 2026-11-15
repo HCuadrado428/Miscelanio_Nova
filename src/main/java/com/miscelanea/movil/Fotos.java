@@ -109,6 +109,18 @@ public final class Fotos {
         if (yo.fotos.stream().noneMatch(f -> f.id() == fotoId)) return -1;
         int a = d.sigAdjunto++;
         d.setDirty();
-        return copiar(propia(p.server, p.getUUID(), fotoId), adjunto(p.server, a)) ? a : -1;
+        if (!copiar(propia(p.server, p.getUUID(), fotoId), adjunto(p.server, a))) return -1;
+        d.marcos.add(a);   // la copia del marco la puede pedir cualquiera que pase por delante
+        return a;
+    }
+
+    /** El marco ha pasado a otra foto (o se ha quedado vacío): la copia que enseñaba ya no hace falta. */
+    public static void soltarCopia(net.minecraft.server.MinecraftServer s, int copia) {
+        if (copia < 0) return;
+        MovilDatos d = MovilServidor.datos(s);
+        if (d.marcos.remove(copia)) {
+            borrar(adjunto(s, copia));
+            d.setDirty();
+        }
     }
 }
