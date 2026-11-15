@@ -5486,6 +5486,22 @@ public final class PruebaCI {
             paso("hacha_3p_" + k, 12, () -> a2Vista(2.4, 0.5, 0.2));
         }
         sin("hacha_3p_fin", 2, A2::camara1p);
+        // marco de fotos: uno de frente y otro de lado, con una foto de la galería (se ve que la foto queda dentro del marco, bien girada)
+        sin("marco_poner", 20, () -> piSrv(sp -> {
+            var l = sp.serverLevel();
+            var galeria = com.miscelanea.movil.Fotos.galeriaDe(sp);
+            var p1 = net.minecraft.core.BlockPos.containing(a2Punto(3, -1.0, 0.3));
+            var p2 = net.minecraft.core.BlockPos.containing(a2Punto(3, 1.5, 0.3));
+            var estado = com.miscelanea.registry.ModBlocks.MARCO_FOTO.get().defaultBlockState();
+            l.setBlock(p1, estado.setValue(com.miscelanea.movil.MarcoFotoBlock.FACING, a2Mira.getOpposite()), 3);
+            l.setBlock(p2, estado.setValue(com.miscelanea.movil.MarcoFotoBlock.FACING, a2Mira.getClockWise()), 3);
+            RESUMEN.add("  marco: galería con " + galeria.size() + " fotos");
+            if (!galeria.isEmpty())
+                for (var p : new net.minecraft.core.BlockPos[]{p1, p2})
+                    if (l.getBlockEntity(p) instanceof com.miscelanea.movil.MarcoFotoBlockEntity be) be.poner(com.miscelanea.movil.Fotos.copiaParaEnsenar(sp, galeria.get(0)), 0);
+        }));
+        sin("marco_esperar", 90, () -> {});
+        paso("marco_foto_1p", 12, () -> {});
     }
 
     private static int fotosEnCapturas() {
