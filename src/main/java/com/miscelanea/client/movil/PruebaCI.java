@@ -5475,14 +5475,9 @@ public final class PruebaCI {
         });
         paso("383_marcas_pared", 10, () -> a2VistaA(a2Punto(16.5, 0, 1.6), a2Punto(13.5, 1.2, 2.2)));
         sin("nv_fin", 2, A2::camara1p);
-        // el Hacha de sangre en tercera persona, con cuatro colocaciones de prueba (custom_model_data 1 a 4) y la normal
-        for (int k = 0; k <= 4; k++) {
-            int kk = k;
-            sin("hacha_3p_poner_" + k, 8, () -> {
-                ItemStack h = new ItemStack(com.miscelanea.registry.ModItems.HACHA_SANGRE.get());
-                if (kk > 0) h.getOrCreateTag().putInt("CustomModelData", kk);
-                a2Mano(h);
-            });
+        // el Hacha de sangre en tercera y primera persona (se ve que va de pie, agarrada por el mango)
+        for (int k = 0; k <= 0; k++) {
+            sin("hacha_3p_poner_" + k, 8, () -> a2Mano(new ItemStack(com.miscelanea.registry.ModItems.HACHA_SANGRE.get())));
             paso("hacha_3p_" + k, 12, () -> a2Vista(2.4, 0.5, 0.2));
             sin("hacha_1p_cam_" + k, 6, () -> a2Camara1p());
             paso("hacha_1p_" + k, 8, () -> {});
