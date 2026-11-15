@@ -201,6 +201,36 @@ Cada arma tiene modelo, animaciones, sonidos y controles propios. Hacen bastante
 | **Núcleo de error** *(creativo)* | Carga un aliento que corrompe bloques blandos |
 | **Hacha de sangre** *(creativo)* | Bebe de lo que golpea y despierta en cuatro fases: guarda sangre y suelta la Siega (giro que corta a todos), cobra el Diezmo (pagas vida y el golpe vale por tres), deja charcos que te curan y, al final, el Diezmo sale gratis de vez en cuando. Tiene sus encantamientos (Sed, Coágulo y Hemorragia) y su sección `hacha_sangre` en la config |
 
+### Armas de fuego
+
+Trece armas de cobre de la vida real, a lo Minecraft. **No se fabrican: se encuentran en cofres** de estructuras (aldeas, barcos hundidos, puestos de saqueadores, pirámides, minas, mansiones, fortalezas, bastiones, tesoros enterrados, templos de la jungla, ciudades antiguas y ruinas submarinas). JEI dice dónde sale cada una y las probabilidades se cambian en la config del servidor. La munición sí se fabrica.
+
+| Arma | En pocas palabras |
+|---|---|
+| **Revólver de ruleta** | Seis recámaras que se cargan una a una con la munición que quieras; agachado + clic izquierdo gira el tambor. Retos de **duelo** a otro jugador |
+| **Rifle de catalejo** | Rifle de cerrojo con catalejo: mira de verdad, bala con caída, más daño en la cabeza y tirolinas con la bala de cuerda |
+| **Escopeta de presión** | Aire comprimido en vez de pólvora: se bombea, tiene manómetro y revienta si te pasas. Cartuchos de grava, escarcha, miel, sal, semillas y más |
+| **Gatling de manivela** | Se planta en su trípode; se calienta y se atasca. Hace de torreta con redstone |
+| **Winchester 1873** | Palanca y depósito de 12 balas mezclables que se cargan una a una |
+| **Derringer** | Pistola de bolsillo: el as en la manga, que se saca con una tecla |
+| **Thompson con estuche de violín** | Ráfaga con mucho retroceso; el estuche es un violín que se toca con arco |
+| **Mosquete de chispa con bayoneta** | Mucho daño, recarga lenta y bayoneta con cualquier espada y sus encantamientos |
+| **Cañón de mano** | Dispara bolaños y bloques que caen; a veces revienta en las manos |
+| **Cerbatana de cobre** | Silenciosa (ni el sculk ni el Warden la oyen). Dardos normales, de veneno y somníferos |
+| **Lanzallamas de cobre** | Un chorro corto y ancho que quema todo el cono. Bidones de combustible; no prende bajo el agua |
+| **Pistola de resonancia** | Una onda de sonido que atraviesa bloques y armadura. Funciona con fragmentos de eco; es ruidosa |
+| **Arponera de cobre** | Un arpón con cuerda: trae hacia ti lo que alcanza, o te lleva a ti hasta un bloque. Mucho más fuerte bajo el agua |
+
+- **Granadas** de humo, metralla y pegamento de miel, que se fabrican con cobre y pólvora.
+- **Cómo se manejan:** clic izquierdo dispara y mantener el clic derecho apunta (el arma va al centro de la pantalla, el campo de visión se estrecha y dispara más junto). El rifle sigue con su catalejo y la Derringer, el cañón de mano y el lanzallamas van siempre a la cadera. **Pulso firme** apunta mejor; la tecla N inspecciona el arma.
+- **Accesorios que se ven en el arma:** Silenciador (rifle, Derringer, Winchester y Thompson), Cañón largo (revólver), Estrangulador (escopeta), Mira de cobre (mosquete) y Ánima rayada (cañón de mano).
+- **Cobre que se oxida:** las piezas de cobre pasan por cuatro fases con el uso. Oxidada, el arma se encasquilla y dispersa más, pero pega y perfora un poco más. Se encera con un panal (la cera se gasta) y se rasca con un hacha.
+- **Ruido:** cada arma se oye a su distancia; los monstruos van a ver de dónde viene el disparo y los animales y aldeanos huyen. El Silenciador casi lo quita.
+- **Mobs armados:** algunos saqueadores llevan una Winchester y disparan de verdad (se cubren, flanquean y acuden al ruido). Sección `mobs_armados` de la config.
+- **Ropa de vaquero y de bandido:** se fabrica con cuero y da ventajas con las armas. El vaquero apunta mejor, recarga más deprisa y oxida menos el cobre; el bandido hace menos ruido y a veces no gasta la bala. El juego completo da un extra. Sección `ropa` de la config.
+- **Encantamientos propios** por arma (mesa y libros) y **munición especial** (bengalas, dardos de sedante, balas de plata, de hielo, de oro, de pintura...).
+- Ningún disparo suelto mata de un tiro a un jugador con la vida llena (salvo la ruleta rusa). Todos los valores de equilibrio están en la sección `armas_de_fuego_equilibrio` de la config.
+
 ---
 
 ## El hombre de estática
