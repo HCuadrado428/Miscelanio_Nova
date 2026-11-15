@@ -6263,6 +6263,8 @@
   "death.attack.miscelanea.cerbatana_disparo": "%1$s no oyó venir el dardo",
   "death.attack.miscelanea.cerbatana_disparo.player": "%1$s no oyó venir el dardo de %2$s",
   "death.attack.miscelanea.cerbatana_disparo.item": "%1$s no oyó venir el dardo de %2$s con %3$s",
+  "jei.miscelanea.info.ropa_vaquero": "Ropa de vaquero: cada pieza que llevas puesta te hace apuntar mejor (menos dispersión), recargar más deprisa y oxida más despacio el cobre de las armas. El juego completo da un extra.",
+  "jei.miscelanea.info.ropa_bandido": "Ropa de bandido: cada pieza que llevas puesta hace que tus disparos se oigan menos y le da una probabilidad de que un disparo no gaste la bala. El juego completo da un extra.",
   "jei.miscelanea.info.cerbatana_botin": "La cerbatana no se fabrica: se encuentra en los cofres de los templos de la jungla. Es silenciosa: el sculk no la oye. Sus dardos se fabrican, también los de veneno y los somníferos.",
   "item.miscelanea.lanzallamas": "Lanzallamas de cobre",
   "item.miscelanea.bidon_combustible": "Bidón de combustible",

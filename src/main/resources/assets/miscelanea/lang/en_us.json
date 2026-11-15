@@ -6263,6 +6263,8 @@
   "death.attack.miscelanea.cerbatana_disparo": "%1$s never heard the dart coming",
   "death.attack.miscelanea.cerbatana_disparo.player": "%1$s never heard %2$s's dart coming",
   "death.attack.miscelanea.cerbatana_disparo.item": "%1$s never heard %2$s's dart coming from %3$s",
+  "jei.miscelanea.info.ropa_vaquero": "Cowboy clothes: every piece you wear makes you aim better (less spread), reload faster and rusts the copper of your guns more slowly. The full set gives a bonus.",
+  "jei.miscelanea.info.ropa_bandido": "Bandit clothes: every piece you wear makes your shots quieter and gives a chance that a shot does not use up the bullet. The full set gives a bonus.",
   "jei.miscelanea.info.cerbatana_botin": "The blowgun can't be crafted: it is found in jungle temple chests. Silent: the sculk does not hear it. Its darts can be crafted, including poison and sleep ones.",
   "item.miscelanea.lanzallamas": "Copper Flamethrower",
   "item.miscelanea.bidon_combustible": "Fuel Canister",

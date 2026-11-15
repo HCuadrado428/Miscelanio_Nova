@@ -91,6 +91,15 @@ public class MiscelaneaJei implements IModPlugin {
         info(r, ModItems.THOMPSON, "thompson_botin");
         info(r, ModItems.MOSQUETE, "mosquete_botin");
         info(r, ModItems.CANON_MANO, "canon_botin");
+        info(r, ModItems.CERBATANA, "cerbatana_botin");
+        info(r, ModItems.LANZALLAMAS, "lanzallamas_botin");
+        info(r, ModItems.RESONANCIA, "resonancia_botin");
+        info(r, ModItems.ARPONERA, "arponera_botin");
+        // ---- ropa: lo que da
+        for (var v : java.util.List.of(ModItems.SOMBRERO_VAQUERO, ModItems.CHALECO_VAQUERO, ModItems.CHAPARRERAS_VAQUERO, ModItems.BOTAS_VAQUERO))
+            info(r, v, "ropa_vaquero");
+        for (var b : java.util.List.of(ModItems.SOMBRERO_BANDIDO, ModItems.PONCHO_BANDIDO, ModItems.PANTALON_BANDIDO, ModItems.BOTAS_BANDIDO))
+            info(r, b, "ropa_bandido");
         // ---- lo que hacen además de disparar (1.1.0)
         info(r, ModItems.GATLING, "gatling_utilidad");
         info(r, ModItems.WINCHESTER, "winchester_deposito");

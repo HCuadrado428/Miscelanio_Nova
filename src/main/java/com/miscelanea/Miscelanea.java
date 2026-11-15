@@ -217,6 +217,19 @@ public class Miscelanea {
                 if (c > 0) laser.getOrCreateTag().putInt(com.miscelanea.laser.Laser.COLOR, c);
                 event.accept(laser);
             }
+            // ---- Armas de cobre de Copper Slug: las cuatro nuevas con sus municiones, y las granadas
+            for (var m : java.util.List.of(ModItems.CERBATANA, ModItems.DARDO_CERBATANA, ModItems.DARDO_VENENO, ModItems.DARDO_SOMNIFERO,
+                    ModItems.LANZALLAMAS, ModItems.BIDON_COMBUSTIBLE, ModItems.RESONANCIA, ModItems.ARPONERA, ModItems.ARPON_COBRE,
+                    ModItems.GRANADA_HUMO, ModItems.GRANADA_METRALLA, ModItems.GRANADA_MIEL)) event.accept(m);
+            // ---- Ropa de vaquero (puntería) y de bandido (sigilo)
+            for (var m : java.util.List.of(ModItems.SOMBRERO_VAQUERO, ModItems.CHALECO_VAQUERO, ModItems.CHAPARRERAS_VAQUERO, ModItems.BOTAS_VAQUERO,
+                    ModItems.SOMBRERO_BANDIDO, ModItems.PONCHO_BANDIDO, ModItems.PANTALON_BANDIDO, ModItems.BOTAS_BANDIDO)) event.accept(m);
+            // ---- Encantamientos nuevos: apuntar, silenciador, accesorios de cobre y los del Hacha de sangre
+            for (var en : java.util.List.of(ModEnchantments.PULSO_FIRME, ModEnchantments.SILENCIADOR, ModEnchantments.CANON_LARGO,
+                    ModEnchantments.ESCOPETA_ESTRANGULADOR, ModEnchantments.MOSQUETE_MIRA, ModEnchantments.CANON_ANIMA,
+                    ModEnchantments.SANGRE_SED, ModEnchantments.SANGRE_COAGULO, ModEnchantments.SANGRE_HEMORRAGIA))
+                event.accept(net.minecraft.world.item.EnchantedBookItem.createForEnchantment(
+                        new net.minecraft.world.item.enchantment.EnchantmentInstance(en.get(), en.get().getMaxLevel())));
             event.accept(ModItems.BFG);
             event.accept(ModItems.MAZO_WEMMBU);
             event.accept(ModItems.LLAVE_ESPADA);
