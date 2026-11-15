@@ -246,6 +246,14 @@ public class HachaSangreItem extends AxeItem implements GeoItem {
                 l.playSound(null, p.blockPosition(), ModSounds.HS_LATIDO.get(), SoundSource.PLAYERS,
                         0.28F + t.getInt(SANGRE) * 0.012F, 0.95F);
         }
+        // gotas de sangre en la mano: mas densas cuanto mas deposito y mas grandes en la fase 4
+        if (mano && e instanceof Player p && HachaSangreConfig.efectos() && l instanceof ServerLevel sl && p.tickCount % 4 == 0
+                && l.random.nextInt(DEPOSITO) < t.getInt(SANGRE)) {
+            boolean insaciable = fase(s) >= 4;
+            var m = p.getLookAngle();
+            sl.sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.54F, 0.05F, 0.08F), insaciable ? 1.4F : 0.9F),
+                    p.getX() + m.x * 0.7, p.getEyeY() - 0.45, p.getZ() + m.z * 0.7, insaciable ? 3 : 1, 0.12, 0.05, 0.12, 0.0);
+        }
         int seco = t.getInt(SECA) + 1;
         int olvido = HachaSangreConfig.olvidoTicks() + 300 * nivel(s, com.miscelanea.registry.ModEnchantments.SANGRE_COAGULO.get());
         if (seco >= olvido) {

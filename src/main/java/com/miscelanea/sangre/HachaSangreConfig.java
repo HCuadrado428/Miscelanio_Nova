@@ -8,7 +8,7 @@ public final class HachaSangreConfig {
 
     private static ForgeConfigSpec.IntValue UMBRAL1, UMBRAL2, UMBRAL3, UMBRAL4, DEPOSITO_OLVIDO_S, SIEGA_ENF_S, CHARCO_S, LIBRE_S, SINERGIA;
     private static ForgeConfigSpec.DoubleValue DIEZMO_EXTRA, DIEZMO_COSTE, DIEZMO_CURA, SIEGA_DANO, SIEGA_RADIO, CHARCO_RADIO, CHARCO_CURA;
-    private static ForgeConfigSpec.BooleanValue TOPE_JUGADORES;
+    private static ForgeConfigSpec.BooleanValue TOPE_JUGADORES, EFECTOS;
 
     public static void definir(ForgeConfigSpec.Builder b) {
         b.comment("Hacha de sangre: bebe de lo que golpea y despierta por fases.").push("hacha_sangre");
@@ -35,6 +35,8 @@ public final class HachaSangreConfig {
                 .defineInRange("sinergia_desangrado", 2, 1, 10);
         TOPE_JUGADORES = b.comment("Ningún golpe extra (Diezmo, Siega) mata de un tiro a un jugador con la vida llena.")
                 .define("tope_jugadores", true);
+        EFECTOS = b.comment("Efectos visuales: gotas de sangre en la mano de quien lleva el hacha, más densas cuanto más depósito (y más grandes en la fase 4).")
+                .define("efectos_visuales", true);
         b.pop();
     }
 
@@ -60,6 +62,9 @@ public final class HachaSangreConfig {
     public static float charcoCura() { return (float) d(CHARCO_CURA); }
     public static long libreTicks() { return i(LIBRE_S) * 20L; }
     public static int sinergia() { return i(SINERGIA); }
+    public static boolean efectos() {
+        try { return EFECTOS.get(); } catch (IllegalStateException e) { return true; }
+    }
     public static boolean topeJugadores() {
         try { return TOPE_JUGADORES.get(); } catch (IllegalStateException e) { return true; }
     }

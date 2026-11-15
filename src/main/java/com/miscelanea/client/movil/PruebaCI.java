@@ -353,6 +353,74 @@ public final class PruebaCI {
                 if (sp != null) com.miscelanea.sedante.Sedante.despertar(sp);
             });
         });
+        // hacha de sangre: beber, fases, Siega, Diezmo gratis, Hemorragia y sinergia con Desangrado
+        sin("hacha_sangre", 5, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                var l = sp.serverLevel();
+                var pig = net.minecraft.world.entity.EntityType.PIG.create(l);
+                pig.moveTo(sp.getX() + 2, sp.getY(), sp.getZ(), 0, 0);
+                l.addFreshEntity(pig);
+                var hacha = (com.miscelanea.sangre.HachaSangreItem) com.miscelanea.registry.ModItems.HACHA_SANGRE.get();
+                var hand = net.minecraft.world.InteractionHand.MAIN_HAND;
+                var st = new net.minecraft.world.item.ItemStack(hacha);
+                sp.setItemInHand(hand, st);
+                try {
+                    // 1) beber: golpear guarda sangre y suma daño bebido
+                    hacha.hurtEnemy(st, pig, sp);
+                    boolean bebe = com.miscelanea.sangre.HachaSangreItem.sangre(st) >= 1 && com.miscelanea.sangre.HachaSangreItem.bebido(st) >= 1;
+                    if (!bebe) RESUMEN.add("  FALLO: el hacha de sangre no bebe al golpear");
+                    // 2) fases: con el daño bebido de cada umbral sube de fase
+                    boolean fases = true;
+                    for (int f = 1; f <= 4; f++) {
+                        st.getOrCreateTag().putInt(com.miscelanea.sangre.HachaSangreItem.BEBIDO, com.miscelanea.sangre.HachaSangreConfig.umbral(f));
+                        fases &= com.miscelanea.sangre.HachaSangreItem.fase(st) == f;
+                    }
+                    if (!fases) RESUMEN.add("  FALLO: las fases del hacha de sangre no salen en sus umbrales");
+                    // 3) sinergia: contra alguien con Desangrado bebe el doble que sin él
+                    st.getOrCreateTag().putInt(com.miscelanea.sangre.HachaSangreItem.SANGRE, 0);
+                    st.getTag().putInt(com.miscelanea.sangre.HachaSangreItem.BEBIDO, com.miscelanea.sangre.HachaSangreConfig.umbral(1));
+                    hacha.hurtEnemy(st, pig, sp);
+                    int sinDesangrado = com.miscelanea.sangre.HachaSangreItem.sangre(st);
+                    st.getTag().putInt(com.miscelanea.sangre.HachaSangreItem.SANGRE, 0);
+                    pig.addEffect(new net.minecraft.world.effect.MobEffectInstance(com.miscelanea.dream.DreamRegistro.DESANGRADO.get(), 200, 0));
+                    hacha.hurtEnemy(st, pig, sp);
+                    int conDesangrado = com.miscelanea.sangre.HachaSangreItem.sangre(st);
+                    if (conDesangrado != sinDesangrado * com.miscelanea.sangre.HachaSangreConfig.sinergia())
+                        RESUMEN.add("  FALLO: la sinergia con Desangrado: " + sinDesangrado + " sin él y " + conDesangrado + " con él");
+                    pig.removeAllEffects();
+                    // 4) Hemorragia: cada golpe deja Desangrado
+                    st.enchant(com.miscelanea.registry.ModEnchantments.SANGRE_HEMORRAGIA.get(), 1);
+                    hacha.hurtEnemy(st, pig, sp);
+                    if (!pig.hasEffect(com.miscelanea.dream.DreamRegistro.DESANGRADO.get())) RESUMEN.add("  FALLO: Hemorragia no deja Desangrado");
+                    // 5) Diezmo gratis en la fase 4: no cuesta vida y deja el golpe cobrado
+                    st.getTag().putInt(com.miscelanea.sangre.HachaSangreItem.BEBIDO, com.miscelanea.sangre.HachaSangreConfig.umbral(4));
+                    st.getTag().putLong(com.miscelanea.sangre.HachaSangreItem.LIBRE, -1000000L);
+                    st.getTag().putBoolean(com.miscelanea.sangre.HachaSangreItem.COBRO, false);
+                    float vida = sp.getHealth();
+                    sp.setShiftKeyDown(true);
+                    hacha.use(l, sp, hand);
+                    sp.setShiftKeyDown(false);
+                    boolean diezmo = st.getTag().getBoolean(com.miscelanea.sangre.HachaSangreItem.COBRO) && sp.getHealth() >= vida;
+                    if (!diezmo) RESUMEN.add("  FALLO: el Diezmo gratis de la fase 4 cobra vida o no se activa");
+                    // 6) Siega: con el depósito lleno, un clic derecho lo vacía
+                    st.getTag().putInt(com.miscelanea.sangre.HachaSangreItem.SANGRE, com.miscelanea.sangre.HachaSangreItem.DEPOSITO);
+                    hacha.use(l, sp, hand);
+                    boolean siega = com.miscelanea.sangre.HachaSangreItem.sangre(st) == 0;
+                    if (!siega) RESUMEN.add("  FALLO: la Siega no vacía el depósito");
+                    RESUMEN.add("  hacha de sangre: " + (bebe && fases && diezmo && siega ? "bien" : "MAL") + " (beber " + bebe + ", fases " + fases
+                            + ", sinergia " + sinDesangrado + "->" + conDesangrado + ", Diezmo gratis " + diezmo + ", Siega " + siega + ")");
+                } finally {
+                    sp.setShiftKeyDown(false);
+                    sp.setItemInHand(hand, net.minecraft.world.item.ItemStack.EMPTY);
+                    sp.getCooldowns().removeCooldown(hacha);
+                    pig.discard();
+                }
+            });
+        });
         // equilibrio de armaduras: netherita con Protección IV y Resistencia IV, golpe de 10 → al menos 2,5 (25 %)
         sin("equilibrio", 5, () -> {
             var srv = mc.getSingleplayerServer();
