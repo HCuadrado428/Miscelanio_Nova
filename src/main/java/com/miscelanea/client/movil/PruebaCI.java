@@ -1733,6 +1733,7 @@ public final class PruebaCI {
                 sp.getInventory().setItem(2, new ItemStack(com.miscelanea.registry.ModItems.BALA_TRAZADORA.get(), 8));
                 sp.getInventory().setItem(3, new ItemStack(com.miscelanea.registry.ModItems.BALA_CUERDA.get(), 2));
                 sp.getInventory().setItem(4, new ItemStack(net.minecraft.world.item.Items.SHEARS));
+                sp.getInventory().setItem(8, new ItemStack(MovilRegistro.MOVIL.get()));   // con el móvil encima, la foto de la mira va a su galería
                 sp.getInventory().selected = 0;
                 sp.connection.teleport(o.getX() + 0.5, o.getY(), o.getZ() + 0.5, mira.toYRot(), 0F);
             });

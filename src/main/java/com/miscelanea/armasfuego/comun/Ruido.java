@@ -40,14 +40,17 @@ public final class Ruido {
 
     /** A cuántos bloques se oye un disparo del arma, sin contar la config ni el Silenciador. */
     public static double base(Item i) {
+        if (i instanceof com.miscelanea.armasfuego.selva.CerbatanaItem) return 0;
         if (i instanceof com.miscelanea.armasfuego.oeste.DerringerItem) return 22;
+        if (i instanceof com.miscelanea.armasfuego.oceano.ArponeraItem) return 18;
+        if (i instanceof com.miscelanea.armasfuego.nether.LanzallamasItem) return 25;
         if (i instanceof com.miscelanea.armasfuego.escopeta.EscopetaPresionItem) return 35;
         if (i instanceof com.miscelanea.armasfuego.pistola.RevolverItem) return 40;
         if (i instanceof com.miscelanea.armasfuego.oeste.ThompsonItem) return 50;
         if (i instanceof com.miscelanea.armasfuego.oeste.WinchesterItem) return 55;
         if (i instanceof com.miscelanea.armasfuego.oeste.MosqueteItem) return 60;
         if (i instanceof com.miscelanea.armasfuego.gatling.GatlingItem) return 65;
-        if (i instanceof com.miscelanea.armasfuego.rifle.RifleItem) return 70;
+        if (i instanceof com.miscelanea.armasfuego.rifle.RifleItem || i instanceof com.miscelanea.armasfuego.ciudad.ResonanciaItem) return 70;
         if (i instanceof com.miscelanea.armasfuego.oeste.CanonManoItem) return 80;
         return 40;
     }
