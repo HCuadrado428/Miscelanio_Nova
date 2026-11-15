@@ -115,6 +115,11 @@ public class BotinArmas extends LootModifier {
     }
 
     @Override
+    public Codec<? extends IGlobalLootModifier> codec() {
+        return CODEC.get();
+    }
+
+    @Override
     protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> botin, LootContext ctx) {
         botin.addAll(aplicar(ctx.getQueriedLootTableId(), ctx.getRandom()));
         return botin;

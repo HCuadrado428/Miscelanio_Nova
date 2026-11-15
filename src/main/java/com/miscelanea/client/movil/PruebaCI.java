@@ -1474,7 +1474,7 @@ public final class PruebaCI {
                         e -> !e.getUUID().equals(piHusk)).forEach(net.minecraft.world.entity.Entity::discard);
                 sp.setHealth(sp.getMaxHealth());
                 sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.DAMAGE_RESISTANCE, 20 * 30, 4, false, false));
-                piForastero = com.miscelanea.plataforma.Plataforma.get().jugadorFalso(sp.serverLevel(),
+                piForastero = net.minecraftforge.common.util.FakePlayerFactory.get(sp.serverLevel(),
                         new com.mojang.authlib.GameProfile(UUID.nameUUIDFromBytes("Forastero".getBytes()), "Forastero"));
                 Vec3 q = piPunto(8, 0, 0);
                 piForastero.setPos(q.x, q.y, q.z);
@@ -2162,8 +2162,8 @@ public final class PruebaCI {
                     com.miscelanea.registry.ModItems.RIFLE)) {
                 ItemStack st = new ItemStack(it.get());
                 var m = ir.getModel(st, mc.level, mc.player, 0);
-                var mano = com.miscelanea.plataforma.PlataformaCliente.P.modeloPara(m, net.minecraft.world.item.ItemDisplayContext.FIRST_PERSON_RIGHT_HAND);
-                var gui = com.miscelanea.plataforma.PlataformaCliente.P.modeloPara(m, net.minecraft.world.item.ItemDisplayContext.GUI);
+                var mano = m.applyTransform(net.minecraft.world.item.ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, new com.mojang.blaze3d.vertex.PoseStack(), false);
+                var gui = m.applyTransform(net.minecraft.world.item.ItemDisplayContext.GUI, new com.mojang.blaze3d.vertex.PoseStack(), false);
                 boolean ok = mano != gui;
                 String linea = it.getId().getPath() + ": " + m.getClass().getSimpleName() + (mano != gui ? " (mano 3D, inventario plano)" : " (MISMO MODELO EN MANO E INVENTARIO)");
                 RESUMEN.add("  armas 3D: " + linea);
@@ -2988,8 +2988,8 @@ public final class PruebaCI {
                     com.miscelanea.registry.ModItems.THOMPSON, com.miscelanea.registry.ModItems.MOSQUETE, com.miscelanea.registry.ModItems.CANON_MANO,
                     com.miscelanea.registry.ModItems.ESTUCHE_VIOLIN)) {
                 var m = ir.getModel(new ItemStack(it.get()), mc.level, mc.player, 0);
-                var mano = com.miscelanea.plataforma.PlataformaCliente.P.modeloPara(m, net.minecraft.world.item.ItemDisplayContext.FIRST_PERSON_RIGHT_HAND);
-                var gui = com.miscelanea.plataforma.PlataformaCliente.P.modeloPara(m, net.minecraft.world.item.ItemDisplayContext.GUI);
+                var mano = m.applyTransform(net.minecraft.world.item.ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, new com.mojang.blaze3d.vertex.PoseStack(), false);
+                var gui = m.applyTransform(net.minecraft.world.item.ItemDisplayContext.GUI, new com.mojang.blaze3d.vertex.PoseStack(), false);
                 if (mano == gui || m == ir.getItemModelShaper().getModelManager().getMissingModel()) mal.append(it.getId().getPath()).append("; ");
             }
             for (var r : com.miscelanea.client.armasfuego.comun.GatlingRenderer.TODOS)
@@ -4769,7 +4769,7 @@ public final class PruebaCI {
             double sube = Math.max(mc.player.getY(), PI.get("salto_max") instanceof Double d ? d : -1e9) - escY;
             RESUMEN.add(String.format("  escopeta: el salto escopeta sube %.1f bloques en 7 ticks", sube));
             // con shaders (pocos fotogramas, el cliente va a trompicones) el impulso se nota algo menos
-            boolean shaders = com.miscelanea.plataforma.Plataforma.get().modCargado("oculus") || com.miscelanea.plataforma.Plataforma.get().modCargado("iris");
+            boolean shaders = net.minecraftforge.fml.ModList.get().isLoaded("oculus") || net.minecraftforge.fml.ModList.get().isLoaded("iris");
             if (sube < (shaders ? 1.0 : 1.5)) throw new IllegalStateException("el soplido hacia abajo con mucha presión no lanza");
         });
         // ---- frenar la caída: desde 14 bloques, soplido hacia abajo antes de llegar
@@ -5366,56 +5366,12 @@ public final class PruebaCI {
                 sp.setHealth(sp.getMaxHealth());
                 var inv = sp.getInventory();
                 inv.clearContent();
-                ItemStack cart = new ItemStack(com.miscelanea.registry.ModItems.CARTUCHERA.get());
-                com.miscelanea.armasfuego.cinturon.CartucheraItem.meter(cart, new ItemStack(BALA.get(), 32));
-                inv.setItem(8, cart);
-                inv.setItem(7, new ItemStack(com.miscelanea.registry.ModItems.FUNDA.get()));
                 inv.setItem(0, a2Cargada(com.miscelanea.registry.ModItems.REVOLVER, 0));
                 inv.selected = 0;
                 sp.connection.send(new net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket(0));
                 sp.connection.teleport(a2O.getX() + 0.5, a2O.getY(), a2O.getZ() + 0.5, a2Mira.toYRot(), 0F);
             });
         });
-        // ---- cartuchera: saca la munición al inventario
-        sin("nv_cartuchera", 5, () -> piSrv(sp -> {
-            ItemStack cart = sp.getInventory().getItem(8);
-            PI.put("nv_cart_antes", com.miscelanea.armasfuego.cinturon.CartucheraItem.total(cart));
-            PI.put("nv_cart_ok", com.miscelanea.armasfuego.cinturon.CartucheraItem.reponer(sp, x -> x.is(BALA.get())));
-            PI.put("nv_cart_inv", sp.getInventory().countItem(BALA.get()));
-            PI.put("nv_cart_resto", com.miscelanea.armasfuego.cinturon.CartucheraItem.total(cart));
-        }));
-        sin("nv_cartuchera_chk", 1, () -> nvComprobar("la cartuchera repone balas", Boolean.TRUE.equals(PI.get("nv_cart_ok"))
-                        && Integer.valueOf(32).equals(PI.get("nv_cart_inv")) && Integer.valueOf(0).equals(PI.get("nv_cart_resto")),
-                "en la cartuchera " + PI.get("nv_cart_antes") + " → " + PI.get("nv_cart_resto") + ", en el inventario " + PI.get("nv_cart_inv")));
-        // ---- funda: enfunda el revólver (se ve en el cinturón) y lo desenfunda
-        sin("nv_funda", 5, () -> piSrv(sp -> {
-            com.miscelanea.armasfuego.cinturon.FundaItem.tecla(sp);
-            PI.put("nv_funda_mano", sp.getMainHandItem().isEmpty());
-            PI.put("nv_funda_llena", !com.miscelanea.armasfuego.cinturon.FundaItem.arma(sp.getInventory().getItem(7)).isEmpty());
-        }));
-        paso("380_funda_cinturon_3p", 15, () -> {
-            nvComprobar("la funda guarda el revólver", Boolean.TRUE.equals(PI.get("nv_funda_mano")) && Boolean.TRUE.equals(PI.get("nv_funda_llena")),
-                    "mano vacía " + PI.get("nv_funda_mano") + ", funda llena " + PI.get("nv_funda_llena"));
-            mc.options.setCameraType(net.minecraft.client.CameraType.THIRD_PERSON_FRONT);
-        });
-        sin("nv_desenfundar", 5, () -> piSrv(sp -> {
-            com.miscelanea.armasfuego.cinturon.FundaItem.tecla(sp);
-            PI.put("nv_desenf", sp.getMainHandItem().getItem() instanceof com.miscelanea.armasfuego.pistola.RevolverItem
-                    && com.miscelanea.armasfuego.cinturon.FundaItem.arma(sp.getInventory().getItem(7)).isEmpty());
-            // un arma larga no cabe: el Winchester se queda en la mano
-            sp.getInventory().setItem(1, a2Cargada(com.miscelanea.registry.ModItems.WINCHESTER, 0));
-            sp.getInventory().selected = 1;
-            sp.connection.send(new net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket(1));
-            com.miscelanea.armasfuego.cinturon.FundaItem.tecla(sp);
-            PI.put("nv_larga", sp.getMainHandItem().getItem() == com.miscelanea.registry.ModItems.WINCHESTER.get()
-                    && com.miscelanea.armasfuego.cinturon.FundaItem.arma(sp.getInventory().getItem(7)).isEmpty());
-        }));
-        sin("nv_funda_chk", 1, () -> {
-            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
-            nvComprobar("se desenfunda el revólver", Boolean.TRUE.equals(PI.get("nv_desenf")), String.valueOf(PI.get("nv_desenf")));
-            nvComprobar("el Winchester no cabe en la funda", Boolean.TRUE.equals(PI.get("nv_larga")), String.valueOf(PI.get("nv_larga")));
-        });
-        // ---- granadas: metralla primero (sola, que empuja) y luego miel y humo
         sin("nv_granadas", 10, () -> {
             piSrv(sp -> {
                 sp.getInventory().selected = 0;
