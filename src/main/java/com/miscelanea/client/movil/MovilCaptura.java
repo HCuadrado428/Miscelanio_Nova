@@ -120,6 +120,19 @@ public final class MovilCaptura {
         return shaders;
     }
 
+    /** En qué fotograma se copió la imagen con shaders (para que el respaldo de abajo no la copie dos veces). */
+    private static int fotogramaCapturado = -100;
+    private static boolean avisadoRespaldo;
+
+    /** Con shaders la copia es más pesada (el pack ya ha gastado la GPU): se copia un fotograma sí y otro no. */
+    private static boolean tocaCopiarConShaders() {
+        return !hayVisor() || (fotograma & 1) == 0;
+    }
+
+    private static boolean hayVisor() {
+        return horizontal ? hayH : hay;
+    }
+
     /** Desde {@code GameRendererMixin}: el nivel ya está dibujado del todo (con shaders, ya compuesto). */
     public static void trasNivel() {
         if (pedido() && shaders()) {
@@ -127,8 +140,25 @@ public final class MovilCaptura {
                 avisadoShaders = true;
                 Miscelanea.LOGGER.info("[Móvil] Cámara con shaders: se copia la imagen tras componer el pack");
             }
-            capturar();
+            fotogramaCapturado = fotograma;   // aunque este fotograma se salte, el respaldo no debe copiar otra vez
+            if (tocaCopiarConShaders()) capturar();
         }
+    }
+
+    /**
+     * Respaldo con shaders, independiente de cómo dibuje cada pack: justo antes del HUD el mundo ya está compuesto en la
+     * pantalla. Si el enganche del mixin no se ha aplicado (con Iris puede pasar: es opcional y falla sin avisar) la cámara
+     * se quedaba negra o parada; así se copia aquí. Si el mixin sí ha copiado en este fotograma, no hace nada.
+     */
+    @SubscribeEvent
+    public static void respaldoConShaders(net.minecraftforge.client.event.RenderGuiEvent.Pre e) {
+        if (!pedido() || !shaders() || fotogramaCapturado == fotograma) return;
+        if (!avisadoRespaldo) {
+            avisadoRespaldo = true;
+            Miscelanea.LOGGER.warn("[Móvil] Cámara con shaders: el enganche del mixin no ha copiado la imagen; se usa el respaldo (antes del HUD)");
+        }
+        fotogramaCapturado = fotograma;
+        if (tocaCopiarConShaders()) capturar();
     }
 
     /** Con shaders y el móvil abierto, la mano no se dibuja: si no, saldría en las fotos (se copia después de ella). */
@@ -174,7 +204,14 @@ public final class MovilCaptura {
         if (recorte) GL11.glDisable(GL11.GL_SCISSOR_TEST);
         GlStateManager._glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, de.frameBufferId);
         GlStateManager._glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, a.frameBufferId);
+        // se lee siempre el primer adjunto de color: los packs de shaders pueden dejar el de la pantalla apuntando a otro
+        // (y la copia salía negra o con otros colores)
+        int leiaAntes = GL11.glGetInteger(GL11.GL_READ_BUFFER);
+        GL30.glReadBuffer(GL30.GL_COLOR_ATTACHMENT0);
+        GL30.glDrawBuffer(GL30.GL_COLOR_ATTACHMENT0);
         GlStateManager._glBlitFrameBuffer(x0, y0, x1, y1, 0, 0, a.width, a.height, GL11.GL_COLOR_BUFFER_BIT, GL11.GL_LINEAR);
+        GlStateManager._glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, de.frameBufferId);
+        GL30.glReadBuffer(leiaAntes);
         GlStateManager._glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
         if (recorte) GL11.glEnable(GL11.GL_SCISSOR_TEST);
     }
