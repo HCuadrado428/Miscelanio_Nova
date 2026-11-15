@@ -40,17 +40,15 @@ import java.util.function.Consumer;
  *   <li><b>Sedienta:</b> cada golpe guarda sangre. Llena del todo, clic derecho suelta la Siega.</li>
  *   <li><b>Cobradora:</b> agachado y clic derecho, el Diezmo: pagas dos corazones y el siguiente golpe triplica.</li>
  *   <li><b>Viva:</b> cada corte deja un charco que frena al que lo pisa y cura a su dueno.</li>
+ *   <li><b>Insaciable:</b> el Diezmo sale gratis una vez por minuto y los charcos dan velocidad a su dueno.</li>
  * </ul>
  */
 public class HachaSangreItem extends AxeItem implements GeoItem {
 
-    public static final String SANGRE = "Sangre", BEBIDO = "Bebido", COBRO = "Cobro", SECA = "SinBeberDesde";
+    public static final String SANGRE = "Sangre", BEBIDO = "Bebido", COBRO = "Cobro", SECA = "SinBeberDesde", LIBRE = "DiezmoLibre";
+    private static final int COLOR_CHARCO = 0x8A0E14;
     /** Cuanta sangre cabe en el corazon. */
     public static final int DEPOSITO = 20;
-    /** Lo que hay que beber para despertar cada fase. */
-    private static final int[] UMBRAL = {0, 120, 420, 900};
-    /** Si pasa esto sin beber, el hacha empieza a vaciarse. */
-    private static final int OLVIDO = 600;
 
     private static final RawAnimation QUIETA = RawAnimation.begin().thenLoop("animation.hacha_sangre.quieta");
     private static final RawAnimation LATE = RawAnimation.begin().thenLoop("animation.hacha_sangre.late");
@@ -77,15 +75,27 @@ public class HachaSangreItem extends AxeItem implements GeoItem {
         return s.hasTag() ? s.getTag().getInt(BEBIDO) : 0;
     }
 
-    /** En que fase esta: 0 seca, 1 sedienta, 2 cobradora, 3 viva. */
+    /** En que fase esta: 0 seca, 1 sedienta, 2 cobradora, 3 viva, 4 insaciable. */
     public static int fase(ItemStack s) {
         int b = bebido(s);
         int f = 0;
-        for (int i = 1; i < UMBRAL.length; i++) if (b >= UMBRAL[i]) f = i;
+        for (int i = 1; i <= 4; i++) if (b >= HachaSangreConfig.umbral(i)) f = i;
         return f;
     }
 
+    private static int nivel(ItemStack s, net.minecraft.world.item.enchantment.Enchantment e) {
+        return net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(e, s);
+    }
+
+    /** Un golpe extra nunca mata de un tiro a un jugador con la vida llena (si la config lo pide). */
+    private static float tope(LivingEntity v, float dano) {
+        if (v instanceof Player && HachaSangreConfig.topeJugadores() && v.getHealth() >= v.getMaxHealth() - 0.01F)
+            return Math.min(dano, v.getMaxHealth() - 1.0F);
+        return dano;
+    }
+
     private static void beber(ItemStack s, int cuanto, float dano) {
+        cuanto = Math.max(1, Math.round(cuanto * (1.0F + 0.5F * nivel(s, com.miscelanea.registry.ModEnchantments.SANGRE_SED.get()))));
         CompoundTag t = datos(s);
         t.putInt(SANGRE, Math.min(DEPOSITO, t.getInt(SANGRE) + cuanto));
         t.putInt(BEBIDO, t.getInt(BEBIDO) + Math.max(1, (int) dano));
@@ -110,17 +120,24 @@ public class HachaSangreItem extends AxeItem implements GeoItem {
         // el Diezmo cobrado: este golpe vale por tres
         if (t.getBoolean(COBRO)) {
             t.putBoolean(COBRO, false);
-            victima.hurt(quien.damageSources().playerAttack(quien instanceof Player p ? p : null), dano * 2.0F);
+            victima.hurt(quien.damageSources().playerAttack(quien instanceof Player p ? p : null),
+                    tope(victima, dano * HachaSangreConfig.diezmoExtra()));
             if (l instanceof ServerLevel sl)
                 sl.sendParticles(ParticleTypes.DAMAGE_INDICATOR, victima.getX(), victima.getY(0.6), victima.getZ(), 14, 0.4, 0.4, 0.4, 0.1);
             if (!victima.isAlive() && quien instanceof Player p) {
-                p.heal(8.0F);
+                p.heal(HachaSangreConfig.diezmoCura());
                 t.putInt(SANGRE, DEPOSITO);
                 com.miscelanea.logros.LogrosMiscelanea.dar(p, "hacha_sangre_diezmo");
             }
         }
 
-        beber(s, fase >= 1 ? 2 : 1, dano);
+        // contra alguien que ya sangra (Desangrado) bebe mas
+        int cuanto = fase >= 1 ? 2 : 1;
+        if (victima.hasEffect(com.miscelanea.dream.DreamRegistro.DESANGRADO.get())) cuanto *= HachaSangreConfig.sinergia();
+        beber(s, cuanto, dano);
+        int hemorragia = nivel(s, com.miscelanea.registry.ModEnchantments.SANGRE_HEMORRAGIA.get());
+        if (hemorragia > 0)
+            victima.addEffect(new MobEffectInstance(com.miscelanea.dream.DreamRegistro.DESANGRADO.get(), (3 + 2 * hemorragia) * 20, 0));
         animar(s, quien, "golpe");
         float lleno = sangre(s) / (float) DEPOSITO;
         l.playSound(null, victima.blockPosition(), ModSounds.HS_TRAGO.get(), SoundSource.PLAYERS,
@@ -145,11 +162,11 @@ public class HachaSangreItem extends AxeItem implements GeoItem {
     private void charco(ServerLevel l, LivingEntity victima, LivingEntity duenno) {
         AreaEffectCloud c = new AreaEffectCloud(l, victima.getX(), victima.getY(), victima.getZ());
         if (duenno instanceof Player p) c.setOwner(p);
-        c.setRadius(2.0F);
-        c.setDuration(160);
+        c.setRadius(HachaSangreConfig.charcoRadio());
+        c.setDuration(HachaSangreConfig.charcoTicks());
         c.setRadiusOnUse(-0.1F);
         c.setWaitTime(5);
-        c.setFixedColor(0x8A0E14);
+        c.setFixedColor(COLOR_CHARCO);
         c.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 1));
         c.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 0));
         l.addFreshEntity(c);
@@ -164,16 +181,18 @@ public class HachaSangreItem extends AxeItem implements GeoItem {
         CompoundTag t = datos(s);
 
         if (j.isShiftKeyDown()) {
-            // el Diezmo: pagas con tu sangre
+            // el Diezmo: pagas con tu sangre (en la fase 4, una vez cada cierto tiempo sale gratis)
             if (fase < 2) return InteractionResultHolder.pass(s);
             if (t.getBoolean(COBRO)) return InteractionResultHolder.pass(s);
-            if (j.getHealth() <= 5.0F) {
+            boolean libre = fase >= 4 && l.getGameTime() - t.getLong(LIBRE) >= HachaSangreConfig.libreTicks();
+            if (!libre && j.getHealth() <= HachaSangreConfig.diezmoCoste() + 1.0F) {
                 if (!l.isClientSide) j.displayClientMessage(
                         Component.translatable("hacha_sangre.miscelanea.sin_sangre").withStyle(ChatFormatting.DARK_RED), true);
                 return InteractionResultHolder.fail(s);
             }
             if (!l.isClientSide) {
-                j.hurt(j.damageSources().magic(), 4.0F);
+                if (libre) t.putLong(LIBRE, l.getGameTime());
+                else j.hurt(j.damageSources().magic(), HachaSangreConfig.diezmoCoste());
                 t.putBoolean(COBRO, true);
                 animar(s, j, "diezmo");
                 l.playSound(null, j.blockPosition(), ModSounds.HS_DIEZMO.get(), SoundSource.PLAYERS, 0.9F, 1.0F);
@@ -191,11 +210,11 @@ public class HachaSangreItem extends AxeItem implements GeoItem {
 
     /** El giro: corta todo lo que hay alrededor y vacia el deposito. */
     private void siega(Level l, Player j, ItemStack s) {
-        double r = 4.0;
+        double r = HachaSangreConfig.siegaRadio();
         List<LivingEntity> cerca = l.getEntitiesOfClass(LivingEntity.class, j.getBoundingBox().inflate(r),
                 e -> e != j && e.isAlive() && !(e instanceof Player p && p.isCreative()));
         for (LivingEntity e : cerca) {
-            e.hurt(j.damageSources().playerAttack(j), 9.0F);
+            e.hurt(j.damageSources().playerAttack(j), tope(e, HachaSangreConfig.siegaDano()));
             e.knockback(0.7F, j.getX() - e.getX(), j.getZ() - e.getZ());
         }
         datos(s).putInt(SANGRE, 0);
@@ -211,7 +230,7 @@ public class HachaSangreItem extends AxeItem implements GeoItem {
         animar(s, j, "siega");
         l.playSound(null, j.blockPosition(), ModSounds.HS_SIEGA.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
         com.miscelanea.logros.LogrosMiscelanea.dar(j, "hacha_sangre_siega");
-        j.getCooldowns().addCooldown(this, 60);
+        j.getCooldowns().addCooldown(this, HachaSangreConfig.siegaEnfriamientoTicks());
     }
 
     // ---------------------------------------------------------------- el hacha se seca si no bebe
@@ -228,11 +247,25 @@ public class HachaSangreItem extends AxeItem implements GeoItem {
                         0.28F + t.getInt(SANGRE) * 0.012F, 0.95F);
         }
         int seco = t.getInt(SECA) + 1;
-        if (seco >= OLVIDO) {
+        int olvido = HachaSangreConfig.olvidoTicks() + 300 * nivel(s, com.miscelanea.registry.ModEnchantments.SANGRE_COAGULO.get());
+        if (seco >= olvido) {
             t.putInt(SANGRE, Math.max(0, t.getInt(SANGRE) - 1));
-            seco = OLVIDO - 60;
+            seco = olvido - 60;
         }
         t.putInt(SECA, seco);
+        // fase viva: quien lleva el hacha se cura en sus charcos y no se frena en ellos (en la fase 4, ademas corre)
+        if (fase(s) >= 3 && e instanceof Player p && p.tickCount % 10 == 0) {
+            var charcos = l.getEntitiesOfClass(AreaEffectCloud.class, p.getBoundingBox().inflate(0.3),
+                    c -> c.getOwner() == p && c.getColor() == COLOR_CHARCO);
+            if (!charcos.isEmpty()) {
+                p.heal(HachaSangreConfig.charcoCura());
+                for (var eff : List.of(MobEffects.MOVEMENT_SLOWDOWN, MobEffects.WEAKNESS)) {
+                    MobEffectInstance m = p.getEffect(eff);
+                    if (m != null && m.getDuration() <= 60) p.removeEffect(eff);
+                }
+                if (fase(s) >= 4) p.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 40, 1, false, false));
+            }
+        }
     }
 
     // ---------------------------------------------------------------- lo que cuenta de si misma
@@ -248,9 +281,9 @@ public class HachaSangreItem extends AxeItem implements GeoItem {
                 .withStyle(sangre(s) >= DEPOSITO ? ChatFormatting.RED : ChatFormatting.DARK_RED));
         for (int i = 1; i <= fase; i++)
             lista.add(Component.translatable("hacha_sangre.miscelanea.poder" + i).withStyle(ChatFormatting.GRAY));
-        if (fase < 3)
+        if (fase < 4)
             lista.add(Component.translatable("hacha_sangre.miscelanea.falta",
-                    UMBRAL[fase + 1] - bebido(s)).withStyle(ChatFormatting.DARK_GRAY));
+                    HachaSangreConfig.umbral(fase + 1) - bebido(s)).withStyle(ChatFormatting.DARK_GRAY));
     }
 
     @Override

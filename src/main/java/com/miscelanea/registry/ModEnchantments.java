@@ -24,6 +24,20 @@ public final class ModEnchantments {
     public static final RegistryObject<Enchantment> TURBO = register(Modo.TURBO);
     public static final RegistryObject<Enchantment> ALQUIMISTA = register(Modo.ALQUIMISTA);
 
+    // ---- Hacha de sangre
+    /** Solo para el Hacha de sangre. */
+    public static final EnchantmentCategory HACHA_SANGRE =
+            EnchantmentCategory.create("MISCELANEA_HACHA_SANGRE", item -> item instanceof com.miscelanea.sangre.HachaSangreItem);
+    /** Bebe más deprisa. */
+    public static final RegistryObject<Enchantment> SANGRE_SED = ENCHANTMENTS.register("hacha_sed",
+            () -> new com.miscelanea.sangre.EncantamientoSangre(Enchantment.Rarity.UNCOMMON, 3, 8, 10, HACHA_SANGRE));
+    /** El depósito tarda más en vaciarse si no bebe. */
+    public static final RegistryObject<Enchantment> SANGRE_COAGULO = ENCHANTMENTS.register("hacha_coagulo",
+            () -> new com.miscelanea.sangre.EncantamientoSangre(Enchantment.Rarity.UNCOMMON, 2, 10, 12, HACHA_SANGRE));
+    /** Cada golpe deja al enemigo con Desangrado. */
+    public static final RegistryObject<Enchantment> SANGRE_HEMORRAGIA = ENCHANTMENTS.register("hacha_hemorragia",
+            () -> new com.miscelanea.sangre.EncantamientoSangre(Enchantment.Rarity.RARE, 2, 15, 15, HACHA_SANGRE));
+
     // ---- Pistola (revólver de ruleta)
     public static final EnchantmentCategory REVOLVER =
             EnchantmentCategory.create("MISCELANEA_REVOLVER", item -> item instanceof com.miscelanea.armasfuego.pistola.RevolverItem);
