@@ -251,6 +251,7 @@ public final class DisparoPresion {
             sl.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.FIREWORK_ROCKET_TWINKLE, SoundSource.PLAYERS, 1.2F, 1.0F);
         }
         sl.gameEvent(p, GameEvent.PROJECTILE_SHOOT, boca);
+        com.miscelanea.armasfuego.comun.Ruido.disparo(sl, p, boca);
         p.setDeltaMovement(p.getDeltaMovement().add(mira.scale(-0.12 * f)));
         p.connection.send(new ClientboundSetEntityMotionPacket(p));
     }

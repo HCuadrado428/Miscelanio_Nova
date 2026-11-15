@@ -147,6 +147,7 @@ public final class Revolver {
                     (c == Carga.DARDO ? 1.25F : c == Carga.BENGALA ? 0.8F : c == Carga.TIEMPO ? 0.7F : 1.0F) + r.nextFloat() * 0.08F);
             l.gameEvent(p, GameEvent.PROJECTILE_SHOOT, boca);
         }
+        com.miscelanea.armasfuego.comun.Ruido.disparo(l, p, boca);
         if (critico) {
             l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 1.0F, 1.2F);
             p.displayClientMessage(Component.translatable("pistola.miscelanea.desenfunde").withStyle(ChatFormatting.GOLD), true);

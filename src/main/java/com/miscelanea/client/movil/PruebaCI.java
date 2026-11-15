@@ -2530,6 +2530,51 @@ public final class PruebaCI {
             piSrv(sp -> PI.put("d_balas2", com.miscelanea.armasfuego.comun.ArmaFuegoItem.balas(sp.getMainHandItem())));
         });
         sin("a2_derringer_rec_ok", 2, () -> a2Comprobar("la Derringer se recarga partiéndola", Integer.valueOf(2).equals(PI.get("d_balas2")), "balas " + PI.get("d_balas2")));
+        // ================================================================ Ruido de los disparos
+        sin("ruido_poner", 4, () -> piSrv(sp -> {
+            var l = sp.serverLevel();
+            Vec3 yo = sp.position();
+            var g = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(l);
+            Vec3 gp = a2Punto(-16, 4, 0);
+            g.moveTo(gp.x, gp.y, gp.z, 0, 0);
+            g.setPersistenceRequired();
+            l.addFreshEntity(g);
+            var v = net.minecraft.world.entity.EntityType.COW.create(l);
+            Vec3 vp = a2Punto(-8, -6, 0);
+            v.moveTo(vp.x, vp.y, vp.z, 0, 0);
+            v.setPersistenceRequired();
+            l.addFreshEntity(v);
+            PI.put("rn_golem", g.getUUID());
+            PI.put("rn_vaca", v.getUUID());
+            PI.put("rn_g0", (float) g.position().distanceTo(yo));
+            PI.put("rn_v0", (float) v.position().distanceTo(yo));
+            com.miscelanea.armasfuego.comun.Ruido.alertar(l, sp, yo, 60, true);   // un disparo fuerte
+        }));
+        sin("ruido_esperar", 50, () -> {});
+        sin("ruido_ver", 4, () -> piSrv(sp -> {
+            var l = sp.serverLevel();
+            Vec3 yo = sp.position();
+            var g = l.getEntity((UUID) PI.get("rn_golem"));
+            var v = l.getEntity((UUID) PI.get("rn_vaca"));
+            PI.put("rn_g1", g == null ? -1F : (float) g.position().distanceTo(yo));
+            PI.put("rn_v1", v == null ? -1F : (float) v.position().distanceTo(yo));
+            PI.put("rn_investiga", g instanceof net.minecraft.world.entity.Mob gm && com.miscelanea.armasfuego.comun.InvestigarRuido.investigando(gm));
+            // los radios: el cañón de mano, mucho más que la Derringer; y el Silenciador, casi nada
+            var winchester = new ItemStack(com.miscelanea.registry.ModItems.WINCHESTER.get());
+            var sil = new ItemStack(com.miscelanea.registry.ModItems.WINCHESTER.get());
+            sil.enchant(com.miscelanea.registry.ModEnchantments.SILENCIADOR.get(), 1);
+            PI.put("rn_radios", com.miscelanea.armasfuego.comun.Ruido.radio(new ItemStack(com.miscelanea.registry.ModItems.CANON_MANO.get()))
+                    > com.miscelanea.armasfuego.comun.Ruido.radio(new ItemStack(com.miscelanea.registry.ModItems.DERRINGER.get()))
+                    && com.miscelanea.armasfuego.comun.Ruido.radio(sil) < com.miscelanea.armasfuego.comun.Ruido.radio(winchester) * 0.3);
+            if (g != null) g.discard();
+            if (v != null) v.discard();
+        }));
+        sin("ruido_ok", 2, () -> {
+            float g0 = a2F("rn_g0"), g1 = a2F("rn_g1"), v0 = a2F("rn_v0"), v1 = a2F("rn_v1");
+            a2Comprobar("un disparo fuerte: el golem va a ver de dónde viene, la vaca huye, y cada arma se oye a lo suyo (el Silenciador casi nada)",
+                    Boolean.TRUE.equals(PI.get("rn_radios")) && Boolean.TRUE.equals(PI.get("rn_investiga")) && g1 >= 0 && g0 - g1 > 3 && v1 >= 0 && v1 - v0 > 2,
+                    "golem " + g0 + " → " + g1 + " (investiga " + PI.get("rn_investiga") + "), vaca " + v0 + " → " + v1 + ", radios " + PI.get("rn_radios"));
+        });
         // ================================================================ Thompson y su estuche
         sin("a2_estuche", 8, () -> {
             ItemStack t = a2Cargada(com.miscelanea.registry.ModItems.THOMPSON, 50);

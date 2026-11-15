@@ -240,6 +240,7 @@ public final class Rifle {
         b.setXRot(xr);
         l.addFreshEntity(b);
 
+        com.miscelanea.armasfuego.comun.Ruido.disparo(l, p, p.position());
         // ruido: se oye a lo lejos y lo notan el sculk y el Warden (salvo con Silenciador)
         if (silencio) {
             l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 0.35F, 1.7F);

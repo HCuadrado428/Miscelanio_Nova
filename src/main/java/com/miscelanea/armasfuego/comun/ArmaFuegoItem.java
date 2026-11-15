@@ -472,6 +472,7 @@ public abstract class ArmaFuegoItem extends Item {
         if (humo > 0) l.sendParticles(ParticleTypes.SMOKE, q.x, q.y, q.z, humo, 0.04, 0.04, 0.04, 0.01);
         l.playSound(null, p.getX(), p.getY(), p.getZ(), snd, SoundSource.PLAYERS, vol, tono + l.random.nextFloat() * 0.08F);
         l.gameEvent(p, GameEvent.PROJECTILE_SHOOT, boca);
+        Ruido.disparo(l, p, boca);   // el ruido para el resto de mobs (con Silenciador casi nada)
         if (casquillo) casquillo(l, p, boca.subtract(mira.scale(0.45)));
     }
 

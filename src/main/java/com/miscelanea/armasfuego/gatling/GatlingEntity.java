@@ -496,6 +496,7 @@ public class GatlingEntity extends Entity {
         l.sendParticles(ArmasFuegoRegistro.CASQUILLO.get(), sale.x, sale.y, sale.z, 0, v.x, v.y, v.z, 1.0);
         l.playSound(null, boca.x, boca.y, boca.z, ModSounds.GATLING_DISPARO.get(), SoundSource.PLAYERS, 3.5F, 0.9F + random.nextFloat() * 0.2F);
         l.gameEvent(quien, GameEvent.PROJECTILE_SHOOT, boca);
+        com.miscelanea.armasfuego.comun.Ruido.disparo(l, quien, boca, 65);
         if (p instanceof ServerPlayer sp && rafaga >= 40) LogrosMiscelanea.dar(sp, "gatling_rafaga");
         if (p instanceof ServerPlayer sp && getVehicle() instanceof net.minecraft.world.entity.vehicle.AbstractMinecart) LogrosMiscelanea.dar(sp, "gatling_vagoneta");
         if (p instanceof ServerPlayer sp && getVehicle() instanceof net.minecraft.world.entity.vehicle.Boat) LogrosMiscelanea.dar(sp, "gatling_barco");

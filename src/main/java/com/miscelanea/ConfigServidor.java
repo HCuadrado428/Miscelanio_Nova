@@ -20,6 +20,9 @@ public final class ConfigServidor {
     private static final ForgeConfigSpec.DoubleValue PORRA_GOLPE_MULT, BFG_VORTICE_MULT, GRAVEDAD_MULT;
     // ---- armas de fuego: dónde se encuentran (no se fabrican)
     private static final ForgeConfigSpec.DoubleValue BOTIN_REVOLVER_HERREROS, BOTIN_REVOLVER_CASAS, BOTIN_ESCOPETA, BOTIN_RIFLE, BOTIN_ENCANTADA;
+    // ---- ruido de los disparos
+    private static final ForgeConfigSpec.BooleanValue RUIDO_ACTIVADO, RUIDO_ASUSTA;
+    private static final ForgeConfigSpec.DoubleValue RUIDO_MULT, RUIDO_SILENCIADOR;
     // ---- puntero láser
     private static final ForgeConfigSpec.DoubleValue LASER_ALCANCE;
     private static final ForgeConfigSpec.BooleanValue LASER_GATOS, LASER_MOBS, LASER_DESLUMBRAR;
@@ -140,6 +143,12 @@ public final class ConfigServidor {
         BOTIN_RIFLE = b.comment("Rifle de catalejo: cofres de los puestos de saqueadores.").defineInRange("rifle_puesto_saqueadores", 0.25, 0.0, 1.0);
         BOTIN_ENCANTADA = b.comment("Probabilidad de que el arma encontrada lleve uno de sus encantamientos propios.").defineInRange("encantada", 0.25, 0.0, 1.0);
         b.pop();
+        b.pop();
+        b.comment("Ruido de los disparos: cada arma se oye a una distancia distinta; los monstruos van a ver de dónde viene y los animales y aldeanos huyen.").push("ruido");
+        RUIDO_ACTIVADO = b.comment("Apagar esto hace que los disparos no alerten a nadie (salvo al sculk y al Warden).").define("activado", true);
+        RUIDO_MULT = b.comment("Multiplica la distancia a la que se oyen todas las armas (1 = normal, 0,5 = la mitad, 2 = el doble).").defineInRange("distancia", 1.0, 0.0, 4.0);
+        RUIDO_SILENCIADOR = b.comment("Qué fracción de su distancia se oye un arma con Silenciador (0,15 = casi nada).").defineInRange("silenciador", 0.15, 0.0, 1.0);
+        RUIDO_ASUSTA = b.comment("Si los animales y aldeanos que oyen un disparo echan a correr.").define("asusta_animales", true);
         b.pop();
 
         b.comment("Sala de juegos (aparatos de tortura).").push("tortura");
@@ -654,6 +663,10 @@ public final class ConfigServidor {
     public static double botinEscopeta() { return d(BOTIN_ESCOPETA); }
     public static double botinRifle() { return d(BOTIN_RIFLE); }
     public static double botinEncantada() { return d(BOTIN_ENCANTADA); }
+    public static boolean ruido() { return b(RUIDO_ACTIVADO); }
+    public static boolean ruidoAsusta() { return b(RUIDO_ASUSTA); }
+    public static double ruidoMultiplicador() { return d(RUIDO_MULT); }
+    public static double ruidoSilenciador() { return d(RUIDO_SILENCIADOR); }
     public static boolean laserGatos() { return b(LASER_GATOS); }
     public static boolean laserMobsMiran() { return b(LASER_MOBS); }
     public static boolean laserDeslumbrar() { return b(LASER_DESLUMBRAR); }
