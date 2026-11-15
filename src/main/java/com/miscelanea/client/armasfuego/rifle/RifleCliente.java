@@ -1,5 +1,9 @@
 package com.miscelanea.client.armasfuego.rifle;
 
+import com.miscelanea.movil.MovilRegistro;
+import com.miscelanea.movil.MovilRed;
+import com.miscelanea.client.movil.MovilCliente;
+import com.miscelanea.client.movil.MovilCaptura;
 import com.miscelanea.Miscelanea;
 import com.miscelanea.armasfuego.rifle.Rifle;
 import com.miscelanea.armasfuego.rifle.RifleAccionPacket;
@@ -150,6 +154,10 @@ public final class RifleCliente {
     private static int fotoFotogramas;
     private static long ultFoto;
     private static boolean hudAntes;
+    /** La foto sale por la cámara del móvil (con el móvil encima) y va a su galería; sin él, a la carpeta de capturas. */
+    private static boolean conMovil;
+    private static float zoomAntes;
+    private static int filtroAntes;
     /** Para la prueba: cuántas fotos se han sacado y dónde ha ido la última. */
     public static int fotosHechas;
     public static String ultimaFoto = "";
@@ -158,15 +166,39 @@ public final class RifleCliente {
         if (Util.getMillis() - ultFoto < 1000 || fotoFotogramas > 0) return;
         ultFoto = Util.getMillis();
         Minecraft mc = Minecraft.getInstance();
-        hudAntes = mc.options.hideGui;
-        mc.options.hideGui = true;
-        fotoFotogramas = 3;
+        conMovil = mc.player != null && mc.player.getInventory().hasAnyMatching(MovilRegistro::esMovil);
+        if (conMovil) {
+            zoomAntes = MovilCaptura.zoom;
+            filtroAntes = MovilCaptura.filtro;
+            fotoFotogramas = 8;
+        } else {
+            hudAntes = mc.options.hideGui;
+            mc.options.hideGui = true;
+            fotoFotogramas = 3;
+        }
     }
 
     /** Unos fotogramas sin HUD y se copia la imagen del último. */
     @SubscribeEvent
     public static void fotograma(TickEvent.RenderTickEvent e) {
         if (e.phase != TickEvent.Phase.END || fotoFotogramas <= 0) return;
+        if (conMovil) {
+            // con el móvil: su cámara copia la imagen y la foto va a su galería
+            MovilCaptura.zoom = 1;
+            MovilCaptura.filtro = 0;
+            MovilCaptura.pedir(true);
+            fotoFotogramas--;
+            // los primeros fotogramas pueden tener una imagen vieja: se espera a que se copie la de ahora
+            if (fotoFotogramas > 4) return;
+            if (MovilCaptura.lista() || fotoFotogramas == 0) {
+                fotoFotogramas = 0;
+                byte[] jpg = MovilCaptura.foto(MovilCliente.maxBytesFoto);
+                MovilCaptura.zoom = zoomAntes;
+                MovilCaptura.filtro = filtroAntes;
+                guardarFotoMovil(jpg);
+            }
+            return;
+        }
         if (--fotoFotogramas > 0) return;
         Minecraft mc = Minecraft.getInstance();
         com.mojang.blaze3d.platform.NativeImage img = null;
@@ -177,6 +209,22 @@ public final class RifleCliente {
         }
         mc.options.hideGui = hudAntes;
         guardarFoto(img);
+    }
+
+    /** Con el móvil encima: la foto se sube a su galería (el servidor la guarda como cualquier foto del móvil). */
+    private static void guardarFotoMovil(byte[] jpg) {
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer p = mc.player;
+        if (p == null) return;
+        if (jpg == null) {
+            p.displayClientMessage(Component.translatable("msg.miscelanea.rifle.foto_error").withStyle(ChatFormatting.RED), true);
+            return;
+        }
+        p.playSound(MovilRegistro.OBTURADOR.get(), 0.8F, 1.0F);
+        fotosHechas++;
+        MovilRed.alServidor(MovilRed.C_FOTO_SUBIR, b -> b.writeByteArray(jpg));
+        ultimaFoto = "movil";
+        p.displayClientMessage(Component.translatable("msg.miscelanea.rifle.foto_movil").withStyle(ChatFormatting.GREEN), true);
     }
 
     private static void guardarFoto(com.mojang.blaze3d.platform.NativeImage img) {
