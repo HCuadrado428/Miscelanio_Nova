@@ -123,8 +123,11 @@ public final class Revolver {
             if (ox >= 1) com.miscelanea.logros.LogrosMiscelanea.dar(p, "revolver_encasquillado");
             return true;
         }
-        Tambor.poner(s, pos, Carga.VACIA);
-        s.getOrCreateTag().putInt(GASTADAS, Math.min(Tambor.N, s.getOrCreateTag().getInt(GASTADAS) + 1));
+        // la ropa de bandido a veces ahorra la bala: se queda en su recámara
+        if (!com.miscelanea.ropa.Ropa.ahorraBala(p)) {
+            Tambor.poner(s, pos, Carga.VACIA);
+            s.getOrCreateTag().putInt(GASTADAS, Math.min(Tambor.N, s.getOrCreateTag().getInt(GASTADAS) + 1));
+        }
         oxidar(p, s);
 
         boolean critico = false;

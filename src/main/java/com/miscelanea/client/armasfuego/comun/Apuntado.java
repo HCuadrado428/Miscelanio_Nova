@@ -255,6 +255,9 @@ public final class Apuntado {
     private static final Mira ARPONERA = new Mira(2, 20, 0.8F, 1.5F, -5.5F, 0.88F, 11.25F, 14F, 11.25F, -5.75F, 0.7F, 0.08F);
     // (el lanzallamas, el cañón de mano y la Derringer no apuntan: van siempre a la cadera, ver Apuntar.conMira)
 
+    /** Lo que se aleja el arma de la cámara al apuntar, en bloques: así no tapa tanta pantalla (más = más lejos y más pequeña). */
+    private static final float PROF_EXTRA = 0.12F;
+
     private static Mira mira(Item i) {
         if (i instanceof RevolverItem) return REVOLVER;
         if (i instanceof WinchesterItem) return WINCHESTER;
@@ -289,7 +292,7 @@ public final class Apuntado {
         float inclina = largo > 0 ? (float) Math.atan2(m.baja, largo) : 0;
         Quaternionf q = new Quaternionf().rotationX(sube + inclina).mul(new Quaternionf(r).invert());
         Quaternionf parte = new Quaternionf().slerp(q, kk);
-        ps.translate((0 - cx) * kk, (-0.004F - m.baja - cy) * kk, (-m.prof - cz) * kk);
+        ps.translate((0 - cx) * kk, (-0.004F - m.baja - cy) * kk, (-m.prof - PROF_EXTRA - cz) * kk);
         ps.translate(cx, cy, cz);
         ps.mulPose(parte);
         ps.translate(-cx, -cy, -cz);

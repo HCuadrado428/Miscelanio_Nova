@@ -150,7 +150,7 @@ public final class DisparoPresion {
         else {
             perdigones(p, s, t, fuerza);
             boolean salva = t.reciclable && r.nextFloat() < 0.15F * Presion.nivel(s, Presion.Encantamiento.RECICLAJE);
-            if (!p.getAbilities().instabuild && !salva) Presion.ponerTolva(s, t, Presion.tolvaN(s) - 1);
+            if (!p.getAbilities().instabuild && !salva && !com.miscelanea.ropa.Ropa.ahorraBala(p)) Presion.ponerTolva(s, t, Presion.tolvaN(s) - 1);
         }
         // presión gastada (con Doble cámara queda para otro disparo)
         int hechos = Presion.disparosHechos(s) + 1;

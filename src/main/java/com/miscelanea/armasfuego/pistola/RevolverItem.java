@@ -52,7 +52,7 @@ public class RevolverItem extends Item {
         if (p.isShiftKeyDown() && !com.miscelanea.armasfuego.comun.Apuntar.apuntando(p)) {
             if (Carga.de(otra) != null) {
                 if (!level.isClientSide) Revolver.cargar((ServerPlayer) p, s, otra);
-                p.getCooldowns().addCooldown(this, 4);
+                p.getCooldowns().addCooldown(this, Math.max(1, (int) Math.round(4 * com.miscelanea.ropa.Ropa.recarga(p))));   // la ropa de vaquero carga más deprisa
                 return InteractionResultHolder.sidedSuccess(s, level.isClientSide);
             }
             if (Revolver.esPanal(otra)) {

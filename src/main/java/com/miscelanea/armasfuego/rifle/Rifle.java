@@ -122,7 +122,8 @@ public final class Rifle {
     /** Empieza el ciclo del cerrojo (si no está ya en marcha). */
     public static void accionarCerrojo(ServerPlayer p, ItemStack s) {
         if (cerrojo(s) > 0) return;
-        s.getOrCreateTag().putInt(CERROJO, CERROJO_TICKS);
+        // la ropa de vaquero acorta el ciclo (nunca por debajo de lo que tarda en salir el casquillo)
+        s.getOrCreateTag().putInt(CERROJO, Math.max(T_EXPULSA + 1, (int) Math.round(CERROJO_TICKS * com.miscelanea.ropa.Ropa.recarga(p))));
         ServerLevel l = p.serverLevel();
         l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.CROSSBOW_LOADING_START, SoundSource.PLAYERS, 0.9F, 1.6F);
         l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.IRON_TRAPDOOR_OPEN, SoundSource.PLAYERS, 0.5F, 1.9F);
@@ -205,7 +206,8 @@ public final class Rifle {
             l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.DISPENSER_FAIL, SoundSource.PLAYERS, 0.8F, 1.4F);
             return;
         }
-        t.putBoolean(GASTADA, true);
+        // la ropa de bandido a veces ahorra la bala: queda otra lista en la recámara
+        if (!com.miscelanea.ropa.Ropa.ahorraBala(p)) t.putBoolean(GASTADA, true);
         int tipo = municion == null ? BALA : tipo(municion);
         boolean apunta = p.isUsingItem() && p.getUseItem() == s;
         int resp = nivel(s, ModEnchantments.RESPIRACION.get());

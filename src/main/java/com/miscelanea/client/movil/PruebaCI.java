@@ -354,6 +354,38 @@ public final class PruebaCI {
                 if (sp != null) com.miscelanea.sedante.Sedante.despertar(sp);
             });
         });
+        // ropa de vaquero y de bandido: cada pieza suma, el juego entero da un extra y la bala a veces no se gasta
+        sin("ropa_perks", 5, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                var slots = new net.minecraft.world.entity.EquipmentSlot[]{net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST,
+                        net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET};
+                try {
+                    double sinRopa = com.miscelanea.ropa.Ropa.dispersion(sp);
+                    var vaquero = new net.minecraft.world.item.Item[]{com.miscelanea.registry.ModItems.SOMBRERO_VAQUERO.get(), com.miscelanea.registry.ModItems.CHALECO_VAQUERO.get(),
+                            com.miscelanea.registry.ModItems.CHAPARRERAS_VAQUERO.get(), com.miscelanea.registry.ModItems.BOTAS_VAQUERO.get()};
+                    var bandido = new net.minecraft.world.item.Item[]{com.miscelanea.registry.ModItems.SOMBRERO_BANDIDO.get(), com.miscelanea.registry.ModItems.PONCHO_BANDIDO.get(),
+                            com.miscelanea.registry.ModItems.PANTALON_BANDIDO.get(), com.miscelanea.registry.ModItems.BOTAS_BANDIDO.get()};
+                    for (int i = 0; i < 4; i++) sp.setItemSlot(slots[i], new ItemStack(vaquero[i]));
+                    double disp = com.miscelanea.ropa.Ropa.dispersion(sp), rec = com.miscelanea.ropa.Ropa.recarga(sp);
+                    int usos = com.miscelanea.ropa.Ropa.usosPorFase(sp, 100);
+                    boolean vOk = sinRopa == 1.0 && disp < 0.9 && rec < 0.9 && usos > 100 && com.miscelanea.ropa.Ropa.ruido(sp) == 1.0;
+                    for (int i = 0; i < 4; i++) sp.setItemSlot(slots[i], new ItemStack(bandido[i]));
+                    double ruido = com.miscelanea.ropa.Ropa.ruido(sp);
+                    int ahorros = 0;
+                    for (int i = 0; i < 4000; i++) if (com.miscelanea.ropa.Ropa.ahorraBala(sp)) ahorros++;
+                    boolean bOk = ruido < 0.7 && ahorros > 300 && ahorros < 1100 && com.miscelanea.ropa.Ropa.dispersion(sp) == 1.0;
+                    RESUMEN.add("  ropa: " + (vOk && bOk ? "bien" : "MAL") + " (vaquero: dispersión " + disp + ", recarga " + rec + ", disparos por fase " + usos
+                            + " · bandido: ruido " + ruido + ", ahorra bala " + ahorros + " de 4000)");
+                    if (!vOk || !bOk) RESUMEN.add("  FALLO: los perks de la ropa no salen como deben");
+                } finally {
+                    for (var sl : slots) sp.setItemSlot(sl, ItemStack.EMPTY);
+                }
+            });
+        });
         // hacha de sangre: beber, fases, Siega, Diezmo gratis, Hemorragia y sinergia con Desangrado
         sin("hacha_sangre", 5, () -> {
             var srv = mc.getSingleplayerServer();

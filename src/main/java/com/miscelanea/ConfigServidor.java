@@ -177,7 +177,7 @@ public final class ConfigServidor {
         ROPA_OXIDO = b.comment("Vaquero: lo que retrasa el óxido del cobre cada pieza (0,1 = un 10 % más de disparos por fase).").defineInRange("vaquero_oxido_pieza", 0.1, 0.0, 0.2);
         ROPA_RUIDO = b.comment("Bandido: lo que baja la distancia a la que se oyen sus disparos cada pieza.").defineInRange("bandido_ruido_pieza", 0.1, 0.0, 0.2);
         ROPA_RUIDO_EXTRA = b.comment("Bandido: extra de sigilo con el juego completo.").defineInRange("bandido_ruido_conjunto", 0.1, 0.0, 0.4);
-        ROPA_AHORRO = b.comment("Bandido: probabilidad por pieza de que un disparo no gaste bala (armas con depósito: Winchester, Thompson, Derringer, mosquete, cañón y Gatling).").defineInRange("bandido_ahorro_pieza", 0.03, 0.0, 0.1);
+        ROPA_AHORRO = b.comment("Bandido: probabilidad por pieza de que un disparo no gaste bala (todas las armas con munición contada: revólver, rifle, escopeta de presión, Winchester, Thompson, Derringer, mosquete, cañón y Gatling).").defineInRange("bandido_ahorro_pieza", 0.03, 0.0, 0.1);
         ROPA_AHORRO_EXTRA = b.comment("Bandido: extra de probabilidad con el juego completo.").defineInRange("bandido_ahorro_conjunto", 0.05, 0.0, 0.3);
         b.pop();
 

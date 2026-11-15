@@ -73,7 +73,11 @@ public class EscopetaPresionItem extends Item {
         if (!(e instanceof Player p) || level.isClientSide) return;
         int t = getUseDuration(s) - quedan;
         if (p.isShiftKeyDown()) DisparoPresion.aspirar((ServerPlayer) p, s, t);
-        else if (t % RITMO == RITMO / 2) DisparoPresion.bombear((ServerPlayer) p, s);
+        else {
+            // la ropa de vaquero bombea más deprisa
+            int ritmo = Math.max(2, (int) Math.round(RITMO * com.miscelanea.ropa.Ropa.recarga(p)));
+            if (t % ritmo == ritmo / 2) DisparoPresion.bombear((ServerPlayer) p, s);
+        }
     }
 
     @Override
