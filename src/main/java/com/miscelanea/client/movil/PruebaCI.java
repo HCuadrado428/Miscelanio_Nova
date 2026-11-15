@@ -5484,6 +5484,8 @@ public final class PruebaCI {
                 a2Mano(h);
             });
             paso("hacha_3p_" + k, 12, () -> a2Vista(2.4, 0.5, 0.2));
+            sin("hacha_1p_cam_" + k, 6, () -> a2Camara1p());
+            paso("hacha_1p_" + k, 8, () -> {});
         }
         sin("hacha_3p_fin", 2, A2::camara1p);
         // marco de fotos: uno de frente y otro de lado, con una foto de la galería (se ve que la foto queda dentro del marco, bien girada)
