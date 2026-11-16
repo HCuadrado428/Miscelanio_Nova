@@ -29,11 +29,10 @@
 13. [Sala de juegos](#sala-de-juegos)
 14. [Colección, pesca y tesoros](#colección-pesca-y-tesoros)
 15. [Casa, cocina y movimiento](#casa-cocina-y-movimiento)
-16. [El Purgatorio](#el-purgatorio)
-17. [Comandos](#comandos)
-18. [Configuración](#configuración)
-19. [Compatibilidad con otros mods](#compatibilidad-con-otros-mods)
-20. [Compilar desde el código](#compilar-desde-el-código)
+16. [Comandos](#comandos)
+17. [Configuración](#configuración)
+18. [Compatibilidad con otros mods](#compatibilidad-con-otros-mods)
+19. [Compilar desde el código](#compilar-desde-el-código)
 
 ---
 
@@ -318,18 +317,6 @@ Trampas y aparatos "de película de miedo", en versión graciosa: cepos, grillet
 - **Ocarina:** melodías que cambian la hora o el tiempo, o te llevan a casa.
 - **Tirolina:** dos postes unidos por cable, hasta 64 bloques.
 - **Trampolín.**
-
----
-
-## El Purgatorio
-
-Adonde van los errores purgados: un espacio liminal, sin cielo y con niebla corta. Se llega colándose por una pared (a veces, al asfixiarte dentro de un bloque) o cayéndote del mapa, y se vuelve justo a donde estabas por una puerta con el cartel verde de SALIDA.
-
-- **Zonas:** Feria Cerrada, Sala de Espera (con Backrooms), Recreativa Infinita, Hotel del Videoclip, Piscina Vacía, Aparcamiento Subterráneo, Colegio de Noche, Centro Comercial Cerrado y Mundo sin Texturas. Tres pisos, salas grandes, ascensores del hotel, pasillos sin sentido y rincones raros. Cada zona tiene su ambiente sonoro.
-- **Habitantes:** no ven, pero oyen. Si hablas por el chat de voz, corres o andas cerca, van hacia ti y, si te pillan, te vuelven a purgar. No hacen daño.
-- **Objetos purgados:** brújula de salida, tiques de turno, llave de la habitación 404, ficha infinita, reloj al revés y el bloque MissingNo.
-- **Restos de errores:** mensajes de sistema rotos, sonidos del juego estropeados, objetos con nombres que no deberían tener y jugadores fantasma a lo lejos.
-- **Logros** propios y sección `[purgatorio]` en la config: se puede desactivar entero.
 
 ---
 

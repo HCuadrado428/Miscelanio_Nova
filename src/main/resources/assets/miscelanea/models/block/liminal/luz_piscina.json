@@ -1,8 +1,0 @@
-{
- "parent": "minecraft:block/orientable",
- "textures": {
-  "front": "miscelanea:block/liminal/luz_piscina",
-  "side": "miscelanea:block/azulejo_piscina_azul",
-  "top": "miscelanea:block/azulejo_piscina_azul"
- }
-}

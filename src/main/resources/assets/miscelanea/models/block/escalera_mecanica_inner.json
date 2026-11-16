@@ -1,8 +1,0 @@
-{
- "parent": "minecraft:block/inner_stairs",
- "textures": {
-  "bottom": "miscelanea:block/escalera_mecanica_lado",
-  "top": "miscelanea:block/escalera_mecanica",
-  "side": "miscelanea:block/escalera_mecanica_lado"
- }
-}

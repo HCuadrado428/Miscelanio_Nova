@@ -24,8 +24,7 @@
     "BlockEntityRenderDispatcherMixin",
     "KeyMappingAccessor",
     "KeyMappingMixin",
-    "GameRendererMixin",
-    "WorldOpenFlowsMixin"
+    "GameRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
