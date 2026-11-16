@@ -6,16 +6,16 @@ Cómo van los números de versión:
 - **x.0.0**: cambios o añadidos grandes.
 
 Ramas del repositorio (cada una compila su propio jar al subir algo):
-- **main**: la versión que se juega (ahora la 1.1.0, en curso). No se sube de número hasta que lo diga el dueño del mod.
+- **main**: la versión que se juega (ahora la 1.2.1). No se sube de número hasta que lo diga el dueño del mod.
 - **arreglos**: la siguiente 1.x.y (solo arreglos). Se une a main en cuanto está probada, y de main pasa a las otras dos.
 - **novedades**: la siguiente 1.x.0 (cosas pequeñas). Se une a main cuando se publica.
 - **version-2**: la 2.0.0 (lo gordo). Recoge lo de main por el camino y se une al final.
 
-## 1.2.1 (en curso)
+## 1.2.1
 
 - **Poción de sedante** (receta del archivo del laboratorio STAG): en el alambique, Poción rara + suavis seco (el cocinado, de The Midnight) → Poción de sedante, con el tiempo normal. Al beberla (o si te cae arrojadiza) es como el pinchazo de la jeringuilla: mareo, forcejeo y a dormir. Además, jeringuilla + Poción de sedante = jeringuilla de sedante; la receta con dos suavis seco y agua se mantiene.
 
-## 1.2.0 (en curso)
+## 1.2.0
 - **Las armas de cobre de Copper Slug vuelven a Miscelánea** (Copper Slug es el mod aparte que nació de las armas de fuego de aquí y ha seguido creciendo; esto trae de vuelta sus armas, su rework, el ruido, los mobs armados y la ropa, sin sus estructuras ni el cinturón):
   - **Cuatro armas nuevas** (no se fabrican: se encuentran en cofres; las probabilidades, en la config `armas_de_fuego_equilibrio.botin`): la **cerbatana de cobre** (silenciosa, ni el sculk ni el Warden la oyen; un dardo cada vez, normales, de veneno y somníferos que se fabrican; templos de la jungla), el **lanzallamas de cobre** (chorro corto y ancho que quema todo el cono; bidones de combustible que se fabrican y se cambian enteros; no prende bajo el agua; fortalezas del Nether), la **pistola de resonancia** (onda de sonido que atraviesa bloques y armadura y hiere todo lo que hay en su línea; funciona con fragmentos de eco; ruidosa a propósito: el sculk la oye; ciudades antiguas) y la **arponera de cobre** (dispara un arpón con cuerda que hiere y trae hacia ti lo que alcanza, o te lleva a ti hasta un bloque, mucho más fuerte bajo el agua; los arpones se fabrican y a veces se recogen; ruinas submarinas). Las cuatro con modelo 3D, HUD, sonidos, óxido de cobre, encantamientos, logros y JEI. Y tres **granadas de cobre** que se fabrican (humo, metralla y pegamento de miel), que también salen sueltas en puestos de saqueadores, minas abandonadas y mazmorras (`granadas.botin`; la de metralla no rompe bloques salvo que se active).
   - **Rework de las nueve armas de antes:** ahora el **clic izquierdo dispara y mantener el clic derecho apunta** (el arma se lleva al centro de la pantalla, el campo de visión se estrecha, dispara más junto y se anda más despacio; el rifle sigue con su catalejo y la Derringer, el cañón de mano y el lanzallamas van siempre a la cadera). Los valores, en `armas_de_fuego_equilibrio.apuntado`. Encantamiento nuevo **Pulso firme** (apuntando, dispersa menos y se anda menos lento). **Accesorios que se ven en el arma:** el Silenciador (ahora vale para el rifle, la Derringer, la Winchester y la Thompson, y hace un soplido sin estampido) y piezas de cobre que se oxidan con el arma: **Cañón largo** (revólver), **Estrangulador** (escopeta de presión), **Mira de cobre** (mosquete) y **Ánima rayada** (cañón de mano). Tambor del revólver como pieza aparte, modelos 3D y sonidos nuevos, **versión lejana** apagada y con eco de cada disparo y eco en interiores. Tecla N: inspeccionar el arma. Las pruebas del juego disparan con el gatillo nuevo.

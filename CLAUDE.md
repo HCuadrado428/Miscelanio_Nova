@@ -33,7 +33,7 @@ Mod de Forge para **Minecraft 1.20.1** (modid `miscelanea`): sala recreativa, fe
 - No hagas commit de `src/main/java/javac.*.args` (restos de compilaciones manuales).
 
 ## Ramas, versiones y CHANGELOG
-- `main` = lo que se juega (ahora **1.1.0 en curso**). **No subas `mod_version` sin que lo diga el dueño.**
+- `main` = lo que se juega (ahora **1.2.1**). **No subas `mod_version` sin que lo diga el dueño.**
 - `arreglos` → siguiente 1.x.y; `novedades` → siguiente 1.x.0; `version-2` → 2.0.0. Un push a cualquiera de ellas compila y publica un jar `build-N` en Releases (y lanza "Probar en el juego").
 - Trabaja en una rama de tema (como `peluche-persona`, `armas-laser`…) y une a la rama que toque cuando esté probado. No hagas push directo a `main` salvo que se pida.
 - Todo cambio visible para el jugador se apunta en `CHANGELOG.md`, en la sección de la versión en curso, con el mismo estilo: frase en negrita con el nombre y explicación para jugadores (cómo se usa, cómo se consigue, recetas).
