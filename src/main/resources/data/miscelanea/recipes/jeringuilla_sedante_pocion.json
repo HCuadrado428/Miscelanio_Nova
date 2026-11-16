@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    { "item": "miscelanea:jeringuilla" },
+    { "type": "forge:nbt", "item": "minecraft:potion", "nbt": "{Potion:\"miscelanea:sedante\"}" }
+  ],
+  "result": { "item": "miscelanea:jeringuilla_sedante" }
+}

@@ -282,7 +282,7 @@ public class Miscelanea {
         // ---- Pociones y efectos (cada poción con sus variantes: normal, arrojadiza, persistente y flecha)
         if (event.getTabKey() == ModTabs.POCIONES.getKey()) {
             for (var p : new net.minecraft.world.item.alchemy.Potion[]{ModPotions.CUPIDO.get(), ModPotions.LONG_CUPIDO.get(), ModPotions.STRONG_CUPIDO.get(),
-                    ModPotions.ENEMIGO.get(), ModPotions.LONG_ENEMIGO.get(), ModPotions.STRONG_ENEMIGO.get()})
+                    ModPotions.ENEMIGO.get(), ModPotions.LONG_ENEMIGO.get(), ModPotions.STRONG_ENEMIGO.get(), ModPotions.SEDANTE.get()})
                 for (var st : pociones(p)) event.accept(st);
             // pociones de fantasma (sin receta)
             for (var st : com.miscelanea.tortura.efectos.EfectosRegistro.pocionesFantasma()) event.accept(st);
