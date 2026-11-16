@@ -20,6 +20,13 @@ public final class ConfigServidor {
     private static final ForgeConfigSpec.DoubleValue PORRA_GOLPE_MULT, BFG_VORTICE_MULT, GRAVEDAD_MULT;
     // ---- armas de fuego: dónde se encuentran (no se fabrican)
     private static final ForgeConfigSpec.DoubleValue BOTIN_REVOLVER_HERREROS, BOTIN_REVOLVER_CASAS, BOTIN_ESCOPETA, BOTIN_RIFLE, BOTIN_ENCANTADA;
+    // ---- ruido de los disparos
+    private static final ForgeConfigSpec.BooleanValue RUIDO_ACTIVADO, RUIDO_ASUSTA;
+    private static final ForgeConfigSpec.BooleanValue MOBS_ACTIVADO, MOBS_TACTICA, GRANADA_ROMPE, ROPA_PERKS;
+    private static final ForgeConfigSpec.DoubleValue ROPA_PRECISION, ROPA_PRECISION_EXTRA, ROPA_RECARGA, ROPA_RECARGA_EXTRA, ROPA_OXIDO, ROPA_RUIDO, ROPA_RUIDO_EXTRA, ROPA_AHORRO, ROPA_AHORRO_EXTRA;
+    private static final ForgeConfigSpec.IntValue MOBS_ALERTA, MOBS_CADENCIA;
+    private static final ForgeConfigSpec.DoubleValue MOBS_PROB, MOBS_PROB_CAPITAN, MOBS_DANO, MOBS_SUELTA, MOBS_FALLO, GRANADA_BOTIN;
+    private static final ForgeConfigSpec.DoubleValue RUIDO_MULT, RUIDO_SILENCIADOR;
     // ---- puntero láser
     private static final ForgeConfigSpec.DoubleValue LASER_ALCANCE;
     private static final ForgeConfigSpec.BooleanValue LASER_GATOS, LASER_MOBS, LASER_DESLUMBRAR;
@@ -36,7 +43,7 @@ public final class ConfigServidor {
     // ---- Dream (mordisco venenoso y anillo de medianoche)
     private static final ForgeConfigSpec.BooleanValue MORDISCO_ACTIVADO, MORDISCO_JUGADORES;
     private static final ForgeConfigSpec.IntValue MORDISCO_LENTITUD_MAX, MORDISCO_LENTITUD_S, MORDISCO_NAUSEA_S,
-            MORDISCO_DESANGRADO_NIVEL, MORDISCO_DESANGRADO_S, MORDISCO_DEBILIDAD_S, VENENO_ENFRIAMIENTO_S, ANILLO_ENFRIAMIENTO_S;
+            MORDISCO_DESANGRADO_NIVEL, MORDISCO_DESANGRADO_S, MORDISCO_DEBILIDAD_S, VENENO_ENFRIAMIENTO_S, ANILLO_ENFRIAMIENTO_S, SEDANTE_S;
     private static final ForgeConfigSpec.BooleanValue EQUILIBRIO_ACTIVO, EQUILIBRIO_MOBS, EQUILIBRIO_RECORTAR;
     private static final ForgeConfigSpec.DoubleValue EQUILIBRIO_TOPE;
     private static final ForgeConfigSpec.IntValue EQUILIBRIO_XP_POR_NIVEL;
@@ -141,6 +148,43 @@ public final class ConfigServidor {
         BOTIN_ENCANTADA = b.comment("Probabilidad de que el arma encontrada lleve uno de sus encantamientos propios.").defineInRange("encantada", 0.25, 0.0, 1.0);
         b.pop();
         b.pop();
+        b.comment("Ruido de los disparos: cada arma se oye a una distancia distinta; los monstruos van a ver de dónde viene y los animales y aldeanos huyen.").push("ruido");
+        RUIDO_ACTIVADO = b.comment("Apagar esto hace que los disparos no alerten a nadie (salvo al sculk y al Warden).").define("activado", true);
+        RUIDO_MULT = b.comment("Multiplica la distancia a la que se oyen todas las armas (1 = normal, 0,5 = la mitad, 2 = el doble).").defineInRange("distancia", 1.0, 0.0, 4.0);
+        RUIDO_SILENCIADOR = b.comment("Qué fracción de su distancia se oye un arma con Silenciador (0,15 = casi nada).").defineInRange("silenciador", 0.15, 0.0, 1.0);
+        RUIDO_ASUSTA = b.comment("Si los animales y aldeanos que oyen un disparo echan a correr.").define("asusta_animales", true);
+        b.pop();
+
+        b.comment("Mobs con armas: algunos saqueadores salen con una Winchester y disparan de verdad.").push("mobs_armados");
+        MOBS_ACTIVADO = b.comment("Apagar esto deja a todos los mobs como en vanilla.").define("activado", true);
+        MOBS_PROB = b.comment("Probabilidad (0-1) de que un saqueador salga armado.").defineInRange("probabilidad_saqueador", 0.05, 0.0, 1.0);
+        MOBS_PROB_CAPITAN = b.comment("Lo mismo para el capitán de la patrulla (el del estandarte).").defineInRange("probabilidad_capitan", 0.3, 0.0, 1.0);
+        MOBS_DANO = b.comment("Daño de cada bala de un mob (2 = un corazón).").defineInRange("dano", 4.0, 0.0, 40.0);
+        MOBS_CADENCIA = b.comment("Ticks entre disparo y disparo de un mob (20 = 1 s).").defineInRange("cadencia", 40, 5, 400);
+        MOBS_FALLO = b.comment("Cuánto fallan: multiplica la dispersión de los mobs (0 = no fallan nunca, 1 = normal, 2 = fallan el doble).").defineInRange("fallo", 1.0, 0.0, 5.0);
+        MOBS_SUELTA = b.comment("Probabilidad (0-1) de que suelte el arma al morir.").defineInRange("suelta", 0.1, 0.0, 1.0);
+        MOBS_TACTICA = b.comment("Táctica de los saqueadores armados: se cubren tras un bloque (sobre todo para recargar), se asoman a disparar y, si son varios, uno flanquea.").define("tactica", true);
+        MOBS_ALERTA = b.comment("Bloques a los que los mobs armados oyen un disparo y acuden (0 = no acuden).").defineInRange("alerta", 24, 0, 64);
+        b.pop();
+
+        b.comment("Ropa de vaquero y de bandido: ventajas con las armas de fuego. Cada pieza suma y el juego completo da un extra.",
+                "Vaquero: puntería, recarga rápida y cobre que se oxida despacio. Bandido: menos ruido y a veces no se gasta la bala.").push("ropa");
+        ROPA_PERKS = b.comment("Apagar esto deja la ropa como pura estética.").define("activado", true);
+        ROPA_PRECISION = b.comment("Vaquero: lo que baja la dispersión cada pieza (0,04 = un 4 %).").defineInRange("vaquero_punteria_pieza", 0.04, 0.0, 0.25);
+        ROPA_PRECISION_EXTRA = b.comment("Vaquero: extra si lleva el juego completo.").defineInRange("vaquero_punteria_conjunto", 0.06, 0.0, 0.5);
+        ROPA_RECARGA = b.comment("Vaquero: lo que acorta la recarga cada pieza.").defineInRange("vaquero_recarga_pieza", 0.05, 0.0, 0.25);
+        ROPA_RECARGA_EXTRA = b.comment("Vaquero: extra de recarga con el juego completo.").defineInRange("vaquero_recarga_conjunto", 0.05, 0.0, 0.5);
+        ROPA_OXIDO = b.comment("Vaquero: lo que retrasa el óxido del cobre cada pieza (0,1 = un 10 % más de disparos por fase).").defineInRange("vaquero_oxido_pieza", 0.1, 0.0, 0.2);
+        ROPA_RUIDO = b.comment("Bandido: lo que baja la distancia a la que se oyen sus disparos cada pieza.").defineInRange("bandido_ruido_pieza", 0.1, 0.0, 0.2);
+        ROPA_RUIDO_EXTRA = b.comment("Bandido: extra de sigilo con el juego completo.").defineInRange("bandido_ruido_conjunto", 0.1, 0.0, 0.4);
+        ROPA_AHORRO = b.comment("Bandido: probabilidad por pieza de que un disparo no gaste bala (todas las armas con munición contada: revólver, rifle, escopeta de presión, Winchester, Thompson, Derringer, mosquete, cañón y Gatling).").defineInRange("bandido_ahorro_pieza", 0.03, 0.0, 0.1);
+        ROPA_AHORRO_EXTRA = b.comment("Bandido: extra de probabilidad con el juego completo.").defineInRange("bandido_ahorro_conjunto", 0.05, 0.0, 0.3);
+        b.pop();
+
+        b.comment("Granadas de cobre (humo, metralla y pegamento).").push("granadas");
+        GRANADA_ROMPE = b.comment("La de metralla rompe bloques como el TNT (apagado: hiere y empuja, pero no rompe nada).").define("metralla_rompe_bloques", false);
+        GRANADA_BOTIN = b.comment("Probabilidad (0-1) de encontrar granadas en los cofres de puestos de saqueadores, minas abandonadas y mazmorras.").defineInRange("botin", 0.2, 0.0, 1.0);
+        b.pop();
 
         b.comment("Sala de juegos (aparatos de tortura).").push("tortura");
         MUERTE_INSTANTANEA = b.comment("Con el mod Incapacitated: las muertes de los aparatos y trampas (trampa de oso, doncella, potro,",
@@ -210,6 +254,8 @@ public final class ConfigServidor {
                 .define("anillo_dimension", "midnight:the_midnight");
         ANILLO_ENFRIAMIENTO_S = b.comment("Segundos de espera del anillo de medianoche después de viajar.")
                 .defineInRange("anillo_enfriamiento_segundos", 10, 0, 3600);
+        SEDANTE_S = b.comment("Segundos que se queda dormido quien no aguanta el sedante de suavis.")
+                .defineInRange("sedante_segundos", 30, 3, 600);
         b.pop();
 
         b.comment("Equilibrio de armaduras: tope a cuánto daño se puede quitar entre armadura, dureza, encantamientos y efectos",
@@ -414,6 +460,7 @@ public final class ConfigServidor {
         LASER_DESLUMBRAR = b.comment("Apuntar a los ojos de un jugador que te mira le deslumbra un momento (solo un destello en su pantalla).").define("deslumbrar", true);
         b.pop();
         com.miscelanea.movil.MovilConfig.definir(b);
+        com.miscelanea.sangre.HachaSangreConfig.definir(b);
         // ---- armas de fuego: equilibrio (daño, cadencia, recarga...) y botín de las nuevas (sección propia)
         com.miscelanea.armasfuego.comun.EquilibrioArmas.definir(b);
 
@@ -507,6 +554,7 @@ public final class ConfigServidor {
     public static double equilibrioReduccionMaxima() { return d(EQUILIBRIO_TOPE); }
     public static boolean equilibrioRecortar() { return b(EQUILIBRIO_RECORTAR); }
     public static int equilibrioXpPorNivel() { return i(EQUILIBRIO_XP_POR_NIVEL); }
+    public static int sedanteTicks() { return i(SEDANTE_S) * 20; }
     public static int anilloEnfriamientoTicks() { return i(ANILLO_ENFRIAMIENTO_S) * 20; }
 
     // ------------------------------------------------------------------ glitch
@@ -650,6 +698,31 @@ public final class ConfigServidor {
     public static double botinEscopeta() { return d(BOTIN_ESCOPETA); }
     public static double botinRifle() { return d(BOTIN_RIFLE); }
     public static double botinEncantada() { return d(BOTIN_ENCANTADA); }
+    public static boolean ropaPerks() { return b(ROPA_PERKS); }
+    public static double ropaPrecision() { return d(ROPA_PRECISION); }
+    public static double ropaPrecisionExtra() { return d(ROPA_PRECISION_EXTRA); }
+    public static double ropaRecarga() { return d(ROPA_RECARGA); }
+    public static double ropaRecargaExtra() { return d(ROPA_RECARGA_EXTRA); }
+    public static double ropaOxido() { return d(ROPA_OXIDO); }
+    public static double ropaRuido() { return d(ROPA_RUIDO); }
+    public static double ropaRuidoExtra() { return d(ROPA_RUIDO_EXTRA); }
+    public static double ropaAhorro() { return d(ROPA_AHORRO); }
+    public static double ropaAhorroExtra() { return d(ROPA_AHORRO_EXTRA); }
+    public static boolean mobsArmados() { return b(MOBS_ACTIVADO); }
+    public static double mobsProb() { return d(MOBS_PROB); }
+    public static double mobsProbCapitan() { return d(MOBS_PROB_CAPITAN); }
+    public static float mobsDano() { return (float) d(MOBS_DANO); }
+    public static int mobsCadencia() { return i(MOBS_CADENCIA); }
+    public static double mobsFallo() { return d(MOBS_FALLO); }
+    public static float mobsSuelta() { return (float) d(MOBS_SUELTA); }
+    public static boolean mobsTactica() { return b(MOBS_TACTICA); }
+    public static int mobsAlerta() { return i(MOBS_ALERTA); }
+    public static boolean granadaRompe() { return b(GRANADA_ROMPE); }
+    public static double granadaBotin() { return d(GRANADA_BOTIN); }
+    public static boolean ruido() { return b(RUIDO_ACTIVADO); }
+    public static boolean ruidoAsusta() { return b(RUIDO_ASUSTA); }
+    public static double ruidoMultiplicador() { return d(RUIDO_MULT); }
+    public static double ruidoSilenciador() { return d(RUIDO_SILENCIADOR); }
     public static boolean laserGatos() { return b(LASER_GATOS); }
     public static boolean laserMobsMiran() { return b(LASER_MOBS); }
     public static boolean laserDeslumbrar() { return b(LASER_DESLUMBRAR); }

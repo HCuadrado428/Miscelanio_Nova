@@ -73,7 +73,11 @@ public class EscopetaPresionItem extends Item {
         if (!(e instanceof Player p) || level.isClientSide) return;
         int t = getUseDuration(s) - quedan;
         if (p.isShiftKeyDown()) DisparoPresion.aspirar((ServerPlayer) p, s, t);
-        else if (t % RITMO == RITMO / 2) DisparoPresion.bombear((ServerPlayer) p, s);
+        else {
+            // la ropa de vaquero bombea más deprisa
+            int ritmo = Math.max(2, (int) Math.round(RITMO * com.miscelanea.ropa.Ropa.recarga(p)));
+            if (t % ritmo == ritmo / 2) DisparoPresion.bombear((ServerPlayer) p, s);
+        }
     }
 
     @Override
@@ -223,14 +227,6 @@ public class EscopetaPresionItem extends Item {
         l.add(t == null ? Component.translatable("item.miscelanea.escopeta_presion.tolva_vacia").withStyle(ChatFormatting.GRAY)
                 : Component.translatable("item.miscelanea.escopeta_presion.tolva", Presion.tolvaN(s), Component.translatable(t.item().getDescriptionId()))
                 .withStyle(ChatFormatting.GRAY));
-        String[] ox = {"normal", "expuesta", "erosionada", "oxidada"};
-        Component estado = Component.translatable("item.miscelanea.escopeta_presion.oxido." + ox[Presion.oxido(s)]);
-        l.add((Presion.encerada(s) ? Component.translatable("item.miscelanea.escopeta_presion.encerada", estado) : estado.copy())
-                .withStyle(ChatFormatting.DARK_AQUA));
-        com.miscelanea.armasfuego.comun.Cobre.tooltip(s, l);
-        l.add(Component.translatable("item.miscelanea.escopeta_presion.ayuda1").withStyle(ChatFormatting.DARK_GRAY));
-        l.add(Component.translatable("item.miscelanea.escopeta_presion.ayuda2").withStyle(ChatFormatting.DARK_GRAY));
-        l.add(Component.translatable("item.miscelanea.escopeta_presion.ayuda3").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     @Override

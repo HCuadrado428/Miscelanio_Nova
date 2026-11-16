@@ -51,14 +51,6 @@ public final class ClientEvents {
             com.miscelanea.client.armas.MazoAnim.init();
             event.enqueueWork(() -> net.minecraft.client.renderer.item.ItemProperties.register(com.miscelanea.registry.ModItems.CHAPA.get(),
                     new net.minecraft.resources.ResourceLocation(com.miscelanea.Miscelanea.MOD_ID, "chapa"), (st, l, e, s) -> com.miscelanea.feria.ChapaItem.dibujo(st) / 10F));
-            // arco de feria: tensado como el arco normal (los modelos usan "pull" y "pulling")
-            event.enqueueWork(() -> {
-                net.minecraft.client.renderer.item.ItemProperties.register(com.miscelanea.registry.ModItems.ARCO_FERIA.get(),
-                        new net.minecraft.resources.ResourceLocation("pull"), (st, l, e, s) -> e == null || e.getUseItem() != st ? 0F
-                                : (st.getUseDuration() - e.getUseItemRemainingTicks()) / 20F);
-                net.minecraft.client.renderer.item.ItemProperties.register(com.miscelanea.registry.ModItems.ARCO_FERIA.get(),
-                        new net.minecraft.resources.ResourceLocation("pulling"), (st, l, e, s) -> e != null && e.isUsingItem() && e.getUseItem() == st ? 1F : 0F);
-            });
             event.enqueueWork(() -> net.minecraft.client.renderer.item.ItemProperties.register(com.miscelanea.registry.ModItems.CANA.get(),
                     new net.minecraft.resources.ResourceLocation("cast"), (stack, level, ent, seed) -> {
                         if (!(ent instanceof net.minecraft.world.entity.player.Player pl)) return 0F;
@@ -153,9 +145,8 @@ public final class ClientEvents {
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.VORTICE.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.ONDA.get(), net.minecraft.client.renderer.entity.NoopRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.MAZO_LANZADO.get(), com.miscelanea.client.armas.MazoLanzadoRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.MARCO_FOTO_BE.get(), com.miscelanea.client.movil.MarcoFotoRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.RECREATIVA_BE.get(), com.miscelanea.client.arcade.RecreativaRenderer::new);
-            event.registerEntityRenderer(com.miscelanea.registry.ModEntities.TREN_MONTANA.get(), com.miscelanea.client.montana.TrenMontanaRenderer::new);
-            event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.RIZO_BE.get(), com.miscelanea.client.montana.RizoRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.CARTEL_RECORDS_BE.get(), com.miscelanea.client.arcade.CartelRecordsRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.BILLAR_BE.get(), com.miscelanea.client.mesas.BillarRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.FUTBOLIN_BE.get(), com.miscelanea.client.mesas.FutbolinRenderer::new);
@@ -172,6 +163,7 @@ public final class ClientEvents {
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.PUESTO_FERIA_BE.get(), com.miscelanea.client.feria.PuestoFeriaRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.BOLA_PETANCA.get(), com.miscelanea.client.feria.BolaPetancaRenderer::new);
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.BALON.get(), com.miscelanea.client.feria.BalonRenderer::new);
+            event.registerEntityRenderer(com.miscelanea.registry.ModEntities.PELUCHE_VUELO.get(), net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.BOLERA_BE.get(), com.miscelanea.client.bolos.BoleraRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.TORRE_BE.get(), com.miscelanea.client.torre.TorreRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.MESA_CARTAS_BE.get(), com.miscelanea.client.cartas.MesaCartasRenderer::new);

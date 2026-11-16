@@ -90,4 +90,37 @@ public final class Fotos {
         byte[] b = leer(de);
         return b != null && escribir(a, b);
     }
+
+    /** Los números de las fotos de la galería de alguien, de la más vieja a la más nueva. */
+    public static java.util.List<Integer> galeriaDe(net.minecraft.server.level.ServerPlayer p) {
+        MovilDatos.Perfil yo = MovilServidor.datos(p.server).perfil(p.getUUID(), MovilServidor.nombre(p));
+        java.util.List<Integer> l = new java.util.ArrayList<>();
+        for (MovilDatos.FotoMeta f : yo.fotos) l.add(f.id());
+        return l;
+    }
+
+    /**
+     * Hace una copia de una foto de la galería para que la pueda ver cualquiera (como cuando se manda por el chat) y
+     * devuelve su número. Devuelve -1 si esa foto no es suya o si no se pudo copiar.
+     */
+    public static int copiaParaEnsenar(net.minecraft.server.level.ServerPlayer p, int fotoId) {
+        MovilDatos d = MovilServidor.datos(p.server);
+        MovilDatos.Perfil yo = d.perfil(p.getUUID(), MovilServidor.nombre(p));
+        if (yo.fotos.stream().noneMatch(f -> f.id() == fotoId)) return -1;
+        int a = d.sigAdjunto++;
+        d.setDirty();
+        if (!copiar(propia(p.server, p.getUUID(), fotoId), adjunto(p.server, a))) return -1;
+        d.marcos.add(a);   // la copia del marco la puede pedir cualquiera que pase por delante
+        return a;
+    }
+
+    /** El marco ha pasado a otra foto (o se ha quedado vacío): la copia que enseñaba ya no hace falta. */
+    public static void soltarCopia(net.minecraft.server.MinecraftServer s, int copia) {
+        if (copia < 0) return;
+        MovilDatos d = MovilServidor.datos(s);
+        if (d.marcos.remove(copia)) {
+            borrar(adjunto(s, copia));
+            d.setDirty();
+        }
+    }
 }

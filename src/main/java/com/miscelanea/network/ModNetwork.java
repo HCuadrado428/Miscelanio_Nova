@@ -318,5 +318,16 @@ public final class ModNetwork {
                 .decoder(com.miscelanea.armasfuego.oeste.MangaPacket::new)
                 .consumerMainThread(com.miscelanea.armasfuego.oeste.MangaPacket::handle)
                 .add();
+        // ---- Armas de cobre de Copper Slug: apuntar (clic derecho) y disparar con el clic izquierdo (al final: paquetes nuevos)
+        CHANNEL.messageBuilder(com.miscelanea.armasfuego.comun.ApuntarPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.armasfuego.comun.ApuntarPacket::encode)
+                .decoder(com.miscelanea.armasfuego.comun.ApuntarPacket::new)
+                .consumerMainThread(com.miscelanea.armasfuego.comun.ApuntarPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(com.miscelanea.armasfuego.comun.GatilloPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(com.miscelanea.armasfuego.comun.GatilloPacket::encode)
+                .decoder(com.miscelanea.armasfuego.comun.GatilloPacket::new)
+                .consumerMainThread(com.miscelanea.armasfuego.comun.GatilloPacket::handle)
+                .add();
     }
 }

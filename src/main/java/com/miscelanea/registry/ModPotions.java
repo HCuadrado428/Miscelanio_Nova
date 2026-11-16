@@ -31,6 +31,10 @@ public final class ModPotions {
     public static final RegistryObject<Potion> STRONG_ENEMIGO = POTIONS.register("strong_enemigo",
             () -> new Potion("enemigo", new MobEffectInstance(ModEffects.ENEMIGO.get(), 600, 1)));
 
+    // --- Sedante (instantánea: al beberla te pincha como la jeringuilla)
+    public static final RegistryObject<Potion> SEDANTE = POTIONS.register("sedante",
+            () -> new Potion("sedante", new MobEffectInstance(ModEffects.SEDANTE.get(), 1)));
+
     /**
      * Cupido:  Poción rara + Pétalos rosas
      * Enemigo: Cupido + Ojo de araña fermentado (el amor corrompido)
@@ -63,6 +67,8 @@ public final class ModPotions {
         larga(Potions.AWKWARD, Items.SNOWBALL, com.miscelanea.voz.VozRegistro.POCION_VENTILADOR.get(), com.miscelanea.voz.VozRegistro.POCION_VENTILADOR_LARGA.get());
         larga(Potions.AWKWARD, Items.WHEAT, com.miscelanea.voz.VozRegistro.POCION_BORRACHERA.get(), com.miscelanea.voz.VozRegistro.POCION_BORRACHERA_LARGA.get());
         larga(Potions.AWKWARD, Items.COCOA_BEANS, com.miscelanea.voz.VozRegistro.POCION_TARTAMUDEO.get(), com.miscelanea.voz.VozRegistro.POCION_TARTAMUDEO_LARGA.get());
+        // sedante: destilado térmico de suavis (suavis seco, de The Midnight, cocinado)
+        add(Potions.AWKWARD, ModItems.SUAVIS_SECO.get(), SEDANTE.get());
         // Sed de sangre y Fantasma siguen siendo solo de creativo (demasiado fuertes para supervivencia)
     }
 

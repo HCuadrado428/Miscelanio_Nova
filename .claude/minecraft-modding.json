@@ -1,0 +1,22 @@
+{
+  "plugin": "minecraft-modding",
+  "version": "1.2.0",
+  "skills": [
+    "blockbench-models",
+    "datagen",
+    "fabric-modding",
+    "forge-modding",
+    "gametests",
+    "geckolib",
+    "gui-screens",
+    "mc-doctor",
+    "mixins",
+    "mod-config",
+    "neoforge-modding",
+    "networking",
+    "pixel-art-16x16",
+    "publishing",
+    "version-matrix",
+    "worldgen"
+  ]
+}

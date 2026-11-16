@@ -1,0 +1,148 @@
+{
+ "multipart": [
+  {
+   "when": {
+    "rotation": "0"
+   },
+   "apply": {
+    "model": "miscelanea:block/peluche_nova",
+    "y": 0
+   }
+  },
+  {
+   "when": {
+    "rotation": "1"
+   },
+   "apply": {
+    "model": "miscelanea:block/peluche_nova_22",
+    "y": 0
+   }
+  },
+  {
+   "when": {
+    "rotation": "2"
+   },
+   "apply": {
+    "model": "miscelanea:block/peluche_nova_45",
+    "y": 0
+   }
+  },
+  {
+   "when": {
+    "rotation": "3"
+   },
+   "apply": {
+    "model": "miscelanea:block/peluche_nova_m22",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "rotation": "4"
+   },
+   "apply": {
+    "model": "miscelanea:block/peluche_nova",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "rotation": "5"
+   },
+   "apply": {
+    "model": "miscelanea:block/peluche_nova_22",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "rotation": "6"
+   },
+   "apply": {
+    "model": "miscelanea:block/peluche_nova_45",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "rotation": "7"
+   },
+   "apply": {
+    "model": "miscelanea:block/peluche_nova_m22",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "rotation": "8"
+   },
+   "apply": {
+    "model": "miscelanea:block/peluche_nova",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "rotation": "9"
+   },
+   "apply": {
+    "model": "miscelanea:block/peluche_nova_22",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "rotation": "10"
+   },
+   "apply": {
+    "model": "miscelanea:block/peluche_nova_45",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "rotation": "11"
+   },
+   "apply": {
+    "model": "miscelanea:block/peluche_nova_m22",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "rotation": "12"
+   },
+   "apply": {
+    "model": "miscelanea:block/peluche_nova",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "rotation": "13"
+   },
+   "apply": {
+    "model": "miscelanea:block/peluche_nova_22",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "rotation": "14"
+   },
+   "apply": {
+    "model": "miscelanea:block/peluche_nova_45",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "rotation": "15"
+   },
+   "apply": {
+    "model": "miscelanea:block/peluche_nova_m22",
+    "y": 0
+   }
+  }
+ ]
+}

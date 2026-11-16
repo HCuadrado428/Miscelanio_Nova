@@ -1,0 +1,9 @@
+-proc:none
+-Xmaxerrs
+100000
+-d
+/tmp/claude-0/-home-user-Miscelanio-Nova/d03ded4c-b6c1-516b-849d-936c3bddc7ab/scratchpad/out
+src/main/java/com/miscelanea/movil/MovilDatos.java
+src/main/java/com/miscelanea/movil/Fotos.java
+src/main/java/com/miscelanea/movil/MovilServidor.java
+src/main/java/com/miscelanea/movil/MarcoFotoBlock.java

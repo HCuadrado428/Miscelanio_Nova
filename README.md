@@ -62,7 +62,7 @@
 
 ## Primeros pasos
 
-- Todo el contenido está en **8 pestañas del creativo**: Feria y atracciones, Sala recreativa, Juegos de mesa, Armas y combate, Sala de juegos, Pociones y efectos, Bromas y Varios.
+- Todo el contenido está en **9 pestañas del creativo**: Feria y atracciones, Sala recreativa, Juegos de mesa, Armas y combate, Sala de juegos, Pociones y efectos, Bromas, Peluches y Varios.
 - **Teclas con preferencia:** mientras usas un arma o poder del mod, sus teclas solo hacen lo suyo aunque otro mod use la misma tecla (por ejemplo, R para recargar la ballesta no recarga los sombreadores, y V para fijar objetivo con la Llave Espada o el Hacha Leviatán no abre el chat de voz). Las teclas de Minecraft y la rueda del ratón siguen funcionando. Fuera de ese momento, la tecla es de todos.
 - **Bloques solo de creativo** (las máquinas, atracciones y aparatos que no tienen receta): en supervivencia son **irrompibles**, ni se pican ni los vuela una explosión. En creativo se quitan normal. La lista es la etiqueta `miscelanea:solo_creativo`.
 - Las teclas propias están en **Opciones → Controles → Miscelánea** y se pueden cambiar todas. Si algo no responde, mira que su tecla no choque con otra.
@@ -138,7 +138,6 @@ Máquinas que funcionan con **fichas**. Hay recreativas sencillas, dobles para 2
 ## Feria
 
 - **Atracciones** en las que se puede montar: noria, tiovivo, pulpo, coches de choque, vagoneta de la bruja y caja de sustos.
-- **Montaña rusa:** vía (recta, curvas, subida y bajada; agáchate y clic con la mano vacía para cambiar la forma), vía de cadena que sube el tren, estación (el tren sale solo a los 5 s con gente, o con redstone), vía de freno y rizo de 4 bloques de alto. El tren lleva de 2 a 4 vagones de dos plazas (agáchate y clic con otro tren para añadir uno), cae por las cuestas con su peso, se inclina en las curvas y da la vuelta entera en el rizo. La barra de seguridad no deja bajarse en marcha. Debajo de la vía que va por el aire sale sola una columna de acero hasta el suelo.
 - **Puestos:** caseta de tiro con escopeta de corcho (la escopeta es prestada: se recoge sola al acabar), pesca de patitos, tómbola, máquina de gancho, tragaperras, gachapón, canastas, boxeo, martillo de fuerza, dardos, petanca, torre de bloques y churrería.
 - **Pizarra de récords de la feria:** una pizarra de tiza con marco de madera, banderines y repisa. Varias juntas forman una pizarra grande que enseña más juegos a la vez.
 - **Comida y ambiente:** algodón de azúcar, palomitas, churros y castillo de fuegos artificiales.
@@ -200,10 +199,11 @@ Cada arma tiene modelo, animaciones, sonidos y controles propios. Hacen bastante
 | **Lanzatintas y rodillo** | Combate con tinta |
 | **Puntero láser** | Apunta, deslumbra y vuelve locos a los gatos |
 | **Núcleo de error** *(creativo)* | Carga un aliento que corrompe bloques blandos |
+| **Hacha de sangre** *(creativo)* | Bebe de lo que golpea y despierta en cuatro fases: guarda sangre y suelta la Siega (giro que corta a todos), cobra el Diezmo (pagas vida y el golpe vale por tres), deja charcos que te curan y, al final, el Diezmo sale gratis de vez en cuando. Tiene sus encantamientos (Sed, Coágulo y Hemorragia) y su sección `hacha_sangre` en la config |
 
 ### Armas de fuego
 
-Nueve armas de la vida real, a lo Minecraft. **No se fabrican: se encuentran en cofres** (aldeas, barcos hundidos, puestos de saqueadores, pirámides, minas, mansiones, fortalezas, bastiones y tesoros enterrados). JEI dice dónde sale cada una y las probabilidades se cambian en la config del servidor. La munición sí se fabrica.
+Trece armas de cobre de la vida real, a lo Minecraft. **No se fabrican: se encuentran en cofres** de estructuras (aldeas, barcos hundidos, puestos de saqueadores, pirámides, minas, mansiones, fortalezas, bastiones, tesoros enterrados, templos de la jungla, ciudades antiguas y ruinas submarinas). JEI dice dónde sale cada una y las probabilidades se cambian en la config del servidor. La munición sí se fabrica.
 
 | Arma | En pocas palabras |
 |---|---|
@@ -211,13 +211,23 @@ Nueve armas de la vida real, a lo Minecraft. **No se fabrican: se encuentran en 
 | **Rifle de catalejo** | Rifle de cerrojo con catalejo: mira de verdad, bala con caída, más daño en la cabeza y tirolinas con la bala de cuerda |
 | **Escopeta de presión** | Aire comprimido en vez de pólvora: se bombea, tiene manómetro y revienta si te pasas. Cartuchos de grava, escarcha, miel, sal, semillas y más |
 | **Gatling de manivela** | Se planta en su trípode; se calienta y se atasca. Hace de torreta con redstone |
-| **Winchester 1873** | Palanca, depósito de 12 balas mezclables que se cargan una a una; a caballo, la palanca se gira con una mano |
+| **Winchester 1873** | Palanca y depósito de 12 balas mezclables que se cargan una a una |
 | **Derringer** | Pistola de bolsillo: el as en la manga, que se saca con una tecla |
 | **Thompson con estuche de violín** | Ráfaga con mucho retroceso; el estuche es un violín que se toca con arco |
 | **Mosquete de chispa con bayoneta** | Mucho daño, recarga lenta y bayoneta con cualquier espada y sus encantamientos |
 | **Cañón de mano** | Dispara bolaños y bloques que caen; a veces revienta en las manos |
+| **Cerbatana de cobre** | Silenciosa (ni el sculk ni el Warden la oyen). Dardos normales, de veneno y somníferos |
+| **Lanzallamas de cobre** | Un chorro corto y ancho que quema todo el cono. Bidones de combustible; no prende bajo el agua |
+| **Pistola de resonancia** | Una onda de sonido que atraviesa bloques y armadura. Funciona con fragmentos de eco; es ruidosa |
+| **Arponera de cobre** | Un arpón con cuerda: trae hacia ti lo que alcanza, o te lleva a ti hasta un bloque. Mucho más fuerte bajo el agua |
 
-- **Cobre que se oxida:** todas llevan piezas de cobre que pasan por cuatro fases con el uso. Oxidada, el arma se encasquilla y dispersa más, pero pega y perfora un poco más. Se encera con un panal (la cera se gasta) y se rasca con un hacha.
+- **Granadas** de humo, metralla y pegamento de miel, que se fabrican con cobre y pólvora.
+- **Cómo se manejan:** clic izquierdo dispara y mantener el clic derecho apunta (el arma va al centro de la pantalla, el campo de visión se estrecha y dispara más junto). El rifle sigue con su catalejo y la Derringer, el cañón de mano y el lanzallamas van siempre a la cadera. **Pulso firme** apunta mejor; la tecla N inspecciona el arma.
+- **Accesorios que se ven en el arma:** Silenciador (rifle, Derringer, Winchester y Thompson), Cañón largo (revólver), Estrangulador (escopeta), Mira de cobre (mosquete) y Ánima rayada (cañón de mano).
+- **Cobre que se oxida:** las piezas de cobre pasan por cuatro fases con el uso. Oxidada, el arma se encasquilla y dispersa más, pero pega y perfora un poco más. Se encera con un panal (la cera se gasta) y se rasca con un hacha.
+- **Ruido:** cada arma se oye a su distancia; los monstruos van a ver de dónde viene el disparo y los animales y aldeanos huyen. El Silenciador casi lo quita.
+- **Mobs armados:** algunos saqueadores llevan una Winchester y disparan de verdad (se cubren, flanquean y acuden al ruido). Sección `mobs_armados` de la config.
+- **Ropa de vaquero y de bandido:** se fabrica con cuero y da ventajas con las armas. El vaquero apunta mejor, recarga más deprisa y oxida menos el cobre; el bandido hace menos ruido y a veces no gasta la bala. El juego completo da un extra. Sección `ropa` de la config.
 - **Encantamientos propios** por arma (mesa y libros) y **munición especial** (bengalas, dardos de sedante, balas de plata, de hielo, de oro, de pintura...).
 - Ningún disparo suelto mata de un tiro a un jugador con la vida llena (salvo la ruleta rusa). Todos los valores de equilibrio están en la sección `armas_de_fuego_equilibrio` de la config.
 
@@ -299,7 +309,7 @@ Inofensivas pero molestas. Mejor acordarlas con el grupo antes de usarlas.
 
 ## Sala de juegos
 
-Trampas y aparatos "de película de miedo", en versión graciosa: cepos, grilletes, jaulas, la caja de agua, el péndulo, la silla de inmersión, la silla de interrogatorio y más. Muchos tienen su minijuego para escapar (ganzúa, alicates, sierra...), y al que está en el cepo se le pueden tirar tomates y huevos podridos. Es para rol y hay que acordarlo con quien participe. El administrador puede desactivar partes en la configuración.
+Trampas y aparatos "de película de miedo", en versión graciosa: cepos, grilletes, jaulas, la caja de agua, el péndulo, la silla de inmersión, la silla de interrogatorio y más. Muchos tienen su minijuego para escapar (ganzúa, alicates, sierra...), y al que está en el cepo se le pueden tirar tomates y huevos podridos. Es para rol y hay que acordarlo con quien participe. Incluye la **jeringuilla de sedante**: se hace con suavis seco y un poco de agua, marea a quien pincha (con un forcejeo para no dormirse, más difícil por la espalda) y, si no lo aguanta, lo deja dormido en el suelo medio minuto. El administrador puede desactivar partes en la configuración.
 
 ---
 
@@ -309,6 +319,8 @@ Trampas y aparatos "de película de miedo", en versión graciosa: cepos, grillet
 - **Bichopedia:** lo que has encontrado y dónde vive cada criatura.
 - **Vitrina del museo, acuario y terrario:** para exponer la colección.
 - **Detector de metales:** fósiles, mosquito en ámbar, tesoros y cápsulas del tiempo con notas.
+- **Peluches de personas** (pestaña «Peluches»): un bloque por persona que chilla al apretarlo y se cansa, se abraza agachado, se lanza y rebota y se lleva de gorro. Con uno encima no salen fantasmas. También se exponen en la vitrina.
+- **Marco de fotos:** un bloque de pared que enseña una foto de tu galería del móvil; con el móvil en la mano se van pasando (agachado, hacia atrás) y lo ve todo el mundo.
 
 ## Casa, cocina y movimiento
 

@@ -84,6 +84,8 @@ public class MovilDatos extends SavedData {
     public final Map<UUID, Perfil> perfiles = new LinkedHashMap<>();
     public final Map<Integer, Chat> chats = new LinkedHashMap<>();
     public int sigChat = 1, sigAdjunto = 1, sigVoz = 1;
+    /** Copias de fotos que enseña un marco de fotos: las puede pedir cualquiera, porque no están en ningún chat. */
+    public final java.util.Set<Integer> marcos = new java.util.HashSet<>();
 
     public static MovilDatos de(MinecraftServer s) {
         return s.overworld().getDataStorage().computeIfAbsent(MovilDatos::cargar, MovilDatos::new, NOMBRE);
@@ -249,6 +251,7 @@ public class MovilDatos extends SavedData {
         t.put("chats", cs);
         t.putInt("sigChat", sigChat);
         t.putInt("sigAdjunto", sigAdjunto);
+        t.putIntArray("marcos", marcos.stream().mapToInt(Integer::intValue).toArray());
         t.putInt("sigVoz", sigVoz);
         return t;
     }
@@ -306,6 +309,7 @@ public class MovilDatos extends SavedData {
         }
         d.sigChat = Math.max(1, t.getInt("sigChat"));
         d.sigAdjunto = Math.max(1, t.getInt("sigAdjunto"));
+        for (int v : t.getIntArray("marcos")) d.marcos.add(v);
         d.sigVoz = Math.max(1, t.getInt("sigVoz"));
         for (Chat ch : d.chats.values()) d.sigChat = Math.max(d.sigChat, ch.id + 1);
         return d;

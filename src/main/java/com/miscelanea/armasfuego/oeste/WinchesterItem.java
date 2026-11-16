@@ -209,7 +209,7 @@ public class WinchesterItem extends ArmaFuegoItem {
             dep.remove(dep.size() - 1);
             ponerDeposito(s, dep);
         }
-        boolean deadEye = p.isPassenger() && nivel(ModEnchantments.WINCHESTER_DEAD_EYE, s) > 0;
+        boolean deadEye = (p.isPassenger() || com.miscelanea.armasfuego.comun.Apuntar.quieto(p)) && nivel(ModEnchantments.WINCHESTER_DEAD_EYE, s) > 0;
         float dano = EquilibrioArmas.winchesterDano() * (deadEye ? 1.25F : 1F);
         double disp = deadEye ? 0 : 0.005;
         Carga c = Carga.de(new ItemStack(tipo));

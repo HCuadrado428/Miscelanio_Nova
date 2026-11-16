@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    {
+      "item": "miscelanea:dardo_cerbatana"
+    },
+    {
+      "item": "miscelanea:dardo_cerbatana"
+    },
+    {
+      "item": "minecraft:fermented_spider_eye"
+    }
+  ],
+  "result": {
+    "item": "miscelanea:dardo_somnifero",
+    "count": 2
+  }
+}

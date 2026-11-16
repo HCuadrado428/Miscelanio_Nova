@@ -44,6 +44,17 @@ public class BalaRifleRenderer extends EntityRenderer<BalaRifle> {
         else { r = 240; g = 200; b = 150; a0 = 0.75F; a1 = 0F; }
         VertexConsumer vc = buf.getBuffer(RenderType.lightning());
         Matrix4f m = ps.last().pose();
+        if (tipo == Rifle.CUERDA) {
+            // la bala de cuerda gira sobre sí misma: dos cintas cruzadas que dan vueltas alrededor del eje del tiro
+            Vec3 eje = atras.normalize();
+            Vec3 otro = eje.cross(lado);
+            double giro = (e.tickCount + pt) * 0.9;
+            Vec3 l1 = lado.scale(Math.cos(giro)).add(otro.scale(Math.sin(giro))).scale(1.6);
+            Vec3 l2 = eje.cross(l1);
+            quad(vc, m, Vec3.ZERO, atras, l1, r, g, b, a0, a1);
+            quad(vc, m, Vec3.ZERO, atras, l2, r, g, b, a0, a1);
+            return;
+        }
         quad(vc, m, Vec3.ZERO, atras, lado, r, g, b, a0, a1);
         if (tipo == Rifle.TRAZADORA) quad(vc, m, Vec3.ZERO, atras.scale(0.5), lado.scale(0.4), 255, 255, 220, 1F, 0F);
     }

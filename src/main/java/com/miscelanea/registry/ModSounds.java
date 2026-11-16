@@ -208,6 +208,15 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> PI_MUSICA = register("pi_musica");
     public static final RegistryObject<SoundEvent> FE_ALGODON = register("fe_algodon");
     public static final RegistryObject<SoundEvent> FE_POP = register("fe_pop");
+    public static final RegistryObject<SoundEvent> PEL_CHIRRIDO = register("pel_chirrido");
+    public static final RegistryObject<SoundEvent> PEL_ABRAZO = register("pel_abrazo");
+    public static final RegistryObject<SoundEvent> PEL_CANSADO = register("pel_cansado");
+    public static final RegistryObject<SoundEvent> PEL_POF = register("pel_pof");
+    public static final RegistryObject<SoundEvent> HS_LATIDO = register("hs_latido");
+    public static final RegistryObject<SoundEvent> HS_TRAGO = register("hs_trago");
+    public static final RegistryObject<SoundEvent> HS_SIEGA = register("hs_siega");
+    public static final RegistryObject<SoundEvent> HS_DIEZMO = register("hs_diezmo");
+    public static final RegistryObject<SoundEvent> HS_CHARCO = register("hs_charco");
     public static final RegistryObject<SoundEvent> FE_MASCLET = register("fe_masclet");
     public static final RegistryObject<SoundEvent> FE_MASCLET_FINAL = register("fe_masclet_final");
     public static final RegistryObject<SoundEvent> FE_TREN = register("fe_tren");
@@ -278,6 +287,24 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> TIEMPO_BALA = register("tiempo_bala");
     public static final RegistryObject<SoundEvent> GOMA_REBOTE = register("goma_rebote");
     public static final RegistryObject<SoundEvent> PINTURA_SPLAT = register("pintura_splat");
+    // ---- sonidos nuevos: el silenciador de verdad, lo que hacen los mobs armados, el eco de interior y la versión lejana de cada disparo
+    public static final RegistryObject<SoundEvent> SILENCIADOR_DISPARO = register("silenciador_disparo");
+    public static final RegistryObject<SoundEvent> MOB_MONTAR = register("mob_montar");
+    public static final RegistryObject<SoundEvent> MOB_CHISPA = register("mob_chispa");
+    public static final RegistryObject<SoundEvent> MOB_CLIC_SECO = register("mob_clic_seco");
+    public static final RegistryObject<SoundEvent> ECO_INTERIOR = register("eco_interior");
+    private static final java.util.Map<String, RegistryObject<SoundEvent>> LEJOS = new java.util.HashMap<>();
+    static {
+        for (String n : new String[]{"revolver_disparo", "rifle_catalejo_disparo", "presion_disparo", "gatling_disparo", "winchester_disparo",
+                "derringer_disparo", "thompson_disparo", "mosquete_disparo", "canon_disparo"})
+            LEJOS.put(n, register(n + "_lejos"));
+    }
+
+    /** La versión lejana (apagada y con eco) de un disparo, o null si ese sonido no la tiene. */
+    public static SoundEvent lejos(SoundEvent s) {
+        RegistryObject<SoundEvent> r = LEJOS.get(s.getLocation().getPath());
+        return r == null ? null : r.get();
+    }
 
     private static RegistryObject<SoundEvent> register(String name) {
         return SOUNDS.register(name,

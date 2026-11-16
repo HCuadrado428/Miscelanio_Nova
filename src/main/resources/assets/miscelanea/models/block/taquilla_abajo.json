@@ -1,8 +1,0 @@
-{
- "parent": "minecraft:block/orientable",
- "textures": {
-  "front": "miscelanea:block/taquilla_abajo",
-  "side": "miscelanea:block/taquilla_lado",
-  "top": "miscelanea:block/taquilla_lado"
- }
-}

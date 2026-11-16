@@ -11,6 +11,8 @@
     "miscelanea:thompson_disparo",
     "miscelanea:mosquete_disparo",
     "miscelanea:armafuego_perforante",
-    "miscelanea:canon_mano"
+    "miscelanea:canon_mano",
+    "miscelanea:cerbatana_disparo",
+    "miscelanea:arponera_disparo"
   ]
 }

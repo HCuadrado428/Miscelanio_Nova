@@ -260,6 +260,9 @@ public final class LazoCliente {
         if (est != null && est.lazo == Lazo.ENLAZADO) {
             c = Component.translatable("hud.miscelanea.lazo.enlazado");
             borde = 0xFF8A2020;
+        } else if (est != null && est.lazo == Lazo.DERRIBADO && p.hasEffect(com.miscelanea.registry.ModEffects.SEDADO.get())) {
+            c = Component.translatable("hud.miscelanea.sedante.dormido", (est.lazoT + 19) / 20);
+            borde = 0xFF5A3A8A;
         } else if (est != null && est.lazo == Lazo.DERRIBADO) {
             c = Component.translatable("hud.miscelanea.lazo.derribado", (est.lazoT + 19) / 20);
             borde = 0xFF8A2020;

@@ -1,0 +1,41 @@
+{
+ "loader": "forge:separate_transforms",
+ "gui_light": "front",
+ "textures": {
+  "particle": "miscelanea:item/arponera"
+ },
+ "base": {
+  "parent": "miscelanea:item/armas3d/arponera_3d",
+  "textures": {
+   "cobre": "miscelanea:item/armas3d/p_cobre_0"
+  }
+ },
+ "perspectives": {
+  "gui": {
+   "parent": "minecraft:item/generated",
+   "textures": {
+    "layer0": "miscelanea:item/arponera"
+   }
+  }
+ },
+ "overrides": [
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.25
+   },
+   "model": "miscelanea:item/arponera_ox1"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.5
+   },
+   "model": "miscelanea:item/arponera_ox2"
+  },
+  {
+   "predicate": {
+    "miscelanea:oxido": 0.75
+   },
+   "model": "miscelanea:item/arponera_ox3"
+  }
+ ]
+}

@@ -17,6 +17,18 @@ public final class ModEffects {
 
     public static final RegistryObject<MobEffect> UBERCARGA = EFFECTS.register("ubercarga", com.miscelanea.medigun.UberEffect::new);
 
+    /** Dormido con el sedante de suavis (solo marca; lo demás lo hace {@link com.miscelanea.sedante.Sedante}). */
+    public static final RegistryObject<MobEffect> SEDADO = EFFECTS.register("sedado",
+            () -> new MobEffect(net.minecraft.world.effect.MobEffectCategory.HARMFUL, 0x6B4FA0) {});
+    /** La poción de sedante: al beberla (o recibirla arrojada) es como el pinchazo, con mareo y forcejeo. */
+    public static final RegistryObject<MobEffect> SEDANTE = EFFECTS.register("sedante", () ->
+            new net.minecraft.world.effect.InstantenousMobEffect(net.minecraft.world.effect.MobEffectCategory.HARMFUL, 0x6B4FA0) {
+                @Override
+                public void applyInstantenousEffect(net.minecraft.world.entity.Entity fuente, net.minecraft.world.entity.Entity indirecta,
+                                                    net.minecraft.world.entity.LivingEntity v, int amp, double salud) {
+                    com.miscelanea.sedante.Sedante.pinchar(v, null, false);
+                }
+            });
     // ---- Escopeta de presión: pringado de miel (no deja saltar)
     public static final RegistryObject<MobEffect> PRINGADO = EFFECTS.register("pringado", com.miscelanea.armasfuego.escopeta.PringadoEffect::new);
 

@@ -84,8 +84,6 @@ public class Miscelanea {
             event.accept(ModItems.PULPO);
             event.accept(ModItems.CASETA_TIRO);
             event.accept(ModItems.ESCOPETA_CORCHO);
-            event.accept(ModItems.CASETA_ARCO);
-            event.accept(ModItems.ARCO_FERIA);
             event.accept(ModItems.PELUCHE);
             event.accept(ModItems.PESCA_PATITOS);
             event.accept(ModItems.CANA_PATITOS);
@@ -117,12 +115,6 @@ public class Miscelanea {
             event.accept(ModItems.POSTE_TIROLINA);
             event.accept(ModItems.CABLE_TIROLINA);
             event.accept(ModItems.PIZARRA_FERIA);
-            event.accept(ModItems.VIA_MONTANA);
-            event.accept(ModItems.VIA_MONTANA_CADENA);
-            event.accept(ModItems.VIA_MONTANA_ESTACION);
-            event.accept(ModItems.VIA_MONTANA_FRENO);
-            event.accept(ModItems.RIZO_MONTANA);
-            event.accept(ModItems.TREN_MONTANA);
             for (int i = 0; i < com.miscelanea.feria.ChapaItem.DIBUJOS.length; i++) event.accept(com.miscelanea.feria.ChapaItem.de(i));
         }
         // ---- Sala recreativa
@@ -137,7 +129,6 @@ public class Miscelanea {
             event.accept(ModItems.TABLON_RECORDS);
             // bolera de salón recreativo
             event.accept(ModItems.BOLERA);
-            event.accept(ModItems.BOLERA_FERIA);
             event.accept(ModItems.PISTA_BOLOS);
             event.accept(ModItems.BOLA_BOLOS);
             // baile: la pista y la gramola de videoclip (como en el tablón de récords, son de la sala recreativa)
@@ -226,10 +217,24 @@ public class Miscelanea {
                 if (c > 0) laser.getOrCreateTag().putInt(com.miscelanea.laser.Laser.COLOR, c);
                 event.accept(laser);
             }
+            // ---- Armas de cobre de Copper Slug: las cuatro nuevas con sus municiones, y las granadas
+            for (var m : java.util.List.of(ModItems.CERBATANA, ModItems.DARDO_CERBATANA, ModItems.DARDO_VENENO, ModItems.DARDO_SOMNIFERO,
+                    ModItems.LANZALLAMAS, ModItems.BIDON_COMBUSTIBLE, ModItems.RESONANCIA, ModItems.ARPONERA, ModItems.ARPON_COBRE,
+                    ModItems.GRANADA_HUMO, ModItems.GRANADA_METRALLA, ModItems.GRANADA_MIEL)) event.accept(m);
+            // ---- Ropa de vaquero (puntería) y de bandido (sigilo)
+            for (var m : java.util.List.of(ModItems.SOMBRERO_VAQUERO, ModItems.CHALECO_VAQUERO, ModItems.CHAPARRERAS_VAQUERO, ModItems.BOTAS_VAQUERO,
+                    ModItems.SOMBRERO_BANDIDO, ModItems.PONCHO_BANDIDO, ModItems.PANTALON_BANDIDO, ModItems.BOTAS_BANDIDO)) event.accept(m);
+            // ---- Encantamientos nuevos: apuntar, silenciador, accesorios de cobre y los del Hacha de sangre
+            for (var en : java.util.List.of(ModEnchantments.PULSO_FIRME, ModEnchantments.SILENCIADOR, ModEnchantments.CANON_LARGO,
+                    ModEnchantments.ESCOPETA_ESTRANGULADOR, ModEnchantments.MOSQUETE_MIRA, ModEnchantments.CANON_ANIMA,
+                    ModEnchantments.SANGRE_SED, ModEnchantments.SANGRE_COAGULO, ModEnchantments.SANGRE_HEMORRAGIA))
+                event.accept(net.minecraft.world.item.EnchantedBookItem.createForEnchantment(
+                        new net.minecraft.world.item.enchantment.EnchantmentInstance(en.get(), en.get().getMaxLevel())));
             event.accept(ModItems.BFG);
             event.accept(ModItems.MAZO_WEMMBU);
             event.accept(ModItems.LLAVE_ESPADA);
             event.accept(ModItems.HACHA_LEVIATAN);
+            event.accept(ModItems.HACHA_SANGRE);
             event.accept(ModItems.MEDIGUN);
             event.accept(ModItems.MOCHILA_MEDICA);
         }
@@ -239,6 +244,9 @@ public class Miscelanea {
             event.accept(com.miscelanea.tortura.TorturaRegistro.LLAVE_TRAMPA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.CAJA_JIGSAW_ITEM);
             event.accept(com.miscelanea.tortura.TorturaRegistro.GRILLETES);
+            event.accept(ModItems.JERINGUILLA);
+            event.accept(ModItems.SUAVIS_SECO);
+            event.accept(ModItems.JERINGUILLA_SEDANTE);
             event.accept(com.miscelanea.tortura.TorturaRegistro.CADENA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.GANZUA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.LAZO);
@@ -274,7 +282,7 @@ public class Miscelanea {
         // ---- Pociones y efectos (cada poción con sus variantes: normal, arrojadiza, persistente y flecha)
         if (event.getTabKey() == ModTabs.POCIONES.getKey()) {
             for (var p : new net.minecraft.world.item.alchemy.Potion[]{ModPotions.CUPIDO.get(), ModPotions.LONG_CUPIDO.get(), ModPotions.STRONG_CUPIDO.get(),
-                    ModPotions.ENEMIGO.get(), ModPotions.LONG_ENEMIGO.get(), ModPotions.STRONG_ENEMIGO.get()})
+                    ModPotions.ENEMIGO.get(), ModPotions.LONG_ENEMIGO.get(), ModPotions.STRONG_ENEMIGO.get(), ModPotions.SEDANTE.get()})
                 for (var st : pociones(p)) event.accept(st);
             // pociones de fantasma (sin receta)
             for (var st : com.miscelanea.tortura.efectos.EfectosRegistro.pocionesFantasma()) event.accept(st);
@@ -296,10 +304,17 @@ public class Miscelanea {
             // --- pociones (otros paquetes añaden aquí)
         }
         // ---- Varios
+        if (event.getTabKey() == ModTabs.PELUCHES.getKey()) {
+            // el osito de la feria y, detrás, los peluches de personas
+            event.accept(ModItems.PELUCHE);
+            for (String n : com.miscelanea.feria.Peluches.NOMBRES)
+                event.accept(com.miscelanea.feria.Peluches.OBJETOS.get(n).get());
+        }
         if (event.getTabKey() == ModTabs.VARIOS.getKey()) {
             event.accept(ModItems.ASPIRAFANTASMAS);
             event.accept(ModItems.MOCHILA);
             event.accept(com.miscelanea.movil.MovilRegistro.MOVIL);
+            event.accept(ModItems.MARCO_FOTO);
             event.accept(com.miscelanea.movil.MovilRegistro.CAJERO_ITEM);
             event.accept(ModItems.OCARINA);
             event.accept(ModItems.RED);

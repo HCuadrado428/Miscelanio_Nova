@@ -7,7 +7,7 @@
  "base": {
   "parent": "miscelanea:item/armas3d/revolver_3d_abierto",
   "textures": {
-   "cobre": "miscelanea:item/armas3d/cobre_2",
+   "cobre": "miscelanea:item/armas3d/p_cobre_2",
    "tambor": "miscelanea:item/armas3d/tambor_frente_2",
    "tambor_lado": "miscelanea:item/armas3d/tambor_lado_2"
   }

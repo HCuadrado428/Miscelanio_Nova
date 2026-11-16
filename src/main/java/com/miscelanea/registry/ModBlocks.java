@@ -81,27 +81,6 @@ public final class ModBlocks {
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.baile.PistaBaileBlockEntity>> PISTA_BAILE_BE = BLOCK_ENTITIES.register("pista_baile",
             () -> BlockEntityType.Builder.of(com.miscelanea.baile.PistaBaileBlockEntity::new, PISTA_BAILE.get(), GRAMOLA.get()).build(null));
-    // ---- Montaña rusa (2.0.0): vías de bloque normales (sin bloque-entidad) y el rizo, que dibuja su vuelta
-    private static BlockBehaviour.Properties via() {
-        return BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(1.5F).sound(SoundType.METAL).noOcclusion();
-    }
-    public static final RegistryObject<Block> VIA_MONTANA = BLOCKS.register("via_montana",
-            () -> new com.miscelanea.montana.ViaMontanaBlock(via(), com.miscelanea.montana.ViaMontanaBlock.Tipo.NORMAL));
-    public static final RegistryObject<Block> VIA_MONTANA_CADENA = BLOCKS.register("via_montana_cadena",
-            () -> new com.miscelanea.montana.ViaMontanaBlock(via(), com.miscelanea.montana.ViaMontanaBlock.Tipo.CADENA));
-    public static final RegistryObject<Block> VIA_MONTANA_ESTACION = BLOCKS.register("via_montana_estacion",
-            () -> new com.miscelanea.montana.ViaMontanaBlock(via(), com.miscelanea.montana.ViaMontanaBlock.Tipo.ESTACION));
-    public static final RegistryObject<Block> VIA_MONTANA_FRENO = BLOCKS.register("via_montana_freno",
-            () -> new com.miscelanea.montana.ViaMontanaBlock(via(), com.miscelanea.montana.ViaMontanaBlock.Tipo.FRENO));
-    public static final RegistryObject<Block> RIZO = BLOCKS.register("rizo_montana",
-            () -> new com.miscelanea.montana.RizoBlock(via()));
-    @SuppressWarnings("DataFlowIssue")
-    public static final RegistryObject<BlockEntityType<com.miscelanea.montana.RizoBlock.RizoBlockEntity>> RIZO_BE = BLOCK_ENTITIES.register("rizo_montana",
-            () -> BlockEntityType.Builder.of(com.miscelanea.montana.RizoBlock.RizoBlockEntity::new, RIZO.get()).build(null));
-    /** Pilar de acero que sale solo debajo de la vía en el aire (no se fabrica ni suelta nada). */
-    public static final RegistryObject<Block> PILAR_MONTANA = BLOCKS.register("pilar_montana",
-            () -> new com.miscelanea.montana.PilarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(1.5F)
-                    .sound(SoundType.METAL).noOcclusion().noLootTable()));
     public static final RegistryObject<Block> NORIA = BLOCKS.register("noria",
             () -> new com.miscelanea.feria.AtraccionBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(3.0F)
                     .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 10), com.miscelanea.feria.AtraccionBlock.NORIA));
@@ -123,15 +102,29 @@ public final class ModBlocks {
     public static final RegistryObject<Block> CASETA_TIRO = BLOCKS.register("caseta_tiro",
             () -> new com.miscelanea.feria.CasetaTiroBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(2.0F)
                     .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 9)));
-    public static final RegistryObject<Block> CASETA_ARCO = BLOCKS.register("caseta_arco",
-            () -> new com.miscelanea.feria.CasetaArcoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN).strength(2.0F)
-                    .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 9)));
     @SuppressWarnings("DataFlowIssue")
     public static final RegistryObject<BlockEntityType<com.miscelanea.feria.CasetaTiroBlockEntity>> CASETA_TIRO_BE = BLOCK_ENTITIES.register("caseta_tiro",
-            () -> BlockEntityType.Builder.of(com.miscelanea.feria.CasetaTiroBlockEntity::new, CASETA_TIRO.get(), CASETA_ARCO.get()).build(null));
+            () -> BlockEntityType.Builder.of(com.miscelanea.feria.CasetaTiroBlockEntity::new, CASETA_TIRO.get()).build(null));
     public static final RegistryObject<Block> PELUCHE = BLOCKS.register("peluche",
             () -> new com.miscelanea.feria.PelucheBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOL).strength(0.5F)
                     .sound(SoundType.WOOL).noOcclusion()));
+    static {
+        // un bloque por cada peluche de la lista (ver com.miscelanea.feria.Peluches)
+        for (int i = 0; i < com.miscelanea.feria.Peluches.NOMBRES.length; i++) {
+            final int indice = i;
+            com.miscelanea.feria.Peluches.BLOQUES.put(com.miscelanea.feria.Peluches.NOMBRES[i],
+                    BLOCKS.register(com.miscelanea.feria.Peluches.id(com.miscelanea.feria.Peluches.NOMBRES[i]),
+                            () -> new com.miscelanea.feria.PeluchePersonaBlock(BlockBehaviour.Properties.of()
+                                    .mapColor(MapColor.WOOL).strength(0.5F).sound(SoundType.WOOL).noOcclusion(), indice)));
+        }
+    }
+    public static final RegistryObject<Block> MARCO_FOTO = BLOCKS.register("marco_foto",
+            () -> new com.miscelanea.movil.MarcoFotoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD)
+                    .strength(0.6F).sound(SoundType.WOOD).noOcclusion()));
+    @SuppressWarnings("DataFlowIssue")
+    public static final RegistryObject<BlockEntityType<com.miscelanea.movil.MarcoFotoBlockEntity>> MARCO_FOTO_BE =
+            BLOCK_ENTITIES.register("marco_foto",
+                    () -> BlockEntityType.Builder.of(com.miscelanea.movil.MarcoFotoBlockEntity::new, MARCO_FOTO.get()).build(null));
     public static final RegistryObject<Block> ALGODONERA = BLOCKS.register("algodonera",
             () -> new com.miscelanea.feria.MaquinaFeriaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PINK).strength(2.0F)
                     .sound(SoundType.METAL).noOcclusion().lightLevel(st -> 6), com.miscelanea.feria.MaquinaFeriaBlock.ALGODON));
@@ -173,10 +166,8 @@ public final class ModBlocks {
             () -> new com.miscelanea.bolos.BoleraBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(1.5F)
                     .sound(SoundType.WOOD).noOcclusion().lightLevel(st -> 6)));
     @SuppressWarnings("DataFlowIssue")
-    public static final RegistryObject<Block> BOLERA_FERIA = BLOCKS.register("bolera_feria",
-            () -> new com.miscelanea.bolos.BoleraFeriaBlock(BlockBehaviour.Properties.copy(BOLERA.get())));
     public static final RegistryObject<BlockEntityType<com.miscelanea.bolos.BoleraBlockEntity>> BOLERA_BE = BLOCK_ENTITIES.register("bolera",
-            () -> BlockEntityType.Builder.of(com.miscelanea.bolos.BoleraBlockEntity::new, BOLERA.get(), BOLERA_FERIA.get()).build(null));
+            () -> BlockEntityType.Builder.of(com.miscelanea.bolos.BoleraBlockEntity::new, BOLERA.get()).build(null));
     public static final RegistryObject<Block> DIANA_DARDOS = BLOCKS.register("diana_dardos",
             () -> new com.miscelanea.dardos.DianaDardosBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(1.0F)
                     .sound(SoundType.WOOD).noOcclusion()));

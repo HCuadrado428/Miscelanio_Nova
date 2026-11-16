@@ -1,13 +1,13 @@
 package com.miscelanea.client.armasfuego.rifle;
 
+import com.miscelanea.movil.MovilRegistro;
+import com.miscelanea.movil.MovilRed;
+import com.miscelanea.client.movil.MovilCliente;
+import com.miscelanea.client.movil.MovilCaptura;
 import com.miscelanea.Miscelanea;
 import com.miscelanea.armasfuego.rifle.Rifle;
 import com.miscelanea.armasfuego.rifle.RifleAccionPacket;
 import com.miscelanea.armasfuego.rifle.RifleItem;
-import com.miscelanea.client.movil.MovilCaptura;
-import com.miscelanea.client.movil.MovilCliente;
-import com.miscelanea.movil.MovilRed;
-import com.miscelanea.movil.MovilRegistro;
 import com.miscelanea.network.ModNetwork;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
@@ -30,7 +30,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -150,8 +149,13 @@ public final class RifleCliente {
 
     // ------------------------------------------------------------------ fotos con la mira
 
+    // Copper Slug: sin el móvil de Miscelánea, la foto va siempre a la carpeta de capturas. Se saca del fotograma
+    // con el HUD escondido (sin la mira ni la interfaz), como la cámara del móvil.
     private static int fotoFotogramas;
     private static long ultFoto;
+    private static boolean hudAntes;
+    /** La foto sale por la cámara del móvil (con el móvil encima) y va a su galería; sin él, a la carpeta de capturas. */
+    private static boolean conMovil;
     private static float zoomAntes;
     private static int filtroAntes;
     /** Para la prueba: cuántas fotos se han sacado y dónde ha ido la última. */
@@ -161,31 +165,54 @@ public final class RifleCliente {
     public static void foto() {
         if (Util.getMillis() - ultFoto < 1000 || fotoFotogramas > 0) return;
         ultFoto = Util.getMillis();
-        zoomAntes = MovilCaptura.zoom;
-        filtroAntes = MovilCaptura.filtro;
-        fotoFotogramas = 8;
-    }
-
-    /** La cámara del móvil copia el centro de la pantalla (sin el HUD ni la mira) al dibujar el mundo: se le pide unos fotogramas. */
-    @SubscribeEvent
-    public static void fotograma(TickEvent.RenderTickEvent e) {
-        if (e.phase != TickEvent.Phase.END || fotoFotogramas <= 0) return;
-        MovilCaptura.zoom = 1;
-        MovilCaptura.filtro = 0;
-        MovilCaptura.pedir(true);
-        fotoFotogramas--;
-        // los primeros fotogramas pueden tener una imagen vieja: se espera a que se copie la de ahora
-        if (fotoFotogramas > 4) return;
-        if (MovilCaptura.lista() || fotoFotogramas == 0) {
-            fotoFotogramas = 0;
-            byte[] jpg = MovilCaptura.foto(MovilCliente.maxBytesFoto);
-            MovilCaptura.zoom = zoomAntes;
-            MovilCaptura.filtro = filtroAntes;
-            guardarFoto(jpg);
+        Minecraft mc = Minecraft.getInstance();
+        conMovil = mc.player != null && mc.player.getInventory().hasAnyMatching(MovilRegistro::esMovil);
+        if (conMovil) {
+            zoomAntes = MovilCaptura.zoom;
+            filtroAntes = MovilCaptura.filtro;
+            fotoFotogramas = 8;
+        } else {
+            hudAntes = mc.options.hideGui;
+            mc.options.hideGui = true;
+            fotoFotogramas = 3;
         }
     }
 
-    private static void guardarFoto(byte[] jpg) {
+    /** Unos fotogramas sin HUD y se copia la imagen del último. */
+    @SubscribeEvent
+    public static void fotograma(TickEvent.RenderTickEvent e) {
+        if (e.phase != TickEvent.Phase.END || fotoFotogramas <= 0) return;
+        if (conMovil) {
+            // con el móvil: su cámara copia la imagen y la foto va a su galería
+            MovilCaptura.zoom = 1;
+            MovilCaptura.filtro = 0;
+            MovilCaptura.pedir(true);
+            fotoFotogramas--;
+            // los primeros fotogramas pueden tener una imagen vieja: se espera a que se copie la de ahora
+            if (fotoFotogramas > 4) return;
+            if (MovilCaptura.lista() || fotoFotogramas == 0) {
+                fotoFotogramas = 0;
+                byte[] jpg = MovilCaptura.foto(MovilCliente.maxBytesFoto);
+                MovilCaptura.zoom = zoomAntes;
+                MovilCaptura.filtro = filtroAntes;
+                guardarFotoMovil(jpg);
+            }
+            return;
+        }
+        if (--fotoFotogramas > 0) return;
+        Minecraft mc = Minecraft.getInstance();
+        com.mojang.blaze3d.platform.NativeImage img = null;
+        try {
+            img = net.minecraft.client.Screenshot.takeScreenshot(mc.getMainRenderTarget());
+        } catch (Exception ex) {
+            Miscelanea.LOGGER.warn("[Rifle] no se pudo copiar la imagen", ex);
+        }
+        mc.options.hideGui = hudAntes;
+        guardarFoto(img);
+    }
+
+    /** Con el móvil encima: la foto se sube a su galería (el servidor la guarda como cualquier foto del móvil). */
+    private static void guardarFotoMovil(byte[] jpg) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer p = mc.player;
         if (p == null) return;
@@ -195,24 +222,37 @@ public final class RifleCliente {
         }
         p.playSound(MovilRegistro.OBTURADOR.get(), 0.8F, 1.0F);
         fotosHechas++;
-        if (p.getInventory().hasAnyMatching(MovilRegistro::esMovil)) {
-            // con el móvil encima, a su galería (el servidor la guarda como cualquier foto del móvil)
-            MovilRed.alServidor(MovilRed.C_FOTO_SUBIR, b -> b.writeByteArray(jpg));
-            ultimaFoto = "movil";
-            p.displayClientMessage(Component.translatable("msg.miscelanea.rifle.foto_movil").withStyle(ChatFormatting.GREEN), true);
+        MovilRed.alServidor(MovilRed.C_FOTO_SUBIR, b -> b.writeByteArray(jpg));
+        ultimaFoto = "movil";
+        p.displayClientMessage(Component.translatable("msg.miscelanea.rifle.foto_movil").withStyle(ChatFormatting.GREEN), true);
+    }
+
+    private static void guardarFoto(com.mojang.blaze3d.platform.NativeImage img) {
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer p = mc.player;
+        if (p == null) {
+            if (img != null) img.close();
             return;
         }
-        // sin móvil, a la carpeta de capturas del juego
-        try {
-            File dir = new File(mc.gameDirectory, "screenshots");
-            dir.mkdirs();
-            String nombre = "catalejo_" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".jpg";
-            Files.write(new File(dir, nombre).toPath(), jpg);
-            ultimaFoto = nombre;
-            p.displayClientMessage(Component.translatable("msg.miscelanea.rifle.foto_capturas", nombre).withStyle(ChatFormatting.GREEN), true);
-        } catch (Exception ex) {
-            Miscelanea.LOGGER.warn("[Rifle] no se pudo guardar la foto", ex);
+        if (img == null) {
             p.displayClientMessage(Component.translatable("msg.miscelanea.rifle.foto_error").withStyle(ChatFormatting.RED), true);
+            return;
         }
+        p.playSound(net.minecraft.sounds.SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, 0.8F, 1.6F);
+        fotosHechas++;
+        File dir = new File(mc.gameDirectory, "screenshots");
+        dir.mkdirs();
+        String nombre = "catalejo_" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".png";
+        ultimaFoto = nombre;
+        File f = new File(dir, nombre);
+        com.mojang.blaze3d.platform.NativeImage i = img;
+        Util.ioPool().execute(() -> {
+            try (i) {
+                i.writeToFile(f);
+            } catch (Exception ex) {
+                Miscelanea.LOGGER.warn("[Rifle] no se pudo guardar la foto", ex);
+            }
+        });
+        p.displayClientMessage(Component.translatable("msg.miscelanea.rifle.foto_capturas", nombre).withStyle(ChatFormatting.GREEN), true);
     }
 }

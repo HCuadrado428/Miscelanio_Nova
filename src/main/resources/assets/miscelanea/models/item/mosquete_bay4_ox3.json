@@ -7,7 +7,7 @@
  "base": {
   "parent": "miscelanea:item/armas3d/mosquete_3d",
   "textures": {
-   "cobre": "miscelanea:item/armas3d/cobre_3",
+   "cobre": "miscelanea:item/armas3d/p_cobre_3",
    "bayoneta": "minecraft:block/gold_block"
   }
  },

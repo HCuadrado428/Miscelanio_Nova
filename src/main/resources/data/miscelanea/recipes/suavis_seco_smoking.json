@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smoking",
+  "ingredient": {
+    "tag": "miscelanea:suavis"
+  },
+  "result": "miscelanea:suavis_seco",
+  "experience": 0.2,
+  "cookingtime": 100
+}

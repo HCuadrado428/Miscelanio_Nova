@@ -38,7 +38,8 @@ import java.util.function.Consumer;
  * Base de las armas de fuego de mano de la segunda tanda (Winchester, Derringer, Thompson, mosquete y cañón de mano).
  * Controles comunes (con el arma en la mano principal):
  * <ul>
- *   <li>Clic derecho: disparar (la Thompson, manteniéndolo, en ráfaga).</li>
+ *   <li>Clic izquierdo: disparar (la Thompson, manteniéndolo, en ráfaga). Lo pide el cliente con {@link GatilloPacket}.</li>
+ *   <li>Mantener clic derecho: apuntar ({@link Apuntar}).</li>
  *   <li>Agachado + mantener clic derecho: recargar (con animación; se corta si se suelta) o, si está encasquillada,
  *       desatascarla.</li>
  * </ul>
@@ -242,7 +243,8 @@ public abstract class ArmaFuegoItem extends Item {
         ItemStack s = p.getItemInHand(hand);
         if (hand != InteractionHand.MAIN_HAND) return InteractionResultHolder.pass(s);
         CompoundTag t = s.getOrCreateTag();
-        if (p.isShiftKeyDown()) {
+        // apuntando, el clic derecho no hace nada más (aunque uno se agache con la mira puesta)
+        if (p.isShiftKeyDown() && !Apuntar.apuntando(p)) {
             // agachado con un panal o un hacha en la otra mano: encerar o rascar el cobre (como el revólver)
             ItemStack otra = p.getOffhandItem();
             if (Cobre.esPanal(otra) || Cobre.esHacha(otra)) {
@@ -275,11 +277,33 @@ public abstract class ArmaFuegoItem extends Item {
             if (!level.isClientSide) empezarRecarga((ServerPlayer) p, s);
             return InteractionResultHolder.consume(s);
         }
-        t.putInt(MODO, MODO_NADA);
-        return apretarGatillo(level, p, s);
+        // sin agacharse, el clic derecho es apuntar (lo lleva el cliente): aquí solo se evita usar lo de la otra mano
+        return InteractionResultHolder.consume(s);
     }
 
-    /** Clic derecho sin agacharse: por defecto, un disparo (semiautomática). */
+    /** El gatillo (clic izquierdo): lo llama el cliente en su lado y el servidor al llegar {@link GatilloPacket}. */
+    public void gatillo(Level level, Player p, ItemStack s) {
+        if (p.isUsingItem() || p.getMainHandItem() != s) return;
+        s.getOrCreateTag().putInt(MODO, MODO_NADA);
+        apretarGatillo(level, p, s);
+    }
+
+    /** Ráfagas en marcha (servidor): ticks con el gatillo apretado de cada jugador. */
+    private static final Map<UUID, Integer> RAFAGAS = new HashMap<>();
+
+    /** Empieza una ráfaga (armas automáticas): sigue cada tick hasta que se suelte el gatillo. */
+    protected void empezarRafaga(Player p) {
+        if (p.level().isClientSide) com.miscelanea.client.armasfuego.comun.Apuntado.rafagaLocal(true);
+        else RAFAGAS.put(p.getUUID(), 0);
+    }
+
+    /** Se suelta el gatillo: acaba la ráfaga. */
+    public static void soltarGatillo(Player p) {
+        if (p.level().isClientSide) com.miscelanea.client.armasfuego.comun.Apuntado.rafagaLocal(false);
+        else RAFAGAS.remove(p.getUUID());
+    }
+
+    /** Apretar el gatillo: por defecto, un disparo (semiautomática). */
     protected InteractionResultHolder<ItemStack> apretarGatillo(Level level, Player p, ItemStack s) {
         if (p.getCooldowns().isOnCooldown(this)) return InteractionResultHolder.fail(s);
         if (!intentar(level, p, s)) return InteractionResultHolder.fail(s);
@@ -311,10 +335,10 @@ public abstract class ArmaFuegoItem extends Item {
             atascar(sp, s);
             return true;
         }
-        if (!p.getAbilities().instabuild) ponerBalas(s, balas(s) - 1);
+        if (!p.getAbilities().instabuild && !com.miscelanea.ropa.Ropa.ahorraBala(p)) ponerBalas(s, balas(s) - 1);
         s.getOrCreateTag().putLong(DISPARO_T, level.getGameTime());
         disparar(sp, s);
-        Cobre.avisar(sp, s, Cobre.gastar(s, usosPorFase(), p.isInWaterOrRain()));
+        Cobre.avisar(sp, s, Cobre.gastar(s, com.miscelanea.ropa.Ropa.usosPorFase(p, usosPorFase()), p.isInWaterOrRain()));
         if (s.isDamageableItem()) s.hurtAndBreak(1, p, x -> x.broadcastBreakEvent(EquipmentSlot.MAINHAND));
         return true;
     }
@@ -337,7 +361,7 @@ public abstract class ArmaFuegoItem extends Item {
         switch (modo(s)) {
             case MODO_RECARGA -> {
                 if (level.isClientSide) return;
-                int paso = ticksRecarga(s);
+                int paso = Math.max(1, (int) Math.round(ticksRecarga(s) * com.miscelanea.ropa.Ropa.recarga(p)));
                 if (t > 0 && t % paso == 0) {
                     if (llena(s) && !cambiaTipo(p, s) || !p.getAbilities().instabuild && !tieneMunicion(p, s)) {
                         s.getOrCreateTag().putLong(FIN_CARGA, level.getGameTime());
@@ -381,8 +405,8 @@ public abstract class ArmaFuegoItem extends Item {
     /** Tras cada paso de recarga. */
     protected void alRecargar(ServerPlayer p, ItemStack s) {}
 
-    /** Ráfaga: cada tick con el clic mantenido (solo la Thompson). */
-    protected void rafaga(Level level, Player p, ItemStack s, int t) {}
+    /** Ráfaga: cada tick con el gatillo apretado (solo la Thompson). */
+    public void rafaga(Level level, Player p, ItemStack s, int t) {}
 
     @Override
     public void releaseUsing(ItemStack s, Level level, LivingEntity e, int quedan) {
@@ -409,6 +433,20 @@ public abstract class ArmaFuegoItem extends Item {
                 SACADO.put(p.getUUID(), ahora);
                 alSacar(p, s);
             }
+            Integer r = RAFAGAS.get(p.getUUID());
+            if (r != null) {
+                RAFAGAS.put(p.getUUID(), r + 1);
+                rafaga(level, p, s, r);
+            }
+        }
+    }
+
+    /** Cada tick del servidor: la ráfaga se acaba si ya no se lleva el arma en la mano (o se está recargando). */
+    public static void tickRafagas(net.minecraft.server.MinecraftServer srv) {
+        if (RAFAGAS.isEmpty()) return;
+        for (UUID id : RAFAGAS.keySet().toArray(new UUID[0])) {
+            ServerPlayer p = srv.getPlayerList().getPlayer(id);
+            if (p == null || !(p.getMainHandItem().getItem() instanceof ArmaFuegoItem) || p.isUsingItem() || !p.isAlive()) RAFAGAS.remove(id);
         }
     }
 
@@ -422,11 +460,15 @@ public abstract class ArmaFuegoItem extends Item {
     }
 
     public static void olvidar(UUID id) {
+        RAFAGAS.remove(id);
         SACADO.remove(id);
         VISTO.remove(id);
     }
 
     public static void limpiar() {
+        ULTIMO_ECO.clear();
+        RAFAGAS.clear();
+        Apuntar.limpiar();
         SACADO.clear();
         VISTO.clear();
     }
@@ -435,6 +477,11 @@ public abstract class ArmaFuegoItem extends Item {
 
     /** Dónde sale el tiro: {@code adelante}, {@code derecha} y {@code abajo} desde los ojos. */
     public static Vec3 boca(Entity p, double adelante, double derecha, double abajo) {
+        // apuntando, el tiro sale del centro (por la mira), no de la derecha como desde la cadera
+        if (p instanceof Player ap && Apuntar.apuntando(ap)) {
+            derecha = 0;
+            abajo = Math.min(abajo, 0.06);
+        }
         Vec3 mira = p.getViewVector(1.0F);
         Vec3 der = mira.cross(new Vec3(0, 1, 0));
         der = der.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : der.normalize();
@@ -448,11 +495,17 @@ public abstract class ArmaFuegoItem extends Item {
         ServerLevel l = p.serverLevel();
         // el cobre: más disperso cuanto más oxidado, pero el cañón gastado pega más y perfora más armadura
         ItemStack arma = p.getMainHandItem();
-        disp += Cobre.dispersion(Cobre.oxido(arma));
+        disp = (disp + Cobre.dispersion(Cobre.oxido(arma))) * Apuntar.dispersion(p) * Accesorios.dispersion(arma);
         dano *= Cobre.dano(arma);
         perf = Math.min(1F, perf + Cobre.perforacion(arma));
         Vec3 dir = Balistica.dispersar(p.getViewVector(1.0F), disp, p.getRandom());
-        Balistica.Tiro t = Balistica.trazar(l, p, p.getEyePosition(), dir, alcance, boca(p, 0.8, 0.3, 0.22), estela);
+        Vec3 boca = boca(p, 0.8, 0.3, 0.22);
+        Balistica.Tiro t = Balistica.trazar(l, p, p.getEyePosition(), dir, alcance, boca, estela);
+        // la bala se ve pasar, del color de su munición, y la boca echa lo suyo
+        Item mun = arma.getItem() instanceof ArmaFuegoItem af ? af.tipoActual(arma) : null;
+        Balistica.trazo(l, boca, t.pos(), mun);
+        Cobre.polvoPatina(l, boca, p.getViewVector(1.0F), Cobre.oxido(arma));
+        Balistica.bocaMunicion(l, boca.add(dir.scale(0.3)), dir, mun);
         if (t.entidad() != null) {
             float d = dano * Balistica.caida(t.distancia(), desdeCaida, alcance, minCaida);
             if (Balistica.herir(t.entidad(), p, d, perf, tipo, rafaga)) {
@@ -468,11 +521,62 @@ public abstract class ArmaFuegoItem extends Item {
     public static void efectos(ServerLevel l, Entity p, Vec3 boca, SoundEvent snd, float vol, float tono, int humo, boolean casquillo) {
         Vec3 mira = p.getViewVector(1.0F);
         Vec3 q = boca.add(mira.scale(0.25));
-        l.sendParticles(ArmasFuegoRegistro.FOGONAZO.get(), q.x, q.y, q.z, 1, 0, 0, 0, 0);
-        if (humo > 0) l.sendParticles(ParticleTypes.SMOKE, q.x, q.y, q.z, humo, 0.04, 0.04, 0.04, 0.01);
-        l.playSound(null, p.getX(), p.getY(), p.getZ(), snd, SoundSource.PLAYERS, vol, tono + l.random.nextFloat() * 0.08F);
-        l.gameEvent(p, GameEvent.PROJECTILE_SHOOT, boca);
+        // el fogonazo, del tamaño de cada arma (va en la velocidad x)
+        float esc = p instanceof net.minecraft.world.entity.LivingEntity le0 ? escalaFogonazo(le0.getMainHandItem()) : 1F;
+        l.sendParticles(ArmasFuegoRegistro.FOGONAZO.get(), q.x, q.y, q.z, 0, esc, 0, 0, 1.0);
+        // el humo de pólvora sale con el tiro y frena
+        for (int i = 0; i < humo + 1; i++) {
+            Vec3 v = mira.scale(0.05 + l.random.nextFloat() * 0.05).add((l.random.nextFloat() - 0.5) * 0.02, 0.01, (l.random.nextFloat() - 0.5) * 0.02);
+            l.sendParticles(ArmasFuegoRegistro.HUMO.get(), q.x, q.y, q.z, 0, v.x, v.y, v.z, 1.0);
+        }
+        boolean sil = p instanceof net.minecraft.world.entity.LivingEntity le && Accesorios.silencioso(le.getMainHandItem());
+        if (sil) {
+            // el silenciador de verdad: un soplido corto y sin estampido (y el sculk no lo oye)
+            l.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.SILENCIADOR_DISPARO.get(), SoundSource.PLAYERS, 1.2F, 0.95F + l.random.nextFloat() * 0.1F);
+        } else {
+            l.playSound(null, p.getX(), p.getY(), p.getZ(), snd, SoundSource.PLAYERS, vol, tono + l.random.nextFloat() * 0.08F);
+            l.gameEvent(p, GameEvent.PROJECTILE_SHOOT, boca);
+            sonidoExtra(l, p, snd, vol, tono);
+            MobsArmados.oirDisparo(l, p, boca);
+        }
+        Ruido.disparo(l, p, boca);   // el ruido para el resto de mobs (con Silenciador casi nada)
         if (casquillo) casquillo(l, p, boca.subtract(mira.scale(0.45)));
+    }
+
+    /** El tamaño del fogonazo de cada arma (1 = el de la Winchester). */
+    public static float escalaFogonazo(ItemStack s) {
+        Item i = s.getItem();
+        if (i instanceof com.miscelanea.armasfuego.oeste.DerringerItem) return 0.7F;
+        if (i instanceof com.miscelanea.armasfuego.oeste.ThompsonItem) return 0.85F;
+        if (i instanceof com.miscelanea.armasfuego.oeste.MosqueteItem) return 1.4F;
+        if (i instanceof com.miscelanea.armasfuego.oeste.CanonManoItem) return 1.7F;
+        return 1F;
+    }
+
+    private static final java.util.Map<java.util.UUID, Long> ULTIMO_ECO = new java.util.HashMap<>();
+
+    /**
+     * Lo que le da profundidad a un disparo: a los jugadores lejos del tirador (45 a 150 bloques) les llega su versión lejana (apagada, con
+     * eco), que el sonido normal ya no alcanza; y en un sitio cerrado (cueva, mina, pirámide, un edificio) resuena. Las armas de mucha
+     * cadencia no lo hacen en cada tiro (cada 6 ticks como mucho).
+     */
+    public static void sonidoExtra(ServerLevel l, Entity p, SoundEvent snd, float vol, float tono) {
+        long t = l.getGameTime();
+        Long ult = ULTIMO_ECO.get(p.getUUID());
+        if (ult != null && t - ult < 6) return;
+        ULTIMO_ECO.put(p.getUUID(), t);
+        SoundEvent lej = ModSounds.lejos(snd);
+        if (lej != null) {
+            for (ServerPlayer sp : l.players()) {
+                double d = sp.distanceTo(p);
+                if (d < 45 || d > 150) continue;
+                float v = Math.min(10F, (float) d / 16F + 1F);
+                sp.connection.send(new net.minecraft.network.protocol.game.ClientboundSoundPacket(
+                        net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(lej), SoundSource.PLAYERS, p.getX(), p.getY(), p.getZ(), v, tono, l.random.nextLong()));
+            }
+        }
+        if (!l.canSeeSky(net.minecraft.core.BlockPos.containing(p.getEyePosition())))
+            l.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.ECO_INTERIOR.get(), SoundSource.PLAYERS, Math.min(1.5F, vol * 0.4F), 0.92F + l.random.nextFloat() * 0.12F);
     }
 
     /** Un casquillo de latón (partícula barata con rebote) que sale a la derecha y hacia arriba. */
@@ -484,8 +588,16 @@ public abstract class ArmaFuegoItem extends Item {
         l.sendParticles(ArmasFuegoRegistro.CASQUILLO.get(), desde.x, desde.y, desde.z, 0, v.x, v.y, v.z, 1.0);
     }
 
-    /** Busca en la otra mano y luego en el inventario algo que cumpla {@code cond}. */
+    /**
+     * Busca en la otra mano y luego en el inventario algo que cumpla {@code cond}. Si no hay y el jugador lleva una
+     * cartuchera con munición que valga, saca una pila de ella al inventario y la devuelve.
+     */
     public static ItemStack buscar(Player p, java.util.function.Predicate<ItemStack> cond) {
+        ItemStack s = buscarSuelto(p, cond);
+        return s;
+    }
+
+    private static ItemStack buscarSuelto(Player p, java.util.function.Predicate<ItemStack> cond) {
         if (cond.test(p.getOffhandItem())) return p.getOffhandItem();
         for (int i = 0; i < p.getInventory().getContainerSize(); i++) {
             ItemStack s = p.getInventory().getItem(i);
@@ -548,14 +660,7 @@ public abstract class ArmaFuegoItem extends Item {
     @Override
     public void appendHoverText(ItemStack s, @Nullable Level level, List<Component> l, TooltipFlag f) {
         l.add(Component.translatable("msg.miscelanea.armafuego.balas", balas(s), capacidad(s), iconoMunicion(s).getHoverName()).withStyle(ChatFormatting.GOLD));
-        l.add(Cobre.estado(s));
-        Cobre.tooltip(s, l);
         if (atascada(s)) l.add(Component.translatable("msg.miscelanea.armafuego.atascada").withStyle(ChatFormatting.RED));
-        String id = getDescriptionId();
-        l.add(Component.translatable(id + ".ayuda1").withStyle(ChatFormatting.GRAY));
-        l.add(Component.translatable(id + ".ayuda2").withStyle(ChatFormatting.DARK_GRAY));
-        l.add(Component.translatable("msg.miscelanea.armafuego.ayuda_recarga").withStyle(ChatFormatting.DARK_GRAY));
-        l.add(Component.translatable("msg.miscelanea.armafuego.ayuda_cobre").withStyle(ChatFormatting.DARK_GRAY));
     }
 
     @Override

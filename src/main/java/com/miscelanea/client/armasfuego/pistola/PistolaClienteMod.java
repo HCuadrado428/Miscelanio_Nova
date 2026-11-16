@@ -23,6 +23,7 @@ public final class PistolaClienteMod {
     public static void setup(FMLClientSetupEvent e) {
         e.enqueueWork(() -> {
             PistolaCliente.init();
+            com.miscelanea.client.armasfuego.comun.Apuntado.init();
             ItemProperties.register(ModItems.REVOLVER.get(), new ResourceLocation(Miscelanea.MOD_ID, "oxido"),
                     (s, l, ent, seed) -> Tambor.oxido(s) / 4F);
         });

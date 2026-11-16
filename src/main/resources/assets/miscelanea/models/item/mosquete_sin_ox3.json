@@ -7,7 +7,7 @@
  "base": {
   "parent": "miscelanea:item/armas3d/mosquete_3d_sin",
   "textures": {
-   "cobre": "miscelanea:item/armas3d/cobre_3",
+   "cobre": "miscelanea:item/armas3d/p_cobre_3",
    "bayoneta": "miscelanea:item/armas3d/g_acero"
   }
  },

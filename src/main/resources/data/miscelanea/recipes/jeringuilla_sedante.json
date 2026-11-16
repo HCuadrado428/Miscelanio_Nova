@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "miscelanea:jeringuilla"
+    },
+    {
+      "item": "miscelanea:suavis_seco"
+    },
+    {
+      "item": "miscelanea:suavis_seco"
+    },
+    {
+      "type": "forge:nbt",
+      "item": "minecraft:potion",
+      "nbt": "{Potion:\"minecraft:water\"}"
+    }
+  ],
+  "result": {
+    "item": "miscelanea:jeringuilla_sedante"
+  }
+}

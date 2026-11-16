@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:sangre/cobradora",
+  "display": {
+    "icon": {
+      "item": "miscelanea:hacha_sangre"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.sangre.viva.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.sangre.viva.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "hacha_sangre_fase3": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "hacha_sangre_fase3"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 40
+  }
+}

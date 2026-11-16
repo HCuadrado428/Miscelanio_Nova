@@ -4,9 +4,10 @@ import com.miscelanea.client.voz.ProcesadorVoz;
 import com.miscelanea.client.voz.dsp.Dsp;
 
 /**
- * Estática: la voz como por una radio rota. Banda de teléfono (300-3200 Hz), muestreo bajado a ~6 kHz con pocos bits
- * (sample-and-hold + cuantización), una cama de nieve que sigue a la voz, chasquidos y cortes al azar (20-90 ms) en los
- * que solo queda la nieve.
+ * Estática: la voz como por una radio rota, pero que se entiende. Banda de teléfono (300-3200 Hz), muestreo bajado a
+ * ~12 kHz con ~6 bits (sample-and-hold + cuantización), una cama de nieve suave que sigue a la voz, algún chasquido y
+ * cortes cortos (10-30 ms, más o menos uno por segundo) en los que solo queda la nieve. (Antes: 6 kHz y 4 bits, nieve
+ * tan alta como media voz y unos 9 cortes por segundo de hasta 90 ms: no se entendía nada.)
  */
 public class ProcEstatica implements ProcesadorVoz {
     private final Dsp.Biquad alto = Dsp.Biquad.pasoAlto(300, 0.7), bajo = Dsp.Biquad.pasoBajo(3200, 0.8);
@@ -19,9 +20,9 @@ public class ProcEstatica implements ProcesadorVoz {
     @Override
     public void procesar(short[] frame, int amp) {
         b = Dsp.aFloat(frame, b);
-        int paso = 8 + Math.min(4, amp);                 // 48000 / 8 = 6 kHz
-        float niveles = Math.max(6F, 14F - 2F * amp);    // ~4 bits
-        float cama = 0.05F + 0.02F * Math.min(3, amp);
+        int paso = 4 + Math.min(2, amp);                 // 48000 / 4 = 12 kHz (con la máxima carga, 8 kHz)
+        float niveles = Math.max(24F, 48F - 6F * amp);   // ~5-6 bits
+        float cama = 0.03F + 0.01F * Math.min(3, amp);
         for (int i = 0; i < b.length; i++) {
             float x = bajo.tick(alto.tick(b[i])) * 1.6F;
             float e = env.tick(x);
@@ -31,9 +32,9 @@ public class ProcEstatica implements ProcesadorVoz {
             if (corte > 0) {
                 corte--;
                 y = 0;
-            } else if (r.entero(48000) < 9) corte = 960 + r.entero(3400);
-            float n = r.tick() * (cama + e * 0.55F);
-            if (r.entero(4000) == 0) n += (r.tick() > 0 ? 0.6F : -0.6F);   // chasquido
+            } else if (r.entero(48000) < 1) corte = 480 + r.entero(960);   // ~1 por segundo, de 10 a 30 ms
+            float n = r.tick() * (cama + e * 0.12F);
+            if (r.entero(12000) == 0) n += (r.tick() > 0 ? 0.35F : -0.35F);   // chasquido
             b[i] = Dsp.suave(y * 0.9F + n);
         }
         Dsp.aShort(b, frame);

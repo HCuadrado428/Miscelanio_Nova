@@ -123,8 +123,11 @@ public final class Revolver {
             if (ox >= 1) com.miscelanea.logros.LogrosMiscelanea.dar(p, "revolver_encasquillado");
             return true;
         }
-        Tambor.poner(s, pos, Carga.VACIA);
-        s.getOrCreateTag().putInt(GASTADAS, Math.min(Tambor.N, s.getOrCreateTag().getInt(GASTADAS) + 1));
+        // la ropa de bandido a veces ahorra la bala: se queda en su recámara
+        if (!com.miscelanea.ropa.Ropa.ahorraBala(p)) {
+            Tambor.poner(s, pos, Carga.VACIA);
+            s.getOrCreateTag().putInt(GASTADAS, Math.min(Tambor.N, s.getOrCreateTag().getInt(GASTADAS) + 1));
+        }
         oxidar(p, s);
 
         boolean critico = false;
@@ -133,12 +136,14 @@ public final class Revolver {
             critico = sacado != null && ahora - sacado <= VENTANA_DESENFUNDE
                     && EncantamientoRevolver.nivel(ModEnchantments.REVOLVER_DESENFUNDE, s) > 0;
         }
-        double disp = critico ? 0 : DISPERSION[0] + com.miscelanea.armasfuego.comun.Cobre.dispersion(ox) + (abanico ? 0.10 : 0);
+        double disp = critico ? 0 : (DISPERSION[0] + com.miscelanea.armasfuego.comun.Cobre.dispersion(ox)) * (abanico ? 1 : com.miscelanea.armasfuego.comun.Apuntar.dispersion(p)) * com.miscelanea.armasfuego.comun.Accesorios.dispersion(s)
+                + (abanico ? 0.10 : 0);
         Vec3 mira = p.getViewVector(1.0F);
         Vec3 dir = mira.add(r.nextGaussian() * disp, r.nextGaussian() * disp, r.nextGaussian() * disp).normalize();
 
         // fogonazo, humo y ruido (los sensores de sculk y el warden lo oyen)
         fogonazo(l, boca, p.getViewVector(1.0F), c == Carga.FOGUEO);
+        com.miscelanea.armasfuego.comun.Cobre.polvoPatina(l, boca, p.getViewVector(1.0F), ox);
         if (c == Carga.FOGUEO) {
             l.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.REVOLVER_FOGUEO.get(), SoundSource.PLAYERS, 6.0F, 0.95F + r.nextFloat() * 0.1F);
             l.gameEvent(p, GameEvent.EXPLODE, boca);
@@ -146,10 +151,11 @@ public final class Revolver {
             l.playSound(null, p.getX(), p.getY(), p.getZ(), ModSounds.REVOLVER_DISPARO.get(), SoundSource.PLAYERS, 4.0F,
                     (c == Carga.DARDO ? 1.25F : c == Carga.BENGALA ? 0.8F : c == Carga.TIEMPO ? 0.7F : 1.0F) + r.nextFloat() * 0.08F);
             l.gameEvent(p, GameEvent.PROJECTILE_SHOOT, boca);
+            com.miscelanea.armasfuego.comun.ArmaFuegoItem.sonidoExtra(l, p, ModSounds.REVOLVER_DISPARO.get(), 4.0F, 1.0F);
         }
+        com.miscelanea.armasfuego.comun.Ruido.disparo(l, p, boca);
         if (critico) {
             l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.PLAYER_ATTACK_CRIT, SoundSource.PLAYERS, 1.0F, 1.2F);
-            p.displayClientMessage(Component.translatable("pistola.miscelanea.desenfunde").withStyle(ChatFormatting.GOLD), true);
         }
 
         if (sien) {
@@ -161,6 +167,7 @@ public final class Revolver {
                 // la bala imán se pega donde da (no rebota): con Carambola se iba rebotando lejos de lo tirado
                 int rebotes = c == Carga.IMAN ? 0 : EncantamientoRevolver.nivel(ModEnchantments.REVOLVER_CARAMBOLA, s);
                 Impacto im = trazar(l, p, p.getEyePosition(), dir, ALCANCE, rebotes, boca);
+                if (im.rebotes() == 0) com.miscelanea.armasfuego.comun.Balistica.trazo(l, boca, im.pos(), c.item());
                 impactar(l, p, c, im, critico, s);
             }
             case BENGALA -> {
@@ -275,9 +282,7 @@ public final class Revolver {
         }
         if (im.bloque() != null) {
             BlockState st = l.getBlockState(im.bloque().getBlockPos());
-            if (!st.isAir())
-                l.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK, st), q.x, q.y, q.z, 6, 0.05, 0.05, 0.05, 0.1);
-            l.sendParticles(ParticleTypes.SMOKE, q.x, q.y, q.z, 2, 0.02, 0.02, 0.02, 0.01);
+            com.miscelanea.armasfuego.comun.Balistica.polvo(l, st, q);
             if (st.getBlock() instanceof BellBlock bell) bell.attemptToRing(p, l, im.bloque().getBlockPos(), im.bloque().getDirection());
         }
         if (c == Carga.IMAN) atraer(l, p, q);
@@ -395,7 +400,9 @@ public final class Revolver {
         Vec3 der = mira.cross(new Vec3(0, 1, 0));
         der = der.lengthSqr() < 1e-4 ? new Vec3(1, 0, 0) : der.normalize();
         if (p.getMainArm() == net.minecraft.world.entity.HumanoidArm.LEFT) der = der.scale(-1);
-        return ojo.add(mira.scale(0.8)).add(der.scale(0.3)).add(0, -0.22, 0);
+        // apuntando, el tiro sale del centro (por la mira), no de la derecha como desde la cadera
+        boolean apunta = com.miscelanea.armasfuego.comun.Apuntar.apuntando(p);
+        return ojo.add(mira.scale(0.8)).add(der.scale(apunta ? 0 : 0.3)).add(0, apunta ? -0.06 : -0.22, 0);
     }
 
     private static void fogonazo(ServerLevel l, Vec3 b, Vec3 mira, boolean grande) {
@@ -424,7 +431,7 @@ public final class Revolver {
     private static void oxidar(ServerPlayer p, ItemStack s) {
         if (Tambor.encerado(s)) {
             // con cera: se gasta un disparo de cera (y avisa cuando se acaba)
-            com.miscelanea.armasfuego.comun.Cobre.avisar(p, s, com.miscelanea.armasfuego.comun.Cobre.gastar(s, USOS_POR_OXIDO, false));
+            com.miscelanea.armasfuego.comun.Cobre.avisar(p, s, com.miscelanea.armasfuego.comun.Cobre.gastar(s, com.miscelanea.ropa.Ropa.usosPorFase(p, USOS_POR_OXIDO), false));
             return;
         }
         if (Tambor.oxido(s) >= 3) return;
@@ -433,7 +440,6 @@ public final class Revolver {
         if (u >= USOS_POR_OXIDO) {
             t.putInt(Tambor.OXIDO, Tambor.oxido(s) + 1);
             t.putInt(Tambor.USOS, 0);
-            p.displayClientMessage(Component.translatable("pistola.miscelanea.oxido." + Tambor.oxido(s)).withStyle(ChatFormatting.DARK_AQUA), true);
         } else {
             t.putInt(Tambor.USOS, u);
         }
@@ -483,7 +489,6 @@ public final class Revolver {
         int hueco = Tambor.primeraVacia(s);
         ServerLevel l = p.serverLevel();
         if (hueco < 0) {
-            p.displayClientMessage(Component.translatable("pistola.miscelanea.lleno").withStyle(ChatFormatting.GRAY), true);
             return false;
         }
         Tambor.poner(s, hueco, c);

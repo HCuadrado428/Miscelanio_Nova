@@ -21,9 +21,6 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<com.miscelanea.feria.AsientoFeria>> CABINA_NORIA = ENTITIES.register("cabina_noria",
             () -> EntityType.Builder.<com.miscelanea.feria.AsientoFeria>of(com.miscelanea.feria.AsientoFeria::new, MobCategory.MISC)
                     .sized(1.9F, 2.6F).clientTrackingRange(12).updateInterval(1).noSummon().build("cabina_noria"));
-    public static final RegistryObject<EntityType<com.miscelanea.montana.TrenMontana>> TREN_MONTANA = ENTITIES.register("tren_montana",
-            () -> EntityType.Builder.<com.miscelanea.montana.TrenMontana>of(com.miscelanea.montana.TrenMontana::new, MobCategory.MISC)
-                    .sized(1.2F, 0.9F).clientTrackingRange(10).updateInterval(1).noSummon().build("tren_montana"));
     public static final RegistryObject<EntityType<com.miscelanea.feria.CocheChoque>> COCHE_CHOQUE = ENTITIES.register("coche_choque",
             () -> EntityType.Builder.<com.miscelanea.feria.CocheChoque>of(com.miscelanea.feria.CocheChoque::new, MobCategory.MISC)
                     .sized(1.3F, 0.7F).clientTrackingRange(10).updateInterval(1).build("coche_choque"));
@@ -39,6 +36,9 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<com.miscelanea.feria.BalonEntity>> BALON = ENTITIES.register("balon",
             () -> EntityType.Builder.<com.miscelanea.feria.BalonEntity>of(com.miscelanea.feria.BalonEntity::new, MobCategory.MISC)
                     .sized(0.24F, 0.24F).clientTrackingRange(8).updateInterval(1).noSummon().build("balon"));
+    public static final RegistryObject<EntityType<com.miscelanea.feria.PelucheVueloEntity>> PELUCHE_VUELO = ENTITIES.register("peluche_vuelo",
+            () -> EntityType.Builder.<com.miscelanea.feria.PelucheVueloEntity>of(com.miscelanea.feria.PelucheVueloEntity::new, MobCategory.MISC)
+                    .sized(0.4F, 0.4F).clientTrackingRange(8).updateInterval(1).noSummon().build("peluche_vuelo"));
     public static final RegistryObject<EntityType<com.miscelanea.petanca.BolaPetanca>> BOLA_PETANCA = ENTITIES.register("bola_petanca",
             () -> EntityType.Builder.<com.miscelanea.petanca.BolaPetanca>of(com.miscelanea.petanca.BolaPetanca::new, MobCategory.MISC)
                     .sized(0.26F, 0.26F).clientTrackingRange(8).updateInterval(1).noSummon().build("bola_petanca"));
@@ -111,6 +111,11 @@ public final class ModEntities {
     public static final RegistryObject<EntityType<com.miscelanea.armasfuego.oeste.BolaCanonEntity>> BOLA_CANON = ENTITIES.register("bola_canon",
             () -> EntityType.Builder.<com.miscelanea.armasfuego.oeste.BolaCanonEntity>of(com.miscelanea.armasfuego.oeste.BolaCanonEntity::new, MobCategory.MISC)
                     .sized(0.4F, 0.4F).clientTrackingRange(8).updateInterval(1).noSummon().build("bola_canon"));
+
+    // ---- Granadas de cobre
+    public static final RegistryObject<EntityType<com.miscelanea.armasfuego.granada.GranadaEntity>> GRANADA = ENTITIES.register("granada",
+            () -> EntityType.Builder.<com.miscelanea.armasfuego.granada.GranadaEntity>of(com.miscelanea.armasfuego.granada.GranadaEntity::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F).clientTrackingRange(8).updateInterval(2).build("granada"));
 
     private ModEntities() {}
 }

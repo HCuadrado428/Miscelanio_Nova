@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:armas/mosquete",
+  "display": {
+    "icon": {
+      "item": "miscelanea:granada_metralla"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.armas.granada.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.armas.granada.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "granada": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "granada"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 10
+  }
+}

@@ -150,7 +150,7 @@ public final class DisparoPresion {
         else {
             perdigones(p, s, t, fuerza);
             boolean salva = t.reciclable && r.nextFloat() < 0.15F * Presion.nivel(s, Presion.Encantamiento.RECICLAJE);
-            if (!p.getAbilities().instabuild && !salva) Presion.ponerTolva(s, t, Presion.tolvaN(s) - 1);
+            if (!p.getAbilities().instabuild && !salva && !com.miscelanea.ropa.Ropa.ahorraBala(p)) Presion.ponerTolva(s, t, Presion.tolvaN(s) - 1);
         }
         // presión gastada (con Doble cámara queda para otro disparo)
         int hechos = Presion.disparosHechos(s) + 1;
@@ -159,7 +159,7 @@ public final class DisparoPresion {
             s.getOrCreateTag().remove(Presion.DISPAROS);
         } else s.getOrCreateTag().putInt(Presion.DISPAROS, hechos);
         // el cobre se oxida con el uso (antes si se usa mojado)
-        if (Presion.encerada(s)) com.miscelanea.armasfuego.comun.Cobre.avisar(p, s, com.miscelanea.armasfuego.comun.Cobre.gastar(s, 45, false));
+        if (Presion.encerada(s)) com.miscelanea.armasfuego.comun.Cobre.avisar(p, s, com.miscelanea.armasfuego.comun.Cobre.gastar(s, com.miscelanea.ropa.Ropa.usosPorFase(p, 45), false));
         else if (ox < 3 && r.nextFloat() < (p.isInWaterOrRain() ? 1 / 15F : 1 / 45F)) Presion.ponerOxido(s, ox + 1);
         s.hurtAndBreak(1, p, x -> x.broadcastBreakEvent(EquipmentSlot.MAINHAND));
         p.getCooldowns().addCooldown(s.getItem(), t == null ? 6 : 10);
@@ -180,7 +180,7 @@ public final class DisparoPresion {
         RandomSource r = p.getRandom();
         Vec3 ojo = p.getEyePosition(), mira = p.getViewVector(1.0F), boca = boca(p);
         float f = Math.min(fuerza, 1.3F);
-        double disp = 0.075 * (1 + 0.15 * Presion.oxido(s)) * (1.3 - 0.5 * f);   // más presión, más agrupado
+        double disp = 0.075 * (1 + 0.15 * Presion.oxido(s)) * (1.3 - 0.5 * f) * com.miscelanea.armasfuego.comun.Accesorios.dispersion(s);   // más presión, más agrupado
         double alcance = (6 + 20 * f) * t.alcance;
         Map<LivingEntity, float[]> golpes = new LinkedHashMap<>();   // daño, perdigones
         List<BlockHitResult> bloques = new ArrayList<>();
@@ -246,11 +246,13 @@ public final class DisparoPresion {
         sl.sendParticles(ParticleTypes.CLOUD, boca.x, boca.y, boca.z, 3, 0.05, 0.05, 0.05, 0.05);
         sl.sendParticles(ParticleTypes.POOF, boca.x, boca.y, boca.z, 2, 0.03, 0.03, 0.03, 0.03);
         sl.playSound(null, p.getX(), p.getY(), p.getZ(), com.miscelanea.registry.ModSounds.PRESION_DISPARO.get(), SoundSource.PLAYERS, 3.0F, 0.95F + r.nextFloat() * 0.1F);
+        com.miscelanea.armasfuego.comun.ArmaFuegoItem.sonidoExtra(sl, p, com.miscelanea.registry.ModSounds.PRESION_DISPARO.get(), 3.0F, 0.95F);
         if (t == TipoCartucho.CONFETI) {
             sl.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, SoundSource.PLAYERS, 1.5F, 1.2F);
             sl.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.FIREWORK_ROCKET_TWINKLE, SoundSource.PLAYERS, 1.2F, 1.0F);
         }
         sl.gameEvent(p, GameEvent.PROJECTILE_SHOOT, boca);
+        com.miscelanea.armasfuego.comun.Ruido.disparo(sl, p, boca);
         p.setDeltaMovement(p.getDeltaMovement().add(mira.scale(-0.12 * f)));
         p.connection.send(new ClientboundSetEntityMotionPacket(p));
     }
@@ -341,7 +343,7 @@ public final class DisparoPresion {
                     sl.playSound(null, pos, SoundEvents.FLINTANDSTEEL_USE, SoundSource.BLOCKS, 0.8F, 1.2F);
                     sl.gameEvent(p, GameEvent.BLOCK_CHANGE, pos);
                 } else if (st.getBlock() instanceof TntBlock) {
-                    st.onCaughtFire(sl, pos, bh.getDirection(), p);
+                    TntBlock.explode(sl, pos);   // Copper Slug: onCaughtFire es de Forge
                     sl.removeBlock(pos, false);
                 }
             }

@@ -1,0 +1,29 @@
+{
+  "parent": "miscelanea:sangre/viva",
+  "display": {
+    "icon": {
+      "item": "miscelanea:hacha_sangre"
+    },
+    "title": {
+      "translate": "advancements.miscelanea.sangre.insaciable.title"
+    },
+    "description": {
+      "translate": "advancements.miscelanea.sangre.insaciable.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "hacha_sangre_fase4": {
+      "trigger": "miscelanea:accion",
+      "conditions": {
+        "accion": "hacha_sangre_fase4"
+      }
+    }
+  },
+  "rewards": {
+    "experience": 80
+  }
+}

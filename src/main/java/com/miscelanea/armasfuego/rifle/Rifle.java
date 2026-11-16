@@ -113,11 +113,8 @@ public final class Rifle {
     private static ItemStack buscarMunicion(Player p) {
         ItemStack otra = p.getOffhandItem();
         if (tipo(otra.getItem()) >= 0) return otra;
-        for (int i = 0; i < p.getInventory().getContainerSize(); i++) {
-            ItemStack s = p.getInventory().getItem(i);
-            if (!s.isEmpty() && tipo(s.getItem()) >= 0) return s;
-        }
-        return ItemStack.EMPTY;
+        // (la del inventario, o si no la de la cartuchera)
+        return com.miscelanea.armasfuego.comun.ArmaFuegoItem.buscar(p, s -> tipo(s.getItem()) >= 0);
     }
 
     // ------------------------------------------------------------------ cerrojo
@@ -125,7 +122,8 @@ public final class Rifle {
     /** Empieza el ciclo del cerrojo (si no está ya en marcha). */
     public static void accionarCerrojo(ServerPlayer p, ItemStack s) {
         if (cerrojo(s) > 0) return;
-        s.getOrCreateTag().putInt(CERROJO, CERROJO_TICKS);
+        // la ropa de vaquero acorta el ciclo (nunca por debajo de lo que tarda en salir el casquillo)
+        s.getOrCreateTag().putInt(CERROJO, Math.max(T_EXPULSA + 1, (int) Math.round(CERROJO_TICKS * com.miscelanea.ropa.Ropa.recarga(p))));
         ServerLevel l = p.serverLevel();
         l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.CROSSBOW_LOADING_START, SoundSource.PLAYERS, 0.9F, 1.6F);
         l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.IRON_TRAPDOOR_OPEN, SoundSource.PLAYERS, 0.5F, 1.9F);
@@ -208,7 +206,8 @@ public final class Rifle {
             l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.DISPENSER_FAIL, SoundSource.PLAYERS, 0.8F, 1.4F);
             return;
         }
-        t.putBoolean(GASTADA, true);
+        // la ropa de bandido a veces ahorra la bala: queda otra lista en la recámara
+        if (!com.miscelanea.ropa.Ropa.ahorraBala(p)) t.putBoolean(GASTADA, true);
         int tipo = municion == null ? BALA : tipo(municion);
         boolean apunta = p.isUsingItem() && p.getUseItem() == s;
         int resp = nivel(s, ModEnchantments.RESPIRACION.get());
@@ -240,15 +239,15 @@ public final class Rifle {
         b.setXRot(xr);
         l.addFreshEntity(b);
 
+        com.miscelanea.armasfuego.comun.Ruido.disparo(l, p, p.position());
         // ruido: se oye a lo lejos y lo notan el sculk y el Warden (salvo con Silenciador)
         if (silencio) {
-            l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 0.35F, 1.7F);
-            l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.WOOL_HIT, SoundSource.PLAYERS, 0.6F, 0.6F);
+            l.playSound(null, p.getX(), p.getY(), p.getZ(), com.miscelanea.registry.ModSounds.SILENCIADOR_DISPARO.get(), SoundSource.PLAYERS, 1.2F, 0.9F + p.getRandom().nextFloat() * 0.1F);
         } else {
             l.playSound(null, p.getX(), p.getY(), p.getZ(), com.miscelanea.registry.ModSounds.RIFLE_CATALEJO_DISPARO.get(), SoundSource.PLAYERS, 4.0F, 0.95F + p.getRandom().nextFloat() * 0.1F);
-            l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.FIREWORK_ROCKET_LARGE_BLAST_FAR, SoundSource.PLAYERS, 4.0F, 0.6F);
-            l.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.CROSSBOW_SHOOT, SoundSource.PLAYERS, 1.0F, 0.6F);
+            com.miscelanea.armasfuego.comun.ArmaFuegoItem.sonidoExtra(l, p, com.miscelanea.registry.ModSounds.RIFLE_CATALEJO_DISPARO.get(), 4.0F, 0.95F);
             l.gameEvent(p, GameEvent.PROJECTILE_SHOOT, p.position());
+            com.miscelanea.armasfuego.comun.MobsArmados.oirDisparo(l, p, p.position());
             Vec3 boca = ojo.add(dir.scale(1.2)).add(0, -0.15, 0);
             l.sendParticles(ParticleTypes.SMOKE, boca.x, boca.y, boca.z, 4, 0.04, 0.04, 0.04, 0.01);
             Vec3 fg = ojo.add(dir.scale(1.6)).add(0, -0.15, 0);
@@ -257,7 +256,7 @@ public final class Rifle {
         t.putInt("Disparos", t.getInt("Disparos") + 1);
         // el cobre se oxida poco a poco con el uso (salvo encerado)
         // con cera se gasta un disparo de cera (y avisa cuando se acaba)
-        if (encerado(s)) com.miscelanea.armasfuego.comun.Cobre.avisar(p, s, com.miscelanea.armasfuego.comun.Cobre.gastar(s, 30, false));
+        if (encerado(s)) com.miscelanea.armasfuego.comun.Cobre.avisar(p, s, com.miscelanea.armasfuego.comun.Cobre.gastar(s, com.miscelanea.ropa.Ropa.usosPorFase(p, 30), false));
         else if (ox < 3 && p.getRandom().nextInt(30) == 0) t.putInt(OXIDO, ox + 1);
         s.hurtAndBreak(1, p, x -> x.broadcastBreakEvent(InteractionHand.MAIN_HAND));
         APUNTE.remove(p.getUUID());

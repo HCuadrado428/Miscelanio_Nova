@@ -148,7 +148,7 @@ public final class Cobre {
 
     /** Aviso en la barra de acción al pasar de fase. */
     public static void avisar(ServerPlayer p, ItemStack s) {
-        p.displayClientMessage(Component.translatable("armafuego.miscelanea.oxido." + oxido(s)).withStyle(ChatFormatting.DARK_AQUA), true);
+        // sin aviso: el cambio de fase se ve en el arma
     }
 
     public static boolean esPanal(ItemStack s) {
@@ -163,6 +163,14 @@ public final class Cobre {
      * Panal: encera para {@link #duracionCera} disparos (si ya tenía cera, la rellena). Devuelve si ha hecho algo. Los
      * sonidos y chispas, en {@code donde} (null = sin partículas).
      */
+    /** El cobre oxidado suelta polvo de pátina verdosa por la boca al disparar (cosmético; nada con el cobre nuevo ni apenas expuesto). */
+    public static void polvoPatina(ServerLevel l, Vec3 boca, Vec3 mira, int oxido) {
+        if (oxido < 2) return;
+        Vec3 q = boca.add(mira.scale(0.2));
+        l.sendParticles(new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(0.30F, 0.72F, 0.58F), 1.0F),
+                q.x, q.y, q.z, 2 * oxido, 0.05, 0.05, 0.05, 0.02);
+    }
+
     public static boolean encerar(Player p, ItemStack s, ItemStack panal, Vec3 donde) {
         int dur = duracionCera(s);
         if (cera(s, dur) >= dur) return false;
@@ -240,8 +248,6 @@ public final class Cobre {
 
     /** Las dos líneas del cobre para el tooltip de cualquier arma (efecto de la fase y cera que queda). */
     public static void tooltip(ItemStack s, java.util.List<Component> l) {
-        l.add(efectoFase(s));
-        Component c = ceraQueda(s);
-        if (c != null) l.add(c);
+        // sin texto: el estado del cobre se ve en el arma, como en vanilla
     }
 }

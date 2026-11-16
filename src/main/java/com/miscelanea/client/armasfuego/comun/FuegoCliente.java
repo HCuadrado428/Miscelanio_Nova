@@ -37,7 +37,7 @@ import net.minecraftforge.fml.common.Mod;
  * El «feel» de todas las armas de fuego en el cliente: el retroceso (la vista sube un poco y la cámara da un golpe
  * que se apaga en unas décimas, con algo de giro), el culatazo del arma en primera persona, las animaciones de
  * recarga, la palanca de la Winchester (con el giro a caballo), el contador de balas del HUD y los mandos de la
- * Gatling (mantener clic derecho = manivela).
+ * Gatling (mantener clic izquierdo = manivela; mantener clic derecho = apuntar).
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
 public final class FuegoCliente {
@@ -66,6 +66,12 @@ public final class FuegoCliente {
         patadas++;
     }
 
+    /** El retroceso de un arma que se puede apuntar: con la mira puesta se nota menos. */
+    public static void patadaArma(float sube, float sacude, float mano) {
+        float r = Apuntado.retroceso();
+        patada(sube * r, sacude * r, mano * r);
+    }
+
     private static float fadeMano() {
         long ms = Util.getMillis() - tPatada;
         return ms > 220 ? 0 : (1 - ms / 220F) * (1 - ms / 220F);
@@ -75,17 +81,18 @@ public final class FuegoCliente {
     public static void disparoLocal(ArmaFuegoItem arma, ItemStack s) {
         LocalPlayer p = Minecraft.getInstance().player;
         if (p == null) return;
-        if (arma instanceof WinchesterItem) patada(2.2F, 3.5F, 1F);
-        else if (arma instanceof DerringerItem) patada(1.6F, 2.5F, 0.8F);
+        if (arma instanceof WinchesterItem) patadaArma(2.2F, 3.5F, 1F);
+        else if (arma instanceof DerringerItem) patadaArma(1.6F, 2.5F, 0.8F);
         else if (arma instanceof ThompsonItem) {
             // ráfaga: cada bala sube un poco y tira hacia un lado (cuanto más larga, más se va)
             int n = ThompsonItem.rafagaN(s);
             float k = ThompsonItem.compensador(s);
-            patada((0.55F + Math.min(0.6F, n * 0.03F)) * k, 1.4F, 0.45F);
-            p.setYRot(p.getYRot() + (p.getRandom().nextFloat() - 0.45F) * 1.1F * k);
-        } else if (arma instanceof MosqueteItem) patada(4.5F, 7F, 1.6F);
-        else if (arma instanceof CanonManoItem) patada(6F, 10F, 2F);
-        else patada(2F, 3F, 1F);
+            patadaArma((0.55F + Math.min(0.6F, n * 0.03F)) * k, 1.4F, 0.45F);
+            p.setYRot(p.getYRot() + (p.getRandom().nextFloat() - 0.45F) * 1.1F * k * Apuntado.retroceso());
+        } else if (arma instanceof com.miscelanea.armasfuego.nether.LanzallamasItem) patadaArma(0.2F, 0.5F, 0.1F);
+        else if (arma instanceof MosqueteItem) patadaArma(4.5F, 7F, 1.6F);
+        else if (arma instanceof CanonManoItem) patadaArma(6F, 10F, 2F);
+        else patadaArma(2F, 3F, 1F);
     }
 
     @SubscribeEvent
@@ -109,6 +116,8 @@ public final class FuegoCliente {
         @Override
         public HumanoidModel.ArmPose getArmPose(LivingEntity e, InteractionHand h, ItemStack s) {
             if (h != InteractionHand.MAIN_HAND) return null;
+            // apuntando: los dos brazos al frente, a la altura de los ojos
+            if (e instanceof net.minecraft.world.entity.player.Player pl && com.miscelanea.armasfuego.comun.Apuntar.apuntando(pl)) return Apuntado.POSE;
             if (s.getItem() instanceof DerringerItem) {
                 // el as en la manga: hasta que dispara, el brazo va como si no llevara nada
                 if (!DerringerItem.visible(s, e.level()) && !(e.isUsingItem() && ArmaFuegoItem.modo(s) == ArmaFuegoItem.MODO_RECARGA))
@@ -132,6 +141,8 @@ public final class FuegoCliente {
         boolean usando = p.isUsingItem() && p.getUseItem() == s;
         int modo = ArmaFuegoItem.modo(s);
         float tUso = usando ? p.getTicksUsingItem() + pt : 0;
+        // apuntando: el arma va al centro, con la mira en el eje de la vista
+        Apuntado.alinear(ps, lado, s, pt);
         // recarga: el arma baja y se ladea; cada paso, un empujoncito
         if (usando && (modo == ArmaFuegoItem.MODO_RECARGA || modo == ArmaFuegoItem.MODO_DESATASCO) && s.getItem() instanceof ArmaFuegoItem a) {
             float entra = Math.min(1F, tUso / 5F);
@@ -229,9 +240,16 @@ public final class FuegoCliente {
             }
         }
         if (!(s.getItem() instanceof ArmaFuegoItem a)) return;
-        int x = w / 2 + 12, y = h / 2 + 8;
+        // apuntando en primera persona el arma ocupa el centro: los contadores se apartan a su derecha
+        boolean apuntando = Apuntado.apunta && Apuntado.k >= 0.6F && mc.options.getCameraType().isFirstPerson();
+        int x = w / 2 + 12 + (apuntando ? 28 : 0), y = h / 2 + 8;
         var f = mc.font;
         int balas = ArmaFuegoItem.balas(s), cap = a.capacidad(s);
+        // los contadores solo salen un rato tras sacar el arma, apuntar o disparar, y siempre que importen (sin balas, pocas,
+        // encasquillada, recargando o con la mecha del cañón encendida): siempre encendidos tapaban la pantalla
+        boolean urgente = balas == 0 || ArmaFuegoItem.atascada(s) || (cap > 0 && balas * 4 <= cap) || p.isUsingItem() && p.getUseItem() == s
+                || s.getItem() instanceof CanonManoItem && CanonManoItem.mecha(s) >= 0;
+        if (!urgente && !HudActividad.reciente()) return;
         // balas: la Winchester, su depósito tubular con el color de cada bala; las demás, puntitos de latón si caben
         // (hasta 12), si no el número
         if (s.getItem() instanceof WinchesterItem) {
@@ -338,7 +356,8 @@ public final class FuegoCliente {
 
     private static void hudGatling(GuiGraphics g, Minecraft mc, GatlingEntity gat, int w, int h) {
         // debajo de la mira (abajo están el aviso de bajarse y los mensajes de la barra de acción)
-        int x = w / 2 - 40, y = h / 2 + 24;
+        // a la derecha de la mira (debajo caía sobre el modelo de la Gatling y los avisos de la barra de acción)
+        int x = w / 2 + 30, y = h / 2 + 2;
         var f = mc.font;
         float c = gat.calor() / 100F;
         int col = c < 0.5F ? 0xFF5FD35F : c < 0.8F ? 0xFFE8C840 : 0xFFE84030;
@@ -349,13 +368,13 @@ public final class FuegoCliente {
         g.drawString(f, b, x + 80 - f.width(b), y - 11, gat.balas() == 0 ? 0xFFFF5555 : 0xFFF0D080, true);
         if (gat.recarga() > 0) {
             Component t = Component.translatable("hud.miscelanea.gatling.recargando");
-            g.drawString(f, t, w / 2 - f.width(t) / 2, y + 8, 0xFFE0C060, true);
+            g.drawString(f, t, x, y + 8, 0xFFE0C060, true);
         }
     }
 
     // ------------------------------------------------------------------ Gatling: la manivela
 
-    private static boolean girandoEnviado;
+    private static boolean girandoEnviado, apuntaEnviado;
 
     @SubscribeEvent
     public static void tick(TickEvent.ClientTickEvent e) {
@@ -364,15 +383,19 @@ public final class FuegoCliente {
         LocalPlayer p = mc.player;
         GatlingEntity gm = p == null ? null : GatlingEntity.deJugador(p);
         boolean en = gm != null;
-        boolean gira = en && mc.screen == null && (mc.options.keyUse.isDown() || manivelaPrueba);
-        if (gira != girandoEnviado && (en || girandoEnviado)) {
+        // a los mandos: mantener el clic izquierdo gira la manivela (dispara) y mantener el derecho apunta
+        boolean gira = en && mc.screen == null && (mc.options.keyAttack.isDown() || manivelaPrueba);
+        boolean apunta = en && mc.screen == null && (mc.options.keyUse.isDown() || Apuntado.apuntarPrueba);
+        if ((gira != girandoEnviado || apunta != apuntaEnviado) && (en || girandoEnviado || apuntaEnviado)) {
             girandoEnviado = gira;
-            if (p != null) ModNetwork.CHANNEL.sendToServer(new GatlingPacket(gira));
+            apuntaEnviado = apunta;
+            if (p != null) ModNetwork.CHANNEL.sendToServer(new GatlingPacket(gira, apunta));
         }
         // la Gatling disparando: la cámara vibra un poco
         if (en && gm.velocidad > 0.35F && gm.girando() && gm.balas() > 0 && gm.atasco() == 0 && p.tickCount % 2 == 0)
             patada(0F, 0.9F, 0F);
         mangaTick(mc, p);
+        Inspeccion.tick(mc, p);
     }
 
     /** El que va a los mandos de la Gatling: los dos brazos a los mandos (como con la ballesta cargada). */
@@ -387,11 +410,11 @@ public final class FuegoCliente {
 
     // ------------------------------------------------------------------ Derringer: la manga
 
-    /** La tecla de la manga (Opciones → Controles → Miscelánea; K por defecto). */
+    /** La tecla de la manga (Opciones → Controles → Copper Slug; K por defecto). */
     public static final net.minecraft.client.KeyMapping MANGA = new net.minecraft.client.KeyMapping("key.miscelanea.derringer_manga",
-            net.minecraftforge.client.settings.KeyConflictContext.IN_GAME, com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM,
-            org.lwjgl.glfw.GLFW.GLFW_KEY_K, com.miscelanea.client.combate.LlaveCliente.CATEGORIA);
+            com.mojang.blaze3d.platform.InputConstants.Type.KEYSYM, org.lwjgl.glfw.GLFW.GLFW_KEY_K, "key.categories.miscelanea");
 
+    /** La tecla de la funda: enfundar o desenfundar el arma corta (H por defecto). */
     private static void mangaTick(Minecraft mc, LocalPlayer p) {
         while (MANGA.consumeClick()) if (p != null && mc.screen == null) sacarDeLaManga();
     }
@@ -404,7 +427,7 @@ public final class FuegoCliente {
     /** Para la prueba del CI: girar la manivela sin el ratón. */
     public static boolean manivelaPrueba;
 
-    /** Con la Gatling, el clic derecho es la manivela: que no use lo que se lleve en la mano. */
+    /** Con la Gatling, el clic derecho es apuntar: que no use lo que se lleve en la mano (el izquierdo lo para Apuntado). */
     @SubscribeEvent
     public static void clic(InputEvent.InteractionKeyMappingTriggered e) {
         LocalPlayer p = Minecraft.getInstance().player;

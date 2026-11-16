@@ -1,0 +1,10 @@
+-proc:none
+-Xmaxerrs
+100000
+-d
+/tmp/claude-0/-home-user-Miscelanio-Nova/d03ded4c-b6c1-516b-849d-936c3bddc7ab/scratchpad/out
+src/main/java/com/miscelanea/armasfuego/pistola/Revolver.java
+src/main/java/com/miscelanea/armasfuego/pistola/RevolverItem.java
+src/main/java/com/miscelanea/armasfuego/rifle/Rifle.java
+src/main/java/com/miscelanea/armasfuego/escopeta/DisparoPresion.java
+src/main/java/com/miscelanea/armasfuego/escopeta/EscopetaPresionItem.java
