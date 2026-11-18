@@ -96,10 +96,12 @@ public final class ClientEvents {
             event.register((st, l, p, tinte) -> tinte == 0 && st.hasProperty(com.miscelanea.muebles.Muebles.COLOR)
                             ? com.miscelanea.muebles.Muebles.rgb(st.getValue(com.miscelanea.muebles.Muebles.COLOR)) : -1,
                     com.miscelanea.registry.ModBlocks.SILLA.get(), com.miscelanea.registry.ModBlocks.SOFA.get(), com.miscelanea.registry.ModBlocks.LAMPARA.get());
+            com.miscelanea.client.purgatorio.LiminalCliente.colores(event);
         }
 
         @SubscribeEvent
         public static void coloresItem(net.minecraftforge.client.event.RegisterColorHandlersEvent.Item event) {
+            com.miscelanea.client.purgatorio.LiminalCliente.coloresObjeto(event);
             event.register((st, tinte) -> tinte == 1 ? com.miscelanea.feria.AlgodonItem.color(st) : -1, com.miscelanea.registry.ModItems.ALGODON.get());
             event.register((st, tinte) -> tinte == 1 ? com.miscelanea.feria.CapsulaGachaItem.color(st) : -1, com.miscelanea.registry.ModItems.CAPSULA_GACHA.get());
             event.register((st, tinte) -> {
@@ -147,6 +149,7 @@ public final class ClientEvents {
             event.registerEntityRenderer(com.miscelanea.registry.ModEntities.MAZO_LANZADO.get(), com.miscelanea.client.armas.MazoLanzadoRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.MARCO_FOTO_BE.get(), com.miscelanea.client.movil.MarcoFotoRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.RECREATIVA_BE.get(), com.miscelanea.client.arcade.RecreativaRenderer::new);
+            event.registerBlockEntityRenderer(com.miscelanea.purgatorio.liminal.LiminalRegistro.ATREZO_BE.get(), com.miscelanea.client.purgatorio.LiminalCliente.AtrezoRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.CARTEL_RECORDS_BE.get(), com.miscelanea.client.arcade.CartelRecordsRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.BILLAR_BE.get(), com.miscelanea.client.mesas.BillarRenderer::new);
             event.registerBlockEntityRenderer(com.miscelanea.registry.ModBlocks.FUTBOLIN_BE.get(), com.miscelanea.client.mesas.FutbolinRenderer::new);

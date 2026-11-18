@@ -1,0 +1,154 @@
+{
+ "parent": "minecraft:block/block",
+ "render_type": "minecraft:cutout",
+ "textures": {
+  "caja": "miscelanea:block/liminal/tubo_caja",
+  "tubo": "miscelanea:block/liminal/tubo_encendido",
+  "particle": "miscelanea:block/liminal/tubo_caja"
+ },
+ "elements": [
+  {
+   "from": [
+    0.5,
+    13,
+    5
+   ],
+   "to": [
+    15.5,
+    16,
+    11
+   ],
+   "faces": {
+    "north": {
+     "texture": "#caja",
+     "uv": [
+      0.5,
+      0.0,
+      15.5,
+      3.0
+     ]
+    },
+    "south": {
+     "texture": "#caja",
+     "uv": [
+      0.5,
+      0.0,
+      15.5,
+      3.0
+     ]
+    },
+    "west": {
+     "texture": "#caja",
+     "uv": [
+      0.0,
+      0.0,
+      6.0,
+      3.0
+     ]
+    },
+    "east": {
+     "texture": "#caja",
+     "uv": [
+      0.0,
+      0.0,
+      6.0,
+      3.0
+     ]
+    },
+    "down": {
+     "texture": "#caja",
+     "uv": [
+      0.5,
+      4.0,
+      15.5,
+      10.0
+     ]
+    }
+   }
+  },
+  {
+   "from": [
+    1,
+    11.6,
+    6.2
+   ],
+   "to": [
+    15,
+    13,
+    7.6
+   ],
+   "shade": false,
+   "faces": {
+    "north": {
+     "texture": "#tubo",
+     "uv": [
+      0.0,
+      0.0,
+      16.0,
+      1.5
+     ]
+    },
+    "south": {
+     "texture": "#tubo",
+     "uv": [
+      0.0,
+      0.0,
+      16.0,
+      1.5
+     ]
+    },
+    "down": {
+     "texture": "#tubo",
+     "uv": [
+      0.0,
+      0.0,
+      16.0,
+      1.5
+     ]
+    }
+   }
+  },
+  {
+   "from": [
+    1,
+    11.6,
+    8.4
+   ],
+   "to": [
+    15,
+    13,
+    9.8
+   ],
+   "shade": false,
+   "faces": {
+    "north": {
+     "texture": "#tubo",
+     "uv": [
+      0.0,
+      0.0,
+      16.0,
+      1.5
+     ]
+    },
+    "south": {
+     "texture": "#tubo",
+     "uv": [
+      0.0,
+      0.0,
+      16.0,
+      1.5
+     ]
+    },
+    "down": {
+     "texture": "#tubo",
+     "uv": [
+      0.0,
+      0.0,
+      16.0,
+      1.5
+     ]
+    }
+   }
+  }
+ ]
+}

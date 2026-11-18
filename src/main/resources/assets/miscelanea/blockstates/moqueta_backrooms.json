@@ -1,0 +1,34 @@
+{
+ "variants": {
+  "": [
+   {
+    "model": "miscelanea:block/liminal/moqueta_backrooms",
+    "weight": 16
+   },
+   {
+    "model": "miscelanea:block/liminal/moqueta_backrooms",
+    "weight": 16,
+    "y": 90
+   },
+   {
+    "model": "miscelanea:block/liminal/moqueta_backrooms",
+    "weight": 16,
+    "y": 180
+   },
+   {
+    "model": "miscelanea:block/liminal/moqueta_backrooms",
+    "weight": 16,
+    "y": 270
+   },
+   {
+    "model": "miscelanea:block/liminal/moqueta_backrooms_humeda",
+    "weight": 3
+   },
+   {
+    "model": "miscelanea:block/liminal/moqueta_backrooms_humeda",
+    "weight": 3,
+    "y": 180
+   }
+  ]
+ }
+}

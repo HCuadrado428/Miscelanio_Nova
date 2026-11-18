@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/reloj_parado"
+  },
+  "facing=east": {
+   "model": "miscelanea:block/reloj_parado",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/reloj_parado",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/reloj_parado",
+   "y": 270
+  }
+ }
+}

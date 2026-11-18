@@ -1,0 +1,10 @@
+{
+ "variants": {
+  "arriba=false": {
+   "model": "miscelanea:block/pizarra_abajo"
+  },
+  "arriba=true": {
+   "model": "miscelanea:block/pizarra_arriba"
+  }
+ }
+}

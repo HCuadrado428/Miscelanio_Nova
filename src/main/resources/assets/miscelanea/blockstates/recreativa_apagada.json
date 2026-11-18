@@ -1,0 +1,244 @@
+{
+ "variants": {
+  "facing=north,half=lower,mueble=0": {
+   "model": "miscelanea:block/recreativa_astro_abajo"
+  },
+  "facing=north,half=upper,mueble=0": {
+   "model": "miscelanea:block/recreativa_apagada_astro_arriba"
+  },
+  "facing=north,half=lower,mueble=1": {
+   "model": "miscelanea:block/recreativa_tetrominos_abajo"
+  },
+  "facing=north,half=upper,mueble=1": {
+   "model": "miscelanea:block/recreativa_apagada_tetrominos_arriba"
+  },
+  "facing=north,half=lower,mueble=2": {
+   "model": "miscelanea:block/recreativa_serpiente_abajo"
+  },
+  "facing=north,half=upper,mueble=2": {
+   "model": "miscelanea:block/recreativa_apagada_serpiente_arriba"
+  },
+  "facing=north,half=lower,mueble=3": {
+   "model": "miscelanea:block/recreativa_ladrillos_abajo"
+  },
+  "facing=north,half=upper,mueble=3": {
+   "model": "miscelanea:block/recreativa_apagada_ladrillos_arriba"
+  },
+  "facing=north,half=lower,mueble=4": {
+   "model": "miscelanea:block/recreativa_pong_abajo"
+  },
+  "facing=north,half=upper,mueble=4": {
+   "model": "miscelanea:block/recreativa_apagada_pong_arriba"
+  },
+  "facing=north,half=lower,mueble=5": {
+   "model": "miscelanea:block/recreativa_pajaro_abajo"
+  },
+  "facing=north,half=upper,mueble=5": {
+   "model": "miscelanea:block/recreativa_apagada_pajaro_arriba"
+  },
+  "facing=north,half=lower,mueble=6": {
+   "model": "miscelanea:block/recreativa_invasores_abajo"
+  },
+  "facing=north,half=upper,mueble=6": {
+   "model": "miscelanea:block/recreativa_apagada_invasores_arriba"
+  },
+  "facing=north,half=lower,mueble=7": {
+   "model": "miscelanea:block/recreativa_mazmorra_abajo"
+  },
+  "facing=north,half=upper,mueble=7": {
+   "model": "miscelanea:block/recreativa_apagada_mazmorra_arriba"
+  },
+  "facing=east,half=lower,mueble=0": {
+   "model": "miscelanea:block/recreativa_astro_abajo",
+   "y": 90
+  },
+  "facing=east,half=upper,mueble=0": {
+   "model": "miscelanea:block/recreativa_apagada_astro_arriba",
+   "y": 90
+  },
+  "facing=east,half=lower,mueble=1": {
+   "model": "miscelanea:block/recreativa_tetrominos_abajo",
+   "y": 90
+  },
+  "facing=east,half=upper,mueble=1": {
+   "model": "miscelanea:block/recreativa_apagada_tetrominos_arriba",
+   "y": 90
+  },
+  "facing=east,half=lower,mueble=2": {
+   "model": "miscelanea:block/recreativa_serpiente_abajo",
+   "y": 90
+  },
+  "facing=east,half=upper,mueble=2": {
+   "model": "miscelanea:block/recreativa_apagada_serpiente_arriba",
+   "y": 90
+  },
+  "facing=east,half=lower,mueble=3": {
+   "model": "miscelanea:block/recreativa_ladrillos_abajo",
+   "y": 90
+  },
+  "facing=east,half=upper,mueble=3": {
+   "model": "miscelanea:block/recreativa_apagada_ladrillos_arriba",
+   "y": 90
+  },
+  "facing=east,half=lower,mueble=4": {
+   "model": "miscelanea:block/recreativa_pong_abajo",
+   "y": 90
+  },
+  "facing=east,half=upper,mueble=4": {
+   "model": "miscelanea:block/recreativa_apagada_pong_arriba",
+   "y": 90
+  },
+  "facing=east,half=lower,mueble=5": {
+   "model": "miscelanea:block/recreativa_pajaro_abajo",
+   "y": 90
+  },
+  "facing=east,half=upper,mueble=5": {
+   "model": "miscelanea:block/recreativa_apagada_pajaro_arriba",
+   "y": 90
+  },
+  "facing=east,half=lower,mueble=6": {
+   "model": "miscelanea:block/recreativa_invasores_abajo",
+   "y": 90
+  },
+  "facing=east,half=upper,mueble=6": {
+   "model": "miscelanea:block/recreativa_apagada_invasores_arriba",
+   "y": 90
+  },
+  "facing=east,half=lower,mueble=7": {
+   "model": "miscelanea:block/recreativa_mazmorra_abajo",
+   "y": 90
+  },
+  "facing=east,half=upper,mueble=7": {
+   "model": "miscelanea:block/recreativa_apagada_mazmorra_arriba",
+   "y": 90
+  },
+  "facing=south,half=lower,mueble=0": {
+   "model": "miscelanea:block/recreativa_astro_abajo",
+   "y": 180
+  },
+  "facing=south,half=upper,mueble=0": {
+   "model": "miscelanea:block/recreativa_apagada_astro_arriba",
+   "y": 180
+  },
+  "facing=south,half=lower,mueble=1": {
+   "model": "miscelanea:block/recreativa_tetrominos_abajo",
+   "y": 180
+  },
+  "facing=south,half=upper,mueble=1": {
+   "model": "miscelanea:block/recreativa_apagada_tetrominos_arriba",
+   "y": 180
+  },
+  "facing=south,half=lower,mueble=2": {
+   "model": "miscelanea:block/recreativa_serpiente_abajo",
+   "y": 180
+  },
+  "facing=south,half=upper,mueble=2": {
+   "model": "miscelanea:block/recreativa_apagada_serpiente_arriba",
+   "y": 180
+  },
+  "facing=south,half=lower,mueble=3": {
+   "model": "miscelanea:block/recreativa_ladrillos_abajo",
+   "y": 180
+  },
+  "facing=south,half=upper,mueble=3": {
+   "model": "miscelanea:block/recreativa_apagada_ladrillos_arriba",
+   "y": 180
+  },
+  "facing=south,half=lower,mueble=4": {
+   "model": "miscelanea:block/recreativa_pong_abajo",
+   "y": 180
+  },
+  "facing=south,half=upper,mueble=4": {
+   "model": "miscelanea:block/recreativa_apagada_pong_arriba",
+   "y": 180
+  },
+  "facing=south,half=lower,mueble=5": {
+   "model": "miscelanea:block/recreativa_pajaro_abajo",
+   "y": 180
+  },
+  "facing=south,half=upper,mueble=5": {
+   "model": "miscelanea:block/recreativa_apagada_pajaro_arriba",
+   "y": 180
+  },
+  "facing=south,half=lower,mueble=6": {
+   "model": "miscelanea:block/recreativa_invasores_abajo",
+   "y": 180
+  },
+  "facing=south,half=upper,mueble=6": {
+   "model": "miscelanea:block/recreativa_apagada_invasores_arriba",
+   "y": 180
+  },
+  "facing=south,half=lower,mueble=7": {
+   "model": "miscelanea:block/recreativa_mazmorra_abajo",
+   "y": 180
+  },
+  "facing=south,half=upper,mueble=7": {
+   "model": "miscelanea:block/recreativa_apagada_mazmorra_arriba",
+   "y": 180
+  },
+  "facing=west,half=lower,mueble=0": {
+   "model": "miscelanea:block/recreativa_astro_abajo",
+   "y": 270
+  },
+  "facing=west,half=upper,mueble=0": {
+   "model": "miscelanea:block/recreativa_apagada_astro_arriba",
+   "y": 270
+  },
+  "facing=west,half=lower,mueble=1": {
+   "model": "miscelanea:block/recreativa_tetrominos_abajo",
+   "y": 270
+  },
+  "facing=west,half=upper,mueble=1": {
+   "model": "miscelanea:block/recreativa_apagada_tetrominos_arriba",
+   "y": 270
+  },
+  "facing=west,half=lower,mueble=2": {
+   "model": "miscelanea:block/recreativa_serpiente_abajo",
+   "y": 270
+  },
+  "facing=west,half=upper,mueble=2": {
+   "model": "miscelanea:block/recreativa_apagada_serpiente_arriba",
+   "y": 270
+  },
+  "facing=west,half=lower,mueble=3": {
+   "model": "miscelanea:block/recreativa_ladrillos_abajo",
+   "y": 270
+  },
+  "facing=west,half=upper,mueble=3": {
+   "model": "miscelanea:block/recreativa_apagada_ladrillos_arriba",
+   "y": 270
+  },
+  "facing=west,half=lower,mueble=4": {
+   "model": "miscelanea:block/recreativa_pong_abajo",
+   "y": 270
+  },
+  "facing=west,half=upper,mueble=4": {
+   "model": "miscelanea:block/recreativa_apagada_pong_arriba",
+   "y": 270
+  },
+  "facing=west,half=lower,mueble=5": {
+   "model": "miscelanea:block/recreativa_pajaro_abajo",
+   "y": 270
+  },
+  "facing=west,half=upper,mueble=5": {
+   "model": "miscelanea:block/recreativa_apagada_pajaro_arriba",
+   "y": 270
+  },
+  "facing=west,half=lower,mueble=6": {
+   "model": "miscelanea:block/recreativa_invasores_abajo",
+   "y": 270
+  },
+  "facing=west,half=upper,mueble=6": {
+   "model": "miscelanea:block/recreativa_apagada_invasores_arriba",
+   "y": 270
+  },
+  "facing=west,half=lower,mueble=7": {
+   "model": "miscelanea:block/recreativa_mazmorra_abajo",
+   "y": 270
+  },
+  "facing=west,half=upper,mueble=7": {
+   "model": "miscelanea:block/recreativa_apagada_mazmorra_arriba",
+   "y": 270
+  }
+ }
+}

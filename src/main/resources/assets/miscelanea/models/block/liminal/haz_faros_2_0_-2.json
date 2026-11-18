@@ -1,0 +1,95 @@
+{
+ "parent": "minecraft:block/block",
+ "textures": {
+  "t": "miscelanea:block/liminal/haz_faros",
+  "particle": "miscelanea:block/liminal/haz_faros"
+ },
+ "elements": [
+  {
+   "from": [
+    0,
+    0.52,
+    8
+   ],
+   "to": [
+    0.4,
+    8.12,
+    16
+   ],
+   "faces": {
+    "east": {
+     "uv": [
+      4.75,
+      14.0,
+      6.75,
+      15.875
+     ],
+     "texture": "#t"
+    },
+    "up": {
+     "uv": [
+      6.75,
+      14.0,
+      6.875,
+      16.0
+     ],
+     "texture": "#t"
+    },
+    "down": {
+     "uv": [
+      6.875,
+      14.0,
+      7.0,
+      16.0
+     ],
+     "texture": "#t"
+    }
+   },
+   "shade": false
+  },
+  {
+   "from": [
+    0,
+    0.3,
+    0
+   ],
+   "to": [
+    1.8,
+    7.56,
+    8
+   ],
+   "faces": {
+    "east": {
+     "uv": [
+      7.0,
+      14.0,
+      9.0,
+      15.875
+     ],
+     "texture": "#t"
+    },
+    "up": {
+     "uv": [
+      9.0,
+      14.0,
+      9.5,
+      16.0
+     ],
+     "texture": "#t"
+    },
+    "down": {
+     "uv": [
+      9.5,
+      14.0,
+      10.0,
+      16.0
+     ],
+     "texture": "#t"
+    }
+   },
+   "shade": false
+  }
+ ],
+ "render_type": "minecraft:translucent",
+ "ambientocclusion": false
+}

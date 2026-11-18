@@ -1,0 +1,34 @@
+{
+ "variants": {
+  "facing=north,arriba=false": {
+   "model": "miscelanea:block/liminal/maquina_expendedora_0_0_0"
+  },
+  "facing=north,arriba=true": {
+   "model": "miscelanea:block/liminal/maquina_expendedora_0_1_0"
+  },
+  "facing=south,arriba=false": {
+   "model": "miscelanea:block/liminal/maquina_expendedora_0_0_0",
+   "y": 180
+  },
+  "facing=south,arriba=true": {
+   "model": "miscelanea:block/liminal/maquina_expendedora_0_1_0",
+   "y": 180
+  },
+  "facing=west,arriba=false": {
+   "model": "miscelanea:block/liminal/maquina_expendedora_0_0_0",
+   "y": 270
+  },
+  "facing=west,arriba=true": {
+   "model": "miscelanea:block/liminal/maquina_expendedora_0_1_0",
+   "y": 270
+  },
+  "facing=east,arriba=false": {
+   "model": "miscelanea:block/liminal/maquina_expendedora_0_0_0",
+   "y": 90
+  },
+  "facing=east,arriba=true": {
+   "model": "miscelanea:block/liminal/maquina_expendedora_0_1_0",
+   "y": 90
+  }
+ }
+}

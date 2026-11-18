@@ -1,0 +1,25 @@
+{
+ "variants": {
+  "axis=x,estado=0": {
+   "model": "miscelanea:block/liminal/tubo_encendido"
+  },
+  "axis=z,estado=0": {
+   "model": "miscelanea:block/liminal/tubo_encendido",
+   "y": 90
+  },
+  "axis=x,estado=1": {
+   "model": "miscelanea:block/liminal/tubo_apagado"
+  },
+  "axis=z,estado=1": {
+   "model": "miscelanea:block/liminal/tubo_apagado",
+   "y": 90
+  },
+  "axis=x,estado=2": {
+   "model": "miscelanea:block/liminal/tubo_parpadea"
+  },
+  "axis=z,estado=2": {
+   "model": "miscelanea:block/liminal/tubo_parpadea",
+   "y": 90
+  }
+ }
+}

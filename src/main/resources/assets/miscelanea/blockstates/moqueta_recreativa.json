@@ -1,0 +1,21 @@
+{
+ "variants": {
+  "": [
+   {
+    "model": "miscelanea:block/moqueta_recreativa"
+   },
+   {
+    "model": "miscelanea:block/moqueta_recreativa",
+    "y": 90
+   },
+   {
+    "model": "miscelanea:block/moqueta_recreativa",
+    "y": 180
+   },
+   {
+    "model": "miscelanea:block/moqueta_recreativa",
+    "y": 270
+   }
+  ]
+ }
+}

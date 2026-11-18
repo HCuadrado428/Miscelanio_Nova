@@ -1,0 +1,10 @@
+{
+  "type": "miscelanea:purgatorio",
+  "generator": {
+    "type": "miscelanea:purgatorio",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "miscelanea:purgatorio"
+    }
+  }
+}

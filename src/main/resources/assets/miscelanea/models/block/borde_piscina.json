@@ -1,0 +1,7 @@
+{
+ "parent": "minecraft:block/cube_column",
+ "textures": {
+  "side": "miscelanea:block/azulejo_piscina",
+  "end": "miscelanea:block/borde_piscina"
+ }
+}

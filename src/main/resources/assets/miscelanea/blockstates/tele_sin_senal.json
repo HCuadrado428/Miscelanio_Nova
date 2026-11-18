@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/tele_sin_senal"
+  },
+  "facing=east": {
+   "model": "miscelanea:block/tele_sin_senal",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/tele_sin_senal",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/tele_sin_senal",
+   "y": 270
+  }
+ }
+}

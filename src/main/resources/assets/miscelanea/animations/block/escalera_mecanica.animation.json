@@ -1,0 +1,73 @@
+{
+ "format_version": "1.8.0",
+ "animations": {
+  "animation.escalera_mecanica.techo": {
+   "loop": true,
+   "animation_length": 1.6,
+   "bones": {
+    "escalones": {
+     "position": {
+      "0.0": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "1.6": [
+       0.0,
+       8.0,
+       -8.0
+      ]
+     }
+    },
+    "ultimo": {
+     "position": {
+      "0.0": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "1.6": [
+       0.0,
+       8.0,
+       -8.0
+      ]
+     }
+    }
+   }
+  },
+  "animation.escalera_mecanica.rellano": {
+   "loop": true,
+   "animation_length": 1.6,
+   "bones": {
+    "escalones": {
+     "position": {
+      "0.0": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "1.6": [
+       0.0,
+       8.0,
+       -8.0
+      ]
+     }
+    },
+    "ultimo": {
+     "position": {
+      "0.0": [
+       0.0,
+       0.0,
+       0.0
+      ],
+      "1.6": [
+       0.0,
+       0.0,
+       -8.0
+      ]
+     }
+    }
+   }
+  }
+ }
+}

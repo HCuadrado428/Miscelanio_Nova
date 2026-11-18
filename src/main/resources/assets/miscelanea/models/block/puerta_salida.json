@@ -1,0 +1,40 @@
+{
+ "textures": {
+  "t": "miscelanea:block/puerta_salida",
+  "particle": "miscelanea:block/puerta_salida"
+ },
+ "elements": [
+  {
+   "from": [
+    0,
+    0,
+    7
+   ],
+   "to": [
+    16,
+    16,
+    9
+   ],
+   "faces": {
+    "north": {
+     "texture": "#t",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ]
+    },
+    "south": {
+     "texture": "#t",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ]
+    }
+   }
+  }
+ ]
+}

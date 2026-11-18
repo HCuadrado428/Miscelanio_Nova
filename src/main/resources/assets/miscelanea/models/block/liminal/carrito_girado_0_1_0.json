@@ -1,0 +1,87 @@
+{
+ "parent": "minecraft:block/block",
+ "textures": {
+  "t": "miscelanea:block/liminal/carrito_girado",
+  "particle": "miscelanea:block/liminal/carrito_girado"
+ },
+ "elements": [
+  {
+   "from": [
+    2.3,
+    -0.3,
+    14.4
+   ],
+   "to": [
+    13.7,
+    0.9,
+    15.6
+   ],
+   "faces": {
+    "north": {
+     "uv": [
+      3.25,
+      13.5,
+      6.125,
+      13.75
+     ],
+     "texture": "#t"
+    },
+    "south": {
+     "uv": [
+      6.125,
+      13.5,
+      9.0,
+      13.75
+     ],
+     "texture": "#t"
+    },
+    "west": {
+     "uv": [
+      9.0,
+      13.5,
+      9.25,
+      13.75
+     ],
+     "texture": "#t"
+    },
+    "east": {
+     "uv": [
+      9.25,
+      13.5,
+      9.5,
+      13.75
+     ],
+     "texture": "#t"
+    },
+    "up": {
+     "uv": [
+      9.5,
+      13.5,
+      12.375,
+      13.75
+     ],
+     "texture": "#t"
+    },
+    "down": {
+     "uv": [
+      12.375,
+      13.5,
+      15.25,
+      13.75
+     ],
+     "texture": "#t"
+    }
+   },
+   "rotation": {
+    "origin": [
+     8,
+     -16,
+     8
+    ],
+    "axis": "y",
+    "angle": 22.5
+   }
+  }
+ ],
+ "render_type": "minecraft:cutout"
+}

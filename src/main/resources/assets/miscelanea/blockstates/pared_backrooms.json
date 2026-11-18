@@ -1,0 +1,14 @@
+{
+ "variants": {
+  "": [
+   {
+    "model": "miscelanea:block/liminal/pared_backrooms",
+    "weight": 30
+   },
+   {
+    "model": "miscelanea:block/liminal/pared_backrooms_mancha",
+    "weight": 2
+   }
+  ]
+ }
+}

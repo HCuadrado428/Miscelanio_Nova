@@ -1,0 +1,28 @@
+{
+ "variants": {
+  "numero=0": {
+   "model": "miscelanea:block/rotulo_tienda_0"
+  },
+  "numero=1": {
+   "model": "miscelanea:block/rotulo_tienda_1"
+  },
+  "numero=2": {
+   "model": "miscelanea:block/rotulo_tienda_2"
+  },
+  "numero=3": {
+   "model": "miscelanea:block/rotulo_tienda_3"
+  },
+  "numero=4": {
+   "model": "miscelanea:block/rotulo_tienda_4"
+  },
+  "numero=5": {
+   "model": "miscelanea:block/rotulo_tienda_5"
+  },
+  "numero=6": {
+   "model": "miscelanea:block/rotulo_tienda_0"
+  },
+  "numero=7": {
+   "model": "miscelanea:block/rotulo_tienda_1"
+  }
+ }
+}

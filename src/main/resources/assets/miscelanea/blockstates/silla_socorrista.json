@@ -1,0 +1,49 @@
+{
+ "variants": {
+  "facing=north,parte=0": {
+   "model": "miscelanea:block/liminal/silla_socorrista_0_0_0"
+  },
+  "facing=north,parte=1": {
+   "model": "miscelanea:block/liminal/silla_socorrista_0_1_0"
+  },
+  "facing=north,parte=2": {
+   "model": "miscelanea:block/liminal/silla_socorrista_0_2_0"
+  },
+  "facing=south,parte=0": {
+   "model": "miscelanea:block/liminal/silla_socorrista_0_0_0",
+   "y": 180
+  },
+  "facing=south,parte=1": {
+   "model": "miscelanea:block/liminal/silla_socorrista_0_1_0",
+   "y": 180
+  },
+  "facing=south,parte=2": {
+   "model": "miscelanea:block/liminal/silla_socorrista_0_2_0",
+   "y": 180
+  },
+  "facing=west,parte=0": {
+   "model": "miscelanea:block/liminal/silla_socorrista_0_0_0",
+   "y": 270
+  },
+  "facing=west,parte=1": {
+   "model": "miscelanea:block/liminal/silla_socorrista_0_1_0",
+   "y": 270
+  },
+  "facing=west,parte=2": {
+   "model": "miscelanea:block/liminal/silla_socorrista_0_2_0",
+   "y": 270
+  },
+  "facing=east,parte=0": {
+   "model": "miscelanea:block/liminal/silla_socorrista_0_0_0",
+   "y": 90
+  },
+  "facing=east,parte=1": {
+   "model": "miscelanea:block/liminal/silla_socorrista_0_1_0",
+   "y": 90
+  },
+  "facing=east,parte=2": {
+   "model": "miscelanea:block/liminal/silla_socorrista_0_2_0",
+   "y": 90
+  }
+ }
+}

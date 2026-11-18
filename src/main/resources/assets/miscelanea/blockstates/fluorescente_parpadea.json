@@ -1,0 +1,10 @@
+{
+ "variants": {
+  "": [
+   {
+    "model": "miscelanea:block/liminal/fluorescente_parpadea",
+    "weight": 1
+   }
+  ]
+ }
+}

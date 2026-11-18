@@ -1,0 +1,10 @@
+{
+ "variants": {
+  "": [
+   {
+    "model": "miscelanea:block/liminal/pared_backrooms_zocalo",
+    "weight": 1
+   }
+  ]
+ }
+}

@@ -1,0 +1,28 @@
+{
+ "variants": {
+  "numero=0": {
+   "model": "miscelanea:block/columna_aparcamiento_0"
+  },
+  "numero=1": {
+   "model": "miscelanea:block/columna_aparcamiento_1"
+  },
+  "numero=2": {
+   "model": "miscelanea:block/columna_aparcamiento_2"
+  },
+  "numero=3": {
+   "model": "miscelanea:block/columna_aparcamiento_3"
+  },
+  "numero=4": {
+   "model": "miscelanea:block/columna_aparcamiento_4"
+  },
+  "numero=5": {
+   "model": "miscelanea:block/columna_aparcamiento_5"
+  },
+  "numero=6": {
+   "model": "miscelanea:block/columna_aparcamiento_6"
+  },
+  "numero=7": {
+   "model": "miscelanea:block/columna_aparcamiento_7"
+  }
+ }
+}
