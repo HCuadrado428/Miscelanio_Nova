@@ -4452,6 +4452,28 @@ public final class PruebaCI {
             paso("e404_" + n + "_a", 40, () -> {});
             paso("e404_" + n + "_b", 30, () -> mc.player.setYRot(mc.player.getYRot() + 140));
         }
+        // lo que cambia cuando no miras: en la sala de espera, 40 intentos a la espalda del jugador
+        sin("e404_cambios_ir", 60, () -> {
+            var b = com.miscelanea.error404.Error404.buscar(com.miscelanea.error404.Error404Generador.Zona.SALA);
+            if (b != null) irA404(b, 10, 5);
+        });
+        sin("e404_cambios", 20, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null || !com.miscelanea.error404.Error404.en(sp.level())) return;
+                int hechos = 0;
+                for (int i = 0; i < 40; i++) if (com.miscelanea.error404.Cambios.hacer(sp.serverLevel(), sp)) hechos++;
+                RESUMEN.add("  404: cambios a la espalda: " + hechos + " de 40 intentos");
+                PI.put("e404_cambios", hechos);
+            });
+        });
+        vigila("e404_cambios_chk", 30, () -> {
+            Object n = PI.get("e404_cambios");
+            if (!(n instanceof Integer k) || k < 1) throw new IllegalStateException("no ha cambiado nada a la espalda (" + n + ")");
+        });
+        paso("e404_cambios_vuelta", 30, () -> mc.player.setYRot(mc.player.getYRot() + 180));
         sin("e404_salida_ir", 60, () -> {
             var b = com.miscelanea.error404.Error404.buscarSalida();
             RESUMEN.add("  404: salida en " + b);

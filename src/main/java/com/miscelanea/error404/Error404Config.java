@@ -11,13 +11,13 @@ import net.minecraftforge.common.ForgeConfigSpec;
 public final class Error404Config {
     private Error404Config() {}
 
-    private static ForgeConfigSpec.BooleanValue ACTIVADO, VACIO;
+    private static ForgeConfigSpec.BooleanValue ACTIVADO, VACIO, CAMBIOS;
     private static ForgeConfigSpec.DoubleValue PARED;
-    private static ForgeConfigSpec.IntValue POR_JUGADOR, MAX_TOTAL;
+    private static ForgeConfigSpec.IntValue CAMBIOS_MIN, CAMBIOS_MAX;
 
     public static void definir(ForgeConfigSpec.Builder b) {
-        b.comment("La 404: la dimensión adonde van los errores purgados (se llega colándose por una pared o cayéndose del mapa).").push("404");
-        ACTIVADO = b.comment("Si es false no se puede llegar a la 404, no salen habitantes y a quien esté dentro se le saca",
+        b.comment("La 404: el espacio liminal sin fin (se llega colándose por una pared o cayéndose del mapa).").push("404");
+        ACTIVADO = b.comment("Si es false no se puede llegar a la 404, y a quien esté dentro se le saca",
                         "(vuelve a donde estaba). La dimensión sigue existiendo, pero vacía.")
                 .define("activado", true);
         PARED = b.comment("Probabilidad (0-1) de colarse por la pared cada vez que hace daño estar dentro de un bloque (cada medio segundo).",
@@ -25,10 +25,12 @@ public final class Error404Config {
                 .defineInRange("probabilidad_pared", 0.12, 0.0, 1.0);
         VACIO = b.comment("Si caerse al vacío del mundo normal (por debajo del fondo del mapa) lleva a la 404 en vez de matar.")
                 .define("entrar_al_caer_al_vacio", true);
-        POR_JUGADOR = b.comment("Habitantes como mucho cerca de cada jugador (a 64 bloques). 0 = no salen.")
-                .defineInRange("habitantes_por_jugador", 2, 0, 8);
-        MAX_TOTAL = b.comment("Habitantes como mucho en todo la 404 a la vez (sumando los de todos los jugadores).")
-                .defineInRange("max_habitantes", 12, 0, 64);
+        CAMBIOS = b.comment("Si false, nada cambia a tus espaldas (relojes, números, paredes, puertas y luces) mientras no miras.")
+                .define("cambios_a_la_espalda", true);
+        CAMBIOS_MIN = b.comment("Segundos mínimos entre un cambio a la espalda de un jugador y el siguiente.")
+                .defineInRange("cambios_segundos_min", 25, 5, 600);
+        CAMBIOS_MAX = b.comment("Segundos máximos entre un cambio a la espalda de un jugador y el siguiente.")
+                .defineInRange("cambios_segundos_max", 70, 10, 1200);
         b.pop();
     }
 
@@ -61,6 +63,7 @@ public final class Error404Config {
     }
     public static double probabilidadPared() { return leer(PARED); }
     public static boolean entrarAlCaer() { return leer(VACIO); }
-    public static int habitantesPorJugador() { return leer(POR_JUGADOR); }
-    public static int maxHabitantes() { return leer(MAX_TOTAL); }
+    public static boolean cambios() { return leer(CAMBIOS); }
+    public static int cambiosMin() { return leer(CAMBIOS_MIN); }
+    public static int cambiosMax() { return Math.max(leer(CAMBIOS_MAX), leer(CAMBIOS_MIN)); }
 }

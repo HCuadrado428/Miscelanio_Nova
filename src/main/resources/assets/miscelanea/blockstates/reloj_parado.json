@@ -1,18 +1,78 @@
 {
  "variants": {
-  "facing=north": {
+  "facing=north,hora=0": {
    "model": "miscelanea:block/reloj_parado"
   },
-  "facing=east": {
+  "facing=north,hora=1": {
+   "model": "miscelanea:block/reloj_parado_1"
+  },
+  "facing=north,hora=2": {
+   "model": "miscelanea:block/reloj_parado_2"
+  },
+  "facing=north,hora=3": {
+   "model": "miscelanea:block/reloj_parado_3"
+  },
+  "facing=north,hora=4": {
+   "model": "miscelanea:block/reloj_parado_4"
+  },
+  "facing=east,hora=0": {
    "model": "miscelanea:block/reloj_parado",
    "y": 90
   },
-  "facing=south": {
+  "facing=east,hora=1": {
+   "model": "miscelanea:block/reloj_parado_1",
+   "y": 90
+  },
+  "facing=east,hora=2": {
+   "model": "miscelanea:block/reloj_parado_2",
+   "y": 90
+  },
+  "facing=east,hora=3": {
+   "model": "miscelanea:block/reloj_parado_3",
+   "y": 90
+  },
+  "facing=east,hora=4": {
+   "model": "miscelanea:block/reloj_parado_4",
+   "y": 90
+  },
+  "facing=south,hora=0": {
    "model": "miscelanea:block/reloj_parado",
    "y": 180
   },
-  "facing=west": {
+  "facing=south,hora=1": {
+   "model": "miscelanea:block/reloj_parado_1",
+   "y": 180
+  },
+  "facing=south,hora=2": {
+   "model": "miscelanea:block/reloj_parado_2",
+   "y": 180
+  },
+  "facing=south,hora=3": {
+   "model": "miscelanea:block/reloj_parado_3",
+   "y": 180
+  },
+  "facing=south,hora=4": {
+   "model": "miscelanea:block/reloj_parado_4",
+   "y": 180
+  },
+  "facing=west,hora=0": {
    "model": "miscelanea:block/reloj_parado",
+   "y": 270
+  },
+  "facing=west,hora=1": {
+   "model": "miscelanea:block/reloj_parado_1",
+   "y": 270
+  },
+  "facing=west,hora=2": {
+   "model": "miscelanea:block/reloj_parado_2",
+   "y": 270
+  },
+  "facing=west,hora=3": {
+   "model": "miscelanea:block/reloj_parado_3",
+   "y": 270
+  },
+  "facing=west,hora=4": {
+   "model": "miscelanea:block/reloj_parado_4",
    "y": 270
   }
  }
