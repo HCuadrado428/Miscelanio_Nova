@@ -200,9 +200,9 @@ public final class Error404 {
         Miscelanea.LOGGER.info("404: sale {} a {} {}", p.getGameProfile().getName(), dest.dimension().location(), BlockPos.containing(b));
     }
 
-    /** Le baja de lo que lleve montado (también del tren de la montaña rusa) y le quita lo que lleve encima. */
+    /** Le baja de lo que lleve montado y le quita lo que lleve encima. */
     static void soltar(ServerPlayer p) {
-        if (p.isPassenger()) com.miscelanea.montana.MontanaEventos.bajarSiOSi(p);
+        if (p.isPassenger()) p.stopRiding();
         if (p.isVehicle()) p.ejectPassengers();
         if (p.isSleeping()) p.stopSleeping();
     }
