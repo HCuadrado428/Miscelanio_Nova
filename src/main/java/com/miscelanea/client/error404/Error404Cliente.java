@@ -428,7 +428,7 @@ public final class Error404Cliente {
 
     /** El bucle de fondo de una zona: su volumen lo lleva {@link Ambiente} (aquí solo se copia). */
     static final class Bucle extends net.minecraft.client.resources.sounds.AbstractTickableSoundInstance {
-        fina la 404Generador.Zona zona;
+        final Error404Generador.Zona zona;
         /** Ha llegado a sonar (si luego deja de estar activo es que lo han cortado). */
         boolean tocado;
 
