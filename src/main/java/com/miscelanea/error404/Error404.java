@@ -1,4 +1,4 @@
-package com.miscelanea.purgatorio;
+package com.miscelanea.error404;
 
 import com.miscelanea.Miscelanea;
 import net.minecraft.core.BlockPos;
@@ -25,17 +25,17 @@ import net.minecraftforge.fml.common.Mod;
 import javax.annotation.Nullable;
 
 /**
- * El Purgatorio: adonde van los errores purgados. Se cae ahí "saliéndose del mapa": asfixiándose dentro de un bloque
+ * La 404: adonde van los errores purgados. Se cae ahí "saliéndose del mapa": asfixiándose dentro de un bloque
  * (a veces, como un noclip) o cayendo al vacío del mundo normal. Se sale cruzando una puerta con el cartel verde de
  * SALIDA (hay más o menos una cada 60 chunks), y se vuelve justo a donde se estaba. Morir allí es como morir normal.
- * Si se cae por debajo del suelo del Purgatorio, se aparece en otra parte de él.
+ * Si se cae por debajo del suelo de la 404, se aparece en otra parte de él.
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID)
-public final class Purgatorio {
-    private Purgatorio() {}
+public final class Error404 {
+    private Error404() {}
 
-    public static final ResourceKey<Level> DIMENSION = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(Miscelanea.MOD_ID, "purgatorio"));
-    private static final String TAG = "miscelanea_purgatorio";
+    public static final ResourceKey<Level> DIMENSION = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(Miscelanea.MOD_ID, "404"));
+    private static final String TAG = "miscelanea_404";
     /** Lo lejos (en chunks) que se puede aparecer del centro. */
     private static final int RADIO = 120;
 
@@ -58,9 +58,9 @@ public final class Purgatorio {
     @SubscribeEvent
     public static void danio(LivingAttackEvent e) {
         if (!(e.getEntity() instanceof ServerPlayer p) || en(p.level())) return;
-        if (e.getSource().is(DamageTypes.IN_WALL) && PurgatorioConfig.activado() && p.getRandom().nextFloat() < PurgatorioConfig.probabilidadPared()) {
+        if (e.getSource().is(DamageTypes.IN_WALL) && Error404Config.activado() && p.getRandom().nextFloat() < Error404Config.probabilidadPared()) {
             e.setCanceled(true);
-            entrar(p, "purgatorio.miscelanea.noclip");
+            entrar(p, "error404.miscelanea.noclip");
         }
     }
 
@@ -69,15 +69,15 @@ public final class Purgatorio {
         if (e.phase != TickEvent.Phase.END || !(e.player instanceof ServerPlayer p) || p.isSpectator()) return;
         Level l = p.level();
         if (en(l)) {
-            // con el Purgatorio desactivado en la configuración, a quien esté dentro se le saca
-            if (p.tickCount % 20 == 0 && !PurgatorioConfig.activado()) {
+            // con la 404 desactivado en la configuración, a quien esté dentro se le saca
+            if (p.tickCount % 20 == 0 && !Error404Config.activado()) {
                 salir(p);
                 return;
             }
             // el pasillo que vuelve al mismo sitio: pasada la raya, 20 bloques atrás sin que se note (relativo: no se
             // pierde ni la velocidad ni hacia dónde se mira)
             // (una vez y espera: hasta que el cliente confirma, el servidor le sigue viendo donde estaba)
-            int dz = PurgatorioPlano.bucle(p.getX(), p.getY(), p.getZ());
+            int dz = Error404Plano.bucle(p.getX(), p.getY(), p.getZ());
             long ya = ((ServerLevel) l).getGameTime();
             if (dz != 0 && !p.isPassenger() && ya - BUCLE.getOrDefault(p.getUUID(), -100L) > 40) {
                 BUCLE.put(p.getUUID(), ya);
@@ -99,17 +99,17 @@ public final class Purgatorio {
                 ServerLevel l2 = (ServerLevel) l;
                 long ahora = l2.getGameTime();
                 boolean recien = ahora - persistente(p).getLong(TAG + "_t") < 400;
-                // por los agujeros del Mundo sin Texturas se cae fuera del Purgatorio: de vuelta a casa
+                // por los agujeros del Mundo sin Texturas se cae fuera de la 404: de vuelta a casa
                 // (también nada más llegar: si encima hay un agujero de verdad, no es que el suelo no hubiera cargado)
-                boolean agujero = l.getBlockState(new BlockPos(p.getBlockX(), PurgatorioGenerador.SUELO - 1, p.getBlockZ())).isAir()
-                        && l.getBlockState(new BlockPos(p.getBlockX(), PurgatorioGenerador.SUELO - 2, p.getBlockZ())).isAir();
-                if ((!recien || agujero) && PurgatorioGenerador.zona(p.getBlockX() >> 4, p.getBlockZ() >> 4) == PurgatorioGenerador.Zona.SIN_TEXTURA) {
+                boolean agujero = l.getBlockState(new BlockPos(p.getBlockX(), Error404Generador.SUELO - 1, p.getBlockZ())).isAir()
+                        && l.getBlockState(new BlockPos(p.getBlockX(), Error404Generador.SUELO - 2, p.getBlockZ())).isAir();
+                if ((!recien || agujero) && Error404Generador.zona(p.getBlockX() >> 4, p.getBlockZ() >> 4) == Error404Generador.Zona.SIN_TEXTURA) {
                     salir(p);
                     return;
                 }
                 // (a otra parte, en el suelo de algún piso: si se dejara caer desde arriba, en las zonas con techo se
                 // quedaría encima del tejado)
-                BlockPos b = recien ? new BlockPos(p.getBlockX(), PurgatorioPlano.base(persistente(p).getInt(TAG + "_n")), p.getBlockZ()) : sitio(p);
+                BlockPos b = recien ? new BlockPos(p.getBlockX(), Error404Plano.base(persistente(p).getInt(TAG + "_n")), p.getBlockZ()) : sitio(p);
                 preparar(l2, b);
                 llegado(p, ahora, b);
                 p.teleportTo(b.getX() + 0.5, b.getY(), b.getZ() + 0.5);
@@ -119,8 +119,8 @@ public final class Purgatorio {
             return;
         }
         if (l.dimension() == Level.OVERWORLD && p.getY() < l.getMinBuildHeight() - 40 && !p.getAbilities().flying
-                && PurgatorioConfig.activado() && PurgatorioConfig.entrarAlCaer())
-            entrar(p, "purgatorio.miscelanea.vacio");
+                && Error404Config.activado() && Error404Config.entrarAlCaer())
+            entrar(p, "error404.miscelanea.vacio");
     }
 
     /** Al irse del servidor se olvida lo que se sabía de él (para no ir guardando jugadores que ya no están). */
@@ -130,7 +130,7 @@ public final class Purgatorio {
         BUCLE.remove(e.getEntity().getUUID());
     }
 
-    /** Lleva al jugador al Purgatorio (guardando de dónde viene). */
+    /** Lleva al jugador a la 404 (guardando de dónde viene). */
     public static void entrar(ServerPlayer p, @Nullable String aviso) {
         ServerLevel dest = nivel(p);
         if (dest == null || en(p.level())) return;
@@ -152,7 +152,7 @@ public final class Purgatorio {
         p.teleportTo(dest, b.getX() + 0.5, b.getY(), b.getZ() + 0.5, p.getYRot(), 0);
         dest.playSound(null, b, SoundEvents.BEACON_DEACTIVATE, SoundSource.AMBIENT, 1F, 0.5F);
         if (aviso != null) p.displayClientMessage(Component.translatable(aviso), true);
-        Miscelanea.LOGGER.debug("Purgatorio: entra {} en {}", p.getGameProfile().getName(), b);
+        Miscelanea.LOGGER.debug("404: entra {} en {}", p.getGameProfile().getName(), b);
     }
 
     /**
@@ -196,8 +196,8 @@ public final class Purgatorio {
         p.setDeltaMovement(0, 0, 0);
         p.teleportTo(dest, b.x, b.y, b.z, p.getYRot(), p.getXRot());
         dest.playSound(null, b.x, b.y, b.z, SoundEvents.BEACON_ACTIVATE, SoundSource.AMBIENT, 1F, 1.4F);
-        p.displayClientMessage(Component.translatable("purgatorio.miscelanea.salida"), true);
-        Miscelanea.LOGGER.info("Purgatorio: sale {} a {} {}", p.getGameProfile().getName(), dest.dimension().location(), BlockPos.containing(b));
+        p.displayClientMessage(Component.translatable("error404.miscelanea.salida"), true);
+        Miscelanea.LOGGER.info("404: sale {} a {} {}", p.getGameProfile().getName(), dest.dimension().location(), BlockPos.containing(b));
     }
 
     /** Le baja de lo que lleve montado (también del tren de la montaña rusa) y le quita lo que lleve encima. */
@@ -254,9 +254,9 @@ public final class Purgatorio {
      */
     public static void llamarAscensor(ServerPlayer p, BlockPos boton) {
         if (!en(p.level()) || VIAJES.containsKey(p.getUUID())) return;
-        int n = PurgatorioPlano.nivel(boton.getY());
-        int m = (n + 1 + p.getRandom().nextInt(PurgatorioPlano.NIVELES - 1)) % PurgatorioPlano.NIVELES;
-        VIAJES.put(p.getUUID(), new Viaje(p.serverLevel().getGameTime() + 30, PurgatorioPlano.base(m) - PurgatorioPlano.base(n), boton.immutable()));
+        int n = Error404Plano.nivel(boton.getY());
+        int m = (n + 1 + p.getRandom().nextInt(Error404Plano.NIVELES - 1)) % Error404Plano.NIVELES;
+        VIAJES.put(p.getUUID(), new Viaje(p.serverLevel().getGameTime() + 30, Error404Plano.base(m) - Error404Plano.base(n), boton.immutable()));
         p.serverLevel().playSound(null, boton, SoundEvents.PISTON_CONTRACT, SoundSource.BLOCKS, 0.5F, 0.6F);
         p.serverLevel().playSound(null, boton, SoundEvents.MINECART_INSIDE, SoundSource.BLOCKS, 0.25F, 0.5F);
     }
@@ -278,8 +278,8 @@ public final class Purgatorio {
         BlockPos b = v.boton().offset(0, v.dy(), 0);
         l.playSound(null, b, SoundEvents.NOTE_BLOCK_BELL.value(), SoundSource.BLOCKS, 0.7F, 1.5F);
         l.playSound(null, b, SoundEvents.PISTON_EXTEND, SoundSource.BLOCKS, 0.4F, 0.7F);
-        int piso = PurgatorioPlano.nivel(b.getY());
-        p.displayClientMessage(Component.translatable("purgatorio.miscelanea.planta", piso == 0 ? "0" : "-" + piso), true);
+        int piso = Error404Plano.nivel(b.getY());
+        p.displayClientMessage(Component.translatable("error404.miscelanea.planta", piso == 0 ? "0" : "-" + piso), true);
     }
 
     /** Para la prueba: ¿va en el ascensor? */
@@ -287,7 +287,7 @@ public final class Purgatorio {
         return VIAJES.containsKey(p.getUUID());
     }
 
-    /** Lo lleva a otra parte del Purgatorio (cuando le pilla un habitante). */
+    /** Lo lleva a otra parte de la 404 (cuando le pilla un habitante). */
     public static void recolocar(ServerPlayer p) {
         ServerLevel l = nivel(p);
         if (l == null || !en(p.level())) return;
@@ -310,56 +310,56 @@ public final class Purgatorio {
     /** Apunta cuándo y a qué piso ha llegado (si se cae nada más llegar, se le devuelve ahí). */
     static void llegado(Player p, long t, BlockPos b) {
         persistente(p).putLong(TAG + "_t", t);
-        persistente(p).putInt(TAG + "_n", PurgatorioPlano.nivel(b.getY()));
+        persistente(p).putInt(TAG + "_n", Error404Plano.nivel(b.getY()));
     }
 
     /** ¿Es un chunk normal en ese piso (sin sala grande, ni escalera, ni ascensor, ni pilar)? */
     static boolean normal(int n, int cx, int cz) {
-        return PurgatorioGenerador.entero(n, cx, cz);
+        return Error404Generador.entero(n, cx, cz);
     }
 
     /**
-     * Un sitio al azar en una calle del Purgatorio (el cruce de un chunk normal siempre está libre), en el piso de arriba
+     * Un sitio al azar en una calle de la 404 (el cruce de un chunk normal siempre está libre), en el piso de arriba
      * más o menos la mitad de las veces y si no en uno de los de abajo.
      */
     static BlockPos sitio(ServerPlayer p) {
         var r = p.getRandom();
         for (int i = 0; ; i++) {
             int cx = r.nextInt(RADIO * 2) - RADIO, cz = r.nextInt(RADIO * 2) - RADIO;
-            int n = r.nextInt(2) == 0 ? 0 : r.nextInt(PurgatorioPlano.NIVELES);
+            int n = r.nextInt(2) == 0 ? 0 : r.nextInt(Error404Plano.NIVELES);
             if (i < 30 && !normal(n, cx, cz)) continue;
-            return new BlockPos(cx * 16 + 8, PurgatorioPlano.base(n), cz * 16 + 8);
+            return new BlockPos(cx * 16 + 8, Error404Plano.base(n), cz * 16 + 8);
         }
     }
 
     /** Para la prueba: el centro de un chunk normal de esa zona cerca del origen (en el piso de más arriba que la tenga). */
-    public static BlockPos buscar(PurgatorioGenerador.Zona z) {
-        for (int n = 0; n < PurgatorioPlano.NIVELES; n++) {
+    public static BlockPos buscar(Error404Generador.Zona z) {
+        for (int n = 0; n < Error404Plano.NIVELES; n++) {
             BlockPos b = buscar(z, n, 40);
             if (b != null) return b;
         }
-        return new BlockPos(8, PurgatorioGenerador.SUELO, 8);
+        return new BlockPos(8, Error404Generador.SUELO, 8);
     }
 
     @Nullable
-    public static BlockPos buscar(PurgatorioGenerador.Zona z, int n, int radio) {
+    public static BlockPos buscar(Error404Generador.Zona z, int n, int radio) {
         for (int r = 0; r < radio; r++)
             for (int cx = -r; cx <= r; cx++)
                 for (int cz = -r; cz <= r; cz++)
-                    if (Math.max(Math.abs(cx), Math.abs(cz)) == r && PurgatorioPlano.zona(n, cx, cz) == z && normal(n, cx, cz) && !PurgatorioPlano.salida(n, cx, cz))
-                        return new BlockPos(cx * 16 + 8, PurgatorioPlano.base(n), cz * 16 + 8);
+                    if (Math.max(Math.abs(cx), Math.abs(cz)) == r && Error404Plano.zona(n, cx, cz) == z && normal(n, cx, cz) && !Error404Plano.salida(n, cx, cz))
+                        return new BlockPos(cx * 16 + 8, Error404Plano.base(n), cz * 16 + 8);
         return null;
     }
 
     /** Para la prueba: la sala grande de ese tipo más cercana al origen (en cualquier piso), o null. */
     @Nullable
-    public static PurgatorioPlano.Grande buscarGrande(PurgatorioPlano.Tipo t) {
-        PurgatorioPlano.Grande mejor = null;
+    public static Error404Plano.Grande buscarGrande(Error404Plano.Tipo t) {
+        Error404Plano.Grande mejor = null;
         long dm = Long.MAX_VALUE;
-        for (int n = 0; n < PurgatorioPlano.NIVELES; n++)
+        for (int n = 0; n < Error404Plano.NIVELES; n++)
             for (int sx = -8; sx <= 8; sx++)
                 for (int sz = -8; sz <= 8; sz++) {
-                    var g = PurgatorioPlano.grandeDe(n, sx, sz);
+                    var g = Error404Plano.grandeDe(n, sx, sz);
                     if (g == null || g.tipo() != t) continue;
                     long d = (long) g.cx0() * g.cx0() + (long) g.cz0() * g.cz0() + n * 40L;
                     if (d < dm) {
@@ -376,8 +376,8 @@ public final class Purgatorio {
         for (int r = 0; r < 60; r++)
             for (int cx = -r; cx <= r; cx++)
                 for (int cz = -r; cz <= r; cz++)
-                    if (Math.max(Math.abs(cx), Math.abs(cz)) == r && PurgatorioPlano.escalera(n, cx, cz)
-                            && PurgatorioPlano.grande(n, cx, cz - 1) == null && PurgatorioPlano.grande(n + 1, cx, cz + 1) == null)
+                    if (Math.max(Math.abs(cx), Math.abs(cz)) == r && Error404Plano.escalera(n, cx, cz)
+                            && Error404Plano.grande(n, cx, cz - 1) == null && Error404Plano.grande(n + 1, cx, cz + 1) == null)
                         return new int[]{cx, cz};
         return null;
     }
@@ -388,7 +388,7 @@ public final class Purgatorio {
         for (int r = 0; r < 60; r++)
             for (int cx = -r; cx <= r; cx++)
                 for (int cz = -r; cz <= r; cz++)
-                    if (Math.max(Math.abs(cx), Math.abs(cz)) == r && PurgatorioPlano.ascensor(cx, cz)) return new int[]{cx, cz};
+                    if (Math.max(Math.abs(cx), Math.abs(cz)) == r && Error404Plano.ascensor(cx, cz)) return new int[]{cx, cz};
         return null;
     }
 
@@ -398,15 +398,15 @@ public final class Purgatorio {
      * la habitación de la tele.
      */
     @Nullable
-    public static BlockPos[] buscarRaro(PurgatorioGenerador.Zona z) {
-        int[][] q = PurgatorioPlano.PARCELAS;
-        for (int n = 0; n < PurgatorioPlano.NIVELES; n++) {
-            int f = PurgatorioPlano.base(n);
+    public static BlockPos[] buscarRaro(Error404Generador.Zona z) {
+        int[][] q = Error404Plano.PARCELAS;
+        for (int n = 0; n < Error404Plano.NIVELES; n++) {
+            int f = Error404Plano.base(n);
             for (int r = 0; r < 80; r++)
                 for (int cx = -r; cx <= r; cx++)
                     for (int cz = -r; cz <= r; cz++) {
-                        if (Math.max(Math.abs(cx), Math.abs(cz)) != r || PurgatorioPlano.zona(n, cx, cz) != z) continue;
-                        int k = PurgatorioGenerador.raro(n, cx, cz);
+                        if (Math.max(Math.abs(cx), Math.abs(cz)) != r || Error404Plano.zona(n, cx, cz) != z) continue;
+                        int k = Error404Generador.raro(n, cx, cz);
                         if (k < 0) continue;
                         int bx = cx * 16, bz = cz * 16;
                         switch (z) {
@@ -449,14 +449,14 @@ public final class Purgatorio {
 
     /** Para la prueba: el agujero del Mundo sin Texturas más cercano al origen (su centro, a la altura del suelo). */
     public static BlockPos buscarAgujero() {
-        int[][] q = PurgatorioPlano.PARCELAS;
+        int[][] q = Error404Plano.PARCELAS;
         for (int r = 0; r < 60; r++)
             for (int cx = -r; cx <= r; cx++)
                 for (int cz = -r; cz <= r; cz++) {
                     if (Math.max(Math.abs(cx), Math.abs(cz)) != r) continue;
                     for (int k = 0; k < 4; k++)
-                        if (PurgatorioPlano.agujero(cx, cz, k))
-                            return new BlockPos(cx * 16 + q[k][0] + 3, PurgatorioGenerador.SUELO, cz * 16 + q[k][1] + 3);
+                        if (Error404Plano.agujero(cx, cz, k))
+                            return new BlockPos(cx * 16 + q[k][0] + 3, Error404Generador.SUELO, cz * 16 + q[k][1] + 3);
                 }
         return null;
     }
@@ -466,8 +466,8 @@ public final class Purgatorio {
         for (int r = 0; r < 60; r++)
             for (int cx = -r; cx <= r; cx++)
                 for (int cz = -r; cz <= r; cz++)
-                    if (Math.max(Math.abs(cx), Math.abs(cz)) == r && PurgatorioGenerador.salida(cx, cz))
-                        return new BlockPos(cx * 16 + 3, PurgatorioGenerador.SUELO, cz * 16 + 6);
-        return new BlockPos(8, PurgatorioGenerador.SUELO, 8);
+                    if (Math.max(Math.abs(cx), Math.abs(cz)) == r && Error404Generador.salida(cx, cz))
+                        return new BlockPos(cx * 16 + 3, Error404Generador.SUELO, cz * 16 + 6);
+        return new BlockPos(8, Error404Generador.SUELO, 8);
     }
 }

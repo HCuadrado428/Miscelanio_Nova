@@ -311,7 +311,7 @@ public final class ModItems {
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.BILLAR.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> FUTBOLIN = ITEMS.register("futbolin",
             () -> new net.minecraft.world.item.BlockItem(ModBlocks.FUTBOLIN.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
-    // El Purgatorio: bloques que solo se encuentran allí (no se fabrican)
+    // La 404: bloques que solo se encuentran allí (no se fabrican)
     public static final RegistryObject<Item> SIN_TEXTURA = ITEMS.register("sin_textura", () -> new net.minecraft.world.item.BlockItem(ModBlocks.SIN_TEXTURA.get(), new Item.Properties().rarity(Rarity.RARE)));
     public static final RegistryObject<Item> MOQUETA_HOTEL = ITEMS.register("moqueta_hotel", () -> new net.minecraft.world.item.BlockItem(ModBlocks.MOQUETA_HOTEL.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> MOQUETA_RECREATIVA = ITEMS.register("moqueta_recreativa", () -> new net.minecraft.world.item.BlockItem(ModBlocks.MOQUETA_RECREATIVA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));

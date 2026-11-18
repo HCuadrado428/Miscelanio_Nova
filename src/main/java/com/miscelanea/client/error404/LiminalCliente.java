@@ -1,11 +1,11 @@
-package com.miscelanea.client.purgatorio;
+package com.miscelanea.client.error404;
 
 import com.miscelanea.Miscelanea;
-import com.miscelanea.purgatorio.Purgatorio;
-import com.miscelanea.purgatorio.PurgatorioGenerador;
-import com.miscelanea.purgatorio.liminal.AtrezoBE;
-import com.miscelanea.purgatorio.liminal.Bloques;
-import com.miscelanea.purgatorio.liminal.LiminalRegistro;
+import com.miscelanea.error404.Error404;
+import com.miscelanea.error404.Error404Generador;
+import com.miscelanea.error404.liminal.AtrezoBE;
+import com.miscelanea.error404.liminal.Bloques;
+import com.miscelanea.error404.liminal.LiminalRegistro;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
@@ -142,7 +142,7 @@ public final class LiminalCliente {
     public static int ticksManiqui;
 
     public static final class Maniquies {
-        /** Cada tic del cliente (lo llama el ambiente del Purgatorio). */
+        /** Cada tic del cliente (lo llama el ambiente de la 404). */
         public static void tick() {
             if (MANIQUIES.isEmpty()) return;
             Minecraft mc = Minecraft.getInstance();
@@ -185,7 +185,7 @@ public final class LiminalCliente {
     }
 
     /** Cuánto eco hay en cada zona (0 = ninguno: la moqueta se lo come). */
-    static float eco(PurgatorioGenerador.Zona z) {
+    static float eco(Error404Generador.Zona z) {
         return switch (z) {
             case PISCINA -> 1.0F;
             case APARCAMIENTO -> 0.85F;
@@ -202,16 +202,16 @@ public final class LiminalCliente {
     public static int ecos;
 
     public static final class Sonidos {
-        /** Cada sonido que suena (lo llama el ambiente del Purgatorio). */
+        /** Cada sonido que suena (lo llama el ambiente de la 404). */
         public static void sonido(PlaySoundEvent e) {
             SoundInstance s = e.getSound();
             if (s == null || s instanceof Eco) return;
             Minecraft mc = Minecraft.getInstance();
-            if (mc.level == null || mc.player == null || !Purgatorio.en(mc.level)) return;
+            if (mc.level == null || mc.player == null || !Error404.en(mc.level)) return;
             String n = s.getLocation().getPath();
             if (!(n.endsWith(".step") || n.endsWith(".fall") || n.endsWith("_close") || n.endsWith("_open") || n.endsWith(".land"))) return;
             if (mc.player.distanceToSqr(s.getX(), s.getY(), s.getZ()) > 36) return;
-            float k = eco(PurgatorioGenerador.zonaEn(mc.player.getX(), mc.player.getY(), mc.player.getZ()));
+            float k = eco(Error404Generador.zonaEn(mc.player.getX(), mc.player.getY(), mc.player.getZ()));
             if (k <= 0) return;
             var sm = mc.getSoundManager();
             sm.play(new Eco(s.getLocation(), s.getSource(), 0.30F * k, 0.96F, 4, s.getX(), s.getY() + 1, s.getZ()));

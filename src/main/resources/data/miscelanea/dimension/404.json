@@ -1,0 +1,10 @@
+{
+  "type": "miscelanea:404",
+  "generator": {
+    "type": "miscelanea:404",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "miscelanea:404"
+    }
+  }
+}

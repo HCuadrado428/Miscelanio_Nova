@@ -1,4 +1,4 @@
-package com.miscelanea.purgatorio;
+package com.miscelanea.error404;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;

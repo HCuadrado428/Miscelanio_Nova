@@ -30,7 +30,7 @@ public class Miscelanea {
         ModEffects.EFFECTS.register(modBus);
         ModPotions.POTIONS.register(modBus);
         ModItems.ITEMS.register(modBus);
-        com.miscelanea.purgatorio.PurgatorioGenerador.GENERADORES.register(modBus);
+        com.miscelanea.error404.Error404Generador.GENERADORES.register(modBus);
         ModEntities.ENTITIES.register(modBus);
         ModSounds.SOUNDS.register(modBus);
         ModEnchantments.ENCHANTMENTS.register(modBus);
@@ -51,7 +51,7 @@ public class Miscelanea {
         com.miscelanea.estatica.EstaticaRegistro.registrar(modBus);
         com.miscelanea.laser.LaserRegistro.registrar(modBus);
         com.miscelanea.movil.MovilRegistro.registrar(modBus);
-        com.miscelanea.purgatorio.liminal.LiminalRegistro.registrar(modBus);
+        com.miscelanea.error404.liminal.LiminalRegistro.registrar(modBus);
         // ---- Armas de fuego: se encuentran en cofres (Global Loot Modifier)
         com.miscelanea.armasfuego.BotinArmas.registrar(modBus);
         com.miscelanea.armasfuego.comun.ArmasFuegoRegistro.registrar(modBus);

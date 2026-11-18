@@ -1,4 +1,4 @@
-package com.miscelanea.purgatorio.liminal;
+package com.miscelanea.error404.liminal;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -180,7 +180,7 @@ public final class Bloques {
                 sl.getServer().tell(new net.minecraft.server.TickTask(sl.getServer().getTickCount() + i * 6, () ->
                         sl.playSound(null, p, SoundEvents.NOTE_BLOCK_BIT.value(), SoundSource.BLOCKS, 0.9F, ii % 2 == 0 ? 1.4F : 1.1F)));
             }
-            pl.displayClientMessage(Component.translatable("purgatorio.miscelanea.coche." + l.random.nextInt(6)), true);
+            pl.displayClientMessage(Component.translatable("error404.miscelanea.coche." + l.random.nextInt(6)), true);
             return InteractionResult.CONSUME;
         }
 
@@ -280,7 +280,7 @@ public final class Bloques {
             BlockState sa = l.getBlockState(abajo);
             if (!sa.is(this)) return InteractionResult.PASS;
             if (sa.getValue(VACIA)) {
-                pl.displayClientMessage(Component.translatable("purgatorio.miscelanea.maquina.agotada"), true);
+                pl.displayClientMessage(Component.translatable("error404.miscelanea.maquina.agotada"), true);
                 l.playSound(null, p, SoundEvents.DISPENSER_FAIL, SoundSource.BLOCKS, 0.6F, 1.2F);
                 return InteractionResult.CONSUME;
             }
@@ -299,7 +299,7 @@ public final class Bloques {
                 ie.setDeltaMovement(f.getStepX() * 0.08, 0.1, f.getStepZ() * 0.08);
                 l.addFreshEntity(ie);
             }
-            pl.displayClientMessage(Component.translatable("purgatorio.miscelanea.maquina." + k), true);
+            pl.displayClientMessage(Component.translatable("error404.miscelanea.maquina." + k), true);
             return InteractionResult.CONSUME;
         }
     }

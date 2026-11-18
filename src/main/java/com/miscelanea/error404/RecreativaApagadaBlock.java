@@ -1,4 +1,4 @@
-package com.miscelanea.purgatorio;
+package com.miscelanea.error404;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -19,7 +19,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 /**
  * Una recreativa fundida de la Recreativa Infinita: el mueble de una de las de verdad (MUEBLE elige cuál) con la pantalla
  * negra. Es un bloque normal de dos alturas, sin bloque-entidad ni nada que dibujar aparte, así que una sala llena de
- * ellas no le cuesta nada al ordenador. Solo hay en el Purgatorio y no suelta nada.
+ * ellas no le cuesta nada al ordenador. Solo hay en la 404 y no suelta nada.
  */
 public class RecreativaApagadaBlock extends HorizontalDirectionalBlock {
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;

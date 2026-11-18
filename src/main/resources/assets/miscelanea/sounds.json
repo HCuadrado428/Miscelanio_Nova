@@ -3013,96 +3013,96 @@
     ],
     "subtitle": "subtitles.miscelanea.canon_disparo_lejos"
   },
-  "purgatorio_feria": {
+  "404_feria": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/feria",
+        "name": "miscelanea:404/feria",
         "stream": true
       }
     ]
   },
-  "purgatorio_sala": {
+  "404_sala": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/sala",
+        "name": "miscelanea:404/sala",
         "stream": true
       }
     ]
   },
-  "purgatorio_recreativa": {
+  "404_recreativa": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/recreativa",
+        "name": "miscelanea:404/recreativa",
         "stream": true
       }
     ]
   },
-  "purgatorio_sin_textura": {
+  "404_sin_textura": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/sin_textura",
+        "name": "miscelanea:404/sin_textura",
         "stream": true
       }
     ]
   },
-  "purgatorio_hotel": {
+  "404_hotel": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/hotel",
+        "name": "miscelanea:404/hotel",
         "stream": true
       }
     ]
   },
-  "purgatorio_tele": {
+  "404_tele": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/tele",
+        "name": "miscelanea:404/tele",
         "attenuation_distance": 10
       }
     ],
-    "subtitle": "subtitles.miscelanea.purgatorio_tele"
+    "subtitle": "subtitles.miscelanea.404_tele"
   },
-  "purgatorio_piscina": {
+  "404_piscina": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/piscina",
+        "name": "miscelanea:404/piscina",
         "stream": true
       }
     ]
   },
-  "purgatorio_aparcamiento": {
+  "404_aparcamiento": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/aparcamiento",
+        "name": "miscelanea:404/aparcamiento",
         "stream": true
       }
     ]
   },
-  "purgatorio_colegio": {
+  "404_colegio": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/colegio",
+        "name": "miscelanea:404/colegio",
         "stream": true
       }
     ]
   },
-  "purgatorio_centro": {
+  "404_centro": {
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/centro",
+        "name": "miscelanea:404/centro",
         "stream": true
       }
     ]
   },
-  "purgatorio_zumbido": {
-    "subtitle": "subtitulo.miscelanea.purgatorio_zumbido",
+  "404_zumbido": {
+    "subtitle": "subtitulo.miscelanea.404_zumbido",
     "sounds": [
       {
-        "name": "miscelanea:purgatorio/zumbido_1",
+        "name": "miscelanea:404/zumbido_1",
         "attenuation_distance": 10
       },
       {
-        "name": "miscelanea:purgatorio/zumbido_2",
+        "name": "miscelanea:404/zumbido_2",
         "attenuation_distance": 10
       }
     ]

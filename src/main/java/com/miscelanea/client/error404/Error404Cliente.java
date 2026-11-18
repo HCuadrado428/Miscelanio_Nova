@@ -1,8 +1,8 @@
-package com.miscelanea.client.purgatorio;
+package com.miscelanea.client.error404;
 
 import com.miscelanea.Miscelanea;
-import com.miscelanea.purgatorio.Purgatorio;
-import com.miscelanea.purgatorio.PurgatorioGenerador;
+import com.miscelanea.error404.Error404;
+import com.miscelanea.error404.Error404Generador;
 import com.mojang.blaze3d.shaders.FogShape;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.DimensionSpecialEffects;
@@ -16,14 +16,14 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 /**
- * El Purgatorio en el cliente: sin cielo, sin nubes, sin sol ni estrellas (no se dibuja nada) y con una niebla corta y
+ * La 404 en el cliente: sin cielo, sin nubes, sin sol ni estrellas (no se dibuja nada) y con una niebla corta y
  * oscura que se come lo de lejos. Además de dar el ambiente, ahorra: lo que tapa la niebla casi no cuesta.
  */
-public final class PurgatorioCliente {
-    private PurgatorioCliente() {}
+public final class Error404Cliente {
+    private Error404Cliente() {}
 
     /** Hasta dónde se ve (bloques) en cada zona: al aire libre, un poco más que dentro. */
-    static float distancia(PurgatorioGenerador.Zona z) {
+    static float distancia(Error404Generador.Zona z) {
         return switch (z) {
             case FERIA -> 34;
             case SALA -> 24;
@@ -38,7 +38,7 @@ public final class PurgatorioCliente {
     }
 
     /** Color de la niebla de cada zona (r, g, b). */
-    static float[] colorNiebla(PurgatorioGenerador.Zona z) {
+    static float[] colorNiebla(Error404Generador.Zona z) {
         return switch (z) {
             case FERIA -> new float[]{0.07F, 0.05F, 0.10F};
             case SALA -> new float[]{0.12F, 0.11F, 0.065F};
@@ -72,7 +72,7 @@ public final class PurgatorioCliente {
     public static final class Registro {
         @SubscribeEvent
         public static void efectos(RegisterDimensionSpecialEffectsEvent e) {
-            e.register(new ResourceLocation(Miscelanea.MOD_ID, "purgatorio"), new Efectos());
+            e.register(new ResourceLocation(Miscelanea.MOD_ID, "404"), new Efectos());
         }
 
         @SubscribeEvent
@@ -92,24 +92,24 @@ public final class PurgatorioCliente {
 
         static boolean aqui() {
             Minecraft mc = Minecraft.getInstance();
-            return mc.level != null && Purgatorio.en(mc.level);
+            return mc.level != null && Error404.en(mc.level);
         }
 
-        static PurgatorioGenerador.Zona zona() {
+        static Error404Generador.Zona zona() {
             Minecraft mc = Minecraft.getInstance();
             var c = mc.gameRenderer.getMainCamera().getPosition();
-            return PurgatorioGenerador.zonaEn(c.x, c.y, c.z);
+            return Error404Generador.zonaEn(c.x, c.y, c.z);
         }
 
         /** Una vez por fotograma: acerca la niebla actual a la de la zona. */
         static void actualizar() {
-            PurgatorioGenerador.Zona z = zona();
+            Error404Generador.Zona z = zona();
             float td = distancia(z);
             // en las salas más grandes (el atrio del centro comercial y la piscina olímpica) se ve más lejos: si no, la
             // niebla se come las escaleras mecánicas y el fondo de la piscina
             var c = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-            var gs = com.miscelanea.purgatorio.PurgatorioPlano.grande(com.miscelanea.purgatorio.PurgatorioPlano.nivel(c.y), (int) Math.floor(c.x) >> 4, (int) Math.floor(c.z) >> 4);
-            if (gs != null && (gs.tipo() == com.miscelanea.purgatorio.PurgatorioPlano.Tipo.ATRIO || gs.tipo() == com.miscelanea.purgatorio.PurgatorioPlano.Tipo.PISCINA_OLIMPICA)) td = 46;
+            var gs = com.miscelanea.error404.Error404Plano.grande(com.miscelanea.error404.Error404Plano.nivel(c.y), (int) Math.floor(c.x) >> 4, (int) Math.floor(c.z) >> 4);
+            if (gs != null && (gs.tipo() == com.miscelanea.error404.Error404Plano.Tipo.ATRIO || gs.tipo() == com.miscelanea.error404.Error404Plano.Tipo.PISCINA_OLIMPICA)) td = 46;
             float[] tc = colorNiebla(z);
             long ahora = net.minecraft.Util.getMillis();
             float dt = (ahora - ultimo) / 1000F;
@@ -163,7 +163,7 @@ public final class PurgatorioCliente {
 
     // ------------------------------------------------------------------ ambiente
     /**
-     * El sonido del Purgatorio, mezclado aquí (no en los sonidos: así se sabe lo que suena aunque no haya tarjeta de
+     * El sonido de la 404, mezclado aquí (no en los sonidos: así se sabe lo que suena aunque no haya tarjeta de
      * sonido, como en la prueba):
      * <ul>
      *   <li>Un bucle de fondo por zona, sin posición; al cambiar de zona el de antes baja en 2 s y entra el nuevo. Cada
@@ -177,8 +177,8 @@ public final class PurgatorioCliente {
     @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, value = Dist.CLIENT)
     public static final class Ambiente {
         /** Volumen de mezcla (0-1) de cada zona y el sonido que lo toca. */
-        private static final java.util.EnumMap<PurgatorioGenerador.Zona, Float> MEZCLA = new java.util.EnumMap<>(PurgatorioGenerador.Zona.class);
-        private static final java.util.EnumMap<PurgatorioGenerador.Zona, Bucle> SONANDO = new java.util.EnumMap<>(PurgatorioGenerador.Zona.class);
+        private static final java.util.EnumMap<Error404Generador.Zona, Float> MEZCLA = new java.util.EnumMap<>(Error404Generador.Zona.class);
+        private static final java.util.EnumMap<Error404Generador.Zona, Bucle> SONANDO = new java.util.EnumMap<>(Error404Generador.Zona.class);
         /** Sustos ya programados (tic en el que suenan) y cuántos han sonado. */
         private static final java.util.ArrayDeque<Susto> COLA = new java.util.ArrayDeque<>();
         private static int edad, proximo = 500, sustos;
@@ -187,23 +187,23 @@ public final class PurgatorioCliente {
 
         private record Susto(int t, net.minecraft.sounds.SoundEvent s, double x, double y, double z, float v, float p) {}
 
-        static net.minecraft.sounds.SoundEvent sonido(PurgatorioGenerador.Zona z) {
+        static net.minecraft.sounds.SoundEvent sonido(Error404Generador.Zona z) {
             return switch (z) {
-                case FERIA -> com.miscelanea.registry.ModSounds.PURGATORIO_FERIA.get();
-                case SALA -> com.miscelanea.registry.ModSounds.PURGATORIO_SALA.get();
-                case RECREATIVA -> com.miscelanea.registry.ModSounds.PURGATORIO_RECREATIVA.get();
-                case HOTEL -> com.miscelanea.registry.ModSounds.PURGATORIO_HOTEL.get();
-                case SIN_TEXTURA -> com.miscelanea.registry.ModSounds.PURGATORIO_SIN_TEXTURA.get();
-                case PISCINA -> com.miscelanea.registry.ModSounds.PURGATORIO_PISCINA.get();
-                case APARCAMIENTO -> com.miscelanea.registry.ModSounds.PURGATORIO_APARCAMIENTO.get();
-                case COLEGIO -> com.miscelanea.registry.ModSounds.PURGATORIO_COLEGIO.get();
-                case CENTRO -> com.miscelanea.registry.ModSounds.PURGATORIO_CENTRO.get();
+                case FERIA -> com.miscelanea.registry.ModSounds.ERROR404_FERIA.get();
+                case SALA -> com.miscelanea.registry.ModSounds.ERROR404_SALA.get();
+                case RECREATIVA -> com.miscelanea.registry.ModSounds.ERROR404_RECREATIVA.get();
+                case HOTEL -> com.miscelanea.registry.ModSounds.ERROR404_HOTEL.get();
+                case SIN_TEXTURA -> com.miscelanea.registry.ModSounds.ERROR404_SIN_TEXTURA.get();
+                case PISCINA -> com.miscelanea.registry.ModSounds.ERROR404_PISCINA.get();
+                case APARCAMIENTO -> com.miscelanea.registry.ModSounds.ERROR404_APARCAMIENTO.get();
+                case COLEGIO -> com.miscelanea.registry.ModSounds.ERROR404_COLEGIO.get();
+                case CENTRO -> com.miscelanea.registry.ModSounds.ERROR404_CENTRO.get();
             };
         }
 
         /** Volumen de cada bucle a tope: todos igualados (medidos en LUFS: feria -24,6, hotel -26,5, recreativa -21,3,
          * sala -27, sin texturas -20,3, piscina -24,3, garaje -19, colegio -25,4 y centro comercial -19,9). */
-        static float ganancia(PurgatorioGenerador.Zona z) {
+        static float ganancia(Error404Generador.Zona z) {
             return switch (z) {
                 case FERIA -> 0.50F;
                 case SALA -> 0.62F;
@@ -217,7 +217,7 @@ public final class PurgatorioCliente {
             };
         }
 
-        static float volumen(PurgatorioGenerador.Zona z) {
+        static float volumen(Error404Generador.Zona z) {
             return MEZCLA.getOrDefault(z, 0F) * ganancia(z);
         }
 
@@ -252,9 +252,9 @@ public final class PurgatorioCliente {
             }
             if (mc.isPaused()) return;
             edad++;
-            PurgatorioGenerador.Zona aqui = mc.player != null && Niebla.aqui() ? Niebla.zona() : null;
+            Error404Generador.Zona aqui = mc.player != null && Niebla.aqui() ? Niebla.zona() : null;
             var sm = mc.getSoundManager();
-            for (PurgatorioGenerador.Zona z : PurgatorioGenerador.Zona.values()) {
+            for (Error404Generador.Zona z : Error404Generador.Zona.values()) {
                 float v = MEZCLA.getOrDefault(z, 0F), meta = z == aqui ? 1 : 0;
                 v = meta > v ? Math.min(meta, v + 1 / 40F) : Math.max(meta, v - 1 / 40F);
                 if (v <= 0) {
@@ -298,7 +298,7 @@ public final class PurgatorioCliente {
         }
 
         /** Programa un susto según la zona (todo con sonidos del juego, cambiados de tono). */
-        private static void planear(Minecraft mc, PurgatorioGenerador.Zona z) {
+        private static void planear(Minecraft mc, Error404Generador.Zona z) {
             if (!COLA.isEmpty()) return;
             var p = mc.player;
             var r = p.getRandom();
@@ -405,12 +405,12 @@ public final class PurgatorioCliente {
         /** El ruido de la tele más cercana que el cliente ha visto hace poco (las teles se apuntan solas al dibujarse). */
         private static void teles(Minecraft mc) {
             long ahora = System.currentTimeMillis();
-            com.miscelanea.purgatorio.TeleBlock.VISTAS.entrySet().removeIf(en -> ahora - en.getValue() > 10000);
+            com.miscelanea.error404.TeleBlock.VISTAS.entrySet().removeIf(en -> ahora - en.getValue() > 10000);
             net.minecraft.core.BlockPos mejor = null;
             double dm = 14 * 14;
-            for (var en : com.miscelanea.purgatorio.TeleBlock.VISTAS.keySet()) {
+            for (var en : com.miscelanea.error404.TeleBlock.VISTAS.keySet()) {
                 double d = en.distToCenterSqr(mc.player.position());
-                if (d < dm && mc.level.getBlockState(en).getBlock() instanceof com.miscelanea.purgatorio.TeleBlock) {
+                if (d < dm && mc.level.getBlockState(en).getBlock() instanceof com.miscelanea.error404.TeleBlock) {
                     dm = d;
                     mejor = en;
                 }
@@ -428,11 +428,11 @@ public final class PurgatorioCliente {
 
     /** El bucle de fondo de una zona: su volumen lo lleva {@link Ambiente} (aquí solo se copia). */
     static final class Bucle extends net.minecraft.client.resources.sounds.AbstractTickableSoundInstance {
-        final PurgatorioGenerador.Zona zona;
+        fina la 404Generador.Zona zona;
         /** Ha llegado a sonar (si luego deja de estar activo es que lo han cortado). */
         boolean tocado;
 
-        Bucle(PurgatorioGenerador.Zona z) {
+        Bucle(Error404Generador.Zona z) {
             super(Ambiente.sonido(z), net.minecraft.sounds.SoundSource.AMBIENT, net.minecraft.client.resources.sounds.SoundInstance.createUnseededRandom());
             zona = z;
             looping = true;
@@ -466,7 +466,7 @@ public final class PurgatorioCliente {
         boolean tocado;
 
         BucleTele(net.minecraft.core.BlockPos p) {
-            super(com.miscelanea.registry.ModSounds.PURGATORIO_TELE.get(), net.minecraft.sounds.SoundSource.BLOCKS,
+            super(com.miscelanea.registry.ModSounds.ERROR404_TELE.get(), net.minecraft.sounds.SoundSource.BLOCKS,
                     net.minecraft.client.resources.sounds.SoundInstance.createUnseededRandom());
             pos = p;
             looping = true;

@@ -1,4 +1,4 @@
-package com.miscelanea.purgatorio;
+package com.miscelanea.error404;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;

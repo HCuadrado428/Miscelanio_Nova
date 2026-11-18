@@ -14,7 +14,7 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
 ## 1.3.0 (en curso)
 
 - **Suavis de The Midnight**: el suavis crudo y el cocinado (`midnight:raw_suavis` y `midnight:cooked_suavis`) ya valen para hacer el suavis seco en el horno, el ahumador o la hoguera, y de ahí la jeringuilla y la Poción de sedante. (La etiqueta `miscelanea:suavis` estaba vacía y no servía ninguno.)
-- **Nueva dimensión** (en preparación): un espacio liminal tipo Backrooms, sin monstruos, pensado para inquietar: un lugar que parece conocido pero en el que algo no cuadra.
+- **La 404** (nueva dimensión, en preparación): un espacio liminal tipo Backrooms, infinito, sin monstruos y pensado para inquietar: un lugar que parece conocido pero en el que algo no cuadra. Se llega colándose por una pared.
 
 ## 1.2.1
 

@@ -1,4 +1,4 @@
-package com.miscelanea.purgatorio;
+package com.miscelanea.error404;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,7 +11,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
-/** El hueco de la puerta de salida del Purgatorio: se cruza (no tiene colisión) y te devuelve a donde estabas. */
+/** El hueco de la puerta de salida de la 404: se cruza (no tiene colisión) y te devuelve a donde estabas. */
 public class PuertaSalidaBlock extends Block {
     private static final VoxelShape FORMA = Block.box(0, 0, 6, 16, 16, 10);
 
@@ -31,6 +31,6 @@ public class PuertaSalidaBlock extends Block {
 
     @Override
     public void entityInside(BlockState s, Level l, BlockPos p, Entity e) {
-        if (!l.isClientSide && e instanceof ServerPlayer sp && !sp.isSpectator() && !sp.isPassenger()) Purgatorio.salir(sp);
+        if (!l.isClientSide && e instanceof ServerPlayer sp && !sp.isSpectator() && !sp.isPassenger()) Error404.salir(sp);
     }
 }

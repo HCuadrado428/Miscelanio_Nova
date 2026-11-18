@@ -1,4 +1,4 @@
-package com.miscelanea.purgatorio.liminal;
+package com.miscelanea.error404.liminal;
 
 import com.miscelanea.Miscelanea;
 import net.minecraft.core.registries.Registries;
@@ -85,8 +85,8 @@ public final class LiminalRegistro {
     public static final RegistryObject<BlockEntityType<AtrezoBE>> ATREZO_BE = BES.register("atrezo",
             () -> BlockEntityType.Builder.of(AtrezoBE::new, MOTOR.get(), MANIQUI.get(), VENTILADOR.get(), FLOTADOR.get()).build(null));
 
-    public static final RegistryObject<SoundEvent> ZUMBIDO = SOUNDS.register("purgatorio_zumbido",
-            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Miscelanea.MOD_ID, "purgatorio_zumbido")));
+    public static final RegistryObject<SoundEvent> ZUMBIDO = SOUNDS.register("404_zumbido",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Miscelanea.MOD_ID, "404_zumbido")));
 
     // ------------------------------------------------------------------ objetos (lo que se puede llevar a casa)
     private static final List<RegistryObject<Item>> OBJETOS = new java.util.ArrayList<>();

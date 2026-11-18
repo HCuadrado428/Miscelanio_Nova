@@ -1,9 +1,9 @@
-package com.miscelanea.purgatorio;
+package com.miscelanea.error404;
 
-import com.miscelanea.purgatorio.PurgatorioGenerador.Zona;
+import com.miscelanea.error404.Error404Generador.Zona;
 
 /**
- * El plano del Purgatorio: qué hay en cada sitio, sin poner un solo bloque (por eso no usa nada de Minecraft y se puede
+ * El plano de la 404: qué hay en cada sitio, sin poner un solo bloque (por eso no usa nada de Minecraft y se puede
  * probar y dibujar fuera del juego). Todo sale de un hash de las coordenadas: siempre igual, en todos los mundos.
  * <ul>
  *   <li><b>Pisos</b>: tres, uno debajo de otro, cada {@link #ALTO} bloques (el de arriba, a la altura de siempre). Al
@@ -20,8 +20,8 @@ import com.miscelanea.purgatorio.PurgatorioGenerador.Zona;
  * este a oeste (z = 7..8) se puede andar de punta a punta y en todas las rayas entre chunks hay paso en 7..8; solo las
  * escaleras, los pasillos sin salida y las salas grandes cortan algún paso, y siempre de pocos en pocos.
  */
-public final class PurgatorioPlano {
-    private PurgatorioPlano() {}
+public final class Error404Plano {
+    private Error404Plano() {}
 
     /** Primer bloque de aire sobre el suelo del piso de arriba. */
     public static final int SUELO = 64;
@@ -68,7 +68,7 @@ public final class PurgatorioPlano {
             {22, 14, 12, 14, 10, 9, 9, 10},
             {14, 10, 17, 14, 21, 12, 12},
             {12, 9, 13, 12, 34, 10, 10}};
-    /** Si se apagan las zonas nuevas (para comparar con el Purgatorio de antes), se cambian por las de siempre (ver {@link #hecha}). */
+    /** Si se apagan las zonas nuevas (para comparar con la 404 de antes), se cambian por las de siempre (ver {@link #hecha}). */
     static boolean nuevas = true;
 
     static boolean hecha(Zona z) {
@@ -223,7 +223,7 @@ public final class PurgatorioPlano {
     public static final int[][] PARCELAS = {{0, 0}, {9, 0}, {0, 9}, {9, 9}};
 
     /**
-     * ¿Hay un agujero en la parcela k de este chunk del Mundo sin Texturas? Por él se cae fuera del Purgatorio,
+     * ¿Hay un agujero en la parcela k de este chunk del Mundo sin Texturas? Por él se cae fuera de la 404,
      * atravesando los pisos de abajo (allí se ve como un pilar sin textura).
      */
     public static boolean agujero(int cx, int cz, int k) {

@@ -1,4 +1,4 @@
-package com.miscelanea.purgatorio.liminal;
+package com.miscelanea.error404.liminal;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
