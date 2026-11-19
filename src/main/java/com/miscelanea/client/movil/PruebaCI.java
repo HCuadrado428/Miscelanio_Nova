@@ -486,7 +486,6 @@ public final class PruebaCI {
                 sp.setGameMode(GameType.CREATIVE);
             });
         });
-        error404();
         // recorte de niveles imposibles (equilibrio): todo lo que pase de su máximo se deja en el máximo
         sin("recorte_niveles", 5, () -> {
             var srv = mc.getSingleplayerServer();
@@ -4403,97 +4402,6 @@ public final class PruebaCI {
         }
         RESUMEN.add("  láser " + nombre + ": " + linea + " · calculado " + calc + (bien ? "" : " · MAL"));
         if (obligatorio && !bien) throw new IllegalStateException("el punto del láser no cae donde debe (" + nombre + ")");
-    }
-
-    // ------------------------------------------------------------------ La 404 (dimensión liminal)
-    private static void irA404(net.minecraft.core.BlockPos b, float yaw, float pitch) {
-        Minecraft mc = Minecraft.getInstance();
-        var srv = mc.getSingleplayerServer();
-        UUID id = mc.player.getUUID();
-        srv.execute(() -> {
-            ServerPlayer sp = srv.getPlayerList().getPlayer(id);
-            var l = srv.getLevel(com.miscelanea.error404.Error404.DIMENSION);
-            if (sp == null || l == null) return;
-            com.miscelanea.error404.Error404.preparar(l, b);
-            sp.getPersistentData().getCompound(net.minecraft.world.entity.player.Player.PERSISTED_NBT_TAG).putLong("miscelanea_404_t", l.getGameTime());
-            sp.teleportTo(l, b.getX() + 0.5, b.getY(), b.getZ() + 0.5, yaw, pitch);
-        });
-    }
-
-    private static void error404() {
-        Minecraft mc = Minecraft.getInstance();
-        sin("e404_entrar", 60, () -> {
-            mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
-            var srv = mc.getSingleplayerServer();
-            UUID id = mc.player.getUUID();
-            srv.execute(() -> {
-                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
-                if (sp == null) return;
-                if (sp.isPassenger()) sp.stopRiding();
-                if (srv.getLevel(com.miscelanea.error404.Error404.DIMENSION) == null) RESUMEN.add("  FALLO: no existe la dimensión 404");
-                com.miscelanea.error404.Error404.entrar(sp, "error404.miscelanea.vacio");
-            });
-        });
-        sin("e404_dentro", 5, () -> {
-            boolean dentro = com.miscelanea.error404.Error404.en(mc.level);
-            RESUMEN.add("  404: ha entrado: " + (dentro ? "sí" : "NO"));
-            if (!dentro) throw new IllegalStateException("no ha entrado en la 404");
-        });
-        paso("e404_00_llegada", 40, () -> {});
-        paso("e404_01_llegada_2", 30, () -> mc.player.setYRot(mc.player.getYRot() + 180));
-        for (var z : com.miscelanea.error404.Error404Generador.Zona.values()) {
-            final var zz = z;
-            String n = z.name().toLowerCase(java.util.Locale.ROOT);
-            sin("e404_" + n + "_ir", 70, () -> {
-                var b = com.miscelanea.error404.Error404.buscar(zz);
-                RESUMEN.add("  404: zona " + zz + " en " + b);
-                if (b != null) irA404(zz == com.miscelanea.error404.Error404Generador.Zona.FERIA ? b.offset(0, 0, -6) : b, zz == com.miscelanea.error404.Error404Generador.Zona.FERIA ? 0 : 10, 6);
-            });
-            paso("e404_" + n + "_a", 40, () -> {});
-            paso("e404_" + n + "_b", 30, () -> mc.player.setYRot(mc.player.getYRot() + 140));
-        }
-        // lo que cambia cuando no miras: en la sala de espera, 40 intentos a la espalda del jugador
-        sin("e404_cambios_ir", 60, () -> {
-            var b = com.miscelanea.error404.Error404.buscar(com.miscelanea.error404.Error404Generador.Zona.SALA);
-            if (b != null) irA404(b, 10, 5);
-        });
-        sin("e404_cambios", 20, () -> {
-            var srv = mc.getSingleplayerServer();
-            UUID id = mc.player.getUUID();
-            srv.execute(() -> {
-                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
-                if (sp == null || !com.miscelanea.error404.Error404.en(sp.level())) return;
-                int hechos = 0;
-                for (int i = 0; i < 40; i++) if (com.miscelanea.error404.Cambios.hacer(sp.serverLevel(), sp)) hechos++;
-                RESUMEN.add("  404: cambios a la espalda: " + hechos + " de 40 intentos");
-                PI.put("e404_cambios", hechos);
-            });
-        });
-        vigila("e404_cambios_chk", 30, () -> {
-            Object n = PI.get("e404_cambios");
-            if (!(n instanceof Integer k) || k < 1) throw new IllegalStateException("no ha cambiado nada a la espalda (" + n + ")");
-        });
-        paso("e404_cambios_vuelta", 30, () -> mc.player.setYRot(mc.player.getYRot() + 180));
-        sin("e404_salida_ir", 60, () -> {
-            var b = com.miscelanea.error404.Error404.buscarSalida();
-            RESUMEN.add("  404: salida en " + b);
-            if (b != null) irA404(new net.minecraft.core.BlockPos(b.getX(), b.getY(), b.getZ() - 3), 180, 0);
-        });
-        paso("e404_salida", 30, () -> {});
-        sin("e404_fuera", 60, () -> {
-            if (com.miscelanea.error404.Error404.en(mc.level)) {
-                RESUMEN.add("  404: no ha salido por la puerta; se le saca a mano");
-                var srv = mc.getSingleplayerServer();
-                UUID id = mc.player.getUUID();
-                srv.execute(() -> {
-                    ServerPlayer sp = srv.getPlayerList().getPlayer(id);
-                    if (sp != null) com.miscelanea.error404.Error404.salir(sp);
-                });
-            } else RESUMEN.add("  404: ha salido por la puerta: sí");
-        });
-        sin("e404_fin", 30, () -> {
-            if (com.miscelanea.error404.Error404.en(mc.level)) throw new IllegalStateException("sigue en la 404");
-        });
     }
 
     // ------------------------------------------------------------------ escopeta de presión

@@ -249,17 +249,6 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> GB_FIN = register("gb_fin");
     public static final RegistryObject<SoundEvent> GB_INICIO = register("gb_inicio");
     public static final RegistryObject<SoundEvent> GB_MUSICA = register("gb_musica");
-    // La 404: un ambiente en bucle por zona
-    public static final RegistryObject<SoundEvent> ERROR404_FERIA = register("404_feria");
-    public static final RegistryObject<SoundEvent> ERROR404_SALA = register("404_sala");
-    public static final RegistryObject<SoundEvent> ERROR404_RECREATIVA = register("404_recreativa");
-    public static final RegistryObject<SoundEvent> ERROR404_SIN_TEXTURA = register("404_sin_textura");
-    public static final RegistryObject<SoundEvent> ERROR404_HOTEL = register("404_hotel");
-    public static final RegistryObject<SoundEvent> ERROR404_TELE = register("404_tele");
-    public static final RegistryObject<SoundEvent> ERROR404_PISCINA = register("404_piscina");
-    public static final RegistryObject<SoundEvent> ERROR404_APARCAMIENTO = register("404_aparcamiento");
-    public static final RegistryObject<SoundEvent> ERROR404_COLEGIO = register("404_colegio");
-    public static final RegistryObject<SoundEvent> ERROR404_CENTRO = register("404_centro");
 
     // ---- Pistola (revólver de ruleta)
     public static final RegistryObject<SoundEvent> REVOLVER_DISPARO = register("revolver_disparo");

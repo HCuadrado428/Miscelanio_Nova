@@ -14,8 +14,6 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
 ## 1.3.0 (en curso)
 
 - **Suavis de The Midnight**: el suavis crudo y el cocinado (`midnight:raw_suavis` y `midnight:cooked_suavis`) ya valen para hacer el suavis seco en el horno, el ahumador o la hoguera, y de ahí la jeringuilla y la Poción de sedante. (La etiqueta `miscelanea:suavis` estaba vacía y no servía ninguno.)
-- **La 404** (nueva dimensión, en preparación): un espacio liminal tipo Backrooms, infinito, sin monstruos y pensado para inquietar: un lugar que parece conocido pero en el que algo no cuadra. Se llega colándose por una pared.
-  - **Lo que no cuadra** (sin monstruos): a tus espaldas, fuera de tu vista, a veces cambia algo pequeño: el reloj del aula marca otra hora (cinco horas distintas), un número del garaje o de una tienda ya no es el que era, se apaga (o se enciende) un panel de fluorescentes, un tramo de pared del pasillo es de otro color o aparece una puerta donde solo había pared. Nunca cierra un paso. En la configuración (`[404]`): `cambios_a_la_espalda`, `cambios_segundos_min` y `cambios_segundos_max`.
 
 ## 1.2.1
 

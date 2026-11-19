@@ -30,7 +30,6 @@ public class Miscelanea {
         ModEffects.EFFECTS.register(modBus);
         ModPotions.POTIONS.register(modBus);
         ModItems.ITEMS.register(modBus);
-        com.miscelanea.error404.Error404Generador.GENERADORES.register(modBus);
         ModEntities.ENTITIES.register(modBus);
         ModSounds.SOUNDS.register(modBus);
         ModEnchantments.ENCHANTMENTS.register(modBus);
@@ -51,7 +50,6 @@ public class Miscelanea {
         com.miscelanea.estatica.EstaticaRegistro.registrar(modBus);
         com.miscelanea.laser.LaserRegistro.registrar(modBus);
         com.miscelanea.movil.MovilRegistro.registrar(modBus);
-        com.miscelanea.error404.liminal.LiminalRegistro.registrar(modBus);
         // ---- Armas de fuego: se encuentran en cofres (Global Loot Modifier)
         com.miscelanea.armasfuego.BotinArmas.registrar(modBus);
         com.miscelanea.armasfuego.comun.ArmasFuegoRegistro.registrar(modBus);
@@ -315,40 +313,6 @@ public class Miscelanea {
         if (event.getTabKey() == ModTabs.VARIOS.getKey()) {
             event.accept(ModItems.ASPIRAFANTASMAS);
             event.accept(ModItems.MOCHILA);
-            event.accept(ModItems.SIN_TEXTURA);
-            event.accept(ModItems.MOQUETA_RECREATIVA);
-            event.accept(ModItems.MOQUETA_HOTEL);
-            event.accept(ModItems.SUELO_SALA);
-            event.accept(ModItems.TECHO_SALA);
-            event.accept(ModItems.PARED_SALA);
-            event.accept(ModItems.FLUORESCENTE);
-            event.accept(ModItems.PAPEL_HOTEL);
-            event.accept(ModItems.TELE);
-            event.accept(ModItems.BOTONERA);
-            event.accept(ModItems.AZULEJO_PISCINA);
-            event.accept(ModItems.AZULEJO_PISCINA_AZUL);
-            event.accept(ModItems.AZULEJO_PISCINA_RAYA);
-            event.accept(ModItems.BORDE_PISCINA);
-            event.accept(ModItems.AGUA_POCA);
-            event.accept(ModItems.FOCO);
-            event.accept(ModItems.SUELO_APARCAMIENTO);
-            event.accept(ModItems.SUELO_APARCAMIENTO_RAYA);
-            event.accept(ModItems.SUELO_APARCAMIENTO_FLECHA);
-            event.accept(ModItems.TECHO_APARCAMIENTO);
-            event.accept(ModItems.PARED_APARCAMIENTO);
-            event.accept(ModItems.PARED_APARCAMIENTO_FRANJA);
-            event.accept(ModItems.COLUMNA_APARCAMIENTO);
-            event.accept(ModItems.COLUMNA_APARCAMIENTO_BASE);
-            event.accept(ModItems.SUELO_COLEGIO);
-            event.accept(ModItems.PARED_COLEGIO);
-            event.accept(ModItems.PARED_COLEGIO_ZOCALO);
-            event.accept(ModItems.TAQUILLA);
-            event.accept(ModItems.PIZARRA);
-            event.accept(ModItems.RELOJ_PARADO);
-            event.accept(ModItems.SUELO_CENTRO);
-            event.accept(ModItems.PERSIANA);
-            event.accept(ModItems.ROTULO_TIENDA);
-            event.accept(ModItems.ESCALERA_MECANICA);
             event.accept(com.miscelanea.movil.MovilRegistro.MOVIL);
             event.accept(ModItems.MARCO_FOTO);
             event.accept(com.miscelanea.movil.MovilRegistro.CAJERO_ITEM);
