@@ -6304,5 +6304,11 @@
   "item.miscelanea.sombrero_bandido": "Sombrero y pañuelo de bandido",
   "item.miscelanea.poncho_bandido": "Poncho de bandido",
   "item.miscelanea.pantalon_bandido": "Pantalón de bandido",
-  "item.miscelanea.botas_bandido": "Botas de bandido"
+  "item.miscelanea.botas_bandido": "Botas de bandido",
+  "fiesta.miscelanea.entras": "¡Bienvenido a la fiesta!",
+  "fiesta.miscelanea.sales": "Has salido de la fiesta.",
+  "fiesta.miscelanea.desactivada": "La fiesta está desactivada en este servidor.",
+  "fiesta.miscelanea.ya_dentro": "Ya estás en la fiesta.",
+  "fiesta.miscelanea.sin_dimension": "No se ha podido entrar a la fiesta.",
+  "fiesta.miscelanea.no_dentro": "No estás en la fiesta."
 }

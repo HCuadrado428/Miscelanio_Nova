@@ -486,6 +486,7 @@ public final class PruebaCI {
                 sp.setGameMode(GameType.CREATIVE);
             });
         });
+        fiesta();
         // recorte de niveles imposibles (equilibrio): todo lo que pase de su máximo se deja en el máximo
         sin("recorte_niveles", 5, () -> {
             var srv = mc.getSingleplayerServer();
@@ -4402,6 +4403,78 @@ public final class PruebaCI {
         }
         RESUMEN.add("  láser " + nombre + ": " + linea + " · calculado " + calc + (bien ? "" : " · MAL"));
         if (obligatorio && !bien) throw new IllegalStateException("el punto del láser no cae donde debe (" + nombre + ")");
+    }
+
+    // ------------------------------------------------------------------ La Fiesta (hito 1: entrar y salir)
+    private static void fiesta() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("fiesta_entrar", 40, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                if (sp.isPassenger()) sp.stopRiding();
+                sp.getInventory().setItem(8, new ItemStack(net.minecraft.world.item.Items.DIAMOND, 3));
+                PI.put("fiesta_dim", sp.level().dimension().location().toString());
+                PI.put("fiesta_pos", sp.position());
+                PI.put("fiesta_modo", sp.gameMode.getGameModeForPlayer().getId());
+                boolean ok = com.miscelanea.fiesta.Fiesta.entrar(sp);
+                RESUMEN.add("  fiesta: entrar -> " + (ok ? "sí" : "NO") + " (venía de " + PI.get("fiesta_dim") + ")");
+                PI.put("fiesta_entro", ok);
+            });
+        });
+        sin("fiesta_dentro", 30, () -> {
+            var sp = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
+            boolean dim = com.miscelanea.fiesta.Fiesta.en(mc.level);
+            boolean vacio = mc.player.getInventory().isEmpty();
+            boolean aventura = sp != null && sp.gameMode.getGameModeForPlayer() == net.minecraft.world.level.GameType.ADVENTURE;
+            RESUMEN.add("  fiesta: dentro: dimensión " + (dim ? "sí" : "NO") + ", manos vacías " + (vacio ? "sí" : "NO") + ", modo aventura " + (aventura ? "sí" : "NO"));
+            if (!dim) throw new IllegalStateException("no ha entrado en la dimensión de la fiesta");
+            if (!vacio) throw new IllegalStateException("el inventario no se ha vaciado al entrar");
+            if (!aventura) throw new IllegalStateException("no está en modo aventura dentro");
+        });
+        paso("fiesta_lobby", 40, () -> {});
+        paso("fiesta_lobby_2", 30, () -> mc.player.setYRot(mc.player.getYRot() + 140));
+        // si se cae por el borde, vuelve al lobby
+        sin("fiesta_caida", 60, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                var l = srv.getLevel(com.miscelanea.fiesta.Fiesta.DIMENSION);
+                if (sp != null && l != null) sp.teleportTo(l, 0.5, 20, 0.5, 0, 0);
+            });
+        });
+        sin("fiesta_caida_chk", 5, () -> {
+            double y = mc.player.getY();
+            RESUMEN.add("  fiesta: tras caerse al vacío está a y=" + Math.round(y));
+            if (y < 60) throw new IllegalStateException("no ha vuelto al lobby tras caerse (y=" + y + ")");
+        });
+        sin("fiesta_salir", 40, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp != null) RESUMEN.add("  fiesta: salir -> " + (com.miscelanea.fiesta.Fiesta.salir(sp) ? "sí" : "NO"));
+            });
+        });
+        sin("fiesta_fuera", 5, () -> {
+            var sp = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
+            boolean dim = mc.level.dimension().location().toString().equals(PI.get("fiesta_dim"));
+            Vec3 antes = (Vec3) PI.get("fiesta_pos");
+            double d = antes == null ? 999 : mc.player.position().distanceTo(antes);
+            boolean diam = mc.player.getInventory().getItem(8).is(net.minecraft.world.item.Items.DIAMOND) && mc.player.getInventory().getItem(8).getCount() == 3;
+            boolean modo = sp != null && sp.gameMode.getGameModeForPlayer().getId() == (Integer) PI.get("fiesta_modo");
+            RESUMEN.add("  fiesta: fuera: misma dimensión " + (dim ? "sí" : "NO") + ", a " + String.format("%.1f", d) + " bloques de donde estaba, inventario " + (diam ? "devuelto" : "NO devuelto") + ", modo " + (modo ? "devuelto" : "NO devuelto"));
+            if (!dim || d > 2.5) throw new IllegalStateException("no ha vuelto a donde estaba (misma dimensión " + dim + ", distancia " + d + ")");
+            if (!diam) throw new IllegalStateException("no se le ha devuelto el inventario");
+            if (!modo) throw new IllegalStateException("no se le ha devuelto el modo de juego");
+            mc.getSingleplayerServer().execute(() -> {
+                var s2 = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
+                if (s2 != null) s2.getInventory().setItem(8, ItemStack.EMPTY);
+            });
+        });
     }
 
     // ------------------------------------------------------------------ escopeta de presión

@@ -6304,5 +6304,11 @@
   "item.miscelanea.sombrero_bandido": "Bandit Hat and Bandana",
   "item.miscelanea.poncho_bandido": "Bandit Poncho",
   "item.miscelanea.pantalon_bandido": "Bandit Trousers",
-  "item.miscelanea.botas_bandido": "Bandit Boots"
+  "item.miscelanea.botas_bandido": "Bandit Boots",
+  "fiesta.miscelanea.entras": "Welcome to the party!",
+  "fiesta.miscelanea.sales": "You left the party.",
+  "fiesta.miscelanea.desactivada": "The party is turned off on this server.",
+  "fiesta.miscelanea.ya_dentro": "You are already at the party.",
+  "fiesta.miscelanea.sin_dimension": "Could not enter the party.",
+  "fiesta.miscelanea.no_dentro": "You are not at the party."
 }

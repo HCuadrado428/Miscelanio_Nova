@@ -1,0 +1,13 @@
+{
+  "type": "miscelanea:party",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "biome": "miscelanea:party",
+      "features": false,
+      "lakes": false,
+      "layers": [],
+      "structure_overrides": []
+    }
+  }
+}

@@ -13,6 +13,8 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
 
 ## 1.3.0 (en curso)
 
+- **La Fiesta** (en preparación; un Mario Party para Minecraft, de 2 a 4 jugadores, en su propia dimensión): por ahora, `/fiesta entrar` lleva al lobby (una plataforma en el vacío, siempre de día, sin mobs) y `/fiesta salir` te devuelve a donde estabas con todo lo tuyo (inventario, modo de juego, vida y hambre). Dentro no se hace daño y, si te caes por el borde, vuelves al lobby. Si te desconectas dentro, al volver sales solo. Se puede apagar con `activada` en la sección `[fiesta]`.
+
 - **Suavis de The Midnight**: el suavis crudo y el cocinado (`midnight:raw_suavis` y `midnight:cooked_suavis`) ya valen para hacer el suavis seco en el horno, el ahumador o la hoguera, y de ahí la jeringuilla y la Poción de sedante. (La etiqueta `miscelanea:suavis` estaba vacía y no servía ninguno.)
 
 ## 1.2.1

@@ -460,6 +460,7 @@ public final class ConfigServidor {
         LASER_DESLUMBRAR = b.comment("Apuntar a los ojos de un jugador que te mira le deslumbra un momento (solo un destello en su pantalla).").define("deslumbrar", true);
         b.pop();
         com.miscelanea.movil.MovilConfig.definir(b);
+        com.miscelanea.fiesta.FiestaConfig.definir(b);
         com.miscelanea.sangre.HachaSangreConfig.definir(b);
         // ---- armas de fuego: equilibrio (daño, cadencia, recarga...) y botín de las nuevas (sección propia)
         com.miscelanea.armasfuego.comun.EquilibrioArmas.definir(b);
