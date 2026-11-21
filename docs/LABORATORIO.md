@@ -25,6 +25,34 @@ Rama de trabajo: `laboratorio` (sale de `novedades`, la 1.3.0). Enlaza con el ar
 3. **Laberinto de la rata:** el sujeto bebe la poción de enano y entra a un mini-laberinto de bloques con queso al final y baldosas con descarga suave. Lecturas: tiempo y fallos. El queso es el premio.
 4. **Tanque de privación sensorial:** tanque oscuro: ceguera, silencio (también del chat de voz) y alucinaciones (el efecto fantasma y sonidos falsos). Lecturas: tiempo hasta alucinar y tiempo aguantado.
 
+## Objetos del laboratorio
+Todos con receta de supervivencia salvo los marcados como "creativo" (como el resto de la zona). Texturas a 32x32.
+
+| Objeto | Para qué sirve | Estación |
+|---|---|---|
+| **Cuaderno de laboratorio** | Anota las fichas de cada experimento (ver arriba). | todas |
+| **Pulsómetro** | Clic derecho a un cautivo: muestra su pulso y su miedo en la barra de acción. Es lo que alimenta las lecturas. | todas |
+| **Termómetro de laboratorio** | Mide la temperatura del sujeto o de la cámara (con la barra de color que sube). | cámara de temperatura |
+| **Cronómetro** | Pulsas para empezar y parar: apunta el tiempo aguantado en la ficha. | todas |
+| **Portapapeles** | Pone número y nombre al sujeto ("Sujeto 7") que luego sale en el cuaderno. | todas |
+| **Electrodos** | Dos pinzas que se colocan al sujeto: dan lecturas más finas y se usan en el test de reflejos. | centrífuga, laberinto |
+| **Bata de laboratorio** | Pechera blanca (ropa). La lleva el científico: las salpicaduras de sueros le duran menos. | todas |
+| **Gafas de seguridad** | Casco. Quitan el efecto de escarcha o de calor de la pantalla del científico cuando está cerca. | cámara de temperatura |
+| **Tubo de ensayo y probeta** | Recipientes para guardar muestras. Se rellenan al acabar un experimento. | todas |
+| **Muestra de miedo / de mareo / de frío** | Resultado de un experimento (sale del tubo). Es un ingrediente: sirve para las mezclas, los dardos y las pociones de miedo. | todas |
+| **Suero sin etiquetar** | Frasco con un efecto al azar (tamaño, voz, helio, eco...). Se descubre usándolo y se apunta en el cuaderno. | mesa de mezclas |
+| **Jeringuilla de suero** | Como la de sedante, pero se carga con un suero o una muestra. Pincha al sujeto. | todas |
+| **Queso de laboratorio** | El premio del laberinto de la rata. Se puede comer (efecto absurdo al azar). | laberinto |
+| **Mesa de mezclas** (bloque) | Pones dos sueros o muestras y sale un tercero. Resultados nuevos y a veces absurdos. | mezclas |
+| **Decoración** (creativo): probeta, matraz burbujeante, microscopio, camilla, taquilla de laboratorio, cartel de biopeligro, placas de Petri | Para montar la sala. | ambiente |
+
+El bucle que une todo: **experimento -> muestra -> mezcla -> suero -> jeringuilla -> nuevo experimento.**
+
+### Dónde entran en los hitos
+- Hito 1 (cuaderno): cuaderno, pulsómetro, cronómetro y portapapeles.
+- Hitos 2 a 5 (estaciones): termómetro, electrodos, queso y las muestras que da cada estación.
+- Hito 6: bata, gafas, mesa de mezclas, sueros, jeringuilla de suero y decoración.
+
 ## Hitos
 1. Modelo de datos y **cuaderno** (objeto, ficha, pantalla), sin estaciones todavía. Con prueba.
 2. **Centrífuga** completa (con sus tres niveles y lecturas).
