@@ -53,6 +53,29 @@ El bucle que une todo: **experimento -> muestra -> mezcla -> suero -> jeringuill
 - Hitos 2 a 5 (estaciones): termómetro, electrodos, queso y las muestras que da cada estación.
 - Hito 6: bata, gafas, mesa de mezclas, sueros, jeringuilla de suero y decoración.
 
+## Máquinas del laboratorio
+Bloques con bloque-entidad, con su interfaz (un menú sencillo) y salida de comparador para redstone. **Sin sistema de energía:** funcionan a mano o con redstone, como el resto de máquinas del mod. Todas son solo de creativo salvo que se diga otra cosa.
+
+| Máquina | Qué hace | Entra -> sale |
+|---|---|---|
+| **Camilla de experimentos** | La base común: el sujeto va tumbado y atado, con electrodos y pulsómetro puestos. Las estaciones la usan para dar sus lecturas. | cautivo -> lecturas |
+| **Panel de control** | La consola central: palancas y diales para manejar las estaciones a distancia (nivel suave, intenso o extremo, con llave para el extremo) y botón de parada de emergencia. | redstone / mano |
+| **Monitor de constantes** | Pantalla con el pulso y el miedo del sujeto en vivo (una gráfica que sube y baja). La ven los demás desde fuera. | lecturas -> gráfica |
+| **Espejo unidireccional** | Cristal que de un lado es espejo y del otro es ventana: la sala de observación. | decorativo |
+| **Intercomunicador** | Altavoz y micro: el científico habla con el sujeto aislado (también por el chat de voz) y ve su nivel de ruido. | voz |
+| **Destilador térmico** | Cocina suavis seco para sacar el **sedante clase M**, como dice el archivo del Laboratorio STAG: dos fases y se calienta con fuego debajo. | suavis seco -> sedante |
+| **Centrifugadora de muestras** | La pequeña: separa una muestra en sus componentes (miedo, mareo, frío) en tubos distintos. | muestra -> 2 o 3 tubos |
+| **Incubadora** | Hace crecer cultivos con el tiempo: una muestra se convierte en suero tras unos minutos. | muestra -> suero |
+| **Analizador** | Mete una muestra o un suero: lo analiza y dice qué es y qué hace (lo apunta en el cuaderno). | muestra -> ficha |
+| **Impresora de informes** | Imprime la ficha del cuaderno en papel (un informe que se puede dejar o colgar en un marco). | cuaderno -> papel |
+| **Dispensador de sueros** | Un expendedor del laboratorio: cambia fichas de recreativa por un suero sin etiquetar. | fichas -> suero |
+
+### Dónde entran en los hitos
+- Hito 2 (centrífuga): camilla de experimentos y panel de control.
+- Hito 3 (cámara de temperatura): monitor de constantes.
+- Hito 4 (tanque): espejo unidireccional e intercomunicador.
+- Hito 6: destilador térmico (con la receta del archivo STAG), centrifugadora de muestras, incubadora, analizador, impresora y dispensador.
+
 ## Hitos
 1. Modelo de datos y **cuaderno** (objeto, ficha, pantalla), sin estaciones todavía. Con prueba.
 2. **Centrífuga** completa (con sus tres niveles y lecturas).
