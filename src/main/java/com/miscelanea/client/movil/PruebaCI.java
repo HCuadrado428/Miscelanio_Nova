@@ -4441,6 +4441,7 @@ public final class PruebaCI {
         camaraTemperatura();
         tanque();
         laberinto();
+        mezclas();
         // el destilador térmico: con fuego debajo sale sedante; sin fuego no avanza
         sin("lab_destilador", 20, () -> {
             var srv = mc.getSingleplayerServer();
@@ -4844,6 +4845,66 @@ public final class PruebaCI {
                     sp.getInventory().clearOrCountMatchingItems(s -> s.is(com.miscelanea.laboratorio.LabRegistro.QUESO.get()) || s.is(com.miscelanea.laboratorio.LabRegistro.MUESTRA_MIEDO.get()), -1, sp.inventoryMenu.getCraftSlots());
                     sp.removeAllEffects();
                     sp.setHealth(sp.getMaxHealth());
+                }
+            });
+        });
+    }
+
+    // ------------------------------------------------------------------ Laboratorio, hito 6: sueros, mesa de mezclas y analizador
+    private static void mezclas() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("lab_mesa", 30, () -> {
+            var srv = mc.getSingleplayerServer();
+            net.minecraft.core.BlockPos b = net.minecraft.core.BlockPos.containing(a2Punto(3, 0, 0.3));
+            srv.execute(() -> {
+                var l = srv.overworld();
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                if (sp == null) return;
+                PI.put("mesa_b", b);
+                PI.put("mesa_aire", l.getBlockState(b));
+                l.setBlock(b, com.miscelanea.laboratorio.LabRegistro.MESA.get().defaultBlockState(), 3);
+                String res = "";
+                boolean ok = false;
+                if (l.getBlockEntity(b) instanceof com.miscelanea.laboratorio.MesaMezclasBlockEntity be) {
+                    var miedo = new ItemStack(com.miscelanea.laboratorio.LabRegistro.MUESTRA_MIEDO.get());
+                    var frio = new ItemStack(com.miscelanea.laboratorio.LabRegistro.MUESTRA_FRIO.get());
+                    boolean p1 = be.poner(miedo), p2 = be.poner(frio);
+                    for (int i = 0; i < com.miscelanea.laboratorio.MesaMezclasBlockEntity.TICKS_MEZCLA + 2; i++)
+                        com.miscelanea.laboratorio.MesaMezclasBlockEntity.tick(l, b, l.getBlockState(b), be);
+                    var esperado = com.miscelanea.laboratorio.Sueros.mezclar(frio, miedo);   // en el otro orden: el mismo
+                    var r = be.resultado();
+                    ok = p1 && p2 && !r.isEmpty() && com.miscelanea.laboratorio.Sueros.tipo(r) == com.miscelanea.laboratorio.Sueros.tipo(esperado) && !com.miscelanea.laboratorio.Sueros.conocido(r);
+                    res = "miedo + frío = suero tipo " + (r.isEmpty() ? "NADA" : com.miscelanea.laboratorio.Sueros.tipo(r)) + " (esperado " + com.miscelanea.laboratorio.Sueros.tipo(esperado) + ")";
+                    // analizar el suero: queda identificado y se apunta
+                    sp.getInventory().setItem(7, new ItemStack(com.miscelanea.laboratorio.LabRegistro.CUADERNO.get()));
+                    if (!r.isEmpty()) {
+                        com.miscelanea.laboratorio.AnalizadorBlock.analizar(sp, r);
+                        ok = ok && com.miscelanea.laboratorio.Sueros.conocido(r);
+                        // beber el suero da su efecto
+                        com.miscelanea.laboratorio.Sueros.aplicar(sp, com.miscelanea.laboratorio.Sueros.tipo(r));
+                        boolean efecto = sp.hasEffect(com.miscelanea.laboratorio.Sueros.efecto(com.miscelanea.laboratorio.Sueros.tipo(r)));
+                        res += "; efecto aplicado " + efecto + "; fichas " + com.miscelanea.laboratorio.Experimentos.fichas(com.miscelanea.laboratorio.Experimentos.cuaderno(sp)).size();
+                        ok = ok && efecto && com.miscelanea.laboratorio.Experimentos.fichas(com.miscelanea.laboratorio.Experimentos.cuaderno(sp)).size() == 1;
+                    }
+                } else res = "sin bloque-entidad";
+                PI.put("mesa_res", res);
+                PI.put("mesa_ok", ok);
+            });
+        });
+        paso("lab_mesa_foto", 30, () -> a2VistaA(a2Punto(3, 0, 0.8), a2Punto(1.4, 1.0, 1.7)));
+        vigila("lab_mesa_chk", 10, () -> {
+            RESUMEN.add("  mezclas: " + PI.get("mesa_res"));
+            if (!Boolean.TRUE.equals(PI.get("mesa_ok"))) throw new IllegalStateException("la mesa de mezclas o el analizador no funcionan como deben: " + PI.get("mesa_res"));
+        });
+        sin("lab_mesa_limpiar", 10, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                if (PI.get("mesa_b") instanceof net.minecraft.core.BlockPos b) l.setBlock(b, (net.minecraft.world.level.block.state.BlockState) PI.get("mesa_aire"), 3);
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                if (sp != null) {
+                    sp.getInventory().setItem(7, ItemStack.EMPTY);
+                    sp.removeAllEffects();
                 }
             });
         });

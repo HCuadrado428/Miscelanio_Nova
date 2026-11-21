@@ -2,6 +2,7 @@
  "replace": false,
  "values": [
   "miscelanea:algodonera",
+  "miscelanea:analizador",
   "miscelanea:bolera",
   "miscelanea:cabina_carreras",
   "miscelanea:caja_jigsaw",
@@ -24,6 +25,7 @@
   "miscelanea:maquina_gancho",
   "miscelanea:martillo_fuerza",
   "miscelanea:mesa_coctel",
+  "miscelanea:mesa_mezclas",
   "miscelanea:noria",
   "miscelanea:palomitera",
   "miscelanea:pendulo",

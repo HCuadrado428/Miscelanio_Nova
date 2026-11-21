@@ -86,6 +86,17 @@ public final class LabRegistro {
     public static final RegistryObject<BlockEntityType<LaberintoBlockEntity>> LABERINTO_BE = BLOCK_ENTITIES.register("laberinto_rata",
             () -> BlockEntityType.Builder.of(LaberintoBlockEntity::new, LABERINTO.get()).build(null));
 
+    // ---- sueros y mezclas
+    public static final RegistryObject<Item> SUERO = ITEMS.register("suero_sin_etiquetar", () -> new SueroItem(new Item.Properties().stacksTo(8)));
+    public static final RegistryObject<Block> MESA = BLOCKS.register("mesa_mezclas",
+            () -> new MesaMezclasBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0F, 6.0F).sound(SoundType.METAL).noOcclusion()));
+    public static final RegistryObject<Item> MESA_ITEM = ITEMS.register("mesa_mezclas", () -> new BlockItem(MESA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<BlockEntityType<MesaMezclasBlockEntity>> MESA_BE = BLOCK_ENTITIES.register("mesa_mezclas",
+            () -> BlockEntityType.Builder.of(MesaMezclasBlockEntity::new, MESA.get()).build(null));
+    public static final RegistryObject<Block> ANALIZADOR = BLOCKS.register("analizador",
+            () -> new AnalizadorBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0F, 6.0F).sound(SoundType.METAL).noOcclusion()));
+    public static final RegistryObject<Item> ANALIZADOR_ITEM = ITEMS.register("analizador", () -> new BlockItem(ANALIZADOR.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+
     public static void registrar(IEventBus bus) {
         ITEMS.register(bus);
         BLOCKS.register(bus);

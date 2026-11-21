@@ -264,6 +264,10 @@ public class Miscelanea {
             event.accept(com.miscelanea.laboratorio.LabRegistro.TANQUE_ITEM);
             event.accept(com.miscelanea.laboratorio.LabRegistro.LABERINTO_ITEM);
             event.accept(com.miscelanea.laboratorio.LabRegistro.QUESO);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.MESA_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.ANALIZADOR_ITEM);
+            for (int i = 0; i < com.miscelanea.laboratorio.Sueros.TIPOS; i++) event.accept(com.miscelanea.laboratorio.Sueros.crear(i, true));
+            event.accept(com.miscelanea.laboratorio.Sueros.crear(0, false));
             event.accept(com.miscelanea.tortura.TorturaRegistro.CADENA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.GANZUA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.LAZO);
