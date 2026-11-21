@@ -13,6 +13,13 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
 
 ## 1.3.0 (en curso)
 
+- **Laboratorio de experimentos** (pestaña Tortura; en preparación, ver `docs/LABORATORIO.md`): primera parte.
+  - **Cuaderno de laboratorio**: clic derecho para leer las fichas de los experimentos (una por página: estación, sujeto, nivel, día y lecturas).
+  - **Pulsómetro**: clic derecho a alguien y ves su pulso y su miedo (sube con el miedo, estar atado o metido en un aparato, correr y el daño reciente). Si llevas el cuaderno, apunta la ficha.
+  - **Cronómetro** (clic derecho para arrancar y parar, agachado para ponerlo a cero) y **portapapeles** (clic derecho a un jugador le pone "Sujeto N", que sale luego en el cuaderno).
+  - **Tubo de ensayo** y **muestras de miedo, de mareo y de frío** (las muestras saldrán de los experimentos; por ahora, solo creativo).
+  - **Destilador térmico** (solo creativo): mete suavis seco con clic derecho, ponle fuego debajo (hoguera, fuego, magma, lava u horno encendido) y a los 20 s por unidad tienes sedante clase M; sácalo con una botella de cristal y sale una Poción de sedante. Cabe hasta 4.
+
 - **Suavis de The Midnight**: el suavis crudo y el cocinado (`midnight:raw_suavis` y `midnight:cooked_suavis`) ya valen para hacer el suavis seco en el horno, el ahumador o la hoguera, y de ahí la jeringuilla y la Poción de sedante. (La etiqueta `miscelanea:suavis` estaba vacía y no servía ninguno.)
 
 ## 1.2.1

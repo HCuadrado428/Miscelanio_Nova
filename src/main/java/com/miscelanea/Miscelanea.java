@@ -50,6 +50,7 @@ public class Miscelanea {
         com.miscelanea.estatica.EstaticaRegistro.registrar(modBus);
         com.miscelanea.laser.LaserRegistro.registrar(modBus);
         com.miscelanea.movil.MovilRegistro.registrar(modBus);
+        com.miscelanea.laboratorio.LabRegistro.registrar(modBus);
         // ---- Armas de fuego: se encuentran en cofres (Global Loot Modifier)
         com.miscelanea.armasfuego.BotinArmas.registrar(modBus);
         com.miscelanea.armasfuego.comun.ArmasFuegoRegistro.registrar(modBus);
@@ -247,6 +248,16 @@ public class Miscelanea {
             event.accept(ModItems.JERINGUILLA);
             event.accept(ModItems.SUAVIS_SECO);
             event.accept(ModItems.JERINGUILLA_SEDANTE);
+            // laboratorio de experimentos
+            event.accept(com.miscelanea.laboratorio.LabRegistro.CUADERNO);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.PULSOMETRO);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.CRONOMETRO);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.PORTAPAPELES);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.TUBO_ENSAYO);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.MUESTRA_MIEDO);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.MUESTRA_MAREO);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.MUESTRA_FRIO);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.DESTILADOR_ITEM);
             event.accept(com.miscelanea.tortura.TorturaRegistro.CADENA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.GANZUA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.LAZO);

@@ -486,6 +486,7 @@ public final class PruebaCI {
                 sp.setGameMode(GameType.CREATIVE);
             });
         });
+        laboratorio();
         // recorte de niveles imposibles (equilibrio): todo lo que pase de su máximo se deja en el máximo
         sin("recorte_niveles", 5, () -> {
             var srv = mc.getSingleplayerServer();
@@ -4402,6 +4403,91 @@ public final class PruebaCI {
         }
         RESUMEN.add("  láser " + nombre + ": " + linea + " · calculado " + calc + (bien ? "" : " · MAL"));
         if (obligatorio && !bien) throw new IllegalStateException("el punto del láser no cae donde debe (" + nombre + ")");
+    }
+
+    // ------------------------------------------------------------------ Laboratorio de experimentos (hito 1)
+    private static void laboratorio() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("lab_fichas", 30, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                if (sp == null) return;
+                sp.getInventory().setItem(7, new ItemStack(com.miscelanea.laboratorio.LabRegistro.CUADERNO.get()));
+                ItemStack pp = new ItemStack(com.miscelanea.laboratorio.LabRegistro.PORTAPAPELES.get());
+                sp.getInventory().setItem(6, pp);
+                int n = com.miscelanea.laboratorio.PortapapelesItem.asignar(pp, sp);
+                int n2 = com.miscelanea.laboratorio.PortapapelesItem.asignar(pp, sp);
+                var lect = com.miscelanea.laboratorio.PulsometroItem.medir(sp, sp);
+                var fich = com.miscelanea.laboratorio.Experimentos.fichas(com.miscelanea.laboratorio.Experimentos.cuaderno(sp));
+                PI.put("lab_fichas", fich.size());
+                PI.put("lab_n", n);
+                PI.put("lab_n2", n2);
+                PI.put("lab_nombre", fich.isEmpty() ? "" : fich.getCompound(0).getString("Sujeto"));
+                PI.put("lab_pulso", lect.get("pulso"));
+            });
+        });
+        vigila("lab_fichas_chk", 20, () -> {
+            RESUMEN.add("  laboratorio: fichas " + PI.get("lab_fichas") + ", sujeto nº " + PI.get("lab_n") + " y " + PI.get("lab_n2") + ", nombre en la ficha '" + PI.get("lab_nombre") + "', pulso " + PI.get("lab_pulso"));
+            if (!Integer.valueOf(1).equals(PI.get("lab_fichas"))) throw new IllegalStateException("el pulsómetro no ha apuntado la ficha en el cuaderno");
+            if (!Integer.valueOf(1).equals(PI.get("lab_n")) || !Integer.valueOf(1).equals(PI.get("lab_n2"))) throw new IllegalStateException("el portapapeles no da el mismo número al mismo jugador");
+            if (!"Sujeto 1".equals(PI.get("lab_nombre"))) throw new IllegalStateException("la ficha no usa el número del portapapeles: " + PI.get("lab_nombre"));
+        });
+        paso("lab_cuaderno", 30, () -> com.miscelanea.client.laboratorio.LabCliente.abrirCuaderno(
+                com.miscelanea.laboratorio.Experimentos.fichas(mc.player.getInventory().getItem(7)).copy()));
+        sin("lab_cuaderno_cerrar", 5, () -> mc.setScreen(null));
+        // el destilador térmico: con fuego debajo sale sedante; sin fuego no avanza
+        sin("lab_destilador", 20, () -> {
+            var srv = mc.getSingleplayerServer();
+            net.minecraft.core.BlockPos b = net.minecraft.core.BlockPos.containing(a2Punto(3, 0, 0.3));
+            srv.execute(() -> {
+                var l = srv.overworld();
+                PI.put("lab_b", b);
+                PI.put("lab_suelo", l.getBlockState(b.below()));
+                PI.put("lab_aire", l.getBlockState(b));
+                l.setBlock(b.below(), net.minecraft.world.level.block.Blocks.MAGMA_BLOCK.defaultBlockState(), 3);
+                l.setBlock(b, com.miscelanea.laboratorio.LabRegistro.DESTILADOR.get().defaultBlockState(), 3);
+                if (!(l.getBlockEntity(b) instanceof com.miscelanea.laboratorio.DestiladorBlockEntity be)) {
+                    PI.put("lab_dest", "sin bloque-entidad");
+                    return;
+                }
+                be.meter();
+                for (int i = 0; i < com.miscelanea.laboratorio.DestiladorBlockEntity.TICKS_POR_UNIDAD + 2; i++)
+                    com.miscelanea.laboratorio.DestiladorBlockEntity.tick(l, b, l.getBlockState(b), be);
+                int listo = be.listo();
+                net.minecraft.world.item.ItemStack pocion = be.sacar();
+                boolean sedante = !pocion.isEmpty() && net.minecraft.world.item.alchemy.PotionUtils.getPotion(pocion) == com.miscelanea.registry.ModPotions.SEDANTE.get();
+                // sin fuego: no avanza
+                l.setBlock(b.below(), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(), 3);
+                be.meter();
+                for (int i = 0; i < com.miscelanea.laboratorio.DestiladorBlockEntity.TICKS_POR_UNIDAD + 2; i++)
+                    com.miscelanea.laboratorio.DestiladorBlockEntity.tick(l, b, l.getBlockState(b), be);
+                PI.put("lab_dest", "con fuego: listo " + listo + ", poción de sedante " + sedante + "; sin fuego: listo " + be.listo() + ", por destilar " + be.suavis());
+                PI.put("lab_dest_ok", listo == 1 && sedante && be.listo() == 0 && be.suavis() == 1);
+                l.setBlock(b.below(), net.minecraft.world.level.block.Blocks.MAGMA_BLOCK.defaultBlockState(), 3);
+            });
+        });
+        vigila("lab_destilador_chk", 10, () -> {
+            RESUMEN.add("  laboratorio: destilador: " + PI.get("lab_dest"));
+            if (!Boolean.TRUE.equals(PI.get("lab_dest_ok"))) throw new IllegalStateException("el destilador no funciona como debe: " + PI.get("lab_dest"));
+        });
+        paso("lab_destilador_foto", 30, () -> a2VistaA(a2Punto(3, 0, 0.8), a2Punto(1.4, 1.0, 1.7)));
+        sin("lab_limpiar", 10, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                if (PI.get("lab_b") instanceof net.minecraft.core.BlockPos b) {
+                    l.setBlock(b, (net.minecraft.world.level.block.state.BlockState) PI.get("lab_aire"), 3);
+                    l.setBlock(b.below(), (net.minecraft.world.level.block.state.BlockState) PI.get("lab_suelo"), 3);
+                }
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                if (sp != null) {
+                    sp.getInventory().setItem(7, ItemStack.EMPTY);
+                    sp.getInventory().setItem(6, ItemStack.EMPTY);
+                }
+            });
+        });
     }
 
     // ------------------------------------------------------------------ escopeta de presión
