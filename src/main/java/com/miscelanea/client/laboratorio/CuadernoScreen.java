@@ -52,7 +52,9 @@ public class CuadernoScreen extends Screen {
             ListTag ls = f.getList("Lecturas", Tag.TAG_COMPOUND);
             for (int i = 0; i < ls.size() && ty < y + ALTO - 12; i++) {
                 CompoundTag l = ls.getCompound(i);
-                g.drawString(font, Component.translatable("laboratorio.miscelanea.lectura." + l.getString("K")).append(": " + l.getString("V")), x + 14, ty, 0xFF1C503A, false);
+                String clave = "laboratorio.miscelanea.valor." + l.getString("V");
+                Component valor = net.minecraft.client.resources.language.I18n.exists(clave) ? Component.translatable(clave) : Component.literal(l.getString("V"));
+                g.drawString(font, Component.translatable("laboratorio.miscelanea.lectura." + l.getString("K")).append(": ").append(valor), x + 14, ty, 0xFF1C503A, false);
                 ty += 11;
             }
         }

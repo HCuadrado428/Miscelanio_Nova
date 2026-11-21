@@ -258,6 +258,7 @@ public class Miscelanea {
             event.accept(com.miscelanea.laboratorio.LabRegistro.MUESTRA_MAREO);
             event.accept(com.miscelanea.laboratorio.LabRegistro.MUESTRA_FRIO);
             event.accept(com.miscelanea.laboratorio.LabRegistro.DESTILADOR_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.CENTRIFUGA_ITEM);
             event.accept(com.miscelanea.tortura.TorturaRegistro.CADENA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.GANZUA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.LAZO);

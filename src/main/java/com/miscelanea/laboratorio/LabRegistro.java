@@ -51,6 +51,15 @@ public final class LabRegistro {
     public static final RegistryObject<BlockEntityType<DestiladorBlockEntity>> DESTILADOR_BE = BLOCK_ENTITIES.register("destilador_termico",
             () -> BlockEntityType.Builder.of(DestiladorBlockEntity::new, DESTILADOR.get()).build(null));
 
+    // ---- estaciones
+    public static final RegistryObject<Block> CENTRIFUGA = BLOCKS.register("centrifuga",
+            () -> new CentrifugaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0F, 6.0F)
+                    .sound(SoundType.METAL).noOcclusion().isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p) -> false)));
+    public static final RegistryObject<Item> CENTRIFUGA_ITEM = ITEMS.register("centrifuga",
+            () -> new com.miscelanea.tortura.aparatos.AparatoItem(CENTRIFUGA.get(), new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), 3));
+    public static final RegistryObject<BlockEntityType<CentrifugaBlockEntity>> CENTRIFUGA_BE = BLOCK_ENTITIES.register("centrifuga",
+            () -> BlockEntityType.Builder.of(CentrifugaBlockEntity::new, CENTRIFUGA.get()).build(null));
+
     public static void registrar(IEventBus bus) {
         ITEMS.register(bus);
         BLOCKS.register(bus);

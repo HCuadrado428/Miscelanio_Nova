@@ -4437,6 +4437,7 @@ public final class PruebaCI {
         paso("lab_cuaderno", 30, () -> com.miscelanea.client.laboratorio.LabCliente.abrirCuaderno(
                 com.miscelanea.laboratorio.Experimentos.fichas(mc.player.getInventory().getItem(7)).copy()));
         sin("lab_cuaderno_cerrar", 5, () -> mc.setScreen(null));
+        centrifuga();
         // el destilador térmico: con fuego debajo sale sedante; sin fuego no avanza
         sin("lab_destilador", 20, () -> {
             var srv = mc.getSingleplayerServer();
@@ -4485,6 +4486,82 @@ public final class PruebaCI {
                 if (sp != null) {
                     sp.getInventory().setItem(7, ItemStack.EMPTY);
                     sp.getInventory().setItem(6, ItemStack.EMPTY);
+                }
+            });
+        });
+    }
+
+    // ------------------------------------------------------------------ Laboratorio, hito 2: la centrífuga
+    private static void centrifuga() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("cen_poner", 30, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            net.minecraft.core.BlockPos b = net.minecraft.core.BlockPos.containing(a2Punto(7, 0, 0.3));
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                var l = srv.overworld();
+                if (sp == null) return;
+                // guarda lo que había en la zona (5 x 5 x 3) y la despeja
+                java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState> antes = new java.util.HashMap<>();
+                for (var q : net.minecraft.core.BlockPos.betweenClosed(b.offset(-3, 0, -3), b.offset(3, 3, 3))) {
+                    antes.put(q.immutable(), l.getBlockState(q));
+                    if (q.getY() > b.getY() - 1) l.setBlock(q, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+                }
+                PI.put("cen_antes", antes);
+                var frente = a2Mira.getOpposite();
+                var estado = com.miscelanea.laboratorio.LabRegistro.CENTRIFUGA.get().defaultBlockState()
+                        .setValue(com.miscelanea.tortura.aparatos.AparatoBlock.FACING, frente);
+                l.setBlock(b, estado, 3);
+                var an = b.relative(frente.getOpposite());
+                l.setBlock(an, estado.setValue(com.miscelanea.tortura.aparatos.AparatoBlock.ANEXO, true), 3);
+                PI.put("cen_b", b);
+                sp.getInventory().setItem(7, new ItemStack(com.miscelanea.laboratorio.LabRegistro.CUADERNO.get()));
+                sp.getInventory().setItem(6, new ItemStack(com.miscelanea.laboratorio.LabRegistro.TUBO_ENSAYO.get(), 2));
+                if (!(l.getBlockEntity(b) instanceof com.miscelanea.laboratorio.CentrifugaBlockEntity be)) {
+                    PI.put("cen_res", "sin bloque-entidad");
+                    return;
+                }
+                boolean dentro = be.meter(sp, sp);
+                be.fijarNivel(0);
+                be.arrancar(l, sp);
+                PI.put("cen_res", "dentro " + dentro + ", girando " + be.girando());
+            });
+        });
+        paso("cen_gira_1", 70, () -> a2VistaA(a2Punto(7, 0, 1.0), a2Punto(1.5, 4.5, 3.0)));
+        paso("cen_gira_2", 40, () -> {});
+        vigila("cen_ficha_chk", 420, () -> {
+            var sp = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
+            var cu = sp == null ? ItemStack.EMPTY : com.miscelanea.laboratorio.Experimentos.cuaderno(sp);
+            var fichas = com.miscelanea.laboratorio.Experimentos.fichas(cu);
+            boolean ficha = false;
+            String resumen = "";
+            for (int i = 0; i < fichas.size(); i++) {
+                var f = fichas.getCompound(i);
+                if ("centrifuga".equals(f.getString("Estacion"))) {
+                    ficha = true;
+                    var ls = f.getList("Lecturas", net.minecraft.nbt.Tag.TAG_COMPOUND);
+                    for (int k = 0; k < ls.size(); k++) resumen += ls.getCompound(k).getString("K") + "=" + ls.getCompound(k).getString("V") + " ";
+                }
+            }
+            boolean muestra = sp != null && sp.getInventory().hasAnyMatching(s -> s.is(com.miscelanea.laboratorio.LabRegistro.MUESTRA_MAREO.get()));
+            RESUMEN.add("  centrífuga: " + PI.get("cen_res") + "; ficha " + (ficha ? "sí (" + resumen.trim() + ")" : "NO") + ", muestra de mareo " + (muestra ? "sí" : "NO"));
+            if (!ficha) throw new IllegalStateException("la centrífuga no ha apuntado la ficha");
+            if (!muestra) throw new IllegalStateException("la centrífuga no ha dado la muestra de mareo");
+        });
+        sin("cen_limpiar", 20, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                if (PI.get("cen_b") instanceof net.minecraft.core.BlockPos b && l.getBlockEntity(b) instanceof com.miscelanea.laboratorio.CentrifugaBlockEntity be) be.sacar(false);
+                @SuppressWarnings("unchecked")
+                var antes = (java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState>) PI.get("cen_antes");
+                if (antes != null) antes.forEach((q, s) -> l.setBlock(q, s, 2));
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                if (sp != null) {
+                    sp.getInventory().setItem(7, ItemStack.EMPTY);
+                    sp.getInventory().setItem(6, ItemStack.EMPTY);
+                    sp.getInventory().clearOrCountMatchingItems(s -> s.is(com.miscelanea.laboratorio.LabRegistro.MUESTRA_MAREO.get()), -1, sp.inventoryMenu.getCraftSlots());
                 }
             });
         });

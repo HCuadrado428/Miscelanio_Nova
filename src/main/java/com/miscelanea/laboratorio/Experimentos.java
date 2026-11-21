@@ -76,6 +76,18 @@ public final class Experimentos {
         return sujeto.getGameProfile().getName();
     }
 
+    /** Si lleva un tubo de ensayo, lo gasta y le da la muestra. Devuelve si lo ha hecho. */
+    public static boolean darMuestra(Player cientifico, net.minecraft.world.item.Item muestra) {
+        for (ItemStack s : cientifico.getInventory().items) {
+            if (!s.is(LabRegistro.TUBO_ENSAYO.get())) continue;
+            s.shrink(1);
+            ItemStack m = new ItemStack(muestra);
+            if (!cientifico.getInventory().add(m)) cientifico.drop(m, false);
+            return true;
+        }
+        return false;
+    }
+
     // ------------------------------------------------------------------ lecturas
     /** Cuánto miedo tiene (0 a 1): del efecto de miedo, de estar atado y de estar metido en un aparato. */
     public static double miedo(LivingEntity v) {
