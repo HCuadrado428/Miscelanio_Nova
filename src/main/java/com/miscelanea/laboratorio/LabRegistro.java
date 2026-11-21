@@ -40,6 +40,7 @@ public final class LabRegistro {
     public static final RegistryObject<Item> TUBO_ENSAYO = ITEMS.register("tubo_ensayo", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> MUESTRA_MIEDO = ITEMS.register("muestra_miedo", () -> new MuestraItem("miedo", new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> MUESTRA_MAREO = ITEMS.register("muestra_mareo", () -> new MuestraItem("mareo", new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> MUESTRA_CALOR = ITEMS.register("muestra_calor", () -> new MuestraItem("calor", new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> MUESTRA_FRIO = ITEMS.register("muestra_frio", () -> new MuestraItem("frio", new Item.Properties().stacksTo(16)));
 
     // ---- máquinas
@@ -59,6 +60,14 @@ public final class LabRegistro {
             () -> new com.miscelanea.tortura.aparatos.AparatoItem(CENTRIFUGA.get(), new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), 3));
     public static final RegistryObject<BlockEntityType<CentrifugaBlockEntity>> CENTRIFUGA_BE = BLOCK_ENTITIES.register("centrifuga",
             () -> BlockEntityType.Builder.of(CentrifugaBlockEntity::new, CENTRIFUGA.get()).build(null));
+
+    public static final RegistryObject<Block> CAMARA = BLOCKS.register("camara_temperatura",
+            () -> new CamaraBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0F, 6.0F)
+                    .sound(SoundType.GLASS).noOcclusion().isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p) -> false)));
+    public static final RegistryObject<Item> CAMARA_ITEM = ITEMS.register("camara_temperatura",
+            () -> new com.miscelanea.tortura.aparatos.AparatoItem(CAMARA.get(), new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), 3));
+    public static final RegistryObject<BlockEntityType<CamaraBlockEntity>> CAMARA_BE = BLOCK_ENTITIES.register("camara_temperatura",
+            () -> BlockEntityType.Builder.of(CamaraBlockEntity::new, CAMARA.get()).build(null));
 
     public static void registrar(IEventBus bus) {
         ITEMS.register(bus);
