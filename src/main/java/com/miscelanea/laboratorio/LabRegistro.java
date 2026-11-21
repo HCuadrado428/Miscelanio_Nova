@@ -69,6 +69,14 @@ public final class LabRegistro {
     public static final RegistryObject<BlockEntityType<CamaraBlockEntity>> CAMARA_BE = BLOCK_ENTITIES.register("camara_temperatura",
             () -> BlockEntityType.Builder.of(CamaraBlockEntity::new, CAMARA.get()).build(null));
 
+    public static final RegistryObject<Block> TANQUE = BLOCKS.register("tanque_privacion",
+            () -> new TanqueBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(3.0F, 6.0F)
+                    .sound(SoundType.GLASS).noOcclusion().isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p) -> false)));
+    public static final RegistryObject<Item> TANQUE_ITEM = ITEMS.register("tanque_privacion",
+            () -> new com.miscelanea.tortura.aparatos.AparatoItem(TANQUE.get(), new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), 3));
+    public static final RegistryObject<BlockEntityType<TanqueBlockEntity>> TANQUE_BE = BLOCK_ENTITIES.register("tanque_privacion",
+            () -> BlockEntityType.Builder.of(TanqueBlockEntity::new, TANQUE.get()).build(null));
+
     public static void registrar(IEventBus bus) {
         ITEMS.register(bus);
         BLOCKS.register(bus);

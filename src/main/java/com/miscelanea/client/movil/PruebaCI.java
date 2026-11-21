@@ -4439,6 +4439,7 @@ public final class PruebaCI {
         sin("lab_cuaderno_cerrar", 5, () -> mc.setScreen(null));
         centrifuga();
         camaraTemperatura();
+        tanque();
         // el destilador térmico: con fuego debajo sale sedante; sin fuego no avanza
         sin("lab_destilador", 20, () -> {
             var srv = mc.getSingleplayerServer();
@@ -4652,6 +4653,82 @@ public final class PruebaCI {
                     sp.getInventory().clearOrCountMatchingItems(s -> s.is(com.miscelanea.laboratorio.LabRegistro.MUESTRA_FRIO.get()) || s.is(com.miscelanea.laboratorio.LabRegistro.MUESTRA_CALOR.get()), -1, sp.inventoryMenu.getCraftSlots());
                     sp.setTicksFrozen(0);
                     sp.clearFire();
+                    sp.removeAllEffects();
+                    sp.setHealth(sp.getMaxHealth());
+                }
+            });
+        });
+    }
+
+    // ------------------------------------------------------------------ Laboratorio, hito 4: el tanque de privación sensorial
+    private static void tanque() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("tan_poner", 30, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            net.minecraft.core.BlockPos b = net.minecraft.core.BlockPos.containing(a2Punto(6, 0, 0.3));
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                var l = srv.overworld();
+                if (sp == null) return;
+                java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState> antes = new java.util.HashMap<>();
+                for (var q : net.minecraft.core.BlockPos.betweenClosed(b.offset(-2, 0, -2), b.offset(2, 3, 2))) {
+                    antes.put(q.immutable(), l.getBlockState(q));
+                    if (q.getY() > b.getY() - 1) l.setBlock(q, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+                }
+                PI.put("tan_antes", antes);
+                var frente = a2Mira.getOpposite();
+                var estado = com.miscelanea.laboratorio.LabRegistro.TANQUE.get().defaultBlockState()
+                        .setValue(com.miscelanea.tortura.aparatos.AparatoBlock.FACING, frente);
+                l.setBlock(b, estado, 3);
+                l.setBlock(b.relative(frente.getOpposite()), estado.setValue(com.miscelanea.tortura.aparatos.AparatoBlock.ANEXO, true), 3);
+                PI.put("tan_b", b);
+                sp.getInventory().setItem(7, new ItemStack(com.miscelanea.laboratorio.LabRegistro.CUADERNO.get()));
+                sp.getInventory().setItem(6, new ItemStack(com.miscelanea.laboratorio.LabRegistro.TUBO_ENSAYO.get(), 2));
+                if (!(l.getBlockEntity(b) instanceof com.miscelanea.laboratorio.TanqueBlockEntity be)) {
+                    PI.put("tan_res", "sin bloque-entidad");
+                    return;
+                }
+                boolean dentro = be.meter(sp, sp);
+                be.fijarNivel(2);
+                be.encender(l, sp);
+                PI.put("tan_res", "dentro " + dentro + ", encendido " + be.encendido() + ", nivel " + be.nivel());
+            });
+        });
+        paso("tan_dentro", 60, () -> a2VistaA(a2Punto(6, 0, 1.0), a2Punto(1.5, 3.5, 2.6)));
+        vigila("tan_ficha_chk", 600, () -> {
+            var sp = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
+            var fichas = com.miscelanea.laboratorio.Experimentos.fichas(sp == null ? ItemStack.EMPTY : com.miscelanea.laboratorio.Experimentos.cuaderno(sp));
+            boolean ficha = false;
+            String resumen = "";
+            for (int i = 0; i < fichas.size(); i++) {
+                var f = fichas.getCompound(i);
+                if ("tanque".equals(f.getString("Estacion"))) {
+                    ficha = true;
+                    var ls = f.getList("Lecturas", net.minecraft.nbt.Tag.TAG_COMPOUND);
+                    resumen = "";
+                    for (int k = 0; k < ls.size(); k++) resumen += ls.getCompound(k).getString("K") + "=" + ls.getCompound(k).getString("V") + " ";
+                }
+            }
+            RESUMEN.add("  tanque de privación: " + PI.get("tan_res") + "; ficha " + (ficha ? "sí (" + resumen.trim() + ")" : "NO"));
+            if (!ficha) throw new IllegalStateException("el tanque de privación no ha apuntado la ficha");
+        });
+        sin("tan_limpiar", 20, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                if (PI.get("tan_b") instanceof net.minecraft.core.BlockPos b && l.getBlockEntity(b) instanceof com.miscelanea.laboratorio.TanqueBlockEntity be) {
+                    be.apagar(null, false);
+                    be.sacar(false);
+                }
+                @SuppressWarnings("unchecked")
+                var antes = (java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState>) PI.get("tan_antes");
+                if (antes != null) antes.forEach((q, s) -> l.setBlock(q, s, 2));
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                if (sp != null) {
+                    sp.getInventory().setItem(7, ItemStack.EMPTY);
+                    sp.getInventory().setItem(6, ItemStack.EMPTY);
+                    sp.getInventory().clearOrCountMatchingItems(s -> s.is(com.miscelanea.laboratorio.LabRegistro.MUESTRA_MIEDO.get()), -1, sp.inventoryMenu.getCraftSlots());
                     sp.removeAllEffects();
                     sp.setHealth(sp.getMaxHealth());
                 }
