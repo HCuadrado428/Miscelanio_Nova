@@ -76,6 +76,35 @@ Bloques con bloque-entidad, con su interfaz (un menú sencillo) y salida de comp
 - Hito 4 (tanque): espejo unidireccional e intercomunicador.
 - Hito 6: destilador térmico (con la receta del archivo STAG), centrifugadora de muestras, incubadora, analizador, impresora y dispensador.
 
+## Sistema de cámaras (hito 7)
+Cámaras y televisiones **a tiempo real, a unos 10 fps**, también fuera de la zona de torturas. Pensado para servidores.
+
+### Cómo llega la señal (la idea clave)
+El cliente solo tiene cargado lo que queda dentro de su distancia de visión, así que **solo un jugador cerca de la cámara puede dibujar lo que ve**. Por eso la señal pasa por el servidor:
+1. Cuando alguien mira una tele que está en un canal, el servidor sabe qué cámara quiere ver.
+2. El servidor elige un **transmisor**: un jugador que tenga el chunk de esa cámara cargado (el más cercano, y con preferencia al que menos carga lleve ya).
+3. El cliente del transmisor dibuja el mundo desde la posición de la cámara en una textura pequeña (128x72) cada seis fotogramas, la comprime en JPEG (como ya hacen las videollamadas del móvil) y la manda al servidor.
+4. El servidor la reenvía a todos los que miran esa cámara, estén donde estén (en la misma dimensión o en otra), y sus teles la dibujan con estática, ruido y sello de fecha y hora.
+5. **Si nadie tiene el chunk de la cámara cargado, la tele muestra "SIN SEÑAL".** El servidor no puede inventarse lo que no se está dibujando en ningún cliente. (Un jugador cerca, un familiar con chunk forzado no sirve: hace falta un cliente que lo dibuje.)
+
+### Reglas para que no pese
+- Una cámara solo transmite si alguien la está mirando; si deja de haber espectadores, el servidor le dice al transmisor que pare.
+- Máximo de cámaras activas por servidor (configurable) y de cámaras por transmisor.
+- Fotogramas de unos 3 a 6 KB: unos 30 a 60 KB/s por cámara y espectador. El servidor solo reenvía, no decodifica.
+- Si el transmisor se aleja, el servidor pasa la transmisión a otro jugador cercano sin que se note (un parpadeo de estática).
+
+### Bloques y objetos
+- **Cámara de vigilancia:** se cuelga de pared o techo, gira con el ratón al colocarla y tiene un nombre y un código de canal.
+- **Televisión** (varios tamaños): también se cuelga de la pared o del techo. Clic derecho para elegir el canal.
+- **Panel de canales** (conmutador): una tele puede ir a un canal fijo o rotar entre varios cada pocos segundos, como en FNAF.
+- **Enlazador:** objeto para unir una cámara a un canal.
+- Encaja con el monitor de constantes y el espejo unidireccional del laboratorio.
+
+### Riesgos conocidos
+- Los shaders (Iris, Oculus) pueden estropear el dibujado extra: primero sin shaders, luego con ellos aparte.
+- El rendimiento del transmisor: cada cámara es un dibujado extra del mundo en su ordenador (se limita a pocas cámaras y a baja resolución).
+- No lo he medido todavía: el primer paso del hito 7 es una cámara y una tele fijas para ver cuánto cuesta.
+
 ## Hitos
 1. Modelo de datos y **cuaderno** (objeto, ficha, pantalla), sin estaciones todavía. Con prueba.
 2. **Centrífuga** completa (con sus tres niveles y lecturas).
@@ -83,6 +112,7 @@ Bloques con bloque-entidad, con su interfaz (un menú sencillo) y salida de comp
 4. **Tanque de privación.**
 5. **Laberinto de la rata.**
 6. Pulido: logros, sonidos, textos, README y CHANGELOG, y pruebas con capturas.
+7. **Sistema de cámaras y televisiones** (ver arriba): primero una cámara y una tele fijas, luego la señal por el servidor, colgar y girar, y los canales.
 
 ## Reglas
 - Solo se puede meter a quien ya es cautivo, y siempre con la salida del QTE; el nivel extremo pide confirmación del científico.
