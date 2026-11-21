@@ -27,8 +27,7 @@
     "KeyMappingMixin",
     "GameRendererMixin",
     "FovApuntadoMixin",
-    "ItemRendererTamborMixin",
-    "WorldOpenFlowsMixin"
+    "ItemRendererTamborMixin"
   ],
   "injectors": {
     "defaultRequire": 1
