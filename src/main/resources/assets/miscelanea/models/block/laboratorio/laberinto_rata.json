@@ -1,0 +1,172 @@
+{
+ "parent": "minecraft:block/block",
+ "textures": {
+  "madera": "minecraft:block/oak_planks",
+  "queso": "minecraft:block/honeycomb_block",
+  "hierro": "minecraft:block/iron_block",
+  "verde": "minecraft:block/lime_concrete",
+  "particle": "minecraft:block/oak_planks"
+ },
+ "elements": [
+  {
+   "from": [
+    1,
+    0,
+    1
+   ],
+   "to": [
+    15,
+    7,
+    15
+   ],
+   "faces": {
+    "down": {
+     "texture": "#madera"
+    },
+    "up": {
+     "texture": "#madera"
+    },
+    "north": {
+     "texture": "#madera"
+    },
+    "south": {
+     "texture": "#madera"
+    },
+    "west": {
+     "texture": "#madera"
+    },
+    "east": {
+     "texture": "#madera"
+    }
+   }
+  },
+  {
+   "from": [
+    0,
+    6,
+    0
+   ],
+   "to": [
+    16,
+    8,
+    16
+   ],
+   "faces": {
+    "down": {
+     "texture": "#hierro"
+    },
+    "up": {
+     "texture": "#hierro"
+    },
+    "north": {
+     "texture": "#hierro"
+    },
+    "south": {
+     "texture": "#hierro"
+    },
+    "west": {
+     "texture": "#hierro"
+    },
+    "east": {
+     "texture": "#hierro"
+    }
+   }
+  },
+  {
+   "from": [
+    5,
+    8,
+    5
+   ],
+   "to": [
+    11,
+    12,
+    11
+   ],
+   "faces": {
+    "down": {
+     "texture": "#queso"
+    },
+    "up": {
+     "texture": "#queso"
+    },
+    "north": {
+     "texture": "#queso"
+    },
+    "south": {
+     "texture": "#queso"
+    },
+    "west": {
+     "texture": "#queso"
+    },
+    "east": {
+     "texture": "#queso"
+    }
+   }
+  },
+  {
+   "from": [
+    1,
+    8,
+    1
+   ],
+   "to": [
+    4,
+    9,
+    4
+   ],
+   "faces": {
+    "down": {
+     "texture": "#verde"
+    },
+    "up": {
+     "texture": "#verde"
+    },
+    "north": {
+     "texture": "#verde"
+    },
+    "south": {
+     "texture": "#verde"
+    },
+    "west": {
+     "texture": "#verde"
+    },
+    "east": {
+     "texture": "#verde"
+    }
+   }
+  },
+  {
+   "from": [
+    12,
+    8,
+    12
+   ],
+   "to": [
+    15,
+    9,
+    15
+   ],
+   "faces": {
+    "down": {
+     "texture": "#verde"
+    },
+    "up": {
+     "texture": "#verde"
+    },
+    "north": {
+     "texture": "#verde"
+    },
+    "south": {
+     "texture": "#verde"
+    },
+    "west": {
+     "texture": "#verde"
+    },
+    "east": {
+     "texture": "#verde"
+    }
+   }
+  }
+ ]
+}

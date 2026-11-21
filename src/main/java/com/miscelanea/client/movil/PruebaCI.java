@@ -4440,6 +4440,7 @@ public final class PruebaCI {
         centrifuga();
         camaraTemperatura();
         tanque();
+        laberinto();
         // el destilador térmico: con fuego debajo sale sedante; sin fuego no avanza
         sin("lab_destilador", 20, () -> {
             var srv = mc.getSingleplayerServer();
@@ -4729,6 +4730,118 @@ public final class PruebaCI {
                     sp.getInventory().setItem(7, ItemStack.EMPTY);
                     sp.getInventory().setItem(6, ItemStack.EMPTY);
                     sp.getInventory().clearOrCountMatchingItems(s -> s.is(com.miscelanea.laboratorio.LabRegistro.MUESTRA_MIEDO.get()), -1, sp.inventoryMenu.getCraftSlots());
+                    sp.removeAllEffects();
+                    sp.setHealth(sp.getMaxHealth());
+                }
+            });
+        });
+    }
+
+    // ------------------------------------------------------------------ Laboratorio, hito 5: el laberinto de la rata
+    private static void laberinto() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("lab_rata_poner", 30, () -> {
+            var srv = mc.getSingleplayerServer();
+            UUID id = mc.player.getUUID();
+            // la caja detrás del jugador, mirando hacia atrás: el laberinto se construye en el espacio de atrás
+            net.minecraft.core.BlockPos b = net.minecraft.core.BlockPos.containing(a2Punto(-4, 0, 0.3));
+            srv.execute(() -> {
+                ServerPlayer sp = srv.getPlayerList().getPlayer(id);
+                var l = srv.overworld();
+                if (sp == null) return;
+                var frente = a2Mira.getOpposite();
+                // despeja el recinto (15 x 15 x 4) y guarda lo que había
+                java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState> antes = new java.util.HashMap<>();
+                var estado = com.miscelanea.laboratorio.LabRegistro.LABERINTO.get().defaultBlockState().setValue(com.miscelanea.laboratorio.LaberintoBlock.FACING, frente);
+                l.setBlock(b, estado, 3);
+                var be0 = (com.miscelanea.laboratorio.LaberintoBlockEntity) l.getBlockEntity(b);
+                for (int u = 0; u < com.miscelanea.laboratorio.LaberintoBlockEntity.LADO; u++)
+                    for (int v = 0; v < com.miscelanea.laboratorio.LaberintoBlockEntity.LADO; v++) {
+                        var q = be0.mundo(u, v);
+                        for (int y = -1; y < 4; y++) antes.put(q.above(y), l.getBlockState(q.above(y)));
+                        for (int y = 0; y < 4; y++) l.setBlock(q.above(y), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+                        if (!l.getBlockState(q.below()).isSolid()) l.setBlock(q.below(), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(), 2);
+                    }
+                PI.put("rata_antes", antes);
+                PI.put("rata_b", b);
+                sp.getInventory().setItem(7, new ItemStack(com.miscelanea.laboratorio.LabRegistro.CUADERNO.get()));
+                sp.getInventory().setItem(6, new ItemStack(com.miscelanea.laboratorio.LabRegistro.TUBO_ENSAYO.get(), 2));
+                boolean ok = be0.empezar(l, sp, sp);
+                PI.put("rata_res", "empezado " + ok + ", activo " + be0.activo());
+                PI.put("rata_centro", be0.centro());
+            });
+        });
+        paso("lab_rata_vista", 50, () -> {
+            Vec3 c = (Vec3) PI.get("rata_centro");
+            if (c != null) a2VistaA(c, c.add(0.0, 16.0, 0.01));
+        });
+        // una baldosa con descarga
+        sin("lab_rata_placa", 30, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                if (PI.get("rata_b") instanceof net.minecraft.core.BlockPos b && l.getBlockEntity(b) instanceof com.miscelanea.laboratorio.LaberintoBlockEntity be) {
+                    var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                    var placas = be.placas();
+                    if (sp != null && !placas.isEmpty()) {
+                        var q = be.mundo(placas.get(0)[0], placas.get(0)[1]);
+                        sp.teleportTo(l, q.getX() + 0.5, q.getY(), q.getZ() + 0.5, sp.getYRot(), sp.getXRot());
+                    }
+                }
+            });
+        });
+        sin("lab_rata_placa_chk", 15, () -> {
+            var srv = mc.getSingleplayerServer();
+            if (PI.get("rata_b") instanceof net.minecraft.core.BlockPos b && srv.overworld().getBlockEntity(b) instanceof com.miscelanea.laboratorio.LaberintoBlockEntity be) {
+                RESUMEN.add("  laberinto: " + PI.get("rata_res") + "; descargas tras pisar una baldosa: " + be.fallos());
+                if (be.fallos() < 1) throw new IllegalStateException("la baldosa no ha dado descarga");
+            } else throw new IllegalStateException("no está la caja del laberinto");
+        });
+        // el queso
+        sin("lab_rata_queso", 30, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                if (PI.get("rata_b") instanceof net.minecraft.core.BlockPos b && l.getBlockEntity(b) instanceof com.miscelanea.laboratorio.LaberintoBlockEntity be) {
+                    var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                    var q = be.posQueso();
+                    if (sp != null) sp.teleportTo(l, q.getX() + 0.5, q.getY(), q.getZ() + 0.5, sp.getYRot(), sp.getXRot());
+                }
+            });
+        });
+        vigila("lab_rata_chk", 60, () -> {
+            var sp = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
+            var fichas = com.miscelanea.laboratorio.Experimentos.fichas(sp == null ? ItemStack.EMPTY : com.miscelanea.laboratorio.Experimentos.cuaderno(sp));
+            boolean ficha = false;
+            String resumen = "";
+            for (int i = 0; i < fichas.size(); i++) {
+                var f = fichas.getCompound(i);
+                if ("laberinto".equals(f.getString("Estacion"))) {
+                    ficha = true;
+                    var ls = f.getList("Lecturas", net.minecraft.nbt.Tag.TAG_COMPOUND);
+                    resumen = "";
+                    for (int k = 0; k < ls.size(); k++) resumen += ls.getCompound(k).getString("K") + "=" + ls.getCompound(k).getString("V") + " ";
+                }
+            }
+            boolean queso = sp != null && sp.getInventory().hasAnyMatching(s -> s.is(com.miscelanea.laboratorio.LabRegistro.QUESO.get()));
+            RESUMEN.add("  laberinto: ficha " + (ficha ? "sí (" + resumen.trim() + ")" : "NO") + ", queso " + (queso ? "sí" : "NO"));
+            if (!ficha) throw new IllegalStateException("el laberinto no ha apuntado la ficha");
+            if (!queso) throw new IllegalStateException("el laberinto no ha dado el queso");
+        });
+        sin("lab_rata_limpiar", 20, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                if (PI.get("rata_b") instanceof net.minecraft.core.BlockPos b && l.getBlockEntity(b) instanceof com.miscelanea.laboratorio.LaberintoBlockEntity be) be.limpiarSiActivo();
+                @SuppressWarnings("unchecked")
+                var antes = (java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState>) PI.get("rata_antes");
+                if (antes != null) antes.forEach((q, s) -> l.setBlock(q, s, 2));
+                if (PI.get("rata_b") instanceof net.minecraft.core.BlockPos b) l.setBlock(b, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                if (sp != null) {
+                    sp.getInventory().setItem(7, ItemStack.EMPTY);
+                    sp.getInventory().setItem(6, ItemStack.EMPTY);
+                    sp.getInventory().clearOrCountMatchingItems(s -> s.is(com.miscelanea.laboratorio.LabRegistro.QUESO.get()) || s.is(com.miscelanea.laboratorio.LabRegistro.MUESTRA_MIEDO.get()), -1, sp.inventoryMenu.getCraftSlots());
                     sp.removeAllEffects();
                     sp.setHealth(sp.getMaxHealth());
                 }

@@ -77,6 +77,15 @@ public final class LabRegistro {
     public static final RegistryObject<BlockEntityType<TanqueBlockEntity>> TANQUE_BE = BLOCK_ENTITIES.register("tanque_privacion",
             () -> BlockEntityType.Builder.of(TanqueBlockEntity::new, TANQUE.get()).build(null));
 
+    public static final RegistryObject<Item> QUESO = ITEMS.register("queso_laboratorio",
+            () -> new QuesoLabItem(new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Block> LABERINTO = BLOCKS.register("laberinto_rata",
+            () -> new LaberintoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(3.0F, 6.0F).sound(SoundType.WOOD).noOcclusion()));
+    public static final RegistryObject<Item> LABERINTO_ITEM = ITEMS.register("laberinto_rata",
+            () -> new BlockItem(LABERINTO.get(), new Item.Properties().rarity(Rarity.EPIC)));
+    public static final RegistryObject<BlockEntityType<LaberintoBlockEntity>> LABERINTO_BE = BLOCK_ENTITIES.register("laberinto_rata",
+            () -> BlockEntityType.Builder.of(LaberintoBlockEntity::new, LABERINTO.get()).build(null));
+
     public static void registrar(IEventBus bus) {
         ITEMS.register(bus);
         BLOCKS.register(bus);

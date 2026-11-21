@@ -6410,5 +6410,21 @@
   "laboratorio.miscelanea.tanque.castigo2": "YOU ARE NOT ALONE!",
   "qte.miscelanea.tanque": "Tell what is real!",
   "death.attack.miscelanea.tanque": "%1$s lost their mind in the deprivation tank",
-  "death.attack.miscelanea.tanque.player": "%1$s lost their mind in %2$s's deprivation tank"
+  "death.attack.miscelanea.tanque.player": "%1$s lost their mind in %2$s's deprivation tank",
+  "item.miscelanea.queso_laboratorio": "Laboratory Cheese",
+  "item.miscelanea.queso_laboratorio.desc": "Prize from the maze. Always edible, with an absurd effect.",
+  "block.miscelanea.laberinto_rata": "Rat Maze",
+  "laboratorio.miscelanea.estacion.laberinto": "Rat maze",
+  "laboratorio.miscelanea.lectura.tiempo": "Time",
+  "laboratorio.miscelanea.lectura.fallos": "Shocks",
+  "laboratorio.miscelanea.valor.llego": "reached the cheese",
+  "laboratorio.miscelanea.valor.tiempo": "ran out of time",
+  "laboratorio.miscelanea.valor.abandonado": "gave up",
+  "laboratorio.miscelanea.laberinto.sin_sujeto": "You need to be leading a captive to put them in the maze.",
+  "laboratorio.miscelanea.laberinto.espacio": "Not enough free space in front of the box (15 x 15 and three high, with floor).",
+  "laboratorio.miscelanea.laberinto.empieza": "Maze running! Two minutes to reach the cheese.",
+  "laboratorio.miscelanea.laberinto.nuevo": "New maze for next time.",
+  "laboratorio.miscelanea.laberinto.queso": "You reached the cheese!",
+  "death.attack.miscelanea.laberinto": "%1$s never left the maze",
+  "death.attack.miscelanea.laberinto.player": "%1$s never left %2$s's maze"
 }

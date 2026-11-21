@@ -262,6 +262,8 @@ public class Miscelanea {
             event.accept(com.miscelanea.laboratorio.LabRegistro.CENTRIFUGA_ITEM);
             event.accept(com.miscelanea.laboratorio.LabRegistro.CAMARA_ITEM);
             event.accept(com.miscelanea.laboratorio.LabRegistro.TANQUE_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.LABERINTO_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.QUESO);
             event.accept(com.miscelanea.tortura.TorturaRegistro.CADENA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.GANZUA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.LAZO);

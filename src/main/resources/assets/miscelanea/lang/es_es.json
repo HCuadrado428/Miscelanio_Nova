@@ -6410,5 +6410,21 @@
   "laboratorio.miscelanea.tanque.castigo2": "¡NO ESTÁ SOLO!",
   "qte.miscelanea.tanque": "¡Distingue lo real!",
   "death.attack.miscelanea.tanque": "%1$s perdió la cabeza en el tanque de privación",
-  "death.attack.miscelanea.tanque.player": "%1$s perdió la cabeza en el tanque de privación de %2$s"
+  "death.attack.miscelanea.tanque.player": "%1$s perdió la cabeza en el tanque de privación de %2$s",
+  "item.miscelanea.queso_laboratorio": "Queso de laboratorio",
+  "item.miscelanea.queso_laboratorio.desc": "Premio del laberinto. Se come siempre y da un efecto absurdo.",
+  "block.miscelanea.laberinto_rata": "Laberinto de la rata",
+  "laboratorio.miscelanea.estacion.laberinto": "Laberinto de la rata",
+  "laboratorio.miscelanea.lectura.tiempo": "Tiempo",
+  "laboratorio.miscelanea.lectura.fallos": "Descargas",
+  "laboratorio.miscelanea.valor.llego": "llegó al queso",
+  "laboratorio.miscelanea.valor.tiempo": "se acabó el tiempo",
+  "laboratorio.miscelanea.valor.abandonado": "abandonó",
+  "laboratorio.miscelanea.laberinto.sin_sujeto": "Necesitas llevar un cautivo para meterlo en el laberinto.",
+  "laboratorio.miscelanea.laberinto.espacio": "Falta sitio libre delante de la caja (15 x 15 y tres de alto, con suelo).",
+  "laboratorio.miscelanea.laberinto.empieza": "¡Laberinto en marcha! Dos minutos para llegar al queso.",
+  "laboratorio.miscelanea.laberinto.nuevo": "Laberinto nuevo para la próxima vez.",
+  "laboratorio.miscelanea.laberinto.queso": "¡Has llegado al queso!",
+  "death.attack.miscelanea.laberinto": "%1$s no salió del laberinto",
+  "death.attack.miscelanea.laberinto.player": "%1$s no salió del laberinto de %2$s"
 }
