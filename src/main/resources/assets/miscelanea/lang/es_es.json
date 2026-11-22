@@ -2606,6 +2606,7 @@
  "movil.miscelanea.app_minegram": "Minegram",
  "movil.miscelanea.app_mapa": "Mapa",
  "movil.miscelanea.app_banco": "Banco",
+ "movil.miscelanea.app_camaras": "Cámaras",
  "movil.miscelanea.app_desactivada": "Esta app está desactivada en el servidor",
  "movil.miscelanea.aviso.banco_saldo": "Saldo insuficiente",
  "movil.miscelanea.aviso.bizum_ok": "Bizum enviado: %s",
