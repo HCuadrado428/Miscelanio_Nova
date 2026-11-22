@@ -5277,6 +5277,8 @@ public final class PruebaCI {
             if (com.miscelanea.client.camaras.CamarasCliente.hayEnvio(9)) throw new IllegalStateException("el canal 9 no tiene cámara y recibe señal");
         });
         paso("cam_foto", 25, () -> {});
+        paso("cam_vista", 60, () -> mc.setScreen(new com.miscelanea.client.camaras.VistaCamaraScreen(net.minecraft.core.BlockPos.containing(a2Punto(14, -2.0, 1.6)), 5)));
+        sin("cam_vista_cerrar", 5, () -> mc.setScreen(null));
         sin("cam_limpiar", 20, () -> {
             var srv = mc.getSingleplayerServer();
             srv.execute(() -> {

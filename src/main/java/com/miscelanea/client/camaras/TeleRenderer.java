@@ -64,7 +64,7 @@ public class TeleRenderer implements BlockEntityRenderer<TeleBlockEntity> {
         var m = ps.last().pose();
         var n = ps.last().normal();
         for (int i = 0; i < 4; i++)
-            vc.vertex(m, (float) p[i][0], (float) p[i][1], (float) p[i][2]).color(255, 255, 255, 255).uv(uv[i][0], uv[i][1])
+            vc.vertex(m, (float) p[i][0], (float) p[i][1], (float) p[i][2]).color(senal ? 205 : 255, senal ? 245 : 255, senal ? 225 : 255, 255).uv(uv[i][0], uv[i][1])
                     .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LUZ).normal(n, d.getStepX(), d.getStepY(), d.getStepZ()).endVertex();
 
         // los textos, en el plano de la pantalla: 56 "píxeles de texto" de ancho (x hacia la derecha del espectador, y hacia abajo)

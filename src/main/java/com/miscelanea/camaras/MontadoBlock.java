@@ -47,6 +47,9 @@ public abstract class MontadoBlock extends BaseEntityBlock {
 
     protected abstract int canalMin();
 
+    /** Agachado, ¿el clic va al canal anterior? (la tele usa el clic normal para la pantalla grande). */
+    protected boolean agachadoRetrocede() { return true; }
+
     protected abstract int canalActual(BlockEntity be);
 
     protected abstract void ponerCanal(BlockEntity be, int canal);
@@ -101,7 +104,7 @@ public abstract class MontadoBlock extends BaseEntityBlock {
         BlockEntity be = l.getBlockEntity(p);
         if (be == null) return InteractionResult.PASS;
         if (l.isClientSide) return InteractionResult.SUCCESS;
-        int min = canalMin(), n = canalActual(be) + (j.isShiftKeyDown() ? -1 : 1);
+        int min = canalMin(), n = canalActual(be) + (j.isShiftKeyDown() && agachadoRetrocede() ? -1 : 1);
         if (n > 99) n = min;
         if (n < min) n = 99;
         ponerCanal(be, n);

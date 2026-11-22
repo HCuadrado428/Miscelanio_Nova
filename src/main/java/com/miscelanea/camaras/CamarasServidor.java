@@ -96,6 +96,12 @@ public final class CamarasServidor {
                         });
                     }
                 }
+                case CamarasRed.C_CANAL -> {
+                    net.minecraft.core.BlockPos pos = b.readBlockPos();
+                    int canal = b.readVarInt();
+                    if (p.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 100 || canal < 0 || canal > 99) return;
+                    if (p.level().getBlockEntity(pos) instanceof TeleBlockEntity tv) tv.canal(canal);
+                }
                 default -> {
                 }
             }

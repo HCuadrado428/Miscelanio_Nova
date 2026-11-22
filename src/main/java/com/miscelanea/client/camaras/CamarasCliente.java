@@ -242,7 +242,7 @@ public final class CamarasCliente {
         Matrix4f proyAntes = new Matrix4f(RenderSystem.getProjectionMatrix());
         VertexSorting ordenAntes = RenderSystem.getVertexSorting();
         float aspecto = (float) mc.getWindow().getWidth() / Math.max(1, mc.getWindow().getHeight());
-        int sw = o.calidad() <= 0 ? 128 : o.calidad() == 1 ? 192 : 256, sh = sw * 9 / 16;
+        int sw = o.calidad() <= 0 ? 256 : o.calidad() == 1 ? 384 : 512, sh = sw * 9 / 16;
         int th = sh * 2, tw = Math.max(sw, Math.min(sw * 4, Math.round(th * aspecto)));
         try {
             if (grande == null || grande.width != tw || grande.height != th) {
@@ -282,12 +282,58 @@ public final class CamarasCliente {
         MovilCaptura.copiar(grande, 0, 0, grande.width, grande.height, pequena);
         original.bindWrite(true);
         try (NativeImage img = MovilCaptura.descargar(pequena)) {
-            for (int q : new int[]{82, 72, 60, 48, 36, 26}) {
-                byte[] b = MovilCaptura.jpeg(img, q);
+            for (int q : new int[]{86, 78, 70, 62, 54, 44, 34}) {
+                byte[] b = jpegGris(img, q);
                 if (b != null && b.length <= CamarasRed.MAX_FRAME - 500) return b;
             }
         }
         return null;
+    }
+
+    /**
+     * JPEG en escala de grises (un solo canal: pesa tres veces menos que en color, y se puede ir a mucha más resolución) con un
+     * toque de contraste; la imagen viene de un framebuffer (de abajo arriba), así que se le da la vuelta. La tele la tiñe de
+     * verde frío al dibujarla (aspecto de cámara de laboratorio).
+     */
+    private static byte[] jpegGris(NativeImage img, int calidad) {
+        int w = img.getWidth(), h = img.getHeight();
+        java.nio.ByteBuffer px = org.lwjgl.system.MemoryUtil.memAlloc(w * h);
+        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream(16384);
+        try {
+            for (int y = 0; y < h; y++)
+                for (int x = 0; x < w; x++) {
+                    int c = img.getPixelRGBA(x, h - 1 - y);
+                    float l = 0.299F * (c & 0xFF) + 0.587F * ((c >> 8) & 0xFF) + 0.114F * ((c >> 16) & 0xFF);
+                    l = (l - 128F) * 1.12F + 128F;
+                    px.put((byte) Math.max(0, Math.min(255, (int) l)));
+                }
+            px.flip();
+            try (org.lwjgl.stb.STBIWriteCallback cb = org.lwjgl.stb.STBIWriteCallback.create((ctx, data, size) -> {
+                java.nio.ByteBuffer b = org.lwjgl.stb.STBIWriteCallback.getData(data, size);
+                byte[] arr = new byte[size];
+                b.get(arr);
+                out.write(arr, 0, size);
+            })) {
+                if (org.lwjgl.stb.STBImageWrite.stbi_write_jpg_to_func(cb, 0L, w, h, 1, px, calidad) == 0) return null;
+            }
+            return out.toByteArray();
+        } catch (Throwable t) {
+            return null;
+        } finally {
+            org.lwjgl.system.MemoryUtil.memFree(px);
+        }
+    }
+
+    public static List<Integer> lista() {
+        return lista;
+    }
+
+    /** Fija el canal de una tele (lo comprueba el servidor: hay que estar cerca). */
+    public static void fijarCanal(BlockPos pos, int canal) {
+        CamarasRed.alServidor(CamarasRed.C_CANAL, b -> {
+            b.writeBlockPos(pos);
+            b.writeVarInt(canal);
+        });
     }
 
     // ------------------------------------------------------------------ imagen de estática (sin señal)

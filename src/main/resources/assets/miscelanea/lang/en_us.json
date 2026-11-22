@@ -6567,8 +6567,12 @@
   "block.miscelanea.camara_vigilancia.ayuda2": "Right-click: next channel (sneak for the previous). Someone needs its chunk loaded nearby for it to broadcast; otherwise the TV says \"no signal\".",
   "block.miscelanea.camara_vigilancia.ayuda3": "It only broadcasts while someone is watching a TV on its channel. Rename it in an anvil before placing it and the name shows on the screen.",
   "block.miscelanea.television.ayuda": "Shows live what the camera on its channel sees, with the time and the channel name. Hangs on a wall or ceiling.",
-  "block.miscelanea.television.ayuda2": "Right-click: next channel (sneak for the previous). Channel 0 is automatic: it cycles through all the cameras.",
+  "block.miscelanea.television.ayuda2": "Right-click: the image full screen (◄ ► switch cameras and \"Set\" leaves it on the TV). Sneak + click: next channel; 0 is automatic and cycles through all the cameras.",
   "block.miscelanea.television.ayuda3": "Works from far away: cameras can even be in another dimension.",
   "camaras.miscelanea.canal": "Channel %s",
+  "camaras.miscelanea.vista": "Security camera",
+  "camaras.miscelanea.vista.fijar": "Set on the TV",
+  "camaras.miscelanea.vista.sin_senal": "NO SIGNAL",
+  "camaras.miscelanea.vista.ayuda": "◄ ► switch camera · Esc to exit",
   "camaras.miscelanea.canal_auto": "Automatic channel (cycles through the cameras)"
 }

@@ -6567,8 +6567,12 @@
   "block.miscelanea.camara_vigilancia.ayuda2": "Clic derecho: canal siguiente (agachado, el anterior). Hace falta que alguien tenga cerca su chunk cargado para que transmita; si no, la tele dice «sin señal».",
   "block.miscelanea.camara_vigilancia.ayuda3": "Solo transmite mientras alguien mira una tele de su canal. Si la renombras en un yunque antes de colocarla, su nombre sale en la pantalla.",
   "block.miscelanea.television.ayuda": "Enseña en directo lo que ve la cámara de su canal, con la hora y el nombre del canal. Se cuelga de una pared o del techo.",
-  "block.miscelanea.television.ayuda2": "Clic derecho: canal siguiente (agachado, el anterior). El canal 0 es automático: rota entre todas las cámaras.",
+  "block.miscelanea.television.ayuda2": "Clic derecho: la imagen en pantalla grande (con ◄ ► cambias de cámara y «Fijar» la deja en la tele). Agachado + clic: canal siguiente; el 0 es automático y rota entre todas las cámaras.",
   "block.miscelanea.television.ayuda3": "Se ve desde lejos: las cámaras pueden estar en otra dimensión.",
   "camaras.miscelanea.canal": "Canal %s",
+  "camaras.miscelanea.vista": "Cámara de vigilancia",
+  "camaras.miscelanea.vista.fijar": "Fijar en la tele",
+  "camaras.miscelanea.vista.sin_senal": "SIN SEÑAL",
+  "camaras.miscelanea.vista.ayuda": "◄ ► cambiar de cámara · Esc salir",
   "camaras.miscelanea.canal_auto": "Canal automático (rota entre las cámaras)"
 }
