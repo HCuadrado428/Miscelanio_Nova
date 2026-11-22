@@ -70,17 +70,14 @@ public class TeleRenderer implements BlockEntityRenderer<TeleBlockEntity> {
         // los textos, en el plano de la pantalla: 56 "píxeles de texto" de ancho (x hacia la derecha del espectador, y hacia abajo)
         Font f = Minecraft.getInstance().font;
         double[] o = pt(d, TeleBlock.PX1, TeleBlock.PY1);                       // esquina superior izquierda del espectador
-        // los textos van un pelín por delante de la imagen: si no, se solapan con ella y se ven a trozos
-        o[0] += d.getStepX() * 0.004;
-        o[1] += d.getStepY() * 0.004;
-        o[2] += d.getStepZ() * 0.004;
         double[] ox = pt(d, TeleBlock.PX1 - 1, TeleBlock.PY1), oy = pt(d, TeleBlock.PX1, TeleBlock.PY1 - 1);
         double porPx = (TeleBlock.PX1 - TeleBlock.PX0) / ANCHO;                 // píxeles del modelo por píxel de texto
         float rx = (float) ((ox[0] - o[0]) * porPx), ry = (float) ((ox[1] - o[1]) * porPx), rz = (float) ((ox[2] - o[2]) * porPx);
         float dx = (float) ((oy[0] - o[0]) * porPx), dy = (float) ((oy[1] - o[1]) * porPx), dz = (float) ((oy[2] - o[2]) * porPx);
         float k = (float) (porPx / 16.0);
         Matrix4f t = new Matrix4f(ps.last().pose());
-        t.mul(new Matrix4f(rx, ry, rz, 0, dx, dy, dz, 0, d.getStepX() * k, d.getStepY() * k, d.getStepZ() * k, 0, (float) o[0], (float) o[1], (float) o[2], 1));
+        t.mul(new Matrix4f(rx, ry, rz, 0, dx, dy, dz, 0, d.getStepX() * k, d.getStepY() * k, d.getStepZ() * k, 0,
+                (float) (o[0] + d.getStepX() * 0.004), (float) (o[1] + d.getStepY() * 0.004), (float) (o[2] + d.getStepZ() * 0.004), 1));   // un pelín por delante de la imagen
         String nombre = ef > 0 ? CamarasCliente.nombre(ef) : "";
         String cab = ef > 0 ? String.format("%02d", ef) : canal == 0 ? "AUTO" : String.format("%02d", canal);
         if (!nombre.isEmpty()) cab += " " + (nombre.length() > 9 ? nombre.substring(0, 9) : nombre).toUpperCase(java.util.Locale.ROOT);
