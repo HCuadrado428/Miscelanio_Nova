@@ -111,6 +111,26 @@ public final class LabRegistro {
     public static final RegistryObject<Item> IMPRESORA_ITEM = ITEMS.register("impresora_informes", () -> new BlockItem(IMPRESORA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> INFORME = ITEMS.register("informe_laboratorio", () -> new InformeItem(new Item.Properties().stacksTo(1)));
 
+    // ---- utilidades y seguridad
+    public static final RegistryObject<Item> SUERO_RECUP = ITEMS.register("suero_recuperacion", () -> new SueroRecuperacionItem(new Item.Properties().stacksTo(8)));
+    public static final RegistryObject<Item> ESCANER = ITEMS.register("escaner_anomalias", () -> new EscanerItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Block> FRIGORIFICO = BLOCKS.register("frigorifico_muestras", () -> new FrigorificoBlock(metal()));
+    public static final RegistryObject<Item> FRIGORIFICO_ITEM = ITEMS.register("frigorifico_muestras", () -> new BlockItem(FRIGORIFICO.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<BlockEntityType<FrigorificoBlockEntity>> FRIGORIFICO_BE = BLOCK_ENTITIES.register("frigorifico_muestras",
+            () -> BlockEntityType.Builder.of(FrigorificoBlockEntity::new, FRIGORIFICO.get()).build(null));
+    public static final RegistryObject<Block> ALARMA = BLOCKS.register("alarma_laboratorio", () -> new AlarmaBlock(metal().lightLevel(s -> s.getValue(AlarmaBlock.SONANDO) ? 12 : s.getValue(AlarmaBlock.ARMADA) ? 4 : 0)));
+    public static final RegistryObject<Item> ALARMA_ITEM = ITEMS.register("alarma_laboratorio", () -> new BlockItem(ALARMA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<BlockEntityType<AlarmaBlockEntity>> ALARMA_BE = BLOCK_ENTITIES.register("alarma_laboratorio",
+            () -> BlockEntityType.Builder.of(AlarmaBlockEntity::new, ALARMA.get()).build(null));
+    public static final RegistryObject<Block> PUERTA_CUARENTENA = BLOCKS.register("puerta_cuarentena",
+            () -> new PuertaCuarentenaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(5.0F, 6.0F).sound(SoundType.METAL).noOcclusion()));
+    public static final RegistryObject<Item> PUERTA_CUARENTENA_ITEM = ITEMS.register("puerta_cuarentena",
+            () -> new net.minecraft.world.item.DoubleHighBlockItem(PUERTA_CUARENTENA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Block> ESTABILIZADOR = BLOCKS.register("estabilizador_glitch", () -> new EstabilizadorBlock(metal().lightLevel(s -> 6)));
+    public static final RegistryObject<Item> ESTABILIZADOR_ITEM = ITEMS.register("estabilizador_glitch", () -> new BlockItem(ESTABILIZADOR.get(), new Item.Properties().rarity(Rarity.RARE)));
+    public static final RegistryObject<BlockEntityType<EstabilizadorBlockEntity>> ESTABILIZADOR_BE = BLOCK_ENTITIES.register("estabilizador_glitch",
+            () -> BlockEntityType.Builder.of(EstabilizadorBlockEntity::new, ESTABILIZADOR.get()).build(null));
+
     // ---- decoración
     public static final RegistryObject<Block> CRISTAL_OBS = BLOCKS.register("cristal_observacion",
             () -> new net.minecraft.world.level.block.GlassBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(0.5F).sound(SoundType.GLASS).noOcclusion()

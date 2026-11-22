@@ -31,6 +31,12 @@ public final class ModPotions {
     public static final RegistryObject<Potion> STRONG_ENEMIGO = POTIONS.register("strong_enemigo",
             () -> new Potion("enemigo", new MobEffectInstance(ModEffects.ENEMIGO.get(), 600, 1)));
 
+    // --- Miedo y mareo (se destilan en el laboratorio a partir de las muestras)
+    public static final RegistryObject<Potion> MIEDO = POTIONS.register("miedo",
+            () -> new Potion("miedo", new MobEffectInstance(com.miscelanea.tortura.efectos.EfectosRegistro.MIEDO.get(), 1800)));
+    public static final RegistryObject<Potion> MAREO = POTIONS.register("mareo",
+            () -> new Potion("mareo", new MobEffectInstance(net.minecraft.world.effect.MobEffects.CONFUSION, 1800)));
+
     // --- Sedante (instantánea: al beberla te pincha como la jeringuilla)
     public static final RegistryObject<Potion> SEDANTE = POTIONS.register("sedante",
             () -> new Potion("sedante", new MobEffectInstance(ModEffects.SEDANTE.get(), 1)));

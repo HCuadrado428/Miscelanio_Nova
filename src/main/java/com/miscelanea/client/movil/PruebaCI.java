@@ -5003,6 +5003,144 @@ public final class PruebaCI {
         });
     }
 
+    // ------------------------------------------------------------------ Laboratorio: glitch, recuperación, frigorífico, alarma, cuarentena, escáner, estabilizador, pociones
+    private static void laboratorioUtilidades() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("labu_poner", 30, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                if (sp == null) return;
+                java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState> antes = new java.util.HashMap<>();
+                String res = "";
+                boolean ok = true;
+                // 1. el glitch es ingrediente: vale 7 y la incubadora lo vuelve suero de glitch (tipo 9)
+                var glitch = new ItemStack(com.miscelanea.glitch.GlitchRegistro.MUESTRA.get());
+                boolean g1 = com.miscelanea.laboratorio.Sueros.valor(glitch) == 7;
+                var bi = net.minecraft.core.BlockPos.containing(a2Punto(10, -4, 0.3));
+                antes.put(bi, l.getBlockState(bi));
+                l.setBlock(bi, com.miscelanea.laboratorio.LabRegistro.INCUBADORA.get().defaultBlockState(), 3);
+                boolean g2 = false;
+                if (l.getBlockEntity(bi) instanceof com.miscelanea.laboratorio.IncubadoraBlockEntity inc) {
+                    inc.poner(glitch);
+                    for (int i = 0; i < com.miscelanea.laboratorio.IncubadoraBlockEntity.TICKS + 2; i++)
+                        com.miscelanea.laboratorio.IncubadoraBlockEntity.tick(l, bi, l.getBlockState(bi), inc);
+                    g2 = !inc.resultado().isEmpty() && com.miscelanea.laboratorio.Sueros.tipo(inc.resultado()) == 9;
+                    // y un queso da el suero de recuperación
+                    inc.alUsar(sp);   // recoge el de glitch
+                    inc.poner(new ItemStack(com.miscelanea.laboratorio.LabRegistro.QUESO.get()));
+                    for (int i = 0; i < com.miscelanea.laboratorio.IncubadoraBlockEntity.TICKS + 2; i++)
+                        com.miscelanea.laboratorio.IncubadoraBlockEntity.tick(l, bi, l.getBlockState(bi), inc);
+                    g2 = g2 && inc.resultado().is(com.miscelanea.laboratorio.LabRegistro.SUERO_RECUP.get());
+                }
+                res += "glitch " + (g1 && g2 ? "bien" : "MAL"); ok = ok && g1 && g2;
+                // 2. el suero de recuperación quita efectos y cura
+                sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.CONFUSION, 600));
+                sp.setHealth(4F);
+                com.miscelanea.laboratorio.SueroRecuperacionItem.curar(sp);
+                boolean r = sp.getActiveEffects().isEmpty() && sp.getHealth() >= 13F;
+                res += "; recuperación " + (r ? "bien" : "MAL"); ok = ok && r;
+                sp.setHealth(sp.getMaxHealth());
+                // 3. el frigorífico guarda cosas
+                var bf = net.minecraft.core.BlockPos.containing(a2Punto(10, -2.6, 0.3));
+                antes.put(bf, l.getBlockState(bf));
+                l.setBlock(bf, com.miscelanea.laboratorio.LabRegistro.FRIGORIFICO.get().defaultBlockState(), 3);
+                boolean f = false;
+                if (l.getBlockEntity(bf) instanceof com.miscelanea.laboratorio.FrigorificoBlockEntity fb) {
+                    fb.setItem(3, new ItemStack(com.miscelanea.laboratorio.LabRegistro.MUESTRA_MIEDO.get(), 5));
+                    f = fb.getContainerSize() == 27 && fb.getItem(3).is(com.miscelanea.laboratorio.LabRegistro.MUESTRA_MIEDO.get()) && fb.getItem(3).getCount() == 5;
+                }
+                res += "; frigorífico " + (f ? "bien" : "MAL"); ok = ok && f;
+                // 4. la alarma salta con alguien cerca (y no con bata)
+                var ba = net.minecraft.core.BlockPos.containing(a2Punto(10, -1.2, 0.3));
+                antes.put(ba, l.getBlockState(ba));
+                l.setBlock(ba, com.miscelanea.laboratorio.LabRegistro.ALARMA.get().defaultBlockState().setValue(com.miscelanea.laboratorio.AlarmaBlock.ARMADA, true), 3);
+                sp.teleportTo(l, ba.getX() + 2.5, ba.getY(), ba.getZ() + 0.5, sp.getYRot(), sp.getXRot());
+                sp.setShiftKeyDown(false);
+                boolean sono = false;
+                if (l.getBlockEntity(ba) instanceof com.miscelanea.laboratorio.AlarmaBlockEntity ab) {
+                    sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, new ItemStack(com.miscelanea.laboratorio.LabRegistro.BATA.get()));
+                    for (int i = 0; i < 20; i++) com.miscelanea.laboratorio.AlarmaBlockEntity.tick(l, ba, l.getBlockState(ba), ab);
+                    boolean conBata = l.getBlockState(ba).getValue(com.miscelanea.laboratorio.AlarmaBlock.SONANDO);
+                    sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, ItemStack.EMPTY);
+                    // en creativo no salta: se prueba con la lógica del intruso
+                    boolean intruso = com.miscelanea.laboratorio.AlarmaBlockEntity.intruso(sp) || sp.isCreative();
+                    sono = !conBata;
+                    res += "; alarma con bata " + (conBata ? "SUENA(MAL)" : "calla") + ", sin bata intruso=" + (com.miscelanea.laboratorio.AlarmaBlockEntity.intruso(sp) ? "sí" : (sp.isCreative() ? "creativo" : "NO"));
+                    ok = ok && sono;
+                }
+                // 5. la puerta de cuarentena: limpio pasa; con suero, no; con bata, sí
+                boolean limpia = com.miscelanea.laboratorio.PuertaCuarentenaBlock.esLimpio(sp);
+                com.miscelanea.laboratorio.Sueros.aplicar(sp, 1);
+                boolean sucio = !com.miscelanea.laboratorio.PuertaCuarentenaBlock.esLimpio(sp) || sp.isCreative();
+                sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, new ItemStack(com.miscelanea.laboratorio.LabRegistro.BATA.get()));
+                boolean conBata2 = com.miscelanea.laboratorio.PuertaCuarentenaBlock.esLimpio(sp);
+                sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, ItemStack.EMPTY);
+                sp.removeAllEffects();
+                res += "; cuarentena limpio=" + limpia + ", con suero rechaza=" + sucio + ", con bata pasa=" + conBata2;
+                ok = ok && limpia && sucio && conBata2;
+                // 6. el escáner: crepita con algo con glitch cerca
+                var cerdo = net.minecraft.world.entity.EntityType.PIG.create(l);
+                double inten = -1;
+                if (cerdo != null) {
+                    cerdo.moveTo(sp.getX() + 3, sp.getY(), sp.getZ(), 0, 0);
+                    l.addFreshEntity(cerdo);
+                    cerdo.addEffect(new net.minecraft.world.effect.MobEffectInstance(com.miscelanea.glitch.GlitchRegistro.EFECTO.get(), 600));
+                    inten = com.miscelanea.laboratorio.EscanerItem.intensidad(l, sp);
+                    cerdo.discard();
+                }
+                boolean esc = inten > 0.5;
+                res += "; escáner " + String.format(java.util.Locale.ROOT, "%.2f", inten) + (esc ? " bien" : " MAL"); ok = ok && esc;
+                // 7. el estabilizador para una onda de glitch recién soltada
+                var bs = net.minecraft.core.BlockPos.containing(a2Punto(10, 0.4, 0.3));
+                antes.put(bs, l.getBlockState(bs));
+                l.setBlock(bs, com.miscelanea.laboratorio.LabRegistro.ESTABILIZADOR.get().defaultBlockState(), 3);
+                com.miscelanea.glitch.OndaGlitch.detonar(l, net.minecraft.world.phys.Vec3.atCenterOf(bs.above(4)), null);
+                int calmadas = com.miscelanea.glitch.OndaGlitch.calmar(l, net.minecraft.world.phys.Vec3.atCenterOf(bs), com.miscelanea.laboratorio.EstabilizadorBlockEntity.RADIO);
+                res += "; estabilizador calma " + calmadas + " onda(s)" + (calmadas >= 1 ? " bien" : " MAL"); ok = ok && calmadas >= 1;
+                // 8. el destilador hace una poción de miedo a partir de una muestra
+                var bd = net.minecraft.core.BlockPos.containing(a2Punto(10, 1.8, 0.3));
+                antes.put(bd.below(), l.getBlockState(bd.below()));
+                antes.put(bd, l.getBlockState(bd));
+                l.setBlock(bd.below(), net.minecraft.world.level.block.Blocks.MAGMA_BLOCK.defaultBlockState(), 3);
+                l.setBlock(bd, com.miscelanea.laboratorio.LabRegistro.DESTILADOR.get().defaultBlockState(), 3);
+                boolean pm = false;
+                if (l.getBlockEntity(bd) instanceof com.miscelanea.laboratorio.DestiladorBlockEntity de) {
+                    boolean mete = de.meterMuestra(new ItemStack(com.miscelanea.laboratorio.LabRegistro.MUESTRA_MIEDO.get()));
+                    for (int i = 0; i < com.miscelanea.laboratorio.DestiladorBlockEntity.TICKS_POR_UNIDAD + 2; i++)
+                        com.miscelanea.laboratorio.DestiladorBlockEntity.tick(l, bd, l.getBlockState(bd), de);
+                    var pocion = de.sacar();
+                    pm = mete && !pocion.isEmpty() && net.minecraft.world.item.alchemy.PotionUtils.getPotion(pocion) == com.miscelanea.registry.ModPotions.MIEDO.get();
+                }
+                res += "; destilar muestra a poción de miedo " + (pm ? "bien" : "MAL"); ok = ok && pm;
+                PI.put("labu_antes", antes);
+                PI.put("labu_res", res);
+                PI.put("labu_ok", ok);
+            });
+        });
+        paso("labu_foto", 40, () -> a2VistaA(a2Punto(10, -1.4, 0.8), a2Punto(5.0, 3.5, 2.6)));
+        vigila("labu_chk", 10, () -> {
+            RESUMEN.add("  laboratorio utilidades: " + PI.get("labu_res"));
+            if (!Boolean.TRUE.equals(PI.get("labu_ok"))) throw new IllegalStateException("fallo en las utilidades del laboratorio: " + PI.get("labu_res"));
+        });
+        sin("labu_limpiar", 10, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                @SuppressWarnings("unchecked")
+                var antes = (java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState>) PI.get("labu_antes");
+                if (antes != null) antes.forEach((q, s) -> l.setBlock(q, s, 3));
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                if (sp != null) {
+                    sp.removeAllEffects();
+                    sp.setHealth(sp.getMaxHealth());
+                    sp.getInventory().clearOrCountMatchingItems(s -> s.is(com.miscelanea.laboratorio.LabRegistro.SUERO.get()) || s.is(com.miscelanea.laboratorio.LabRegistro.SUERO_RECUP.get()), -1, sp.inventoryMenu.getCraftSlots());
+                }
+            });
+        });
+    }
+
     // ------------------------------------------------------------------ escopeta de presión
     private static boolean escAgachado;
     private static net.minecraft.core.BlockPos escHoguera, escVela, escTierra;
@@ -6077,6 +6215,7 @@ public final class PruebaCI {
         // el laboratorio de experimentos (necesita la arena de pruebas ya preparada)
         laboratorio();
         laboratorioExtra();
+        laboratorioUtilidades();
         // el Hacha de sangre en tercera y primera persona (se ve que va de pie, agarrada por el mango)
         for (int k = 0; k <= 0; k++) {
             sin("hacha_3p_poner_" + k, 8, () -> a2Mano(new ItemStack(com.miscelanea.registry.ModItems.HACHA_SANGRE.get())));

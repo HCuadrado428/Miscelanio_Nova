@@ -48,7 +48,9 @@ public class IncubadoraBlockEntity extends BlockEntity {
         be.progreso++;
         if (be.progreso % 20 == 0) sl.sendParticles(ParticleTypes.HAPPY_VILLAGER, p.getX() + 0.5, p.getY() + 1.0, p.getZ() + 0.5, 1, 0.2, 0.1, 0.2, 0.0);
         if (be.progreso >= TICKS) {
-            be.resultado = Sueros.mezclar(be.dentro, be.dentro);
+            if (be.dentro.is(LabRegistro.QUESO.get())) be.resultado = new ItemStack(LabRegistro.SUERO_RECUP.get());
+            else if (be.dentro.is(com.miscelanea.glitch.GlitchRegistro.MUESTRA.get())) be.resultado = Sueros.crear(9, false);   // suero de glitch
+            else be.resultado = Sueros.mezclar(be.dentro, be.dentro);
             be.dentro = ItemStack.EMPTY;
             be.progreso = 0;
             be.setChanged();

@@ -17,12 +17,13 @@ import java.util.function.Supplier;
 public final class Sueros {
     private Sueros() {}
 
-    public static final int TIPOS = 9;
+    public static final int TIPOS = 11;
     public static final int SEGUNDOS = 60;
 
     /** Efecto de cada tipo, por orden: la clave de texto es {@code laboratorio.miscelanea.suero.<n>}. */
     private static final List<Supplier<MobEffect>> EFECTOS = List.of(PocionesRegistro.GIGANTE, PocionesRegistro.ENANO, PocionesRegistro.ECOLOCALIZACION,
-            PocionesRegistro.ESPEJISMO, PocionesRegistro.NIEBLA_VIVIENTE, VozRegistro.HELIO, VozRegistro.TARTAMUDEO, VozRegistro.VENTILADOR, VozRegistro.BORRACHERA);
+            PocionesRegistro.ESPEJISMO, PocionesRegistro.NIEBLA_VIVIENTE, VozRegistro.HELIO, VozRegistro.TARTAMUDEO, VozRegistro.VENTILADOR, VozRegistro.BORRACHERA,
+            com.miscelanea.glitch.GlitchRegistro.EFECTO, com.miscelanea.estatica.EstaticaRegistro.EFECTO);
 
     public static MobEffect efecto(int tipo) {
         return EFECTOS.get(Math.floorMod(tipo, TIPOS)).get();
@@ -60,7 +61,8 @@ public final class Sueros {
         if (s.is(LabRegistro.MUESTRA_FRIO.get())) return 3;
         if (s.is(LabRegistro.MUESTRA_CALOR.get())) return 4;
         if (s.is(LabRegistro.QUESO.get())) return 5;
-        if (s.is(LabRegistro.SUERO.get())) return 6 + tipo(s);
+        if (s.is(com.miscelanea.glitch.GlitchRegistro.MUESTRA.get())) return 7;   // el glitch: un ingrediente raro
+        if (s.is(LabRegistro.SUERO.get())) return 10 + tipo(s);
         return 0;
     }
 

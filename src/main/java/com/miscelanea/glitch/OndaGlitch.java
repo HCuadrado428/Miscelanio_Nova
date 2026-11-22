@@ -107,6 +107,23 @@ public final class OndaGlitch {
         ACTIVAS.add(new OndaGlitch(level, centro, dueno));
     }
 
+    /**
+     * Para (sin más estragos) las ondas vivas cuya esfera toca el círculo de radio {@code radio} alrededor de {@code centro}.
+     * Los bloques que ya se habían corrompido se resuelven solos. Devuelve cuántas ha parado.
+     */
+    public static int calmar(Level level, Vec3 centro, double radio) {
+        int n = 0;
+        for (Iterator<OndaGlitch> it = ACTIVAS.iterator(); it.hasNext(); ) {
+            OndaGlitch o = it.next();
+            double r = radio + o.radio;
+            if (o.level == level && o.centro.distanceToSqr(centro) <= r * r) {
+                it.remove();
+                n++;
+            }
+        }
+        return n;
+    }
+
     /** Si {@code pos} está dentro de una onda que sigue viva (para el frasco de muestras). */
     public static boolean dentro(Level level, Vec3 pos) {
         for (OndaGlitch o : ACTIVAS)

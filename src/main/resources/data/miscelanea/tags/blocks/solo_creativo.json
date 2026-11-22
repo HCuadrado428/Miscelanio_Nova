@@ -1,6 +1,7 @@
 {
  "replace": false,
  "values": [
+  "miscelanea:alarma_laboratorio",
   "miscelanea:algodonera",
   "miscelanea:analizador",
   "miscelanea:bolera",
@@ -17,6 +18,8 @@
   "miscelanea:diana_dardos",
   "miscelanea:dispensador_sueros",
   "miscelanea:doncella_hierro",
+  "miscelanea:estabilizador_glitch",
+  "miscelanea:frigorifico_muestras",
   "miscelanea:gachapon",
   "miscelanea:gancho_colgar",
   "miscelanea:impresora_informes",

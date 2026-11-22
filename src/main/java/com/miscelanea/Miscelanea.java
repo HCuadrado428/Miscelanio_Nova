@@ -277,6 +277,12 @@ public class Miscelanea {
             event.accept(com.miscelanea.laboratorio.LabRegistro.TAQUILLA_ITEM);
             event.accept(com.miscelanea.laboratorio.LabRegistro.MICROSCOPIO_ITEM);
             event.accept(com.miscelanea.laboratorio.LabRegistro.PROBETAS_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.SUERO_RECUP);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.ESCANER);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.FRIGORIFICO_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.ALARMA_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.PUERTA_CUARENTENA_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.ESTABILIZADOR_ITEM);
             for (int i = 0; i < com.miscelanea.laboratorio.Sueros.TIPOS; i++) event.accept(com.miscelanea.laboratorio.Sueros.crear(i, true));
             event.accept(com.miscelanea.laboratorio.Sueros.crear(0, false));
             event.accept(com.miscelanea.tortura.TorturaRegistro.CADENA);
@@ -314,7 +320,8 @@ public class Miscelanea {
         // ---- Pociones y efectos (cada poción con sus variantes: normal, arrojadiza, persistente y flecha)
         if (event.getTabKey() == ModTabs.POCIONES.getKey()) {
             for (var p : new net.minecraft.world.item.alchemy.Potion[]{ModPotions.CUPIDO.get(), ModPotions.LONG_CUPIDO.get(), ModPotions.STRONG_CUPIDO.get(),
-                    ModPotions.ENEMIGO.get(), ModPotions.LONG_ENEMIGO.get(), ModPotions.STRONG_ENEMIGO.get(), ModPotions.SEDANTE.get()})
+                    ModPotions.ENEMIGO.get(), ModPotions.LONG_ENEMIGO.get(), ModPotions.STRONG_ENEMIGO.get(), ModPotions.SEDANTE.get(),
+                    ModPotions.MIEDO.get(), ModPotions.MAREO.get()})
                 for (var st : pociones(p)) event.accept(st);
             // pociones de fantasma (sin receta)
             for (var st : com.miscelanea.tortura.efectos.EfectosRegistro.pocionesFantasma()) event.accept(st);
