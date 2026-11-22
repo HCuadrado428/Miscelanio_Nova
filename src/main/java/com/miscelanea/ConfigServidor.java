@@ -461,6 +461,7 @@ public final class ConfigServidor {
         b.pop();
         com.miscelanea.movil.MovilConfig.definir(b);
         com.miscelanea.laboratorio.LabConfig.definir(b);
+        com.miscelanea.camaras.CamarasConfig.definir(b);
         com.miscelanea.sangre.HachaSangreConfig.definir(b);
         // ---- armas de fuego: equilibrio (daño, cadencia, recarga...) y botín de las nuevas (sección propia)
         com.miscelanea.armasfuego.comun.EquilibrioArmas.definir(b);

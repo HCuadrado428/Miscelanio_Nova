@@ -6560,5 +6560,15 @@
   "death.attack.miscelanea.microgravedad": "%1$s was flung out of the microgravity chamber",
   "death.attack.miscelanea.microgravedad.player": "%1$s was flung out of %2$s's microgravity chamber",
   "death.attack.miscelanea.interferencias": "%1$s got lost in the interference",
-  "death.attack.miscelanea.interferencias.player": "%1$s got lost in %2$s's interference"
+  "death.attack.miscelanea.interferencias.player": "%1$s got lost in %2$s's interference",
+  "block.miscelanea.camara_vigilancia": "Security Camera",
+  "block.miscelanea.television": "Television",
+  "block.miscelanea.camara_vigilancia.ayuda": "Hang it on a wall or ceiling and it sends its live image (about 10 frames per second) to the televisions on its channel.",
+  "block.miscelanea.camara_vigilancia.ayuda2": "Right-click: next channel (sneak for the previous). Someone needs its chunk loaded nearby for it to broadcast; otherwise the TV says \"no signal\".",
+  "block.miscelanea.camara_vigilancia.ayuda3": "It only broadcasts while someone is watching a TV on its channel.",
+  "block.miscelanea.television.ayuda": "Shows live what the camera on its channel sees, with the time and the channel name. Hangs on a wall or ceiling.",
+  "block.miscelanea.television.ayuda2": "Right-click: next channel (sneak for the previous). Channel 0 is automatic: it cycles through all the cameras.",
+  "block.miscelanea.television.ayuda3": "Works from far away: cameras can even be in another dimension.",
+  "camaras.miscelanea.canal": "Channel %s",
+  "camaras.miscelanea.canal_auto": "Automatic channel (cycles through the cameras)"
 }

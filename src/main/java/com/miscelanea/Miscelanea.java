@@ -51,6 +51,7 @@ public class Miscelanea {
         com.miscelanea.laser.LaserRegistro.registrar(modBus);
         com.miscelanea.movil.MovilRegistro.registrar(modBus);
         com.miscelanea.laboratorio.LabRegistro.registrar(modBus);
+        com.miscelanea.camaras.CamarasRegistro.registrar(modBus);
         // ---- Armas de fuego: se encuentran en cofres (Global Loot Modifier)
         com.miscelanea.armasfuego.BotinArmas.registrar(modBus);
         com.miscelanea.armasfuego.comun.ArmasFuegoRegistro.registrar(modBus);
@@ -286,6 +287,8 @@ public class Miscelanea {
             event.accept(com.miscelanea.laboratorio.LabRegistro.ESCANER);
             event.accept(com.miscelanea.laboratorio.LabRegistro.FRIGORIFICO_ITEM);
             event.accept(com.miscelanea.laboratorio.LabRegistro.ALARMA_ITEM);
+            event.accept(com.miscelanea.camaras.CamarasRegistro.VIGILANCIA_ITEM);
+            event.accept(com.miscelanea.camaras.CamarasRegistro.TELE_ITEM);
             event.accept(com.miscelanea.laboratorio.LabRegistro.PUERTA_CUARENTENA_ITEM);
             event.accept(com.miscelanea.laboratorio.LabRegistro.ESTABILIZADOR_ITEM);
             for (int i = 0; i < com.miscelanea.laboratorio.Sueros.TIPOS; i++) event.accept(com.miscelanea.laboratorio.Sueros.crear(i, true));

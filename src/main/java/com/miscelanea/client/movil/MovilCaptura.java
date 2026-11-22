@@ -80,6 +80,7 @@ public final class MovilCaptura {
 
     /** ¿Se ha pedido hace poco (en tiempo o en fotogramas)? */
     private static boolean pedido() {
+        if (com.miscelanea.client.camaras.CamarasCliente.dibujando) return false;   // dibujando una cámara de vigilancia: no es la vista del jugador
         return Util.getMillis() <= pedidoHasta || fotograma - fotogramaPedido <= 2;
     }
 
@@ -197,7 +198,7 @@ public final class MovilCaptura {
         main.bindWrite(false);
     }
 
-    private static void copiar(RenderTarget de, int x0, int y0, int x1, int y1, RenderTarget a) {
+    public static void copiar(RenderTarget de, int x0, int y0, int x1, int y1, RenderTarget a) {
         // la copia respeta el recorte (scissor): dentro de la pantalla del móvil está puesto y la copia salía negra
         // (la vista previa con filtro y los vídeos cortos)
         boolean recorte = GL11.glIsEnabled(GL11.GL_SCISSOR_TEST);
@@ -359,7 +360,7 @@ public final class MovilCaptura {
         texPrevia = null;
     }
 
-    private static NativeImage descargar(RenderTarget t) {
+    public static NativeImage descargar(RenderTarget t) {
         NativeImage img = new NativeImage(t.width, t.height, false);
         RenderSystem.bindTexture(t.getColorTextureId());
         img.downloadTexture(0, true);
@@ -367,7 +368,7 @@ public final class MovilCaptura {
     }
 
     /** JPEG con STB; la imagen viene de un framebuffer (de abajo arriba), así que se le da la vuelta. */
-    private static byte[] jpeg(NativeImage img, int calidad) {
+    public static byte[] jpeg(NativeImage img, int calidad) {
         int w = img.getWidth(), h = img.getHeight();
         ByteBuffer px = MemoryUtil.memAlloc(w * h * 3);
         ByteArrayOutputStream out = new ByteArrayOutputStream(16384);

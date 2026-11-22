@@ -5221,6 +5221,70 @@ public final class PruebaCI {
         });
     }
 
+    // ------------------------------------------------------------------ Cámaras de vigilancia y teles (señal repartida por el servidor)
+    private static void camaras() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("cam_poner", 30, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                var frente = a2Mira.getOpposite();
+                java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState> antes = new java.util.HashMap<>();
+                java.util.function.BiConsumer<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState> poner = (q, s) -> {
+                    antes.putIfAbsent(q.immutable(), l.getBlockState(q));
+                    l.setBlock(q, s, 3);
+                };
+                // algo reconocible delante de la cámara: dos columnas de lana, roja y azul
+                var rojo = net.minecraft.world.level.block.Blocks.RED_WOOL.defaultBlockState();
+                var azul = net.minecraft.world.level.block.Blocks.BLUE_WOOL.defaultBlockState();
+                for (int y = 0; y < 3; y++) {
+                    var q1 = net.minecraft.core.BlockPos.containing(a2Punto(7, 7, y + 0.2));
+                    var q2 = net.minecraft.core.BlockPos.containing(a2Punto(7, 4, y + 0.2));
+                    poner.accept(q1, rojo);
+                    poner.accept(q2, azul);
+                }
+                var camPos = net.minecraft.core.BlockPos.containing(a2Punto(14, 5.5, 1.6));
+                var estado = com.miscelanea.camaras.CamarasRegistro.VIGILANCIA.get().defaultBlockState().setValue(com.miscelanea.camaras.Montaje.FACING, frente);
+                poner.accept(camPos, estado);
+                if (l.getBlockEntity(camPos) instanceof com.miscelanea.camaras.VigilanciaBlockEntity v) v.canal(5);
+                int[] canales = {5, 9};
+                for (int i = 0; i < 2; i++) {
+                    var q = net.minecraft.core.BlockPos.containing(a2Punto(14, -2.0 - i * 2.2, 1.6));
+                    poner.accept(q, com.miscelanea.camaras.CamarasRegistro.TELE.get().defaultBlockState().setValue(com.miscelanea.camaras.Montaje.FACING, frente));
+                    if (l.getBlockEntity(q) instanceof com.miscelanea.camaras.TeleBlockEntity tv) tv.canal(canales[i]);
+                }
+                PI.put("cam_antes", antes);
+                PI.put("cam_cargadas", com.miscelanea.camaras.CamarasServidor.camaras());
+            });
+        });
+        paso("cam_mirar", 10, () -> a2VistaA(a2Punto(14, -3.1, 1.9), a2Punto(8.5, -3.1, 1.9)));
+        vigila("cam_chk", 200, () -> {
+            int n = com.miscelanea.client.camaras.CamarasCliente.recibidos(5);
+            var s = com.miscelanea.client.camaras.CamarasCliente.senal(5);
+            if (n < 3 || s == null) throw new IllegalStateException("el canal 5 no ha recibido fotogramas (" + n + ")");
+            double fps = n * 1000.0 / Math.max(1, s.ultimo - s.primero);
+            // que la imagen no sea toda del mismo color
+            var px = s.tex.getPixels();
+            java.util.Set<Integer> colores = new java.util.HashSet<>();
+            for (int y = 0; y < px.getHeight(); y += 4) for (int x = 0; x < px.getWidth(); x += 4) colores.add(px.getPixelRGBA(x, y) & 0xFFFFFF);
+            RESUMEN.add("  cámaras: canal 5: " + n + " fotogramas (" + String.format("%.1f", fps) + " por segundo), " + colores.size() + " colores distintos, "
+                    + com.miscelanea.client.camaras.CamarasCliente.enviados() + " enviados por mí, cámaras cargadas en el servidor "
+                    + PI.get("cam_cargadas") + ", transmisor: " + (com.miscelanea.camaras.CamarasServidor.transmisor(5) != null ? "sí" : "no"));
+            if (colores.size() < 12) throw new IllegalStateException("la imagen del canal 5 es lisa (" + colores.size() + " colores)");
+            if (com.miscelanea.client.camaras.CamarasCliente.hayEnvio(9)) throw new IllegalStateException("el canal 9 no tiene cámara y recibe señal");
+        });
+        paso("cam_foto", 25, () -> {});
+        sin("cam_limpiar", 20, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                @SuppressWarnings("unchecked")
+                var antes = (java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState>) PI.get("cam_antes");
+                if (antes != null) antes.forEach((q, s) -> l.setBlock(q, s, 2));
+            });
+        });
+    }
+
     // ------------------------------------------------------------------ escopeta de presión
     private static boolean escAgachado;
     private static net.minecraft.core.BlockPos escHoguera, escVela, escTierra;
@@ -6297,6 +6361,7 @@ public final class PruebaCI {
         laboratorioExtra();
         laboratorioUtilidades();
         laboratorioEstaciones();
+        camaras();
         // el Hacha de sangre en tercera y primera persona (se ve que va de pie, agarrada por el mango)
         for (int k = 0; k <= 0; k++) {
             sin("hacha_3p_poner_" + k, 8, () -> a2Mano(new ItemStack(com.miscelanea.registry.ModItems.HACHA_SANGRE.get())));
