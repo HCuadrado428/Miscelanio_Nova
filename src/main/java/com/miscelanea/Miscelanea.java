@@ -266,6 +266,17 @@ public class Miscelanea {
             event.accept(com.miscelanea.laboratorio.LabRegistro.QUESO);
             event.accept(com.miscelanea.laboratorio.LabRegistro.MESA_ITEM);
             event.accept(com.miscelanea.laboratorio.LabRegistro.ANALIZADOR_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.INCUBADORA_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.DISPENSADOR_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.IMPRESORA_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.GAFAS);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.BATA);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.PANTALON_LAB);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.CRISTAL_OBS_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.CARTEL_BIO_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.TAQUILLA_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.MICROSCOPIO_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.PROBETAS_ITEM);
             for (int i = 0; i < com.miscelanea.laboratorio.Sueros.TIPOS; i++) event.accept(com.miscelanea.laboratorio.Sueros.crear(i, true));
             event.accept(com.miscelanea.laboratorio.Sueros.crear(0, false));
             event.accept(com.miscelanea.tortura.TorturaRegistro.CADENA);

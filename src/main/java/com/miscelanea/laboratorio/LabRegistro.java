@@ -97,6 +97,46 @@ public final class LabRegistro {
             () -> new AnalizadorBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0F, 6.0F).sound(SoundType.METAL).noOcclusion()));
     public static final RegistryObject<Item> ANALIZADOR_ITEM = ITEMS.register("analizador", () -> new BlockItem(ANALIZADOR.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
 
+    // ---- más máquinas
+    private static BlockBehaviour.Properties metal() {
+        return BlockBehaviour.Properties.of().mapColor(MapColor.METAL).strength(3.0F, 6.0F).sound(SoundType.METAL).noOcclusion();
+    }
+    public static final RegistryObject<Block> INCUBADORA = BLOCKS.register("incubadora", () -> new IncubadoraBlock(metal()));
+    public static final RegistryObject<Item> INCUBADORA_ITEM = ITEMS.register("incubadora", () -> new BlockItem(INCUBADORA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<BlockEntityType<IncubadoraBlockEntity>> INCUBADORA_BE = BLOCK_ENTITIES.register("incubadora",
+            () -> BlockEntityType.Builder.of(IncubadoraBlockEntity::new, INCUBADORA.get()).build(null));
+    public static final RegistryObject<Block> DISPENSADOR = BLOCKS.register("dispensador_sueros", () -> new DispensadorBlock(metal()));
+    public static final RegistryObject<Item> DISPENSADOR_ITEM = ITEMS.register("dispensador_sueros", () -> new BlockItem(DISPENSADOR.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Block> IMPRESORA = BLOCKS.register("impresora_informes", () -> new ImpresoraBlock(metal()));
+    public static final RegistryObject<Item> IMPRESORA_ITEM = ITEMS.register("impresora_informes", () -> new BlockItem(IMPRESORA.get(), new Item.Properties().rarity(Rarity.UNCOMMON)));
+    public static final RegistryObject<Item> INFORME = ITEMS.register("informe_laboratorio", () -> new InformeItem(new Item.Properties().stacksTo(1)));
+
+    // ---- decoración
+    public static final RegistryObject<Block> CRISTAL_OBS = BLOCKS.register("cristal_observacion",
+            () -> new net.minecraft.world.level.block.GlassBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(0.5F).sound(SoundType.GLASS).noOcclusion()
+                    .isValidSpawn((s, l, p, e) -> false).isRedstoneConductor((s, l, p) -> false).isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p) -> false)));
+    public static final RegistryObject<Item> CRISTAL_OBS_ITEM = ITEMS.register("cristal_observacion", () -> new BlockItem(CRISTAL_OBS.get(), new Item.Properties()));
+    public static final RegistryObject<Block> CARTEL_BIO = BLOCKS.register("cartel_biopeligro",
+            () -> new DecoracionOrientadaBlock(metal().noCollission(), 2, 2, 15, 14, 14, 16));
+    public static final RegistryObject<Item> CARTEL_BIO_ITEM = ITEMS.register("cartel_biopeligro", () -> new BlockItem(CARTEL_BIO.get(), new Item.Properties()));
+    public static final RegistryObject<Block> TAQUILLA = BLOCKS.register("taquilla_laboratorio",
+            () -> new DecoracionOrientadaBlock(metal(), 1, 0, 2, 15, 16, 14));
+    public static final RegistryObject<Item> TAQUILLA_ITEM = ITEMS.register("taquilla_laboratorio", () -> new BlockItem(TAQUILLA.get(), new Item.Properties()));
+    public static final RegistryObject<Block> MICROSCOPIO = BLOCKS.register("microscopio",
+            () -> new DecoracionBlock(metal(), 3, 0, 3, 13, 14, 13));
+    public static final RegistryObject<Item> MICROSCOPIO_ITEM = ITEMS.register("microscopio", () -> new BlockItem(MICROSCOPIO.get(), new Item.Properties()));
+    public static final RegistryObject<Block> PROBETAS = BLOCKS.register("probetas",
+            () -> new DecoracionBlock(metal().sound(SoundType.GLASS), 1, 0, 1, 15, 13, 15));
+    public static final RegistryObject<Item> PROBETAS_ITEM = ITEMS.register("probetas", () -> new BlockItem(PROBETAS.get(), new Item.Properties()));
+
+    // ---- ropa del científico
+    public static final RegistryObject<Item> GAFAS = ITEMS.register("gafas_seguridad",
+            () -> new net.minecraft.world.item.ArmorItem(LabRopa.CIENTIFICO, net.minecraft.world.item.ArmorItem.Type.HELMET, new Item.Properties()));
+    public static final RegistryObject<Item> BATA = ITEMS.register("bata_laboratorio",
+            () -> new net.minecraft.world.item.ArmorItem(LabRopa.CIENTIFICO, net.minecraft.world.item.ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+    public static final RegistryObject<Item> PANTALON_LAB = ITEMS.register("pantalon_laboratorio",
+            () -> new net.minecraft.world.item.ArmorItem(LabRopa.CIENTIFICO, net.minecraft.world.item.ArmorItem.Type.LEGGINGS, new Item.Properties()));
+
     public static void registrar(IEventBus bus) {
         ITEMS.register(bus);
         BLOCKS.register(bus);

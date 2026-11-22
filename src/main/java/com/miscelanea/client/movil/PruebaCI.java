@@ -4919,6 +4919,90 @@ public final class PruebaCI {
         });
     }
 
+    // ------------------------------------------------------------------ Laboratorio: incubadora, informes, ropa y decoración
+    private static void laboratorioExtra() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("labx_poner", 30, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                if (sp == null) return;
+                // una fila de objetos de decoración y máquinas delante, para la foto
+                var bloques = java.util.List.of(com.miscelanea.laboratorio.LabRegistro.INCUBADORA, com.miscelanea.laboratorio.LabRegistro.DISPENSADOR, com.miscelanea.laboratorio.LabRegistro.IMPRESORA,
+                        com.miscelanea.laboratorio.LabRegistro.TAQUILLA, com.miscelanea.laboratorio.LabRegistro.MICROSCOPIO, com.miscelanea.laboratorio.LabRegistro.PROBETAS,
+                        com.miscelanea.laboratorio.LabRegistro.CRISTAL_OBS, com.miscelanea.laboratorio.LabRegistro.CARTEL_BIO);
+                java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState> antes = new java.util.HashMap<>();
+                for (int i = 0; i < bloques.size(); i++) {
+                    var b = net.minecraft.core.BlockPos.containing(a2Punto(8, -5.0 + i * 1.4, 0.3));
+                    antes.put(b, l.getBlockState(b));
+                    var est = bloques.get(i).get().defaultBlockState();
+                    if (est.hasProperty(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING))
+                        est = est.setValue(net.minecraft.world.level.block.HorizontalDirectionalBlock.FACING, a2Mira.getOpposite());
+                    l.setBlock(b, est, 3);
+                }
+                PI.put("labx_antes", antes);
+                String res = "";
+                boolean ok = true;
+                // incubadora: una muestra de miedo da el suero de mezclarla consigo misma
+                var bi = net.minecraft.core.BlockPos.containing(a2Punto(8, -5.0, 0.3));
+                if (l.getBlockEntity(bi) instanceof com.miscelanea.laboratorio.IncubadoraBlockEntity be) {
+                    var m = new ItemStack(com.miscelanea.laboratorio.LabRegistro.MUESTRA_MIEDO.get());
+                    boolean pone = be.poner(m);
+                    for (int i = 0; i < com.miscelanea.laboratorio.IncubadoraBlockEntity.TICKS + 2; i++)
+                        com.miscelanea.laboratorio.IncubadoraBlockEntity.tick(l, bi, l.getBlockState(bi), be);
+                    var r = be.resultado();
+                    boolean bien = pone && !r.isEmpty() && com.miscelanea.laboratorio.Sueros.tipo(r) == com.miscelanea.laboratorio.Sueros.tipo(com.miscelanea.laboratorio.Sueros.mezclar(m, m));
+                    res += "incubadora " + (bien ? "bien" : "MAL");
+                    ok = ok && bien;
+                } else { res += "incubadora sin bloque-entidad"; ok = false; }
+                // informe impreso de la última ficha
+                sp.getInventory().setItem(7, new ItemStack(com.miscelanea.laboratorio.LabRegistro.CUADERNO.get()));
+                com.miscelanea.laboratorio.PulsometroItem.medir(sp, sp);
+                sp.getInventory().setItem(6, new ItemStack(net.minecraft.world.item.Items.PAPER, 2));
+                boolean imp = com.miscelanea.laboratorio.ImpresoraBlock.imprimir(sp);
+                boolean informe = sp.getInventory().hasAnyMatching(s -> s.is(com.miscelanea.laboratorio.LabRegistro.INFORME.get()) && s.getTag() != null && s.getTag().contains("Ficha"));
+                res += "; impresora " + (imp && informe ? "bien" : "MAL");
+                ok = ok && imp && informe;
+                // ropa: bata + gafas reducen la duración del suero a 0,5 x 0,75
+                sp.removeAllEffects();
+                sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, new ItemStack(com.miscelanea.laboratorio.LabRegistro.BATA.get()));
+                sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(com.miscelanea.laboratorio.LabRegistro.GAFAS.get()));
+                com.miscelanea.laboratorio.Sueros.aplicar(sp, 1);
+                var ef = sp.getEffect(com.miscelanea.laboratorio.Sueros.efecto(1));
+                int dur = ef == null ? -1 : ef.getDuration();
+                boolean ropa = dur > 400 && dur <= 451;
+                res += "; efecto con bata y gafas dura " + dur + " ticks (esperado unos 450) " + (ropa ? "bien" : "MAL");
+                ok = ok && ropa;
+                sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, ItemStack.EMPTY);
+                sp.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, ItemStack.EMPTY);
+                sp.removeAllEffects();
+                PI.put("labx_res", res);
+                PI.put("labx_ok", ok);
+            });
+        });
+        paso("labx_foto", 40, () -> a2VistaA(a2Punto(8, -1.4, 0.8), a2Punto(2.0, 3.5, 2.4)));
+        vigila("labx_chk", 10, () -> {
+            RESUMEN.add("  laboratorio extra: " + PI.get("labx_res"));
+            if (!Boolean.TRUE.equals(PI.get("labx_ok"))) throw new IllegalStateException("fallo en lo extra del laboratorio: " + PI.get("labx_res"));
+        });
+        sin("labx_limpiar", 10, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                @SuppressWarnings("unchecked")
+                var antes = (java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState>) PI.get("labx_antes");
+                if (antes != null) antes.forEach((q, s) -> l.setBlock(q, s, 3));
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                if (sp != null) {
+                    sp.getInventory().setItem(7, ItemStack.EMPTY);
+                    sp.getInventory().setItem(6, ItemStack.EMPTY);
+                    sp.getInventory().clearOrCountMatchingItems(s -> s.is(com.miscelanea.laboratorio.LabRegistro.INFORME.get()) || s.is(com.miscelanea.laboratorio.LabRegistro.SUERO.get()), -1, sp.inventoryMenu.getCraftSlots());
+                }
+            });
+        });
+    }
+
     // ------------------------------------------------------------------ escopeta de presión
     private static boolean escAgachado;
     private static net.minecraft.core.BlockPos escHoguera, escVela, escTierra;
@@ -5992,6 +6076,7 @@ public final class PruebaCI {
         sin("nv_fin", 2, A2::camara1p);
         // el laboratorio de experimentos (necesita la arena de pruebas ya preparada)
         laboratorio();
+        laboratorioExtra();
         // el Hacha de sangre en tercera y primera persona (se ve que va de pie, agarrada por el mango)
         for (int k = 0; k <= 0; k++) {
             sin("hacha_3p_poner_" + k, 8, () -> a2Mano(new ItemStack(com.miscelanea.registry.ModItems.HACHA_SANGRE.get())));

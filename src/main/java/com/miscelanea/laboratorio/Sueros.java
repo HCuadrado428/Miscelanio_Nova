@@ -29,7 +29,7 @@ public final class Sueros {
     }
 
     public static void aplicar(LivingEntity v, int tipo) {
-        v.addEffect(new MobEffectInstance(efecto(tipo), SEGUNDOS * 20, 0));
+        v.addEffect(new MobEffectInstance(efecto(tipo), (int) Math.max(20, SEGUNDOS * 20 * LabRopa.factorSuero(v)), 0));
     }
 
     /** Un frasco de suero de ese tipo (conocido = ya identificado en el analizador). */
