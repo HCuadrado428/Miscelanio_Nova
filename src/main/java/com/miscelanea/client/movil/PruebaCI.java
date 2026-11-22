@@ -5141,6 +5141,86 @@ public final class PruebaCI {
         });
     }
 
+    // ------------------------------------------------------------------ Laboratorio: las cinco estaciones nuevas a la vez (con cerdos de sujetos)
+    private static void laboratorioEstaciones() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("labe_poner", 30, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                if (sp == null) return;
+                sp.getInventory().setItem(7, new ItemStack(com.miscelanea.laboratorio.LabRegistro.CUADERNO.get()));
+                sp.getInventory().setItem(6, new ItemStack(com.miscelanea.laboratorio.LabRegistro.TUBO_ENSAYO.get(), 8));
+                var estaciones = java.util.List.of(com.miscelanea.laboratorio.LabRegistro.MICRO, com.miscelanea.laboratorio.LabRegistro.VOZ, com.miscelanea.laboratorio.LabRegistro.REFLEJOS,
+                        com.miscelanea.laboratorio.LabRegistro.INTERFERENCIAS, com.miscelanea.laboratorio.LabRegistro.CONTENCION);
+                java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState> antes = new java.util.HashMap<>();
+                java.util.List<net.minecraft.core.BlockPos> sitios = new java.util.ArrayList<>();
+                var frente = a2Mira.getOpposite();
+                String res = "";
+                int dentro = 0;
+                for (int i = 0; i < estaciones.size(); i++) {
+                    var b = net.minecraft.core.BlockPos.containing(a2Punto(14, -5.0 + i * 2.6, 0.3));
+                    for (var q : net.minecraft.core.BlockPos.betweenClosed(b.offset(-1, 0, -1), b.offset(1, 3, 1)))
+                        if (!antes.containsKey(q)) { antes.put(q.immutable(), l.getBlockState(q)); if (q.getY() > b.getY() - 1) l.setBlock(q, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2); }
+                    var est = estaciones.get(i).get().defaultBlockState().setValue(com.miscelanea.tortura.aparatos.AparatoBlock.FACING, frente);
+                    l.setBlock(b, est, 3);
+                    l.setBlock(b.relative(frente.getOpposite()), est.setValue(com.miscelanea.tortura.aparatos.AparatoBlock.ANEXO, true), 3);
+                    sitios.add(b);
+                    var cerdo = net.minecraft.world.entity.EntityType.PIG.create(l);
+                    if (cerdo == null) continue;
+                    cerdo.moveTo(b.getX() + 0.5, b.getY() + 1, b.getZ() + 0.5, 0, 0);
+                    l.addFreshEntity(cerdo);
+                    if (l.getBlockEntity(b) instanceof com.miscelanea.laboratorio.EstacionBlockEntity be) {
+                        boolean m = be.meter(cerdo, sp);
+                        be.fijarNivel(0);
+                        if (m) {
+                            dentro++;
+                            // la cámara de contención pide una muestra de glitch en la mano: se le pone
+                            if (be instanceof com.miscelanea.laboratorio.ContencionBlockEntity) sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(com.miscelanea.glitch.GlitchRegistro.MUESTRA.get()));
+                            be.encender(l, sp);
+                        }
+                    }
+                }
+                PI.put("labe_antes", antes);
+                PI.put("labe_sitios", sitios);
+                PI.put("labe_res", "sujetos dentro " + dentro + " de " + estaciones.size());
+            });
+        });
+        paso("labe_foto", 80, () -> a2VistaA(a2Punto(14, 0.0, 1.0), a2Punto(4.0, 0.0, 4.0)));
+        vigila("labe_chk", 900, () -> {
+            var sp = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
+            var fichas = com.miscelanea.laboratorio.Experimentos.fichas(sp == null ? ItemStack.EMPTY : com.miscelanea.laboratorio.Experimentos.cuaderno(sp));
+            java.util.Set<String> vistas = new java.util.TreeSet<>();
+            for (int i = 0; i < fichas.size(); i++) vistas.add(fichas.getCompound(i).getString("Estacion"));
+            RESUMEN.add("  estaciones nuevas: " + PI.get("labe_res") + "; con ficha: " + vistas);
+            for (String e : new String[]{"microgravedad", "voz", "reflejos", "interferencias", "contencion"})
+                if (!vistas.contains(e)) throw new IllegalStateException("la estación '" + e + "' no ha apuntado su ficha (tienen: " + vistas + ")");
+        });
+        sin("labe_limpiar", 20, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                @SuppressWarnings("unchecked")
+                var sitios = (java.util.List<net.minecraft.core.BlockPos>) PI.get("labe_sitios");
+                if (sitios != null) for (var b : sitios) if (l.getBlockEntity(b) instanceof com.miscelanea.laboratorio.EstacionBlockEntity be) { be.apagar(null, false); be.sacar(false); }
+                @SuppressWarnings("unchecked")
+                var antes = (java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState>) PI.get("labe_antes");
+                if (antes != null) antes.forEach((q, s) -> l.setBlock(q, s, 2));
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                if (sp != null) {
+                    sp.getInventory().setItem(7, ItemStack.EMPTY);
+                    sp.getInventory().setItem(6, ItemStack.EMPTY);
+                    sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+                    sp.getInventory().clearOrCountMatchingItems(s -> s.getItem() instanceof com.miscelanea.laboratorio.MuestraItem || s.is(com.miscelanea.laboratorio.LabRegistro.SUERO.get()), -1, sp.inventoryMenu.getCraftSlots());
+                    sp.removeAllEffects();
+                    sp.setHealth(sp.getMaxHealth());
+                }
+                for (var e : l.getEntities(net.minecraft.world.level.entity.EntityTypeTest.forClass(net.minecraft.world.entity.animal.Pig.class), x -> true)) e.discard();
+            });
+        });
+    }
+
     // ------------------------------------------------------------------ escopeta de presión
     private static boolean escAgachado;
     private static net.minecraft.core.BlockPos escHoguera, escVela, escTierra;
@@ -6216,6 +6296,7 @@ public final class PruebaCI {
         laboratorio();
         laboratorioExtra();
         laboratorioUtilidades();
+        laboratorioEstaciones();
         // el Hacha de sangre en tercera y primera persona (se ve que va de pie, agarrada por el mango)
         for (int k = 0; k <= 0; k++) {
             sin("hacha_3p_poner_" + k, 8, () -> a2Mano(new ItemStack(com.miscelanea.registry.ModItems.HACHA_SANGRE.get())));

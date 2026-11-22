@@ -262,6 +262,11 @@ public class Miscelanea {
             event.accept(com.miscelanea.laboratorio.LabRegistro.CENTRIFUGA_ITEM);
             event.accept(com.miscelanea.laboratorio.LabRegistro.CAMARA_ITEM);
             event.accept(com.miscelanea.laboratorio.LabRegistro.TANQUE_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.MICRO_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.VOZ_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.REFLEJOS_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.INTERFERENCIAS_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.CONTENCION_ITEM);
             event.accept(com.miscelanea.laboratorio.LabRegistro.LABERINTO_ITEM);
             event.accept(com.miscelanea.laboratorio.LabRegistro.QUESO);
             event.accept(com.miscelanea.laboratorio.LabRegistro.MESA_ITEM);
