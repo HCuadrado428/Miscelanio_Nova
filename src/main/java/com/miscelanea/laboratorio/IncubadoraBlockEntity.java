@@ -80,6 +80,15 @@ public class IncubadoraBlockEntity extends BlockEntity {
         setChanged();
     }
 
+    /** Saca lo que haya hecho (o la muestra, si aún no): para las pruebas y para recoger sin pasar por la mano. */
+    public ItemStack recoger() {
+        ItemStack s = !resultado.isEmpty() ? resultado : dentro;
+        resultado = dentro = ItemStack.EMPTY;
+        progreso = 0;
+        setChanged();
+        return s;
+    }
+
     public void soltarTodo() {
         if (level == null || level.isClientSide) return;
         for (ItemStack s : new ItemStack[]{dentro, resultado})

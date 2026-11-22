@@ -5028,7 +5028,7 @@ public final class PruebaCI {
                         com.miscelanea.laboratorio.IncubadoraBlockEntity.tick(l, bi, l.getBlockState(bi), inc);
                     g2 = !inc.resultado().isEmpty() && com.miscelanea.laboratorio.Sueros.tipo(inc.resultado()) == 9;
                     // y un queso da el suero de recuperación
-                    inc.alUsar(sp);   // recoge el de glitch
+                    inc.recoger();   // recoge el de glitch
                     inc.poner(new ItemStack(com.miscelanea.laboratorio.LabRegistro.QUESO.get()));
                     for (int i = 0; i < com.miscelanea.laboratorio.IncubadoraBlockEntity.TICKS + 2; i++)
                         com.miscelanea.laboratorio.IncubadoraBlockEntity.tick(l, bi, l.getBlockState(bi), inc);
