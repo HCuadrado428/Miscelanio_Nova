@@ -70,6 +70,10 @@ public class TeleRenderer implements BlockEntityRenderer<TeleBlockEntity> {
         // los textos, en el plano de la pantalla: 56 "píxeles de texto" de ancho (x hacia la derecha del espectador, y hacia abajo)
         Font f = Minecraft.getInstance().font;
         double[] o = pt(d, TeleBlock.PX1, TeleBlock.PY1);                       // esquina superior izquierda del espectador
+        // los textos van un pelín por delante de la imagen: si no, se solapan con ella y se ven a trozos
+        o[0] += d.getStepX() * 0.004;
+        o[1] += d.getStepY() * 0.004;
+        o[2] += d.getStepZ() * 0.004;
         double[] ox = pt(d, TeleBlock.PX1 - 1, TeleBlock.PY1), oy = pt(d, TeleBlock.PX1, TeleBlock.PY1 - 1);
         double porPx = (TeleBlock.PX1 - TeleBlock.PX0) / ANCHO;                 // píxeles del modelo por píxel de texto
         float rx = (float) ((ox[0] - o[0]) * porPx), ry = (float) ((ox[1] - o[1]) * porPx), rz = (float) ((ox[2] - o[2]) * porPx);
