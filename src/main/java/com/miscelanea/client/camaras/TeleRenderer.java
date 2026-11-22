@@ -5,6 +5,7 @@ import com.miscelanea.camaras.TeleBlock;
 import com.miscelanea.camaras.TeleBlockEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -41,7 +42,17 @@ public class TeleRenderer implements BlockEntityRenderer<TeleBlockEntity> {
         int canal = be.canal();
         CamarasCliente.visto(canal);
         int ef = CamarasCliente.efectivo(canal);
-        boolean senal = ef > 0 && CamarasCliente.hayEnvio(ef);
+        // al cambiar de canal, medio segundo de estática (como una tele de verdad)
+        long ahora = Util.getMillis();
+        net.minecraft.core.BlockPos pos = be.getBlockPos();
+        long[] ult = CAMBIOS.computeIfAbsent(pos, k -> new long[]{canal, 0});
+        if (ult[0] != canal) {
+            ult[0] = canal;
+            ult[1] = ahora;
+            if (CAMBIOS.size() > 64) CAMBIOS.clear();
+        }
+        boolean cambiando = ahora - ult[1] < 450;
+        boolean senal = ef > 0 && CamarasCliente.hayEnvio(ef) && !cambiando;
         ResourceLocation rl = senal ? CamarasCliente.senal(ef).rl : CamarasCliente.estatica();
 
         // la imagen
@@ -56,30 +67,36 @@ public class TeleRenderer implements BlockEntityRenderer<TeleBlockEntity> {
             vc.vertex(m, (float) p[i][0], (float) p[i][1], (float) p[i][2]).color(255, 255, 255, 255).uv(uv[i][0], uv[i][1])
                     .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LUZ).normal(n, d.getStepX(), d.getStepY(), d.getStepZ()).endVertex();
 
-        // los textos, en el plano de la pantalla (x hacia la derecha del espectador, y hacia abajo)
+        // los textos, en el plano de la pantalla: 56 "píxeles de texto" de ancho (x hacia la derecha del espectador, y hacia abajo)
         Font f = Minecraft.getInstance().font;
-        double[] o = pt(d, TeleBlock.PX1, TeleBlock.PY1 + 0.001);          // esquina superior izquierda del espectador
-        double[] ox = pt(d, TeleBlock.PX1 - 1, TeleBlock.PY1 + 0.001), oy = pt(d, TeleBlock.PX1, TeleBlock.PY1 - 1 + 0.001);
-        // "arriba" del modelo es +y en el plano: la esquina superior del espectador es y = PY1 (más alto) y la imagen va hacia abajo
-        float esc = (float) ((TeleBlock.PX1 - TeleBlock.PX0) / 16.0 / 64.0);
-        float rx = (float) (ox[0] - o[0]), ry = (float) (ox[1] - o[1]), rz = (float) (ox[2] - o[2]);   // derecha (por pixel del modelo)
-        float dx = (float) (oy[0] - o[0]), dy = (float) (oy[1] - o[1]), dz = (float) (oy[2] - o[2]);   // abajo (por pixel del modelo)
-        float nx = d.getStepX(), ny = d.getStepY(), nz = d.getStepZ();
+        double[] o = pt(d, TeleBlock.PX1, TeleBlock.PY1);                       // esquina superior izquierda del espectador
+        double[] ox = pt(d, TeleBlock.PX1 - 1, TeleBlock.PY1), oy = pt(d, TeleBlock.PX1, TeleBlock.PY1 - 1);
+        double porPx = (TeleBlock.PX1 - TeleBlock.PX0) / ANCHO;                 // píxeles del modelo por píxel de texto
+        float rx = (float) ((ox[0] - o[0]) * porPx), ry = (float) ((ox[1] - o[1]) * porPx), rz = (float) ((ox[2] - o[2]) * porPx);
+        float dx = (float) ((oy[0] - o[0]) * porPx), dy = (float) ((oy[1] - o[1]) * porPx), dz = (float) ((oy[2] - o[2]) * porPx);
+        float k = (float) (porPx / 16.0);
         Matrix4f t = new Matrix4f(ps.last().pose());
-        t.mul(new Matrix4f(rx * esc * 16, ry * esc * 16, rz * esc * 16, 0, dx * esc * 16, dy * esc * 16, dz * esc * 16, 0,
-                nx * esc, ny * esc, nz * esc, 0, (float) o[0], (float) o[1], (float) o[2], 1));
-        String nombre = ef > 0 ? String.format("CAM %02d", ef) : canal == 0 ? "AUTO" : String.format("CAM %02d", canal);
-        f.drawInBatch(Component.literal(nombre), 3, 3, 0xFFEFEFEF, false, t, buf, Font.DisplayMode.NORMAL, 0, LUZ);
-        if ((Util.getMillis() / 500) % 2 == 0 && senal)
-            f.drawInBatch(Component.literal("●"), 50, 3, 0xFFFF3030, false, t, buf, Font.DisplayMode.NORMAL, 0, LUZ);
-        if (!senal) {
-            String s = "SIN SEÑAL";
-            f.drawInBatch(Component.literal(s), 32 - f.width(s) / 2.0F, 16, 0xFFFFFFFF, true, t, buf, Font.DisplayMode.NORMAL, 0, LUZ);
+        t.mul(new Matrix4f(rx, ry, rz, 0, dx, dy, dz, 0, d.getStepX() * k, d.getStepY() * k, d.getStepZ() * k, 0, (float) o[0], (float) o[1], (float) o[2], 1));
+        String nombre = ef > 0 ? CamarasCliente.nombre(ef) : "";
+        String cab = ef > 0 ? String.format("%02d", ef) : canal == 0 ? "AUTO" : String.format("%02d", canal);
+        if (!nombre.isEmpty()) cab += " " + (nombre.length() > 9 ? nombre.substring(0, 9) : nombre).toUpperCase(java.util.Locale.ROOT);
+        f.drawInBatch(Component.literal(cab).withStyle(ChatFormatting.BOLD), 2, 1, 0xFFFFFFFF, false, t, buf, Font.DisplayMode.NORMAL, FONDO, LUZ);
+        if (senal) {
+            boolean punto = (ahora / 500) % 2 == 0;
+            f.drawInBatch(Component.literal("●").withStyle(ChatFormatting.BOLD), ANCHO - 26, 1, punto ? 0xFFFF3030 : 0xFF601010, false, t, buf, Font.DisplayMode.NORMAL, FONDO, LUZ);
+            f.drawInBatch(Component.literal("REC").withStyle(ChatFormatting.BOLD), ANCHO - 17, 1, 0xFFFFFFFF, false, t, buf, Font.DisplayMode.NORMAL, FONDO, LUZ);
+        } else {
+            Component s = Component.literal(cambiando ? "CAMBIANDO..." : "SIN SEÑAL").withStyle(ChatFormatting.BOLD);
+            f.drawInBatch(s, (ANCHO - f.width(s)) / 2.0F, 11, 0xFFFFFFFF, false, t, buf, Font.DisplayMode.NORMAL, FONDO, LUZ);
         }
         LocalTime h = LocalTime.now();
-        f.drawInBatch(Component.literal(String.format("%02d:%02d:%02d", h.getHour(), h.getMinute(), h.getSecond())), 3, 29, 0xFFEFEFEF, false, t, buf,
-                Font.DisplayMode.NORMAL, 0, LUZ);
+        f.drawInBatch(Component.literal(String.format("%02d:%02d:%02d", h.getHour(), h.getMinute(), h.getSecond())), 2, 21, 0xFFFFFFFF, false, t, buf,
+                Font.DisplayMode.NORMAL, FONDO, LUZ);
     }
+
+    private static final double ANCHO = 56;
+    private static final int FONDO = 0x99000000;
+    private static final java.util.Map<net.minecraft.core.BlockPos, long[]> CAMBIOS = new java.util.HashMap<>();
 
     /** Punto de la pantalla (x, y del modelo mirando al norte) puesto en el bloque, en bloques (0..1), un pelín delante. */
     private static double[] pt(Direction d, double x, double y) {

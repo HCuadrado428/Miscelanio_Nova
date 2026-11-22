@@ -90,7 +90,10 @@ public abstract class MontadoBlock extends BaseEntityBlock {
     @Override
     public void setPlacedBy(Level l, BlockPos p, BlockState s, @Nullable LivingEntity quien, ItemStack i) {
         super.setPlacedBy(l, p, s, quien, i);
-        if (quien != null && l.getBlockEntity(p) instanceof VigilanciaBlockEntity v) v.giro(quien.getYRot());
+        if (l.getBlockEntity(p) instanceof VigilanciaBlockEntity v) {
+            if (quien != null) v.giro(quien.getYRot());
+            if (i.hasCustomHoverName()) v.nombre(i.getHoverName().getString());
+        }
     }
 
     @Override

@@ -31,8 +31,8 @@ public final class CamarasRed {
     public static final int C_VER = 0, C_FRAME = 1;
     /** Servidor → cliente: dibuja esta cámara; para; fotograma de un canal; lista de canales que existen. */
     public static final int S_ORDEN = 0, S_PARAR = 1, S_FRAME = 2, S_LISTA = 3;
-    /** Tamaño máximo de un fotograma JPEG (los de 128x72 salen de 2 a 6 KB). */
-    public static final int MAX_FRAME = 14000;
+    /** Tamaño máximo de un fotograma JPEG (de 2 a 6 KB a 128x72 y de 8 a 14 KB a 256x144; el límite de un paquete de vanilla es 32 KB). */
+    public static final int MAX_FRAME = 24000;
 
     public static final class Paquete {
         final int tipo;

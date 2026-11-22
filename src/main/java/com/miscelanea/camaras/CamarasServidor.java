@@ -239,6 +239,7 @@ public final class CamarasServidor {
             b.writeDouble(o.z);
             b.writeFloat(cam.yaw());
             b.writeFloat(cam.pitch());
+            b.writeByte(CamarasConfig.calidad());
         });
     }
 
@@ -247,13 +248,16 @@ public final class CamarasServidor {
         if (p != null) CamarasRed.aJugador(p, CamarasRed.S_PARAR, b -> b.writeVarInt(canal));
     }
 
-    /** Los canales que tienen una cámara cargada (para la tele en automático). */
+    /** Los canales que tienen una cámara cargada y su nombre (para la tele en automático y para el rótulo). */
     private static void enviarLista(ServerPlayer p) {
-        TreeSet<Integer> l = new TreeSet<>();
-        for (VigilanciaBlockEntity c : CAMARAS) if (!c.isRemoved()) l.add(c.canal());
+        TreeMap<Integer, String> l = new TreeMap<>();
+        for (VigilanciaBlockEntity c : CAMARAS) if (!c.isRemoved()) l.merge(c.canal(), c.nombre(), (x, y) -> x.isEmpty() ? y : x);
         CamarasRed.aJugador(p, CamarasRed.S_LISTA, b -> {
             b.writeVarInt(l.size());
-            for (int c : l) b.writeVarInt(c);
+            for (Map.Entry<Integer, String> e : l.entrySet()) {
+                b.writeVarInt(e.getKey());
+                b.writeUtf(e.getValue(), 32);
+            }
         });
     }
 }

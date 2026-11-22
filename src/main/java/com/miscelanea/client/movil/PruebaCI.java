@@ -5246,7 +5246,10 @@ public final class PruebaCI {
                 var camPos = net.minecraft.core.BlockPos.containing(a2Punto(14, 5.5, 1.6));
                 var estado = com.miscelanea.camaras.CamarasRegistro.VIGILANCIA.get().defaultBlockState().setValue(com.miscelanea.camaras.Montaje.FACING, frente);
                 poner.accept(camPos, estado);
-                if (l.getBlockEntity(camPos) instanceof com.miscelanea.camaras.VigilanciaBlockEntity v) v.canal(5);
+                if (l.getBlockEntity(camPos) instanceof com.miscelanea.camaras.VigilanciaBlockEntity v) {
+                    v.canal(5);
+                    v.nombre("Entrada");
+                }
                 int[] canales = {5, 9};
                 for (int i = 0; i < 2; i++) {
                     var q = net.minecraft.core.BlockPos.containing(a2Punto(14, -2.0 - i * 2.2, 1.6));
@@ -5267,7 +5270,7 @@ public final class PruebaCI {
             var px = s.tex.getPixels();
             java.util.Set<Integer> colores = new java.util.HashSet<>();
             for (int y = 0; y < px.getHeight(); y += 4) for (int x = 0; x < px.getWidth(); x += 4) colores.add(px.getPixelRGBA(x, y) & 0xFFFFFF);
-            RESUMEN.add("  cámaras: canal 5: " + n + " fotogramas (" + String.format("%.1f", fps) + " por segundo), " + colores.size() + " colores distintos, "
+            RESUMEN.add("  cámaras: imagen de " + px.getWidth() + "x" + px.getHeight() + ", canal 5: " + n + " fotogramas (" + String.format("%.1f", fps) + " por segundo), " + colores.size() + " colores distintos, "
                     + com.miscelanea.client.camaras.CamarasCliente.enviados() + " enviados por mí, cámaras cargadas en el servidor "
                     + PI.get("cam_cargadas") + ", transmisor: " + (com.miscelanea.camaras.CamarasServidor.transmisor(5) != null ? "sí" : "no"));
             if (colores.size() < 12) throw new IllegalStateException("la imagen del canal 5 es lisa (" + colores.size() + " colores)");

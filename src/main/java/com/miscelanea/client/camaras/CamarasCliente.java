@@ -41,7 +41,6 @@ import java.util.*;
 public final class CamarasCliente {
     private CamarasCliente() {}
 
-    public static final int W = 128, H = 72;
     /** Se está dibujando una cámara de vigilancia (la cámara del móvil no debe copiar esa imagen). */
     public static volatile boolean dibujando;
 
@@ -56,7 +55,12 @@ public final class CamarasCliente {
     private static final Map<Integer, Senal> SENALES = new HashMap<>();
     private static final Map<Integer, Long> VISTOS = new HashMap<>();
     private static List<Integer> lista = List.of();
-    private static boolean avisadoVacio = true;
+    private static Map<Integer, String> NOMBRES = Map.of();
+
+    /** Nombre de la cámara de un canal (el de la cámara renombrada), o "". */
+    public static String nombre(int canal) {
+        return NOMBRES.getOrDefault(canal, "");
+    }
 
     /** La tele enseña este canal (se llama al dibujarla). 0 = automático: se pide la lista y se rota. */
     public static void visto(int canal) {
@@ -98,7 +102,7 @@ public final class CamarasCliente {
     private static long enviados;
 
     // ------------------------------------------------------------------ transmitir
-    private record Orden(String dim, double x, double y, double z, float yaw, float pitch, long hasta) {}
+    private record Orden(String dim, double x, double y, double z, float yaw, float pitch, int calidad, long hasta) {}
 
     private static final Map<Integer, Orden> ORDENES = new LinkedHashMap<>();
     private static int turno;
@@ -113,7 +117,7 @@ public final class CamarasCliente {
                 case CamarasRed.S_ORDEN -> {
                     int canal = b.readVarInt();
                     ORDENES.put(canal, new Orden(b.readUtf(), b.readDouble(), b.readDouble(), b.readDouble(), b.readFloat(), b.readFloat(),
-                            Util.getMillis() + 5000));
+                            b.readUnsignedByte(), Util.getMillis() + 5000));
                 }
                 case CamarasRed.S_PARAR -> ORDENES.remove(b.readVarInt());
                 case CamarasRed.S_FRAME -> {
@@ -123,8 +127,14 @@ public final class CamarasCliente {
                 case CamarasRed.S_LISTA -> {
                     int n = Math.min(100, b.readVarInt());
                     List<Integer> l = new ArrayList<>();
-                    for (int i = 0; i < n; i++) l.add(b.readVarInt());
+                    Map<Integer, String> nombres = new HashMap<>();
+                    for (int i = 0; i < n; i++) {
+                        int c = b.readVarInt();
+                        l.add(c);
+                        nombres.put(c, b.readUtf(32));
+                    }
                     lista = l;
+                    NOMBRES = nombres;
                 }
                 default -> {
                 }
@@ -141,6 +151,7 @@ public final class CamarasCliente {
             if (s.tex == null || s.tex.getPixels() == null || s.tex.getPixels().getWidth() != img.getWidth() || s.tex.getPixels().getHeight() != img.getHeight()) {
                 if (s.rl != null) Minecraft.getInstance().getTextureManager().release(s.rl);
                 s.tex = new DynamicTexture(img.getWidth(), img.getHeight(), false);
+                s.tex.setFilter(true, false);   // suavizado al ampliarla en la pantalla
                 s.rl = Minecraft.getInstance().getTextureManager().register("miscelanea_camara", s.tex);
             }
             s.tex.getPixels().copyFrom(img);
@@ -161,6 +172,7 @@ public final class CamarasCliente {
         VISTOS.clear();
         ORDENES.clear();
         lista = List.of();
+        NOMBRES = Map.of();
     }
 
     @SubscribeEvent
@@ -230,13 +242,17 @@ public final class CamarasCliente {
         Matrix4f proyAntes = new Matrix4f(RenderSystem.getProjectionMatrix());
         VertexSorting ordenAntes = RenderSystem.getVertexSorting();
         float aspecto = (float) mc.getWindow().getWidth() / Math.max(1, mc.getWindow().getHeight());
-        int th = 144, tw = Math.max(96, Math.min(320, Math.round(th * aspecto)));
+        int sw = o.calidad() <= 0 ? 128 : o.calidad() == 1 ? 192 : 256, sh = sw * 9 / 16;
+        int th = sh * 2, tw = Math.max(sw, Math.min(sw * 4, Math.round(th * aspecto)));
         try {
-            if (grande == null || grande.width != tw) {
+            if (grande == null || grande.width != tw || grande.height != th) {
                 if (grande != null) grande.destroyBuffers();
                 grande = new TextureTarget(tw, th, true, Minecraft.ON_OSX);
             }
-            if (pequena == null) pequena = new TextureTarget(W, H, false, Minecraft.ON_OSX);
+            if (pequena == null || pequena.width != sw) {
+                if (pequena != null) pequena.destroyBuffers();
+                pequena = new TextureTarget(sw, sh, false, Minecraft.ON_OSX);
+            }
             if (falsa == null || falsa.level() != mc.level) falsa = new ArmorStand(mc.level, o.x(), o.y(), o.z());
             falsa.moveTo(o.x(), o.y() - falsa.getEyeHeight(), o.z(), o.yaw(), o.pitch());
             falsa.setYHeadRot(o.yaw());
@@ -266,7 +282,7 @@ public final class CamarasCliente {
         MovilCaptura.copiar(grande, 0, 0, grande.width, grande.height, pequena);
         original.bindWrite(true);
         try (NativeImage img = MovilCaptura.descargar(pequena)) {
-            for (int q : new int[]{70, 55, 40, 28}) {
+            for (int q : new int[]{82, 72, 60, 48, 36, 26}) {
                 byte[] b = MovilCaptura.jpeg(img, q);
                 if (b != null && b.length <= CamarasRed.MAX_FRAME - 500) return b;
             }

@@ -21,6 +21,8 @@ public class VigilanciaBlockEntity extends BlockEntity {
     private int canal = 1;
     /** Giro horizontal de quien la colocó (solo se usa en el techo; en la pared mira hacia fuera de la pared). */
     private float giro;
+    /** Nombre que sale en la pantalla (el de la cámara renombrada en el yunque al colocarla). */
+    private String nombre = "";
 
     public VigilanciaBlockEntity(BlockPos p, BlockState s) {
         super(CamarasRegistro.VIGILANCIA_BE.get(), p, s);
@@ -32,6 +34,13 @@ public class VigilanciaBlockEntity extends BlockEntity {
         canal = Math.max(1, Math.min(99, c));
         setChanged();
         if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+    }
+
+    public String nombre() { return nombre; }
+
+    public void nombre(String n) {
+        nombre = n == null ? "" : n.length() > 16 ? n.substring(0, 16) : n;
+        setChanged();
     }
 
     public void giro(float g) {
@@ -81,6 +90,7 @@ public class VigilanciaBlockEntity extends BlockEntity {
         super.saveAdditional(t);
         t.putInt("Canal", canal);
         t.putFloat("Giro", giro);
+        t.putString("Nombre", nombre);
     }
 
     @Override
@@ -88,6 +98,7 @@ public class VigilanciaBlockEntity extends BlockEntity {
         super.load(t);
         canal = Math.max(1, Math.min(99, t.contains("Canal") ? t.getInt("Canal") : 1));
         giro = t.getFloat("Giro");
+        nombre = t.getString("Nombre");
     }
 
     @Override
