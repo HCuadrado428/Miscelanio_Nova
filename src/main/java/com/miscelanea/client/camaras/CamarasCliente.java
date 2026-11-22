@@ -151,11 +151,12 @@ public final class CamarasCliente {
             if (s.tex == null || s.tex.getPixels() == null || s.tex.getPixels().getWidth() != img.getWidth() || s.tex.getPixels().getHeight() != img.getHeight()) {
                 if (s.rl != null) Minecraft.getInstance().getTextureManager().release(s.rl);
                 s.tex = new DynamicTexture(img.getWidth(), img.getHeight(), false);
-                s.tex.setFilter(true, false);   // suavizado al ampliarla en la pantalla
+                s.tex.setFilter(true, true);    // suavizado al ampliarla y, al verla pequeña en la tele, reducida con mipmaps (si no, sale granulada)
                 s.rl = Minecraft.getInstance().getTextureManager().register("miscelanea_camara", s.tex);
             }
             s.tex.getPixels().copyFrom(img);
             s.tex.upload();
+            org.lwjgl.opengl.GL30.glGenerateMipmap(org.lwjgl.opengl.GL11.GL_TEXTURE_2D);   // la textura sigue enlazada tras subirla
             long ahora = Util.getMillis();
             if (s.total == 0) s.primero = ahora;
             s.ultimo = ahora;
@@ -345,7 +346,8 @@ public final class CamarasCliente {
     /** Textura de ruido que se rehace unas 12 veces por segundo. */
     public static ResourceLocation estatica() {
         if (estatica == null || estatica.getPixels() == null) {
-            estatica = new DynamicTexture(64, 36, false);
+            estatica = new DynamicTexture(128, 72, false);
+            estatica.setFilter(true, false);
             estaticaRl = Minecraft.getInstance().getTextureManager().register("miscelanea_estatica_tele", estatica);
             ultEstatica = 0;
         }
@@ -353,8 +355,8 @@ public final class CamarasCliente {
         if (ahora - ultEstatica > 80) {
             ultEstatica = ahora;
             NativeImage p = estatica.getPixels();
-            for (int y = 0; y < 36; y++)
-                for (int x = 0; x < 64; x++) {
+            for (int y = 0; y < 72; y++)
+                for (int x = 0; x < 128; x++) {
                     int v = 30 + RND.nextInt(150);
                     if (RND.nextInt(40) == 0) v = 230;
                     p.setPixelRGBA(x, y, 0xFF000000 | (v << 16) | (v << 8) | v);

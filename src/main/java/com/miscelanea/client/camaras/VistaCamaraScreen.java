@@ -91,7 +91,7 @@ public class VistaCamaraScreen extends Screen {
         boolean senal = CamarasCliente.hayEnvio(canal);
         ResourceLocation rl = senal ? CamarasCliente.senal(canal).rl : CamarasCliente.estatica();
         RenderSystem.setShaderColor(0.80F, 0.96F, 0.88F, 1.0F);      // gris verdoso de laboratorio
-        int tw = 64, th = 36;
+        int tw = 128, th = 72;
         if (senal && CamarasCliente.senal(canal).tex.getPixels() != null) {
             tw = CamarasCliente.senal(canal).tex.getPixels().getWidth();
             th = CamarasCliente.senal(canal).tex.getPixels().getHeight();
