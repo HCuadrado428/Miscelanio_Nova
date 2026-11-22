@@ -4606,6 +4606,7 @@ public final class PruebaCI {
             });
         });
         paso("cam_frio", 80, () -> a2VistaA(a2Punto(6, 0, 1.0), a2Punto(1.5, 3.5, 2.6)));
+        vigila("cam_ficha_frio_chk", 700, () -> camaraFichas(mc, 1, "frío"));
         sin("cam_calor", 10, () -> {
             var srv = mc.getSingleplayerServer();
             srv.execute(() -> {
@@ -4618,24 +4619,8 @@ public final class PruebaCI {
                 }
             });
         });
-        paso("cam_calor_foto", 160, () -> {});
-        vigila("cam_ficha_chk", 700, () -> {
-            var sp = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
-            var fichas = com.miscelanea.laboratorio.Experimentos.fichas(sp == null ? ItemStack.EMPTY : com.miscelanea.laboratorio.Experimentos.cuaderno(sp));
-            boolean ficha = false;
-            String resumen = "";
-            for (int i = 0; i < fichas.size(); i++) {
-                var f = fichas.getCompound(i);
-                if ("camara".equals(f.getString("Estacion"))) {
-                    ficha = true;
-                    var ls = f.getList("Lecturas", net.minecraft.nbt.Tag.TAG_COMPOUND);
-                    resumen = "";
-                    for (int k = 0; k < ls.size(); k++) resumen += ls.getCompound(k).getString("K") + "=" + ls.getCompound(k).getString("V") + " ";
-                }
-            }
-            RESUMEN.add("  cámara de temperatura: " + PI.get("cam_res") + "; ficha " + (ficha ? "sí (" + resumen.trim() + ")" : "NO"));
-            if (!ficha) throw new IllegalStateException("la cámara de temperatura no ha apuntado la ficha");
-        });
+        paso("cam_calor_foto", 120, () -> {});
+        vigila("cam_ficha_calor_chk", 700, () -> camaraFichas(mc, 2, "calor"));
         sin("cam_limpiar", 20, () -> {
             var srv = mc.getSingleplayerServer();
             srv.execute(() -> {
@@ -4659,6 +4644,25 @@ public final class PruebaCI {
                 }
             });
         });
+    }
+
+    /** Comprueba que el cuaderno tiene al menos n fichas de la cámara de temperatura. */
+    private static void camaraFichas(Minecraft mc, int n, String vuelta) {
+        var sp = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
+        var fichas = com.miscelanea.laboratorio.Experimentos.fichas(sp == null ? ItemStack.EMPTY : com.miscelanea.laboratorio.Experimentos.cuaderno(sp));
+        int cuenta = 0;
+        String resumen = "";
+        for (int i = 0; i < fichas.size(); i++) {
+            var f = fichas.getCompound(i);
+            if ("camara".equals(f.getString("Estacion"))) {
+                cuenta++;
+                var ls = f.getList("Lecturas", net.minecraft.nbt.Tag.TAG_COMPOUND);
+                resumen = "";
+                for (int k = 0; k < ls.size(); k++) resumen += ls.getCompound(k).getString("K") + "=" + ls.getCompound(k).getString("V") + " ";
+            }
+        }
+        RESUMEN.add("  cámara de temperatura (" + vuelta + "): " + PI.get("cam_res") + "; fichas " + cuenta + (cuenta > 0 ? " (" + resumen.trim() + ")" : ""));
+        if (cuenta < n) throw new IllegalStateException("la cámara de temperatura no ha apuntado la ficha de la vuelta de " + vuelta);
     }
 
     // ------------------------------------------------------------------ Laboratorio, hito 4: el tanque de privación sensorial
@@ -4790,12 +4794,18 @@ public final class PruebaCI {
                 }
             });
         });
-        sin("lab_rata_placa_chk", 15, () -> {
+        sin("lab_rata_placa_leer", 15, () -> {
             var srv = mc.getSingleplayerServer();
-            if (PI.get("rata_b") instanceof net.minecraft.core.BlockPos b && srv.overworld().getBlockEntity(b) instanceof com.miscelanea.laboratorio.LaberintoBlockEntity be) {
-                RESUMEN.add("  laberinto: " + PI.get("rata_res") + "; descargas tras pisar una baldosa: " + be.fallos());
-                if (be.fallos() < 1) throw new IllegalStateException("la baldosa no ha dado descarga");
-            } else throw new IllegalStateException("no está la caja del laberinto");
+            srv.execute(() -> {
+                if (PI.get("rata_b") instanceof net.minecraft.core.BlockPos b && srv.overworld().getBlockEntity(b) instanceof com.miscelanea.laboratorio.LaberintoBlockEntity be)
+                    PI.put("rata_fallos", be.fallos());
+                else PI.put("rata_fallos", -1);
+            });
+        });
+        vigila("lab_rata_placa_chk", 20, () -> {
+            Object n = PI.get("rata_fallos");
+            RESUMEN.add("  laberinto: " + PI.get("rata_res") + "; descargas tras pisar una baldosa: " + n);
+            if (!(n instanceof Integer k) || k < 1) throw new IllegalStateException("la baldosa no ha dado descarga (" + n + ")");
         });
         // el queso
         sin("lab_rata_queso", 30, () -> {

@@ -133,6 +133,10 @@ public class CamaraBlockEntity extends AparatoBlockEntity {
             p.displayClientMessage(Component.translatable("laboratorio.miscelanea.camara.dial0").withStyle(ChatFormatting.GRAY), true);
             return;
         }
+        if (!terminado && tiempo > 0) {   // la vuelta anterior no se cerró: se apunta antes de empezar otra
+            terminado = true;
+            cerrarFicha(sl, "paro");
+        }
         encendida = true;
         terminado = false;
         aguante = tiempo = 0;
@@ -179,6 +183,16 @@ public class CamaraBlockEntity extends AparatoBlockEntity {
         int fuerza = !(frio || calor) ? 0 : (Math.abs(temp - 20F) > 85F ? 3 : Math.abs(temp - 20F) > 45F ? 2 : 1);
         if (fuerza == 0) return;
         aguante++;
+        // el nivel suave no tiene QTE: termina bien a los 15 segundos
+        if (fuerza == 1 && aguante >= 300 && !terminado) {
+            resistio = true;
+            terminado = true;
+            cerrarFicha(sl, "aguanto");
+            encendida = false;
+            if (v instanceof ServerPlayer vp) vp.displayClientMessage(Component.translatable("laboratorio.miscelanea.camara.aguantas").withStyle(ChatFormatting.GREEN), true);
+            marcar();
+            return;
+        }
         if (frio) v.setTicksFrozen(Math.min(139, v.getTicksFrozen() + 6));
         if (v.tickCount % 20 == 0) {
             if (frio) {
