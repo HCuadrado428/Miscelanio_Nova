@@ -256,12 +256,17 @@ public final class MovilCaptura {
             video = nuevo(w, h);
             if (foto == null) foto = nuevo(FW, FH);
         }
-        // en dos pasos (640 → 320 → w) para que no salga tan dentado
-        copiar(medio, 0, 0, MW, MH, foto);
-        copiar(foto, 0, 0, FW, FH, video);
+        // por encima de 180 de ancho, de una vez desde 360x640 (pasar por 180x320 la estropearía); por debajo, en dos pasos
+        // (640 → 320 → w) para que no salga tan dentado
+        if (w > FW) {
+            copiar(medio, 0, 0, MW, MH, video);
+        } else {
+            copiar(medio, 0, 0, MW, MH, foto);
+            copiar(foto, 0, 0, FW, FH, video);
+        }
         Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
         try (NativeImage img = descargar(video)) {
-            for (int q : new int[]{58, 42, 28}) {
+            for (int q : new int[]{84, 74, 64, 54, 44, 34, 26}) {
                 byte[] b = jpeg(img, q);
                 if (b != null && b.length <= maxBytes) return b;
             }
