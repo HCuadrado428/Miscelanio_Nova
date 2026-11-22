@@ -117,31 +117,31 @@ public final class LabRegistro {
                 .isSuffocating((s, l, p) -> false).isViewBlocking((s, l, p) -> false);
     }
     public static final RegistryObject<Block> MICRO = BLOCKS.register("camara_microgravedad",
-            () -> new EstacionBlock(cabina(), MicrogravedadBlockEntity::new, () -> MICRO_BE.get()));
+            () -> new EstacionBlock(cabina(), MicrogravedadBlockEntity::new, () -> LabRegistro.MICRO_BE.get()));
     public static final RegistryObject<Item> MICRO_ITEM = ITEMS.register("camara_microgravedad",
             () -> new com.miscelanea.tortura.aparatos.AparatoItem(MICRO.get(), new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), 3));
     public static final RegistryObject<BlockEntityType<MicrogravedadBlockEntity>> MICRO_BE = BLOCK_ENTITIES.register("camara_microgravedad",
             () -> BlockEntityType.Builder.of(MicrogravedadBlockEntity::new, MICRO.get()).build(null));
     public static final RegistryObject<Block> VOZ = BLOCKS.register("cabina_voz",
-            () -> new EstacionBlock(cabina(), CabinaVozBlockEntity::new, () -> VOZ_BE.get()));
+            () -> new EstacionBlock(cabina(), CabinaVozBlockEntity::new, () -> LabRegistro.VOZ_BE.get()));
     public static final RegistryObject<Item> VOZ_ITEM = ITEMS.register("cabina_voz",
             () -> new com.miscelanea.tortura.aparatos.AparatoItem(VOZ.get(), new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), 3));
     public static final RegistryObject<BlockEntityType<CabinaVozBlockEntity>> VOZ_BE = BLOCK_ENTITIES.register("cabina_voz",
             () -> BlockEntityType.Builder.of(CabinaVozBlockEntity::new, VOZ.get()).build(null));
     public static final RegistryObject<Block> REFLEJOS = BLOCKS.register("test_reflejos",
-            () -> new EstacionBlock(cabina(), ReflejosBlockEntity::new, () -> REFLEJOS_BE.get()));
+            () -> new EstacionBlock(cabina(), ReflejosBlockEntity::new, () -> LabRegistro.REFLEJOS_BE.get()));
     public static final RegistryObject<Item> REFLEJOS_ITEM = ITEMS.register("test_reflejos",
             () -> new com.miscelanea.tortura.aparatos.AparatoItem(REFLEJOS.get(), new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), 3));
     public static final RegistryObject<BlockEntityType<ReflejosBlockEntity>> REFLEJOS_BE = BLOCK_ENTITIES.register("test_reflejos",
             () -> BlockEntityType.Builder.of(ReflejosBlockEntity::new, REFLEJOS.get()).build(null));
     public static final RegistryObject<Block> INTERFERENCIAS = BLOCKS.register("sala_interferencias",
-            () -> new EstacionBlock(cabina(), InterferenciasBlockEntity::new, () -> INTERFERENCIAS_BE.get()));
+            () -> new EstacionBlock(cabina(), InterferenciasBlockEntity::new, () -> LabRegistro.INTERFERENCIAS_BE.get()));
     public static final RegistryObject<Item> INTERFERENCIAS_ITEM = ITEMS.register("sala_interferencias",
             () -> new com.miscelanea.tortura.aparatos.AparatoItem(INTERFERENCIAS.get(), new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), 3));
     public static final RegistryObject<BlockEntityType<InterferenciasBlockEntity>> INTERFERENCIAS_BE = BLOCK_ENTITIES.register("sala_interferencias",
             () -> BlockEntityType.Builder.of(InterferenciasBlockEntity::new, INTERFERENCIAS.get()).build(null));
     public static final RegistryObject<Block> CONTENCION = BLOCKS.register("camara_contencion",
-            () -> new EstacionBlock(cabina(), ContencionBlockEntity::new, () -> CONTENCION_BE.get()));
+            () -> new EstacionBlock(cabina(), ContencionBlockEntity::new, () -> LabRegistro.CONTENCION_BE.get()));
     public static final RegistryObject<Item> CONTENCION_ITEM = ITEMS.register("camara_contencion",
             () -> new com.miscelanea.tortura.aparatos.AparatoItem(CONTENCION.get(), new Item.Properties().stacksTo(1).rarity(Rarity.EPIC), 3));
     public static final RegistryObject<BlockEntityType<ContencionBlockEntity>> CONTENCION_BE = BLOCK_ENTITIES.register("camara_contencion",
