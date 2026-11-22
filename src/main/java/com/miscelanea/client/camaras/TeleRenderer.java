@@ -94,7 +94,7 @@ public class TeleRenderer implements BlockEntityRenderer<TeleBlockEntity> {
                 Font.DisplayMode.NORMAL, FONDO, LUZ);
     }
 
-    private static final double ANCHO = 56;
+    private static final float ANCHO = 56;
     private static final int FONDO = 0x99000000;
     private static final java.util.Map<net.minecraft.core.BlockPos, long[]> CAMBIOS = new java.util.HashMap<>();
 
