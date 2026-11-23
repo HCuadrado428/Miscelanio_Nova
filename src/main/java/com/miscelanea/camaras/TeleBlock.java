@@ -35,6 +35,9 @@ public class TeleBlock extends MontadoBlock {
     protected boolean agachadoRetrocede() { return false; }
 
     @Override
+    protected boolean sueloHaciaJugador() { return true; }
+
+    @Override
     protected double[] caja() { return new double[]{0, 3.5, 12, 16, 12.5, 16}; }
 
     @Override

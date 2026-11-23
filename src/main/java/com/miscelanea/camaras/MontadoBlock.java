@@ -50,6 +50,9 @@ public abstract class MontadoBlock extends BaseEntityBlock {
     /** Agachado, ¿el clic va al canal anterior? (la tele usa el clic normal para la pantalla grande). */
     protected boolean agachadoRetrocede() { return true; }
 
+    /** En el suelo, ¿mira hacia quien la pone? (la tele sí; la cámara mira hacia donde mira el jugador). */
+    protected boolean sueloHaciaJugador() { return false; }
+
     protected abstract int canalActual(BlockEntity be);
 
     protected abstract void ponerCanal(BlockEntity be, int canal);
@@ -75,7 +78,7 @@ public abstract class MontadoBlock extends BaseEntityBlock {
     public BlockState getStateForPlacement(BlockPlaceContext c) {
         Direction clic = c.getClickedFace();
         // la pared o el techo en que se apoya: mira hacia fuera de ella; en el suelo, hacia donde mira quien la pone
-        Direction d = clic == Direction.UP ? c.getHorizontalDirection() : clic;
+        Direction d = clic == Direction.UP ? (sueloHaciaJugador() ? c.getHorizontalDirection().getOpposite() : c.getHorizontalDirection()) : clic;
         return defaultBlockState().setValue(Montaje.FACING, d);
     }
 

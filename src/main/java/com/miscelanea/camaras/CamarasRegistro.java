@@ -61,6 +61,11 @@ public final class CamarasRegistro {
     public static final RegistryObject<BlockEntityType<TeleBlockEntity>> TELE_BE = BLOCK_ENTITIES.register("television",
             () -> BlockEntityType.Builder.of(TeleBlockEntity::new, TELE.get()).build(null));
 
+    public static final RegistryObject<Block> MONITOR = BLOCKS.register("monitor_laboratorio", () -> new MonitorBlock(metal().lightLevel(s -> 7)));
+    public static final RegistryObject<Item> MONITOR_ITEM = ITEMS.register("monitor_laboratorio", () -> new ConAyuda(MONITOR.get(), "monitor_laboratorio"));
+    public static final RegistryObject<BlockEntityType<MonitorBlockEntity>> MONITOR_BE = BLOCK_ENTITIES.register("monitor_laboratorio",
+            () -> BlockEntityType.Builder.of(MonitorBlockEntity::new, MONITOR.get()).build(null));
+
     public static void registrar(IEventBus modBus) {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);

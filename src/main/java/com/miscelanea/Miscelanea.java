@@ -289,6 +289,7 @@ public class Miscelanea {
             event.accept(com.miscelanea.laboratorio.LabRegistro.ALARMA_ITEM);
             event.accept(com.miscelanea.camaras.CamarasRegistro.VIGILANCIA_ITEM);
             event.accept(com.miscelanea.camaras.CamarasRegistro.TELE_ITEM);
+            event.accept(com.miscelanea.camaras.CamarasRegistro.MONITOR_ITEM);
             event.accept(com.miscelanea.laboratorio.LabRegistro.PUERTA_CUARENTENA_ITEM);
             event.accept(com.miscelanea.laboratorio.LabRegistro.ESTABILIZADOR_ITEM);
             for (int i = 0; i < com.miscelanea.laboratorio.Sueros.TIPOS; i++) event.accept(com.miscelanea.laboratorio.Sueros.crear(i, true));

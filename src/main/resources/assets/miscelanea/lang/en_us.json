@@ -6575,5 +6575,9 @@
   "camaras.miscelanea.vista.fijar": "Set on the TV",
   "camaras.miscelanea.vista.sin_senal": "NO SIGNAL",
   "camaras.miscelanea.vista.ayuda": "◄ ► switch camera · Esc to exit",
-  "camaras.miscelanea.canal_auto": "Automatic channel (cycles through the cameras)"
+  "camaras.miscelanea.canal_auto": "Automatic channel (cycles through the cameras)",
+  "block.miscelanea.monitor_laboratorio": "Lab Monitor",
+  "block.miscelanea.monitor_laboratorio.ayuda": "Steel-framed wall panel. Put several together in a rectangle (up to 8x8) and they make one big screen with the camera image.",
+  "block.miscelanea.monitor_laboratorio.ayuda2": "Right-click: the image full screen. Sneak + click: next channel for the whole wall (0 is automatic).",
+  "block.miscelanea.monitor_laboratorio.ayuda3": "The bottom-left monitor is in charge: the ones you add take its channel."
 }

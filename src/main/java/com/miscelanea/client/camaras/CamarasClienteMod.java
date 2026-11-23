@@ -15,5 +15,6 @@ public final class CamarasClienteMod {
     @SubscribeEvent
     public static void renderers(EntityRenderersEvent.RegisterRenderers e) {
         e.registerBlockEntityRenderer(CamarasRegistro.TELE_BE.get(), TeleRenderer::new);
+        e.registerBlockEntityRenderer(CamarasRegistro.MONITOR_BE.get(), MonitorRenderer::new);
     }
 }

@@ -18,6 +18,10 @@ public class TeleBlockEntity extends BlockEntity {
         super(CamarasRegistro.TELE_BE.get(), p, s);
     }
 
+    protected TeleBlockEntity(net.minecraft.world.level.block.entity.BlockEntityType<?> tipo, BlockPos p, BlockState s) {
+        super(tipo, p, s);
+    }
+
     public int canal() { return canal; }
 
     public void canal(int c) {
