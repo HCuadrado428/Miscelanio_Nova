@@ -89,10 +89,23 @@ public final class PanelLuces {
     }
 
     public static class Bloque extends Block {
-        private static final VoxelShape FORMA = Block.box(1, 0, 1, 15, 11, 15);
+        public static final net.minecraft.world.level.block.state.properties.DirectionProperty FACING = net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
+        private static final VoxelShape FORMA = Block.box(0.6, 0, 1.4, 15.4, 16, 14.6);
 
         public Bloque(Properties p) {
             super(p);
+            registerDefaultState(stateDefinition.any().setValue(FACING, net.minecraft.core.Direction.NORTH));
+        }
+
+        @Override
+        protected void createBlockStateDefinition(net.minecraft.world.level.block.state.StateDefinition.Builder<Block, BlockState> b) {
+            b.add(FACING);
+        }
+
+        /** El tablero queda hacia quien la pone (el técnico) y la pantalla, al fondo. */
+        @Override
+        public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext c) {
+            return defaultBlockState().setValue(FACING, c.getHorizontalDirection().getOpposite());
         }
 
         @Override
