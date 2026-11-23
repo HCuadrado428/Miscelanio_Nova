@@ -6624,5 +6624,14 @@
   "rave.miscelanea.dj.alcance": "Alcance: %s bloques (%s altavoces)",
   "rave.miscelanea.dj.bucle_si": "Repetir: sí",
   "rave.miscelanea.dj.bucle_no": "Repetir: no",
-  "rave.miscelanea.dj.luces": "Luces cambiadas: %s"
+  "rave.miscelanea.dj.luces": "Luces cambiadas: %s",
+  "rave.miscelanea.dj.entrada": "Entrada: %s",
+  "rave.miscelanea.dj.emitir": "🎧 Emitir mi PC",
+  "rave.miscelanea.dj.emitir_parar": "■ Dejar de emitir",
+  "rave.miscelanea.dj.emitir_info": "Emitir mi PC: lo que suene en tu ordenador (Spotify...) sale por la mesa y los altavoces. Elige la entrada «Mezcla estéreo» o un cable virtual.",
+  "rave.miscelanea.dj.emite": "Emitiendo el ordenador de %s por la mesa y los altavoces.",
+  "rave.miscelanea.dj.sin_voicechat": "Para emitir hace falta Simple Voice Chat (en el servidor y en tu juego).",
+  "rave.miscelanea.dj.sin_entrada": "No hay ninguna entrada de sonido en tu ordenador.",
+  "rave.miscelanea.dj.entrada_no_abre": "No se puede abrir esa entrada de sonido: prueba con otra.",
+  "rave.miscelanea.dj.ocupada": "%s ya está emitiendo por esta mesa."
 }

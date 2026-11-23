@@ -31,6 +31,10 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
     private boolean sonando, bucle;
     private long inicio;
     private int volumen = 80, alcance = 32, altavoces;
+    /** Quién está emitiendo el audio de su ordenador por esta mesa (null si nadie). */
+    @Nullable
+    private java.util.UUID emisor;
+    private String emisorNombre = "";
 
     public MesaDjBlockEntity(BlockPos p, BlockState s) {
         super(RaveRegistro.MESA_BE.get(), p, s);
@@ -43,6 +47,8 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
     public int volumen() { return volumen; }
     public int alcance() { return alcance; }
     public int altavoces() { return altavoces; }
+    @Nullable public java.util.UUID emisor() { return emisor; }
+    public String emisorNombre() { return emisorNombre; }
 
     // ------------------------------------------------------------------ servidor
     /** Una orden de la pantalla (ya validada la distancia en RaveRed). */
@@ -61,6 +67,23 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
                 bucle = numero != 0;
                 cambiado();
             }
+            case RaveRed.DJ_EMITIR -> {
+                if (numero != 0) {
+                    if (!AudioDj.disponible()) {
+                        p.displayClientMessage(Component.translatable("rave.miscelanea.dj.sin_voicechat"), true);
+                        return;
+                    }
+                    if (emisor != null && !emisor.equals(p.getUUID())) {
+                        p.displayClientMessage(Component.translatable("rave.miscelanea.dj.ocupada", emisorNombre), true);
+                        return;
+                    }
+                    sonando = false;
+                    emisor = p.getUUID();
+                    emisorNombre = p.getGameProfile().getName();
+                    calcularAlcance();
+                } else if (p.getUUID().equals(emisor)) dejarDeEmitir();
+                cambiado();
+            }
             case RaveRed.DJ_LUCES_ON, RaveRed.DJ_LUCES_OFF -> {
                 int n = luces(accion == RaveRed.DJ_LUCES_ON);
                 p.displayClientMessage(Component.translatable("rave.miscelanea.dj.luces", n), true);
@@ -73,6 +96,7 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
     /** Pone una pista desde el principio. */
     public void poner(String id) {
         if (level == null) return;
+        if (emisor != null) dejarDeEmitir();
         pista = id;
         sonando = true;
         inicio = level.getGameTime();
@@ -108,12 +132,36 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
         alcance = Math.min(RaveConfig.alcanceMax(), RaveConfig.alcanceBase() + n * RaveConfig.porAltavoz());
     }
 
+    private void dejarDeEmitir() {
+        emisor = null;
+        emisorNombre = "";
+        AudioDj.cerrar(this);
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        if (level != null && !level.isClientSide && emisor != null) AudioDj.cerrar(this);
+    }
+
     private void cambiado() {
         setChanged();
         if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
     }
 
     public static void tickServidor(Level l, BlockPos p, BlockState s, MesaDjBlockEntity be) {
+        if (be.emisor != null && l instanceof ServerLevel sl && sl.getGameTime() % 20 == 0) {
+            // si quien emite se va (o se aleja mucho), la mesa deja de emitir
+            var j = sl.getServer().getPlayerList().getPlayer(be.emisor);
+            if (j == null || j.level() != l || j.distanceToSqr(p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5) > 64 * 64) {
+                be.dejarDeEmitir();
+                be.cambiado();
+            } else if (sl.getGameTime() % 40 == 0) {
+                int antes = be.alcance;
+                be.calcularAlcance();
+                if (be.alcance != antes) be.cambiado();
+            }
+        }
         if (!be.sonando || !(l instanceof ServerLevel)) return;
         Pistas.Pista pi = Pistas.de(be.pista);
         long t = l.getGameTime();
@@ -149,6 +197,10 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
         t.putInt("Volumen", volumen);
         t.putInt("Alcance", alcance);
         t.putInt("Altavoces", altavoces);
+        if (emisor != null) {
+            t.putUUID("Emisor", emisor);
+            t.putString("EmisorNombre", emisorNombre);
+        }
     }
 
     @Override
@@ -161,6 +213,8 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
         volumen = t.contains("Volumen") ? t.getInt("Volumen") : 80;
         alcance = t.contains("Alcance") ? t.getInt("Alcance") : 32;
         altavoces = t.getInt("Altavoces");
+        emisor = t.hasUUID("Emisor") ? t.getUUID("Emisor") : null;
+        emisorNombre = t.getString("EmisorNombre");
     }
 
     @Override

@@ -6624,5 +6624,14 @@
   "rave.miscelanea.dj.alcance": "Range: %s blocks (%s speakers)",
   "rave.miscelanea.dj.bucle_si": "Loop: on",
   "rave.miscelanea.dj.bucle_no": "Loop: off",
-  "rave.miscelanea.dj.luces": "Lights switched: %s"
+  "rave.miscelanea.dj.luces": "Lights switched: %s",
+  "rave.miscelanea.dj.entrada": "Input: %s",
+  "rave.miscelanea.dj.emitir": "🎧 Stream my PC",
+  "rave.miscelanea.dj.emitir_parar": "■ Stop streaming",
+  "rave.miscelanea.dj.emitir_info": "Stream my PC: whatever plays on your computer (Spotify...) comes out of the table and speakers. Pick \"Stereo Mix\" or a virtual cable input.",
+  "rave.miscelanea.dj.emite": "Streaming %s's computer through the table and speakers.",
+  "rave.miscelanea.dj.sin_voicechat": "Streaming needs Simple Voice Chat (on the server and in your game).",
+  "rave.miscelanea.dj.sin_entrada": "There is no sound input on your computer.",
+  "rave.miscelanea.dj.entrada_no_abre": "That sound input cannot be opened: try another one.",
+  "rave.miscelanea.dj.ocupada": "%s is already streaming through this table."
 }
