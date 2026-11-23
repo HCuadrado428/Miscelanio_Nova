@@ -5039,8 +5039,10 @@ public final class PruebaCI {
                 sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.CONFUSION, 600));
                 sp.setHealth(4F);
                 com.miscelanea.laboratorio.SueroRecuperacionItem.curar(sp);
-                boolean r = sp.getActiveEffects().isEmpty() && sp.getHealth() >= 13F;
-                res += "; recuperación " + (r ? "bien" : "MAL"); ok = ok && r;
+                // (la vida máxima puede venir bajada de otra prueba: con pociones de enano, por ejemplo)
+                boolean r = sp.getActiveEffects().isEmpty() && sp.getHealth() >= Math.min(13F, sp.getMaxHealth() - 0.01F);
+                res += "; recuperación " + (r ? "bien" : "MAL (vida " + sp.getHealth() + " de " + sp.getMaxHealth() + ", efectos "
+                        + sp.getActiveEffects().stream().map(e -> e.getDescriptionId()).toList() + ")"); ok = ok && r;
                 sp.setHealth(sp.getMaxHealth());
                 // 3. el frigorífico guarda cosas
                 var bf = net.minecraft.core.BlockPos.containing(a2Punto(10, -2.6, 0.3));
