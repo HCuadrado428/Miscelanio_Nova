@@ -59,10 +59,23 @@ public final class RaveRegistro {
     public static final RegistryObject<net.minecraft.world.level.block.entity.BlockEntityType<EstroboBlockEntity>> ESTROBO_BE = BLOCK_ENTITIES.register("estroboscopio",
             () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(EstroboBlockEntity::new, ESTROBO.get()).build(null));
 
+    // ---- hito 3: mesa de DJ y altavoces
+    public static final RegistryObject<Block> MESA = BLOCKS.register("mesa_dj", () -> new MesaDjBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK)
+            .strength(1.5F, 6.0F).sound(SoundType.METAL).noOcclusion().lightLevel(s -> 5)));
+    public static final RegistryObject<Item> MESA_ITEM = ITEMS.register("mesa_dj", () -> new com.miscelanea.camaras.CamarasRegistro.ConAyuda(MESA.get(), "mesa_dj"));
+    public static final RegistryObject<net.minecraft.world.level.block.entity.BlockEntityType<MesaDjBlockEntity>> MESA_BE = BLOCK_ENTITIES.register("mesa_dj",
+            () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(MesaDjBlockEntity::new, MESA.get()).build(null));
+    public static final RegistryObject<Block> ALTAVOZ = BLOCKS.register("altavoz_concierto", () -> new AltavozBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK)
+            .strength(1.5F, 6.0F).sound(SoundType.WOOD).noOcclusion()));
+    public static final RegistryObject<Item> ALTAVOZ_ITEM = ITEMS.register("altavoz_concierto", () -> new com.miscelanea.camaras.CamarasRegistro.ConAyuda(ALTAVOZ.get(), "altavoz_concierto"));
+    public static final RegistryObject<net.minecraft.world.level.block.entity.BlockEntityType<AltavozBlockEntity>> ALTAVOZ_BE = BLOCK_ENTITIES.register("altavoz_concierto",
+            () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(AltavozBlockEntity::new, ALTAVOZ.get()).build(null));
+
     public static void registrar(IEventBus modBus) {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         BLOCK_ENTITIES.register(modBus);
         ENTITIES.register(modBus);
+        modBus.addListener((net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent e) -> e.enqueueWork(RaveRed::registrar));
     }
 }

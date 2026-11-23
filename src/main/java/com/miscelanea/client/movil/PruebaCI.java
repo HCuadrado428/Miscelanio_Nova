@@ -5391,6 +5391,53 @@ public final class PruebaCI {
             RESUMEN.add("  rave luces: bolas " + bolas + ", focos " + focos + ", estroboscopios cargados " + estrobos);
             if (bolas != 1 || focos != 2 || estrobos < 1) throw new IllegalStateException("faltan luces (bolas " + bolas + ", focos " + focos + ", estroboscopios " + estrobos + ")");
         });
+        // hito 3: mesa de DJ con dos altavoces, poniendo un disco
+        sin("rave_dj_poner", 20, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                @SuppressWarnings("unchecked")
+                var antes = (java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState>) PI.get("rave_antes");
+                java.util.function.BiConsumer<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState> poner = (q, s) -> {
+                    antes.putIfAbsent(q.immutable(), l.getBlockState(q));
+                    l.setBlock(q, s, 3);
+                };
+                var frente = a2Mira.getOpposite();
+                var mesa = net.minecraft.core.BlockPos.containing(a2Punto(9, 0.0, 0.3));
+                poner.accept(mesa, com.miscelanea.rave.RaveRegistro.MESA.get().defaultBlockState().setValue(com.miscelanea.rave.MesaDjBlock.FACING, frente));
+                for (double lado : new double[]{-2.0, 2.0})
+                    poner.accept(net.minecraft.core.BlockPos.containing(a2Punto(9.5, lado, 0.3)),
+                            com.miscelanea.rave.RaveRegistro.ALTAVOZ.get().defaultBlockState().setValue(com.miscelanea.rave.AltavozBlock.FACING, frente));
+                PI.put("rave_mesa", mesa);
+            });
+        });
+        sin("rave_dj_play", 10, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                if (srv.overworld().getBlockEntity((net.minecraft.core.BlockPos) PI.get("rave_mesa")) instanceof com.miscelanea.rave.MesaDjBlockEntity m)
+                    m.poner("disco:minecraft:music_disc_cat");
+            });
+        });
+        paso("rave_dj_foto", 40, () -> a2VistaA(a2Punto(9, 0.0, 1.0), a2Punto(5.5, 0.0, 2.2)));
+        vigila("rave_dj_chk", 20, () -> {
+            var pos = (net.minecraft.core.BlockPos) PI.get("rave_mesa");
+            var m = mc.level.getBlockEntity(pos) instanceof com.miscelanea.rave.MesaDjBlockEntity x ? x : null;
+            boolean suena = com.miscelanea.client.rave.MusicaDj.suena(pos);
+            RESUMEN.add("  rave dj: sonando " + (m != null && m.sonando()) + ", en este cliente " + suena + ", volumen aquí "
+                    + String.format("%.2f", com.miscelanea.client.rave.MusicaDj.volumen(pos)) + ", alcance " + (m == null ? -1 : m.alcance())
+                    + " con " + (m == null ? -1 : m.altavoces()) + " altavoces, canciones en la lista " + com.miscelanea.rave.Pistas.todas().size());
+            if (m == null || !m.sonando()) throw new IllegalStateException("la mesa de DJ no suena");
+            if (m.altavoces() != 2) throw new IllegalStateException("la mesa no cuenta los dos altavoces (" + m.altavoces() + ")");
+            if (!suena) throw new IllegalStateException("la música de la mesa no suena en el cliente");
+        });
+        paso("rave_dj_pantalla", 20, () -> mc.setScreen(new com.miscelanea.client.rave.MesaDjScreen((net.minecraft.core.BlockPos) PI.get("rave_mesa"))));
+        sin("rave_dj_parar", 10, () -> {
+            mc.setScreen(null);
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                if (srv.overworld().getBlockEntity((net.minecraft.core.BlockPos) PI.get("rave_mesa")) instanceof com.miscelanea.rave.MesaDjBlockEntity m) m.parar();
+            });
+        });
         sin("rave_limpiar", 20, () -> {
             var srv = mc.getSingleplayerServer();
             srv.execute(() -> {

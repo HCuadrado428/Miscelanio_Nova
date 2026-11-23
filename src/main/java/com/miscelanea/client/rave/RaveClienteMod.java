@@ -33,6 +33,8 @@ public final class RaveClienteMod {
         e.registerBlockEntityRenderer(RaveRegistro.BOLA_BE.get(), BolaRenderer::new);
         e.registerBlockEntityRenderer(RaveRegistro.FOCO_BE.get(), FocoRenderer::new);
         e.registerBlockEntityRenderer(RaveRegistro.ESTROBO_BE.get(), EstroboRenderer::new);
+        e.registerBlockEntityRenderer(RaveRegistro.MESA_BE.get(), ctx -> ModelosDj.mesa());
+        e.registerBlockEntityRenderer(RaveRegistro.ALTAVOZ_BE.get(), ctx -> ModelosDj.altavoz());
     }
 
     @SubscribeEvent

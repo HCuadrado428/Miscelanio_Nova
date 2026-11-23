@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/rave/mesa_dj"
+  },
+  "facing=east": {
+   "model": "miscelanea:block/rave/mesa_dj",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/rave/mesa_dj",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/rave/mesa_dj",
+   "y": 270
+  }
+ }
+}
