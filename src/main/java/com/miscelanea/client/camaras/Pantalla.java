@@ -94,9 +94,9 @@ public final class Pantalla {
         Component rec = Component.literal("REC").withStyle(ChatFormatting.BOLD), bola = Component.literal("●").withStyle(ChatFormatting.BOLD);
         float xRec = wt - f.width(rec) - 2, xBola = xRec - f.width(bola) - 2;
         if (!nombre.isEmpty()) {
-            String n = nombre.toUpperCase(java.util.Locale.ROOT);
-            while (n.length() > 2 && 2 + f.width(Component.literal(cab + " " + n).withStyle(ChatFormatting.BOLD)) > xBola - 3) n = n.substring(0, n.length() - 1);
-            if (n.length() > 2 || n.length() == nombre.length()) cab += " " + n;
+            String nom = nombre.toUpperCase(java.util.Locale.ROOT);
+            while (nom.length() > 2 && 2 + f.width(Component.literal(cab + " " + nom).withStyle(ChatFormatting.BOLD)) > xBola - 3) nom = nom.substring(0, nom.length() - 1);
+            if (nom.length() > 2 || nom.length() == nombre.length()) cab += " " + nom;
         }
         f.drawInBatch(Component.literal(cab).withStyle(ChatFormatting.BOLD), 2, 1, 0xFFFFFFFF, false, t, buf, Font.DisplayMode.NORMAL, FONDO, LUZ);
         if (senal) {
