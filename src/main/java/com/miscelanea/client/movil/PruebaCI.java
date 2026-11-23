@@ -5438,6 +5438,58 @@ public final class PruebaCI {
                 if (srv.overworld().getBlockEntity((net.minecraft.core.BlockPos) PI.get("rave_mesa")) instanceof com.miscelanea.rave.MesaDjBlockEntity m) m.parar();
             });
         });
+        // hito 4: máquina de humo, fuente de chispas y cañón de confeti (disparando)
+        sin("rave_efectos_poner", 20, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                @SuppressWarnings("unchecked")
+                var antes = (java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState>) PI.get("rave_antes");
+                java.util.function.BiConsumer<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState> poner = (q, s) -> {
+                    antes.putIfAbsent(q.immutable(), l.getBlockState(q));
+                    l.setBlock(q, s, 3);
+                };
+                var frente = a2Mira.getOpposite();
+                poner.accept(net.minecraft.core.BlockPos.containing(a2Punto(7, -3.0, 0.3)), com.miscelanea.rave.RaveRegistro.HUMO.get().defaultBlockState()
+                        .setValue(com.miscelanea.rave.HumoBlock.FACING, frente).setValue(com.miscelanea.rave.LucesRave.MODO, 3));
+                poner.accept(net.minecraft.core.BlockPos.containing(a2Punto(7, 3.0, 0.3)), com.miscelanea.rave.RaveRegistro.HUMO.get().defaultBlockState()
+                        .setValue(com.miscelanea.rave.HumoBlock.FACING, frente).setValue(com.miscelanea.rave.LucesRave.MODO, 3)
+                        .setValue(com.miscelanea.muebles.Muebles.COLOR, net.minecraft.world.item.DyeColor.CYAN));
+                for (double lado : new double[]{-1.2, 1.2})
+                    poner.accept(net.minecraft.core.BlockPos.containing(a2Punto(8, lado, 0.3)), com.miscelanea.rave.RaveRegistro.CHISPAS.get().defaultBlockState()
+                            .setValue(com.miscelanea.rave.LucesRave.MODO, 2));
+                var canon = net.minecraft.core.BlockPos.containing(a2Punto(7.5, 0.0, 0.3));
+                poner.accept(canon, com.miscelanea.rave.RaveRegistro.CONFETI.get().defaultBlockState());
+                PI.put("rave_canon", canon);
+            });
+        });
+        sin("rave_confeti", 30, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                var q = (net.minecraft.core.BlockPos) PI.get("rave_canon");
+                com.miscelanea.rave.ConfetiBlock.disparar(l, q, l.getBlockState(q));
+            });
+        });
+        paso("rave_efectos_foto", 12, () -> a2VistaA(a2Punto(8, 0.0, 1.6), a2Punto(2.5, 0.0, 2.2)));
+        vigila("rave_efectos_chk", 10, () -> {
+            int particulas = 0;
+            try {
+                var f = net.minecraft.client.particle.ParticleEngine.class.getDeclaredFields();
+                for (var c : f)
+                    if (java.util.Map.class.isAssignableFrom(c.getType())) {
+                        c.setAccessible(true);
+                        Object m = c.get(mc.particleEngine);
+                        if (m instanceof java.util.Map<?, ?> mm)
+                            for (Object v : mm.values()) if (v instanceof java.util.Collection<?> col) particulas += col.size();
+                    }
+            } catch (Exception ignored) {
+            }
+            var q = (net.minecraft.core.BlockPos) PI.get("rave_canon");
+            boolean recargando = !mc.level.getBlockState(q).getValue(com.miscelanea.rave.ConfetiBlock.CARGADO);
+            RESUMEN.add("  rave efectos: partículas en pantalla " + particulas + ", cañón recargando " + recargando);
+            if (particulas < 100) throw new IllegalStateException("apenas hay partículas (" + particulas + ")");
+        });
         sin("rave_limpiar", 20, () -> {
             var srv = mc.getSingleplayerServer();
             srv.execute(() -> {

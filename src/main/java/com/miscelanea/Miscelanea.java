@@ -251,6 +251,9 @@ public class Miscelanea {
             event.accept(com.miscelanea.rave.RaveRegistro.ESTROBO_ITEM);
             event.accept(com.miscelanea.rave.RaveRegistro.MESA_ITEM);
             event.accept(com.miscelanea.rave.RaveRegistro.ALTAVOZ_ITEM);
+            event.accept(com.miscelanea.rave.RaveRegistro.HUMO_ITEM);
+            event.accept(com.miscelanea.rave.RaveRegistro.CHISPAS_ITEM);
+            event.accept(com.miscelanea.rave.RaveRegistro.CONFETI_ITEM);
         }
         if (event.getTabKey() == ModTabs.TORTURA.getKey()) {
             event.accept(com.miscelanea.tortura.TorturaRegistro.TRAMPA_OSO);

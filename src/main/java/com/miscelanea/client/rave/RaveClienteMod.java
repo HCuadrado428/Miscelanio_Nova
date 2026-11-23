@@ -19,7 +19,7 @@ public final class RaveClienteMod {
     @SubscribeEvent
     public static void coloresBloque(RegisterColorHandlersEvent.Block e) {
         e.register((st, l, p, tinte) -> tinte == 0 && st.hasProperty(Muebles.COLOR) ? Neon.rgb(st.getValue(Muebles.COLOR)) : -1,
-                RaveRegistro.TUBO.get(), RaveRegistro.PANEL.get(), RaveRegistro.BARRA_SUELO.get());
+                RaveRegistro.TUBO.get(), RaveRegistro.PANEL.get(), RaveRegistro.BARRA_SUELO.get(), RaveRegistro.HUMO.get(), RaveRegistro.CONFETI.get());
     }
 
     @SubscribeEvent
@@ -35,6 +35,13 @@ public final class RaveClienteMod {
         e.registerBlockEntityRenderer(RaveRegistro.ESTROBO_BE.get(), EstroboRenderer::new);
         e.registerBlockEntityRenderer(RaveRegistro.MESA_BE.get(), ctx -> ModelosDj.mesa());
         e.registerBlockEntityRenderer(RaveRegistro.ALTAVOZ_BE.get(), ctx -> ModelosDj.altavoz());
+    }
+
+    @SubscribeEvent
+    public static void particulas(net.minecraftforge.client.event.RegisterParticleProvidersEvent e) {
+        e.registerSpriteSet(RaveRegistro.HUMO_PARTICULA.get(), ParticulasRave.Humo.Provider::new);
+        e.registerSpriteSet(RaveRegistro.CHISPA_PARTICULA.get(), ParticulasRave.Chispa.Provider::new);
+        e.registerSpriteSet(RaveRegistro.CONFETI_PARTICULA.get(), ParticulasRave.Confeti.Provider::new);
     }
 
     @SubscribeEvent

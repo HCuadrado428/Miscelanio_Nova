@@ -6633,5 +6633,17 @@
   "rave.miscelanea.dj.sin_voicechat": "Streaming needs Simple Voice Chat (on the server and in your game).",
   "rave.miscelanea.dj.sin_entrada": "There is no sound input on your computer.",
   "rave.miscelanea.dj.entrada_no_abre": "That sound input cannot be opened: try another one.",
-  "rave.miscelanea.dj.ocupada": "%s is already streaming through this table."
+  "rave.miscelanea.dj.ocupada": "%s is already streaming through this table.",
+  "block.miscelanea.maquina_humo": "Smoke Machine",
+  "block.miscelanea.chispas_frias": "Cold Spark Fountain",
+  "block.miscelanea.canon_confeti": "Confetti Cannon",
+  "block.miscelanea.maquina_humo.ayuda": "Puffs coloured smoke forward that lingers over the dance floor and glows a little.",
+  "block.miscelanea.maquina_humo.ayuda2": "Right-click: on/off. Sneak + click: amount. Use a dye for the smoke colour.",
+  "block.miscelanea.maquina_humo.ayuda3": "It can also be switched on with redstone.",
+  "block.miscelanea.chispas_frias.ayuda": "A fountain of sparks going up, like at concerts. They do not burn.",
+  "block.miscelanea.chispas_frias.ayuda2": "Right-click: on/off. Sneak + click: height.",
+  "block.miscelanea.chispas_frias.ayuda3": "It can also be switched on with redstone.",
+  "block.miscelanea.canon_confeti.ayuda": "Right-click (or redstone): fires a cloud of confetti where it points. Reloads in a second.",
+  "block.miscelanea.canon_confeti.ayuda2": "White: all colours; dyed: that colour.",
+  "block.miscelanea.canon_confeti.ayuda3": "It points away from the face you place it on."
 }

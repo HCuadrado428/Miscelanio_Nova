@@ -21,6 +21,7 @@ public final class RaveRegistro {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, Miscelanea.MOD_ID);
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Miscelanea.MOD_ID);
     public static final DeferredRegister<net.minecraft.world.level.block.entity.BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Miscelanea.MOD_ID);
+    public static final DeferredRegister<net.minecraft.core.particles.ParticleType<?>> PARTICLES = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, Miscelanea.MOD_ID);
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, Miscelanea.MOD_ID);
 
     private static BlockBehaviour.Properties neon(int luz) {
@@ -71,10 +72,40 @@ public final class RaveRegistro {
     public static final RegistryObject<net.minecraft.world.level.block.entity.BlockEntityType<AltavozBlockEntity>> ALTAVOZ_BE = BLOCK_ENTITIES.register("altavoz_concierto",
             () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(AltavozBlockEntity::new, ALTAVOZ.get()).build(null));
 
+    // ---- hito 4: humo, chispas y confeti
+    public static final RegistryObject<net.minecraft.core.particles.ParticleType<HumoOpciones>> HUMO_PARTICULA = PARTICLES.register("humo_rave",
+            () -> new net.minecraft.core.particles.ParticleType<HumoOpciones>(false, HumoOpciones.DESERIALIZER) {
+                @Override
+                public com.mojang.serialization.Codec<HumoOpciones> codec() {
+                    return HumoOpciones.CODEC;
+                }
+            });
+    public static final RegistryObject<net.minecraft.core.particles.SimpleParticleType> CHISPA_PARTICULA = PARTICLES.register("chispa_fria",
+            () -> new net.minecraft.core.particles.SimpleParticleType(false));
+    public static final RegistryObject<net.minecraft.core.particles.ParticleType<ConfetiOpciones>> CONFETI_PARTICULA = PARTICLES.register("confeti",
+            () -> new net.minecraft.core.particles.ParticleType<ConfetiOpciones>(false, ConfetiOpciones.DESERIALIZER) {
+                @Override
+                public com.mojang.serialization.Codec<ConfetiOpciones> codec() {
+                    return ConfetiOpciones.CODEC;
+                }
+            });
+    public static final RegistryObject<Block> HUMO = BLOCKS.register("maquina_humo", () -> new HumoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+            .strength(1.5F, 6.0F).sound(SoundType.METAL).noOcclusion(), false));
+    public static final RegistryObject<Item> HUMO_ITEM = ITEMS.register("maquina_humo", () -> new com.miscelanea.camaras.CamarasRegistro.ConAyuda(HUMO.get(), "maquina_humo"));
+    public static final RegistryObject<Block> CHISPAS = BLOCKS.register("chispas_frias", () -> new HumoBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+            .strength(1.5F, 6.0F).sound(SoundType.METAL).noOcclusion().lightLevel(s -> s.getValue(LucesRave.ENCENDIDA) ? 9 : 0), true));
+    public static final RegistryObject<Item> CHISPAS_ITEM = ITEMS.register("chispas_frias", () -> new com.miscelanea.camaras.CamarasRegistro.ConAyuda(CHISPAS.get(), "chispas_frias"));
+    public static final RegistryObject<net.minecraft.world.level.block.entity.BlockEntityType<EfectoBlockEntity>> EFECTO_BE = BLOCK_ENTITIES.register("efecto_rave",
+            () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(EfectoBlockEntity::new, HUMO.get(), CHISPAS.get()).build(null));
+    public static final RegistryObject<Block> CONFETI = BLOCKS.register("canon_confeti", () -> new ConfetiBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+            .strength(1.0F, 6.0F).sound(SoundType.METAL).noOcclusion()));
+    public static final RegistryObject<Item> CONFETI_ITEM = ITEMS.register("canon_confeti", () -> new com.miscelanea.camaras.CamarasRegistro.ConAyuda(CONFETI.get(), "canon_confeti"));
+
     public static void registrar(IEventBus modBus) {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         BLOCK_ENTITIES.register(modBus);
+        PARTICLES.register(modBus);
         ENTITIES.register(modBus);
         modBus.addListener((net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent e) -> e.enqueueWork(RaveRed::registrar));
     }

@@ -1,1 +1,5 @@
-{"textures": ["miscelanea:confeti_0", "miscelanea:confeti_1", "miscelanea:confeti_2"]}
+{
+ "textures": [
+  "miscelanea:confeti"
+ ]
+}
