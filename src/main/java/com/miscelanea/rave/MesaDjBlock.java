@@ -1,5 +1,7 @@
 package com.miscelanea.rave;
 
+import com.miscelanea.camaras.Montaje;
+import com.miscelanea.multibloque.MultiBloque;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -20,16 +22,21 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
-/** Mesa de DJ: clic derecho abre su pantalla (elegir canción, volumen, bucle y luces del local). */
-public class MesaDjBlock extends BaseEntityBlock {
+/**
+ * Cabina de DJ: tres bloques de ancho (el del centro es el de verdad y los de los lados, relleno: ver {@link MultiBloque}). Clic
+ * derecho en cualquier parte abre su pantalla (elegir canción, volumen, bucle, lista y luces del local).
+ */
+public class MesaDjBlock extends BaseEntityBlock implements MultiBloque {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
-    private static final VoxelShape FORMA = Block.box(0, 0, 0, 16, 12, 16);
+    private static final VoxelShape[] FORMAS = new VoxelShape[6], CHOQUES = new VoxelShape[6];
 
     public MesaDjBlock(Properties p) {
         super(p);
@@ -43,12 +50,47 @@ public class MesaDjBlock extends BaseEntityBlock {
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext c) {
-        return defaultBlockState().setValue(FACING, c.getHorizontalDirection().getOpposite());
+        BlockState s = defaultBlockState().setValue(FACING, c.getHorizontalDirection().getOpposite());
+        return MultiBloque.cabe(this, s, c) ? s : null;
+    }
+
+    @Override
+    public List<BlockPos> partes(BlockState s) {
+        Direction d = s.getValue(FACING);
+        return List.of(BlockPos.ZERO.relative(d.getClockWise()), BlockPos.ZERO.relative(d.getCounterClockWise()));
+    }
+
+    @Override
+    public VoxelShape formaCompleta(BlockState s) {
+        Direction d = s.getValue(FACING);
+        VoxelShape f = FORMAS[d.get3DDataValue()];
+        if (f == null) f = FORMAS[d.get3DDataValue()] = Shapes.or(Montaje.forma(d, -16, 0, 1, 32, 13.5, 15), Montaje.forma(d, -13, 13.5, 3, 29, 16, 14));
+        return f;
+    }
+
+    @Override
+    public VoxelShape getCollisionShape(BlockState s, BlockGetter l, BlockPos p, CollisionContext c) {
+        int i = s.getValue(FACING).get3DDataValue();
+        VoxelShape f = CHOQUES[i];
+        if (f == null) f = CHOQUES[i] = MultiBloque.trozo(formaCompleta(s));
+        return f;
+    }
+
+    @Override
+    public void onPlace(BlockState s, Level l, BlockPos p, BlockState viejo, boolean mov) {
+        super.onPlace(s, l, p, viejo, mov);
+        if (!viejo.is(this)) MultiBloque.colocar(this, l, p, s);
+    }
+
+    @Override
+    public void onRemove(BlockState s, Level l, BlockPos p, BlockState nuevo, boolean mov) {
+        if (!nuevo.is(this)) MultiBloque.quitar(this, l, p, s);
+        super.onRemove(s, l, p, nuevo, mov);
     }
 
     @Override
     public VoxelShape getShape(BlockState s, BlockGetter l, BlockPos p, CollisionContext c) {
-        return FORMA;
+        return formaCompleta(s);
     }
 
     @Override

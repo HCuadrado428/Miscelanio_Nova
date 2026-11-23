@@ -9,12 +9,13 @@ import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoBlockRenderer;
 import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
-/** Modelos de GeckoLib de la mesa de DJ (los platos giran mientras suena) y del altavoz (el cono late con el ritmo). */
+/** Modelos de GeckoLib de la cabina de DJ (los platos giran mientras suena) y de la torre de altavoces (los conos laten con el ritmo). */
 final class ModelosDj {
     private ModelosDj() {}
 
     private static final ResourceLocation ANIM = new ResourceLocation(Miscelanea.MOD_ID, "animations/block/rave.animation.json"),
-            TEX = new ResourceLocation(Miscelanea.MOD_ID, "textures/block/rave/dj.png");
+            TEX_MESA = new ResourceLocation(Miscelanea.MOD_ID, "textures/block/rave/mesa_dj.png"),
+            TEX_ALTAVOZ = new ResourceLocation(Miscelanea.MOD_ID, "textures/block/rave/altavoz_concierto.png");
 
     static GeoBlockRenderer<MesaDjBlockEntity> mesa() {
         GeoBlockRenderer<MesaDjBlockEntity> r = new GeoBlockRenderer<>(new GeoModel<>() {
@@ -27,7 +28,7 @@ final class ModelosDj {
 
             @Override
             public ResourceLocation getTextureResource(MesaDjBlockEntity e) {
-                return TEX;
+                return TEX_MESA;
             }
 
             @Override
@@ -58,7 +59,7 @@ final class ModelosDj {
 
             @Override
             public ResourceLocation getTextureResource(AltavozBlockEntity e) {
-                return TEX;
+                return TEX_ALTAVOZ;
             }
 
             @Override
@@ -69,12 +70,15 @@ final class ModelosDj {
             @Override
             public void setCustomAnimations(AltavozBlockEntity e, long id, AnimationState<AltavozBlockEntity> st) {
                 float latido = MusicaDj.latido(e.getBlockPos(), st.getPartialTick());
-                float s = 1 + 0.14F * latido;
-                getBone("cono").ifPresent(b -> {
+                // el subgrave late con el bombo; las dos cajas de arriba vibran menos
+                float s = 1 + 0.12F * latido;
+                getBone("cono_sub").ifPresent(b -> {
                     b.setScaleX(s);
                     b.setScaleY(s);
-                    b.setPosZ(-0.6F * latido);
+                    b.setPosZ(-0.5F * latido);
                 });
+                getBone("cono_a").ifPresent(b -> b.setPosZ(-0.25F * latido));
+                getBone("cono_b").ifPresent(b -> b.setPosZ(-0.18F * latido));
             }
         });
         r.addRenderLayer(new AutoGlowingGeoLayer<>(r));

@@ -11,6 +11,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
@@ -299,6 +300,12 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
     // ------------------------------------------------------------------ GeckoLib (los platos giran en el modelo)
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar c) {}
+
+    /** El modelo ocupa tres bloques de ancho. */
+    @Override
+    public AABB getRenderBoundingBox() {
+        return new AABB(worldPosition).inflate(1.5, 1, 1.5);
+    }
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {

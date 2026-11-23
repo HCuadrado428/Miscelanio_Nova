@@ -51,7 +51,7 @@ public class ConfetiBlock extends Block {
     public VoxelShape getShape(BlockState s, BlockGetter l, BlockPos p, CollisionContext c) {
         Direction d = s.getValue(FACING);
         VoxelShape f = FORMAS[d.get3DDataValue()];
-        if (f == null) f = FORMAS[d.get3DDataValue()] = Neon.forma(d, 4, 0, 4, 12, 14, 12);
+        if (f == null) f = FORMAS[d.get3DDataValue()] = Neon.forma(d, 3, 0, 3, 13.6, 19, 13);
         return f;
     }
 

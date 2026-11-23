@@ -12,7 +12,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 /** Foco móvil (cabeza robótica): en el suelo o colgado del techo, barre el local con un haz de luz de color. */
 public class FocoBlock extends LuzRaveBlock {
-    private static final VoxelShape SUELO = Block.box(2, 0, 2, 14, 14, 14), TECHO = Block.box(2, 2, 2, 14, 16, 14);
+    private static final VoxelShape SUELO = Block.box(1.5, 0, 1.5, 14.5, 16, 14.5), TECHO = Block.box(1.5, 0, 1.5, 14.5, 16, 14.5);
 
     public FocoBlock(Properties p) {
         super(p, FocoBlockEntity::new, RenderShape.ENTITYBLOCK_ANIMATED);

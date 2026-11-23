@@ -52,6 +52,7 @@ public class Miscelanea {
         com.miscelanea.movil.MovilRegistro.registrar(modBus);
         com.miscelanea.laboratorio.LabRegistro.registrar(modBus);
         com.miscelanea.camaras.CamarasRegistro.registrar(modBus);
+        com.miscelanea.multibloque.MultiRegistro.registrar(modBus);
         com.miscelanea.rave.RaveRegistro.registrar(modBus);
         // ---- Armas de fuego: se encuentran en cofres (Global Loot Modifier)
         com.miscelanea.armasfuego.BotinArmas.registrar(modBus);

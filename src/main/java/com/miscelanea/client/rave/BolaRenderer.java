@@ -32,7 +32,9 @@ public class BolaRenderer implements net.minecraft.client.renderer.blockentity.B
     /** El modelo de GeckoLib (este renderizador lo dibuja y luego añade la luz). */
     private final GeoBlockRenderer<BolaBlockEntity> geo;
     private static final int RAYOS = 48;
-    private static final float ALCANCE = 18F;
+    private static final float ALCANCE = 20F;
+    /** Centro de la bola (por debajo de su bloque) y su radio, en bloques, como en el modelo. */
+    private static final float CENTRO = -8F / 16F, RADIO = 13.5F / 16F;
     private static final Vector3f[] DIRS = new Vector3f[RAYOS];
 
     static {
@@ -107,7 +109,7 @@ public class BolaRenderer implements net.minecraft.client.renderer.blockentity.B
             if (h == null) continue;
             Vector3f c = new Vector3f((float) (h.x - p.getX()), (float) (h.y - p.getY()), (float) (h.z - p.getZ()));
             Vec3 nn = im.normales()[i];
-            float dist = c.distance(0.5F, 0.375F, 0.5F);
+            float dist = c.distance(0.5F, CENTRO, 0.5F);
             float fuerza = (1 - dist / (ALCANCE + 4)) * ((i % 3 == 0) ? 1.2F : 0.9F);
             Luces.mancha(ps, buf, c, new Vector3f((float) nn.x, (float) nn.y, (float) nn.z), 0.22F + dist * 0.02F, rgb, fuerza);
         }
@@ -121,12 +123,12 @@ public class BolaRenderer implements net.minecraft.client.renderer.blockentity.B
         if (c != null && c.tick() == tick) return c;
         if (CACHE.size() > 64) CACHE.clear();
         float giro = LucesRave.giroBola(tick, modo);
-        Vec3 o = new Vec3(p.getX() + 0.5, p.getY() + 0.375, p.getZ() + 0.5);
+        Vec3 o = new Vec3(p.getX() + 0.5, p.getY() + CENTRO, p.getZ() + 0.5);
         Vec3[] pts = new Vec3[RAYOS], nor = new Vec3[RAYOS];
         var quien = Minecraft.getInstance().player;
         for (int i = 0; i < RAYOS; i++) {
             Vector3f d = new Vector3f(DIRS[i]).rotateY(-giro);
-            Vec3 ini = o.add(d.x * 0.45, d.y * 0.45, d.z * 0.45), fin = o.add(d.x * ALCANCE, d.y * ALCANCE, d.z * ALCANCE);
+            Vec3 ini = o.add(d.x * RADIO, d.y * RADIO, d.z * RADIO), fin = o.add(d.x * ALCANCE, d.y * ALCANCE, d.z * ALCANCE);
             BlockHitResult r = be.getLevel().clip(new ClipContext(ini, fin, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, quien));
             if (r.getType() == HitResult.Type.BLOCK) {
                 pts[i] = r.getLocation();

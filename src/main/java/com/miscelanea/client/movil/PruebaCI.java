@@ -5405,7 +5405,7 @@ public final class PruebaCI {
                 var frente = a2Mira.getOpposite();
                 var mesa = net.minecraft.core.BlockPos.containing(a2Punto(9, 0.0, 0.3));
                 poner.accept(mesa, com.miscelanea.rave.RaveRegistro.MESA.get().defaultBlockState().setValue(com.miscelanea.rave.MesaDjBlock.FACING, frente));
-                for (double lado : new double[]{-2.0, 2.0})
+                for (double lado : new double[]{-3.0, 3.0})
                     poner.accept(net.minecraft.core.BlockPos.containing(a2Punto(9.5, lado, 0.3)),
                             com.miscelanea.rave.RaveRegistro.ALTAVOZ.get().defaultBlockState().setValue(com.miscelanea.rave.AltavozBlock.FACING, frente));
                 PI.put("rave_mesa", mesa);
@@ -5418,7 +5418,9 @@ public final class PruebaCI {
                     m.poner("disco:minecraft:music_disc_cat");
             });
         });
-        paso("rave_dj_foto", 40, () -> a2VistaA(a2Punto(9, 0.0, 1.0), a2Punto(5.5, 0.0, 2.2)));
+        paso("rave_dj_foto", 40, () -> a2VistaA(a2Punto(9, 0.0, 1.3), a2Punto(4.2, 1.2, 2.3)));
+        // desde el lado del DJ (platos, mezclador y portátil)
+        paso("rave_dj_foto2", 10, () -> a2VistaA(a2Punto(9, 0.0, 1.0), a2Punto(10.7, -1.0, 2.9)));
         vigila("rave_dj_chk", 20, () -> {
             var pos = (net.minecraft.core.BlockPos) PI.get("rave_mesa");
             var m = mc.level.getBlockEntity(pos) instanceof com.miscelanea.rave.MesaDjBlockEntity x ? x : null;
@@ -5426,6 +5428,14 @@ public final class PruebaCI {
             RESUMEN.add("  rave dj: sonando " + (m != null && m.sonando()) + ", en este cliente " + suena + ", volumen aquí "
                     + String.format("%.2f", com.miscelanea.client.rave.MusicaDj.volumen(pos)) + ", alcance " + (m == null ? -1 : m.alcance())
                     + " con " + (m == null ? -1 : m.altavoces()) + " altavoces, canciones en la lista " + com.miscelanea.rave.Pistas.todas().size());
+            // la cabina (3 de ancho), las dos torres (3 de alto) y la bola (2 huecos debajo) rellenan sus huecos con partes
+            int partes = 0;
+            var sl = mc.getSingleplayerServer().overworld();
+            for (var q : net.minecraft.core.BlockPos.betweenClosed(pos.offset(-6, -1, -6), pos.offset(6, 8, 6)))
+                if (sl.getBlockState(q).is(com.miscelanea.multibloque.MultiRegistro.PARTE.get())
+                        && sl.getBlockEntity(q) instanceof com.miscelanea.multibloque.ParteBlockEntity pb && pb.maestro() != null) partes++;
+            RESUMEN.add("  rave multibloque: " + partes + " partes (cabina 2 + torres 4 + bola 2)");
+            if (partes != 8) throw new IllegalStateException("las partes de los bloques grandes no están bien (" + partes + " de 8)");
             if (m == null || !m.sonando()) throw new IllegalStateException("la mesa de DJ no suena");
             if (m.altavoces() != 2) throw new IllegalStateException("la mesa no cuenta los dos altavoces (" + m.altavoces() + ")");
             if (!suena) throw new IllegalStateException("la música de la mesa no suena en el cliente");
@@ -5658,7 +5668,13 @@ public final class PruebaCI {
                 var l = srv.overworld();
                 @SuppressWarnings("unchecked")
                 var antes = (java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState>) PI.get("rave_antes");
-                if (antes != null) antes.forEach((q, s) -> l.setBlock(q, s, 2));
+                if (antes != null) {
+                    // primero los bloques grandes (se llevan sus partes) y luego el resto
+                    antes.forEach((q, s) -> {
+                        if (l.getBlockState(q).getBlock() instanceof com.miscelanea.multibloque.MultiBloque) l.setBlock(q, s, 2);
+                    });
+                    antes.forEach((q, s) -> l.setBlock(q, s, 2));
+                }
                 if (PI.get("rave_hora") instanceof Long h) l.setDayTime(h);
                 var s0 = net.minecraft.core.BlockPos.containing(a2Punto(8, 0.0, 0.0));
                 for (var q : net.minecraft.core.BlockPos.betweenClosed(s0.offset(-20, -3, -20), s0.offset(20, 6, 20)))

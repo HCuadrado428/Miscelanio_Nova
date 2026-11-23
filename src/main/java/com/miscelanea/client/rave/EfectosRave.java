@@ -51,7 +51,7 @@ public final class EfectosRave {
     /** Disparo del cañón: una nube de confeti hacia donde apunta. */
     public static void confeti(Level l, BlockPos p, Direction d, DyeColor color) {
         RandomSource r = l.random;
-        double ox = p.getX() + 0.5 + d.getStepX() * 0.85, oy = p.getY() + 0.5 + d.getStepY() * 0.85, oz = p.getZ() + 0.5 + d.getStepZ() * 0.85;
+        double ox = p.getX() + 0.5 + d.getStepX() * 0.8, oy = p.getY() + 0.5 + d.getStepY() * 0.8, oz = p.getZ() + 0.5 + d.getStepZ() * 0.8;
         DyeColor[] todos = DyeColor.values();
         for (int i = 0; i < 180; i++) {
             double v = 0.5 + r.nextDouble() * 0.6;

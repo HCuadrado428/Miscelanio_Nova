@@ -55,7 +55,7 @@ public class HumoBlock extends LuzRaveBlock {
         if (chispas) return CHISPAS;
         Direction d = s.getValue(FACING);
         VoxelShape f = HUMO[d.get3DDataValue()];
-        if (f == null) f = HUMO[d.get3DDataValue()] = com.miscelanea.camaras.Montaje.forma(d, 2, 0, 0, 14, 9, 13);
+        if (f == null) f = HUMO[d.get3DDataValue()] = com.miscelanea.camaras.Montaje.forma(d, 2, 0, 0.5, 14, 13.5, 14);
         return f;
     }
 

@@ -30,7 +30,7 @@ public class FocoRenderer implements net.minecraft.client.renderer.blockentity.B
     private final GeoBlockRenderer<FocoBlockEntity> geo;
     private static final float LARGO = 22F;
     /** Altura del eje de la cabeza y distancia del eje a la lente (en bloques), como en el modelo. */
-    private static final float EJE = 8F / 16F, LENTE = 4.6F / 16F;
+    private static final float EJE = 9F / 16F, LENTE = 7.2F / 16F;
 
     public FocoRenderer(net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Context ctx) {
         geo = new GeoBlockRenderer<>(new Modelo());

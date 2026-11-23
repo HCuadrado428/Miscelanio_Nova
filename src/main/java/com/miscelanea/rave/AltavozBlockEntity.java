@@ -3,6 +3,7 @@ package com.miscelanea.rave;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -38,6 +39,12 @@ public class AltavozBlockEntity extends BlockEntity implements GeoBlockEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar c) {}
+
+    /** El modelo ocupa tres bloques de alto. */
+    @Override
+    public AABB getRenderBoundingBox() {
+        return new AABB(worldPosition).expandTowards(0, 2, 0).inflate(0.5);
+    }
 
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
