@@ -108,8 +108,8 @@ public class BolaRenderer implements net.minecraft.client.renderer.blockentity.B
             Vector3f c = new Vector3f((float) (h.x - p.getX()), (float) (h.y - p.getY()), (float) (h.z - p.getZ()));
             Vec3 nn = im.normales()[i];
             float dist = c.distance(0.5F, 0.375F, 0.5F);
-            float fuerza = 0.9F * (1 - dist / (ALCANCE + 2)) * ((i % 3 == 0) ? 1F : 0.7F);
-            Luces.mancha(ps, buf, c, new Vector3f((float) nn.x, (float) nn.y, (float) nn.z), 0.12F + dist * 0.012F, rgb, fuerza);
+            float fuerza = (1 - dist / (ALCANCE + 4)) * ((i % 3 == 0) ? 1.2F : 0.9F);
+            Luces.mancha(ps, buf, c, new Vector3f((float) nn.x, (float) nn.y, (float) nn.z), 0.22F + dist * 0.02F, rgb, fuerza);
         }
     }
 
