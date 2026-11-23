@@ -24,7 +24,7 @@ public final class RaveClienteMod {
 
     @SubscribeEvent
     public static void coloresItem(RegisterColorHandlersEvent.Item e) {
-        e.register((st, tinte) -> tinte == 0 ? Neon.rgb(Neon.de(st)) : -1, RaveRegistro.TUBO_ITEM.get(), RaveRegistro.PANEL_ITEM.get(), RaveRegistro.BARRA.get());
+        e.register((st, tinte) -> tinte == 0 ? Neon.rgb(Neon.de(st)) : -1, RaveRegistro.TUBO_ITEM.get(), RaveRegistro.PANEL_ITEM.get(), RaveRegistro.BARRA.get(), RaveRegistro.PULSERA.get(), RaveRegistro.COLLAR.get());
     }
 
     @SubscribeEvent

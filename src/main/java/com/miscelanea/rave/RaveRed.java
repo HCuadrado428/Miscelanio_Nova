@@ -20,7 +20,8 @@ public final class RaveRed {
     public static final SimpleChannel CANAL = NetworkRegistry.newSimpleChannel(new ResourceLocation(Miscelanea.MOD_ID, "rave"),
             () -> PROTOCOLO, PROTOCOLO::equals, PROTOCOLO::equals);
 
-    public static final int DJ_PONER = 0, DJ_PARAR = 1, DJ_VOLUMEN = 2, DJ_BUCLE = 3, DJ_LUCES_ON = 4, DJ_LUCES_OFF = 5, DJ_EMITIR = 6;
+    public static final int DJ_PONER = 0, DJ_PARAR = 1, DJ_VOLUMEN = 2, DJ_BUCLE = 3, DJ_LUCES_ON = 4, DJ_LUCES_OFF = 5, DJ_EMITIR = 6,
+            DJ_COLA_ANADIR = 7, DJ_COLA_QUITAR = 8, DJ_COLA_PONER = 9, DJ_COLA_VACIAR = 10;
     /** Tamaño máximo de un trozo de audio Opus del DJ (20 ms suelen ser 60 a 300 bytes). */
     public static final int MAX_AUDIO = 1500;
 
@@ -160,12 +161,33 @@ public final class RaveRed {
         }
     }
 
+    /** Servidor → cliente: la pulsera y el collar de neón que lleva un jugador (color, o -1). */
+    public record Puesto(int entidad, int pulsera, int collar) {
+        void encode(FriendlyByteBuf b) {
+            b.writeVarInt(entidad);
+            b.writeByte(pulsera);
+            b.writeByte(collar);
+        }
+
+        static Puesto decode(FriendlyByteBuf b) {
+            return new Puesto(b.readVarInt(), b.readByte(), b.readByte());
+        }
+
+        static void handle(Puesto m, Supplier<NetworkEvent.Context> ctx) {
+            NetworkEvent.Context c = ctx.get();
+            c.enqueueWork(() -> net.minecraftforge.fml.DistExecutor.unsafeRunWhenOn(net.minecraftforge.api.distmarker.Dist.CLIENT, () -> () ->
+                    com.miscelanea.client.rave.AccesoriosCliente.recibir(m.entidad, m.pulsera, m.collar)));
+            c.setPacketHandled(true);
+        }
+    }
+
     static void registrar() {
         CANAL.messageBuilder(Dj.class, 0, NetworkDirection.PLAY_TO_SERVER).encoder(Dj::encode).decoder(Dj::decode).consumerMainThread(Dj::handle).add();
         CANAL.messageBuilder(Audio.class, 1, NetworkDirection.PLAY_TO_SERVER).encoder(Audio::encode).decoder(Audio::decode).consumerMainThread(Audio::handle).add();
         CANAL.messageBuilder(PonerVideo.class, 2, NetworkDirection.PLAY_TO_SERVER).encoder(PonerVideo::encode).decoder(PonerVideo::decode).consumerMainThread(PonerVideo::handle).add();
         CANAL.messageBuilder(PedirVideo.class, 3, NetworkDirection.PLAY_TO_SERVER).encoder(PedirVideo::encode).decoder(PedirVideo::decode).consumerMainThread(PedirVideo::handle).add();
         CANAL.messageBuilder(Luces.class, 5, NetworkDirection.PLAY_TO_SERVER).encoder(Luces::encode).decoder(Luces::decode).consumerMainThread(Luces::handle).add();
+        CANAL.messageBuilder(Puesto.class, 6, NetworkDirection.PLAY_TO_CLIENT).encoder(Puesto::encode).decoder(Puesto::decode).consumerMainThread(Puesto::handle).add();
         CANAL.messageBuilder(Video.class, 4, NetworkDirection.PLAY_TO_CLIENT).encoder(Video::encode).decoder(Video::decode).consumerMainThread(Video::handle).add();
     }
 

@@ -137,6 +137,9 @@ public final class RaveRegistro {
     public static final RegistryObject<Item> PANEL_LUCES_ITEM = ITEMS.register("panel_luces", () -> new com.miscelanea.camaras.CamarasRegistro.ConAyuda(PANEL_LUCES.get(), "panel_luces"));
     public static final RegistryObject<Item> MANDO_LUCES = ITEMS.register("mando_luces", () -> new PanelLuces.Mando(new Item.Properties().stacksTo(1)));
 
+    public static final RegistryObject<Item> PULSERA = ITEMS.register("pulsera_neon", () -> new Accesorios.Objeto(Accesorios.PULSERA));
+    public static final RegistryObject<Item> COLLAR = ITEMS.register("collar_neon", () -> new Accesorios.Objeto(Accesorios.COLLAR));
+
     public static void registrar(IEventBus modBus) {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);

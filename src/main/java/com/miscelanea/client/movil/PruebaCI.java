@@ -5611,6 +5611,47 @@ public final class PruebaCI {
             var srv = mc.getSingleplayerServer();
             srv.execute(() -> srv.getPlayerList().getPlayer(mc.player.getUUID()).removeAllEffects());
         });
+        // pulsera y collar de neón puestos, y lista de reproducción de la mesa de DJ
+        sin("rave_accesorios", 10, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                com.miscelanea.rave.Accesorios.poner(sp, com.miscelanea.rave.Accesorios.PULSERA, net.minecraft.world.item.DyeColor.MAGENTA.getId());
+                com.miscelanea.rave.Accesorios.poner(sp, com.miscelanea.rave.Accesorios.COLLAR, net.minecraft.world.item.DyeColor.CYAN.getId());
+                String cola = "sin mesa";
+                if (l.getBlockEntity((net.minecraft.core.BlockPos) PI.get("rave_mesa")) instanceof com.miscelanea.rave.MesaDjBlockEntity m) {
+                    m.cola().clear();
+                    m.cola().add("disco:minecraft:music_disc_cat");
+                    m.cola().add("disco:minecraft:music_disc_blocks");
+                    m.ponerCola(false);
+                    cola = "lista de " + m.cola().size() + ", en lista " + m.enCola() + ", suena " + m.pista();
+                    PI.put("rave_cola_ok", m.enCola() && m.sonando() && m.pista().equals("disco:minecraft:music_disc_cat"));
+                }
+                PI.put("rave_cola", cola);
+            });
+        });
+        paso("rave_accesorios_foto", 30, () -> {
+            var ojo = mc.player.getEyePosition();
+            var f = mc.player.getViewVector(1F);
+            a2VistaA(ojo.add(0, -0.5, 0), ojo.add(f.x * 2.2, 0.0, f.z * 2.2));
+        });
+        vigila("rave_accesorios_chk", 10, () -> {
+            int[] q = com.miscelanea.client.rave.AccesoriosCliente.de(mc.player.getId());
+            RESUMEN.add("  rave accesorios: en el cliente " + (q == null ? "nada" : "pulsera " + q[0] + ", collar " + q[1]) + "; mesa: " + PI.get("rave_cola"));
+            if (q == null || q[0] != net.minecraft.world.item.DyeColor.MAGENTA.getId() || q[1] != net.minecraft.world.item.DyeColor.CYAN.getId())
+                throw new IllegalStateException("la pulsera y el collar no han llegado al cliente");
+            if (!Boolean.TRUE.equals(PI.get("rave_cola_ok"))) throw new IllegalStateException("la lista de reproducción no arranca: " + PI.get("rave_cola"));
+        });
+        sin("rave_accesorios_quitar", 5, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                com.miscelanea.rave.Accesorios.poner(sp, com.miscelanea.rave.Accesorios.PULSERA, -1);
+                com.miscelanea.rave.Accesorios.poner(sp, com.miscelanea.rave.Accesorios.COLLAR, -1);
+                if (srv.overworld().getBlockEntity((net.minecraft.core.BlockPos) PI.get("rave_mesa")) instanceof com.miscelanea.rave.MesaDjBlockEntity m) m.parar();
+            });
+        });
         sin("rave_limpiar", 20, () -> {
             var srv = mc.getSingleplayerServer();
             srv.execute(() -> {

@@ -246,6 +246,8 @@ public class Miscelanea {
             for (net.minecraft.world.item.DyeColor c : net.minecraft.world.item.DyeColor.values()) event.accept(com.miscelanea.rave.NeonItem.de(com.miscelanea.rave.RaveRegistro.TUBO_ITEM.get(), c));
             for (net.minecraft.world.item.DyeColor c : net.minecraft.world.item.DyeColor.values()) event.accept(com.miscelanea.rave.NeonItem.de(com.miscelanea.rave.RaveRegistro.PANEL_ITEM.get(), c));
             for (net.minecraft.world.item.DyeColor c : net.minecraft.world.item.DyeColor.values()) event.accept(com.miscelanea.rave.BarraLuminosaItem.de(c));
+            for (net.minecraft.world.item.DyeColor c : net.minecraft.world.item.DyeColor.values()) event.accept(com.miscelanea.rave.Accesorios.objeto(com.miscelanea.rave.Accesorios.PULSERA, c));
+            for (net.minecraft.world.item.DyeColor c : net.minecraft.world.item.DyeColor.values()) event.accept(com.miscelanea.rave.Accesorios.objeto(com.miscelanea.rave.Accesorios.COLLAR, c));
             event.accept(com.miscelanea.rave.RaveRegistro.BOLA_ITEM);
             event.accept(com.miscelanea.rave.RaveRegistro.FOCO_ITEM);
             event.accept(com.miscelanea.rave.RaveRegistro.ESTROBO_ITEM);

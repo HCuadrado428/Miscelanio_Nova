@@ -6691,5 +6691,15 @@
   "rave.miscelanea.panel.modo.1": "Rápido",
   "rave.miscelanea.panel.modo.2": "Círculos",
   "rave.miscelanea.panel.modo.3": "Locura",
-  "rave.miscelanea.panel.alcance": "Alcance: %s bloques"
+  "rave.miscelanea.panel.alcance": "Alcance: %s bloques",
+  "item.miscelanea.pulsera_neon": "Pulsera de neón",
+  "item.miscelanea.collar_neon": "Collar de neón",
+  "rave.miscelanea.accesorio.ayuda": "Clic derecho: te lo pones (brilla y lo ven los demás). Agachado + clic: te lo quitas. No ocupa armadura.",
+  "rave.miscelanea.dj.cola_anadir": "+ Lista",
+  "rave.miscelanea.dj.cola_poner": "▶ Lista",
+  "rave.miscelanea.dj.cola_azar": "Al azar",
+  "rave.miscelanea.dj.cola_vaciar": "Vaciar",
+  "rave.miscelanea.dj.cola_estado": "Lista: %s de %s",
+  "rave.miscelanea.dj.cola_estado_azar": "Lista al azar: %s de %s",
+  "rave.miscelanea.dj.cola_parada": "Lista: %2$s canciones"
 }

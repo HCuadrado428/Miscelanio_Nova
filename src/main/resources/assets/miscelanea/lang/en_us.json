@@ -6691,5 +6691,15 @@
   "rave.miscelanea.panel.modo.1": "Fast",
   "rave.miscelanea.panel.modo.2": "Circles",
   "rave.miscelanea.panel.modo.3": "Crazy",
-  "rave.miscelanea.panel.alcance": "Range: %s blocks"
+  "rave.miscelanea.panel.alcance": "Range: %s blocks",
+  "item.miscelanea.pulsera_neon": "Neon Bracelet",
+  "item.miscelanea.collar_neon": "Neon Necklace",
+  "rave.miscelanea.accesorio.ayuda": "Right-click: put it on (it glows and others see it). Sneak + click: take it off. Uses no armour slot.",
+  "rave.miscelanea.dj.cola_anadir": "+ List",
+  "rave.miscelanea.dj.cola_poner": "▶ List",
+  "rave.miscelanea.dj.cola_azar": "Shuffle",
+  "rave.miscelanea.dj.cola_vaciar": "Clear",
+  "rave.miscelanea.dj.cola_estado": "List: %s of %s",
+  "rave.miscelanea.dj.cola_estado_azar": "Shuffled list: %s of %s",
+  "rave.miscelanea.dj.cola_parada": "List: %2$s songs"
 }

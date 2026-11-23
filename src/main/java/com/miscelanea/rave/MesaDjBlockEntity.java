@@ -35,6 +35,12 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
     @Nullable
     private java.util.UUID emisor;
     private String emisorNombre = "";
+    /** Lista de reproducción (cola) de la mesa: ids de pista, en orden; como mucho {@link #MAX_COLA}. */
+    private final java.util.List<String> cola = new java.util.ArrayList<>();
+    public static final int MAX_COLA = 32;
+    /** ¿Se está reproduciendo la cola? Posición en ella y si va en orden aleatorio. */
+    private boolean enCola, aleatorio;
+    private int posCola;
 
     public MesaDjBlockEntity(BlockPos p, BlockState s) {
         super(RaveRegistro.MESA_BE.get(), p, s);
@@ -49,6 +55,10 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
     public int altavoces() { return altavoces; }
     @Nullable public java.util.UUID emisor() { return emisor; }
     public String emisorNombre() { return emisorNombre; }
+    public java.util.List<String> cola() { return cola; }
+    public boolean enCola() { return enCola; }
+    public boolean aleatorio() { return aleatorio; }
+    public int posCola() { return posCola; }
 
     // ------------------------------------------------------------------ servidor
     /** Una orden de la pantalla (ya validada la distancia en RaveRed). */
@@ -56,9 +66,30 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
         switch (accion) {
             case RaveRed.DJ_PONER -> {
                 if (Pistas.de(texto) == null) return;
+                enCola = false;
                 poner(texto);
             }
-            case RaveRed.DJ_PARAR -> parar();
+            case RaveRed.DJ_PARAR -> {
+                enCola = false;
+                parar();
+            }
+            case RaveRed.DJ_COLA_ANADIR -> {
+                if (Pistas.de(texto) == null || cola.size() >= MAX_COLA) return;
+                cola.add(texto);
+                cambiado();
+            }
+            case RaveRed.DJ_COLA_QUITAR -> {
+                if (numero < 0 || numero >= cola.size()) return;
+                cola.remove(numero);
+                if (posCola > numero) posCola--;
+                cambiado();
+            }
+            case RaveRed.DJ_COLA_VACIAR -> {
+                cola.clear();
+                enCola = false;
+                cambiado();
+            }
+            case RaveRed.DJ_COLA_PONER -> ponerCola(numero != 0);
             case RaveRed.DJ_VOLUMEN -> {
                 volumen = Math.max(0, Math.min(100, numero));
                 cambiado();
@@ -78,6 +109,7 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
                         return;
                     }
                     sonando = false;
+                    enCola = false;
                     emisor = p.getUUID();
                     emisorNombre = p.getGameProfile().getName();
                     calcularAlcance();
@@ -102,6 +134,29 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
         inicio = level.getGameTime();
         calcularAlcance();
         cambiado();
+    }
+
+    /** Empieza la lista de reproducción desde el principio (o por una al azar). */
+    public void ponerCola(boolean alAzar) {
+        if (cola.isEmpty() || level == null) return;
+        aleatorio = alAzar;
+        enCola = true;
+        posCola = alAzar ? level.random.nextInt(cola.size()) : 0;
+        poner(cola.get(posCola));
+    }
+
+    private void siguienteDeLaCola() {
+        if (cola.isEmpty() || level == null) {
+            enCola = false;
+            parar();
+            return;
+        }
+        if (aleatorio && cola.size() > 1) {
+            int n;
+            do n = level.random.nextInt(cola.size()); while (n == posCola);
+            posCola = n;
+        } else posCola = (posCola + 1) % cola.size();
+        poner(cola.get(posCola));
     }
 
     public void parar() {
@@ -170,7 +225,8 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
             return;
         }
         if (t - be.inicio > pi.ticks() + 10) {
-            if (be.bucle) be.poner(be.pista);
+            if (be.enCola) be.siguienteDeLaCola();
+            else if (be.bucle) be.poner(be.pista);
             else be.parar();
             return;
         }
@@ -197,6 +253,12 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
         t.putInt("Volumen", volumen);
         t.putInt("Alcance", alcance);
         t.putInt("Altavoces", altavoces);
+        net.minecraft.nbt.ListTag lc = new net.minecraft.nbt.ListTag();
+        for (String c : cola) lc.add(net.minecraft.nbt.StringTag.valueOf(c));
+        t.put("Cola", lc);
+        t.putBoolean("EnCola", enCola);
+        t.putBoolean("Aleatorio", aleatorio);
+        t.putInt("PosCola", posCola);
         if (emisor != null) {
             t.putUUID("Emisor", emisor);
             t.putString("EmisorNombre", emisorNombre);
@@ -213,6 +275,12 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
         volumen = t.contains("Volumen") ? t.getInt("Volumen") : 80;
         alcance = t.contains("Alcance") ? t.getInt("Alcance") : 32;
         altavoces = t.getInt("Altavoces");
+        cola.clear();
+        net.minecraft.nbt.ListTag lc = t.getList("Cola", net.minecraft.nbt.Tag.TAG_STRING);
+        for (int i = 0; i < lc.size() && i < MAX_COLA; i++) cola.add(lc.getString(i));
+        enCola = t.getBoolean("EnCola");
+        aleatorio = t.getBoolean("Aleatorio");
+        posCola = t.getInt("PosCola");
         emisor = t.hasUUID("Emisor") ? t.getUUID("Emisor") : null;
         emisorNombre = t.getString("EmisorNombre");
     }
