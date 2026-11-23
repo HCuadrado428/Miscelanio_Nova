@@ -4586,13 +4586,6 @@ public final class PruebaCI {
                     antes.put(q.immutable(), l.getBlockState(q));
                     if (q.getY() > b.getY() - 1) l.setBlock(q, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
                 }
-                // una pared de monitores de 3x2 en el canal 5 (al lado de las teles)
-                for (int c = 0; c < 3; c++)
-                    for (int r = 0; r < 2; r++) {
-                        var q = net.minecraft.core.BlockPos.containing(a2Punto(14, -6.6 - c, 1.6 + r));
-                        poner.accept(q, com.miscelanea.camaras.CamarasRegistro.MONITOR.get().defaultBlockState().setValue(com.miscelanea.camaras.MonitorBlock.FACING, frente));
-                        if (l.getBlockEntity(q) instanceof com.miscelanea.camaras.TeleBlockEntity tv) tv.canal(5);
-                    }
                 PI.put("cam_antes", antes);
                 var frente = a2Mira.getOpposite();
                 var estado = com.miscelanea.laboratorio.LabRegistro.CAMARA.get().defaultBlockState()
@@ -5263,6 +5256,13 @@ public final class PruebaCI {
                     poner.accept(q, com.miscelanea.camaras.CamarasRegistro.TELE.get().defaultBlockState().setValue(com.miscelanea.camaras.Montaje.FACING, frente));
                     if (l.getBlockEntity(q) instanceof com.miscelanea.camaras.TeleBlockEntity tv) tv.canal(canales[i]);
                 }
+                // una pared de monitores de 3x2 en el canal 5 (al lado de las teles)
+                for (int c = 0; c < 3; c++)
+                    for (int r = 0; r < 2; r++) {
+                        var q = net.minecraft.core.BlockPos.containing(a2Punto(14, -6.6 - c, 1.6 + r));
+                        poner.accept(q, com.miscelanea.camaras.CamarasRegistro.MONITOR.get().defaultBlockState().setValue(com.miscelanea.camaras.MonitorBlock.FACING, frente));
+                        if (l.getBlockEntity(q) instanceof com.miscelanea.camaras.TeleBlockEntity tv) tv.canal(5);
+                    }
                 PI.put("cam_antes", antes);
                 PI.put("cam_cargadas", com.miscelanea.camaras.CamarasServidor.camaras());
             });
