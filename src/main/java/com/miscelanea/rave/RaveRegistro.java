@@ -114,6 +114,13 @@ public final class RaveRegistro {
     public static final RegistryObject<net.minecraft.world.level.block.entity.BlockEntityType<SueloLedBlockEntity>> SUELO_LED_BE = BLOCK_ENTITIES.register("suelo_led",
             () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(SueloLedBlockEntity::new, SUELO_LED.get()).build(null));
 
+    // ---- hito 6: pantalla de vídeo
+    public static final RegistryObject<Block> PANTALLA = BLOCKS.register("pantalla_video", () -> new PantallaVideoBlock(BlockBehaviour.Properties.of()
+            .mapColor(MapColor.COLOR_BLACK).strength(1.5F, 6.0F).sound(SoundType.METAL).noOcclusion().lightLevel(s -> 6)));
+    public static final RegistryObject<Item> PANTALLA_ITEM = ITEMS.register("pantalla_video", () -> new com.miscelanea.camaras.CamarasRegistro.ConAyuda(PANTALLA.get(), "pantalla_video"));
+    public static final RegistryObject<net.minecraft.world.level.block.entity.BlockEntityType<PantallaVideoBlockEntity>> PANTALLA_BE = BLOCK_ENTITIES.register("pantalla_video",
+            () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(PantallaVideoBlockEntity::new, PANTALLA.get()).build(null));
+
     public static void registrar(IEventBus modBus) {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);

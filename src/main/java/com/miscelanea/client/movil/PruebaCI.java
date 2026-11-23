@@ -5536,6 +5536,41 @@ public final class PruebaCI {
             RESUMEN.add("  rave escenario: el andamio del medio de la pasarela se une por " + lados + " lados");
             if (!(lados instanceof Integer n) || n != 2) throw new IllegalStateException("el andamio no se une bien (" + lados + " lados)");
         });
+        // hito 6: pantalla de vídeo de 4x2 encima del escenario, con un vídeo de la galería del móvil si hay alguno
+        sin("rave_video_poner", 20, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                @SuppressWarnings("unchecked")
+                var antes = (java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState>) PI.get("rave_antes");
+                var frente = a2Mira.getOpposite();
+                var origen = net.minecraft.core.BlockPos.containing(a2Punto(14, 0.0, 1.6));
+                var der = frente.getCounterClockWise();
+                for (int c = 0; c < 4; c++)
+                    for (int r = 0; r < 2; r++) {
+                        var q = origen.relative(der, c - 2).above(r);
+                        antes.putIfAbsent(q.immutable(), l.getBlockState(q));
+                        l.setBlock(q, com.miscelanea.rave.RaveRegistro.PANTALLA.get().defaultBlockState().setValue(com.miscelanea.rave.PantallaVideoBlock.FACING, frente), 3);
+                    }
+                var o = com.miscelanea.rave.PantallaVideoBlock.origen(l, origen, frente);
+                PI.put("rave_pantalla", o);
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                int video = -1;
+                if (sp != null) for (var f : com.miscelanea.movil.MovilDatos.de(srv).perfil(sp.getUUID(), null).fotos) if (f.ms() > 0) video = f.id();
+                PI.put("rave_video", video);
+                if (video >= 0 && l.getBlockEntity(o) instanceof com.miscelanea.rave.PantallaVideoBlockEntity be) be.poner(sp.getUUID(), video);
+            });
+        });
+        paso("rave_video_foto", 60, () -> a2VistaA(a2Punto(14, 0.0, 2.6), a2Punto(5.5, 0.0, 2.6)));
+        vigila("rave_video_chk", 10, () -> {
+            var o = (net.minecraft.core.BlockPos) PI.get("rave_pantalla");
+            int video = (Integer) PI.get("rave_video");
+            var be = mc.level.getBlockEntity(o) instanceof com.miscelanea.rave.PantallaVideoBlockEntity x ? x : null;
+            boolean cargado = be != null && com.miscelanea.client.rave.VideosPantalla.cargado(be);
+            RESUMEN.add("  rave pantalla: " + (video < 0 ? "no hay vídeos en la galería del móvil (se ve el aviso)" : "vídeo " + video + ", cargado en el cliente " + cargado));
+            if (be == null) throw new IllegalStateException("no está la pantalla de vídeo");
+            if (video >= 0 && !cargado) throw new IllegalStateException("el vídeo de la pantalla no ha llegado al cliente");
+        });
         sin("rave_limpiar", 20, () -> {
             var srv = mc.getSingleplayerServer();
             srv.execute(() -> {

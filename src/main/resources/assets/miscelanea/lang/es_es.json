@@ -6654,5 +6654,15 @@
   "block.miscelanea.andamio_truss.ayuda3": "Cuelga de él los focos móviles y la bola de discoteca.",
   "block.miscelanea.suelo_led.ayuda": "Baldosas de discoteca que cambian de color formando ondas.",
   "block.miscelanea.suelo_led.ayuda2": "Si cerca suena una mesa de DJ, cambian al ritmo de la canción y laten con cada pulso.",
-  "block.miscelanea.suelo_led.ayuda3": "Ponlas juntas para hacer una pista de baile."
+  "block.miscelanea.suelo_led.ayuda3": "Ponlas juntas para hacer una pista de baile.",
+  "block.miscelanea.pantalla_video": "Pantalla de vídeo",
+  "block.miscelanea.pantalla_video.ayuda": "Paneles LED para el escenario: varios juntos en rectángulo (hasta 12x8) forman una sola pantalla.",
+  "block.miscelanea.pantalla_video.ayuda2": "Clic derecho: elige un vídeo corto de la galería de tu móvil y se ve en bucle, con su sonido si estás cerca.",
+  "block.miscelanea.pantalla_video.ayuda3": "Los vídeos se graban con la cámara del móvil (mantén el botón de grabar).",
+  "rave.miscelanea.pantalla.vacia": "Clic derecho para poner un vídeo del móvil",
+  "rave.miscelanea.pantalla.cargando": "Cargando vídeo...",
+  "rave.miscelanea.pantalla.poner": "▶ Poner este vídeo",
+  "rave.miscelanea.pantalla.quitar": "■ Quitar el vídeo",
+  "rave.miscelanea.pantalla.video": "Vídeo del %s (%s s)",
+  "rave.miscelanea.pantalla.sin_videos": "No tienes vídeos en la galería del móvil. Grábalos con la cámara del móvil manteniendo el botón de grabar."
 }

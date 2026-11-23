@@ -36,6 +36,7 @@ public final class RaveClienteMod {
         e.registerBlockEntityRenderer(RaveRegistro.MESA_BE.get(), ctx -> ModelosDj.mesa());
         e.registerBlockEntityRenderer(RaveRegistro.ALTAVOZ_BE.get(), ctx -> ModelosDj.altavoz());
         e.registerBlockEntityRenderer(RaveRegistro.SUELO_LED_BE.get(), SueloLedRenderer::new);
+        e.registerBlockEntityRenderer(RaveRegistro.PANTALLA_BE.get(), PantallaVideoRenderer::new);
     }
 
     @SubscribeEvent

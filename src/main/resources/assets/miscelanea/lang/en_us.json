@@ -6654,5 +6654,15 @@
   "block.miscelanea.andamio_truss.ayuda3": "Hang moving heads and the disco ball from it.",
   "block.miscelanea.suelo_led.ayuda": "Disco tiles that change colour in waves.",
   "block.miscelanea.suelo_led.ayuda2": "If a DJ table is playing nearby, they change to the beat of the song and pulse with it.",
-  "block.miscelanea.suelo_led.ayuda3": "Put them together to make a dance floor."
+  "block.miscelanea.suelo_led.ayuda3": "Put them together to make a dance floor.",
+  "block.miscelanea.pantalla_video": "Video Screen",
+  "block.miscelanea.pantalla_video.ayuda": "LED panels for the stage: several together in a rectangle (up to 12x8) make one screen.",
+  "block.miscelanea.pantalla_video.ayuda2": "Right-click: pick a short video from your phone gallery and it loops, with its sound if you are close.",
+  "block.miscelanea.pantalla_video.ayuda3": "Record videos with the phone camera (hold the record button).",
+  "rave.miscelanea.pantalla.vacia": "Right-click to show a phone video",
+  "rave.miscelanea.pantalla.cargando": "Loading video...",
+  "rave.miscelanea.pantalla.poner": "▶ Show this video",
+  "rave.miscelanea.pantalla.quitar": "■ Remove the video",
+  "rave.miscelanea.pantalla.video": "Video from %s (%s s)",
+  "rave.miscelanea.pantalla.sin_videos": "You have no videos in your phone gallery. Record them with the phone camera holding the record button."
 }

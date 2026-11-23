@@ -70,9 +70,79 @@ public final class RaveRed {
         }
     }
 
+    /** Pantalla de vídeo: poner un vídeo de mi galería (id; -1 = quitarlo) en la pantalla cuyo origen es pos. */
+    public record PonerVideo(BlockPos pos, int clip) {
+        void encode(FriendlyByteBuf b) {
+            b.writeBlockPos(pos);
+            b.writeVarInt(clip);
+        }
+
+        static PonerVideo decode(FriendlyByteBuf b) {
+            return new PonerVideo(b.readBlockPos(), b.readVarInt());
+        }
+
+        static void handle(PonerVideo m, Supplier<NetworkEvent.Context> ctx) {
+            NetworkEvent.Context c = ctx.get();
+            ServerPlayer p = c.getSender();
+            c.enqueueWork(() -> {
+                if (p == null || p.distanceToSqr(m.pos.getX() + 0.5, m.pos.getY() + 0.5, m.pos.getZ() + 0.5) > 32 * 32) return;
+                if (!(p.level().getBlockEntity(m.pos) instanceof PantallaVideoBlockEntity be)) return;
+                if (m.clip < 0) be.poner(null, -1);
+                else if (com.miscelanea.movil.Clips.clipDe(p.server, p.getUUID(), m.clip) != null) be.poner(p.getUUID(), m.clip);
+            });
+            c.setPacketHandled(true);
+        }
+    }
+
+    /** El cliente pide los datos del vídeo que enseña la pantalla de pos. */
+    public record PedirVideo(BlockPos pos) {
+        void encode(FriendlyByteBuf b) {
+            b.writeBlockPos(pos);
+        }
+
+        static PedirVideo decode(FriendlyByteBuf b) {
+            return new PedirVideo(b.readBlockPos());
+        }
+
+        static void handle(PedirVideo m, Supplier<NetworkEvent.Context> ctx) {
+            NetworkEvent.Context c = ctx.get();
+            ServerPlayer p = c.getSender();
+            c.enqueueWork(() -> {
+                if (p == null || !(p.level().getBlockEntity(m.pos) instanceof PantallaVideoBlockEntity be) || be.dueno() == null) return;
+                if (p.distanceToSqr(m.pos.getX() + 0.5, m.pos.getY() + 0.5, m.pos.getZ() + 0.5) > 160 * 160) return;
+                byte[] d = com.miscelanea.movil.Clips.clipDe(p.server, be.dueno(), be.clip());
+                CANAL.send(net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> p), new Video(be.dueno(), be.clip(), d == null ? new byte[0] : d));
+            });
+            c.setPacketHandled(true);
+        }
+    }
+
+    /** Servidor → cliente: los datos de un vídeo (de quién, cuál y el archivo; vacío si ya no existe). */
+    public record Video(java.util.UUID dueno, int clip, byte[] datos) {
+        void encode(FriendlyByteBuf b) {
+            b.writeUUID(dueno);
+            b.writeVarInt(clip);
+            b.writeByteArray(datos);
+        }
+
+        static Video decode(FriendlyByteBuf b) {
+            return new Video(b.readUUID(), b.readVarInt(), b.readByteArray(1_000_000));
+        }
+
+        static void handle(Video m, Supplier<NetworkEvent.Context> ctx) {
+            NetworkEvent.Context c = ctx.get();
+            c.enqueueWork(() -> net.minecraftforge.fml.DistExecutor.unsafeRunWhenOn(net.minecraftforge.api.distmarker.Dist.CLIENT, () -> () ->
+                    com.miscelanea.client.rave.VideosPantalla.recibir(m.dueno, m.clip, m.datos)));
+            c.setPacketHandled(true);
+        }
+    }
+
     static void registrar() {
         CANAL.messageBuilder(Dj.class, 0, NetworkDirection.PLAY_TO_SERVER).encoder(Dj::encode).decoder(Dj::decode).consumerMainThread(Dj::handle).add();
         CANAL.messageBuilder(Audio.class, 1, NetworkDirection.PLAY_TO_SERVER).encoder(Audio::encode).decoder(Audio::decode).consumerMainThread(Audio::handle).add();
+        CANAL.messageBuilder(PonerVideo.class, 2, NetworkDirection.PLAY_TO_SERVER).encoder(PonerVideo::encode).decoder(PonerVideo::decode).consumerMainThread(PonerVideo::handle).add();
+        CANAL.messageBuilder(PedirVideo.class, 3, NetworkDirection.PLAY_TO_SERVER).encoder(PedirVideo::encode).decoder(PedirVideo::decode).consumerMainThread(PedirVideo::handle).add();
+        CANAL.messageBuilder(Video.class, 4, NetworkDirection.PLAY_TO_CLIENT).encoder(Video::encode).decoder(Video::decode).consumerMainThread(Video::handle).add();
     }
 
     /** Desde el cliente: un trozo de audio del ordenador del DJ. */
