@@ -4234,7 +4234,8 @@ public final class PruebaCI {
         sin("eco_medir_cielo", 1, () -> {
             String img = ecoImagen("eco_cielo");
             RESUMEN.add("  eco mirando arriba (a mediodía): " + img);
-            if (ecoClaros > 40) {
+            // el sol son miles de píxeles; unas decenas son del HUD (la mira y los números de la barra)
+            if (ecoClaros > 200) {
                 // con shaders el cielo lo pinta el pack: solo aviso
                 if (MovilCaptura.shaders()) RESUMEN.add("  AVISO eco: con shaders se ve el sol a ciegas");
                 else throw new IllegalStateException("se ve el sol a ciegas");
