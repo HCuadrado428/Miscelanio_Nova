@@ -90,14 +90,19 @@ public final class Pantalla {
                 (float) (o[0] + d.getStepX() * 0.004), (float) (o[1] + d.getStepY() * 0.004), (float) (o[2] + d.getStepZ() * 0.004), 1));
         String nombre = ef > 0 ? CamarasCliente.nombre(ef) : "";
         String cab = ef > 0 ? String.format("%02d", ef) : canal == 0 ? "AUTO" : String.format("%02d", canal);
-        int maxNombre = Math.max(0, (int) ((wt - 46) / 6));
-        if (!nombre.isEmpty() && maxNombre > 2)
-            cab += " " + (nombre.length() > maxNombre ? nombre.substring(0, maxNombre) : nombre).toUpperCase(java.util.Locale.ROOT);
+        // a la derecha, «● REC» (medido: en negrita es más ancho); el nombre de la cámara se recorta para no pisarlo
+        Component rec = Component.literal("REC").withStyle(ChatFormatting.BOLD), bola = Component.literal("●").withStyle(ChatFormatting.BOLD);
+        float xRec = wt - f.width(rec) - 2, xBola = xRec - f.width(bola) - 2;
+        if (!nombre.isEmpty()) {
+            String n = nombre.toUpperCase(java.util.Locale.ROOT);
+            while (n.length() > 2 && 2 + f.width(Component.literal(cab + " " + n).withStyle(ChatFormatting.BOLD)) > xBola - 3) n = n.substring(0, n.length() - 1);
+            if (n.length() > 2 || n.length() == nombre.length()) cab += " " + n;
+        }
         f.drawInBatch(Component.literal(cab).withStyle(ChatFormatting.BOLD), 2, 1, 0xFFFFFFFF, false, t, buf, Font.DisplayMode.NORMAL, FONDO, LUZ);
         if (senal) {
             boolean punto = (ahora / 500) % 2 == 0;
-            f.drawInBatch(Component.literal("●").withStyle(ChatFormatting.BOLD), wt - 26, 1, punto ? 0xFFFF3030 : 0xFF601010, false, t, buf, Font.DisplayMode.NORMAL, FONDO, LUZ);
-            f.drawInBatch(Component.literal("REC").withStyle(ChatFormatting.BOLD), wt - 17, 1, 0xFFFFFFFF, false, t, buf, Font.DisplayMode.NORMAL, FONDO, LUZ);
+            f.drawInBatch(bola, xBola, 1, punto ? 0xFFFF3030 : 0xFF601010, false, t, buf, Font.DisplayMode.NORMAL, FONDO, LUZ);
+            f.drawInBatch(rec, xRec, 1, 0xFFFFFFFF, false, t, buf, Font.DisplayMode.NORMAL, FONDO, LUZ);
         } else {
             Component s = Component.literal(cambiando ? "CAMBIANDO..." : "SIN SEÑAL").withStyle(ChatFormatting.BOLD);
             f.drawInBatch(s, (wt - f.width(s)) / 2.0F, ht / 2 - 4.5F, 0xFFFFFFFF, false, t, buf, Font.DisplayMode.NORMAL, FONDO, LUZ);
