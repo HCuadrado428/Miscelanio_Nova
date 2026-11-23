@@ -25,14 +25,16 @@ import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
  * El foco móvil: modelo de GeckoLib (base, horquilla que gira y cabeza que se inclina) y, encendido, un haz de luz de color
  * que sale de la lente y deja una mancha donde da. Colgado del techo se dibuja boca abajo.
  */
-public class FocoRenderer extends GeoBlockRenderer<FocoBlockEntity> {
+public class FocoRenderer implements net.minecraft.client.renderer.blockentity.BlockEntityRenderer<FocoBlockEntity> {
+    /** El modelo de GeckoLib (este renderizador lo dibuja y luego añade la luz). */
+    private final GeoBlockRenderer<FocoBlockEntity> geo;
     private static final float LARGO = 22F;
     /** Altura del eje de la cabeza y distancia del eje a la lente (en bloques), como en el modelo. */
     private static final float EJE = 8F / 16F, LENTE = 4.6F / 16F;
 
     public FocoRenderer(net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Context ctx) {
-        super(new Modelo());
-        addRenderLayer(new AutoGlowingGeoLayer<>(this));
+        geo = new GeoBlockRenderer<>(new Modelo());
+        geo.addRenderLayer(new AutoGlowingGeoLayer<>(geo));
     }
 
     static float pan(FocoBlockEntity e, float pt) {
@@ -95,7 +97,7 @@ public class FocoRenderer extends GeoBlockRenderer<FocoBlockEntity> {
             ps.mulPose(Axis.XP.rotationDegrees(180));
             ps.translate(-0.5, -0.5, -0.5);
         }
-        super.render(be, pt, ps, buf, luz, overlay);
+        geo.render(be, pt, ps, buf, luz, overlay);
         ps.popPose();
         var s = be.getBlockState();
         if (!s.getValue(LucesRave.ENCENDIDA) || be.getLevel() == null) return;

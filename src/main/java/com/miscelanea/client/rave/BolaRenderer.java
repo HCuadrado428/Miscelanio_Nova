@@ -28,7 +28,9 @@ import java.util.Map;
  * La bola de discoteca: modelo de GeckoLib que gira y, encendida, reparte manchas de luz por suelo, paredes y techo (se lanzan
  * rayos desde la bola que giran con ella y donde chocan se dibuja una mancha).
  */
-public class BolaRenderer extends GeoBlockRenderer<BolaBlockEntity> {
+public class BolaRenderer implements net.minecraft.client.renderer.blockentity.BlockEntityRenderer<BolaBlockEntity> {
+    /** El modelo de GeckoLib (este renderizador lo dibuja y luego añade la luz). */
+    private final GeoBlockRenderer<BolaBlockEntity> geo;
     private static final int RAYOS = 48;
     private static final float ALCANCE = 18F;
     private static final Vector3f[] DIRS = new Vector3f[RAYOS];
@@ -48,8 +50,8 @@ public class BolaRenderer extends GeoBlockRenderer<BolaBlockEntity> {
     private static final Map<BlockPos, Impactos> CACHE = new HashMap<>();
 
     public BolaRenderer(net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Context ctx) {
-        super(new Modelo());
-        addRenderLayer(new AutoGlowingGeoLayer<>(this));
+        geo = new GeoBlockRenderer<>(new Modelo());
+        geo.addRenderLayer(new AutoGlowingGeoLayer<>(geo));
     }
 
     static class Modelo extends GeoModel<BolaBlockEntity> {
@@ -94,7 +96,7 @@ public class BolaRenderer extends GeoBlockRenderer<BolaBlockEntity> {
 
     @Override
     public void render(BolaBlockEntity be, float pt, PoseStack ps, MultiBufferSource buf, int luz, int overlay) {
-        super.render(be, pt, ps, buf, luz, overlay);
+        geo.render(be, pt, ps, buf, luz, overlay);
         var s = be.getBlockState();
         if (!s.getValue(LucesRave.ENCENDIDA) || be.getLevel() == null) return;
         Impactos im = impactos(be, s.getValue(LucesRave.MODO), pt);
