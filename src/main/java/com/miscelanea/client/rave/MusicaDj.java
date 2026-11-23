@@ -37,7 +37,7 @@ public final class MusicaDj {
     /** Volumen que le llega ahora a este cliente de esa mesa (0 a 1). */
     public static float volumen(BlockPos p) {
         Sonido s = SONANDO.get(p);
-        return s == null ? 0 : s.getVolume();
+        return s == null ? 0 : s.volumenCalculado();   // (getVolume() falla si el sonido aún no está cargado)
     }
 
     /**
@@ -113,6 +113,10 @@ public final class MusicaDj {
 
         void parar() {
             stop();
+        }
+
+        float volumenCalculado() {
+            return volume;
         }
 
         private float calcular() {
