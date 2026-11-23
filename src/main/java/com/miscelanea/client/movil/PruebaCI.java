@@ -5256,10 +5256,10 @@ public final class PruebaCI {
                     poner.accept(q, com.miscelanea.camaras.CamarasRegistro.TELE.get().defaultBlockState().setValue(com.miscelanea.camaras.Montaje.FACING, frente));
                     if (l.getBlockEntity(q) instanceof com.miscelanea.camaras.TeleBlockEntity tv) tv.canal(canales[i]);
                 }
-                // una pared de monitores de 3x2 en el canal 5 (al lado de las teles)
+                // una pared de monitores de 3x2 en el canal 5 (a la derecha de las teles, en la pared de ladrillo)
                 for (int c = 0; c < 3; c++)
                     for (int r = 0; r < 2; r++) {
-                        var q = net.minecraft.core.BlockPos.containing(a2Punto(14, -6.6 - c, 1.6 + r));
+                        var q = net.minecraft.core.BlockPos.containing(a2Punto(14, 1.0 + c, 1.6 + r));
                         poner.accept(q, com.miscelanea.camaras.CamarasRegistro.MONITOR.get().defaultBlockState().setValue(com.miscelanea.camaras.MonitorBlock.FACING, frente));
                         if (l.getBlockEntity(q) instanceof com.miscelanea.camaras.TeleBlockEntity tv) tv.canal(5);
                     }
@@ -5267,7 +5267,7 @@ public final class PruebaCI {
                 PI.put("cam_cargadas", com.miscelanea.camaras.CamarasServidor.camaras());
             });
         });
-        paso("cam_mirar", 10, () -> a2VistaA(a2Punto(14, -5.2, 2.3), a2Punto(6.5, -5.2, 2.3)));
+        paso("cam_mirar", 10, () -> a2VistaA(a2Punto(14, -0.6, 2.2), a2Punto(7.0, -0.6, 2.4)));
         vigila("cam_chk", 200, () -> {
             int n = com.miscelanea.client.camaras.CamarasCliente.recibidos(5);
             var s = com.miscelanea.client.camaras.CamarasCliente.senal(5);
