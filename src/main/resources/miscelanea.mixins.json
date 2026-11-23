@@ -27,7 +27,8 @@
     "KeyMappingMixin",
     "GameRendererMixin",
     "FovApuntadoMixin",
-    "ItemRendererTamborMixin"
+    "ItemRendererTamborMixin",
+    "MinecraftAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,0 +1,16 @@
+{
+ "variants": {
+  "armada=false,sonando=false": {
+   "model": "miscelanea:block/laboratorio/alarma_apagada"
+  },
+  "armada=false,sonando=true": {
+   "model": "miscelanea:block/laboratorio/alarma_sonando"
+  },
+  "armada=true,sonando=false": {
+   "model": "miscelanea:block/laboratorio/alarma_armada"
+  },
+  "armada=true,sonando=true": {
+   "model": "miscelanea:block/laboratorio/alarma_sonando"
+  }
+ }
+}

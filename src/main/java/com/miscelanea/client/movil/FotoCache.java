@@ -119,7 +119,9 @@ public final class FotoCache {
             v.t.upload();
         } else {
             quitarVideo(de);
-            VIDEOS.put(de, new Tex(img, "video_" + Integer.toHexString(de.hashCode())));
+            Tex nuevo = new Tex(img, "video_" + Integer.toHexString(de.hashCode()));
+            nuevo.t.setFilter(true, false);   // suavizado al ampliarlo (si no, se ve a cuadros)
+            VIDEOS.put(de, nuevo);
         }
     }
 

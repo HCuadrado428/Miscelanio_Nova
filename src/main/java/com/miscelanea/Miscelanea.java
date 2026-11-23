@@ -50,6 +50,8 @@ public class Miscelanea {
         com.miscelanea.estatica.EstaticaRegistro.registrar(modBus);
         com.miscelanea.laser.LaserRegistro.registrar(modBus);
         com.miscelanea.movil.MovilRegistro.registrar(modBus);
+        com.miscelanea.laboratorio.LabRegistro.registrar(modBus);
+        com.miscelanea.camaras.CamarasRegistro.registrar(modBus);
         // ---- Armas de fuego: se encuentran en cofres (Global Loot Modifier)
         com.miscelanea.armasfuego.BotinArmas.registrar(modBus);
         com.miscelanea.armasfuego.comun.ArmasFuegoRegistro.registrar(modBus);
@@ -247,6 +249,51 @@ public class Miscelanea {
             event.accept(ModItems.JERINGUILLA);
             event.accept(ModItems.SUAVIS_SECO);
             event.accept(ModItems.JERINGUILLA_SEDANTE);
+            // laboratorio de experimentos
+            event.accept(com.miscelanea.laboratorio.LabRegistro.CUADERNO);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.PULSOMETRO);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.CRONOMETRO);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.PORTAPAPELES);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.TUBO_ENSAYO);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.MUESTRA_MIEDO);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.MUESTRA_MAREO);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.MUESTRA_FRIO);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.MUESTRA_CALOR);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.DESTILADOR_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.CENTRIFUGA_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.CAMARA_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.TANQUE_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.MICRO_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.VOZ_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.REFLEJOS_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.INTERFERENCIAS_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.CONTENCION_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.LABERINTO_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.QUESO);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.MESA_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.ANALIZADOR_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.INCUBADORA_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.DISPENSADOR_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.IMPRESORA_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.GAFAS);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.BATA);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.PANTALON_LAB);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.CRISTAL_OBS_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.CARTEL_BIO_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.TAQUILLA_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.MICROSCOPIO_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.PROBETAS_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.SUERO_RECUP);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.ESCANER);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.FRIGORIFICO_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.ALARMA_ITEM);
+            event.accept(com.miscelanea.camaras.CamarasRegistro.VIGILANCIA_ITEM);
+            event.accept(com.miscelanea.camaras.CamarasRegistro.TELE_ITEM);
+            event.accept(com.miscelanea.camaras.CamarasRegistro.MONITOR_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.PUERTA_CUARENTENA_ITEM);
+            event.accept(com.miscelanea.laboratorio.LabRegistro.ESTABILIZADOR_ITEM);
+            for (int i = 0; i < com.miscelanea.laboratorio.Sueros.TIPOS; i++) event.accept(com.miscelanea.laboratorio.Sueros.crear(i, true));
+            event.accept(com.miscelanea.laboratorio.Sueros.crear(0, false));
             event.accept(com.miscelanea.tortura.TorturaRegistro.CADENA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.GANZUA);
             event.accept(com.miscelanea.tortura.TorturaRegistro.LAZO);
@@ -282,7 +329,8 @@ public class Miscelanea {
         // ---- Pociones y efectos (cada poción con sus variantes: normal, arrojadiza, persistente y flecha)
         if (event.getTabKey() == ModTabs.POCIONES.getKey()) {
             for (var p : new net.minecraft.world.item.alchemy.Potion[]{ModPotions.CUPIDO.get(), ModPotions.LONG_CUPIDO.get(), ModPotions.STRONG_CUPIDO.get(),
-                    ModPotions.ENEMIGO.get(), ModPotions.LONG_ENEMIGO.get(), ModPotions.STRONG_ENEMIGO.get(), ModPotions.SEDANTE.get()})
+                    ModPotions.ENEMIGO.get(), ModPotions.LONG_ENEMIGO.get(), ModPotions.STRONG_ENEMIGO.get(), ModPotions.SEDANTE.get(),
+                    ModPotions.MIEDO.get(), ModPotions.MAREO.get()})
                 for (var st : pociones(p)) event.accept(st);
             // pociones de fantasma (sin receta)
             for (var st : com.miscelanea.tortura.efectos.EfectosRegistro.pocionesFantasma()) event.accept(st);

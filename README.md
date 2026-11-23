@@ -311,6 +311,16 @@ Inofensivas pero molestas. Mejor acordarlas con el grupo antes de usarlas.
 
 Trampas y aparatos "de película de miedo", en versión graciosa: cepos, grilletes, jaulas, la caja de agua, el péndulo, la silla de inmersión, la silla de interrogatorio y más. Muchos tienen su minijuego para escapar (ganzúa, alicates, sierra...), y al que está en el cepo se le pueden tirar tomates y huevos podridos. Es para rol y hay que acordarlo con quien participe. Incluye la **jeringuilla de sedante**: se hace con suavis seco y un poco de agua, marea a quien pincha (con un forcejeo para no dormirse, más difícil por la espalda) y, si no lo aguanta, lo deja dormido en el suelo medio minuto. El administrador puede desactivar partes en la configuración.
 
+### Laboratorio de experimentos
+
+En la pestaña **Tortura**: estaciones donde un cautivo hace de sujeto de pruebas, con un cuaderno que va apuntando los resultados. Todas se manejan desde un puesto de mando en el bloque de detrás y tienen tres niveles (**suave**, cómico; **intenso**, inquietante; **extremo**, con daño de verdad, que pide pulsar dos veces para confirmarlo). En la configuración (`[laboratorio]`) se pueden apagar las estaciones o limitar el nivel máximo.
+
+- **Para medir y anotar:** *cuaderno de laboratorio* (lee las fichas), *pulsómetro* (pulso y miedo de quien tocas), *cronómetro* y *portapapeles* (pone "Sujeto N" a cada jugador).
+- **Estaciones** (solo creativo): *centrífuga* (silla en un brazo que gira, con QTE para aguantar), *cámara de temperatura* (cabina de cristal con termostato de -3 a +3), *tanque de privación sensorial* (oscuridad y ruidos que solo oye el sujeto) y *laberinto de la rata* (un laberinto que se construye solo; el sujeto, encogido, tiene que llegar al queso esquivando baldosas con descarga).
+- **Muestras:** al acabar un experimento, con un *tubo de ensayo* en el inventario, sale una muestra (de mareo, de frío, de calor o de miedo).
+- **Mezclas:** en la *mesa de mezclas* dos ingredientes (muestras, queso o sueros) dan un *suero sin etiquetar* con uno de nueve efectos, siempre el mismo para cada pareja. El *analizador* lo identifica y lo apunta en el cuaderno.
+- **Destilador térmico:** convierte el suavis seco (de The Midnight, cocinado) en sedante clase M con fuego debajo; con una botella de cristal se saca la Poción de sedante.
+
 ---
 
 ## Colección, pesca y tesoros

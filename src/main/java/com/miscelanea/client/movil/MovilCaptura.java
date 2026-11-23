@@ -80,6 +80,7 @@ public final class MovilCaptura {
 
     /** ¿Se ha pedido hace poco (en tiempo o en fotogramas)? */
     private static boolean pedido() {
+        if (com.miscelanea.client.camaras.CamarasCliente.dibujando) return false;   // dibujando una cámara de vigilancia: no es la vista del jugador
         return Util.getMillis() <= pedidoHasta || fotograma - fotogramaPedido <= 2;
     }
 
@@ -197,7 +198,7 @@ public final class MovilCaptura {
         main.bindWrite(false);
     }
 
-    private static void copiar(RenderTarget de, int x0, int y0, int x1, int y1, RenderTarget a) {
+    public static void copiar(RenderTarget de, int x0, int y0, int x1, int y1, RenderTarget a) {
         // la copia respeta el recorte (scissor): dentro de la pantalla del móvil está puesto y la copia salía negra
         // (la vista previa con filtro y los vídeos cortos)
         boolean recorte = GL11.glIsEnabled(GL11.GL_SCISSOR_TEST);
@@ -255,12 +256,17 @@ public final class MovilCaptura {
             video = nuevo(w, h);
             if (foto == null) foto = nuevo(FW, FH);
         }
-        // en dos pasos (640 → 320 → w) para que no salga tan dentado
-        copiar(medio, 0, 0, MW, MH, foto);
-        copiar(foto, 0, 0, FW, FH, video);
+        // por encima de 180 de ancho, de una vez desde 360x640 (pasar por 180x320 la estropearía); por debajo, en dos pasos
+        // (640 → 320 → w) para que no salga tan dentado
+        if (w > FW) {
+            copiar(medio, 0, 0, MW, MH, video);
+        } else {
+            copiar(medio, 0, 0, MW, MH, foto);
+            copiar(foto, 0, 0, FW, FH, video);
+        }
         Minecraft.getInstance().getMainRenderTarget().bindWrite(true);
         try (NativeImage img = descargar(video)) {
-            for (int q : new int[]{58, 42, 28}) {
+            for (int q : new int[]{84, 74, 64, 54, 44, 34, 26}) {
                 byte[] b = jpeg(img, q);
                 if (b != null && b.length <= maxBytes) return b;
             }
@@ -359,7 +365,7 @@ public final class MovilCaptura {
         texPrevia = null;
     }
 
-    private static NativeImage descargar(RenderTarget t) {
+    public static NativeImage descargar(RenderTarget t) {
         NativeImage img = new NativeImage(t.width, t.height, false);
         RenderSystem.bindTexture(t.getColorTextureId());
         img.downloadTexture(0, true);
@@ -367,7 +373,7 @@ public final class MovilCaptura {
     }
 
     /** JPEG con STB; la imagen viene de un framebuffer (de abajo arriba), así que se le da la vuelta. */
-    private static byte[] jpeg(NativeImage img, int calidad) {
+    public static byte[] jpeg(NativeImage img, int calidad) {
         int w = img.getWidth(), h = img.getHeight();
         ByteBuffer px = MemoryUtil.memAlloc(w * h * 3);
         ByteArrayOutputStream out = new ByteArrayOutputStream(16384);

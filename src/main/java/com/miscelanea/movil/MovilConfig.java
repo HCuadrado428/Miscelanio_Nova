@@ -38,13 +38,13 @@ public final class MovilConfig {
         TIMBRE_S = b.comment("Segundos que suena una llamada antes de quedar como perdida.").defineInRange("timbre_segundos", 30, 5, 120);
         VIDEO = b.comment("Permitir videollamadas (imágenes pequeñas en JPEG reenviadas por el servidor solo a los de la llamada).")
                 .define("videollamadas", true);
-        VIDEO_FPS = b.comment("Imágenes por segundo del vídeo (cada uno). Con 84x148 y 10 fps son unos 40-50 KB/s por persona y sentido.",
-                        "(Claves nuevas \"_v2\": las de antes, más lentas, se ignoran.)")
-                .defineInRange("video_fps_v2", 10, 1, 20);
-        VIDEO_ANCHO = b.comment("Ancho del vídeo en píxeles (el alto es ancho*16/9, en vertical como un móvil).")
-                .defineInRange("video_ancho_v2", 84, 36, 144);
-        VIDEO_MAX_BYTES = b.comment("Tamaño máximo de cada imagen de vídeo (bytes); las más grandes se descartan.")
-                .defineInRange("video_max_bytes_v2", 11000, 1000, 30000);
+        VIDEO_FPS = b.comment("Imágenes por segundo del vídeo (cada uno). Con 180x320 y 10 fps son unos 100-150 KB/s por persona y sentido (con 84x148, unos 40-50).",
+                        "(Claves nuevas \"_v3\": las de antes, de menos resolución, se ignoran.)")
+                .defineInRange("video_fps_v3", 10, 1, 20);
+        VIDEO_ANCHO = b.comment("Ancho del vídeo en píxeles (el alto es ancho*16/9, en vertical como un móvil). 180 = buena calidad; 288 = máxima; 84 = ligera.")
+                .defineInRange("video_ancho_v3", 180, 36, 288);
+        VIDEO_MAX_BYTES = b.comment("Tamaño máximo de cada imagen de vídeo (bytes); las más grandes se descartan (el cliente baja la calidad hasta que cabe).")
+                .defineInRange("video_max_bytes_v3", 20000, 1000, 30000);
 
         b.comment("Notas de voz en los chats (necesitan Simple Voice Chat en el cliente y en el servidor; se comprimen en Opus).",
                 "Las notas se guardan EN EL SERVIDOR (miscelanea_movil/voz/) hasta que salen del historial del chat.").push("notas_voz");
