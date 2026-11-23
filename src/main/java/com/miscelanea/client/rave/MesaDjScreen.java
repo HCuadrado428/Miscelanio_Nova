@@ -20,7 +20,7 @@ import java.util.List;
  * un botón para encender o apagar todas las luces de la rave de alrededor. Muestra lo que suena, cuánto falta y el alcance.
  */
 public class MesaDjScreen extends Screen {
-    private static final int W = 320, H = 250, FILA = 13, FILAS = 10;
+    private static final int W = 320, H = 214, FILA = 13, FILAS = 8;
     private Component error;
     private final BlockPos pos;
     private int x0, y0, scroll, elegida = -1;
@@ -42,17 +42,17 @@ public class MesaDjScreen extends Screen {
     @Override
     protected void init() {
         x0 = (width - W) / 2;
-        y0 = (height - H) / 2;
+        y0 = Math.max(4, (height - H) / 2);
         MesaDjBlockEntity m = mesa();
         List<Pistas.Pista> l = Pistas.todas();
         if (m != null) for (int i = 0; i < l.size(); i++) if (l.get(i).id().equals(m.pista())) elegida = i;
         int bx = x0 + 186;
         addRenderableWidget(Button.builder(Component.translatable("rave.miscelanea.dj.poner"), b -> {
             if (elegida >= 0 && elegida < l.size()) RaveRed.dj(pos, RaveRed.DJ_PONER, l.get(elegida).id(), 0);
-        }).bounds(bx, y0 + 58, 60, 20).build());
+        }).bounds(bx, y0 + 50, 60, 20).build());
         addRenderableWidget(Button.builder(Component.translatable("rave.miscelanea.dj.parar"), b -> RaveRed.dj(pos, RaveRed.DJ_PARAR, "", 0))
-                .bounds(bx + 64, y0 + 58, 60, 20).build());
-        addRenderableWidget(new AbstractSliderButton(bx, y0 + 84, 124, 20, Component.empty(), (m == null ? 80 : m.volumen()) / 100.0) {
+                .bounds(bx + 64, y0 + 50, 60, 20).build());
+        addRenderableWidget(new AbstractSliderButton(bx, y0 + 74, 124, 20, Component.empty(), (m == null ? 80 : m.volumen()) / 100.0) {
             {
                 updateMessage();
             }
@@ -70,13 +70,13 @@ public class MesaDjScreen extends Screen {
         addRenderableWidget(Button.builder(Component.translatable("rave.miscelanea.dj.bucle"), b -> {
             MesaDjBlockEntity mm = mesa();
             RaveRed.dj(pos, RaveRed.DJ_BUCLE, "", mm != null && mm.bucle() ? 0 : 1);
-        }).bounds(bx, y0 + 110, 124, 20).build());
+        }).bounds(bx, y0 + 98, 124, 20).build());
         addRenderableWidget(Button.builder(Component.translatable("rave.miscelanea.dj.luces_on"), b -> RaveRed.dj(pos, RaveRed.DJ_LUCES_ON, "", 0))
-                .bounds(bx, y0 + 136, 60, 20).build());
+                .bounds(bx, y0 + 122, 60, 20).build());
         addRenderableWidget(Button.builder(Component.translatable("rave.miscelanea.dj.luces_off"), b -> RaveRed.dj(pos, RaveRed.DJ_LUCES_OFF, "", 0))
-                .bounds(bx + 64, y0 + 136, 60, 20).build());
+                .bounds(bx + 64, y0 + 122, 60, 20).build());
         // audio del ordenador (Spotify o lo que suene) por la mesa y sus altavoces
-        int ay = y0 + 196;
+        int ay = y0 + 182;
         addRenderableWidget(Button.builder(Component.translatable("rave.miscelanea.dj.entrada", CapturaPc.nombreEntrada()), b -> {
             CapturaPc.siguienteEntrada();
             b.setMessage(Component.translatable("rave.miscelanea.dj.entrada", CapturaPc.nombreEntrada()));
@@ -137,21 +137,21 @@ public class MesaDjScreen extends Screen {
             yy += 10;
         }
         if (m != null) {
-            g.drawString(font, Component.translatable("rave.miscelanea.dj.alcance", m.alcance(), m.altavoces()), sx, y0 + 162, 0xFF9AA0B0, false);
-            g.drawString(font, Component.translatable(m.bucle() ? "rave.miscelanea.dj.bucle_si" : "rave.miscelanea.dj.bucle_no"), sx, y0 + 174, 0xFF9AA0B0, false);
+            g.drawString(font, Component.translatable("rave.miscelanea.dj.alcance", m.alcance(), m.altavoces()), sx, y0 + 146, 0xFF9AA0B0, false);
+            g.drawString(font, Component.translatable(m.bucle() ? "rave.miscelanea.dj.bucle_si" : "rave.miscelanea.dj.bucle_no"), x0 + 8, y0 + 132, 0xFF9AA0B0, false);
         }
         // emisión del ordenador
-        int ay = y0 + 184;
+        int ay = y0 + 168;
         g.fill(x0 + 6, ay - 4, x0 + W - 6, ay - 3, 0xFF3A1A6A);
         Component info = m != null && m.emisor() != null ? Component.translatable("rave.miscelanea.dj.emite", m.emisorNombre())
                 : Component.translatable("rave.miscelanea.dj.emitir_info");
         g.drawString(font, font.plainSubstrByWidth(info.getString(), W - 16), x0 + 8, ay, 0xFF9AA0B0, false);
         if (CapturaPc.emitiendo()) {
             int w = (int) (CapturaPc.nivel() * 120);
-            g.fill(x0 + 186, y0 + 220, x0 + 186 + 124, y0 + 224, 0xFF22222E);
-            g.fill(x0 + 186, y0 + 220, x0 + 186 + w, y0 + 224, 0xFF7CFF3A);
+            g.fill(x0 + 186, y0 + 205, x0 + 186 + 124, y0 + 208, 0xFF22222E);
+            g.fill(x0 + 186, y0 + 205, x0 + 186 + w, y0 + 208, 0xFF7CFF3A);
         }
-        if (error != null) g.drawString(font, font.plainSubstrByWidth(error.getString(), W - 16), x0 + 8, y0 + 230, 0xFFFF5A5A, false);
+        if (error != null) g.drawString(font, font.plainSubstrByWidth(error.getString(), W - 16), x0 + 8, y0 + 204, 0xFFFF5A5A, false);
         super.render(g, mx, my, pt);
     }
 
