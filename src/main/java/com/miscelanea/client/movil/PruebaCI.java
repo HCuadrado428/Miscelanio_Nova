@@ -5503,7 +5503,8 @@ public final class PruebaCI {
                 };
                 // quitar lo de los hitos anteriores que estorba en la zona (máquinas, mesa...): se guardan para restaurar
                 var truss = com.miscelanea.rave.RaveRegistro.TRUSS.get().defaultBlockState();
-                var a = net.minecraft.core.BlockPos.containing(a2Punto(5, -3.0, 0.3)), b = net.minecraft.core.BlockPos.containing(a2Punto(5, 3.0, 0.3));
+                var a = net.minecraft.core.BlockPos.containing(a2Punto(5, -3.0, 0.3));
+                var b = net.minecraft.core.BlockPos.containing(a2Punto(5, 3.0, 0.3));
                 for (int y = 0; y < 4; y++) {
                     poner.accept(a.above(y), truss);
                     poner.accept(b.above(y), truss);
