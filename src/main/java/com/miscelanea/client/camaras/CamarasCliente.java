@@ -179,6 +179,7 @@ public final class CamarasCliente {
         SENALES.clear();
         VISTOS.clear();
         ORDENES.clear();
+        VISTAS.clear();
         lista = List.of();
         NOMBRES = Map.of();
     }
@@ -233,7 +234,7 @@ public final class CamarasCliente {
         int canal = canales.get(turno++ % canales.size());
         Orden o = ORDENES.get(canal);
         if (!mc.level.dimension().location().toString().equals(o.dim())) return;
-        byte[] jpeg = dibujar(mc, o);
+        byte[] jpeg = dibujar(mc, canal, o);
         if (jpeg == null) return;
         enviados++;
         CamarasRed.alServidor(CamarasRed.C_FRAME, b -> {
@@ -243,16 +244,41 @@ public final class CamarasCliente {
     }
 
     /** Dibuja el mundo desde la cámara en una textura y devuelve el JPEG de 128x72, o null. */
-    private static byte[] dibujar(Minecraft mc, Orden o) {
+    /** Lo que ve cada cámara (qué trozos del mundo), de una pasada para la siguiente; y de qué zona de dibujado es. */
+    private static final Map<Integer, Object[]> VISTAS = new HashMap<>();
+    private static net.minecraft.client.Camera camaraPropia;
+    /** Calidad del JPEG: se queda en la que cabe (si fuera cambiando de un fotograma a otro, la imagen "temblaría"). */
+    private static int calidadJpeg = 78, fotogramasBien;
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static byte[] dibujar(Minecraft mc, int canal, Orden o) {
         var gr = mc.gameRenderer;
+        var lr = (com.miscelanea.mixin.LevelRendererAccessor) mc.levelRenderer;
+        // si el juego aún está calculando qué ve el jugador, no se toca: se intenta en el fotograma siguiente
+        java.util.concurrent.Future<?> pendiente = lr.miscelanea$calculo();
+        if (pendiente != null && !pendiente.isDone()) {
+            ultTx = 0;
+            return null;
+        }
         RenderTarget original = mc.getMainRenderTarget();
         Entity camaraAntes = mc.getCameraEntity();
         CameraType tipoAntes = mc.options.getCameraType();
+        net.minecraft.client.Camera camJugador = gr.getMainCamera();
+        var miraAntes = mc.hitResult;
+        var entidadMiraAntes = mc.crosshairPickEntity;
         Matrix4f proyAntes = new Matrix4f(RenderSystem.getProjectionMatrix());
         VertexSorting ordenAntes = RenderSystem.getVertexSorting();
+        // lo que ve el jugador (se devuelve tal cual al acabar)
+        Object almacenJugador = lr.miscelanea$almacen().get();
+        double px = lr.miscelanea$x(), py = lr.miscelanea$y(), pz = lr.miscelanea$z(), prx = lr.miscelanea$rx(), pry = lr.miscelanea$ry();
+        boolean recalcularAntes = lr.miscelanea$recalcular();
+        Object[] vista = VISTAS.get(canal);
+        if (vista != null && vista[1] != lr.miscelanea$zona()) vista = null;      // se ha recargado el dibujado: lo guardado ya no vale
+        boolean primera = vista == null;
         float aspecto = (float) mc.getWindow().getWidth() / Math.max(1, mc.getWindow().getHeight());
         int sw = o.calidad() <= 0 ? 256 : o.calidad() == 1 ? 384 : 512, sh = sw * 9 / 16;
         int th = sh * 2, tw = Math.max(sw, Math.min(sw * 4, Math.round(th * aspecto)));
+        boolean bien = false;
         try {
             if (grande == null || grande.width != tw || grande.height != th) {
                 if (grande != null) grande.destroyBuffers();
@@ -266,34 +292,76 @@ public final class CamarasCliente {
             falsa.moveTo(o.x(), o.y() - falsa.getEyeHeight(), o.z(), o.yaw(), o.pitch());
             falsa.setYHeadRot(o.yaw());
             falsa.yHeadRotO = o.yaw();
+            if (camaraPropia == null) camaraPropia = new net.minecraft.client.Camera();
             dibujando = true;
+            if (!primera) lr.miscelanea$almacen().set(vista[0]);
+            lr.miscelanea$recalcular(true);
             ((MinecraftAccessor) mc).miscelanea$setMainRenderTarget(grande);
-            mc.setCameraEntity(falsa);
+            ((MinecraftAccessor) mc).miscelanea$setCameraEntity(falsa);
+            ((com.miscelanea.mixin.GameRendererAccessor) gr).miscelanea$setMainCamera(camaraPropia);
             mc.options.setCameraType(CameraType.FIRST_PERSON);
             gr.setRenderHand(false);
             grande.setClearColor(0.05F, 0.05F, 0.07F, 1.0F);
             grande.clear(Minecraft.ON_OSX);
             grande.bindWrite(true);
             gr.renderLevel(mc.getFrameTime(), Util.getNanos(), new PoseStack());
+            bien = true;
         } catch (Throwable t) {
             Miscelanea.LOGGER.warn("[Cámaras] No se pudo dibujar desde la cámara: {}", t.toString());
             ORDENES.clear();
-            return null;
         } finally {
+            // se espera a que acabe el cálculo de lo que ve la cámara (unos milisegundos) y se guarda para la próxima pasada
+            boolean acabado = true;
+            java.util.concurrent.Future<?> f = lr.miscelanea$calculo();
+            if (f != null && !f.isDone()) {
+                try {
+                    f.get(250, java.util.concurrent.TimeUnit.MILLISECONDS);
+                } catch (Throwable t) {
+                    acabado = false;
+                }
+            }
+            if (bien && acabado) VISTAS.put(canal, new Object[]{lr.miscelanea$almacen().get(), lr.miscelanea$zona()});
+            // y todo vuelve a como lo tenía el jugador
+            lr.miscelanea$almacen().set(almacenJugador);
+            lr.miscelanea$x(px);
+            lr.miscelanea$y(py);
+            lr.miscelanea$z(pz);
+            lr.miscelanea$rx(prx);
+            lr.miscelanea$ry(pry);
+            lr.miscelanea$recalcular(recalcularAntes || !acabado);
+            lr.miscelanea$recortar().set(true);
             ((MinecraftAccessor) mc).miscelanea$setMainRenderTarget(original);
-            mc.setCameraEntity(camaraAntes);
+            ((MinecraftAccessor) mc).miscelanea$setCameraEntity(camaraAntes);
+            ((com.miscelanea.mixin.GameRendererAccessor) gr).miscelanea$setMainCamera(camJugador);
             mc.options.setCameraType(tipoAntes);
+            mc.hitResult = miraAntes;
+            mc.crosshairPickEntity = entidadMiraAntes;
             gr.setRenderHand(true);
             RenderSystem.setProjectionMatrix(proyAntes, ordenAntes);
             original.bindWrite(true);
             dibujando = false;
         }
+        // la primera pasada de una cámara aún usa lo que veía el jugador (le faltarían trozos): no se manda
+        if (!bien || primera) {
+            if (primera) ultTx = 0;
+            return null;
+        }
         MovilCaptura.copiar(grande, 0, 0, grande.width, grande.height, pequena);
         original.bindWrite(true);
         try (NativeImage img = MovilCaptura.descargar(pequena)) {
-            for (int q : new int[]{86, 78, 70, 62, 54, 44, 34}) {
-                byte[] b = jpegGris(img, q);
-                if (b != null && b.length <= CamarasRed.MAX_FRAME - 500) return b;
+            int max = CamarasRed.MAX_FRAME - 500;
+            for (int intento = 0; intento < 6; intento++) {
+                byte[] b = jpegGris(img, calidadJpeg);
+                if (b != null && b.length <= max) {
+                    // con mucho margen durante un buen rato, se sube un punto la calidad
+                    if (b.length < max * 0.6 && ++fotogramasBien > 50 && calidadJpeg < 84) {
+                        calidadJpeg += 6;
+                        fotogramasBien = 0;
+                    }
+                    return b;
+                }
+                calidadJpeg = Math.max(30, calidadJpeg - 8);
+                fotogramasBien = 0;
             }
         }
         return null;

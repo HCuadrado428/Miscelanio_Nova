@@ -28,7 +28,9 @@
     "GameRendererMixin",
     "FovApuntadoMixin",
     "ItemRendererTamborMixin",
-    "MinecraftAccessor"
+    "MinecraftAccessor",
+    "GameRendererAccessor",
+    "LevelRendererAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
