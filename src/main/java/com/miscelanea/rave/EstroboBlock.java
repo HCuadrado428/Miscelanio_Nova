@@ -37,7 +37,7 @@ public class EstroboBlock extends LuzRaveBlock {
     protected VoxelShape caja(BlockState s) {
         Direction d = s.getValue(FACING);
         VoxelShape f = FORMAS[d.get3DDataValue()];
-        if (f == null) f = FORMAS[d.get3DDataValue()] = com.miscelanea.camaras.Montaje.forma(d, 2, 3, 4, 14, 11, 14);
+        if (f == null) f = FORMAS[d.get3DDataValue()] = com.miscelanea.camaras.Montaje.forma(d, 1, 0, 2.6, 15, 13.2, 12);
         return f;
     }
 }

@@ -29,7 +29,7 @@ public final class EfectosRave {
             // fuente de chispas: un chorro hacia arriba (más alto con más modo)
             float fuerza = 0.35F + modo * 0.1F;
             for (int i = 0; i < 3 + modo * 3; i++)
-                l.addParticle(RaveRegistro.CHISPA_PARTICULA.get(), p.getX() + 0.5, p.getY() + 0.42, p.getZ() + 0.5,
+                l.addParticle(RaveRegistro.CHISPA_PARTICULA.get(), p.getX() + 0.5, p.getY() + 0.6, p.getZ() + 0.5,
                         (r.nextDouble() - 0.5) * 0.07, fuerza * (0.8 + r.nextDouble() * 0.4), (r.nextDouble() - 0.5) * 0.07);
             if (r.nextInt(12) == 0) l.playLocalSound(p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5, SoundEvents.FIREWORK_ROCKET_TWINKLE_FAR,
                     SoundSource.BLOCKS, 0.25F, 1.6F + r.nextFloat() * 0.3F, false);

@@ -26,8 +26,8 @@ public class EstroboRenderer implements BlockEntityRenderer<EstroboBlockEntity> 
         VertexConsumer vc = buf.getBuffer(RenderType.eyes(Luces.MANCHA));
         var m = ps.last().pose();
         var n = ps.last().normal();
-        // el cristal del frente (en el modelo mirando al norte: x 3..13, y 4..10, z = 3.9) y un halo más grande delante
-        float[][] caras = {{3, 13, 4, 10, 3.9F, 1F}, {-6, 22, -3, 17, 3.0F, 0.6F}};
+        // el cristal del frente (en el modelo mirando al norte: x 2..14, y 5.5..12.5, z = 3.9) y un halo más grande delante
+        float[][] caras = {{2, 14, 5.5F, 12.5F, 3.9F, 1F}, {-7, 23, -2, 20, 2.5F, 0.6F}};
         for (float[] c : caras) {
             double[][] q = {Montaje.mapa(d, c[0], c[2], c[4]), Montaje.mapa(d, c[1], c[2], c[4]), Montaje.mapa(d, c[1], c[3], c[4]), Montaje.mapa(d, c[0], c[3], c[4])};
             float[][] uv = {{0, 1}, {1, 1}, {1, 0}, {0, 0}};

@@ -27,7 +27,7 @@ public class HumoBlock extends LuzRaveBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     private final boolean chispas;
     private static final VoxelShape[] HUMO = new VoxelShape[6];
-    private static final VoxelShape CHISPAS = Block.box(3, 0, 3, 13, 6, 13);
+    private static final VoxelShape CHISPAS = Block.box(2.8, 0, 2.8, 13.2, 9, 13.2);
 
     public HumoBlock(Properties p, boolean chispas) {
         super(p, EfectoBlockEntity::new, RenderShape.MODEL);
