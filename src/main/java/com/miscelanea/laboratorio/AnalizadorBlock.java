@@ -20,10 +20,23 @@ import java.util.Map;
 
 /** El analizador: clic derecho con un suero sin etiquetar para identificarlo (y apuntarlo en el cuaderno); con una muestra, dice qué es. */
 public class AnalizadorBlock extends Block {
+    public static final net.minecraft.world.level.block.state.properties.DirectionProperty FACING = net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
     private static final VoxelShape FORMA = Block.box(1, 0, 1, 15, 15, 15);
 
     public AnalizadorBlock(Properties p) {
         super(p);
+        registerDefaultState(stateDefinition.any().setValue(FACING, net.minecraft.core.Direction.NORTH));
+    }
+
+    @Override
+    protected void createBlockStateDefinition(net.minecraft.world.level.block.state.StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> b) {
+        b.add(FACING);
+    }
+
+    /** El frente (pantalla, puerta, boquillas) mira hacia quien lo pone. */
+    @Override
+    public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext c) {
+        return defaultBlockState().setValue(FACING, c.getHorizontalDirection().getOpposite());
     }
 
     @Override

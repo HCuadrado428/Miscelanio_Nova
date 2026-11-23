@@ -20,10 +20,23 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 /** El dispensador de sueros: una ficha de recreativa por un suero sin etiquetar al azar. */
 public class DispensadorBlock extends Block {
+    public static final net.minecraft.world.level.block.state.properties.DirectionProperty FACING = net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
     private static final VoxelShape FORMA = Block.box(1, 0, 1, 15, 16, 15);
 
     public DispensadorBlock(Properties p) {
         super(p);
+        registerDefaultState(stateDefinition.any().setValue(FACING, net.minecraft.core.Direction.NORTH));
+    }
+
+    @Override
+    protected void createBlockStateDefinition(net.minecraft.world.level.block.state.StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> b) {
+        b.add(FACING);
+    }
+
+    /** El frente (pantalla, puerta, boquillas) mira hacia quien lo pone. */
+    @Override
+    public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext c) {
+        return defaultBlockState().setValue(FACING, c.getHorizontalDirection().getOpposite());
     }
 
     @Override

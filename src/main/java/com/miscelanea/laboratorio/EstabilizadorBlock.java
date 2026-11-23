@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 
 /** El estabilizador: frena las ondas de glitch que lleguen a menos de 16 bloques de él. Clic derecho: cuántas ha calmado. */
 public class EstabilizadorBlock extends BaseEntityBlock {
-    private static final VoxelShape FORMA = Block.box(2, 0, 2, 14, 14, 14);
+    private static final VoxelShape FORMA = Block.box(2, 0, 2, 14, 16, 14);
 
     public EstabilizadorBlock(Properties p) {
         super(p);

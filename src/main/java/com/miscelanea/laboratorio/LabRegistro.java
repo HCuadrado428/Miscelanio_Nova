@@ -176,7 +176,7 @@ public final class LabRegistro {
             () -> new DecoracionOrientadaBlock(metal().noCollission(), 2, 2, 15, 14, 14, 16));
     public static final RegistryObject<Item> CARTEL_BIO_ITEM = ITEMS.register("cartel_biopeligro", () -> new BlockItem(CARTEL_BIO.get(), new Item.Properties()));
     public static final RegistryObject<Block> TAQUILLA = BLOCKS.register("taquilla_laboratorio",
-            () -> new DecoracionOrientadaBlock(metal(), 1, 0, 2, 15, 16, 14));
+            () -> new DecoracionAltaBlock(metal(), 1, 0, 2.4, 15, 32, 14.4));
     public static final RegistryObject<Item> TAQUILLA_ITEM = ITEMS.register("taquilla_laboratorio", () -> new BlockItem(TAQUILLA.get(), new Item.Properties()));
     public static final RegistryObject<Block> MICROSCOPIO = BLOCKS.register("microscopio",
             () -> new DecoracionBlock(metal(), 3, 0, 3, 13, 14, 13));

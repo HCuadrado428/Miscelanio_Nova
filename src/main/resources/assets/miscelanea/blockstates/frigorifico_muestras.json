@@ -1,7 +1,19 @@
 {
  "variants": {
-  "": {
+  "facing=north": {
    "model": "miscelanea:block/laboratorio/frigorifico_muestras"
+  },
+  "facing=east": {
+   "model": "miscelanea:block/laboratorio/frigorifico_muestras",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/laboratorio/frigorifico_muestras",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/laboratorio/frigorifico_muestras",
+   "y": 270
   }
  }
 }

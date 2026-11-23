@@ -21,10 +21,23 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 /** La impresora de informes: gasta un papel y saca en un informe la última ficha de tu cuaderno. */
 public class ImpresoraBlock extends Block {
+    public static final net.minecraft.world.level.block.state.properties.DirectionProperty FACING = net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
     private static final VoxelShape FORMA = Block.box(1, 0, 1, 15, 10, 15);
 
     public ImpresoraBlock(Properties p) {
         super(p);
+        registerDefaultState(stateDefinition.any().setValue(FACING, net.minecraft.core.Direction.NORTH));
+    }
+
+    @Override
+    protected void createBlockStateDefinition(net.minecraft.world.level.block.state.StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> b) {
+        b.add(FACING);
+    }
+
+    /** El frente (pantalla, puerta, boquillas) mira hacia quien lo pone. */
+    @Override
+    public BlockState getStateForPlacement(net.minecraft.world.item.context.BlockPlaceContext c) {
+        return defaultBlockState().setValue(FACING, c.getHorizontalDirection().getOpposite());
     }
 
     @Override
