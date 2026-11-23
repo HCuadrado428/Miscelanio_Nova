@@ -76,7 +76,7 @@ public class TeleRenderer implements BlockEntityRenderer<TeleBlockEntity> {
         float dx = (float) ((oy[0] - o[0]) * porPx), dy = (float) ((oy[1] - o[1]) * porPx), dz = (float) ((oy[2] - o[2]) * porPx);
         float k = (float) (porPx / 16.0);
         Matrix4f t = new Matrix4f(ps.last().pose());
-        t.mul(new Matrix4f(rx, ry, rz, 0, dx, dy, dz, 0, d.getStepX() * k, d.getStepY() * k, d.getStepZ() * k, 0,
+        t.mul(new Matrix4f(rx, ry, rz, 0, dx, dy, dz, 0, -d.getStepX() * k, -d.getStepY() * k, -d.getStepZ() * k, 0,   // z del texto hacia dentro (como los rótulos de nombre): el fondo queda detrás de las letras
                 (float) (o[0] + d.getStepX() * 0.004), (float) (o[1] + d.getStepY() * 0.004), (float) (o[2] + d.getStepZ() * 0.004), 1));   // un pelín por delante de la imagen
         String nombre = ef > 0 ? CamarasCliente.nombre(ef) : "";
         String cab = ef > 0 ? String.format("%02d", ef) : canal == 0 ? "AUTO" : String.format("%02d", canal);
