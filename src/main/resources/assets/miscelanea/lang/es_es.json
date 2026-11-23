@@ -6645,5 +6645,14 @@
   "block.miscelanea.chispas_frias.ayuda3": "También se enciende con redstone.",
   "block.miscelanea.canon_confeti.ayuda": "Clic derecho (o redstone): dispara una nube de confeti hacia donde apunta. Se recarga en un segundo.",
   "block.miscelanea.canon_confeti.ayuda2": "En blanco, de todos los colores; con un tinte, de ese color.",
-  "block.miscelanea.canon_confeti.ayuda3": "Se pone apuntando hacia fuera de la cara en que lo colocas."
+  "block.miscelanea.canon_confeti.ayuda3": "Se pone apuntando hacia fuera de la cara en que lo colocas.",
+  "block.miscelanea.andamio_truss": "Andamio de escenario",
+  "block.miscelanea.tarima_escenario": "Tarima de escenario",
+  "block.miscelanea.suelo_led": "Suelo LED",
+  "block.miscelanea.andamio_truss.ayuda": "Se une solo con los andamios de al lado, de arriba y de abajo: haz torres y pasarelas.",
+  "block.miscelanea.andamio_truss.ayuda2": "Con polvo de piedra luminosa: le pones luces LED (con un tinte, el color; agachado con la mano vacía, se quitan).",
+  "block.miscelanea.andamio_truss.ayuda3": "Cuelga de él los focos móviles y la bola de discoteca.",
+  "block.miscelanea.suelo_led.ayuda": "Baldosas de discoteca que cambian de color formando ondas.",
+  "block.miscelanea.suelo_led.ayuda2": "Si cerca suena una mesa de DJ, cambian al ritmo de la canción y laten con cada pulso.",
+  "block.miscelanea.suelo_led.ayuda3": "Ponlas juntas para hacer una pista de baile."
 }

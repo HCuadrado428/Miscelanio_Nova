@@ -5490,6 +5490,51 @@ public final class PruebaCI {
             RESUMEN.add("  rave efectos: partículas en pantalla " + particulas + ", cañón recargando " + recargando);
             if (particulas < 100) throw new IllegalStateException("apenas hay partículas (" + particulas + ")");
         });
+        // hito 5: escenario: dos torres de andamio unidas por arriba (con LED y dos focos colgados), tarima y suelo LED
+        sin("rave_escenario_poner", 20, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                @SuppressWarnings("unchecked")
+                var antes = (java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState>) PI.get("rave_antes");
+                java.util.function.BiConsumer<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState> poner = (q, s) -> {
+                    antes.putIfAbsent(q.immutable(), l.getBlockState(q));
+                    l.setBlock(q, s, 3);
+                };
+                // quitar lo de los hitos anteriores que estorba en la zona (máquinas, mesa...): se guardan para restaurar
+                var truss = com.miscelanea.rave.RaveRegistro.TRUSS.get().defaultBlockState();
+                var a = net.minecraft.core.BlockPos.containing(a2Punto(5, -3.0, 0.3)), b = net.minecraft.core.BlockPos.containing(a2Punto(5, 3.0, 0.3));
+                for (int y = 0; y < 4; y++) {
+                    poner.accept(a.above(y), truss);
+                    poner.accept(b.above(y), truss);
+                }
+                var lado = a2Lado;
+                for (int i = 1; i < 6; i++) poner.accept(a.above(3).relative(lado, i), truss.setValue(com.miscelanea.rave.TrussBlock.LUCES, true)
+                        .setValue(com.miscelanea.muebles.Muebles.COLOR, net.minecraft.world.item.DyeColor.MAGENTA));
+                // ¿el andamio de en medio de la pasarela se ha unido a los dos lados?
+                var medio = a.above(3).relative(lado, 3);
+                var sm = l.getBlockState(medio);
+                int lados = 0;
+                for (var d : net.minecraft.core.Direction.values())
+                    if (sm.getValue(net.minecraft.world.level.block.PipeBlock.PROPERTY_BY_DIRECTION.get(d))) lados++;
+                PI.put("rave_truss_lados", lados);
+                for (int i : new int[]{2, 4}) poner.accept(medio.relative(lado, i - 3).below(), com.miscelanea.rave.RaveRegistro.FOCO.get().defaultBlockState()
+                        .setValue(com.miscelanea.rave.LucesRave.COLGADO, true).setValue(com.miscelanea.muebles.Muebles.COLOR,
+                                i == 2 ? net.minecraft.world.item.DyeColor.LIME : net.minecraft.world.item.DyeColor.PURPLE));
+                // tarima y suelo LED delante
+                for (int x = -2; x <= 2; x++) {
+                    poner.accept(net.minecraft.core.BlockPos.containing(a2Punto(4, x, 0.3)), com.miscelanea.rave.RaveRegistro.TARIMA.get().defaultBlockState());
+                    for (int z = 0; z < 3; z++)
+                        poner.accept(net.minecraft.core.BlockPos.containing(a2Punto(1 + z, x, -0.7)), com.miscelanea.rave.RaveRegistro.SUELO_LED.get().defaultBlockState());
+                }
+            });
+        });
+        paso("rave_escenario_foto", 50, () -> a2VistaA(a2Punto(4, 0.0, 2.0), a2Punto(-3.5, 0.0, 3.0)));
+        vigila("rave_escenario_chk", 10, () -> {
+            Object lados = PI.get("rave_truss_lados");
+            RESUMEN.add("  rave escenario: el andamio del medio de la pasarela se une por " + lados + " lados");
+            if (!(lados instanceof Integer n) || n != 2) throw new IllegalStateException("el andamio no se une bien (" + lados + " lados)");
+        });
         sin("rave_limpiar", 20, () -> {
             var srv = mc.getSingleplayerServer();
             srv.execute(() -> {

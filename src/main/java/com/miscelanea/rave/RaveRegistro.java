@@ -101,6 +101,19 @@ public final class RaveRegistro {
             .strength(1.0F, 6.0F).sound(SoundType.METAL).noOcclusion()));
     public static final RegistryObject<Item> CONFETI_ITEM = ITEMS.register("canon_confeti", () -> new com.miscelanea.camaras.CamarasRegistro.ConAyuda(CONFETI.get(), "canon_confeti"));
 
+    // ---- hito 5: escenario
+    public static final RegistryObject<Block> TRUSS = BLOCKS.register("andamio_truss", () -> new TrussBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+            .strength(2.0F, 6.0F).sound(SoundType.LANTERN).noOcclusion().lightLevel(s -> s.getValue(TrussBlock.LUCES) ? 7 : 0)));
+    public static final RegistryObject<Item> TRUSS_ITEM = ITEMS.register("andamio_truss", () -> new com.miscelanea.camaras.CamarasRegistro.ConAyuda(TRUSS.get(), "andamio_truss"));
+    public static final RegistryObject<Block> TARIMA = BLOCKS.register("tarima_escenario", () -> new net.minecraft.world.level.block.SlabBlock(
+            BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).strength(2.0F, 3.0F).sound(SoundType.WOOD)));
+    public static final RegistryObject<Item> TARIMA_ITEM = ITEMS.register("tarima_escenario", () -> new net.minecraft.world.item.BlockItem(TARIMA.get(), new Item.Properties()));
+    public static final RegistryObject<Block> SUELO_LED = BLOCKS.register("suelo_led", () -> new SueloLedBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK)
+            .strength(1.5F, 6.0F).sound(SoundType.GLASS).lightLevel(s -> 6)));
+    public static final RegistryObject<Item> SUELO_LED_ITEM = ITEMS.register("suelo_led", () -> new com.miscelanea.camaras.CamarasRegistro.ConAyuda(SUELO_LED.get(), "suelo_led"));
+    public static final RegistryObject<net.minecraft.world.level.block.entity.BlockEntityType<SueloLedBlockEntity>> SUELO_LED_BE = BLOCK_ENTITIES.register("suelo_led",
+            () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(SueloLedBlockEntity::new, SUELO_LED.get()).build(null));
+
     public static void registrar(IEventBus modBus) {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);

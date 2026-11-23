@@ -45,8 +45,16 @@ public final class MusicaDj {
      * no suena ninguna. Lo usan los altavoces para mover el cono al ritmo.
      */
     public static float latido(BlockPos p, float pt) {
+        float b = pulsos(p, pt);
+        if (b < 0) return 0;
+        float k = 1 - (b % 1F);
+        return k * k * k;
+    }
+
+    /** Pulsos que lleva la canción de la mesa que suena más cerca (a menos de 24 bloques), o -1 si no suena ninguna. */
+    public static float pulsos(BlockPos p, float pt) {
         var mc = Minecraft.getInstance();
-        if (mc.level == null) return 0;
+        if (mc.level == null) return -1;
         Sonido mejor = null;
         double md = 24 * 24;
         for (Map.Entry<BlockPos, Sonido> e : SONANDO.entrySet()) {
@@ -57,13 +65,11 @@ public final class MusicaDj {
                 mejor = e.getValue();
             }
         }
-        if (mejor == null) return 0;
+        if (mejor == null) return -1;
         Pistas.Pista pi = Pistas.de(mejor.pista);
         float bpm = pi == null ? 120 : pi.bpm();
         float seg = (mc.level.getGameTime() - mejor.inicio + pt) / 20F;
-        float fase = (seg * bpm / 60F) % 1F;
-        float k = 1 - fase;
-        return k * k * k;
+        return seg * bpm / 60F;
     }
 
     public static void tick(MesaDjBlockEntity be) {

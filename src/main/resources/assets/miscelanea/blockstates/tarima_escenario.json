@@ -1,0 +1,13 @@
+{
+ "variants": {
+  "type=bottom": {
+   "model": "miscelanea:block/rave/tarima"
+  },
+  "type=top": {
+   "model": "miscelanea:block/rave/tarima_arriba"
+  },
+  "type=double": {
+   "model": "miscelanea:block/rave/tarima_doble"
+  }
+ }
+}

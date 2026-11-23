@@ -19,7 +19,7 @@ public final class RaveClienteMod {
     @SubscribeEvent
     public static void coloresBloque(RegisterColorHandlersEvent.Block e) {
         e.register((st, l, p, tinte) -> tinte == 0 && st.hasProperty(Muebles.COLOR) ? Neon.rgb(st.getValue(Muebles.COLOR)) : -1,
-                RaveRegistro.TUBO.get(), RaveRegistro.PANEL.get(), RaveRegistro.BARRA_SUELO.get(), RaveRegistro.HUMO.get(), RaveRegistro.CONFETI.get());
+                RaveRegistro.TUBO.get(), RaveRegistro.PANEL.get(), RaveRegistro.BARRA_SUELO.get(), RaveRegistro.HUMO.get(), RaveRegistro.CONFETI.get(), RaveRegistro.TRUSS.get());
     }
 
     @SubscribeEvent
@@ -35,6 +35,7 @@ public final class RaveClienteMod {
         e.registerBlockEntityRenderer(RaveRegistro.ESTROBO_BE.get(), EstroboRenderer::new);
         e.registerBlockEntityRenderer(RaveRegistro.MESA_BE.get(), ctx -> ModelosDj.mesa());
         e.registerBlockEntityRenderer(RaveRegistro.ALTAVOZ_BE.get(), ctx -> ModelosDj.altavoz());
+        e.registerBlockEntityRenderer(RaveRegistro.SUELO_LED_BE.get(), SueloLedRenderer::new);
     }
 
     @SubscribeEvent

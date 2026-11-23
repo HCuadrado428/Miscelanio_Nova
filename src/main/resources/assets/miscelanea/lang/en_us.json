@@ -6645,5 +6645,14 @@
   "block.miscelanea.chispas_frias.ayuda3": "It can also be switched on with redstone.",
   "block.miscelanea.canon_confeti.ayuda": "Right-click (or redstone): fires a cloud of confetti where it points. Reloads in a second.",
   "block.miscelanea.canon_confeti.ayuda2": "White: all colours; dyed: that colour.",
-  "block.miscelanea.canon_confeti.ayuda3": "It points away from the face you place it on."
+  "block.miscelanea.canon_confeti.ayuda3": "It points away from the face you place it on.",
+  "block.miscelanea.andamio_truss": "Stage Truss",
+  "block.miscelanea.tarima_escenario": "Stage Platform",
+  "block.miscelanea.suelo_led": "LED Floor",
+  "block.miscelanea.andamio_truss.ayuda": "Joins the trusses next to it, above and below: build towers and walkways.",
+  "block.miscelanea.andamio_truss.ayuda2": "With glowstone dust: adds LED lights (dye for the colour; sneak with an empty hand to remove them).",
+  "block.miscelanea.andamio_truss.ayuda3": "Hang moving heads and the disco ball from it.",
+  "block.miscelanea.suelo_led.ayuda": "Disco tiles that change colour in waves.",
+  "block.miscelanea.suelo_led.ayuda2": "If a DJ table is playing nearby, they change to the beat of the song and pulse with it.",
+  "block.miscelanea.suelo_led.ayuda3": "Put them together to make a dance floor."
 }

@@ -1,0 +1,79 @@
+{
+ "multipart": [
+  {
+   "apply": {
+    "model": "miscelanea:block/rave/truss_nudo"
+   }
+  },
+  {
+   "when": {
+    "luces": "true"
+   },
+   "apply": {
+    "model": "miscelanea:block/rave/truss_led"
+   }
+  },
+  {
+   "when": {
+    "up": "true"
+   },
+   "apply": {
+    "model": "miscelanea:block/rave/truss_brazo",
+    "uvlock": false
+   }
+  },
+  {
+   "when": {
+    "down": "true"
+   },
+   "apply": {
+    "model": "miscelanea:block/rave/truss_brazo",
+    "x": 180,
+    "uvlock": false
+   }
+  },
+  {
+   "when": {
+    "north": "true"
+   },
+   "apply": {
+    "model": "miscelanea:block/rave/truss_brazo",
+    "x": 90,
+    "uvlock": false
+   }
+  },
+  {
+   "when": {
+    "south": "true"
+   },
+   "apply": {
+    "model": "miscelanea:block/rave/truss_brazo",
+    "x": 90,
+    "y": 180,
+    "uvlock": false
+   }
+  },
+  {
+   "when": {
+    "east": "true"
+   },
+   "apply": {
+    "model": "miscelanea:block/rave/truss_brazo",
+    "x": 90,
+    "y": 90,
+    "uvlock": false
+   }
+  },
+  {
+   "when": {
+    "west": "true"
+   },
+   "apply": {
+    "model": "miscelanea:block/rave/truss_brazo",
+    "x": 90,
+    "y": 270,
+    "uvlock": false
+   }
+  }
+ ]
+}
