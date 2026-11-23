@@ -49,5 +49,6 @@ public final class RaveClienteMod {
     @SubscribeEvent
     public static void overlays(net.minecraftforge.client.event.RegisterGuiOverlaysEvent e) {
         e.registerAboveAll("rave_estrobo", EstroboDestello::dibujar);
+        e.registerBelowAll("rave_colores", ColoresOverlay::dibujar);
     }
 }

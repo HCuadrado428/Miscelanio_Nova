@@ -137,11 +137,35 @@ public final class RaveRed {
         }
     }
 
+    /** Orden del panel o del mando de luces. */
+    public record Luces(boolean mando, BlockPos pos, int accion, int valor) {
+        void encode(FriendlyByteBuf b) {
+            b.writeBoolean(mando);
+            b.writeBlockPos(pos);
+            b.writeByte(accion);
+            b.writeVarInt(valor);
+        }
+
+        static Luces decode(FriendlyByteBuf b) {
+            return new Luces(b.readBoolean(), b.readBlockPos(), b.readUnsignedByte(), b.readVarInt());
+        }
+
+        static void handle(Luces m, Supplier<NetworkEvent.Context> ctx) {
+            NetworkEvent.Context c = ctx.get();
+            ServerPlayer p = c.getSender();
+            c.enqueueWork(() -> {
+                if (p != null && m.valor >= 0 && m.valor < 16) PanelLuces.orden(p, m.mando, m.pos, m.accion, m.valor);
+            });
+            c.setPacketHandled(true);
+        }
+    }
+
     static void registrar() {
         CANAL.messageBuilder(Dj.class, 0, NetworkDirection.PLAY_TO_SERVER).encoder(Dj::encode).decoder(Dj::decode).consumerMainThread(Dj::handle).add();
         CANAL.messageBuilder(Audio.class, 1, NetworkDirection.PLAY_TO_SERVER).encoder(Audio::encode).decoder(Audio::decode).consumerMainThread(Audio::handle).add();
         CANAL.messageBuilder(PonerVideo.class, 2, NetworkDirection.PLAY_TO_SERVER).encoder(PonerVideo::encode).decoder(PonerVideo::decode).consumerMainThread(PonerVideo::handle).add();
         CANAL.messageBuilder(PedirVideo.class, 3, NetworkDirection.PLAY_TO_SERVER).encoder(PedirVideo::encode).decoder(PedirVideo::decode).consumerMainThread(PedirVideo::handle).add();
+        CANAL.messageBuilder(Luces.class, 5, NetworkDirection.PLAY_TO_SERVER).encoder(Luces::encode).decoder(Luces::decode).consumerMainThread(Luces::handle).add();
         CANAL.messageBuilder(Video.class, 4, NetworkDirection.PLAY_TO_CLIENT).encoder(Video::encode).decoder(Video::decode).consumerMainThread(Video::handle).add();
     }
 

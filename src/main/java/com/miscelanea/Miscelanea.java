@@ -258,6 +258,12 @@ public class Miscelanea {
             event.accept(com.miscelanea.rave.RaveRegistro.TARIMA_ITEM);
             event.accept(com.miscelanea.rave.RaveRegistro.SUELO_LED_ITEM);
             event.accept(com.miscelanea.rave.RaveRegistro.PANTALLA_ITEM);
+            event.accept(com.miscelanea.rave.RaveRegistro.PANEL_LUCES_ITEM);
+            event.accept(com.miscelanea.rave.RaveRegistro.MANDO_LUCES);
+            event.accept(com.miscelanea.rave.RaveRegistro.CARAMELO_CORAZON);
+            event.accept(com.miscelanea.rave.RaveRegistro.PIRULETA);
+            event.accept(com.miscelanea.rave.RaveRegistro.POLVO_ESTRELLAS);
+            event.accept(com.miscelanea.rave.RaveRegistro.CHICLE);
         }
         if (event.getTabKey() == ModTabs.TORTURA.getKey()) {
             event.accept(com.miscelanea.tortura.TorturaRegistro.TRAMPA_OSO);

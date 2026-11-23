@@ -5571,6 +5571,46 @@ public final class PruebaCI {
             if (be == null) throw new IllegalStateException("no está la pantalla de vídeo");
             if (video >= 0 && !cargado) throw new IllegalStateException("el vídeo de la pantalla no ha llegado al cliente");
         });
+        // hito 7: panel de luces (todo a verde y apagar/encender) y caramelos (subidón, visión de colores y bajón)
+        sin("rave_panel", 20, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                var c = net.minecraft.core.BlockPos.containing(a2Punto(9, 0.0, 0.3));
+                int verdes = com.miscelanea.rave.PanelLuces.aplicar(l, c, com.miscelanea.rave.PanelLuces.COLOR, net.minecraft.world.item.DyeColor.LIME.getId());
+                int apagadas = com.miscelanea.rave.PanelLuces.aplicar(l, c, com.miscelanea.rave.PanelLuces.OFF, 0);
+                int encendidas = com.miscelanea.rave.PanelLuces.aplicar(l, c, com.miscelanea.rave.PanelLuces.ON, 0);
+                // caramelos: la piruleta da subidón y visión de colores; con el bajón, otro caramelo marea
+                com.miscelanea.rave.Caramelos.CarameloItem.tomar(sp, 1);
+                boolean sub = sp.hasEffect(com.miscelanea.rave.RaveRegistro.SUBIDON.get()) && sp.hasEffect(com.miscelanea.rave.RaveRegistro.COLORES.get());
+                PI.put("rave_panel_res", "panel: " + verdes + " a verde, " + apagadas + " apagadas, " + encendidas + " encendidas; piruleta: subidón y colores " + sub);
+                PI.put("rave_panel_ok", verdes > 10 && apagadas > 3 && apagadas == encendidas && sub);
+            });
+        });
+        paso("rave_panel_foto", 40, () -> a2VistaA(a2Punto(11, 0.0, 2.0), a2Punto(3.0, 0.0, 2.6)));
+        paso("rave_panel_pantalla", 10, () -> mc.setScreen(new com.miscelanea.client.rave.PanelLucesScreen(null)));
+        sin("rave_bajon", 10, () -> {
+            mc.setScreen(null);
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                // se acorta el subidón para ver llegar el bajón
+                sp.removeEffect(com.miscelanea.rave.RaveRegistro.SUBIDON.get());
+                sp.addEffect(new net.minecraft.world.effect.MobEffectInstance(com.miscelanea.rave.RaveRegistro.SUBIDON.get(), 5));
+            });
+        });
+        vigila("rave_panel_chk", 30, () -> {
+            var sp = mc.getSingleplayerServer().getPlayerList().getPlayer(mc.player.getUUID());
+            boolean bajon = sp.hasEffect(com.miscelanea.rave.RaveRegistro.BAJON.get());
+            if (!bajon) throw new IllegalStateException("tras el subidón no ha llegado el bajón");
+            RESUMEN.add("  rave " + PI.get("rave_panel_res") + "; bajón al acabar " + bajon);
+            if (!Boolean.TRUE.equals(PI.get("rave_panel_ok"))) throw new IllegalStateException("panel de luces o caramelos: " + PI.get("rave_panel_res"));
+        });
+        sin("rave_efectos_quitar", 5, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> srv.getPlayerList().getPlayer(mc.player.getUUID()).removeAllEffects());
+        });
         sin("rave_limpiar", 20, () -> {
             var srv = mc.getSingleplayerServer();
             srv.execute(() -> {

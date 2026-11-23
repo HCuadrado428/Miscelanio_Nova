@@ -27,12 +27,13 @@
 11. [Pociones y efectos](#pociones-y-efectos)
 12. [Bromas](#bromas)
 13. [Sala de juegos](#sala-de-juegos)
-14. [Colección, pesca y tesoros](#colección-pesca-y-tesoros)
-15. [Casa, cocina y movimiento](#casa-cocina-y-movimiento)
-16. [Comandos](#comandos)
-17. [Configuración](#configuración)
-18. [Compatibilidad con otros mods](#compatibilidad-con-otros-mods)
-19. [Compilar desde el código](#compilar-desde-el-código)
+14. [Rave, discoteca y concierto](#rave-discoteca-y-concierto)
+15. [Colección, pesca y tesoros](#colección-pesca-y-tesoros)
+16. [Casa, cocina y movimiento](#casa-cocina-y-movimiento)
+17. [Comandos](#comandos)
+18. [Configuración](#configuración)
+19. [Compatibilidad con otros mods](#compatibilidad-con-otros-mods)
+20. [Compilar desde el código](#compilar-desde-el-código)
 
 ---
 
@@ -322,6 +323,21 @@ En la pestaña **Tortura**: estaciones donde un cautivo hace de sujeto de prueba
 - **Destilador térmico:** convierte el suavis seco (de The Midnight, cocinado) en sedante clase M con fuego debajo; con una botella de cristal se saca la Poción de sedante.
 
 ---
+
+## Rave, discoteca y concierto
+
+Pestaña **Rave** del creativo. Todo se enciende o apaga con clic derecho, cambia de patrón con agachado + clic, de color con un tinte, y también va con redstone.
+
+- **Neón:** tubos y paneles de 16 colores que alumbran, y barras luminosas que se lanzan y alumbran 5 minutos donde caen.
+- **Luces:** bola de discoteca (manchas de luz por todo el local), foco móvil (haz de color que barre; en el suelo o colgado) y estroboscopio (respeta «Ocultar destellos»).
+- **Mesa de DJ y altavoces:** la mesa pone las canciones de la pista de baile y los discos; se oye a 32 bloques y cada altavoz cercano suma 24 (hasta 128). Con Simple Voice Chat, **🎧 Emitir mi PC** saca por la mesa lo que suene en tu ordenador (elige la entrada «Mezcla estéreo» o un cable de audio virtual).
+- **Efectos:** máquina de humo de colores, fuente de chispas frías y cañón de confeti.
+- **Escenario:** andamio (truss) que se une solo y lleva luces LED, tarima y suelo LED que cambia al ritmo de la mesa.
+- **Pantalla de vídeo:** paneles que forman una pantalla (hasta 12×8) y enseñan en bucle un vídeo corto de la galería de tu móvil.
+- **Panel y mando de luces:** manejan de golpe todas las luces a 24 bloques (encender, apagar, patrón, color, confeti).
+- **Caramelos de fiesta:** corazón, piruleta arcoíris, polvo de estrellas y chicle eléctrico: un subidón con efectos y, al acabar, medio minuto de bajón.
+
+Configuración en `[rave]` (alcance de la música). Las recetas están en el CHANGELOG.
 
 ## Colección, pesca y tesoros
 

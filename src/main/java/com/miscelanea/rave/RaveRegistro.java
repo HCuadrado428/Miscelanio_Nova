@@ -22,6 +22,7 @@ public final class RaveRegistro {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, Miscelanea.MOD_ID);
     public static final DeferredRegister<net.minecraft.world.level.block.entity.BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Miscelanea.MOD_ID);
     public static final DeferredRegister<net.minecraft.core.particles.ParticleType<?>> PARTICLES = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, Miscelanea.MOD_ID);
+    public static final DeferredRegister<net.minecraft.world.effect.MobEffect> EFECTOS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS, Miscelanea.MOD_ID);
     public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(Registries.ENTITY_TYPE, Miscelanea.MOD_ID);
 
     private static BlockBehaviour.Properties neon(int luz) {
@@ -121,11 +122,27 @@ public final class RaveRegistro {
     public static final RegistryObject<net.minecraft.world.level.block.entity.BlockEntityType<PantallaVideoBlockEntity>> PANTALLA_BE = BLOCK_ENTITIES.register("pantalla_video",
             () -> net.minecraft.world.level.block.entity.BlockEntityType.Builder.of(PantallaVideoBlockEntity::new, PANTALLA.get()).build(null));
 
+    // ---- hito 7: caramelos de fiesta, panel y mando de luces
+    public static final RegistryObject<net.minecraft.world.effect.MobEffect> SUBIDON = EFECTOS.register("subidon",
+            () -> new Caramelos.Efecto(net.minecraft.world.effect.MobEffectCategory.BENEFICIAL, 0xFF3CF0));
+    public static final RegistryObject<net.minecraft.world.effect.MobEffect> COLORES = EFECTOS.register("vision_colores",
+            () -> new Caramelos.Efecto(net.minecraft.world.effect.MobEffectCategory.NEUTRAL, 0x4FD8FF));
+    public static final RegistryObject<net.minecraft.world.effect.MobEffect> BAJON = EFECTOS.register("bajon", Caramelos::bajon);
+    public static final RegistryObject<Item> CARAMELO_CORAZON = ITEMS.register("caramelo_corazon", () -> new Caramelos.CarameloItem(0));
+    public static final RegistryObject<Item> PIRULETA = ITEMS.register("piruleta_arcoiris", () -> new Caramelos.CarameloItem(1));
+    public static final RegistryObject<Item> POLVO_ESTRELLAS = ITEMS.register("polvo_estrellas", () -> new Caramelos.CarameloItem(2));
+    public static final RegistryObject<Item> CHICLE = ITEMS.register("chicle_electrico", () -> new Caramelos.CarameloItem(3));
+    public static final RegistryObject<Block> PANEL_LUCES = BLOCKS.register("panel_luces", () -> new PanelLuces.Bloque(BlockBehaviour.Properties.of()
+            .mapColor(MapColor.COLOR_BLACK).strength(1.5F, 6.0F).sound(SoundType.METAL).noOcclusion().lightLevel(s -> 4)));
+    public static final RegistryObject<Item> PANEL_LUCES_ITEM = ITEMS.register("panel_luces", () -> new com.miscelanea.camaras.CamarasRegistro.ConAyuda(PANEL_LUCES.get(), "panel_luces"));
+    public static final RegistryObject<Item> MANDO_LUCES = ITEMS.register("mando_luces", () -> new PanelLuces.Mando(new Item.Properties().stacksTo(1)));
+
     public static void registrar(IEventBus modBus) {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         BLOCK_ENTITIES.register(modBus);
         PARTICLES.register(modBus);
+        EFECTOS.register(modBus);
         ENTITIES.register(modBus);
         modBus.addListener((net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent e) -> e.enqueueWork(RaveRed::registrar));
     }
