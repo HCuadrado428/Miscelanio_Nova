@@ -52,7 +52,7 @@ final class VistasCamaras {
         @Override
         void dibujar(GuiGraphics g, int mx, int my, float pt) {
             CamarasCliente.visto(canal);
-            CamarasCliente.visto(0);          // pide también la lista de cámaras (para ◄ ► y los nombres)
+            CamarasCliente.pedirLista();      // la lista de cámaras (para ◄ ► y los nombres)
             Ui.rect(g, 0, 0, HW, HH, 0xFF050807);
             int w = HW, h = w * 9 / 16, x = 0, y = (HH - h) / 2;
             boolean senal = CamarasCliente.hayEnvio(canal);

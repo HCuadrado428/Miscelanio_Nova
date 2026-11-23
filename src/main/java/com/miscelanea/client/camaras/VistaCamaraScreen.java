@@ -82,7 +82,7 @@ public class VistaCamaraScreen extends Screen {
     @Override
     public void render(GuiGraphics g, int mx, int my, float pt) {
         CamarasCliente.visto(canal);
-        CamarasCliente.visto(0);          // pide también la lista de cámaras (para las flechas y los nombres)
+        CamarasCliente.pedirLista();      // la lista de cámaras (para las flechas y los nombres)
         g.fill(0, 0, width, height, 0xFF050807);
         // la imagen, lo más grande posible en 16:9
         int mw = width - 40, mh = height - 70;

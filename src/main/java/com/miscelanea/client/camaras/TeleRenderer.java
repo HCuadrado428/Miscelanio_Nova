@@ -41,6 +41,7 @@ public class TeleRenderer implements BlockEntityRenderer<TeleBlockEntity> {
         Direction d = be.getBlockState().getValue(Montaje.FACING);
         int canal = be.canal();
         CamarasCliente.visto(canal);
+        CamarasCliente.pedirLista();      // para el nombre de la cámara en el rótulo
         int ef = CamarasCliente.efectivo(canal);
         // al cambiar de canal, medio segundo de estática (como una tele de verdad)
         long ahora = Util.getMillis();

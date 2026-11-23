@@ -67,6 +67,13 @@ public final class CamarasCliente {
         VISTOS.put(canal, Util.getMillis());
     }
 
+    private static long listaPedida;
+
+    /** Pedir la lista de cámaras con sus nombres (rótulos, flechas de la pantalla grande y del móvil). */
+    public static void pedirLista() {
+        listaPedida = Util.getMillis();
+    }
+
     /** Canal que enseña de verdad una tele: el suyo, o en automático el que toca (rota cada 6 s entre los que existen). */
     public static int efectivo(int canal) {
         if (canal != 0) return canal;
@@ -195,8 +202,9 @@ public final class CamarasCliente {
         long ahora = Util.getMillis();
         VISTOS.values().removeIf(t -> ahora - t > 700);
         Set<Integer> c = new TreeSet<>(VISTOS.keySet());
-        // en automático también interesan los canales que rota la tele
+        // en automático también interesan los canales que rota la tele (el 0 en sí solo pide la lista de cámaras)
         if (c.contains(0)) c.add(efectivo(0));
+        if (ahora - listaPedida < 700) c.add(0);
         if (c.isEmpty() && !mirabaAlgo) return;
         mirabaAlgo = !c.isEmpty();
         CamarasRed.alServidor(CamarasRed.C_VER, b -> {
