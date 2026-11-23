@@ -1,0 +1,86 @@
+{
+ "parent": "minecraft:block/block",
+ "textures": {
+  "neon": "miscelanea:block/rave/neon_tubo",
+  "panel": "miscelanea:block/rave/neon_panel",
+  "metal": "miscelanea:block/laboratorio/acero_oscuro",
+  "particle": "miscelanea:block/rave/neon_tubo"
+ },
+ "elements": [
+  {
+   "from": [
+    0,
+    0,
+    0
+   ],
+   "to": [
+    16,
+    1,
+    16
+   ],
+   "faces": {
+    "down": {
+     "texture": "#metal",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ]
+    },
+    "up": {
+     "texture": "#panel",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "north": {
+     "texture": "#metal",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ]
+    },
+    "south": {
+     "texture": "#metal",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ]
+    },
+    "west": {
+     "texture": "#metal",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ]
+    },
+    "east": {
+     "texture": "#metal",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ]
+    }
+   },
+   "shade": false
+  }
+ ],
+ "ambientocclusion": false
+}

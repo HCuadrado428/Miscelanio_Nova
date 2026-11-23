@@ -5297,6 +5297,74 @@ public final class PruebaCI {
         });
     }
 
+    // ------------------------------------------------------------------ Rave, hito 1: neón (tubos y paneles de 16 colores) y barras luminosas
+    private static void rave() {
+        Minecraft mc = Minecraft.getInstance();
+        sin("rave_poner", 30, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                var frente = a2Mira.getOpposite();
+                java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState> antes = new java.util.HashMap<>();
+                java.util.function.BiConsumer<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState> poner = (q, s) -> {
+                    antes.putIfAbsent(q.immutable(), l.getBlockState(q));
+                    l.setBlock(q, s, 3);
+                };
+                var colores = net.minecraft.world.item.DyeColor.values();
+                // 16 tubos de pie en el suelo y 8 paneles en la pared de ladrillo, uno de cada color
+                for (int i = 0; i < 16; i++) {
+                    var q = net.minecraft.core.BlockPos.containing(a2Punto(11, -7.5 + i, 0.3));
+                    poner.accept(q, com.miscelanea.rave.RaveRegistro.TUBO.get().defaultBlockState().setValue(com.miscelanea.muebles.Muebles.COLOR, colores[i]));
+                }
+                for (int i = 0; i < 8; i++) {
+                    var q = net.minecraft.core.BlockPos.containing(a2Punto(14, -7.5 + i * 2, 3.6));
+                    poner.accept(q, com.miscelanea.rave.RaveRegistro.PANEL.get().defaultBlockState().setValue(com.miscelanea.rave.NeonBlock.FACING, frente)
+                            .setValue(com.miscelanea.muebles.Muebles.COLOR, colores[(i * 2 + 1) % 16]));
+                }
+                // una barra luminosa lanzada hacia el suelo, delante
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                var b = new com.miscelanea.rave.BarraLanzada(l, sp);
+                b.setItem(com.miscelanea.rave.BarraLuminosaItem.de(net.minecraft.world.item.DyeColor.LIME));
+                var desde = a2Punto(8, 0.0, 3.0);
+                b.setPos(desde.x, desde.y, desde.z);
+                b.setDeltaMovement(0, -0.6, 0);
+                l.addFreshEntity(b);
+                PI.put("rave_antes", antes);
+                PI.put("rave_barra", net.minecraft.core.BlockPos.containing(a2Punto(8, 0.0, 1.2)));
+            });
+        });
+        paso("rave_foto", 60, () -> a2VistaA(a2Punto(12, 0.0, 1.5), a2Punto(5.0, 0.0, 3.0)));
+        vigila("rave_chk", 40, () -> {
+            var srv = mc.getSingleplayerServer();
+            var l = srv.overworld();
+            int tubos = 0, paneles = 0, barras = 0;
+            var s0 = net.minecraft.core.BlockPos.containing(a2Punto(8, 0.0, 0.0));
+            for (var q : net.minecraft.core.BlockPos.betweenClosed(s0.offset(-20, -3, -20), s0.offset(20, 6, 20))) {
+                var st = l.getBlockState(q);
+                if (st.is(com.miscelanea.rave.RaveRegistro.TUBO.get())) tubos++;
+                else if (st.is(com.miscelanea.rave.RaveRegistro.PANEL.get())) paneles++;
+                else if (st.is(com.miscelanea.rave.RaveRegistro.BARRA_SUELO.get())) barras++;
+            }
+            int luz = l.getBrightness(net.minecraft.world.level.LightLayer.BLOCK, net.minecraft.core.BlockPos.containing(a2Punto(11, 0.5, 1.3)));
+            RESUMEN.add("  rave: tubos " + tubos + ", paneles " + paneles + ", barras luminosas en el suelo " + barras + ", luz junto a los tubos " + luz);
+            if (tubos != 16 || paneles != 8) throw new IllegalStateException("faltan bloques de neón (tubos " + tubos + ", paneles " + paneles + ")");
+            if (barras < 1) throw new IllegalStateException("la barra luminosa lanzada no se ha quedado en el suelo");
+            if (luz < 8) throw new IllegalStateException("los tubos de neón no alumbran (luz " + luz + ")");
+        });
+        sin("rave_limpiar", 20, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                @SuppressWarnings("unchecked")
+                var antes = (java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState>) PI.get("rave_antes");
+                if (antes != null) antes.forEach((q, s) -> l.setBlock(q, s, 2));
+                var s0 = net.minecraft.core.BlockPos.containing(a2Punto(8, 0.0, 0.0));
+                for (var q : net.minecraft.core.BlockPos.betweenClosed(s0.offset(-20, -3, -20), s0.offset(20, 6, 20)))
+                    if (l.getBlockState(q).is(com.miscelanea.rave.RaveRegistro.BARRA_SUELO.get())) l.removeBlock(q, false);
+            });
+        });
+    }
+
     // ------------------------------------------------------------------ escopeta de presión
     private static boolean escAgachado;
     private static net.minecraft.core.BlockPos escHoguera, escVela, escTierra;
@@ -6374,6 +6442,7 @@ public final class PruebaCI {
         laboratorioUtilidades();
         laboratorioEstaciones();
         camaras();
+        rave();
         // el Hacha de sangre en tercera y primera persona (se ve que va de pie, agarrada por el mango)
         for (int k = 0; k <= 0; k++) {
             sin("hacha_3p_poner_" + k, 8, () -> a2Mano(new ItemStack(com.miscelanea.registry.ModItems.HACHA_SANGRE.get())));

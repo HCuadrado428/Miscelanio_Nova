@@ -52,6 +52,7 @@ public class Miscelanea {
         com.miscelanea.movil.MovilRegistro.registrar(modBus);
         com.miscelanea.laboratorio.LabRegistro.registrar(modBus);
         com.miscelanea.camaras.CamarasRegistro.registrar(modBus);
+        com.miscelanea.rave.RaveRegistro.registrar(modBus);
         // ---- Armas de fuego: se encuentran en cofres (Global Loot Modifier)
         com.miscelanea.armasfuego.BotinArmas.registrar(modBus);
         com.miscelanea.armasfuego.comun.ArmasFuegoRegistro.registrar(modBus);
@@ -241,6 +242,11 @@ public class Miscelanea {
             event.accept(ModItems.MOCHILA_MEDICA);
         }
         // ---- Sala de juegos / tortura
+        if (event.getTabKey() == ModTabs.RAVE.getKey()) {
+            for (net.minecraft.world.item.DyeColor c : net.minecraft.world.item.DyeColor.values()) event.accept(com.miscelanea.rave.NeonItem.de(com.miscelanea.rave.RaveRegistro.TUBO_ITEM.get(), c));
+            for (net.minecraft.world.item.DyeColor c : net.minecraft.world.item.DyeColor.values()) event.accept(com.miscelanea.rave.NeonItem.de(com.miscelanea.rave.RaveRegistro.PANEL_ITEM.get(), c));
+            for (net.minecraft.world.item.DyeColor c : net.minecraft.world.item.DyeColor.values()) event.accept(com.miscelanea.rave.BarraLuminosaItem.de(c));
+        }
         if (event.getTabKey() == ModTabs.TORTURA.getKey()) {
             event.accept(com.miscelanea.tortura.TorturaRegistro.TRAMPA_OSO);
             event.accept(com.miscelanea.tortura.TorturaRegistro.LLAVE_TRAMPA);

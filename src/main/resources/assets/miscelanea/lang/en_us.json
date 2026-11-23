@@ -6579,5 +6579,13 @@
   "block.miscelanea.monitor_laboratorio": "Lab Monitor",
   "block.miscelanea.monitor_laboratorio.ayuda": "Steel-framed wall panel. Put several together in a rectangle (up to 8x8) and they make one big screen with the camera image.",
   "block.miscelanea.monitor_laboratorio.ayuda2": "Right-click: the image full screen. Sneak + click: next channel for the whole wall (0 is automatic).",
-  "block.miscelanea.monitor_laboratorio.ayuda3": "The bottom-left monitor is in charge: the ones you add take its channel."
+  "block.miscelanea.monitor_laboratorio.ayuda3": "The bottom-left monitor is in charge: the ones you add take its channel.",
+  "itemGroup.miscelanea.rave": "Miscelánea: Rave",
+  "block.miscelanea.tubo_neon": "Neon Tube",
+  "block.miscelanea.panel_neon": "Neon Panel",
+  "block.miscelanea.neon.ayuda": "Glows in its colour. Sticks to floor, ceiling or wall; use a dye to change the colour.",
+  "item.miscelanea.barra_luminosa": "Glow Stick",
+  "item.miscelanea.barra_luminosa.ayuda": "Right-click: crack it and throw it. Where it lands it lights up for 5 minutes.",
+  "block.miscelanea.barra_luminosa_suelo": "Glow Stick",
+  "entity.miscelanea.barra_lanzada": "Glow Stick"
 }

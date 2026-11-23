@@ -6579,5 +6579,13 @@
   "block.miscelanea.monitor_laboratorio": "Monitor de laboratorio",
   "block.miscelanea.monitor_laboratorio.ayuda": "Panel con marco de acero para la pared. Pon varios juntos en rectángulo (hasta 8x8) y forman una sola pantalla grande con la imagen de la cámara.",
   "block.miscelanea.monitor_laboratorio.ayuda2": "Clic derecho: la imagen en pantalla grande. Agachado + clic: canal siguiente de toda la pared (el 0 es automático).",
-  "block.miscelanea.monitor_laboratorio.ayuda3": "Manda el monitor de abajo a la izquierda: los que añadas toman su canal."
+  "block.miscelanea.monitor_laboratorio.ayuda3": "Manda el monitor de abajo a la izquierda: los que añadas toman su canal.",
+  "itemGroup.miscelanea.rave": "Miscelánea: Rave",
+  "block.miscelanea.tubo_neon": "Tubo de neón",
+  "block.miscelanea.panel_neon": "Panel de neón",
+  "block.miscelanea.neon.ayuda": "Brilla en su color. Se pega al suelo, al techo o a la pared; con un tinte, cambia de color.",
+  "item.miscelanea.barra_luminosa": "Barra luminosa",
+  "item.miscelanea.barra_luminosa.ayuda": "Clic derecho: la partes y la lanzas. Donde cae se queda alumbrando 5 minutos.",
+  "block.miscelanea.barra_luminosa_suelo": "Barra luminosa",
+  "entity.miscelanea.barra_lanzada": "Barra luminosa"
 }
