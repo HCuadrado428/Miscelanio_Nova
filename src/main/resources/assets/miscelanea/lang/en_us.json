@@ -6628,7 +6628,7 @@
   "rave.miscelanea.dj.entrada": "Input: %s",
   "rave.miscelanea.dj.emitir": "🎧 Stream my PC",
   "rave.miscelanea.dj.emitir_parar": "■ Stop streaming",
-  "rave.miscelanea.dj.emitir_info": "Stream my PC: what plays on your computer (Spotify…) comes out of the table.",
+  "rave.miscelanea.dj.emitir_info": "Streams whatever plays on your computer (Spotify…).",
   "rave.miscelanea.dj.emite": "Streaming %s's computer through the table and speakers.",
   "rave.miscelanea.dj.sin_voicechat": "Streaming needs Simple Voice Chat (on the server and in your game).",
   "rave.miscelanea.dj.sin_entrada": "There is no sound input on your computer.",
