@@ -39,6 +39,6 @@ public record ConfetiOpciones(int color) implements ParticleOptions {
 
     @Override
     public String writeToString() {
-        return "miscelanea:confeti " + color;
+        return "miscelanea:confeti_rave " + color;
     }
 }

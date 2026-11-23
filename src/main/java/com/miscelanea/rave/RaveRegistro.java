@@ -82,7 +82,7 @@ public final class RaveRegistro {
             });
     public static final RegistryObject<net.minecraft.core.particles.SimpleParticleType> CHISPA_PARTICULA = PARTICLES.register("chispa_fria",
             () -> new net.minecraft.core.particles.SimpleParticleType(false));
-    public static final RegistryObject<net.minecraft.core.particles.ParticleType<ConfetiOpciones>> CONFETI_PARTICULA = PARTICLES.register("confeti",
+    public static final RegistryObject<net.minecraft.core.particles.ParticleType<ConfetiOpciones>> CONFETI_PARTICULA = PARTICLES.register("confeti_rave",
             () -> new net.minecraft.core.particles.ParticleType<ConfetiOpciones>(false, ConfetiOpciones.DESERIALIZER) {
                 @Override
                 public com.mojang.serialization.Codec<ConfetiOpciones> codec() {
