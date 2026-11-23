@@ -322,14 +322,14 @@ En la pestaña **Tortura**: estaciones donde un cautivo hace de sujeto de prueba
 - **Mezclas:** en la *mesa de mezclas* dos ingredientes (muestras, queso o sueros) dan un *suero sin etiquetar* con uno de nueve efectos, siempre el mismo para cada pareja. El *analizador* lo identifica y lo apunta en el cuaderno.
 - **Destilador térmico:** convierte el suavis seco (de The Midnight, cocinado) en sedante clase M con fuego debajo; con una botella de cristal se saca la Poción de sedante.
 
----
-
 ### Cámaras de vigilancia y televisiones
 
 - **Cámara de vigilancia:** se cuelga de una pared o del techo y manda su imagen en directo a las pantallas de su canal (clic derecho: canal siguiente). Si la renombras en un yunque, su nombre sale en la pantalla.
 - **Televisión:** pantalla plana de 2 bloques de ancho (ocupa su bloque y el de su derecha). Clic derecho: la imagen en pantalla grande; agachado + clic: canal (el 0 rota entre todas las cámaras).
 - **Monitor de laboratorio:** pon varios juntos en rectángulo (hasta 8x8) y forman una sola pantalla grande.
 - En el móvil, la app **Cámaras** enseña cualquier cámara desde donde estés.
+
+---
 
 ## Rave, discoteca y concierto
 
