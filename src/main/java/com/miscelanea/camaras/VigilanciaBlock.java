@@ -11,7 +11,7 @@ public class VigilanciaBlock extends MontadoBlock {
     }
 
     @Override
-    protected double[] caja() { return new double[]{3, 3, 1, 13, 12, 16}; }
+    protected double[] caja() { return new double[]{4.5, 2.5, 0, 11.5, 12, 16}; }
 
     @Override
     protected int canalMin() { return 1; }

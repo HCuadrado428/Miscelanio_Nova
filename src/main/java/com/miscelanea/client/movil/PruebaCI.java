@@ -5254,7 +5254,7 @@ public final class PruebaCI {
                 }
                 int[] canales = {5, 9};
                 for (int i = 0; i < 2; i++) {
-                    var q = net.minecraft.core.BlockPos.containing(a2Punto(14, -2.0 - i * 2.2, 1.6));
+                    var q = net.minecraft.core.BlockPos.containing(a2Punto(14, -2.0 - i * 3.0, 1.6));
                     poner.accept(q, com.miscelanea.camaras.CamarasRegistro.TELE.get().defaultBlockState().setValue(com.miscelanea.camaras.Montaje.FACING, frente));
                     if (l.getBlockEntity(q) instanceof com.miscelanea.camaras.TeleBlockEntity tv) tv.canal(canales[i]);
                 }

@@ -24,6 +24,12 @@ public class TeleBlockEntity extends BlockEntity {
 
     public int canal() { return canal; }
 
+    /** La pantalla ocupa dos bloques: que no deje de dibujarse cuando el suyo queda fuera de la vista. */
+    @Override
+    public net.minecraft.world.phys.AABB getRenderBoundingBox() {
+        return new net.minecraft.world.phys.AABB(worldPosition).inflate(1.5);
+    }
+
     public void canal(int c) {
         canal = Math.max(0, Math.min(99, c));
         setChanged();

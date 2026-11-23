@@ -64,6 +64,11 @@ public abstract class MontadoBlock extends BaseEntityBlock {
 
     @Override
     public VoxelShape getShape(BlockState s, BlockGetter l, BlockPos p, CollisionContext c) {
+        return forma(s);
+    }
+
+    /** La forma del bloque tal como está puesto (puede salirse de su hueco: la tele mide dos bloques). */
+    protected VoxelShape forma(BlockState s) {
         Direction d = s.getValue(Montaje.FACING);
         VoxelShape f = formas[d.get3DDataValue()];
         if (f == null) {
