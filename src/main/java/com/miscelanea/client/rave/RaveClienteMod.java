@@ -30,5 +30,13 @@ public final class RaveClienteMod {
     @SubscribeEvent
     public static void renderers(EntityRenderersEvent.RegisterRenderers e) {
         e.registerEntityRenderer(RaveRegistro.BARRA_LANZADA.get(), ThrownItemRenderer::new);
+        e.registerBlockEntityRenderer(RaveRegistro.BOLA_BE.get(), BolaRenderer::new);
+        e.registerBlockEntityRenderer(RaveRegistro.FOCO_BE.get(), FocoRenderer::new);
+        e.registerBlockEntityRenderer(RaveRegistro.ESTROBO_BE.get(), EstroboRenderer::new);
+    }
+
+    @SubscribeEvent
+    public static void overlays(net.minecraftforge.client.event.RegisterGuiOverlaysEvent e) {
+        e.registerAboveAll("rave_estrobo", EstroboDestello::dibujar);
     }
 }

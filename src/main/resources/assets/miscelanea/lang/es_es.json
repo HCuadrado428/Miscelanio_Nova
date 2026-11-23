@@ -6587,5 +6587,21 @@
   "item.miscelanea.barra_luminosa": "Barra luminosa",
   "item.miscelanea.barra_luminosa.ayuda": "Clic derecho: la partes y la lanzas. Donde cae se queda alumbrando 5 minutos.",
   "block.miscelanea.barra_luminosa_suelo": "Barra luminosa",
-  "entity.miscelanea.barra_lanzada": "Barra luminosa"
+  "entity.miscelanea.barra_lanzada": "Barra luminosa",
+  "block.miscelanea.bola_discoteca": "Bola de discoteca",
+  "block.miscelanea.foco_movil": "Foco móvil",
+  "block.miscelanea.estroboscopio": "Estroboscopio",
+  "block.miscelanea.bola_discoteca.ayuda": "Cuélgala del techo: gira y reparte manchas de luz por todo el local.",
+  "block.miscelanea.bola_discoteca.ayuda2": "Clic derecho: encender o apagar. Agachado + clic: velocidad. Con un tinte, el color de las manchas.",
+  "block.miscelanea.bola_discoteca.ayuda3": "También se enciende con redstone.",
+  "block.miscelanea.foco_movil.ayuda": "Cabeza móvil con un haz de luz de color que barre el local. En el suelo o colgado del techo.",
+  "block.miscelanea.foco_movil.ayuda2": "Clic derecho: encender o apagar. Agachado + clic: patrón (barrido lento, rápido, círculos, locura). Con un tinte, el color.",
+  "block.miscelanea.foco_movil.ayuda3": "También se enciende con redstone.",
+  "block.miscelanea.estroboscopio.ayuda": "Destella en blanco. Quien lo mire de cerca ve el destello en toda la pantalla (no con la opción «Ocultar destellos»).",
+  "block.miscelanea.estroboscopio.ayuda2": "Clic derecho: encender o apagar. Agachado + clic: velocidad del destello.",
+  "block.miscelanea.estroboscopio.ayuda3": "También se enciende con redstone.",
+  "rave.miscelanea.modo.0": "Modo: lento",
+  "rave.miscelanea.modo.1": "Modo: rápido",
+  "rave.miscelanea.modo.2": "Modo: círculos",
+  "rave.miscelanea.modo.3": "Modo: locura"
 }

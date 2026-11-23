@@ -36,10 +36,10 @@ public final class CamarasRegistro {
     }
 
     /** Objeto de bloque con tres líneas de ayuda ({@code block.miscelanea.<id>.ayuda}, {@code .ayuda2}, {@code .ayuda3}). */
-    private static final class ConAyuda extends BlockItem {
+    public static final class ConAyuda extends BlockItem {
         private final String id;
 
-        ConAyuda(Block b, String id) {
+        public ConAyuda(Block b, String id) {
             super(b, new Item.Properties().rarity(Rarity.UNCOMMON));
             this.id = id;
         }

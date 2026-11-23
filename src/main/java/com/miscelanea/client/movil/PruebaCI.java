@@ -5353,6 +5353,44 @@ public final class PruebaCI {
             if (barras < 1) throw new IllegalStateException("la barra luminosa lanzada no se ha quedado en el suelo");
             if (luz < 8) throw new IllegalStateException("los tubos de neón no alumbran (luz " + luz + ")");
         });
+        // hito 2: de noche, una bola de discoteca colgada, dos focos móviles y un estroboscopio
+        sin("rave_luces_poner", 20, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                PI.put("rave_hora", l.getDayTime());
+                l.setDayTime(18000);
+                @SuppressWarnings("unchecked")
+                var antes = (java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState>) PI.get("rave_antes");
+                java.util.function.BiConsumer<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState> poner = (q, s) -> {
+                    antes.putIfAbsent(q.immutable(), l.getBlockState(q));
+                    l.setBlock(q, s, 3);
+                };
+                var techo = net.minecraft.core.BlockPos.containing(a2Punto(10, 0.0, 6.3));
+                poner.accept(techo, net.minecraft.world.level.block.Blocks.SMOOTH_STONE.defaultBlockState());
+                poner.accept(techo.below(), com.miscelanea.rave.RaveRegistro.BOLA.get().defaultBlockState());
+                poner.accept(net.minecraft.core.BlockPos.containing(a2Punto(12, -3.0, 0.3)), com.miscelanea.rave.RaveRegistro.FOCO.get().defaultBlockState()
+                        .setValue(com.miscelanea.muebles.Muebles.COLOR, net.minecraft.world.item.DyeColor.MAGENTA).setValue(com.miscelanea.rave.LucesRave.MODO, 1));
+                poner.accept(net.minecraft.core.BlockPos.containing(a2Punto(12, 3.0, 0.3)), com.miscelanea.rave.RaveRegistro.FOCO.get().defaultBlockState()
+                        .setValue(com.miscelanea.muebles.Muebles.COLOR, net.minecraft.world.item.DyeColor.CYAN).setValue(com.miscelanea.rave.LucesRave.MODO, 2));
+                poner.accept(net.minecraft.core.BlockPos.containing(a2Punto(13, 0.0, 0.3)), com.miscelanea.rave.RaveRegistro.ESTROBO.get().defaultBlockState()
+                        .setValue(com.miscelanea.rave.EstroboBlock.FACING, a2Mira.getOpposite()).setValue(com.miscelanea.rave.LucesRave.MODO, 3));
+            });
+        });
+        paso("rave_luces_foto", 60, () -> a2VistaA(a2Punto(11, 0.0, 2.5), a2Punto(3.5, 0.0, 2.2)));
+        vigila("rave_luces_chk", 20, () -> {
+            var l = mc.level;
+            int bolas = 0, focos = 0, estrobos = 0;
+            for (var be : com.miscelanea.rave.EstroboBlockEntity.CLIENTE) if (!be.isRemoved()) estrobos++;
+            var s0 = net.minecraft.core.BlockPos.containing(a2Punto(11, 0.0, 0.0));
+            for (var q : net.minecraft.core.BlockPos.betweenClosed(s0.offset(-6, -2, -6), s0.offset(6, 8, 6))) {
+                var be = l.getBlockEntity(q);
+                if (be instanceof com.miscelanea.rave.BolaBlockEntity) bolas++;
+                if (be instanceof com.miscelanea.rave.FocoBlockEntity) focos++;
+            }
+            RESUMEN.add("  rave luces: bolas " + bolas + ", focos " + focos + ", estroboscopios cargados " + estrobos);
+            if (bolas != 1 || focos != 2 || estrobos < 1) throw new IllegalStateException("faltan luces (bolas " + bolas + ", focos " + focos + ", estroboscopios " + estrobos + ")");
+        });
         sin("rave_limpiar", 20, () -> {
             var srv = mc.getSingleplayerServer();
             srv.execute(() -> {
@@ -5360,6 +5398,7 @@ public final class PruebaCI {
                 @SuppressWarnings("unchecked")
                 var antes = (java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState>) PI.get("rave_antes");
                 if (antes != null) antes.forEach((q, s) -> l.setBlock(q, s, 2));
+                if (PI.get("rave_hora") instanceof Long h) l.setDayTime(h);
                 var s0 = net.minecraft.core.BlockPos.containing(a2Punto(8, 0.0, 0.0));
                 for (var q : net.minecraft.core.BlockPos.betweenClosed(s0.offset(-20, -3, -20), s0.offset(20, 6, 20)))
                     if (l.getBlockState(q).is(com.miscelanea.rave.RaveRegistro.BARRA_SUELO.get())) l.removeBlock(q, false);

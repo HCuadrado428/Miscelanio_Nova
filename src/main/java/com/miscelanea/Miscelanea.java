@@ -246,6 +246,9 @@ public class Miscelanea {
             for (net.minecraft.world.item.DyeColor c : net.minecraft.world.item.DyeColor.values()) event.accept(com.miscelanea.rave.NeonItem.de(com.miscelanea.rave.RaveRegistro.TUBO_ITEM.get(), c));
             for (net.minecraft.world.item.DyeColor c : net.minecraft.world.item.DyeColor.values()) event.accept(com.miscelanea.rave.NeonItem.de(com.miscelanea.rave.RaveRegistro.PANEL_ITEM.get(), c));
             for (net.minecraft.world.item.DyeColor c : net.minecraft.world.item.DyeColor.values()) event.accept(com.miscelanea.rave.BarraLuminosaItem.de(c));
+            event.accept(com.miscelanea.rave.RaveRegistro.BOLA_ITEM);
+            event.accept(com.miscelanea.rave.RaveRegistro.FOCO_ITEM);
+            event.accept(com.miscelanea.rave.RaveRegistro.ESTROBO_ITEM);
         }
         if (event.getTabKey() == ModTabs.TORTURA.getKey()) {
             event.accept(com.miscelanea.tortura.TorturaRegistro.TRAMPA_OSO);

@@ -6587,5 +6587,21 @@
   "item.miscelanea.barra_luminosa": "Glow Stick",
   "item.miscelanea.barra_luminosa.ayuda": "Right-click: crack it and throw it. Where it lands it lights up for 5 minutes.",
   "block.miscelanea.barra_luminosa_suelo": "Glow Stick",
-  "entity.miscelanea.barra_lanzada": "Glow Stick"
+  "entity.miscelanea.barra_lanzada": "Glow Stick",
+  "block.miscelanea.bola_discoteca": "Disco Ball",
+  "block.miscelanea.foco_movil": "Moving Head Light",
+  "block.miscelanea.estroboscopio": "Strobe Light",
+  "block.miscelanea.bola_discoteca.ayuda": "Hang it from the ceiling: it spins and throws light spots all over the room.",
+  "block.miscelanea.bola_discoteca.ayuda2": "Right-click: on/off. Sneak + click: speed. Use a dye to colour the spots.",
+  "block.miscelanea.bola_discoteca.ayuda3": "It can also be switched on with redstone.",
+  "block.miscelanea.foco_movil.ayuda": "Moving head with a coloured beam that sweeps the room. On the floor or hanging from the ceiling.",
+  "block.miscelanea.foco_movil.ayuda2": "Right-click: on/off. Sneak + click: pattern (slow sweep, fast, circles, crazy). Use a dye for the colour.",
+  "block.miscelanea.foco_movil.ayuda3": "It can also be switched on with redstone.",
+  "block.miscelanea.estroboscopio.ayuda": "Flashes white. Whoever looks at it from close sees the flash on the whole screen (not with \"Hide Lightning Flashes\").",
+  "block.miscelanea.estroboscopio.ayuda2": "Right-click: on/off. Sneak + click: flash speed.",
+  "block.miscelanea.estroboscopio.ayuda3": "It can also be switched on with redstone.",
+  "rave.miscelanea.modo.0": "Mode: slow",
+  "rave.miscelanea.modo.1": "Mode: fast",
+  "rave.miscelanea.modo.2": "Mode: circles",
+  "rave.miscelanea.modo.3": "Mode: crazy"
 }
