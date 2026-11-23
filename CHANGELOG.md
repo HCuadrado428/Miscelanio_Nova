@@ -47,6 +47,7 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
   - **Centrífuga** (solo creativo): una silla en un brazo que gira. Mete al sujeto en la silla como en el resto de aparatos y usa el puesto de mando (el bloque de detrás): clic derecho arranca y para; agachado, cambia el nivel (suave 20 vueltas por minuto, intenso 45, extremo 80; el extremo pide pulsar dos veces). El sujeto marea y, cuando llega a toda velocidad, tiene un QTE de alternar para aguantar. Si no aguanta: en suave se marea, en intenso se desmaya y en extremo sale disparado (con daño, configurable). Al acabar apunta la ficha en el cuaderno (g máximas, tiempo aguantado y resultado) y da una muestra de mareo si llevas un tubo de ensayo. Necesita espacio libre alrededor. En la configuración (`[laboratorio]`): `estaciones_activadas`, `nivel_maximo` y `dano_extremo`.
 
 - **Suavis de The Midnight**: el suavis crudo y el cocinado (`midnight:raw_suavis` y `midnight:cooked_suavis`) ya valen para hacer el suavis seco en el horno, el ahumador o la hoguera, y de ahí la jeringuilla y la Poción de sedante. (La etiqueta `miscelanea:suavis` estaba vacía y no servía ninguno.)
+  - **Ecolocalización sin shaders**: en algunas instalaciones (con otros mods que tocan la niebla o el dibujado del mundo) no se veían las ondas ni las siluetas, o se veía el mundo normal. Ahora no depende de la niebla: se tapa todo de negro y las ondas, aristas y siluetas se dibujan al final, quedando igual que antes tapadas por las paredes.
 
 ## 1.2.1
 
