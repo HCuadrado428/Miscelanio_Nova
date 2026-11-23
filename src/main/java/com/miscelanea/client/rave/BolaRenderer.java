@@ -19,7 +19,6 @@ import org.joml.Vector3f;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoBlockRenderer;
-import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,7 +52,7 @@ public class BolaRenderer implements net.minecraft.client.renderer.blockentity.B
 
     public BolaRenderer(net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Context ctx) {
         geo = new GeoBlockRenderer<>(new Modelo());
-        geo.addRenderLayer(new AutoGlowingGeoLayer<>(geo));
+        geo.addRenderLayer(new CapaBrillo<>(geo, new net.minecraft.resources.ResourceLocation(com.miscelanea.Miscelanea.MOD_ID, "textures/block/rave/bola_discoteca_glowmask.png")));
     }
 
     static class Modelo extends GeoModel<BolaBlockEntity> {

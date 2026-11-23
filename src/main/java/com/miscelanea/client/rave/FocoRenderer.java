@@ -19,7 +19,6 @@ import org.joml.Vector3f;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoBlockRenderer;
-import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
 /**
  * El foco móvil: modelo de GeckoLib (base, horquilla que gira y cabeza que se inclina) y, encendido, un haz de luz de color
@@ -34,7 +33,7 @@ public class FocoRenderer implements net.minecraft.client.renderer.blockentity.B
 
     public FocoRenderer(net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Context ctx) {
         geo = new GeoBlockRenderer<>(new Modelo());
-        geo.addRenderLayer(new AutoGlowingGeoLayer<>(geo));
+        geo.addRenderLayer(new CapaBrillo<>(geo, new net.minecraft.resources.ResourceLocation(com.miscelanea.Miscelanea.MOD_ID, "textures/block/rave/foco_movil_glowmask.png")));
     }
 
     static float pan(FocoBlockEntity e, float pt) {

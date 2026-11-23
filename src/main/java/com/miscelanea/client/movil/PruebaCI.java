@@ -5430,10 +5430,10 @@ public final class PruebaCI {
                     + " con " + (m == null ? -1 : m.altavoces()) + " altavoces, canciones en la lista " + com.miscelanea.rave.Pistas.todas().size());
             // la cabina (3 de ancho), las dos torres (3 de alto) y la bola (2 huecos debajo) rellenan sus huecos con partes
             int partes = 0;
-            var sl = mc.getSingleplayerServer().overworld();
+            // en el cliente: así se comprueba también que a cada parte le ha llegado dónde está su maestro
             for (var q : net.minecraft.core.BlockPos.betweenClosed(pos.offset(-6, -1, -6), pos.offset(6, 8, 6)))
-                if (sl.getBlockState(q).is(com.miscelanea.multibloque.MultiRegistro.PARTE.get())
-                        && sl.getBlockEntity(q) instanceof com.miscelanea.multibloque.ParteBlockEntity pb && pb.maestro() != null) partes++;
+                if (mc.level.getBlockState(q).is(com.miscelanea.multibloque.MultiRegistro.PARTE.get())
+                        && mc.level.getBlockEntity(q) instanceof com.miscelanea.multibloque.ParteBlockEntity pb && pb.maestro() != null) partes++;
             RESUMEN.add("  rave multibloque: " + partes + " partes (cabina 2 + torres 4 + bola 2)");
             if (partes != 8) throw new IllegalStateException("las partes de los bloques grandes no están bien (" + partes + " de 8)");
             if (m == null || !m.sonando()) throw new IllegalStateException("la mesa de DJ no suena");

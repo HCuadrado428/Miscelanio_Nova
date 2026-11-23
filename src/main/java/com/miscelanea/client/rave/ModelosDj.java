@@ -7,7 +7,6 @@ import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoBlockRenderer;
-import software.bernie.geckolib.renderer.layer.AutoGlowingGeoLayer;
 
 /** Modelos de GeckoLib de la cabina de DJ (los platos giran mientras suena) y de la torre de altavoces (los conos laten con el ritmo). */
 final class ModelosDj {
@@ -44,7 +43,7 @@ final class ModelosDj {
                 getBone("plato_der").ifPresent(b -> b.setRotY(-t * 1.07F));
             }
         });
-        r.addRenderLayer(new AutoGlowingGeoLayer<>(r));
+        r.addRenderLayer(new CapaBrillo<>(r, new net.minecraft.resources.ResourceLocation(com.miscelanea.Miscelanea.MOD_ID, "textures/block/rave/mesa_dj_glowmask.png")));
         return r;
     }
 
@@ -81,7 +80,7 @@ final class ModelosDj {
                 getBone("cono_b").ifPresent(b -> b.setPosZ(-0.18F * latido));
             }
         });
-        r.addRenderLayer(new AutoGlowingGeoLayer<>(r));
+        r.addRenderLayer(new CapaBrillo<>(r, new net.minecraft.resources.ResourceLocation(com.miscelanea.Miscelanea.MOD_ID, "textures/block/rave/altavoz_concierto_glowmask.png")));
         return r;
     }
 }
