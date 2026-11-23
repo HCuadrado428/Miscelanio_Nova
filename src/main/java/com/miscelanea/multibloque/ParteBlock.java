@@ -107,10 +107,10 @@ public class ParteBlock extends BaseEntityBlock {
 
     @Override
     public void onRemove(BlockState s, Level l, BlockPos p, BlockState nuevo, boolean mov) {
-        // roto por otra cosa (una explosión, un pistón...): el maestro se rompe y suelta su objeto
+        // quitada por otra cosa (una explosión, un comando...): el maestro se va con ella, sin soltar nada (como media puerta)
         if (!s.is(nuevo.getBlock()) && !l.isClientSide) {
             BlockPos m = maestro(l, p);
-            if (m != null) l.destroyBlock(m, true);
+            if (m != null) l.destroyBlock(m, false);
         }
         super.onRemove(s, l, p, nuevo, mov);
     }

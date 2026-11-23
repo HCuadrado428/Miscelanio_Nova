@@ -44,8 +44,9 @@ public class MicrogravedadBlockEntity extends EstacionBlockEntity {
     private Vec3 flota() {
         double t = level == null ? 0 : level.getGameTime();
         boolean sube = encendida;
-        double y = sube ? 0.55 + 0.3 * Math.sin(t * 0.07) : 0.05;
-        double dx = sube ? 0.14 * Math.cos(t * 0.05) : 0, dz = sube ? 0.14 * Math.sin(t * 0.06) : 0;
+        // dentro de la cápsula (2 bloques de alto) queda poco hueco por encima de la cabeza: flota un palmo y se mece
+        double y = sube ? 0.15 + 0.045 * Math.sin(t * 0.07) : 0.1;
+        double dx = sube ? 0.07 * Math.cos(t * 0.05) : 0, dz = sube ? 0.07 * Math.sin(t * 0.06) : 0;
         return new Vec3(worldPosition.getX() + 0.5 + dx, worldPosition.getY() + y, worldPosition.getZ() + 0.5 + dz);
     }
 

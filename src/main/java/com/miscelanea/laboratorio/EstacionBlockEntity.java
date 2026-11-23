@@ -65,7 +65,7 @@ public abstract class EstacionBlockEntity extends AparatoBlockEntity {
 
     @Override
     public Vec3 sitioVictima(LivingEntity v) {
-        return new Vec3(worldPosition.getX() + 0.5, worldPosition.getY() + 0.05, worldPosition.getZ() + 0.5);
+        return new Vec3(worldPosition.getX() + 0.5, worldPosition.getY() + 0.1, worldPosition.getZ() + 0.5);
     }
 
     @Override
