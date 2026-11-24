@@ -313,9 +313,15 @@ public final class PruebaCI {
                 if (sp == null) return;
                 var cerdo = net.minecraft.world.entity.EntityType.PIG.create(sp.serverLevel());
                 var mira = sp.getLookAngle().multiply(1, 0, 1).normalize().scale(2.5);
-                cerdo.moveTo(sp.getX() + mira.x, sp.getY(), sp.getZ() + mira.z, 0, 0);
+                // sobre el suelo de esa columna: a la altura del jugador podía caer dentro de una ladera, y el cerdo se
+                // asfixiaba (muere en 5 s) antes de que el sedante hiciera efecto (6 s): la prueba fallaba según el terreno
+                double cx = sp.getX() + mira.x, cz = sp.getZ() + mira.z;
+                int suelo = sp.serverLevel().getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, net.minecraft.util.Mth.floor(cx), net.minecraft.util.Mth.floor(cz));
+                double cy = Math.abs(suelo - sp.getY()) <= 4 ? suelo : sp.getY();
+                cerdo.moveTo(cx, cy, cz, 0, 0);
                 boolean puesto = sp.serverLevel().addFreshEntity(cerdo);
-                RESUMEN.add("  sedante: cerdo puesto " + puesto + " en " + cerdo.blockPosition().toShortString() + " (jugador en " + sp.blockPosition().toShortString() + ")");
+                RESUMEN.add("  sedante: cerdo puesto " + puesto + " en " + cerdo.blockPosition().toShortString() + " (jugador en " + sp.blockPosition().toShortString()
+                        + ", suelo de su columna " + suelo + ", dentro de un bloque " + cerdo.isInWall() + ")");
                 com.miscelanea.sedante.Sedante.pinchar(cerdo, sp, false);
                 SEDANTE_CERDO = cerdo.getUUID();
             });
@@ -327,7 +333,8 @@ public final class PruebaCI {
                 if (SEDANTE_OK) return;
                 var c = mc.getSingleplayerServer().overworld().getEntity(SEDANTE_CERDO);
                 SEDANTE_OK = c instanceof net.minecraft.world.entity.LivingEntity le && com.miscelanea.tortura.Lazo.estado(le) == com.miscelanea.tortura.Lazo.DERRIBADO;
-                if (kk == 0 || kk == 7) RESUMEN.add("  sedante: cerdo " + (c == null ? "no existe" : c.isAlive() ? "vivo" : "muerto") + " en " + (c == null ? "-" : c.blockPosition().toShortString()));
+                if (kk == 0 || kk == 7 || c == null) RESUMEN.add("  sedante (" + kk + "): cerdo " + (c == null ? "no existe" : c.isAlive() ? "vivo" : "muerto") + " en " + (c == null ? "-" : c.blockPosition().toShortString())
+                        + (c instanceof net.minecraft.world.entity.LivingEntity le ? ", vida " + le.getHealth() + ", dentro de un bloque " + le.isInWall() : ""));
             });
         }
         paso("50_sedante_cerdo", 10, () -> {
