@@ -1,0 +1,23 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/camaras/camara"
+  },
+  "facing=east": {
+   "model": "miscelanea:block/camaras/camara",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/camaras/camara",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/camaras/camara",
+   "y": 270
+  },
+  "facing=down": {
+   "model": "miscelanea:block/camaras/camara",
+   "x": 90
+  }
+ }
+}

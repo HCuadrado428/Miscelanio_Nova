@@ -25,9 +25,9 @@ public final class ClipCliente {
 
     /** Un vídeo ya descargado y separado en imágenes. */
     public static final class Clip {
-        final int fps, w, h;
-        final List<byte[]> imagenes;
-        final byte[] audio;
+        public final int fps, w, h;
+        public final List<byte[]> imagenes;
+        public final byte[] audio;
 
         Clip(int fps, int w, int h, List<byte[]> imagenes, byte[] audio) {
             this.fps = fps;
@@ -37,7 +37,7 @@ public final class ClipCliente {
             this.audio = audio;
         }
 
-        int ms() {
+        public int ms() {
             return imagenes.size() * 1000 / fps;
         }
     }
@@ -135,7 +135,7 @@ public final class ClipCliente {
         return ((b[i] & 0xFF) << 24) | ((b[i + 1] & 0xFF) << 16) | ((b[i + 2] & 0xFF) << 8) | (b[i + 3] & 0xFF);
     }
 
-    static Clip leer(byte[] b) {
+    public static Clip leer(byte[] b) {
         try {
             if (b == null || b.length < 13) return null;
             for (int i = 0; i < 4; i++) if (b[i] != Clips.MAGIA[i]) return null;

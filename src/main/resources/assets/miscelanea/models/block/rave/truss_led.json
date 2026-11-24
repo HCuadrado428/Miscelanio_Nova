@@ -1,0 +1,305 @@
+{
+ "parent": "minecraft:block/block",
+ "textures": {
+  "a": "miscelanea:block/rave/aluminio",
+  "n": "miscelanea:block/rave/neon_tubo",
+  "particle": "miscelanea:block/rave/aluminio"
+ },
+ "elements": [
+  {
+   "from": [
+    5.5,
+    4.6,
+    5.5
+   ],
+   "to": [
+    10.5,
+    5,
+    10.5
+   ],
+   "faces": {
+    "down": {
+     "texture": "#n",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "up": {
+     "texture": "#n",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "north": {
+     "texture": "#n",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "south": {
+     "texture": "#n",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "west": {
+     "texture": "#n",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "east": {
+     "texture": "#n",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    }
+   }
+  },
+  {
+   "from": [
+    4.6,
+    5.5,
+    5.5
+   ],
+   "to": [
+    5,
+    10.5,
+    10.5
+   ],
+   "faces": {
+    "down": {
+     "texture": "#n",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "up": {
+     "texture": "#n",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "north": {
+     "texture": "#n",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "south": {
+     "texture": "#n",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "west": {
+     "texture": "#n",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "east": {
+     "texture": "#n",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    }
+   }
+  },
+  {
+   "from": [
+    11,
+    5.5,
+    5.5
+   ],
+   "to": [
+    11.4,
+    10.5,
+    10.5
+   ],
+   "faces": {
+    "down": {
+     "texture": "#n",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "up": {
+     "texture": "#n",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "north": {
+     "texture": "#n",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "south": {
+     "texture": "#n",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "west": {
+     "texture": "#n",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    },
+    "east": {
+     "texture": "#n",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ],
+     "tintindex": 0,
+     "forge_data": {
+      "block_light": 15,
+      "sky_light": 15
+     }
+    }
+   }
+  }
+ ],
+ "ambientocclusion": false
+}

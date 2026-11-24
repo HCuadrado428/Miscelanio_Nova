@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/rave/panel_luces"
+  },
+  "facing=east": {
+   "model": "miscelanea:block/rave/panel_luces",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/rave/panel_luces",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/rave/panel_luces",
+   "y": 270
+  }
+ }
+}

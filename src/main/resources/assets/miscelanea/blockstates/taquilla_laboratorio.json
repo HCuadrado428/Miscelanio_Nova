@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/laboratorio/taquilla_laboratorio"
+  },
+  "facing=east": {
+   "model": "miscelanea:block/laboratorio/taquilla_laboratorio",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/laboratorio/taquilla_laboratorio",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/laboratorio/taquilla_laboratorio",
+   "y": 270
+  }
+ }
+}

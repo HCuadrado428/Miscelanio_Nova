@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/rave/altavoz_concierto"
+  },
+  "facing=east": {
+   "model": "miscelanea:block/rave/altavoz_concierto",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/rave/altavoz_concierto",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/rave/altavoz_concierto",
+   "y": 270
+  }
+ }
+}

@@ -356,7 +356,7 @@ public final class NotasVozCliente {
         }
     }
 
-    static void parar() {
+    public static void parar() {
         if (sonido != null) Minecraft.getInstance().getSoundManager().stop(sonido);
         sonido = null;
         sonando = -1;
@@ -364,7 +364,7 @@ public final class NotasVozCliente {
     }
 
     /** Hace sonar el sonido de un vídeo corto (ya descargado); devuelve si ha empezado. */
-    static boolean sonarBlob(byte[] blob) {
+    public static boolean sonarBlob(byte[] blob) {
         parar();
         if (blob == null || blob.length == 0 || !MovilVoz.codecDisponible()) return false;
         short[] pcm = decodificar(blob);

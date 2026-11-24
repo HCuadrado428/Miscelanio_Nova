@@ -1,0 +1,7 @@
+{
+ "parent": "minecraft:block/door_top_right",
+ "textures": {
+  "top": "miscelanea:block/laboratorio/puerta_superior",
+  "bottom": "miscelanea:block/laboratorio/puerta_inferior"
+ }
+}

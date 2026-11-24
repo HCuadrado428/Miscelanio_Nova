@@ -27,12 +27,13 @@
 11. [Pociones y efectos](#pociones-y-efectos)
 12. [Bromas](#bromas)
 13. [Sala de juegos](#sala-de-juegos)
-14. [Colección, pesca y tesoros](#colección-pesca-y-tesoros)
-15. [Casa, cocina y movimiento](#casa-cocina-y-movimiento)
-16. [Comandos](#comandos)
-17. [Configuración](#configuración)
-18. [Compatibilidad con otros mods](#compatibilidad-con-otros-mods)
-19. [Compilar desde el código](#compilar-desde-el-código)
+14. [Rave, discoteca y concierto](#rave-discoteca-y-concierto)
+15. [Colección, pesca y tesoros](#colección-pesca-y-tesoros)
+16. [Casa, cocina y movimiento](#casa-cocina-y-movimiento)
+17. [Comandos](#comandos)
+18. [Configuración](#configuración)
+19. [Compatibilidad con otros mods](#compatibilidad-con-otros-mods)
+20. [Compilar desde el código](#compilar-desde-el-código)
 
 ---
 
@@ -311,7 +312,39 @@ Inofensivas pero molestas. Mejor acordarlas con el grupo antes de usarlas.
 
 Trampas y aparatos "de película de miedo", en versión graciosa: cepos, grilletes, jaulas, la caja de agua, el péndulo, la silla de inmersión, la silla de interrogatorio y más. Muchos tienen su minijuego para escapar (ganzúa, alicates, sierra...), y al que está en el cepo se le pueden tirar tomates y huevos podridos. Es para rol y hay que acordarlo con quien participe. Incluye la **jeringuilla de sedante**: se hace con suavis seco y un poco de agua, marea a quien pincha (con un forcejeo para no dormirse, más difícil por la espalda) y, si no lo aguanta, lo deja dormido en el suelo medio minuto. El administrador puede desactivar partes en la configuración.
 
+### Laboratorio de experimentos
+
+En la pestaña **Tortura**: estaciones donde un cautivo hace de sujeto de pruebas, con un cuaderno que va apuntando los resultados. Todas se manejan desde un puesto de mando en el bloque de detrás y tienen tres niveles (**suave**, cómico; **intenso**, inquietante; **extremo**, con daño de verdad, que pide pulsar dos veces para confirmarlo). En la configuración (`[laboratorio]`) se pueden apagar las estaciones o limitar el nivel máximo.
+
+- **Para medir y anotar:** *cuaderno de laboratorio* (lee las fichas), *pulsómetro* (pulso y miedo de quien tocas), *cronómetro* y *portapapeles* (pone "Sujeto N" a cada jugador).
+- **Estaciones** (solo creativo): *centrífuga* (silla en un brazo que gira, con QTE para aguantar), *cámara de temperatura* (cabina de cristal con termostato de -3 a +3), *tanque de privación sensorial* (oscuridad y ruidos que solo oye el sujeto) y *laberinto de la rata* (un laberinto que se construye solo; el sujeto, encogido, tiene que llegar al queso esquivando baldosas con descarga).
+- **Muestras:** al acabar un experimento, con un *tubo de ensayo* en el inventario, sale una muestra (de mareo, de frío, de calor o de miedo).
+- **Mezclas:** en la *mesa de mezclas* dos ingredientes (muestras, queso o sueros) dan un *suero sin etiquetar* con uno de nueve efectos, siempre el mismo para cada pareja. El *analizador* lo identifica y lo apunta en el cuaderno.
+- **Destilador térmico:** convierte el suavis seco (de The Midnight, cocinado) en sedante clase M con fuego debajo; con una botella de cristal se saca la Poción de sedante.
+
+### Cámaras de vigilancia y televisiones
+
+- **Cámara de vigilancia:** se cuelga de una pared o del techo y manda su imagen en directo a las pantallas de su canal (clic derecho: canal siguiente). Si la renombras en un yunque, su nombre sale en la pantalla.
+- **Televisión:** pantalla plana de 2 bloques de ancho (ocupa su bloque y el de su derecha). Clic derecho: la imagen en pantalla grande; agachado + clic: canal (el 0 rota entre todas las cámaras).
+- **Monitor de laboratorio:** pon varios juntos en rectángulo (hasta 8x8) y forman una sola pantalla grande.
+- En el móvil, la app **Cámaras** enseña cualquier cámara desde donde estés.
+
 ---
+
+## Rave, discoteca y concierto
+
+Pestaña **Rave** del creativo. Todo se enciende o apaga con clic derecho, cambia de patrón con agachado + clic, de color con un tinte, y también va con redstone.
+
+- **Neón:** tubos y paneles de 16 colores que alumbran, barras luminosas que se lanzan y alumbran 5 minutos donde caen, y pulseras y collares de neón para llevar puestos (clic derecho; no ocupan armadura).
+- **Luces:** bola de discoteca (bola de espejos grande: cuélgala con 2 bloques libres debajo; manchas de luz por todo el local), foco móvil (haz de color que barre; en el suelo o colgado) y estroboscopio (respeta «Ocultar destellos»).
+- **Cabina de DJ y torres de altavoces:** la cabina mide 3 bloques de ancho y cada torre 3 de alto (necesitan ese hueco libre; se ponen y se rompen enteras). La cabina pone las canciones de la pista de baile y los discos, sueltas o en una lista de reproducción (en orden o al azar); se oye a 32 bloques y cada altavoz cercano suma 24 (hasta 128). Con Simple Voice Chat, **🎧 Emitir mi PC** saca por la mesa lo que suene en tu ordenador (elige la entrada «Mezcla estéreo» o un cable de audio virtual).
+- **Efectos:** máquina de humo de colores, fuente de chispas frías y cañón de confeti.
+- **Escenario:** andamio (truss) que se une solo y lleva luces LED, tarima y suelo LED que cambia al ritmo de la mesa.
+- **Pantalla de vídeo:** paneles que forman una pantalla (hasta 12×8) y enseñan en bucle un vídeo corto de la galería de tu móvil.
+- **Panel y mando de luces:** manejan de golpe todas las luces a 24 bloques (encender, apagar, patrón, color, confeti).
+- **Caramelos de fiesta:** corazón, piruleta arcoíris, polvo de estrellas y chicle eléctrico: un subidón con efectos y, al acabar, medio minuto de bajón.
+
+Configuración en `[rave]` (alcance de la música). Las recetas están en el CHANGELOG.
 
 ## Colección, pesca y tesoros
 

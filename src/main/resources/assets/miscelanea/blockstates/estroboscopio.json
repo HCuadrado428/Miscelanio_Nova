@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/rave/estroboscopio"
+  },
+  "facing=east": {
+   "model": "miscelanea:block/rave/estroboscopio",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/rave/estroboscopio",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/rave/estroboscopio",
+   "y": 270
+  }
+ }
+}

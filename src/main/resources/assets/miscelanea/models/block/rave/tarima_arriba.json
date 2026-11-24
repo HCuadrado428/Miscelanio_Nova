@@ -1,0 +1,8 @@
+{
+ "parent": "minecraft:block/slab_top",
+ "textures": {
+  "bottom": "miscelanea:block/rave/tarima_lado",
+  "top": "miscelanea:block/rave/tarima_arriba",
+  "side": "miscelanea:block/rave/tarima_lado"
+ }
+}

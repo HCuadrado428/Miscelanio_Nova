@@ -25,10 +25,10 @@ final class VistasApps {
     // ================================================================== inicio
     static final class Inicio extends Vista {
         /** apps de la cuadrícula y del dock. */
-        private static final int[] REJILLA = {Ui.APP_MINEGRAM, Ui.APP_MAPA, Ui.APP_BANCO, Ui.APP_AGENDA, Ui.APP_RELOJ, Ui.APP_LINTERNA, Ui.APP_AJUSTES},
+        private static final int[] REJILLA = {Ui.APP_MINEGRAM, Ui.APP_MAPA, Ui.APP_BANCO, Ui.APP_AGENDA, Ui.APP_RELOJ, Ui.APP_LINTERNA, Ui.APP_CAMARAS, Ui.APP_AJUSTES},
                 DOCK = {Ui.APP_LLAMAR, Ui.APP_CHATS, Ui.APP_CAMARA, Ui.APP_FOTOS};
         private static final String[] NOMBRES = {"app_chats", "app_llamar", "app_agenda", "app_camara", "app_fotos", "app_reloj", "app_linterna", "app_ajustes",
-                "app_minegram", "app_mapa", "app_banco"};
+                "app_minegram", "app_mapa", "app_banco", "app_camaras"};
 
         @Override
         int fondoBarra() {
@@ -142,6 +142,7 @@ final class VistasApps {
                 case Ui.APP_LINTERNA -> new Linterna();
                 case Ui.APP_MINEGRAM -> MovilCliente.minegram ? new VistasMinegram.Feed() : new Desactivada("app_minegram");
                 case Ui.APP_MAPA -> new VistasMapa.Mapa();
+                case Ui.APP_CAMARAS -> new VistasCamaras.Camaras();
                 case Ui.APP_BANCO -> MovilCliente.banco ? new VistasBanco.Banco() : new Desactivada("app_banco");
                 default -> new Ajustes();
             });

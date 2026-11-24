@@ -1,0 +1,30 @@
+{
+ "variants": {
+  "facing=up": {
+   "model": "miscelanea:block/rave/panel_neon"
+  },
+  "facing=down": {
+   "model": "miscelanea:block/rave/panel_neon",
+   "x": 180
+  },
+  "facing=north": {
+   "model": "miscelanea:block/rave/panel_neon",
+   "x": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/rave/panel_neon",
+   "x": 90,
+   "y": 180
+  },
+  "facing=east": {
+   "model": "miscelanea:block/rave/panel_neon",
+   "x": 90,
+   "y": 90
+  },
+  "facing=west": {
+   "model": "miscelanea:block/rave/panel_neon",
+   "x": 90,
+   "y": 270
+  }
+ }
+}

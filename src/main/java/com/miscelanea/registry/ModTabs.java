@@ -33,6 +33,8 @@ public final class ModTabs {
     public static final RegistryObject<CreativeModeTab> BROMAS = tab("bromas", () -> new ItemStack(com.miscelanea.bromas.BromasRegistro.VARITA_UWU.get()));
     /** Varios: muebles, cocina, aspirafantasmas, bichos, tesoros... */
     public static final RegistryObject<CreativeModeTab> PELUCHES = tab("peluches", () -> new ItemStack(com.miscelanea.feria.Peluches.OBJETOS.get(com.miscelanea.feria.Peluches.NOMBRES[0]).get()));
+    /** Rave, discoteca y concierto: neón, luces, DJ, efectos. */
+    public static final RegistryObject<CreativeModeTab> RAVE = tab("rave", () -> com.miscelanea.rave.BarraLuminosaItem.de(net.minecraft.world.item.DyeColor.MAGENTA));
     public static final RegistryObject<CreativeModeTab> VARIOS = tab("varios", () -> new ItemStack(ModItems.ASPIRAFANTASMAS.get()));
 
     private static RegistryObject<CreativeModeTab> tab(String nombre, Supplier<ItemStack> icono) {
