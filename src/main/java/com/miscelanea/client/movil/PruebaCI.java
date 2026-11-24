@@ -1573,6 +1573,25 @@ public final class PruebaCI {
         });
     }
 
+    /** Mientras está puesto, se apunta todo lo que hace vibración a menos de 9 bloques del sensor de sculk, y quién lo hace. */
+    private static volatile boolean rifleEscucha;
+    private static final List<String> RIFLE_OIDO = java.util.Collections.synchronizedList(new ArrayList<>());
+    /** De eso, lo que es ruido de un disparo (del tirador o de la bala): lo que el Silenciador tiene que quitar. */
+    private static final List<String> RIFLE_OIDO_TIRO = java.util.Collections.synchronizedList(new ArrayList<>());
+
+    @SubscribeEvent
+    public static void rifleVibracion(net.minecraftforge.event.VanillaGameEvent e) {
+        var sensor = rifleSensor;
+        if (!ACTIVA || !rifleEscucha || sensor == null || e.getEventPosition().distanceToSqr(Vec3.atCenterOf(sensor)) > 81) return;
+        var c = e.getCause();
+        String que = e.getVanillaEvent().getName() + " de " + (c == null ? "nadie" : net.minecraft.world.entity.EntityType.getKey(c.getType()).getPath());
+        RIFLE_OIDO.add(que);
+        var ev = e.getVanillaEvent();
+        boolean tiro = ev == net.minecraft.world.level.gameevent.GameEvent.PROJECTILE_SHOOT || ev == net.minecraft.world.level.gameevent.GameEvent.PROJECTILE_LAND
+                || ev == net.minecraft.world.level.gameevent.GameEvent.EXPLODE;
+        if (tiro && (c instanceof net.minecraft.world.entity.player.Player || c instanceof com.miscelanea.armasfuego.rifle.BalaRifle)) RIFLE_OIDO_TIRO.add(que);
+    }
+
     /** Lo mismo pero dentro de n ticks del servidor (para mirar algo que dura poco, como un sensor de sculk). */
     private static final List<Object[]> RIFLE_TRAS = new ArrayList<>();
 
@@ -1877,11 +1896,19 @@ public final class PruebaCI {
                             net.minecraft.world.level.block.state.properties.SculkSensorPhase.INACTIVE).setValue(net.minecraft.world.level.block.SculkSensorBlock.POWER, 0), 3);
                 }
             });
+            // el sensor se activa con cualquier cosa que pase cerca (un animal andando, quitar el ojo del catalejo...), así que
+            // mirar solo si está activo fallaba a ratos sin que el disparo sonara: se apunta qué vibraciones hay junto al
+            // sensor en esos ticks y solo cuenta el ruido de un disparo (del tirador o de la bala)
+            RIFLE_OIDO.clear();
+            RIFLE_OIDO_TIRO.clear();
+            rifleEscucha = true;
             rifleClic();
             rifleSrvTras(8, sp -> {
+                rifleEscucha = false;
                 var fase = net.minecraft.world.level.block.SculkSensorBlock.getPhase(sp.serverLevel().getBlockState(rifleSensor));
-                RESUMEN.add("  rifle: con Silenciador, el sensor de sculk tras el disparo: " + fase);
-                if (fase == net.minecraft.world.level.block.state.properties.SculkSensorPhase.ACTIVE) rifleFallo = "el sensor de sculk ha oído el disparo con silenciador";
+                RESUMEN.add("  rifle: con Silenciador, el sensor de sculk tras el disparo: " + fase + "; vibraciones junto al sensor: "
+                        + (RIFLE_OIDO.isEmpty() ? "ninguna" : String.join(", ", RIFLE_OIDO)));
+                if (!RIFLE_OIDO_TIRO.isEmpty()) rifleFallo = "el disparo con silenciador ha hecho ruido para el sculk: " + String.join(", ", RIFLE_OIDO_TIRO);
             });
         });
         sin("rifle_silencio_espera", 15, () -> {});
