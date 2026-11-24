@@ -313,15 +313,26 @@ public final class PruebaCI {
                 if (sp == null) return;
                 var cerdo = net.minecraft.world.entity.EntityType.PIG.create(sp.serverLevel());
                 var mira = sp.getLookAngle().multiply(1, 0, 1).normalize().scale(2.5);
-                // sobre el suelo de esa columna: a la altura del jugador podía caer dentro de una ladera, y el cerdo se
-                // asfixiaba (muere en 5 s) antes de que el sedante hiciera efecto (6 s): la prueba fallaba según el terreno
+                // en un hueco libre: delante del jugador puede haber una ladera o un bloque pegado, y un cerdo que roza un
+                // bloque a la altura de los ojos se asfixia; si moría antes de los 6 s que tarda el sedante, la prueba fallaba.
+                // Se prueban varios sitios alrededor (delante, a los lados, detrás) sobre el suelo de cada columna
+                var nivel = sp.serverLevel();
                 double cx = sp.getX() + mira.x, cz = sp.getZ() + mira.z;
-                int suelo = sp.serverLevel().getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, net.minecraft.util.Mth.floor(cx), net.minecraft.util.Mth.floor(cz));
-                double cy = Math.abs(suelo - sp.getY()) <= 4 ? suelo : sp.getY();
-                cerdo.moveTo(cx, cy, cz, 0, 0);
+                int suelo = (int) sp.getY();
+                boolean libre = false;
+                for (int g = 0; g < 8 && !libre; g++) {
+                    var dir = mira.yRot((float) Math.toRadians(new int[]{0, 45, -45, 90, -90, 135, -135, 180}[g]));
+                    cx = sp.getX() + dir.x;
+                    cz = sp.getZ() + dir.z;
+                    suelo = nivel.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, net.minecraft.util.Mth.floor(cx), net.minecraft.util.Mth.floor(cz));
+                    if (Math.abs(suelo - sp.getY()) > 4) continue;
+                    cerdo.moveTo(cx, suelo, cz, 0, 0);
+                    libre = nivel.noCollision(cerdo, cerdo.getBoundingBox().inflate(0.45, 0, 0.45));
+                }
+                if (!libre) cerdo.moveTo(sp.getX() + mira.x, sp.getY(), sp.getZ() + mira.z, 0, 0);
                 boolean puesto = sp.serverLevel().addFreshEntity(cerdo);
                 RESUMEN.add("  sedante: cerdo puesto " + puesto + " en " + cerdo.blockPosition().toShortString() + " (jugador en " + sp.blockPosition().toShortString()
-                        + ", suelo de su columna " + suelo + ", dentro de un bloque " + cerdo.isInWall() + ")");
+                        + ", suelo de su columna " + suelo + ", hueco libre " + libre + ", dentro de un bloque " + cerdo.isInWall() + ")");
                 com.miscelanea.sedante.Sedante.pinchar(cerdo, sp, false);
                 SEDANTE_CERDO = cerdo.getUUID();
             });
