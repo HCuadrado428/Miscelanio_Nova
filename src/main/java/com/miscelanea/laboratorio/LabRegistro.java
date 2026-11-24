@@ -179,10 +179,10 @@ public final class LabRegistro {
             () -> new DecoracionAltaBlock(metal(), 1, 0, 2.4, 15, 32, 14.4));
     public static final RegistryObject<Item> TAQUILLA_ITEM = ITEMS.register("taquilla_laboratorio", () -> new BlockItem(TAQUILLA.get(), new Item.Properties()));
     public static final RegistryObject<Block> MICROSCOPIO = BLOCKS.register("microscopio",
-            () -> new DecoracionBlock(metal(), 3, 0, 3, 13, 14, 13));
+            () -> new DecoracionBlock(metal(), 4, 0, 4, 12, 16, 13));
     public static final RegistryObject<Item> MICROSCOPIO_ITEM = ITEMS.register("microscopio", () -> new BlockItem(MICROSCOPIO.get(), new Item.Properties()));
     public static final RegistryObject<Block> PROBETAS = BLOCKS.register("probetas",
-            () -> new DecoracionBlock(metal().sound(SoundType.GLASS), 1, 0, 1, 15, 13, 15));
+            () -> new DecoracionBlock(metal().sound(SoundType.GLASS), 1.5, 0, 4.5, 14.5, 11.5, 11.5));
     public static final RegistryObject<Item> PROBETAS_ITEM = ITEMS.register("probetas", () -> new BlockItem(PROBETAS.get(), new Item.Properties()));
 
     // ---- ropa del científico
