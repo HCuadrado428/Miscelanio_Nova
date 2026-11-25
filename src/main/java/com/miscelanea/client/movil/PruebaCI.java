@@ -313,9 +313,26 @@ public final class PruebaCI {
                 if (sp == null) return;
                 var cerdo = net.minecraft.world.entity.EntityType.PIG.create(sp.serverLevel());
                 var mira = sp.getLookAngle().multiply(1, 0, 1).normalize().scale(2.5);
-                cerdo.moveTo(sp.getX() + mira.x, sp.getY(), sp.getZ() + mira.z, 0, 0);
+                // en un hueco libre: delante del jugador puede haber una ladera o un bloque pegado, y un cerdo que roza un
+                // bloque a la altura de los ojos se asfixia; si moría antes de los 6 s que tarda el sedante, la prueba fallaba.
+                // Se prueban varios sitios alrededor (delante, a los lados, detrás) sobre el suelo de cada columna
+                var nivel = sp.serverLevel();
+                double cx = sp.getX() + mira.x, cz = sp.getZ() + mira.z;
+                int suelo = (int) sp.getY();
+                boolean libre = false;
+                for (int g = 0; g < 8 && !libre; g++) {
+                    var dir = mira.yRot((float) Math.toRadians(new int[]{0, 45, -45, 90, -90, 135, -135, 180}[g]));
+                    cx = sp.getX() + dir.x;
+                    cz = sp.getZ() + dir.z;
+                    suelo = nivel.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, net.minecraft.util.Mth.floor(cx), net.minecraft.util.Mth.floor(cz));
+                    if (Math.abs(suelo - sp.getY()) > 4) continue;
+                    cerdo.moveTo(cx, suelo, cz, 0, 0);
+                    libre = nivel.noCollision(cerdo, cerdo.getBoundingBox().inflate(0.45, 0, 0.45));
+                }
+                if (!libre) cerdo.moveTo(sp.getX() + mira.x, sp.getY(), sp.getZ() + mira.z, 0, 0);
                 boolean puesto = sp.serverLevel().addFreshEntity(cerdo);
-                RESUMEN.add("  sedante: cerdo puesto " + puesto + " en " + cerdo.blockPosition().toShortString() + " (jugador en " + sp.blockPosition().toShortString() + ")");
+                RESUMEN.add("  sedante: cerdo puesto " + puesto + " en " + cerdo.blockPosition().toShortString() + " (jugador en " + sp.blockPosition().toShortString()
+                        + ", suelo de su columna " + suelo + ", hueco libre " + libre + ", dentro de un bloque " + cerdo.isInWall() + ")");
                 com.miscelanea.sedante.Sedante.pinchar(cerdo, sp, false);
                 SEDANTE_CERDO = cerdo.getUUID();
             });
@@ -327,7 +344,8 @@ public final class PruebaCI {
                 if (SEDANTE_OK) return;
                 var c = mc.getSingleplayerServer().overworld().getEntity(SEDANTE_CERDO);
                 SEDANTE_OK = c instanceof net.minecraft.world.entity.LivingEntity le && com.miscelanea.tortura.Lazo.estado(le) == com.miscelanea.tortura.Lazo.DERRIBADO;
-                if (kk == 0 || kk == 7) RESUMEN.add("  sedante: cerdo " + (c == null ? "no existe" : c.isAlive() ? "vivo" : "muerto") + " en " + (c == null ? "-" : c.blockPosition().toShortString()));
+                if (kk == 0 || kk == 7 || c == null) RESUMEN.add("  sedante (" + kk + "): cerdo " + (c == null ? "no existe" : c.isAlive() ? "vivo" : "muerto") + " en " + (c == null ? "-" : c.blockPosition().toShortString())
+                        + (c instanceof net.minecraft.world.entity.LivingEntity le ? ", vida " + le.getHealth() + ", dentro de un bloque " + le.isInWall() : ""));
             });
         }
         paso("50_sedante_cerdo", 10, () -> {
@@ -1555,6 +1573,25 @@ public final class PruebaCI {
         });
     }
 
+    /** Mientras está puesto, se apunta todo lo que hace vibración a menos de 9 bloques del sensor de sculk, y quién lo hace. */
+    private static volatile boolean rifleEscucha;
+    private static final List<String> RIFLE_OIDO = java.util.Collections.synchronizedList(new ArrayList<>());
+    /** De eso, lo que es ruido de un disparo (del tirador o de la bala): lo que el Silenciador tiene que quitar. */
+    private static final List<String> RIFLE_OIDO_TIRO = java.util.Collections.synchronizedList(new ArrayList<>());
+
+    @SubscribeEvent
+    public static void rifleVibracion(net.minecraftforge.event.VanillaGameEvent e) {
+        var sensor = rifleSensor;
+        if (!ACTIVA || !rifleEscucha || sensor == null || e.getEventPosition().distanceToSqr(Vec3.atCenterOf(sensor)) > 81) return;
+        var c = e.getCause();
+        String que = e.getVanillaEvent().getName() + " de " + (c == null ? "nadie" : net.minecraft.world.entity.EntityType.getKey(c.getType()).getPath());
+        RIFLE_OIDO.add(que);
+        var ev = e.getVanillaEvent();
+        boolean tiro = ev == net.minecraft.world.level.gameevent.GameEvent.PROJECTILE_SHOOT || ev == net.minecraft.world.level.gameevent.GameEvent.PROJECTILE_LAND
+                || ev == net.minecraft.world.level.gameevent.GameEvent.EXPLODE;
+        if (tiro && (c instanceof net.minecraft.world.entity.player.Player || c instanceof com.miscelanea.armasfuego.rifle.BalaRifle)) RIFLE_OIDO_TIRO.add(que);
+    }
+
     /** Lo mismo pero dentro de n ticks del servidor (para mirar algo que dura poco, como un sensor de sculk). */
     private static final List<Object[]> RIFLE_TRAS = new ArrayList<>();
 
@@ -1859,11 +1896,19 @@ public final class PruebaCI {
                             net.minecraft.world.level.block.state.properties.SculkSensorPhase.INACTIVE).setValue(net.minecraft.world.level.block.SculkSensorBlock.POWER, 0), 3);
                 }
             });
+            // el sensor se activa con cualquier cosa que pase cerca (un animal andando, quitar el ojo del catalejo...), así que
+            // mirar solo si está activo fallaba a ratos sin que el disparo sonara: se apunta qué vibraciones hay junto al
+            // sensor en esos ticks y solo cuenta el ruido de un disparo (del tirador o de la bala)
+            RIFLE_OIDO.clear();
+            RIFLE_OIDO_TIRO.clear();
+            rifleEscucha = true;
             rifleClic();
             rifleSrvTras(8, sp -> {
+                rifleEscucha = false;
                 var fase = net.minecraft.world.level.block.SculkSensorBlock.getPhase(sp.serverLevel().getBlockState(rifleSensor));
-                RESUMEN.add("  rifle: con Silenciador, el sensor de sculk tras el disparo: " + fase);
-                if (fase == net.minecraft.world.level.block.state.properties.SculkSensorPhase.ACTIVE) rifleFallo = "el sensor de sculk ha oído el disparo con silenciador";
+                RESUMEN.add("  rifle: con Silenciador, el sensor de sculk tras el disparo: " + fase + "; vibraciones junto al sensor: "
+                        + (RIFLE_OIDO.isEmpty() ? "ninguna" : String.join(", ", RIFLE_OIDO)));
+                if (!RIFLE_OIDO_TIRO.isEmpty()) rifleFallo = "el disparo con silenciador ha hecho ruido para el sculk: " + String.join(", ", RIFLE_OIDO_TIRO);
             });
         });
         sin("rifle_silencio_espera", 15, () -> {});
