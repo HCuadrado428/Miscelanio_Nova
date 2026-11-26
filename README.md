@@ -320,6 +320,7 @@ En la pestaña **Tortura**: estaciones donde un cautivo hace de sujeto de prueba
 - **Estaciones** (solo creativo): *centrífuga* (silla en un brazo que gira, con QTE para aguantar), *cámara de temperatura* (cabina de cristal con termostato de -3 a +3), *tanque de privación sensorial* (oscuridad y ruidos que solo oye el sujeto) y *laberinto de la rata* (un laberinto que se construye solo; el sujeto, encogido, tiene que llegar al queso esquivando baldosas con descarga).
 - **Muestras:** al acabar un experimento, con un *tubo de ensayo* en el inventario, sale una muestra (de mareo, de frío, de calor o de miedo).
 - **Mezclas:** en la *mesa de mezclas* dos ingredientes (muestras, queso o sueros) dan un *suero sin etiquetar* con uno de nueve efectos, siempre el mismo para cada pareja. El *analizador* lo identifica y lo apunta en el cuaderno.
+- **Con receta en supervivencia:** el instrumental (cuaderno, pulsómetro, cronómetro, portapapeles, tubo de ensayo, escáner de anomalías), la ropa (gafas, bata y pantalón) y lo de decorar y equipar el laboratorio: cristal de observación, cartel de biopeligro, taquilla, microscopio, probetas, frigorífico de muestras, puerta de cuarentena y alarma. Las estaciones y las máquinas de sueros son de creativo.
 - **Destilador térmico:** convierte el suavis seco (de The Midnight, cocinado) en sedante clase M con fuego debajo; con una botella de cristal se saca la Poción de sedante.
 
 ### Cámaras de vigilancia y televisiones
