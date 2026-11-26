@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "TTT",
+    "PPP"
+  ],
+  "key": {
+    "T": {
+      "item": "miscelanea:tubo_ensayo"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    }
+  },
+  "result": {
+    "item": "miscelanea:probetas"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "II",
+    "GI",
+    "YI"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "G": {
+      "item": "minecraft:glass_pane"
+    },
+    "Y": {
+      "item": "minecraft:yellow_dye"
+    }
+  },
+  "result": {
+    "item": "miscelanea:puerta_cuarentena"
+  }
+}
