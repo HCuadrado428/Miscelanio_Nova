@@ -396,6 +396,7 @@ Probado pensando en un servidor con, entre otros:
 
 - **Customizable Player Models**
 - **Simple Voice Chat**
+- **Pehkui**
 - **Incapacitated**
 - **Ice and Fire**
 - **Corail Tombstone**
@@ -405,6 +406,7 @@ Además:
 
 - El daño de las armas y de la estática atraviesa en parte la armadura y la Protección, para que siga contando contra equipo muy fuerte.
 - Los jefes (dragón, wither y la etiqueta `forge:bosses`) reciben menos efectos; se ajusta en la configuración.
+- Con **Pehkui** (el mod de tamaños que usa Customizable Player Models), quien entra en un aparato de la sala de juegos, una cápsula del laboratorio, el cepo, la jaula o una atracción de la feria pasa a talla normal mientras está dentro y recupera la suya al salir. Se ajusta en la configuración (`[pehkui]`: `ajustar_talla`, `ajustar_en_feria` y `talla`).
 - Los contactos y el Bizum se guardan por el identificador interno de cada jugador (UUID), así que cambiarse el nombre (Fakename) no los rompe.
 
 ---
