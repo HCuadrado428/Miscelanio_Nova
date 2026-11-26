@@ -6695,7 +6695,7 @@
   "rave.miscelanea.panel.alcance": "Range: %s blocks",
   "item.miscelanea.pulsera_neon": "Neon Bracelet",
   "item.miscelanea.collar_neon": "Neon Necklace",
-  "rave.miscelanea.accesorio.ayuda": "Right-click: put it on (it glows and others see it). Sneak + click: take it off. Uses no armour slot.",
+  "rave.miscelanea.accesorio.ayuda": "Right-click: put it on (it glows and others see it). To take it off: sneak + right-click the air with an empty hand, or with another one in hand. Uses no armour slot.",
   "rave.miscelanea.dj.cola_anadir": "+ List",
   "rave.miscelanea.dj.cola_poner": "▶ List",
   "rave.miscelanea.dj.cola_azar": "Shuffle",

@@ -336,7 +336,7 @@ En la pestaña **Tortura**: estaciones donde un cautivo hace de sujeto de prueba
 
 Pestaña **Rave** del creativo. Todo se enciende o apaga con clic derecho, cambia de patrón con agachado + clic, de color con un tinte, y también va con redstone.
 
-- **Neón:** tubos y paneles de 16 colores que alumbran, barras luminosas que se lanzan y alumbran 5 minutos donde caen, y pulseras y collares de neón para llevar puestos (clic derecho; no ocupan armadura).
+- **Neón:** tubos y paneles de 16 colores que alumbran, barras luminosas que se lanzan y alumbran 5 minutos donde caen, y pulseras y collares de neón para llevar puestos (clic derecho; no ocupan armadura; se quitan con agachado + clic derecho al aire con la mano vacía).
 - **Luces:** bola de discoteca (bola de espejos grande: cuélgala con 2 bloques libres debajo; manchas de luz por todo el local), foco móvil (haz de color que barre; en el suelo o colgado) y estroboscopio (respeta «Ocultar destellos»).
 - **Cabina de DJ y torres de altavoces:** la cabina mide 3 bloques de ancho y cada torre 3 de alto (necesitan ese hueco libre; se ponen y se rompen enteras). La cabina pone las canciones de la pista de baile y los discos, sueltas o en una lista de reproducción (en orden o al azar); se oye a 32 bloques y cada altavoz cercano suma 24 (hasta 128). Con Simple Voice Chat, **🎧 Emitir mi PC** saca por la mesa lo que suene en tu ordenador (elige la entrada «Mezcla estéreo» o un cable de audio virtual).
 - **Efectos:** máquina de humo de colores, fuente de chispas frías y cañón de confeti.

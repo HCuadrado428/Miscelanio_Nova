@@ -6695,7 +6695,7 @@
   "rave.miscelanea.panel.alcance": "Alcance: %s bloques",
   "item.miscelanea.pulsera_neon": "Pulsera de neón",
   "item.miscelanea.collar_neon": "Collar de neón",
-  "rave.miscelanea.accesorio.ayuda": "Clic derecho: te lo pones (brilla y lo ven los demás). Agachado + clic: te lo quitas. No ocupa armadura.",
+  "rave.miscelanea.accesorio.ayuda": "Clic derecho: te lo pones (brilla y lo ven los demás). Para quitártelo: agachado + clic derecho al aire con la mano vacía, o con otro en la mano. No ocupa armadura.",
   "rave.miscelanea.dj.cola_anadir": "+ Lista",
   "rave.miscelanea.dj.cola_poner": "▶ Lista",
   "rave.miscelanea.dj.cola_azar": "Al azar",
