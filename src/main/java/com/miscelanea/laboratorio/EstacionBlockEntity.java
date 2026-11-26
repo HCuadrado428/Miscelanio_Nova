@@ -31,7 +31,7 @@ import java.util.Map;
  * pone sus efectos, tiene su propio QTE a la mitad del experimento y su castigo si no se aguanta, y al acabar apunta la
  * ficha en el cuaderno y da su muestra.
  */
-public abstract class EstacionBlockEntity extends AparatoBlockEntity {
+public abstract class EstacionBlockEntity extends AparatoBlockEntity implements ConsolaLab {
     protected int nivel;
     protected boolean encendida, terminado, resistio, qteHecho;
     protected int tiempo, aguante;
@@ -88,9 +88,47 @@ public abstract class EstacionBlockEntity extends AparatoBlockEntity {
             p.displayClientMessage(Component.translatable("laboratorio.miscelanea.estacion.ayuda"), true);
             return;
         }
+        // agachado: siguiente nivel sin abrir el panel; sin agacharse, el panel se abre en el cliente (ver ConsolaLab)
         if (p.isShiftKeyDown()) cambiarNivel(sl, p);
-        else if (encendida) apagar(p, true);
-        else if (puedeArrancar(sl, p)) encender(sl, p);
+    }
+
+    // ------------------------------------------------------------------ consola (panel) y mensajes
+    @Override
+    protected boolean agachadoSaca(boolean anexo) {
+        return !anexo;   // en la consola, agachado cambia el nivel; en la cabina, saca al sujeto
+    }
+
+    @Override
+    protected String claveMensajes() {
+        return "lab";
+    }
+
+    @Override
+    public int ajuste() {
+        return nivel;
+    }
+
+    @Override
+    public boolean enMarcha() {
+        return encendida;
+    }
+
+    @Override
+    public void ponerAjuste(ServerPlayer p, int valor) {
+        nivel = Math.max(0, Math.min(ConsolaLab.nivelMaximo(), valor));
+        ConsolaLab.avisarNivel(p, nivel);
+        sonido(SoundEvents.UI_BUTTON_CLICK.value(), 0.8F, 1.0F);
+        marcar();
+    }
+
+    @Override
+    public void arrancarDesdeConsola(ServerPlayer p) {
+        if (!encendida && level instanceof ServerLevel sl && puedeArrancar(sl, p)) encender(sl, p);
+    }
+
+    @Override
+    public void pararDesdeConsola(ServerPlayer p) {
+        if (encendida) apagar(p, true);
     }
 
     /** Para estaciones que piden algo para empezar (la de contención pide una muestra de glitch). */

@@ -44,6 +44,14 @@ public abstract class CapsulaBlock extends AparatoBlock implements MultiBloque {
         return s.getValue(ANEXO) ? CONSOLA : Shapes.block();
     }
 
+    /** Clic derecho en la consola: abre el panel (en el cliente); lo demás lo hace el aparato en el servidor. */
+    @Override
+    public net.minecraft.world.InteractionResult use(BlockState s, Level l, BlockPos pos, net.minecraft.world.entity.player.Player p,
+                                                     net.minecraft.world.InteractionHand mano, net.minecraft.world.phys.BlockHitResult hit) {
+        ConsolaLab.abrirPanel(s, l, pos, p, mano);
+        return super.use(s, l, pos, p, mano, hit);
+    }
+
     @Override
     public List<BlockPos> partes(BlockState s) {
         return s.getValue(ANEXO) ? List.of() : ENCIMA;

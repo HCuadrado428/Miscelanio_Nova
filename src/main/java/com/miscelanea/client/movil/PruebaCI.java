@@ -5245,6 +5245,88 @@ public final class PruebaCI {
             for (String e : new String[]{"microgravedad", "voz", "reflejos", "interferencias", "contencion"})
                 if (!vistas.contains(e)) throw new IllegalStateException("la estación '" + e + "' no ha apuntado su ficha (tienen: " + vistas + ")");
         });
+        // la consola, como la usa un jugador: agachado + clic con el cuaderno en la mano cambia el nivel (antes sacaba al sujeto,
+        // y con algo en la mano ni llegaba al bloque), el panel arranca y para, y agachado + clic en la cabina saca al sujeto.
+        // Y la cámara de temperatura: el panel pone la temperatura y el atajo la mueve
+        sin("labe_consola", 10, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                @SuppressWarnings("unchecked")
+                var sitios = (java.util.List<net.minecraft.core.BlockPos>) PI.get("labe_sitios");
+                @SuppressWarnings("unchecked")
+                var antes = (java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState>) PI.get("labe_antes");
+                if (sp == null || sitios == null || !(l.getBlockEntity(sitios.get(0)) instanceof com.miscelanea.laboratorio.EstacionBlockEntity be)) {
+                    PI.put("labe_consola", "no está la estación");
+                    return;
+                }
+                var b = sitios.get(0);
+                var detras = be.frente().getOpposite();
+                var consola = b.relative(detras);
+                be.apagar(null, false);
+                if (!be.ocupado()) {
+                    var cerdo = net.minecraft.world.entity.EntityType.PIG.create(l);
+                    cerdo.moveTo(b.getX() + 0.5, b.getY() + 1, b.getZ() + 0.5, 0, 0);
+                    l.addFreshEntity(cerdo);
+                    be.meter(cerdo, sp);
+                }
+                be.fijarNivel(0);
+                var manoAntes = sp.getMainHandItem().copy();
+                sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(com.miscelanea.laboratorio.LabRegistro.CUADERNO.get()));
+                sp.setShiftKeyDown(true);
+                java.util.function.Consumer<net.minecraft.core.BlockPos> clic = q -> sp.gameMode.useItemOn(sp, l, sp.getMainHandItem(), net.minecraft.world.InteractionHand.MAIN_HAND,
+                        new net.minecraft.world.phys.BlockHitResult(net.minecraft.world.phys.Vec3.atCenterOf(q), detras, q, false));
+                clic.accept(consola);
+                int nivelAtajo = be.nivel();
+                boolean sigueDentro = be.ocupado();
+                // el panel
+                be.ponerAjuste(sp, 2);
+                int nivelPanel = be.nivel();
+                be.arrancarDesdeConsola(sp);
+                boolean arranca = be.enMarcha();
+                be.pararDesdeConsola(sp);
+                boolean para = !be.enMarcha();
+                // agachado + clic en la cabina: lo saca
+                clic.accept(b);
+                boolean sacado = !be.ocupado();
+                // la cámara de temperatura, al lado
+                var c = net.minecraft.core.BlockPos.containing(a2Punto(14, 9.0, 0.3));
+                for (var q : net.minecraft.core.BlockPos.betweenClosed(c.offset(-1, 0, -1), c.offset(1, 2, 1)))
+                    if (!antes.containsKey(q)) { antes.put(q.immutable(), l.getBlockState(q)); l.setBlock(q, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2); }
+                var est = com.miscelanea.laboratorio.LabRegistro.CAMARA.get().defaultBlockState().setValue(com.miscelanea.tortura.aparatos.AparatoBlock.FACING, be.frente());
+                l.setBlock(c, est, 3);
+                l.setBlock(c.relative(detras), est.setValue(com.miscelanea.tortura.aparatos.AparatoBlock.ANEXO, true), 3);
+                String dial = "sin cámara";
+                boolean dialOk = false;
+                if (l.getBlockEntity(c) instanceof com.miscelanea.laboratorio.CamaraBlockEntity cam) {
+                    cam.ponerAjuste(sp, -2);
+                    int panel = cam.ajuste();
+                    clic.accept(c.relative(detras));
+                    int atajo = cam.ajuste();
+                    dial = "panel " + panel + ", atajo " + atajo;
+                    dialOk = panel == -2 && atajo == -1;
+                    PI.put("labe_camara", c);
+                }
+                sp.setShiftKeyDown(false);
+                sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, manoAntes);
+                String r = "atajo en la consola: nivel " + nivelAtajo + " (sujeto dentro " + sigueDentro + "), panel: nivel " + nivelPanel + ", arranca " + arranca
+                        + ", para " + para + ", agachado en la cabina lo saca " + sacado + "; cámara de temperatura: " + dial;
+                PI.put("labe_consola", r);
+                PI.put("labe_consola_ok", nivelAtajo == 1 && sigueDentro && nivelPanel == 2 && arranca && para && sacado && dialOk);
+            });
+        });
+        vigila("labe_consola_chk", 20, () -> {
+            if (PI.get("labe_consola") == null) throw new IllegalStateException("aún no se ha probado la consola");
+            RESUMEN.add("  consola del laboratorio: " + PI.get("labe_consola"));
+            if (!Boolean.TRUE.equals(PI.get("labe_consola_ok"))) throw new IllegalStateException("la consola del laboratorio no responde bien: " + PI.get("labe_consola"));
+        });
+        paso("lab_consola_pantalla", 10, () -> mc.setScreen(new com.miscelanea.client.laboratorio.ConsolaScreen(
+                ((java.util.List<net.minecraft.core.BlockPos>) PI.get("labe_sitios")).get(0))));
+        paso("lab_consola_temperatura", 10, () -> {
+            if (PI.get("labe_camara") instanceof net.minecraft.core.BlockPos c) mc.setScreen(new com.miscelanea.client.laboratorio.ConsolaScreen(c));
+        });
+        sin("lab_consola_cerrar", 3, () -> mc.setScreen(null));
         sin("labe_limpiar", 20, () -> {
             var srv = mc.getSingleplayerServer();
             srv.execute(() -> {

@@ -45,7 +45,7 @@ import java.util.Map;
  *       frío o de calor.</li>
  * </ul>
  */
-public class CamaraBlockEntity extends AparatoBlockEntity {
+public class CamaraBlockEntity extends AparatoBlockEntity implements ConsolaLab {
     /** Temperatura (ºC) de cada posición del dial, de -3 a +3. */
     public static final float[] TEMPERATURA = {-40F, -20F, -5F, 20F, 45F, 70F, 110F};
     public static final ResourceKey<DamageType> DANO = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(com.miscelanea.Miscelanea.MOD_ID, "camara_temperatura"));
@@ -93,13 +93,58 @@ public class CamaraBlockEntity extends AparatoBlockEntity {
             p.displayClientMessage(Component.translatable("laboratorio.miscelanea.camara.ayuda"), true);
             return;
         }
-        if (p.isShiftKeyDown()) {
-            moverDial(sl, p);
-        } else if (encendida) {
-            apagar(p, true);
-        } else {
-            encender(sl, p);
-        }
+        // agachado: siguiente posición del dial sin abrir el panel; sin agacharse, el panel se abre en el cliente
+        if (p.isShiftKeyDown()) moverDial(sl, p);
+    }
+
+    // ------------------------------------------------------------------ consola (panel) y mensajes
+    @Override
+    protected boolean agachadoSaca(boolean anexo) {
+        return !anexo;   // en la consola, agachado cambia el nivel; en la cabina, saca al sujeto
+    }
+
+    @Override
+    protected String claveMensajes() {
+        return "lab";
+    }
+
+    @Override
+    public int ajuste() {
+        return dial;
+    }
+
+    @Override
+    public boolean conDial() {
+        return true;
+    }
+
+    @Override
+    public boolean enMarcha() {
+        return encendida;
+    }
+
+    @Override
+    public void ponerAjuste(ServerPlayer p, int valor) {
+        int max = ConsolaLab.nivelMaximo() + 1;   // nivel máximo 0..2 -> dial máximo 1..3
+        dial = Math.max(-max, Math.min(max, valor));
+        avisarDial(p);
+        marcar();
+    }
+
+    @Override
+    public void arrancarDesdeConsola(ServerPlayer p) {
+        if (!encendida && level instanceof ServerLevel sl) encender(sl, p);
+    }
+
+    @Override
+    public void pararDesdeConsola(ServerPlayer p) {
+        if (encendida) apagar(p, true);
+    }
+
+    private void avisarDial(Player p) {
+        p.displayClientMessage(Component.translatable("laboratorio.miscelanea.camara.dial", Math.round(TEMPERATURA[dial + 3]))
+                .withStyle(dial < 0 ? ChatFormatting.AQUA : dial > 0 ? ChatFormatting.GOLD : ChatFormatting.GRAY), true);
+        sonido(SoundEvents.UI_BUTTON_CLICK.value(), 0.8F, 1.0F + dial * 0.1F);
     }
 
     /** Para las pruebas: fija el dial sin pasar por la confirmación. */
@@ -118,9 +163,7 @@ public class CamaraBlockEntity extends AparatoBlockEntity {
             return;
         }
         dial = siguiente;
-        p.displayClientMessage(Component.translatable("laboratorio.miscelanea.camara.dial", Math.round(TEMPERATURA[dial + 3]))
-                .withStyle(dial < 0 ? ChatFormatting.AQUA : dial > 0 ? ChatFormatting.GOLD : ChatFormatting.GRAY), true);
-        sonido(SoundEvents.UI_BUTTON_CLICK.value(), 0.8F, 1.0F + dial * 0.1F);
+        avisarDial(p);
         marcar();
     }
 

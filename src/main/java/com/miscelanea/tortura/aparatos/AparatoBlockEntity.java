@@ -93,6 +93,22 @@ public abstract class AparatoBlockEntity extends BlockEntity {
 
     protected void guardar(CompoundTag t) {}
 
+    /**
+     * ¿Agachado + clic en esta parte saca a la víctima? En los aparatos de tortura, sí en cualquier parte. En las estaciones del
+     * laboratorio solo en la cabina: en la consola, agachado + clic cambia el nivel.
+     */
+    protected boolean agachadoSaca(boolean anexo) {
+        return true;
+    }
+
+    /**
+     * Qué mensajes salen al meter a alguien ({@code msg.miscelanea.aparato.dentro_X} y {@code metido_X}). Por defecto, los del
+     * tipo de víctima; las estaciones del laboratorio tienen los suyos (usan la postura de la doncella, pero no son la doncella).
+     */
+    protected String claveMensajes() {
+        return String.valueOf(tipo());
+    }
+
     protected void cargar(CompoundTag t) {}
 
     // ------------------------------------------------------------------ consultas
@@ -149,7 +165,7 @@ public abstract class AparatoBlockEntity extends BlockEntity {
     // ------------------------------------------------------------------ uso
     public void usar(Player p, boolean anexo, BlockHitResult hit) {
         if (esVictima(p)) return;
-        if (p.isShiftKeyDown()) {
+        if (p.isShiftKeyDown() && agachadoSaca(anexo)) {
             if (!ocupado()) return;
             if (puedeManejar(p)) {
                 LivingEntity v = victimaEntidad();
@@ -193,9 +209,9 @@ public abstract class AparatoBlockEntity extends BlockEntity {
         }
         alMeter(v, quien);
         if (v instanceof ServerPlayer sp)
-            sp.displayClientMessage(Component.translatable("msg.miscelanea.aparato.dentro_" + tipo()).withStyle(ChatFormatting.DARK_RED), true);
+            sp.displayClientMessage(Component.translatable("msg.miscelanea.aparato.dentro_" + claveMensajes(), getBlockState().getBlock().getName()).withStyle(ChatFormatting.DARK_RED), true);
         if (quien != null)
-            quien.displayClientMessage(Component.translatable("msg.miscelanea.aparato.metido_" + tipo(), v.getDisplayName()).withStyle(ChatFormatting.GOLD), true);
+            quien.displayClientMessage(Component.translatable("msg.miscelanea.aparato.metido_" + claveMensajes(), v.getDisplayName(), getBlockState().getBlock().getName()).withStyle(ChatFormatting.GOLD), true);
         sonido(com.miscelanea.tortura.TorturaRegistro.GRILLETES_PONER.get(), 0.9F, 0.8F);
         sincronizar();
         return true;

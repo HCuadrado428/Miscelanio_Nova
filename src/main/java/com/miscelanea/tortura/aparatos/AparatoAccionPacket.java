@@ -17,6 +17,8 @@ import java.util.function.Supplier;
  */
 public class AparatoAccionPacket {
     public static final int VOLTAJE = 1, INFORME_DONCELLA = 2, DESMAYO_PULSO = 3, VELOCIDAD_PENDULO = 4, INFORME_INMERSION = 5;
+    /** El panel de la consola de una estación del laboratorio: poner el nivel o el dial (valor), arrancar, parar, sacar al sujeto. */
+    public static final int LAB_AJUSTE = 6, LAB_ARRANCAR = 7, LAB_PARAR = 8, LAB_SACAR = 9;
     public final int accion;
     public final BlockPos pos;
     public final int valor;
@@ -60,6 +62,37 @@ public class AparatoAccionPacket {
             }
             case INFORME_INMERSION -> {
                 if (be instanceof InmersionBlockEntity in && be.esVictima(p)) in.informe(Math.max(0, Math.min(10, valor)));
+            }
+            case LAB_AJUSTE, LAB_ARRANCAR, LAB_PARAR, LAB_SACAR -> consola(p, be);
+            default -> {
+            }
+        }
+    }
+
+    /** Una orden del panel de la consola del laboratorio, con todas las comprobaciones (como un clic en el bloque). */
+    private void consola(ServerPlayer p, AparatoBlockEntity be) {
+        if (!(be instanceof com.miscelanea.laboratorio.ConsolaLab c) || be.esVictima(p) || p.isSpectator()
+                || p.distanceToSqr(be.centro()) > 64 || Aparatos.en(p)) return;
+        if (!com.miscelanea.laboratorio.LabConfig.estaciones()) {
+            p.displayClientMessage(net.minecraft.network.chat.Component.translatable("laboratorio.miscelanea.estacion.apagada")
+                    .withStyle(net.minecraft.ChatFormatting.RED), true);
+            return;
+        }
+        if (be.ocupado() && !be.puedeManejar(p)) {
+            p.displayClientMessage(net.minecraft.network.chat.Component.translatable("msg.miscelanea.aparato.no_tuyo")
+                    .withStyle(net.minecraft.ChatFormatting.RED), true);
+            return;
+        }
+        switch (accion) {
+            case LAB_AJUSTE -> c.ponerAjuste(p, Math.max(-3, Math.min(3, valor)));
+            case LAB_ARRANCAR -> c.arrancarDesdeConsola(p);
+            case LAB_PARAR -> c.pararDesdeConsola(p);
+            case LAB_SACAR -> {
+                if (!be.ocupado()) return;
+                net.minecraft.world.entity.LivingEntity v = be.victimaEntidad();
+                be.sacar(true);
+                p.displayClientMessage(net.minecraft.network.chat.Component.translatable("msg.miscelanea.aparato.sacado",
+                        v == null ? net.minecraft.network.chat.Component.literal("?") : v.getDisplayName()).withStyle(net.minecraft.ChatFormatting.GRAY), true);
             }
             default -> {
             }

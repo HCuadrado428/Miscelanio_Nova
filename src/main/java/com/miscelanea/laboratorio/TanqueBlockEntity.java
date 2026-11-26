@@ -46,7 +46,7 @@ import java.util.Map;
  * si no, sufre el castigo del nivel. Apunta la ficha (alucinaciones oídas, aguante, resultado) y da una muestra de miedo
  * si el científico lleva un tubo de ensayo.
  */
-public class TanqueBlockEntity extends AparatoBlockEntity {
+public class TanqueBlockEntity extends AparatoBlockEntity implements ConsolaLab {
     public static final ResourceKey<DamageType> DANO = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(com.miscelanea.Miscelanea.MOD_ID, "tanque"));
     /** Ticks hasta el QTE, según el nivel (a más nivel, antes). */
     private static final int[] HASTA_QTE = {300, 240, 160};
@@ -90,9 +90,47 @@ public class TanqueBlockEntity extends AparatoBlockEntity {
             p.displayClientMessage(Component.translatable("laboratorio.miscelanea.tanque.ayuda"), true);
             return;
         }
+        // agachado: siguiente nivel sin abrir el panel; sin agacharse, el panel se abre en el cliente
         if (p.isShiftKeyDown()) cambiarNivel(sl, p);
-        else if (encendido) apagar(p, true);
-        else encender(sl, p);
+    }
+
+    // ------------------------------------------------------------------ consola (panel) y mensajes
+    @Override
+    protected boolean agachadoSaca(boolean anexo) {
+        return !anexo;   // en la consola, agachado cambia el nivel; en la cabina, saca al sujeto
+    }
+
+    @Override
+    protected String claveMensajes() {
+        return "lab";
+    }
+
+    @Override
+    public int ajuste() {
+        return nivel;
+    }
+
+    @Override
+    public boolean enMarcha() {
+        return encendido;
+    }
+
+    @Override
+    public void ponerAjuste(ServerPlayer p, int valor) {
+        nivel = Math.max(0, Math.min(ConsolaLab.nivelMaximo(), valor));
+        ConsolaLab.avisarNivel(p, nivel);
+        sonido(SoundEvents.UI_BUTTON_CLICK.value(), 0.8F, 1.0F);
+        marcar();
+    }
+
+    @Override
+    public void arrancarDesdeConsola(ServerPlayer p) {
+        if (!encendido && level instanceof ServerLevel sl) encender(sl, p);
+    }
+
+    @Override
+    public void pararDesdeConsola(ServerPlayer p) {
+        if (encendido) apagar(p, true);
     }
 
     /** Para las pruebas: fija el nivel sin la confirmación. */

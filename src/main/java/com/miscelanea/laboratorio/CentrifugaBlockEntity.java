@@ -44,7 +44,7 @@ import java.util.Map;
  *       lleva un tubo de ensayo, se llena con una muestra de mareo.</li>
  * </ul>
  */
-public class CentrifugaBlockEntity extends AparatoBlockEntity {
+public class CentrifugaBlockEntity extends AparatoBlockEntity implements ConsolaLab {
     /** Radio (en bloques) al que va la silla. */
     public static final double RADIO = 1.6;
     /** Grados por tick de cada nivel: 20, 45 y 80 vueltas por minuto. */
@@ -122,15 +122,48 @@ public class CentrifugaBlockEntity extends AparatoBlockEntity {
             p.displayClientMessage(Component.translatable("laboratorio.miscelanea.centrifuga.ayuda"), true);
             return;
         }
-        if (girando) {
-            parar(sl, p, true);
-            return;
-        }
-        if (p.isShiftKeyDown()) {
-            cambiarNivel(sl, p);
-            return;
-        }
-        arrancar(sl, p);
+        // agachado: siguiente nivel sin abrir el panel; sin agacharse, el panel se abre en el cliente
+        if (p.isShiftKeyDown()) cambiarNivel(sl, p);
+    }
+
+    // ------------------------------------------------------------------ consola (panel) y mensajes
+    @Override
+    protected boolean agachadoSaca(boolean anexo) {
+        return !anexo;   // en la consola, agachado cambia el nivel; en la cabina, saca al sujeto
+    }
+
+    @Override
+    protected String claveMensajes() {
+        return "lab";
+    }
+
+    @Override
+    public int ajuste() {
+        return nivel;
+    }
+
+    @Override
+    public boolean enMarcha() {
+        return girando;
+    }
+
+    @Override
+    public void ponerAjuste(ServerPlayer p, int valor) {
+        nivel = Math.max(0, Math.min(ConsolaLab.nivelMaximo(), valor));
+        p.displayClientMessage(Component.translatable("laboratorio.miscelanea.nivel_elegido", Component.translatable("laboratorio.miscelanea.nivel." + nivel),
+                Math.round(VELOCIDAD[nivel] * 20 / 6F)).withStyle(nivel == 2 ? ChatFormatting.RED : ChatFormatting.YELLOW), true);
+        sonido(SoundEvents.UI_BUTTON_CLICK.value(), 0.8F, 1.0F);
+        marcar();
+    }
+
+    @Override
+    public void arrancarDesdeConsola(ServerPlayer p) {
+        if (!girando && level instanceof ServerLevel sl) arrancar(sl, p);
+    }
+
+    @Override
+    public void pararDesdeConsola(ServerPlayer p) {
+        if (girando && level instanceof ServerLevel sl) parar(sl, p, true);
     }
 
     /** Para las pruebas: fija el nivel sin pasar por la confirmación. */
