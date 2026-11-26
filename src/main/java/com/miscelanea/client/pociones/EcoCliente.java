@@ -385,33 +385,112 @@ public final class EcoCliente {
     }
 
     // ------------------------------------------------------------------ dibujar ondas, aristas y siluetas (sin niebla)
+    private static boolean avisadoRespaldo;
+
+    /**
+     * Cuándo se dibuja. Sin shaders, al final del nivel (tras la lluvia): primero se tapa todo de negro con un rectángulo a
+     * pantalla completa que no toca la profundidad y encima van las ondas, aristas y siluetas, que así siguen quedando tapadas
+     * por las paredes. Antes dependía de que la niebla negra tapara el mundo y de la etapa de los bloques translúcidos, y las
+     * dos cosas fallan con otros mods (los que cambian la niebla, o los que dibujan ellos los chunks y no lanzan esa etapa):
+     * no se veía nada o se veía el mundo normal. Con gráficos «¡Fabulosos!» se sigue dibujando tras los translúcidos (ahí
+     * cada capa va a su búfer). Con shaders se apunta la cámara y se dibuja al acabar el nivel (ver trasNivel), que además
+     * hace de respaldo si aquí no se ha podido dibujar.
+     */
     @SubscribeEvent
     public static void dibujar(RenderLevelStageEvent e) {
-        if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS || !activo()) return;
-        // con shaders, Oculus vuelve a lanzar esta etapa al dibujar el mapa de sombras: ahí no (ondas y siluetas
-        // salían como sombras y se dibujaba todo dos veces)
-        if (pasadaSombras()) return;
+        RenderLevelStageEvent.Stage etapa = e.getStage();
+        boolean cielo = etapa == RenderLevelStageEvent.Stage.AFTER_SKY, translucidos = etapa == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS,
+                clima = etapa == RenderLevelStageEvent.Stage.AFTER_WEATHER;
+        if (!cielo && !translucidos && !clima) return;
+        if (!activo()) return;
+        // con shaders, Oculus vuelve a lanzar las etapas al dibujar el mapa de sombras: ahí no (ondas y siluetas salían como
+        // sombras y se dibujaba todo dos veces). Tampoco en la imagen de una cámara de vigilancia
+        if (pasadaSombras() || com.miscelanea.client.camaras.CamarasCliente.dibujando) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
-        if (com.miscelanea.client.movil.MovilCaptura.shaders()) {
-            // con shaders el pack no hace caso de la niebla (el mundo se veía gris a lo lejos) y pinta las líneas y
-            // las siluetas con sus programas (las ondas no salían y las siluetas, rotas): se apunta lo de la cámara y
-            // se dibuja todo al acabar el nivel, ya sin el pack (ver trasNivel)
+        if (cielo || !sh.pendiente && !sh.pintado) {
+            // lo de la cámara, por si hay que dibujar al acabar el nivel
             sh.pendiente = true;
+            sh.pintado = false;
             sh.pt = e.getPartialTick();
             sh.cam = e.getCamera().getPosition();
             sh.proj = new Matrix4f(e.getProjectionMatrix());
             sh.vista = new Matrix4f(e.getPoseStack().last().pose());
             sh.normal = new Matrix3f(e.getPoseStack().last().normal());
+        }
+        if (cielo || sh.pintado) return;
+        // con shaders el pack no hace caso de la niebla (el mundo se veía gris a lo lejos) y pinta las líneas y las siluetas
+        // con sus programas (las ondas no salían y las siluetas, rotas): se dibuja todo al acabar el nivel, ya sin el pack
+        if (com.miscelanea.client.movil.MovilCaptura.shaders()) return;
+        boolean fabuloso = Minecraft.useShaderTransparency();
+        if (fabuloso != translucidos) return;       // fabuloso: tras los translúcidos; si no, tras la lluvia
+        sh.pendiente = false;
+        sh.pintado = true;
+        if (fabuloso) {
+            if (ONDAS.isEmpty() && BLOQUES.isEmpty() && ENTES.isEmpty()) return;
+            pintar(mc, e.getPoseStack(), e.getCamera().getPosition(), e.getPartialTick(), mc.renderBuffers().bufferSource());
             return;
         }
-        if (ONDAS.isEmpty() && BLOQUES.isEmpty() && ENTES.isEmpty()) return;
-        pintar(mc, e.getPoseStack(), e.getCamera().getPosition(), e.getPartialTick(), mc.renderBuffers().bufferSource());
+        // en esta etapa la vista del modelo ya lleva el giro de la cámara (lo pone el juego para las nubes y la lluvia) y la
+        // pila del evento también: se quita la del juego mientras se dibuja para no girar dos veces
+        boolean escribeProfundidad = org.lwjgl.opengl.GL11.glGetBoolean(org.lwjgl.opengl.GL11.GL_DEPTH_WRITEMASK);
+        PoseStack mv = RenderSystem.getModelViewStack();
+        mv.pushPose();
+        mv.setIdentity();
+        RenderSystem.applyModelViewMatrix();
+        try {
+            negro();
+            if (!ONDAS.isEmpty() || !BLOQUES.isEmpty() || !ENTES.isEmpty())
+                pintar(mc, e.getPoseStack(), e.getCamera().getPosition(), e.getPartialTick(), mc.renderBuffers().bufferSource());
+        } finally {
+            mv.popPose();
+            RenderSystem.applyModelViewMatrix();
+            RenderSystem.depthMask(escribeProfundidad);
+            RenderSystem.enableDepthTest();
+            RenderSystem.enableCull();
+            RenderSystem.disableBlend();
+        }
+    }
+
+    /** Cada fotograma empieza sin nada apuntado ni dibujado (aunque el enganche de trasNivel no se haya aplicado). */
+    @SubscribeEvent
+    public static void fotograma(TickEvent.RenderTickEvent e) {
+        if (e.phase != TickEvent.Phase.START) return;
+        sh.pendiente = false;
+        sh.pintado = false;
+    }
+
+    /** Tapa de negro todo lo dibujado hasta ahora, sin tocar la profundidad (lo que se dibuje después sigue chocando con el mundo). */
+    private static void negro() {
+        Matrix4f projAntes = RenderSystem.getProjectionMatrix();
+        com.mojang.blaze3d.vertex.VertexSorting ordenAntes = RenderSystem.getVertexSorting();
+        RenderSystem.setProjectionMatrix(new Matrix4f(), com.mojang.blaze3d.vertex.VertexSorting.ORTHOGRAPHIC_Z);
+        RenderSystem.disableDepthTest();
+        RenderSystem.depthMask(false);
+        RenderSystem.disableCull();
+        RenderSystem.disableBlend();
+        RenderSystem.setShader(net.minecraft.client.renderer.GameRenderer::getPositionColorShader);
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+        try {
+            com.mojang.blaze3d.vertex.BufferBuilder bb = com.mojang.blaze3d.vertex.Tesselator.getInstance().getBuilder();
+            bb.begin(com.mojang.blaze3d.vertex.VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+            bb.vertex(-1, -1, 0).color(0, 0, 0, 255).endVertex();
+            bb.vertex(1, -1, 0).color(0, 0, 0, 255).endVertex();
+            bb.vertex(1, 1, 0).color(0, 0, 0, 255).endVertex();
+            bb.vertex(-1, 1, 0).color(0, 0, 0, 255).endVertex();
+            com.mojang.blaze3d.vertex.BufferUploader.drawWithShader(bb.end());
+        } finally {
+            RenderSystem.setProjectionMatrix(projAntes, ordenAntes);
+            RenderSystem.enableDepthTest();
+            RenderSystem.depthMask(true);
+            RenderSystem.enableCull();
+        }
     }
 
     /** Lo apuntado en mitad del nivel con shaders, para dibujar al acabar. */
     private static final class ConShaders {
-        boolean pendiente;
+        /** Hay cámara apuntada en este fotograma y aún no se ha dibujado; ya se ha dibujado en este fotograma. */
+        boolean pendiente, pintado;
         float pt;
         Vec3 cam;
         Matrix4f proj, vista;
@@ -423,13 +502,20 @@ public final class EcoCliente {
 
     /**
      * Desde GameRendererMixin, con el nivel ya compuesto por el pack de shaders: todo negro (así no depende de si el
-     * pack respeta la niebla) y encima las ondas, aristas y siluetas con los programas normales.
+     * pack respeta la niebla) y encima las ondas, aristas y siluetas con los programas normales. Sin shaders solo se llega
+     * aquí con algo pendiente si en el nivel no se ha podido dibujar (respaldo).
      */
     public static void trasNivel() {
-        if (!sh.pendiente) return;
+        boolean pendiente = sh.pendiente;
         sh.pendiente = false;
+        sh.pintado = false;
+        if (!pendiente) return;
         Minecraft mc = Minecraft.getInstance();
         if (!activo() || mc.level == null) return;
+        if (!com.miscelanea.client.movil.MovilCaptura.shaders() && !avisadoRespaldo) {
+            avisadoRespaldo = true;
+            Miscelanea.LOGGER.warn("[Eco] No ha llegado la etapa de dibujo del nivel (¿otro mod la quita?): la ecolocalización se dibuja al acabar el nivel");
+        }
         com.mojang.blaze3d.pipeline.RenderTarget main = mc.getMainRenderTarget();
         main.bindWrite(true);
         RenderSystem.clearColor(0F, 0F, 0F, 1F);
@@ -460,8 +546,11 @@ public final class EcoCliente {
 
     private static void pintar(Minecraft mc, PoseStack ps, Vec3 cam, float pt, MultiBufferSource.BufferSource bs) {
         float nieblaIni = RenderSystem.getShaderFogStart(), nieblaFin = RenderSystem.getShaderFogEnd();
+        float[] nieblaColor = RenderSystem.getShaderFogColor().clone();
         RenderSystem.setShaderFogStart(1.0E6F);
         RenderSystem.setShaderFogEnd(1.0E6F + 1F);
+        // y por si algo vuelve a poner las distancias: niebla transparente (no tiñe nada)
+        RenderSystem.setShaderFogColor(nieblaColor[0], nieblaColor[1], nieblaColor[2], 0F);
         try {
             ps.pushPose();
             ps.translate(-cam.x, -cam.y, -cam.z);
@@ -520,6 +609,7 @@ public final class EcoCliente {
         } finally {
             RenderSystem.setShaderFogStart(nieblaIni);
             RenderSystem.setShaderFogEnd(nieblaFin);
+            RenderSystem.setShaderFogColor(nieblaColor[0], nieblaColor[1], nieblaColor[2], nieblaColor[3]);
         }
     }
 

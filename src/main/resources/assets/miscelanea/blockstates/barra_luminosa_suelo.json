@@ -1,0 +1,11 @@
+{
+ "variants": {
+  "axis=x": {
+   "model": "miscelanea:block/rave/barra_luminosa_suelo"
+  },
+  "axis=z": {
+   "model": "miscelanea:block/rave/barra_luminosa_suelo",
+   "y": 90
+  }
+ }
+}

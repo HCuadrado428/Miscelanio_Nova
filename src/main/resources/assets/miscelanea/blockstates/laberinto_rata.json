@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/laboratorio/laberinto_rata"
+  },
+  "facing=east": {
+   "model": "miscelanea:block/laboratorio/laberinto_rata",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/laboratorio/laberinto_rata",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/laboratorio/laberinto_rata",
+   "y": 270
+  }
+ }
+}

@@ -1,0 +1,11 @@
+{
+ "variants": {
+  "colgado=false": {
+   "model": "miscelanea:block/rave/foco_movil"
+  },
+  "colgado=true": {
+   "model": "miscelanea:block/rave/foco_movil",
+   "x": 180
+  }
+ }
+}

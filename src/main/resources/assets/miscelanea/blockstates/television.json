@@ -1,0 +1,23 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "miscelanea:block/camaras/television"
+  },
+  "facing=east": {
+   "model": "miscelanea:block/camaras/television",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "miscelanea:block/camaras/television",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "miscelanea:block/camaras/television",
+   "y": 270
+  },
+  "facing=down": {
+   "model": "miscelanea:block/camaras/television",
+   "x": 90
+  }
+ }
+}

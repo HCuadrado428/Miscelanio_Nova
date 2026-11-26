@@ -1,0 +1,32 @@
+{
+ "type": "minecraft:block",
+ "pools": [
+  {
+   "rolls": 1,
+   "entries": [
+    {
+     "type": "minecraft:item",
+     "name": "miscelanea:tarima_escenario",
+     "functions": [
+      {
+       "function": "minecraft:set_count",
+       "count": 2,
+       "conditions": [
+        {
+         "condition": "minecraft:block_state_property",
+         "block": "miscelanea:tarima_escenario",
+         "properties": {
+          "type": "double"
+         }
+        }
+       ]
+      },
+      {
+       "function": "minecraft:explosion_decay"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

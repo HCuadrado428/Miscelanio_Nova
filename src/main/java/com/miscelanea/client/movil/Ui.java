@@ -30,7 +30,7 @@ public final class Ui {
 
     // iconos de apps (24x24, fila 0)
     public static final int APP_CHATS = 0, APP_LLAMAR = 1, APP_AGENDA = 2, APP_CAMARA = 3, APP_FOTOS = 4, APP_RELOJ = 5, APP_LINTERNA = 6,
-            APP_AJUSTES = 7, APP_MINEGRAM = 8, APP_MAPA = 9, APP_BANCO = 10;
+            APP_AJUSTES = 7, APP_MINEGRAM = 8, APP_MAPA = 9, APP_BANCO = 10, APP_CAMARAS = 11;
     // glifos 9x9 blancos (fila y=32, cada 10 px)
     public static final int G_ATRAS = 0, G_ENVIAR = 1, G_MAS = 2, G_TELEFONO = 3, G_VIDEO = 4, G_COLGAR = 5, G_CAMARA = 6, G_BORRAR = 7,
             G_GIRAR = 8, G_OK = 9, G_SILENCIO = 10, G_SALIR = 11, G_SALIENTE = 12, G_ENTRANTE = 13, G_PERDIDA = 14, G_MENSAJE = 15,

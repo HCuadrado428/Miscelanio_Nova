@@ -1,4 +1,7 @@
 {
   "replace": false,
-  "values": []
+  "values": [
+    { "id": "midnight:raw_suavis", "required": false },
+    { "id": "midnight:cooked_suavis", "required": false }
+  ]
 }

@@ -120,6 +120,13 @@ public final class Clips {
         return 0;
     }
 
+    /** El vídeo corto {@code id} de la galería de {@code dueño} (para la pantalla de vídeo de la rave), o null si no existe. */
+    public static byte[] clipDe(net.minecraft.server.MinecraftServer s, UUID dueno, int id) {
+        MovilDatos.Perfil yo = MovilDatos.de(s).perfil(dueno, null);
+        if (yo == null || msDe(yo, id) <= 0) return null;
+        return Fotos.leer(Fotos.clipPropio(s, dueno, id));
+    }
+
     static void pedir(ServerPlayer p, int tipo, int id) {
         byte[] datos = null;
         if (tipo == MovilRed.FOTO_PROPIA) {
