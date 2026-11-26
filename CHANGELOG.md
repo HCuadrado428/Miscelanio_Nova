@@ -6,12 +6,12 @@ Cómo van los números de versión:
 - **x.0.0**: cambios o añadidos grandes.
 
 Ramas del repositorio (cada una compila su propio jar al subir algo):
-- **main**: la versión que se juega (ahora la 1.2.1). No se sube de número hasta que lo diga el dueño del mod.
+- **main**: la versión que se juega (ahora la 1.3.0). No se sube de número hasta que lo diga el dueño del mod.
 - **arreglos**: la siguiente 1.x.y (solo arreglos). Se une a main en cuanto está probada, y de main pasa a las otras dos.
 - **novedades**: la siguiente 1.x.0 (cosas pequeñas). Se une a main cuando se publica.
 - **version-2**: la 2.0.0 (lo gordo). Recoge lo de main por el camino y se une al final.
 
-## 1.3.0 (en curso)
+## 1.3.0
 
 - **Laboratorio de experimentos** (pestaña Tortura; en preparación, ver `docs/LABORATORIO.md`): primera parte.
   - **Cuaderno de laboratorio**: clic derecho para leer las fichas de los experimentos (una por página: estación, sujeto, nivel, día y lecturas).
