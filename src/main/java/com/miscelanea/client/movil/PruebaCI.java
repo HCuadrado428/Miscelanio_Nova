@@ -5709,6 +5709,8 @@ public final class PruebaCI {
                 sp.getInventory().clearOrCountMatchingItems(esAccesorio, -1, sp.inventoryMenu.getCraftSlots());
                 boolean q1 = com.miscelanea.rave.Accesorios.quitarAMano(sp);
                 int trasUna = com.miscelanea.rave.Accesorios.puesto(sp, com.miscelanea.rave.Accesorios.PULSERA), collarAun = com.miscelanea.rave.Accesorios.puesto(sp, com.miscelanea.rave.Accesorios.COLLAR);
+                // lo que se quita no se queda en la mano (si no, el segundo clic ya no sería con la mano vacía)
+                boolean manoLibre = sp.getMainHandItem().isEmpty();
                 // con algo en la mano no se quita nada
                 sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(net.minecraft.world.item.Items.STICK));
                 boolean conPalo = com.miscelanea.rave.Accesorios.quitarAMano(sp);
@@ -5716,8 +5718,8 @@ public final class PruebaCI {
                 boolean q2 = com.miscelanea.rave.Accesorios.quitarAMano(sp), q3 = com.miscelanea.rave.Accesorios.quitarAMano(sp);
                 int devueltos = sp.getInventory().clearOrCountMatchingItems(esAccesorio, -1, sp.inventoryMenu.getCraftSlots());
                 sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, enMano);
-                PI.put("rave_mano", "primera " + q1 + " (pulsera " + trasUna + ", collar " + collarAun + "), con un palo en la mano " + conPalo + ", segunda " + q2 + ", tercera " + q3 + ", devueltos al inventario " + devueltos);
-                PI.put("rave_mano_ok", q1 && trasUna < 0 && collarAun >= 0 && !conPalo && q2 && !q3 && devueltos == 2
+                PI.put("rave_mano", "primera " + q1 + " (pulsera " + trasUna + ", collar " + collarAun + ", mano libre " + manoLibre + "), con un palo en la mano " + conPalo + ", segunda " + q2 + ", tercera " + q3 + ", devueltos al inventario " + devueltos);
+                PI.put("rave_mano_ok", q1 && trasUna < 0 && collarAun >= 0 && manoLibre && !conPalo && q2 && !q3 && devueltos == 2
                         && com.miscelanea.rave.Accesorios.puesto(sp, com.miscelanea.rave.Accesorios.COLLAR) < 0);
             });
         });
