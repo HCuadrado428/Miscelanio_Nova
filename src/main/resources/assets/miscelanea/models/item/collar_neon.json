@@ -1,6 +1,7 @@
 {
  "parent": "minecraft:item/generated",
  "textures": {
-  "layer0": "miscelanea:item/collar_neon"
+  "layer0": "miscelanea:item/collar_neon",
+  "layer1": "miscelanea:item/collar_neon_cierre"
  }
 }

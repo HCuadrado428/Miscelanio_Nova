@@ -40,12 +40,12 @@ public class TrussBlock extends Block {
     public static final BooleanProperty LUCES = BooleanProperty.create("luces");
     private static final Map<Direction, BooleanProperty> LADOS = Map.of(Direction.NORTH, NORTE, Direction.SOUTH, SUR, Direction.EAST, ESTE,
             Direction.WEST, OESTE, Direction.UP, ARRIBA, Direction.DOWN, ABAJO);
-    private static final VoxelShape NUDO = Block.box(5, 5, 5, 11, 11, 11);
+    private static final VoxelShape NUDO = Block.box(3, 3, 3, 13, 13, 13);
     private static final Map<Direction, VoxelShape> BRAZOS = new HashMap<>();
     private final Map<BlockState, VoxelShape> formas = new HashMap<>();
 
     static {
-        for (Direction d : Direction.values()) BRAZOS.put(d, Neon.forma(rotarAArriba(d), 5, 11, 5, 11, 16, 11));
+        for (Direction d : Direction.values()) BRAZOS.put(d, Neon.forma(rotarAArriba(d), 3, 13, 3, 13, 16, 13));
     }
 
     /** El brazo está dibujado hacia arriba; para el giro de {@link Neon#forma} la dirección es la misma. */
