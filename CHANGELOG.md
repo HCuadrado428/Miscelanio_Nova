@@ -19,6 +19,16 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
   - **Agachado + clic en la cabina**: saca al sujeto.
   - Vale para las siete cápsulas y la centrífuga.
 - **Laboratorio: mensajes propios.** Al meter a alguien en una estación ya no salen los de la doncella de hierro («te han encerrado en la doncella...», «mantén clic derecho para cerrarla») ni, en la centrífuga, los de la silla eléctrica: ahora dice en qué estación está y que se maneja desde la consola.
+- **Laboratorio: más arreglos.**
+  - Los aparatos de medir (**pulsómetro, sueros, portapapeles**) usados sobre la cabina de una cápsula ocupada ahora se aplican al sujeto de dentro (antes el clic se lo quedaba el bloque).
+  - **Agachado con algo solo en la mano izquierda** también llega a la consola (antes Minecraft se saltaba el bloque).
+  - Al **parar** una estación o **sacar** al sujeto se cancela el reto en pantalla y ya no llega un castigo tardío. En la microgravedad y la centrífuga, el castigo extremo cuenta como daño de quien manejaba la estación.
+  - **Cámara de temperatura:** el frío y el calor aprietan según lo extremo de la temperatura (a partir de 0° o 40°, más fuerte desde -18° o 68° y al máximo desde -38° o 108°), y el reto y el castigo usan esa fuerza: con la temperatura suave ya no sale un reto de extremo.
+  - En **contención**, arrancar sin nadie dentro ya no gasta la muestra.
+  - Las cápsulas ya no se pueden romper en supervivencia picando la parte de arriba. La **alarma** y el **frigorífico de muestras** sí se pueden romper (antes eran irrompibles fuera de creativo por error).
+  - La **alarma** deja de sonar al desactivarla.
+  - **Laberinto:** al soltar a alguien se le quita también la cadena, y mientras está en marcha no se pueden romper ni poner bloques dentro (salvo en creativo).
+  - La **centrífuga** avisa bien del espacio que necesita: **5 x 5** a su alrededor y dos de alto.
 - **Pulsera y collar de neón: ya se pueden quitar con la mano vacía.** Agachado + clic derecho **al aire** con la mano vacía te quita la pulsera (y, si no llevas pulsera, el collar) y te la devuelve al inventario. Antes solo se podía con otra pulsera o collar en la mano, y como al ponértela se gasta, quien se quedaba sin ninguna ya no podía quitársela nunca. Sigue valiendo lo de antes (agachado + clic con otra en la mano). Lo que te quitas va a otro hueco del inventario, no a la mano, así que con dos clics te quitas las dos cosas. Para esto hay un mensaje de red nuevo: cliente y servidor tienen que llevar los dos la 1.3.1.
 
 ## 1.3.0

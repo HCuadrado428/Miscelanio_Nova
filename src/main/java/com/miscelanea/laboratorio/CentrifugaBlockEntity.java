@@ -298,10 +298,11 @@ public class CentrifugaBlockEntity extends AparatoBlockEntity implements Consola
             Vec3 pos = v.position();
             double a = Math.toRadians(angulo);
             Vec3 tangente = new Vec3(-Math.sin(a), 0, -Math.cos(a)).normalize();
+            java.util.UUID quien = captor;   // sacar() lo borra, y el golpe es suyo (para el mensaje de muerte)
             sacar(true);
             v.setDeltaMovement(tangente.x * 1.8, 0.7, tangente.z * 1.8);
             v.hurtMarked = true;
-            if (LabConfig.danoExtremo() > 0) Aparatos.danar(v, DANO, LabConfig.danoExtremo(), captor);
+            if (LabConfig.danoExtremo() > 0) Aparatos.danar(v, DANO, LabConfig.danoExtremo(), quien);
             v.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));
             sl.playSound(null, pos.x, pos.y, pos.z, SoundEvents.PLAYER_ATTACK_KNOCKBACK, net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 0.6F);
         }

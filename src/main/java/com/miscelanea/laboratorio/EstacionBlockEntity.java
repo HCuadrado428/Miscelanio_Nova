@@ -123,7 +123,12 @@ public abstract class EstacionBlockEntity extends AparatoBlockEntity implements 
 
     @Override
     public void arrancarDesdeConsola(ServerPlayer p) {
-        if (!encendida && level instanceof ServerLevel sl && puedeArrancar(sl, p)) encender(sl, p);
+        if (encendida || !(level instanceof ServerLevel sl)) return;
+        if (!ocupado()) {   // antes de puedeArrancar: la de contención gasta la muestra de glitch
+            p.displayClientMessage(Component.translatable("laboratorio.miscelanea.sin_sujeto").withStyle(ChatFormatting.RED), true);
+            return;
+        }
+        if (puedeArrancar(sl, p)) encender(sl, p);
     }
 
     @Override
@@ -184,6 +189,8 @@ public abstract class EstacionBlockEntity extends AparatoBlockEntity implements 
             cerrarFicha(sl, resistio ? "aguanto" : "paro");
         }
         encendida = false;
+        castigoEn = 0;
+        if (manual) cancelarQte(victimaEntidad());
         if (manual && quien != null) quien.displayClientMessage(Component.translatable("laboratorio.miscelanea.estacion.para").withStyle(ChatFormatting.GRAY), true);
         marcar();
     }
@@ -221,7 +228,8 @@ public abstract class EstacionBlockEntity extends AparatoBlockEntity implements 
 
     /** El sujeto no aguanta: se apunta la ficha y se le aplica el castigo del nivel. */
     protected void fallar(ServerLevel sl, LivingEntity v) {
-        if (terminado) return;
+        // ya parada o con el sujeto fuera: no hay castigo (el QTE puede acabar después de que el científico la pare o lo saque)
+        if (terminado || !encendida || !esVictima(v)) return;
         resistio = false;
         terminado = true;
         cerrarFicha(sl, resultadoCastigo());
@@ -244,7 +252,16 @@ public abstract class EstacionBlockEntity extends AparatoBlockEntity implements 
 
     @Override
     protected void alSacar(@Nullable LivingEntity v) {
+        // lo de esta vuelta ya no cuenta: ni castigo cuando acabe el QTE ni una ficha falsa al volver a arrancar
+        terminado = true;
         encendida = false;
+        castigoEn = 0;
+        cancelarQte(v);
+    }
+
+    /** Quita el QTE de la pantalla del sujeto (su resultado ya no hace nada: la estación está parada). */
+    protected static void cancelarQte(@Nullable LivingEntity v) {
+        if (v instanceof ServerPlayer vp && Qte.activo(vp)) Qte.cancelar(vp);
     }
 
     protected void cerrarFicha(ServerLevel sl, String resultado) {

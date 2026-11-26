@@ -193,6 +193,8 @@ public class CamaraBlockEntity extends AparatoBlockEntity implements ConsolaLab 
 
     public void apagar(@Nullable Player quien, boolean manual) {
         encendida = false;
+        castigoEn = 0;
+        if (manual && victimaEntidad() instanceof ServerPlayer vp && Qte.activo(vp)) Qte.cancelar(vp);
         if (manual && quien != null) quien.displayClientMessage(Component.translatable("laboratorio.miscelanea.camara.para").withStyle(ChatFormatting.GRAY), true);
         marcar();
     }
@@ -223,11 +225,12 @@ public class CamaraBlockEntity extends AparatoBlockEntity implements ConsolaLab 
         tiempo++;
         boolean frio = temp < 0;
         boolean calor = temp > 40;
-        int fuerza = !(frio || calor) ? 0 : (Math.abs(temp - 20F) > 85F ? 3 : Math.abs(temp - 20F) > 45F ? 2 : 1);
+        int fuerza = !(frio || calor) ? 0 : fuerza(temp);
         if (fuerza == 0) return;
         aguante++;
+        int elegido = Math.abs(dial);
         // el nivel suave no tiene QTE: termina bien a los 15 segundos
-        if (fuerza == 1 && aguante >= 300 && !terminado) {
+        if (encendida && elegido == 1 && aguante >= 300 && !terminado) {
             resistio = true;
             terminado = true;
             cerrarFicha(sl, "aguanto");
@@ -248,18 +251,20 @@ public class CamaraBlockEntity extends AparatoBlockEntity implements ConsolaLab 
                 if (fuerza == 3) v.setSecondsOnFire(3);
             }
         }
-        // el QTE de aguantar: una vez, cuando llega al extremo del dial (solo de +-2 en adelante)
-        if (!qteHecho && fuerza >= 2 && aguante > 40) {
+        // el QTE de aguantar: una vez, cuando la cabina llega a la temperatura del dial (solo de +-2 en adelante); antes saltaba
+        // a medio calentar y el castigo era el del nivel de por debajo
+        if (encendida && !qteHecho && elegido >= 2 && fuerza >= elegido && aguante > 40) {
             qteHecho = true;
             if (v instanceof ServerPlayer vp) {
                 if (Qte.activo(vp)) Qte.cancelar(vp);
-                Qte.iniciar(vp, QteTipo.BARRA_ZONA, QteParams.de(0.3F + 0.2F * fuerza).titulo(Component.translatable("qte.miscelanea.camara")), (pl, r) -> {
+                Qte.iniciar(vp, QteTipo.BARRA_ZONA, QteParams.de(0.3F + 0.2F * elegido).titulo(Component.translatable("qte.miscelanea.camara")), (pl, r) -> {
+                    if (!encendida || terminado || !esVictima(v)) return;   // la han parado o lo han sacado entretanto
                     resistio = r.exito();
                     if (r.exito()) {
                         if (pl != null) pl.displayClientMessage(Component.translatable("laboratorio.miscelanea.camara.aguantas").withStyle(ChatFormatting.GREEN), true);
                         apagar(null, false);
                     } else {
-                        castigo(sl, v, fuerza, frio);
+                        castigo(sl, v, elegido, frio);
                     }
                 });
             } else {
@@ -269,7 +274,7 @@ public class CamaraBlockEntity extends AparatoBlockEntity implements ConsolaLab 
         }
         if (castigoEn > 0 && sl.getGameTime() >= castigoEn) {
             castigoEn = 0;
-            castigo(sl, v, fuerza, frio);
+            castigo(sl, v, elegido, frio);
         }
     }
 
@@ -277,7 +282,7 @@ public class CamaraBlockEntity extends AparatoBlockEntity implements ConsolaLab 
 
     /** Lo que le pasa al que no aguanta. */
     private void castigo(ServerLevel sl, LivingEntity v, int fuerza, boolean frio) {
-        if (terminado) return;
+        if (terminado || !encendida || !esVictima(v)) return;
         resistio = false;
         terminado = true;
         cerrarFicha(sl, fuerza >= 3 ? (frio ? "congelado" : "tostado") : "castigo");
@@ -295,7 +300,21 @@ public class CamaraBlockEntity extends AparatoBlockEntity implements ConsolaLab 
 
     @Override
     protected void alSacar(@Nullable LivingEntity v) {
+        terminado = true;
         encendida = false;
+        castigoEn = 0;
+        if (v instanceof ServerPlayer vp && Qte.activo(vp)) Qte.cancelar(vp);
+    }
+
+    /**
+     * Lo fuerte que es la temperatura que hace dentro (0 a 3), con los mismos escalones en frío que en calor: los de las
+     * posiciones del dial (-5 / 45, -20 / 70, -40 / 110). Antes el frío iba un escalón por debajo: -20 contaba como suave.
+     */
+    static int fuerza(float t) {
+        if (t <= -38F || t >= 108F) return 3;
+        if (t <= -18F || t >= 68F) return 2;
+        if (t < 0F || t > 40F) return 1;
+        return 0;
     }
 
     /** Apunta la ficha en el cuaderno de quien la maneja y, con un tubo de ensayo, saca una muestra. */

@@ -74,6 +74,8 @@ public class ReflejosBlockEntity extends EstacionBlockEntity {
             if (Qte.activo(vp)) return;
             enQte = true;
             Qte.iniciar(vp, QteTipo.ESQUIVA, QteParams.de(0.3F + 0.2F * nivel).titulo(Component.translatable("qte.miscelanea.reflejos")), (pl, r) -> {
+                enQte = false;
+                if (!encendida || terminado || !esVictima(v)) return;   // la han parado o lo han sacado mientras esquivaba
                 if (r.exito()) aciertos++;
                 else descarga(sl, v);
                 ronda++;

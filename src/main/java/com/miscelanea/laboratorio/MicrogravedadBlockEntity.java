@@ -83,10 +83,11 @@ public class MicrogravedadBlockEntity extends EstacionBlockEntity {
             v.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 300, 0));
             v.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 80, 0));
         } else {
+            java.util.UUID quien = captor;   // sacar() lo borra, y el golpe es suyo (para el mensaje de muerte)
             sacar(true);
             v.setDeltaMovement(0, 1.6, 0);
             v.hurtMarked = true;
-            if (LabConfig.danoExtremo() > 0) Aparatos.danar(v, DANO, LabConfig.danoExtremo() / 2F, captor);
+            if (LabConfig.danoExtremo() > 0) Aparatos.danar(v, DANO, LabConfig.danoExtremo() / 2F, quien);
         }
         if (v instanceof ServerPlayer vp)
             vp.displayClientMessage(Component.translatable("laboratorio.miscelanea.microgravedad.castigo" + Math.min(nivel, 2)).withStyle(ChatFormatting.DARK_PURPLE), true);

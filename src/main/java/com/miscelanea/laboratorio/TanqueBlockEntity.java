@@ -176,6 +176,8 @@ public class TanqueBlockEntity extends AparatoBlockEntity implements ConsolaLab 
             cerrarFicha(sl, resistio ? "aguanto" : "paro");
         }
         encendido = false;
+        castigoEn = 0;
+        if (manual && victimaEntidad() instanceof ServerPlayer vp && Qte.activo(vp)) Qte.cancelar(vp);
         if (manual && quien != null) quien.displayClientMessage(Component.translatable("laboratorio.miscelanea.tanque.para").withStyle(ChatFormatting.GRAY), true);
         marcar();
     }
@@ -237,7 +239,7 @@ public class TanqueBlockEntity extends AparatoBlockEntity implements ConsolaLab 
     private long castigoEn;
 
     private void castigo(ServerLevel sl, LivingEntity v) {
-        if (terminado) return;
+        if (terminado || !encendido || !esVictima(v)) return;   // parado o sacado mientras hacía el QTE: nada
         terminado = true;
         resistio = false;
         cerrarFicha(sl, nivel == 2 ? "loco" : nivel == 1 ? "panico" : "mareo");
@@ -251,7 +253,10 @@ public class TanqueBlockEntity extends AparatoBlockEntity implements ConsolaLab 
 
     @Override
     protected void alSacar(@Nullable LivingEntity v) {
+        terminado = true;
         encendido = false;
+        castigoEn = 0;
+        if (v instanceof ServerPlayer vp && Qte.activo(vp)) Qte.cancelar(vp);
     }
 
     private void cerrarFicha(ServerLevel sl, String resultado) {

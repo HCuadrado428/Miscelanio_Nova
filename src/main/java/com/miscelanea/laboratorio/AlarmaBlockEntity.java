@@ -31,6 +31,7 @@ public class AlarmaBlockEntity extends BlockEntity {
 
     public static void tick(Level l, BlockPos p, BlockState s, AlarmaBlockEntity be) {
         if (!(l instanceof ServerLevel sl)) return;
+        if (be.restante > 0 && !s.getValue(AlarmaBlock.SONANDO)) be.restante = 0;   // la han desarmado: se calla ya
         if (be.restante > 0) {
             be.restante--;
             if (be.restante % 20 == 0) {

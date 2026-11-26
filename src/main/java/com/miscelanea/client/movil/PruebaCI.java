@@ -5280,6 +5280,30 @@ public final class PruebaCI {
                 clic.accept(consola);
                 int nivelAtajo = be.nivel();
                 boolean sigueDentro = be.ocupado();
+                // con la mano derecha vacía y algo en la izquierda (antes Minecraft tampoco llevaba el clic al bloque)
+                be.fijarNivel(0);
+                var izqAntes = sp.getOffhandItem().copy();
+                sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+                sp.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, new ItemStack(net.minecraft.world.item.Items.TORCH));
+                clic.accept(consola);
+                int nivelIzq = be.nivel();
+                sp.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, izqAntes);
+                // el pulsómetro sobre la cabina mide al sujeto de dentro (antes se lo quedaba el bloque)
+                sp.setShiftKeyDown(false);
+                var pulsometro = com.miscelanea.laboratorio.LabRegistro.PULSOMETRO.get();
+                sp.getCooldowns().removeCooldown(pulsometro);
+                sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(pulsometro));
+                clic.accept(b);
+                boolean midio = sp.getCooldowns().isOnCooldown(pulsometro);
+                // en supervivencia, picar el hueco de arriba de la cápsula no la rompe
+                var modo = sp.gameMode.getGameModeForPlayer();
+                sp.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+                boolean rompio = sp.gameMode.destroyBlock(b.above());
+                boolean sigue = l.getBlockEntity(b) == be && !be.isRemoved();
+                sp.setGameMode(modo);
+                sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(com.miscelanea.laboratorio.LabRegistro.CUADERNO.get()));
+                sp.setShiftKeyDown(true);
+                be.fijarNivel(1);
                 // el panel
                 be.ponerAjuste(sp, 2);
                 int nivelPanel = be.nivel();
@@ -5310,10 +5334,12 @@ public final class PruebaCI {
                 }
                 sp.setShiftKeyDown(false);
                 sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, manoAntes);
-                String r = "atajo en la consola: nivel " + nivelAtajo + " (sujeto dentro " + sigueDentro + "), panel: nivel " + nivelPanel + ", arranca " + arranca
+                String r = "atajo en la consola: nivel " + nivelAtajo + " (sujeto dentro " + sigueDentro + "), con algo solo en la izquierda: nivel " + nivelIzq
+                        + ", pulsómetro sobre la cabina mide " + midio + ", picar arriba en supervivencia la rompe " + rompio + " (sigue " + sigue + ")"
+                        + ", panel: nivel " + nivelPanel + ", arranca " + arranca
                         + ", para " + para + ", agachado en la cabina lo saca " + sacado + "; cámara de temperatura: " + dial;
                 PI.put("labe_consola", r);
-                PI.put("labe_consola_ok", nivelAtajo == 1 && sigueDentro && nivelPanel == 2 && arranca && para && sacado && dialOk);
+                PI.put("labe_consola_ok", nivelAtajo == 1 && sigueDentro && nivelIzq == 1 && midio && !rompio && sigue && nivelPanel == 2 && arranca && para && sacado && dialOk);
             });
         });
         vigila("labe_consola_chk", 20, () -> {

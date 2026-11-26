@@ -119,6 +119,23 @@ public class LaberintoBlockEntity extends BlockEntity {
     }
 
     public BlockPos posSalida() { return mundo(1, 1); }
+
+    /** Laberintos en marcha (los mira {@link LaberintoProteccion} para que no se piquen ni se tapen sus paredes). */
+    static final java.util.Set<LaberintoBlockEntity> ACTIVOS = java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
+
+    /** ¿Está {@code q} en el recinto del laberinto (paredes, pasillos o el suelo de debajo)? */
+    public boolean enRecinto(BlockPos q) {
+        BlockPos a = mundo(0, 0), b = mundo(LADO - 1, LADO - 1);
+        return q.getX() >= Math.min(a.getX(), b.getX()) && q.getX() <= Math.max(a.getX(), b.getX())
+                && q.getZ() >= Math.min(a.getZ(), b.getZ()) && q.getZ() <= Math.max(a.getZ(), b.getZ())
+                && q.getY() >= a.getY() - 1 && q.getY() < a.getY() + ALTO;
+    }
+
+    @Override
+    public void setRemoved() {
+        super.setRemoved();
+        ACTIVOS.remove(this);
+    }
     public BlockPos posQueso() { return mundo(LADO - 2, LADO - 2); }
     public Vec3 centro() {
         BlockPos c = mundo(CELDAS, CELDAS);
@@ -198,6 +215,7 @@ public class LaberintoBlockEntity extends BlockEntity {
         if (Aparatos.en(v)) return false;
         construir(sl);
         Lazo.soltar(v, false);
+        com.miscelanea.tortura.Grilletes.cadena(v, null);   // si no, la cadena tiraba de él hacia el científico
         BlockPos s = posSalida();
         v.teleportTo(s.getX() + 0.5, s.getY(), s.getZ() + 0.5);
         v.addEffect(new MobEffectInstance(PocionesRegistro.ENANO.get(), DURACION + 200, 0, false, false, true));
@@ -213,6 +231,10 @@ public class LaberintoBlockEntity extends BlockEntity {
     }
 
     public static void tick(Level l, BlockPos p, BlockState s, LaberintoBlockEntity be) {
+        if (!l.isClientSide) {
+            if (be.activo) ACTIVOS.add(be);
+            else ACTIVOS.remove(be);
+        }
         if (!(l instanceof ServerLevel sl) || !be.activo) return;
         be.tiempo++;
         LivingEntity v = be.sujeto == null ? null : sl.getEntity(be.sujeto) instanceof LivingEntity le ? le : null;

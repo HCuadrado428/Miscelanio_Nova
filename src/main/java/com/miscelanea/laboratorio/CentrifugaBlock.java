@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 
 /**
  * La centrífuga: la base con el eje en un bloque y el puesto de mando (la palanca) en el de detrás (el anexo). El brazo
- * con la silla gira por encima, así que hace falta espacio libre alrededor (3 x 3 y dos de alto).
+ * con la silla gira por encima, así que hace falta espacio libre alrededor (5 x 5 y dos de alto).
  */
 public class CentrifugaBlock extends AparatoBlock {
     private static final VoxelShape FORMA = Block.box(0, 0, 0, 16, 12, 16);
