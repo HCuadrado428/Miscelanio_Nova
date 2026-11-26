@@ -70,10 +70,32 @@ public final class Accesorios {
         if (tipo < 0) return false;
         int color = puesto(p, tipo);
         poner(p, tipo, -1);
-        ItemStack s = objeto(tipo, DyeColor.byId(color));
-        if (!p.getInventory().add(s)) p.drop(s, false);
+        guardarFueraDeLaMano(p, objeto(tipo, DyeColor.byId(color)));
         p.level().playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.ARMOR_EQUIP_CHAIN, SoundSource.PLAYERS, 0.8F, 1.5F);
         return true;
+    }
+
+    /**
+     * Mete en el inventario lo que se acaba de quitar sin dejarlo en la mano: si cayera en la mano (que está vacía, es el primer
+     * hueco libre muchas veces), el siguiente clic ya no sería con la mano vacía y no se podría quitar el collar. Primero se junta
+     * con uno igual que ya tenga; si no, al primer hueco que no sea la mano; y si solo queda la mano, ahí, y si no cabe, al suelo.
+     */
+    private static void guardarFueraDeLaMano(ServerPlayer p, ItemStack s) {
+        var inv = p.getInventory();
+        for (int i = 0; i < inv.items.size(); i++) {
+            ItemStack h = inv.items.get(i);
+            if (!h.isEmpty() && ItemStack.isSameItemSameTags(h, s) && h.getCount() < h.getMaxStackSize()) {
+                h.grow(s.getCount());
+                return;
+            }
+        }
+        for (int i = 0; i < inv.items.size(); i++) {
+            if (i != inv.selected && inv.items.get(i).isEmpty()) {
+                inv.items.set(i, s);
+                return;
+            }
+        }
+        if (!inv.add(s)) p.drop(s, false);
     }
 
     public static ItemStack objeto(int tipo, DyeColor c) {
