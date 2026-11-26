@@ -11,7 +11,7 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
 - **novedades**: la siguiente 1.x.0 (cosas pequeñas). Se une a main cuando se publica.
 - **version-2**: la 2.0.0 (lo gordo). Recoge lo de main por el camino y se une al final.
 
-## 1.3.2 (en curso)
+## 1.3.1
 
 - **Laboratorio: la consola por fin funciona.** Agachado + clic en la consola de una estación no cambiaba el nivel ni la temperatura: sacaba al sujeto (y, con algo en la mano, ni siquiera llegaba al bloque). Ahora:
   - **Clic derecho en la consola** (el bloque de detrás de la cabina) abre un **panel** con quién está dentro, si está en marcha, un botón por nivel (**suave, intenso, extremo**; en la cámara de temperatura, un botón por temperatura, de **-40° a 110°**), **Arrancar / Parar** y **Sacar al sujeto**. El extremo pide pulsar dos veces.
@@ -19,9 +19,6 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
   - **Agachado + clic en la cabina**: saca al sujeto.
   - Vale para las siete cápsulas y la centrífuga.
 - **Laboratorio: mensajes propios.** Al meter a alguien en una estación ya no salen los de la doncella de hierro («te han encerrado en la doncella...», «mantén clic derecho para cerrarla») ni, en la centrífuga, los de la silla eléctrica: ahora dice en qué estación está y que se maneja desde la consola.
-
-## 1.3.1
-
 - **Pulsera y collar de neón: ya se pueden quitar con la mano vacía.** Agachado + clic derecho **al aire** con la mano vacía te quita la pulsera (y, si no llevas pulsera, el collar) y te la devuelve al inventario. Antes solo se podía con otra pulsera o collar en la mano, y como al ponértela se gasta, quien se quedaba sin ninguna ya no podía quitársela nunca. Sigue valiendo lo de antes (agachado + clic con otra en la mano). Lo que te quitas va a otro hueco del inventario, no a la mano, así que con dos clics te quitas las dos cosas. Para esto hay un mensaje de red nuevo: cliente y servidor tienen que llevar los dos la 1.3.1.
 
 ## 1.3.0
