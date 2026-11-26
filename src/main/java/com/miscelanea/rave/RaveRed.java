@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 public final class RaveRed {
     private RaveRed() {}
 
-    private static final String PROTOCOLO = "1";
+    private static final String PROTOCOLO = "2";
     public static final SimpleChannel CANAL = NetworkRegistry.newSimpleChannel(new ResourceLocation(Miscelanea.MOD_ID, "rave"),
             () -> PROTOCOLO, PROTOCOLO::equals, PROTOCOLO::equals);
 
@@ -181,6 +181,24 @@ public final class RaveRed {
         }
     }
 
+    /** Quitarse la pulsera o el collar con la mano vacía (no lleva datos: el servidor mira qué lleva puesto quien lo manda). */
+    public record QuitarAccesorio() {
+        void encode(FriendlyByteBuf b) {}
+
+        static QuitarAccesorio decode(FriendlyByteBuf b) {
+            return new QuitarAccesorio();
+        }
+
+        static void handle(QuitarAccesorio m, Supplier<NetworkEvent.Context> ctx) {
+            NetworkEvent.Context c = ctx.get();
+            ServerPlayer p = c.getSender();
+            c.enqueueWork(() -> {
+                if (p != null && p.isAlive() && !p.isSpectator() && p.isShiftKeyDown()) Accesorios.quitarAMano(p);
+            });
+            c.setPacketHandled(true);
+        }
+    }
+
     static void registrar() {
         CANAL.messageBuilder(Dj.class, 0, NetworkDirection.PLAY_TO_SERVER).encoder(Dj::encode).decoder(Dj::decode).consumerMainThread(Dj::handle).add();
         CANAL.messageBuilder(Audio.class, 1, NetworkDirection.PLAY_TO_SERVER).encoder(Audio::encode).decoder(Audio::decode).consumerMainThread(Audio::handle).add();
@@ -189,6 +207,13 @@ public final class RaveRed {
         CANAL.messageBuilder(Luces.class, 5, NetworkDirection.PLAY_TO_SERVER).encoder(Luces::encode).decoder(Luces::decode).consumerMainThread(Luces::handle).add();
         CANAL.messageBuilder(Puesto.class, 6, NetworkDirection.PLAY_TO_CLIENT).encoder(Puesto::encode).decoder(Puesto::decode).consumerMainThread(Puesto::handle).add();
         CANAL.messageBuilder(Video.class, 4, NetworkDirection.PLAY_TO_CLIENT).encoder(Video::encode).decoder(Video::decode).consumerMainThread(Video::handle).add();
+        CANAL.messageBuilder(QuitarAccesorio.class, 7, NetworkDirection.PLAY_TO_SERVER).encoder(QuitarAccesorio::encode).decoder(QuitarAccesorio::decode)
+                .consumerMainThread(QuitarAccesorio::handle).add();
+    }
+
+    /** Desde el cliente: quitarme la pulsera o el collar con la mano vacía. */
+    public static void quitarAccesorio() {
+        CANAL.sendToServer(new QuitarAccesorio());
     }
 
     /** Desde el cliente: un trozo de audio del ordenador del DJ. */

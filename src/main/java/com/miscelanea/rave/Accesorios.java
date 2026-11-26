@@ -57,6 +57,25 @@ public final class Accesorios {
         return new RaveRed.Puesto(p.getId(), puesto(p, PULSERA), puesto(p, COLLAR));
     }
 
+    /**
+     * Quitarse lo que lleva sin tener otro en la mano (agachado + clic derecho al aire con la mano vacía): primero la pulsera y,
+     * si no lleva, el collar. Vuelve al inventario. Antes solo se podía con otro accesorio en la mano, y como al ponérselo se
+     * gasta, quien se quedaba sin ninguno ya no podía quitárselo.
+     *
+     * @return si se ha quitado algo
+     */
+    public static boolean quitarAMano(ServerPlayer p) {
+        if (!p.getMainHandItem().isEmpty()) return false;
+        int tipo = puesto(p, PULSERA) >= 0 ? PULSERA : puesto(p, COLLAR) >= 0 ? COLLAR : -1;
+        if (tipo < 0) return false;
+        int color = puesto(p, tipo);
+        poner(p, tipo, -1);
+        ItemStack s = objeto(tipo, DyeColor.byId(color));
+        if (!p.getInventory().add(s)) p.drop(s, false);
+        p.level().playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.ARMOR_EQUIP_CHAIN, SoundSource.PLAYERS, 0.8F, 1.5F);
+        return true;
+    }
+
     public static ItemStack objeto(int tipo, DyeColor c) {
         ItemStack s = new ItemStack(tipo == PULSERA ? RaveRegistro.PULSERA.get() : RaveRegistro.COLLAR.get());
         s.getOrCreateTag().putString("color", c.getName());

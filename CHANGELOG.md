@@ -11,6 +11,10 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
 - **novedades**: la siguiente 1.x.0 (cosas pequeñas). Se une a main cuando se publica.
 - **version-2**: la 2.0.0 (lo gordo). Recoge lo de main por el camino y se une al final.
 
+## 1.3.1 (en curso)
+
+- **Pulsera y collar de neón: ya se pueden quitar con la mano vacía.** Agachado + clic derecho **al aire** con la mano vacía te quita la pulsera (y, si no llevas pulsera, el collar) y te la devuelve al inventario. Antes solo se podía con otra pulsera o collar en la mano, y como al ponértela se gasta, quien se quedaba sin ninguna ya no podía quitársela nunca. Sigue valiendo lo de antes (agachado + clic con otra en la mano). Para esto hay un mensaje de red nuevo: cliente y servidor tienen que llevar los dos la 1.3.1.
+
 ## 1.3.0
 
 - **Laboratorio de experimentos** (pestaña Tortura; en preparación, ver `docs/LABORATORIO.md`): primera parte.

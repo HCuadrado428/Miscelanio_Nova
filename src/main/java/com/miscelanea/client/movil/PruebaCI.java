@@ -5699,6 +5699,34 @@ public final class PruebaCI {
                 throw new IllegalStateException("la pulsera y el collar no han llegado al cliente");
             if (!Boolean.TRUE.equals(PI.get("rave_cola_ok"))) throw new IllegalStateException("la lista de reproducción no arranca: " + PI.get("rave_cola"));
         });
+        sin("rave_accesorios_mano", 5, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                var enMano = sp.getMainHandItem().copy();
+                sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+                java.util.function.Predicate<ItemStack> esAccesorio = s -> s.is(com.miscelanea.rave.RaveRegistro.PULSERA.get()) || s.is(com.miscelanea.rave.RaveRegistro.COLLAR.get());
+                sp.getInventory().clearOrCountMatchingItems(esAccesorio, -1, sp.inventoryMenu.getCraftSlots());
+                boolean q1 = com.miscelanea.rave.Accesorios.quitarAMano(sp);
+                int trasUna = com.miscelanea.rave.Accesorios.puesto(sp, com.miscelanea.rave.Accesorios.PULSERA), collarAun = com.miscelanea.rave.Accesorios.puesto(sp, com.miscelanea.rave.Accesorios.COLLAR);
+                // con algo en la mano no se quita nada
+                sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(net.minecraft.world.item.Items.STICK));
+                boolean conPalo = com.miscelanea.rave.Accesorios.quitarAMano(sp);
+                sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+                boolean q2 = com.miscelanea.rave.Accesorios.quitarAMano(sp), q3 = com.miscelanea.rave.Accesorios.quitarAMano(sp);
+                int devueltos = sp.getInventory().clearOrCountMatchingItems(esAccesorio, -1, sp.inventoryMenu.getCraftSlots());
+                sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, enMano);
+                PI.put("rave_mano", "primera " + q1 + " (pulsera " + trasUna + ", collar " + collarAun + "), con un palo en la mano " + conPalo + ", segunda " + q2 + ", tercera " + q3 + ", devueltos al inventario " + devueltos);
+                PI.put("rave_mano_ok", q1 && trasUna < 0 && collarAun >= 0 && !conPalo && q2 && !q3 && devueltos == 2
+                        && com.miscelanea.rave.Accesorios.puesto(sp, com.miscelanea.rave.Accesorios.COLLAR) < 0);
+            });
+        });
+        vigila("rave_accesorios_mano_chk", 20, () -> {
+            if (PI.get("rave_mano") == null) throw new IllegalStateException("aún no se ha probado quitarse los accesorios con la mano vacía");
+            RESUMEN.add("  rave accesorios, quitar con la mano vacía: " + PI.get("rave_mano"));
+            if (!Boolean.TRUE.equals(PI.get("rave_mano_ok"))) throw new IllegalStateException("quitarse la pulsera y el collar con la mano vacía: " + PI.get("rave_mano"));
+            if (com.miscelanea.client.rave.AccesoriosCliente.de(mc.player.getId()) != null) throw new IllegalStateException("el cliente sigue viendo la pulsera o el collar puestos");
+        });
         sin("rave_accesorios_quitar", 5, () -> {
             var srv = mc.getSingleplayerServer();
             srv.execute(() -> {

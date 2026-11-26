@@ -47,6 +47,19 @@ public final class AccesoriosCliente {
         public static void salir(ClientPlayerNetworkEvent.LoggingOut e) {
             PUESTOS.clear();
         }
+
+        /**
+         * Agachado + clic derecho al aire con la mano vacía: quitarse la pulsera (o el collar, si no lleva pulsera). Ese clic
+         * no llega al servidor por sí solo, así que se le avisa. Solo al aire: agachado + clic sobre un bloque ya hace otras
+         * cosas (cambiar el patrón de una luz, quitar los LED de un andamio...).
+         */
+        @SubscribeEvent
+        public static void clicAlAire(net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickEmpty e) {
+            var j = e.getEntity();
+            if (e.getHand() != net.minecraft.world.InteractionHand.MAIN_HAND || !j.isShiftKeyDown() || !j.getMainHandItem().isEmpty()) return;
+            if (PUESTOS.get(j.getId()) == null) return;
+            com.miscelanea.rave.RaveRed.quitarAccesorio();
+        }
     }
 
     @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
