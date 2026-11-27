@@ -29,7 +29,7 @@ public class BolaBlock extends LuzRaveBlock implements MultiBloque {
 
     public BolaBlock(Properties p) {
         super(p, BolaBlockEntity::new, RenderShape.ENTITYBLOCK_ANIMATED);
-        registerDefaultState(stateDefinition.any().setValue(LucesRave.ENCENDIDA, true).setValue(LucesRave.MODO, 0).setValue(Muebles.COLOR, DyeColor.WHITE));
+        registerDefaultState(stateDefinition.any().setValue(LucesRave.CON_SENAL, false).setValue(LucesRave.ENCENDIDA, true).setValue(LucesRave.MODO, 0).setValue(Muebles.COLOR, DyeColor.WHITE));
     }
 
     @Override

@@ -32,7 +32,7 @@ public class HumoBlock extends LuzRaveBlock {
     public HumoBlock(Properties p, boolean chispas) {
         super(p, EfectoBlockEntity::new, RenderShape.MODEL);
         this.chispas = chispas;
-        registerDefaultState(stateDefinition.any().setValue(LucesRave.ENCENDIDA, true).setValue(LucesRave.MODO, 1)
+        registerDefaultState(stateDefinition.any().setValue(LucesRave.CON_SENAL, false).setValue(LucesRave.ENCENDIDA, true).setValue(LucesRave.MODO, 1)
                 .setValue(FACING, Direction.NORTH).setValue(Muebles.COLOR, chispas ? DyeColor.YELLOW : DyeColor.MAGENTA));
     }
 

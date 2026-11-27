@@ -16,7 +16,7 @@ public class FocoBlock extends LuzRaveBlock {
 
     public FocoBlock(Properties p) {
         super(p, FocoBlockEntity::new, RenderShape.ENTITYBLOCK_ANIMATED);
-        registerDefaultState(stateDefinition.any().setValue(LucesRave.ENCENDIDA, true).setValue(LucesRave.MODO, 0)
+        registerDefaultState(stateDefinition.any().setValue(LucesRave.CON_SENAL, false).setValue(LucesRave.ENCENDIDA, true).setValue(LucesRave.MODO, 0)
                 .setValue(LucesRave.COLGADO, false).setValue(Muebles.COLOR, DyeColor.MAGENTA));
     }
 

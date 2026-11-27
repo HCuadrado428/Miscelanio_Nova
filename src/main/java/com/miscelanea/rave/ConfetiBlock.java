@@ -36,7 +36,7 @@ public class ConfetiBlock extends Block {
 
     public ConfetiBlock(Properties p) {
         super(p);
-        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.UP).setValue(Muebles.COLOR, DyeColor.WHITE).setValue(CARGADO, true));
+        registerDefaultState(stateDefinition.any().setValue(FACING, Direction.UP).setValue(Muebles.COLOR, DyeColor.WHITE).setValue(CARGADO, true).setValue(CON_SENAL, false));
     }
 
     @Override

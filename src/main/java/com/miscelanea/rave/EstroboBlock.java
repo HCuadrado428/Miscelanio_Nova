@@ -20,7 +20,7 @@ public class EstroboBlock extends LuzRaveBlock {
 
     public EstroboBlock(Properties p) {
         super(p, EstroboBlockEntity::new, RenderShape.MODEL);
-        registerDefaultState(stateDefinition.any().setValue(LucesRave.ENCENDIDA, true).setValue(LucesRave.MODO, 1).setValue(FACING, Direction.NORTH));
+        registerDefaultState(stateDefinition.any().setValue(LucesRave.CON_SENAL, false).setValue(LucesRave.ENCENDIDA, true).setValue(LucesRave.MODO, 1).setValue(FACING, Direction.NORTH));
     }
 
     @Override
