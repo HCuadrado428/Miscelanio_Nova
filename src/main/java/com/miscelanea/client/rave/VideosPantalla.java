@@ -43,7 +43,12 @@ public final class VideosPantalla {
         int mostrada = -1, w, h;
         Clave de;
         long vuelta = -1;
+        /** Cuándo se dibujó por última vez (para soltar la textura de las pantallas que ya no se ven). */
+        long usada;
     }
+
+    /** Cuándo se usó por última vez cada vídeo (para no guardarlos todos hasta desconectarse). */
+    private static final Map<Clave, Long> USO = new HashMap<>();
 
     private static final Map<BlockPos, Imagen> IMAGENES = new HashMap<>();
 
@@ -77,8 +82,10 @@ public final class VideosPantalla {
             }
             return null;
         }
+        USO.put(k, Util.getMillis());
         if (c.imagenes.isEmpty()) return null;
         Imagen im = IMAGENES.computeIfAbsent(p.immutable(), q -> new Imagen());
+        im.usada = Util.getMillis();
         if (!k.equals(im.de)) {
             im.de = k;
             im.mostrada = -1;
@@ -104,6 +111,9 @@ public final class VideosPantalla {
                 } else {
                     if (im.rl != null) Minecraft.getInstance().getTextureManager().release(im.rl);
                     im.tex = new DynamicTexture(img);
+                    // con sitio para los mipmaps (DynamicTexture reserva solo uno y glGenerateMipmap no hacía nada)
+                    int niveles = Math.max(0, Math.min(4, 31 - Integer.numberOfLeadingZeros(Math.min(img.getWidth(), img.getHeight()))));
+                    com.mojang.blaze3d.platform.TextureUtil.prepareImage(im.tex.getId(), niveles, img.getWidth(), img.getHeight());
                     im.tex.setFilter(true, true);
                     im.rl = Minecraft.getInstance().getTextureManager().register("miscelanea_pantalla_video", im.tex);
                 }
@@ -122,11 +132,30 @@ public final class VideosPantalla {
         if (im != null && im.rl != null) Minecraft.getInstance().getTextureManager().release(im.rl);
     }
 
+    /** Suelta las texturas de las pantallas que llevan un rato sin dibujarse (rotas, lejos, en otro chunk) y los vídeos sin usar. */
+    @SubscribeEvent
+    public static void tic(net.minecraftforge.event.TickEvent.ClientTickEvent e) {
+        if (e.phase != net.minecraftforge.event.TickEvent.Phase.END || Minecraft.getInstance().level == null
+                || Minecraft.getInstance().level.getGameTime() % 100 != 0) return;
+        long ahora = Util.getMillis();
+        IMAGENES.entrySet().removeIf(en -> {
+            if (ahora - en.getValue().usada < 15_000) return false;
+            if (en.getValue().rl != null) Minecraft.getInstance().getTextureManager().release(en.getValue().rl);
+            return true;
+        });
+        USO.entrySet().removeIf(en -> {
+            if (ahora - en.getValue() < 120_000) return false;
+            VIDEOS.remove(en.getKey());
+            return true;
+        });
+    }
+
     @SubscribeEvent
     public static void salir(ClientPlayerNetworkEvent.LoggingOut e) {
         for (Imagen im : IMAGENES.values()) if (im.rl != null) Minecraft.getInstance().getTextureManager().release(im.rl);
         IMAGENES.clear();
         VIDEOS.clear();
+        USO.clear();
         PEDIDOS.clear();
         FALTAN.clear();
     }

@@ -25,7 +25,7 @@ public class EstroboBlock extends LuzRaveBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) {
-        b.add(LucesRave.ENCENDIDA, LucesRave.MODO, FACING);
+        b.add(LucesRave.ENCENDIDA, LucesRave.MODO, LucesRave.CON_SENAL, FACING);
     }
 
     @Override

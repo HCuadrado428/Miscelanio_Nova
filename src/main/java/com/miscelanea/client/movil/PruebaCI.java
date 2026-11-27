@@ -5654,6 +5654,90 @@ public final class PruebaCI {
             RESUMEN.add("  rave efectos: partículas en pantalla " + particulas + ", cañón recargando " + recargando);
             if (particulas < 100) throw new IllegalStateException("apenas hay partículas (" + particulas + ")");
         });
+        // arreglos de la 1.3.1: luces y confeti con redstone, la pantalla de vídeo al ampliarla y el tubo del último suero
+        sin("rave_arreglos", 60, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                var sp = srv.getPlayerList().getPlayer(mc.player.getUUID());
+                @SuppressWarnings("unchecked")
+                var antes = (java.util.Map<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState>) PI.get("rave_antes");
+                java.util.function.BiConsumer<net.minecraft.core.BlockPos, net.minecraft.world.level.block.state.BlockState> poner = (q, s) -> {
+                    antes.putIfAbsent(q.immutable(), l.getBlockState(q));
+                    l.setBlock(q, s, 3);
+                };
+                var aire = net.minecraft.world.level.block.Blocks.AIR.defaultBlockState();
+                var piedra = net.minecraft.world.level.block.Blocks.STONE.defaultBlockState();
+                var redstone = net.minecraft.world.level.block.Blocks.REDSTONE_BLOCK.defaultBlockState();
+                var b0 = net.minecraft.core.BlockPos.containing(a2Punto(3, -9, 0.3));
+                // foco: se enciende al dar corriente, apagado a mano no se vuelve a encender por tocar al lado, y se apaga al quitarla
+                poner.accept(b0, com.miscelanea.rave.RaveRegistro.FOCO.get().defaultBlockState().setValue(com.miscelanea.rave.LucesRave.ENCENDIDA, false));
+                poner.accept(b0.east(), redstone);
+                boolean enciende = l.getBlockState(b0).getValue(com.miscelanea.rave.LucesRave.ENCENDIDA);
+                l.setBlock(b0, l.getBlockState(b0).setValue(com.miscelanea.rave.LucesRave.ENCENDIDA, false), 3);
+                poner.accept(b0.west(), piedra);
+                boolean sigueApagada = !l.getBlockState(b0).getValue(com.miscelanea.rave.LucesRave.ENCENDIDA);
+                l.setBlock(b0, l.getBlockState(b0).setValue(com.miscelanea.rave.LucesRave.ENCENDIDA, true), 3);
+                poner.accept(b0.east(), aire);
+                boolean apaga = !l.getBlockState(b0).getValue(com.miscelanea.rave.LucesRave.ENCENDIDA);
+                PI.put("rave_arr_luz", "enciende con corriente " + enciende + ", apagada a mano sigue apagada " + sigueApagada + ", se apaga al quitarla " + apaga);
+                PI.put("rave_arr_luz_ok", enciende && sigueApagada && apaga);
+                // dos cañones juntos, cada uno con su corriente: un disparo cada uno y ya (antes se disparaban el uno al otro sin parar)
+                var c1 = b0.south(3);
+                var c2 = c1.east();
+                poner.accept(c1, com.miscelanea.rave.RaveRegistro.CONFETI.get().defaultBlockState());
+                poner.accept(c2, com.miscelanea.rave.RaveRegistro.CONFETI.get().defaultBlockState());
+                poner.accept(c1.west(), redstone);
+                poner.accept(c2.east(), redstone);
+                PI.put("rave_arr_c1", c1);
+                PI.put("rave_arr_disparos", (l.getBlockState(c1).getValue(com.miscelanea.rave.ConfetiBlock.CARGADO) ? 0 : 1)
+                        + (l.getBlockState(c2).getValue(com.miscelanea.rave.ConfetiBlock.CARGADO) ? 0 : 1));
+                // pantalla de vídeo: al añadir un panel por la izquierda el vídeo pasa al nuevo de abajo a la izquierda, y al quitarlo vuelve
+                var f = a2Mira.getOpposite();
+                var p1 = b0.north(3);
+                var p2 = p1.relative(f.getClockWise());
+                poner.accept(p1, com.miscelanea.rave.RaveRegistro.PANTALLA.get().defaultBlockState().setValue(com.miscelanea.rave.PantallaVideoBlock.FACING, f));
+                if (l.getBlockEntity(p1) instanceof com.miscelanea.rave.PantallaVideoBlockEntity v1) v1.poner(java.util.UUID.randomUUID(), 0);
+                poner.accept(p2, com.miscelanea.rave.RaveRegistro.PANTALLA.get().defaultBlockState().setValue(com.miscelanea.rave.PantallaVideoBlock.FACING, f));
+                boolean origen = com.miscelanea.rave.PantallaVideoBlock.origen(l, p1, f).equals(p2);
+                boolean pasa = l.getBlockEntity(p2) instanceof com.miscelanea.rave.PantallaVideoBlockEntity v2 && v2.conVideo()
+                        && l.getBlockEntity(p1) instanceof com.miscelanea.rave.PantallaVideoBlockEntity v1b && !v1b.conVideo();
+                l.setBlock(p2, aire, 3);
+                boolean vuelve = l.getBlockEntity(p1) instanceof com.miscelanea.rave.PantallaVideoBlockEntity v1c && v1c.conVideo();
+                if (l.getBlockEntity(p1) instanceof com.miscelanea.rave.PantallaVideoBlockEntity v1d) v1d.poner(null, -1);
+                PI.put("rave_arr_pantalla", "el nuevo panel es el origen " + origen + ", el vídeo pasa a él " + pasa + ", y vuelve al quitarlo " + vuelve);
+                PI.put("rave_arr_pantalla_ok", origen && pasa && vuelve);
+                // el último suero inyectado a otro deja el tubo vacío en el inventario
+                var tubo = com.miscelanea.laboratorio.LabRegistro.TUBO_ENSAYO.get();
+                var manoAntes = sp.getMainHandItem().copy();
+                int tubosAntes = sp.getInventory().countItem(tubo);
+                var cerdo = net.minecraft.world.entity.EntityType.PIG.create(l);
+                boolean tuboOk = false;
+                if (cerdo != null) {
+                    cerdo.moveTo(sp.getX() + 1.5, sp.getY(), sp.getZ());
+                    l.addFreshEntity(cerdo);
+                    sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new ItemStack(com.miscelanea.laboratorio.LabRegistro.SUERO.get()));
+                    sp.interactOn(cerdo, net.minecraft.world.InteractionHand.MAIN_HAND);
+                    tuboOk = sp.getInventory().countItem(tubo) == tubosAntes + 1 && sp.getMainHandItem().isEmpty();
+                    cerdo.discard();
+                }
+                sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, manoAntes);
+                sp.getInventory().clearOrCountMatchingItems(s -> s.is(tubo), tuboOk ? 1 : 0, sp.inventoryMenu.getCraftSlots());
+                PI.put("rave_arr_tubo", tuboOk);
+            });
+        });
+        vigila("rave_arreglos_chk", 10, () -> {
+            var c1 = (net.minecraft.core.BlockPos) PI.get("rave_arr_c1");
+            boolean cargados = c1 != null && mc.level.getBlockState(c1).getValue(com.miscelanea.rave.ConfetiBlock.CARGADO)
+                    && mc.level.getBlockState(c1.east()).getValue(com.miscelanea.rave.ConfetiBlock.CARGADO);
+            RESUMEN.add("  arreglos rave: luz con redstone: " + PI.get("rave_arr_luz") + "; confeti: disparos al dar corriente "
+                    + PI.get("rave_arr_disparos") + ", 3 s después los dos cargados (no se disparan solos) " + cargados
+                    + "; pantalla: " + PI.get("rave_arr_pantalla") + "; último suero deja el tubo " + PI.get("rave_arr_tubo"));
+            if (!Boolean.TRUE.equals(PI.get("rave_arr_luz_ok"))) throw new IllegalStateException("las luces no obedecen bien a la redstone");
+            if (!cargados) throw new IllegalStateException("los cañones de confeti se siguen disparando solos");
+            if (!Boolean.TRUE.equals(PI.get("rave_arr_pantalla_ok"))) throw new IllegalStateException("el vídeo no pasa al nuevo panel de abajo a la izquierda");
+            if (!Boolean.TRUE.equals(PI.get("rave_arr_tubo"))) throw new IllegalStateException("el último suero se lleva el tubo");
+        });
         // hito 5: escenario: dos torres de andamio unidas por arriba (con LED y dos focos colgados), tarima y suelo LED
         sin("rave_escenario_poner", 20, () -> {
             var srv = mc.getSingleplayerServer();

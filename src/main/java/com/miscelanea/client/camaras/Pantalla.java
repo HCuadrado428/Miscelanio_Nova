@@ -39,8 +39,12 @@ public final class Pantalla {
      */
     public static void dibujar(PoseStack ps, MultiBufferSource buf, Direction d, BlockPos pos, int canal,
                                double xIzq, double xDer, double yAbajo, double yArriba, double z) {
-        CamarasCliente.visto(canal);
-        CamarasCliente.pedirLista();      // para el nombre de la cámara en el rótulo
+        // una tele que sale en la imagen de otra cámara no cuenta como que alguien la mira: si no, el transmisor se la pedía
+        // a sí mismo cada vez que dibujaba y la cámara se quedaba transmitiendo para siempre
+        if (!CamarasCliente.dibujando) {
+            CamarasCliente.visto(canal);
+            CamarasCliente.pedirLista();      // para el nombre de la cámara en el rótulo
+        }
         int ef = CamarasCliente.efectivo(canal);
         // al cambiar de canal, medio segundo de estática (como una tele de verdad)
         long ahora = Util.getMillis();
@@ -104,7 +108,7 @@ public final class Pantalla {
             f.drawInBatch(bola, xBola, 1, punto ? 0xFFFF3030 : 0xFF601010, false, t, buf, Font.DisplayMode.NORMAL, FONDO, LUZ);
             f.drawInBatch(rec, xRec, 1, 0xFFFFFFFF, false, t, buf, Font.DisplayMode.NORMAL, FONDO, LUZ);
         } else {
-            Component s = Component.literal(cambiando ? "CAMBIANDO..." : "SIN SEÑAL").withStyle(ChatFormatting.BOLD);
+            Component s = Component.translatable(cambiando ? "camaras.miscelanea.vista.cambiando" : "camaras.miscelanea.vista.sin_senal").withStyle(ChatFormatting.BOLD);
             f.drawInBatch(s, (wt - f.width(s)) / 2.0F, ht / 2 - 4.5F, 0xFFFFFFFF, false, t, buf, Font.DisplayMode.NORMAL, FONDO, LUZ);
         }
         LocalTime h = LocalTime.now();

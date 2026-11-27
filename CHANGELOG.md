@@ -29,6 +29,30 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
   - La **alarma** deja de sonar al desactivarla.
   - **Laberinto:** al soltar a alguien se le quita también la cadena, y mientras está en marcha no se pueden romper ni poner bloques dentro (salvo en creativo).
   - La **centrífuga** avisa bien del espacio que necesita: **5 x 5** a su alrededor y dos de alto.
+- **Laboratorio: herramientas.**
+  - El **visor de constantes** de las gafas de seguridad ahora mide en el servidor, como el pulsómetro. Antes no se enteraba de los sueros ni del miedo que les ponían a los demás, ni de si estaban atados, y a veces alguien se quedaba «asustado» en el visor para siempre.
+  - El **escáner de anomalías** ya suena y enseña la barra a todo el mundo. Antes, según cuándo hubieras entrado al mundo, no hacía nada hasta que morías.
+  - Inyectar el **último suero** a otro ya no se lleva el **tubo de ensayo**: va al inventario.
+  - El **portapapeles** y los **tubos de ensayo** cuentan también en la mano izquierda.
+  - **Destilador:** con la mano derecha vacía usa lo que llevas en la izquierda (suavis, muestras o botellas), y al romperlo suelta lo que tenía dentro.
+  - El **analizador** apunta el nombre del suero en tu idioma (en un servidor dedicado salía en inglés).
+- **Rave: arreglos.**
+  - La música de la **mesa de DJ** vuelve a oírse al volver del Nether o del End (antes no se oía hasta la siguiente canción). Y quien llega a mitad de una canción la oye **por donde va**, no desde el principio, así que el ritmo de las luces y los altavoces cuadra con lo que suena.
+  - **Lista de reproducción:** quitar la canción que está sonando ya no se salta la siguiente.
+  - **«Emitir mi PC»** se para solo si otro pone música, si te alejas de la mesa o si el servidor no puede emitir, y el botón cambia a «Emitir».
+  - Las **luces** (bola, focos, estroboscopio, humo y chispas) se **encienden al dar corriente y se apagan al quitarla**. Antes la redstone solo encendía y volvía a encender las que apagabas.
+  - Los **cañones de confeti** disparan una vez al recibir corriente. Antes, dos juntos con corriente se disparaban el uno al otro sin parar.
+  - **Pantalla de vídeo:** el vídeo ya no se pierde al ampliarla por la izquierda o por abajo, ni al romper el panel de la esquina.
+  - Las **pulseras y collares** de los demás se ven bien aunque se los quiten mientras estás lejos.
+  - Las texturas de las pantallas de vídeo se liberan cuando dejas de verlas (antes se acumulaban hasta salir del mundo).
+- **Cámaras y teles: arreglos.**
+  - Una cámara que enfoca una tele ya no se queda **transmitiendo para siempre**. Antes el PC de quien la dibujaba seguía mandando imagen aunque nadie mirara, y eso daba lag.
+  - Lo que le pasa a quien transmite (**catalejo, correr, borrachera, sustos, el retroceso de las armas**) ya no sale en la imagen de la cámara.
+  - La imagen ya **no sale deformada** si quien transmite tiene la pantalla en 16:10, 4:3 o ultrapanorámica, y de lejos ya no sale granulada.
+  - «SIN SEÑAL» y «CAMBIANDO...» salen en tu idioma.
+  - La **cámara renombrada** conserva el nombre al romperla y volver a ponerla.
+  - **Agachado + clic** en una tele, un monitor o una cámara cambia de canal aunque lleves algo en la mano (salvo un bloque).
+  - Las texturas de los canales que ya no miras se liberan al rato (antes ocupaban memoria hasta salir del mundo).
 - **Pulsera y collar de neón: ya se pueden quitar con la mano vacía.** Agachado + clic derecho **al aire** con la mano vacía te quita la pulsera (y, si no llevas pulsera, el collar) y te la devuelve al inventario. Antes solo se podía con otra pulsera o collar en la mano, y como al ponértela se gasta, quien se quedaba sin ninguna ya no podía quitársela nunca. Sigue valiendo lo de antes (agachado + clic con otra en la mano). Lo que te quitas va a otro hueco del inventario, no a la mano, así que con dos clics te quitas las dos cosas. Para esto hay un mensaje de red nuevo: cliente y servidor tienen que llevar los dos la 1.3.1.
 
 ## 1.3.0

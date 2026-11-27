@@ -3,7 +3,11 @@ package com.miscelanea.client.rave;
 import com.miscelanea.Miscelanea;
 import com.miscelanea.rave.MesaDjBlockEntity;
 import com.miscelanea.rave.Pistas;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.Sound;
+import net.minecraft.client.sounds.AudioStream;
+import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.BlockPos;
@@ -16,6 +20,7 @@ import net.minecraftforge.fml.common.Mod;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * La música de las mesas de DJ en este cliente: una por mesa, que empieza cuando la mesa se pone a sonar y para cuando
@@ -82,10 +87,16 @@ public final class MusicaDj {
             }
             return;
         }
-        if (s != null && !s.isStopped() && s.pista.equals(be.pista()) && s.inicio == be.inicio()) return;
-        if (s != null) s.parar();
+        var mc = Minecraft.getInstance();
+        boolean misma = s != null && !s.isStopped() && s.mesa == be && s.pista.equals(be.pista()) && s.inicio == be.inicio();
+        // al cambiar de dimensión o con F3+T el juego corta todos los sonidos sin marcarlos parados: si ya no suena de verdad,
+        // se vuelve a poner por donde va (no cada tic, por si el juego no tiene canales libres)
+        if (misma && (mc.getSoundManager().isActive(s) || be.getLevel() == null || be.getLevel().getGameTime() - s.puesto < 40)) return;
         Pistas.Pista pi = Pistas.de(be.pista());
         if (pi == null) return;
+        long lleva = be.getLevel() == null ? 0 : be.getLevel().getGameTime() - be.inicio();
+        if (misma && lleva > pi.ticks() - 40) return;   // se ha acabado sola: la mesa pasará a la siguiente
+        if (s != null) s.parar();
         Sonido n = new Sonido(be, pi);
         SONANDO.put(p.immutable(), n);
         Minecraft.getInstance().getSoundManager().play(n);
@@ -101,12 +112,19 @@ public final class MusicaDj {
         private final MesaDjBlockEntity mesa;
         final String pista;
         final long inicio;
+        /** Tic del mundo en que se puso a sonar en este cliente. */
+        final long puesto;
+        /** Ticks de canción que se salta al empezar (quien llega a mitad la oye por donde va, no desde el principio). */
+        private final long saltar;
 
         Sonido(MesaDjBlockEntity mesa, Pistas.Pista pi) {
             super(Pistas.evento(pi), SoundSource.RECORDS, RandomSource.create());
             this.mesa = mesa;
             this.pista = mesa.pista();
             this.inicio = mesa.inicio();
+            long ahora = mesa.getLevel() == null ? inicio : mesa.getLevel().getGameTime();
+            this.puesto = ahora;
+            this.saltar = Math.max(0, Math.min(ahora - inicio, pi.ticks()));
             BlockPos p = mesa.getBlockPos();
             x = p.getX() + 0.5;
             y = p.getY() + 0.5;
@@ -137,6 +155,14 @@ public final class MusicaDj {
         }
 
         @Override
+        public CompletableFuture<AudioStream> getStream(SoundBufferLibrary lib, Sound sonido, boolean bucle) {
+            CompletableFuture<AudioStream> f = lib.getStream(sonido.getPath(), bucle);
+            if (saltar < 20) return f;
+            long t = saltar;
+            return f.thenApplyAsync(a -> Salto.saltar(a, t), Util.backgroundExecutor());
+        }
+
+        @Override
         public boolean canStartSilent() {
             return true;
         }
@@ -148,6 +174,26 @@ public final class MusicaDj {
                 return;
             }
             volume = calcular();
+        }
+    }
+
+    /** Adelanta un flujo de audio: lee y tira los primeros {@code ticks} de canción. */
+    static final class Salto {
+        private Salto() {}
+
+        static AudioStream saltar(AudioStream a, long ticks) {
+            try {
+                var fmt = a.getFormat();
+                long bytes = (long) (ticks / 20.0 * fmt.getSampleRate()) * fmt.getFrameSize();
+                while (bytes > 0) {
+                    var b = a.read((int) Math.min(bytes, 1 << 16));
+                    if (b == null || !b.hasRemaining()) break;
+                    bytes -= b.remaining();
+                }
+            } catch (java.io.IOException e) {
+                Miscelanea.LOGGER.debug("No se pudo adelantar la canción de la mesa de DJ", e);
+            }
+            return a;
         }
     }
 }

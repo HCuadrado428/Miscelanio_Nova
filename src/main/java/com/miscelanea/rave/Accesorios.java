@@ -106,7 +106,8 @@ public final class Accesorios {
 
     @SubscribeEvent
     public static void empiezaAVer(PlayerEvent.StartTracking e) {
-        if (e.getTarget() instanceof Player otro && e.getEntity() instanceof ServerPlayer yo && (puesto(otro, PULSERA) >= 0 || puesto(otro, COLLAR) >= 0))
+        // siempre, también si no lleva nada: si no, quien lo vio con la pulsera y volvió después de que se la quitara la seguía viendo
+        if (e.getTarget() instanceof Player otro && e.getEntity() instanceof ServerPlayer yo)
             RaveRed.CANAL.send(PacketDistributor.PLAYER.with(() -> yo), paquete(otro));
     }
 

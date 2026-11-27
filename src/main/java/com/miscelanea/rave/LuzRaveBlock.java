@@ -76,8 +76,22 @@ public abstract class LuzRaveBlock extends BaseEntityBlock {
     public void neighborChanged(BlockState s, Level l, BlockPos p, Block b, BlockPos de, boolean mov) {
         super.neighborChanged(s, l, p, b, de, mov);
         if (l.isClientSide) return;
+        senal(s, l, p);
+    }
+
+    @Override
+    public void onPlace(BlockState s, Level l, BlockPos p, BlockState antes, boolean mov) {
+        super.onPlace(s, l, p, antes, mov);
+        if (!l.isClientSide && !antes.is(s.getBlock())) senal(s, l, p);
+    }
+
+    /**
+     * La redstone solo enciende cuando la señal sube y apaga cuando baja (así se puede seguir usando el clic y el panel
+     * mientras hay corriente). Antes encendía con cualquier cambio de un vecino y nunca apagaba.
+     */
+    private static void senal(BlockState s, Level l, BlockPos p) {
         boolean señal = l.hasNeighborSignal(p);
-        // la redstone solo enciende al subir y apaga al bajar (así se puede seguir usando el clic)
-        if (señal && !s.getValue(LucesRave.ENCENDIDA)) l.setBlock(p, s.setValue(LucesRave.ENCENDIDA, true), 3);
+        if (señal == s.getValue(LucesRave.CON_SENAL)) return;
+        l.setBlock(p, s.setValue(LucesRave.CON_SENAL, señal).setValue(LucesRave.ENCENDIDA, señal), 3);
     }
 }

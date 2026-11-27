@@ -34,6 +34,19 @@ public class PantallaVideoBlockEntity extends BlockEntity {
         if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
     }
 
+    /** ¿Enseña un vídeo? */
+    public boolean conVideo() { return dueno != null; }
+
+    /** Se queda con el vídeo de otro panel (desde el mismo momento) y se lo quita a ese. */
+    void quitarVideoA(PantallaVideoBlockEntity otro) {
+        dueno = otro.dueno;
+        clip = otro.clip;
+        inicio = otro.inicio;
+        setChanged();
+        if (level != null) level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        if (otro != this) otro.poner(null, -1);
+    }
+
     @Override
     protected void saveAdditional(CompoundTag t) {
         super.saveAdditional(t);

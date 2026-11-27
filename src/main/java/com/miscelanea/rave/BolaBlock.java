@@ -34,7 +34,7 @@ public class BolaBlock extends LuzRaveBlock implements MultiBloque {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) {
-        b.add(LucesRave.ENCENDIDA, LucesRave.MODO, Muebles.COLOR);
+        b.add(LucesRave.ENCENDIDA, LucesRave.MODO, LucesRave.CON_SENAL, Muebles.COLOR);
     }
 
     @Override

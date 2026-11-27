@@ -65,10 +65,15 @@ public final class Experimentos {
         return true;
     }
 
+    /** El inventario y la mano izquierda (antes lo que se llevaba en la izquierda no contaba). */
+    private static Iterable<ItemStack> inventarioYMano(Player p) {
+        return com.google.common.collect.Iterables.concat(p.getInventory().items, p.getInventory().offhand);
+    }
+
     /** "Sujeto 7" si el científico lleva un portapapeles con ese jugador numerado; si no, su nombre. */
     public static String nombreSujeto(Player cientifico, @Nullable Player sujeto) {
         if (sujeto == null) return "?";
-        for (ItemStack s : cientifico.getInventory().items) {
+        for (ItemStack s : inventarioYMano(cientifico)) {
             if (!s.is(LabRegistro.PORTAPAPELES.get()) || s.getTag() == null) continue;
             CompoundTag sujetos = s.getTag().getCompound("Sujetos");
             if (sujetos.contains(sujeto.getStringUUID())) return "Sujeto " + sujetos.getInt(sujeto.getStringUUID());
@@ -78,7 +83,7 @@ public final class Experimentos {
 
     /** Si lleva un tubo de ensayo, lo gasta y le da la muestra. Devuelve si lo ha hecho. */
     public static boolean darMuestra(Player cientifico, net.minecraft.world.item.Item muestra) {
-        for (ItemStack s : cientifico.getInventory().items) {
+        for (ItemStack s : inventarioYMano(cientifico)) {
             if (!s.is(LabRegistro.TUBO_ENSAYO.get())) continue;
             s.shrink(1);
             ItemStack m = new ItemStack(muestra);
@@ -86,6 +91,26 @@ public final class Experimentos {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Da un tubo de ensayo vacío sin ponerlo en la mano con la que se ha usado el suero (esa mano se vacía después): se junta
+     * con los que ya tenga o va a un hueco libre; si no cabe, al suelo.
+     */
+    public static void tuboVacio(Player p, net.minecraft.world.InteractionHand mano) {
+        ItemStack tubo = new ItemStack(LabRegistro.TUBO_ENSAYO.get());
+        var inv = p.getInventory();
+        for (ItemStack h : inv.items)
+            if (!h.isEmpty() && ItemStack.isSameItemSameTags(h, tubo) && h.getCount() < h.getMaxStackSize()) {
+                h.grow(1);
+                return;
+            }
+        for (int i = 0; i < inv.items.size(); i++)
+            if ((mano != net.minecraft.world.InteractionHand.MAIN_HAND || i != inv.selected) && inv.items.get(i).isEmpty()) {
+                inv.items.set(i, tubo);
+                return;
+            }
+        p.drop(tubo, false);
     }
 
     // ------------------------------------------------------------------ lecturas

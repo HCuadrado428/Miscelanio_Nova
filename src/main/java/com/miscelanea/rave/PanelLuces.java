@@ -81,7 +81,8 @@ public final class PanelLuces {
             if (!p.getMainHandItem().is(RaveRegistro.MANDO_LUCES.get()) && !p.getOffhandItem().is(RaveRegistro.MANDO_LUCES.get())) return;
             centro = p.blockPosition();
         } else {
-            if (!p.level().getBlockState(pos).is(RaveRegistro.PANEL_LUCES.get()) || p.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 100) return;
+            // primero la distancia: si no, un cliente trucado podía hacer cargar chunks lejanos con posiciones inventadas
+            if (p.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) > 100 || !p.level().getBlockState(pos).is(RaveRegistro.PANEL_LUCES.get())) return;
             centro = pos;
         }
         int n = aplicar(p.level(), centro, accion, valor);

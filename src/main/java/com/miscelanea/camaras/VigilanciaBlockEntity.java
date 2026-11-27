@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
  * Una cámara de vigilancia colocada. Guarda su canal (1 a 99) y hacia dónde mira. Mientras está cargada en el servidor se
  * apunta en {@link CamarasServidor}: es lo que permite saber qué jugador tiene su chunk cargado y puede dibujarla.
  */
-public class VigilanciaBlockEntity extends BlockEntity {
+public class VigilanciaBlockEntity extends BlockEntity implements net.minecraft.world.Nameable {
     private int canal = 1;
     /** Giro horizontal de quien la colocó (solo se usa en el techo; en la pared mira hacia fuera de la pared). */
     private float giro;
@@ -37,6 +37,19 @@ public class VigilanciaBlockEntity extends BlockEntity {
     }
 
     public String nombre() { return nombre; }
+
+    /** Con nombre, la cámara que se suelta al romperla lo conserva (copy_name de su loot table). */
+    @Nullable
+    @Override
+    public net.minecraft.network.chat.Component getCustomName() {
+        return nombre.isEmpty() ? null : net.minecraft.network.chat.Component.literal(nombre);
+    }
+
+    @Override
+    public net.minecraft.network.chat.Component getName() {
+        var n = getCustomName();
+        return n != null ? n : getBlockState().getBlock().getName();
+    }
 
     public void nombre(String n) {
         nombre = n == null ? "" : n.length() > 16 ? n.substring(0, 16) : n;
@@ -76,13 +89,14 @@ public class VigilanciaBlockEntity extends BlockEntity {
     @Override
     public void setRemoved() {
         super.setRemoved();
-        CamarasServidor.baja(this);
+        // solo en el servidor: en un mundo de un jugador el cliente tocaba la lista del servidor desde otro hilo
+        if (level != null && !level.isClientSide) CamarasServidor.baja(this);
     }
 
     @Override
     public void onChunkUnloaded() {
         super.onChunkUnloaded();
-        CamarasServidor.baja(this);
+        if (level != null && !level.isClientSide) CamarasServidor.baja(this);
     }
 
     @Override

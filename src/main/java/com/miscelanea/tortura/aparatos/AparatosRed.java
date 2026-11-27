@@ -18,7 +18,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
  */
 @Mod.EventBusSubscriber(modid = Miscelanea.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class AparatosRed {
-    private static final String PROTOCOLO = "2";
+    private static final String PROTOCOLO = "3";   // 3: visor de constantes del laboratorio
 
     public static final SimpleChannel CANAL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(Miscelanea.MOD_ID, "aparatos"),
@@ -46,6 +46,10 @@ public final class AparatosRed {
             CANAL.messageBuilder(com.miscelanea.tortura.muertes.MuertePacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                     .encoder(com.miscelanea.tortura.muertes.MuertePacket::encode).decoder(com.miscelanea.tortura.muertes.MuertePacket::new)
                     .consumerMainThread(com.miscelanea.tortura.muertes.MuertePacket::handle).add();
+            // visor de constantes de las gafas del laboratorio
+            CANAL.messageBuilder(com.miscelanea.laboratorio.VisorPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                    .encoder(com.miscelanea.laboratorio.VisorPacket::encode).decoder(com.miscelanea.laboratorio.VisorPacket::new)
+                    .consumerMainThread(com.miscelanea.laboratorio.VisorPacket::handle).add();
         });
     }
 

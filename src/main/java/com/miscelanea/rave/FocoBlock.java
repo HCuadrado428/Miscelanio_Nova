@@ -22,7 +22,7 @@ public class FocoBlock extends LuzRaveBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) {
-        b.add(LucesRave.ENCENDIDA, LucesRave.MODO, LucesRave.COLGADO, Muebles.COLOR);
+        b.add(LucesRave.ENCENDIDA, LucesRave.MODO, LucesRave.CON_SENAL, LucesRave.COLGADO, Muebles.COLOR);
     }
 
     @Override

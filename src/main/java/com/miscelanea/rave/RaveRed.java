@@ -109,8 +109,8 @@ public final class RaveRed {
             NetworkEvent.Context c = ctx.get();
             ServerPlayer p = c.getSender();
             c.enqueueWork(() -> {
-                if (p == null || !(p.level().getBlockEntity(m.pos) instanceof PantallaVideoBlockEntity be) || be.dueno() == null) return;
-                if (p.distanceToSqr(m.pos.getX() + 0.5, m.pos.getY() + 0.5, m.pos.getZ() + 0.5) > 160 * 160) return;
+                if (p == null || p.distanceToSqr(m.pos.getX() + 0.5, m.pos.getY() + 0.5, m.pos.getZ() + 0.5) > 160 * 160 || !p.level().hasChunkAt(m.pos)) return;
+                if (!(p.level().getBlockEntity(m.pos) instanceof PantallaVideoBlockEntity be) || be.dueno() == null) return;
                 byte[] d = com.miscelanea.movil.Clips.clipDe(p.server, be.dueno(), be.clip());
                 CANAL.send(net.minecraftforge.network.PacketDistributor.PLAYER.with(() -> p), new Video(be.dueno(), be.clip(), d == null ? new byte[0] : d));
             });

@@ -62,7 +62,8 @@ public class AnalizadorBlock extends Block {
             p.displayClientMessage(Component.translatable("laboratorio.miscelanea.analizador.suero", nombre).withStyle(ChatFormatting.GREEN), true);
             if (nuevo) {
                 Map<String, String> lecturas = new LinkedHashMap<>();
-                lecturas.put("suero", nombre.getString());
+                // la clave, no el texto: en un servidor dedicado getString() lo dejaba en inglés para todos
+                lecturas.put("suero", "suero." + tipo);
                 Experimentos.anotar(p, "analisis", null, 0, lecturas);
             }
             return true;

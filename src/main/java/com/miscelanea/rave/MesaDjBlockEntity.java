@@ -83,6 +83,8 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
                 if (numero < 0 || numero >= cola.size()) return;
                 cola.remove(numero);
                 if (posCola > numero) posCola--;
+                // si se quita la que suena, la siguiente es la que ha ocupado su sitio (antes se la saltaba)
+                else if (posCola == numero) posCola = cola.isEmpty() ? 0 : (numero - 1 + cola.size()) % cola.size();
                 cambiado();
             }
             case RaveRed.DJ_COLA_VACIAR -> {

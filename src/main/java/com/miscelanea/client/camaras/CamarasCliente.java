@@ -158,6 +158,9 @@ public final class CamarasCliente {
             if (s.tex == null || s.tex.getPixels() == null || s.tex.getPixels().getWidth() != img.getWidth() || s.tex.getPixels().getHeight() != img.getHeight()) {
                 if (s.rl != null) Minecraft.getInstance().getTextureManager().release(s.rl);
                 s.tex = new DynamicTexture(img.getWidth(), img.getHeight(), false);
+                // con sitio para los mipmaps: DynamicTexture reserva solo un nivel y glGenerateMipmap no hacía nada
+                int niveles = Math.max(0, Math.min(4, 31 - Integer.numberOfLeadingZeros(Math.min(img.getWidth(), img.getHeight()))));
+                com.mojang.blaze3d.platform.TextureUtil.prepareImage(s.tex.getId(), niveles, img.getWidth(), img.getHeight());
                 s.tex.setFilter(true, true);    // suavizado al ampliarla y, al verla pequeña en la tele, reducida con mipmaps (si no, sale granulada)
                 s.rl = Minecraft.getInstance().getTextureManager().register("miscelanea_camara", s.tex);
             }
@@ -194,6 +197,23 @@ public final class CamarasCliente {
     private static int tick;
     private static boolean mirabaAlgo;
 
+    /*
+     * Mientras se dibuja una cámara, lo que le pasa al jugador que transmite (catalejo, correr, borrachera, sustos, retroceso
+     * de las armas...) no puede salir en la imagen: el ángulo de visión y el giro son los de la cámara, y nada más.
+     */
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST)
+    public static void fovCamara(net.minecraftforge.client.event.ViewportEvent.ComputeFov e) {
+        if (dibujando && e.usedConfiguredFov()) e.setFOV(Minecraft.getInstance().options.fov().get());
+    }
+
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST)
+    public static void giroCamara(net.minecraftforge.client.event.ViewportEvent.ComputeCameraAngles e) {
+        if (!dibujando || falsa == null) return;
+        e.setYaw(falsa.getYRot());
+        e.setPitch(falsa.getXRot());
+        e.setRoll(0);
+    }
+
     @SubscribeEvent
     public static void tic(TickEvent.ClientTickEvent e) {
         if (e.phase != TickEvent.Phase.END) return;
@@ -202,6 +222,15 @@ public final class CamarasCliente {
         if (++tick % 10 != 0) return;
         long ahora = Util.getMillis();
         VISTOS.values().removeIf(t -> ahora - t > 700);
+        // texturas de canales que ya no llegan y lo que veían cámaras que ya no dibujo: fuera (antes duraban hasta desconectar)
+        if (tick % 200 == 0) {
+            SENALES.entrySet().removeIf(en -> {
+                if (VISTOS.containsKey(en.getKey()) || ahora - en.getValue().ultimo < 30_000) return false;
+                if (en.getValue().rl != null) mc.getTextureManager().release(en.getValue().rl);
+                return true;
+            });
+            VISTAS.values().removeIf(v -> ahora - (Long) v[2] > 30_000);
+        }
         Set<Integer> c = new TreeSet<>(VISTOS.keySet());
         // en automático también interesan los canales que rota la tele (el 0 en sí solo pide la lista de cámaras)
         if (c.contains(0)) c.add(efectivo(0));
@@ -320,7 +349,7 @@ public final class CamarasCliente {
                     acabado = false;
                 }
             }
-            if (bien && acabado) VISTAS.put(canal, new Object[]{lr.miscelanea$almacen().get(), lr.miscelanea$zona()});
+            if (bien && acabado) VISTAS.put(canal, new Object[]{lr.miscelanea$almacen().get(), lr.miscelanea$zona(), Util.getMillis()});
             // y todo vuelve a como lo tenía el jugador
             lr.miscelanea$almacen().set(almacenJugador);
             lr.miscelanea$x(px);
@@ -346,7 +375,18 @@ public final class CamarasCliente {
             if (primera) ultTx = 0;
             return null;
         }
-        MovilCaptura.copiar(grande, 0, 0, grande.width, grande.height, pequena);
+        // solo la franja central 16:9: con la ventana en 16:10, 4:3 o ultrapanorámica, la imagen salía aplastada o estirada
+        int cx0 = 0, cy0 = 0, cx1 = grande.width, cy1 = grande.height;
+        if (grande.width * 9 > grande.height * 16) {
+            int cw = grande.height * 16 / 9;
+            cx0 = (grande.width - cw) / 2;
+            cx1 = cx0 + cw;
+        } else {
+            int ch = grande.width * 9 / 16;
+            cy0 = (grande.height - ch) / 2;
+            cy1 = cy0 + ch;
+        }
+        MovilCaptura.copiar(grande, cx0, cy0, cx1, cy1, pequena);
         original.bindWrite(true);
         try (NativeImage img = MovilCaptura.descargar(pequena)) {
             int max = CamarasRed.MAX_FRAME - 500;

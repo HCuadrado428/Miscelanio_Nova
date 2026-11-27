@@ -54,7 +54,12 @@ public class SueroItem extends Item {
     public InteractionResult interactLivingEntity(ItemStack s, Player p, LivingEntity v, InteractionHand h) {
         if (!p.level().isClientSide) {
             Sueros.aplicar(v, Sueros.tipo(s));
-            p.setItemInHand(h, vaciar(s, p));
+            // el tubo vacío va al inventario, no a la mano: con el último suero, Minecraft vacía la mano después de esto y se
+            // llevaba el tubo por delante
+            if (!p.getAbilities().instabuild) {
+                s.shrink(1);
+                Experimentos.tuboVacio(p, h);
+            }
         }
         return InteractionResult.sidedSuccess(p.level().isClientSide);
     }

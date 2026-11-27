@@ -92,6 +92,58 @@ public class PantallaVideoBlock extends BaseEntityBlock {
         return p.relative(d.getCounterClockWise().getOpposite(), g[0]).below(g[2]);
     }
 
+    /*
+     * El vídeo lo guarda el panel de abajo a la izquierda. Si se añaden paneles por la izquierda o por abajo, o se rompe ese
+     * panel, el de abajo a la izquierda pasa a ser otro: el vídeo se le pasa a él (antes la pantalla se quedaba vacía).
+     */
+    @Override
+    public void onPlace(BlockState s, Level l, BlockPos p, BlockState antes, boolean mov) {
+        super.onPlace(s, l, p, antes, mov);
+        if (!l.isClientSide && !antes.is(this)) reubicar(l, p, s.getValue(FACING), null);
+    }
+
+    @Override
+    public void onRemove(BlockState s, Level l, BlockPos p, BlockState nuevo, boolean mov) {
+        PantallaVideoBlockEntity quitado = !l.isClientSide && !nuevo.is(this) && l.getBlockEntity(p) instanceof PantallaVideoBlockEntity be && be.conVideo() ? be : null;
+        // copia del vídeo antes de que desaparezca el panel
+        PantallaVideoBlockEntity copia = null;
+        if (quitado != null) {
+            copia = new PantallaVideoBlockEntity(p, s);
+            copia.load(quitado.saveWithoutMetadata());
+        }
+        super.onRemove(s, l, p, nuevo, mov);
+        if (copia == null) return;
+        Direction d = s.getValue(FACING), der = d.getCounterClockWise();
+        for (Direction v : new Direction[]{der.getOpposite(), der, Direction.DOWN, Direction.UP}) {
+            BlockPos q = p.relative(v);
+            if (igual(l, q, d) && reubicar(l, q, d, copia)) return;
+        }
+    }
+
+    /**
+     * Deja el vídeo del grupo de {@code p} en su panel de abajo a la izquierda: el de {@code traido} si llega uno o, si no, el
+     * de cualquier otro panel del grupo. Devuelve si ha colocado {@code traido}.
+     */
+    private static boolean reubicar(Level l, BlockPos p, Direction d, @Nullable PantallaVideoBlockEntity traido) {
+        BlockPos o = origen(l, p, d);
+        if (!(l.getBlockEntity(o) instanceof PantallaVideoBlockEntity org) || org.conVideo()) return false;
+        if (traido != null) {
+            org.quitarVideoA(traido);
+            return true;
+        }
+        int[] g = grupo(l, o, d);
+        Direction der = d.getCounterClockWise();
+        for (int i = 0; i <= g[1]; i++)
+            for (int j = 0; j <= g[3]; j++) {
+                BlockPos q = o.relative(der, i).above(j);
+                if (!q.equals(o) && l.getBlockEntity(q) instanceof PantallaVideoBlockEntity otro && otro.conVideo()) {
+                    org.quitarVideoA(otro);
+                    return false;
+                }
+            }
+        return false;
+    }
+
     @Override
     public InteractionResult use(BlockState s, Level l, BlockPos p, Player j, InteractionHand m, BlockHitResult h) {
         BlockPos o = origen(l, p, s.getValue(FACING));

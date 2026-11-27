@@ -42,7 +42,7 @@ public class HumoBlock extends LuzRaveBlock {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) {
-        b.add(LucesRave.ENCENDIDA, LucesRave.MODO, FACING, Muebles.COLOR);
+        b.add(LucesRave.ENCENDIDA, LucesRave.MODO, LucesRave.CON_SENAL, FACING, Muebles.COLOR);
     }
 
     @Override

@@ -14,6 +14,8 @@ public final class LucesRave {
     private LucesRave() {}
 
     public static final BooleanProperty ENCENDIDA = BooleanProperty.create("encendida");
+    /** Si tenía señal de redstone (para encender solo al subir y apagar al bajar). */
+    public static final BooleanProperty CON_SENAL = net.minecraft.world.level.block.state.properties.BlockStateProperties.POWERED;
     /** Velocidad o patrón (0 a 3); agachado + clic lo cambia. */
     public static final IntegerProperty MODO = IntegerProperty.create("modo", 0, 3);
     public static final BooleanProperty COLGADO = BooleanProperty.create("colgado");

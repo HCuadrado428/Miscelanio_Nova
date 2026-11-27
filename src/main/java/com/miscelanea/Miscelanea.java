@@ -75,7 +75,8 @@ public class Miscelanea {
     private static final java.util.Set<Item> EN_PESTANAS = new java.util.HashSet<>();
     private static int pestanasHechas;
     /** Objetos internos que no van en el creativo a propósito (iconos de proyectiles, piezas que solo se dibujan). */
-    private static final java.util.Set<String> SIN_PESTANA = java.util.Set.of("desatascador", "escudo_guardian", "muestra_glitch_lanzada");
+    private static final java.util.Set<String> SIN_PESTANA = java.util.Set.of("desatascador", "escudo_guardian", "muestra_glitch_lanzada",
+            "informe_laboratorio");   // solo sale de la impresora del laboratorio (lleva la ficha dentro)
 
     private void creativeTabs(final BuildCreativeModeTabContentsEvent event) {
         // ---- Feria y atracciones

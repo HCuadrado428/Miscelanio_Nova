@@ -51,8 +51,17 @@ public class DestiladorBlock extends BaseEntityBlock {
 
     @Override
     public InteractionResult use(BlockState s, Level l, BlockPos p, Player pl, InteractionHand h, BlockHitResult r) {
+        if (!(l.getBlockEntity(p) instanceof DestiladorBlockEntity be)) return InteractionResult.PASS;
+        // con la mano derecha sin nada útil y algo útil en la izquierda, que lo use la izquierda (antes solo enseñaba el estado)
+        if (h == InteractionHand.MAIN_HAND && !be.util(pl.getMainHandItem()) && be.util(pl.getOffhandItem())) return InteractionResult.PASS;
         if (l.isClientSide) return InteractionResult.SUCCESS;
-        if (l.getBlockEntity(p) instanceof DestiladorBlockEntity be) be.alInteractuar(pl, h);
+        be.alInteractuar(pl, h);
         return InteractionResult.CONSUME;
+    }
+
+    @Override
+    public void onRemove(BlockState s, Level l, BlockPos p, BlockState nuevo, boolean movido) {
+        if (!s.is(nuevo.getBlock()) && !l.isClientSide && l.getBlockEntity(p) instanceof DestiladorBlockEntity be) be.soltarTodo();
+        super.onRemove(s, l, p, nuevo, movido);
     }
 }

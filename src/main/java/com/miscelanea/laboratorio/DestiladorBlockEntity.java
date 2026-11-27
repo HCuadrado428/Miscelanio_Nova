@@ -109,6 +109,32 @@ public class DestiladorBlockEntity extends BlockEntity {
         };
     }
 
+    /** Lo que se mete para esa tarea (para devolverlo si se rompe el destilador). */
+    private static ItemStack entrada(String tarea) {
+        return new ItemStack(switch (tarea) {
+            case "miedo" -> LabRegistro.MUESTRA_MIEDO.get();
+            case "mareo" -> LabRegistro.MUESTRA_MAREO.get();
+            case "frio" -> LabRegistro.MUESTRA_FRIO.get();
+            case "calor" -> LabRegistro.MUESTRA_CALOR.get();
+            default -> ModItems.SUAVIS_SECO.get();
+        });
+    }
+
+    /** Al romperlo: suelta lo que se estaba destilando y las pociones hechas (antes se perdía todo). */
+    public void soltarTodo() {
+        if (level == null) return;
+        for (String t : cola) net.minecraft.world.Containers.dropItemStack(level, worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5, entrada(t));
+        for (ItemStack s : salidas) net.minecraft.world.Containers.dropItemStack(level, worldPosition.getX() + 0.5, worldPosition.getY() + 0.5, worldPosition.getZ() + 0.5, s);
+        cola.clear();
+        salidas.clear();
+        setChanged();
+    }
+
+    /** ¿Hace algo este objeto en el destilador? (meter o sacar) */
+    public boolean util(ItemStack s) {
+        return s.is(ModItems.SUAVIS_SECO.get()) || tarea(s) != null || (s.is(Items.GLASS_BOTTLE) && !salidas.isEmpty());
+    }
+
     /** Saca la primera poción lista como poción (vacío si no hay ninguna). */
     public ItemStack sacar() {
         if (salidas.isEmpty()) return ItemStack.EMPTY;

@@ -67,6 +67,9 @@ public final class CapturaPc {
         elegida = elegida < 0 ? 1 : elegida + 1;
     }
 
+    /** Tics que lleva emitiendo esta captura (para darle tiempo al servidor a apuntarme como emisor). */
+    private static int ticsEmitiendo;
+
     public static boolean emitiendo() {
         return hilo != null && seguir;
     }
@@ -103,6 +106,7 @@ public final class CapturaPc {
         if (linea == null) return "rave.miscelanea.dj.entrada_no_abre";
         mesa = p.immutable();
         seguir = true;
+        ticsEmitiendo = 0;
         RaveRed.dj(p, RaveRed.DJ_EMITIR, "", 1);
         final TargetDataLine ln = linea;
         final int ch = canales;
@@ -178,9 +182,12 @@ public final class CapturaPc {
             seguir = false;
             return;
         }
+        ticsEmitiendo++;
         if (mc.level.getGameTime() % 20 != 0) return;
-        if (mc.level.getBlockEntity(p) instanceof MesaDjBlockEntity m && m.emisor() != null && !mc.player.getUUID().equals(m.emisor())) seguir = false;
-        if (!(mc.level.getBlockEntity(p) instanceof MesaDjBlockEntity)) seguir = false;
+        // la mesa tiene que decir que emito yo; si dice otro o nadie (alguien ha puesto música, me he alejado, el servidor no
+        // tiene Simple Voice Chat...), se para. Al empezar se deja un par de segundos para que llegue la respuesta del servidor.
+        if (!(mc.level.getBlockEntity(p) instanceof MesaDjBlockEntity m)) seguir = false;
+        else if (!mc.player.getUUID().equals(m.emisor()) && (m.emisor() != null || ticsEmitiendo > 60)) seguir = false;
     }
 
     @SubscribeEvent

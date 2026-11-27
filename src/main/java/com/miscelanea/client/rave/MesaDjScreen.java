@@ -1,5 +1,6 @@
 package com.miscelanea.client.rave;
 
+import javax.annotation.Nullable;
 import com.miscelanea.rave.MesaDjBlockEntity;
 import com.miscelanea.rave.Pistas;
 import com.miscelanea.rave.RaveRed;
@@ -92,7 +93,7 @@ public class MesaDjScreen extends Screen {
             CapturaPc.siguienteEntrada();
             b.setMessage(Component.translatable("rave.miscelanea.dj.entrada", CapturaPc.nombreEntrada()));
         }).bounds(x0 + 8, ay, 170, 20).build());
-        addRenderableWidget(Button.builder(Component.translatable(CapturaPc.emitiendo() ? "rave.miscelanea.dj.emitir_parar" : "rave.miscelanea.dj.emitir"), b -> {
+        botonEmitir = addRenderableWidget(Button.builder(Component.translatable(CapturaPc.emitiendo() ? "rave.miscelanea.dj.emitir_parar" : "rave.miscelanea.dj.emitir"), b -> {
             if (CapturaPc.emitiendo()) {
                 CapturaPc.parar();
                 error = null;
@@ -107,6 +108,17 @@ public class MesaDjScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    /** Botón de emitir el ordenador: cambia solo si la captura se para por su cuenta (otro ha puesto música, me he alejado...). */
+    @Nullable
+    private Button botonEmitir;
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (botonEmitir != null)
+            botonEmitir.setMessage(Component.translatable(CapturaPc.emitiendo() ? "rave.miscelanea.dj.emitir_parar" : "rave.miscelanea.dj.emitir"));
     }
 
     @Override

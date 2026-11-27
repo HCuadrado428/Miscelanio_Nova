@@ -61,13 +61,14 @@ public class EscanerItem extends Item {
     public void inventoryTick(ItemStack st, Level l, Entity e, int slot, boolean sel) {
         if (l.isClientSide || !(e instanceof ServerPlayer p) || !sel) return;
         if (p.tickCount % 4 != 0) return;
-        // la intensidad se recalcula cada medio segundo (recorre un cubo de bloques)
-        long t = l.getGameTime();
+        // la intensidad se recalcula cada 8 tics (recorre un cubo de bloques). Con el mismo reloj que el filtro de arriba: antes
+        // se usaba la hora del mundo y, según cuándo había entrado el jugador, nunca coincidían (ni sonaba ni salía la barra)
+        boolean medir = p.tickCount % 8 == 0;
         CompoundTagCache c = CompoundTagCache.de(st);
-        if (t % 10 == 0) c.intensidad = intensidad(l, p);
+        if (medir) c.intensidad = intensidad(l, p);
         if (c.intensidad > 0 && l.random.nextFloat() < 0.15 + c.intensidad * 0.85)
             p.playNotifySound(GlitchRegistro.CRUJIDO.get(), net.minecraft.sounds.SoundSource.PLAYERS, 0.25F + (float) c.intensidad * 0.6F, 0.8F + l.random.nextFloat() * 0.6F);
-        if (t % 10 == 0) {
+        if (medir) {
             int barras = (int) Math.round(c.intensidad * 10);
             p.displayClientMessage(Component.translatable("laboratorio.miscelanea.escaner.barra", "█".repeat(barras) + "░".repeat(10 - barras))
                     .withStyle(barras >= 7 ? ChatFormatting.RED : barras >= 3 ? ChatFormatting.YELLOW : ChatFormatting.GREEN), true);

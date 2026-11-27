@@ -30,6 +30,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public class ConfetiBlock extends Block {
     public static final DirectionProperty FACING = BlockStateProperties.FACING;
     public static final BooleanProperty CARGADO = BooleanProperty.create("cargado");
+    /** Si tenía señal de redstone: dispara solo cuando la señal sube, como el dispensador. */
+    public static final BooleanProperty CON_SENAL = BlockStateProperties.TRIGGERED;
     private static final VoxelShape[] FORMAS = new VoxelShape[6];
 
     public ConfetiBlock(Properties p) {
@@ -39,7 +41,7 @@ public class ConfetiBlock extends Block {
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> b) {
-        b.add(FACING, Muebles.COLOR, CARGADO);
+        b.add(FACING, Muebles.COLOR, CARGADO, CON_SENAL);
     }
 
     @Override
@@ -88,6 +90,12 @@ public class ConfetiBlock extends Block {
     @Override
     public void neighborChanged(BlockState s, Level l, BlockPos p, Block b, BlockPos de, boolean mov) {
         super.neighborChanged(s, l, p, b, de, mov);
-        if (!l.isClientSide && l.hasNeighborSignal(p)) disparar(l, p, s);
+        if (l.isClientSide) return;
+        // solo al subir la señal: si no, dos cañones juntos con corriente se disparaban el uno al otro sin parar al recargarse
+        boolean señal = l.hasNeighborSignal(p);
+        if (señal == s.getValue(CON_SENAL)) return;
+        BlockState n = s.setValue(CON_SENAL, señal);
+        l.setBlock(p, n, 2);
+        if (señal) disparar(l, p, n);
     }
 }
