@@ -5724,6 +5724,7 @@ public final class PruebaCI {
                 sp.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, manoAntes);
                 sp.getInventory().clearOrCountMatchingItems(s -> s.is(tubo), tuboOk ? 1 : 0, sp.inventoryMenu.getCraftSlots());
                 PI.put("rave_arr_tubo", tuboOk);
+                PI.put("rave_arr_b0", b0);
             });
         });
         vigila("rave_arreglos_chk", 10, () -> {
@@ -5737,6 +5738,18 @@ public final class PruebaCI {
             if (!cargados) throw new IllegalStateException("los cañones de confeti se siguen disparando solos");
             if (!Boolean.TRUE.equals(PI.get("rave_arr_pantalla_ok"))) throw new IllegalStateException("el vídeo no pasa al nuevo panel de abajo a la izquierda");
             if (!Boolean.TRUE.equals(PI.get("rave_arr_tubo"))) throw new IllegalStateException("el último suero se lleva el tubo");
+        });
+        // se quitan las piezas de la prueba (si no, el panel de luces de más adelante cuenta el foco apagado)
+        sin("rave_arreglos_quitar", 5, () -> {
+            var srv = mc.getSingleplayerServer();
+            srv.execute(() -> {
+                var l = srv.overworld();
+                var b0 = (net.minecraft.core.BlockPos) PI.get("rave_arr_b0");
+                if (b0 == null) return;
+                var c1 = b0.south(3);
+                for (var q : new net.minecraft.core.BlockPos[]{b0, b0.east(), b0.west(), c1, c1.east(), c1.west(), c1.east(2), b0.north(3)})
+                    l.setBlock(q, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+            });
         });
         // hito 5: escenario: dos torres de andamio unidas por arriba (con LED y dos focos colgados), tarima y suelo LED
         sin("rave_escenario_poner", 20, () -> {
