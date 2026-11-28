@@ -28,6 +28,7 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
 
 ## 1.3.1
 
+- **Peluche de Kaneis: quitado.** Ya no está en la pestaña «Peluches» ni sale de la máquina de garra. Los que hubiera puestos en el mundo o guardados en cofres desaparecen al actualizar.
 - **Laboratorio: la consola por fin funciona.** Agachado + clic en la consola de una estación no cambiaba el nivel ni la temperatura: sacaba al sujeto (y, con algo en la mano, ni siquiera llegaba al bloque). Ahora:
   - **Clic derecho en la consola** (el bloque de detrás de la cabina) abre un **panel** con quién está dentro, si está en marcha, un botón por nivel (**suave, intenso, extremo**; en la cámara de temperatura, un botón por temperatura, de **-40° a 110°**), **Arrancar / Parar** y **Sacar al sujeto**. El extremo pide pulsar dos veces.
   - **Agachado + clic en la consola**: siguiente nivel (o temperatura) sin abrir el panel, aunque lleves algo en la mano.
