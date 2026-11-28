@@ -13,6 +13,7 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
 
 ## 1.3.2
 
+- **Peluche de Kaneis: quitado.** Ya no está en la pestaña «Peluches» ni sale de la máquina de garra. Los que hubiera puestos en el mundo o guardados en cofres desaparecen al actualizar.
 - **Mesa de DJ: «Emitir mi PC» ya coge el sonido del ordenador, no el micro.** Antes solo sabía grabar de las entradas de sonido, y en Windows lo que suena por los altavoces no es una entrada (salvo que actives la «Mezcla estéreo»), así que cogía el micrófono y Spotify solo se oía de rebote. Ahora:
   - En **Windows** hay una entrada nueva, **«Sonido del PC»**, que es la que sale elegida: manda tal cual lo que suena en tu ordenador (Spotify, YouTube…) sin configurar nada.
   - Si eliges un micrófono, la pantalla te avisa de que eso no recoge la música.
@@ -28,7 +29,6 @@ Ramas del repositorio (cada una compila su propio jar al subir algo):
 
 ## 1.3.1
 
-- **Peluche de Kaneis: quitado.** Ya no está en la pestaña «Peluches» ni sale de la máquina de garra. Los que hubiera puestos en el mundo o guardados en cofres desaparecen al actualizar.
 - **Laboratorio: la consola por fin funciona.** Agachado + clic en la consola de una estación no cambiaba el nivel ni la temperatura: sacaba al sujeto (y, con algo en la mano, ni siquiera llegaba al bloque). Ahora:
   - **Clic derecho en la consola** (el bloque de detrás de la cabina) abre un **panel** con quién está dentro, si está en marcha, un botón por nivel (**suave, intenso, extremo**; en la cámara de temperatura, un botón por temperatura, de **-40° a 110°**), **Arrancar / Parar** y **Sacar al sujeto**. El extremo pide pulsar dos veces.
   - **Agachado + clic en la consola**: siguiente nivel (o temperatura) sin abrir el panel, aunque lleves algo en la mano.
