@@ -149,17 +149,18 @@ public final class MusicaDj {
             double d = Math.sqrt(pl.distanceToSqr(x, y, z));
             double a = Math.max(8, mesa.alcance());
             if (d >= a) return 0;
-            // casi igual de fuerte en la pista (los primeros bloques) y baja hasta el borde del alcance
-            double f = d < 6 ? 1 : 1 - (d - 6) / (a - 6);
-            return (float) (mesa.volumen() / 100.0 * Math.pow(f, 1.3));
+            // a tope en la pista (el primer tercio del alcance, 8 bloques como poco) y baja poco a poco hasta el borde
+            double llano = Math.min(a - 1, Math.max(8, a * 0.35));
+            double f = d < llano ? 1 : 1 - (d - llano) / (a - llano);
+            return (float) (mesa.volumen() / 100.0 * f);
         }
 
         @Override
         public CompletableFuture<AudioStream> getStream(SoundBufferLibrary lib, Sound sonido, boolean bucle) {
             CompletableFuture<AudioStream> f = lib.getStream(sonido.getPath(), bucle);
-            if (saltar < 20) return f;
             long t = saltar;
-            return f.thenApplyAsync(a -> Salto.saltar(a, t), Util.backgroundExecutor());
+            // adelantada hasta por donde va y con el volumen subido (las canciones grabadas flojas se oían muy bajo)
+            return f.thenApplyAsync(a -> new Fuerte(t < 20 ? a : Salto.saltar(a, t)), Util.backgroundExecutor());
         }
 
         @Override
@@ -174,6 +175,37 @@ public final class MusicaDj {
                 return;
             }
             volume = calcular();
+        }
+    }
+
+    /** Un flujo de audio con el volumen subido por el {@link Compresor} (solo si es de 16 bits, que es lo que da el juego). */
+    static final class Fuerte implements AudioStream {
+        private final AudioStream base;
+        private final Compresor compresor;
+
+        Fuerte(AudioStream base) {
+            this.base = base;
+            var fmt = base.getFormat();
+            compresor = fmt.getSampleSizeInBits() == 16 ? new Compresor(fmt.getSampleRate() * fmt.getChannels(), 2.8F) : null;
+        }
+
+        @Override
+        public javax.sound.sampled.AudioFormat getFormat() {
+            return base.getFormat();
+        }
+
+        @Override
+        public java.nio.ByteBuffer read(int tam) throws java.io.IOException {
+            java.nio.ByteBuffer b = base.read(tam);
+            if (b == null || compresor == null) return b;
+            java.nio.ShortBuffer s = b.duplicate().order(java.nio.ByteOrder.nativeOrder()).asShortBuffer();
+            for (int i = 0, n = s.limit(); i < n; i++) s.put(i, (short) Math.round(compresor.procesar(s.get(i) / 32768F) * 32767F));
+            return b;
+        }
+
+        @Override
+        public void close() throws java.io.IOException {
+            base.close();
         }
     }
 

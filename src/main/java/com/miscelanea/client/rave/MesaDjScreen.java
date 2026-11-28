@@ -177,7 +177,12 @@ public class MesaDjScreen extends Screen {
             g.fill(x0 + 186, y0 + 227, x0 + 186 + 124, y0 + 230, 0xFF22222E);
             g.fill(x0 + 186, y0 + 227, x0 + 186 + w, y0 + 230, 0xFF7CFF3A);
         }
-        if (error != null) g.drawString(font, font.plainSubstrByWidth(error.getString(), W - 16), x0 + 8, y0 + 226, 0xFFFF5A5A, false);
+        // abajo: el error de la captura si lo hay; si no, el aviso de que lo elegido es un micrófono
+        Component abajo = error;
+        if (abajo == null && CapturaPc.fallo() != null) abajo = Component.translatable(CapturaPc.fallo());
+        boolean esAviso = abajo == null && CapturaPc.aviso() != null;
+        if (esAviso) abajo = Component.translatable(CapturaPc.aviso());
+        if (abajo != null) g.drawString(font, font.plainSubstrByWidth(abajo.getString(), CapturaPc.emitiendo() ? 174 : W - 16), x0 + 8, y0 + 226, esAviso ? 0xFFFFC23A : 0xFFFF5A5A, false);
         super.render(g, mx, my, pt);
     }
 

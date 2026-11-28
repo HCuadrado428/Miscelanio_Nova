@@ -31,7 +31,7 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
     private String pista = "";
     private boolean sonando, bucle;
     private long inicio;
-    private int volumen = 80, alcance = 32, altavoces;
+    private int volumen = 100, alcance = 32, altavoces;
     /** Quién está emitiendo el audio de su ordenador por esta mesa (null si nadie). */
     @Nullable
     private java.util.UUID emisor;
@@ -275,7 +275,7 @@ public class MesaDjBlockEntity extends BlockEntity implements GeoBlockEntity {
         sonando = t.getBoolean("Sonando");
         bucle = t.getBoolean("Bucle");
         inicio = t.getLong("Inicio");
-        volumen = t.contains("Volumen") ? t.getInt("Volumen") : 80;
+        volumen = t.contains("Volumen") ? t.getInt("Volumen") : 100;
         alcance = t.contains("Alcance") ? t.getInt("Alcance") : 32;
         altavoces = t.getInt("Altavoces");
         cola.clear();

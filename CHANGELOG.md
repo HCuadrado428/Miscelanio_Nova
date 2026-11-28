@@ -6,10 +6,25 @@ Cómo van los números de versión:
 - **x.0.0**: cambios o añadidos grandes.
 
 Ramas del repositorio (cada una compila su propio jar al subir algo):
-- **main**: la versión que se juega (ahora la 1.3.1). No se sube de número hasta que lo diga el dueño del mod.
+- **main**: la versión que se juega (ahora la 1.3.2). No se sube de número hasta que lo diga el dueño del mod.
 - **arreglos**: la siguiente 1.x.y (solo arreglos). Se une a main en cuanto está probada, y de main pasa a las otras dos.
 - **novedades**: la siguiente 1.x.0 (cosas pequeñas). Se une a main cuando se publica.
 - **version-2**: la 2.0.0 (lo gordo). Recoge lo de main por el camino y se une al final.
+
+## 1.3.2
+
+- **Mesa de DJ: «Emitir mi PC» ya coge el sonido del ordenador, no el micro.** Antes solo sabía grabar de las entradas de sonido, y en Windows lo que suena por los altavoces no es una entrada (salvo que actives la «Mezcla estéreo»), así que cogía el micrófono y Spotify solo se oía de rebote. Ahora:
+  - En **Windows** hay una entrada nueva, **«Sonido del PC»**, que es la que sale elegida: manda tal cual lo que suena en tu ordenador (Spotify, YouTube…) sin configurar nada.
+  - Si eliges un micrófono, la pantalla te avisa de que eso no recoge la música.
+  - Ojo: recoge **todo** lo que suena en tu PC, también el propio Minecraft y las voces de los demás por el voicechat. Si no quieres que salgan, baja esos volúmenes mientras emites (o usa cascos y sube Spotify).
+  - En Mac y Linux sigue como antes: hace falta una entrada que recoja el sonido (BlackHole, un «monitor»…).
+- **Mesa de DJ: se oye mucho más fuerte.**
+  - Las **canciones** de la mesa pasan por un compresor: las que estaban grabadas flojas suben hasta casi el triple y las fuertes se quedan como están, sin reventar.
+  - El volumen ya no cae nada más salir de la cabina: va a tope en el primer tercio del alcance y baja poco a poco hasta el borde.
+  - Las mesas nuevas empiezan al **100 %** (antes al 80 %). Las que ya tengas puestas siguen como las dejaste: súbelas en su pantalla.
+  - La **emisión del PC** también se sube sola si va floja, y usa el códec en modo música (antes en modo voz, que apaga la música).
+  - Cada jugador tiene un volumen propio para la emisión en el voicechat: tecla del voicechat → **Ajustar volúmenes** → **«Mesa de DJ»** (hasta el 400 %).
+  - Las canciones de la mesa suenan por el volumen de **«Tocadiscos/Bloques musicales»** de las opciones de sonido de Minecraft: si lo tienes bajo, la mesa también.
 
 ## 1.3.1
 

@@ -25,6 +25,8 @@ import java.util.UUID;
 public class RaveVozPlugin implements VoicechatPlugin {
     private static final Map<BlockPos, LocationalAudioChannel> CANALES = new HashMap<>();
     private static final Map<BlockPos, UUID> SALVO = new HashMap<>();
+    /** Id de la categoría de volumen del voicechat (como mucho 16 letras minúsculas o guiones bajos). */
+    private static final String CATEGORIA = "mesa_dj";
 
     @Override
     public String getPluginId() {
@@ -35,6 +37,16 @@ public class RaveVozPlugin implements VoicechatPlugin {
     public void registerEvents(EventRegistration r) {
         r.registerEvent(VoicechatServerStartedEvent.class, e -> {
             VoicechatServerApi api = e.getVoicechat();
+            // categoría de volumen propia: cada jugador la sube o la baja en "Ajustar volúmenes" del voicechat (hasta 400 %)
+            boolean categoria = false;
+            try {
+                api.registerVolumeCategory(api.volumeCategoryBuilder().setId(CATEGORIA).setName("Mesa de DJ")
+                        .setDescription("El ordenador del DJ por la mesa y los altavoces").build());
+                categoria = true;
+            } catch (Throwable t) {
+                // voicechat antiguo: suena con el volumen general
+            }
+            final boolean conCategoria = categoria;
             AudioDj.salida = new AudioDj.Salida() {
                 @Override
                 public void enviar(ServerLevel l, BlockPos fuente, double distancia, UUID salvo, byte[] opus) {
@@ -45,6 +57,7 @@ public class RaveVozPlugin implements VoicechatPlugin {
                             c = api.createLocationalAudioChannel(id, api.fromServerLevel(l),
                                     api.createPosition(fuente.getX() + 0.5, fuente.getY() + 0.8, fuente.getZ() + 0.5));
                             if (c == null) return;
+                            if (conCategoria) c.setCategory(CATEGORIA);
                             CANALES.put(fuente.immutable(), c);
                         }
                         // quien emite ya lo oye en su ordenador: a él no se le manda (si no, se oiría dos veces)

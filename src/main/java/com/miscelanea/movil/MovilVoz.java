@@ -35,6 +35,8 @@ public final class MovilVoz {
     /** Los pone el plugin del voicechat al iniciarse (en el cliente y en el servidor). */
     public static volatile java.util.function.Supplier<Codificador> nuevoCodificador;
     public static volatile java.util.function.Supplier<Decodificador> nuevoDecodificador;
+    /** Como {@link #nuevoCodificador} pero ajustado para música en vez de para voz (lo usa la mesa de DJ); puede faltar. */
+    public static volatile java.util.function.Supplier<Codificador> nuevoCodificadorMusica;
     /**
      * Mientras se graba una nota de voz, el plugin le pasa aquí cada trama del micro del jugador local (desde el hilo del
      * micro del voicechat: el receptor tiene que ser seguro entre hilos).

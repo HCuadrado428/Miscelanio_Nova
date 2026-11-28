@@ -58,6 +58,26 @@ public class MovilVozPlugin implements VoicechatPlugin {
                 }
             };
         };
+        // para la mesa de DJ: el mismo códec en modo música (en modo voz, la música suena apagada y con menos volumen)
+        try {
+            api.createEncoder(de.maxhenkel.voicechat.api.opus.OpusEncoderMode.AUDIO).close();
+            MovilVoz.nuevoCodificadorMusica = () -> {
+                OpusEncoder e = api.createEncoder(de.maxhenkel.voicechat.api.opus.OpusEncoderMode.AUDIO);
+                return new MovilVoz.Codificador() {
+                    @Override
+                    public byte[] codificar(short[] pcm) {
+                        return e.encode(pcm);
+                    }
+
+                    @Override
+                    public void cerrar() {
+                        e.close();
+                    }
+                };
+            };
+        } catch (Throwable t) {
+            MovilVoz.nuevoCodificadorMusica = null;   // voicechat antiguo: se queda el de voz
+        }
         MovilVoz.nuevoDecodificador = () -> {
             OpusDecoder d = api.createDecoder();
             return new MovilVoz.Decodificador() {

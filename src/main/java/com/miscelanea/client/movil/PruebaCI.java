@@ -5594,6 +5594,31 @@ public final class PruebaCI {
             if (m.altavoces() != 2) throw new IllegalStateException("la mesa no cuenta los dos altavoces (" + m.altavoces() + ")");
             if (!suena) throw new IllegalStateException("la música de la mesa no suena en el cliente");
         });
+        // el volumen de la mesa: una canción floja sale bastante más fuerte, una fuerte no se toca apenas y nada pasa de 1
+        vigila("rave_dj_volumen", 5, () -> {
+            double[] sale = new double[2];
+            float pico = 0;
+            float[] amplitudes = {0.08F, 0.6F};
+            for (int k = 0; k < 2; k++) {
+                var c = new com.miscelanea.client.rave.Compresor(44100F, 2.8F);
+                double suma = 0;
+                int n = 44100 * 6, desde = 44100 * 4;
+                for (int i = 0; i < n; i++) {
+                    float y = c.procesar(amplitudes[k] * (float) Math.sin(i * 2 * Math.PI * 440 / 44100));
+                    pico = Math.max(pico, Math.abs(y));
+                    if (i >= desde) suma += (double) y * y;
+                }
+                sale[k] = Math.sqrt(suma / (n - desde)) / (amplitudes[k] / Math.sqrt(2));
+            }
+            // con la captura de pico (0.9) al principio, que no pase de 1
+            var c = new com.miscelanea.client.rave.Compresor(48000F, 4F);
+            for (int i = 0; i < 48000; i++) pico = Math.max(pico, Math.abs(c.procesar(i % 2 == 0 ? 0.99F : -0.99F)));
+            boolean directo = false;
+            for (var en : com.miscelanea.client.rave.CapturaPc.entradas()) directo |= en.directo();
+            RESUMEN.add(String.format("  rave dj volumen: la floja sale x%.2f, la fuerte x%.2f, pico máximo %.3f; sonido del PC directo aquí (no es Windows) %s",
+                    sale[0], sale[1], pico, directo));
+            if (sale[0] < 2.2 || sale[1] > 1.15 || sale[1] < 0.7 || pico > 1.0F) throw new IllegalStateException("el compresor de la mesa no hace lo que debe");
+        });
         paso("rave_dj_pantalla", 20, () -> mc.setScreen(new com.miscelanea.client.rave.MesaDjScreen((net.minecraft.core.BlockPos) PI.get("rave_mesa"))));
         sin("rave_dj_parar", 10, () -> {
             mc.setScreen(null);
